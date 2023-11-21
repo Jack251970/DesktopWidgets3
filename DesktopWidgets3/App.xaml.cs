@@ -54,6 +54,14 @@ public partial class App : Application
         }
     }
 
+    private static WindowEx? ClockWindow { get; set; }
+    public static void ShowClockWindow()
+    {
+        ClockWindow ??= new ClockWindow();
+        ClockWindow.Show();
+        ClockWindow.Activate();
+    }
+
     private static bool closeWindow = false;
     public static bool CheckCanCloseWindow()
     {

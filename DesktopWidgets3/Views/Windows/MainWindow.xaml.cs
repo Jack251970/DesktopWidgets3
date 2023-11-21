@@ -17,8 +17,6 @@ public sealed partial class MainWindow : WindowEx
 
     private readonly UISettings settings;
 
-    private readonly WindowSinker windowSinker;
-
     public MainWindow()
     {
         InitializeComponent();
@@ -34,8 +32,6 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
-
-        windowSinker = new WindowSinker(this);
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open

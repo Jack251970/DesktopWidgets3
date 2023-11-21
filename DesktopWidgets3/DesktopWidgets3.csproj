@@ -45,6 +45,7 @@
     <None Remove="Views\SubPages\CompleteTimingPage.xaml" />
     <None Remove="Views\SubPages\MainTimingPage.xaml" />
     <None Remove="Views\SubPages\SetMinutesPage.xaml" />
+    <None Remove="Views\Windows\ClockWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
@@ -92,10 +93,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Windows\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -121,6 +118,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\SubPages\SetMinutesPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Windows\ClockWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
