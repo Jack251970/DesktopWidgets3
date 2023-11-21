@@ -4,7 +4,7 @@ using Windows.UI.ViewManagement;
 
 namespace DesktopWidgets3.Views.Windows;
 
-public sealed partial class ClockWindow : WindowEx
+public sealed partial class BlankWindow : WindowEx
 {
     private readonly DispatcherQueue dispatcherQueue;
 
@@ -12,16 +12,16 @@ public sealed partial class ClockWindow : WindowEx
 
     private readonly WindowSinker? windowSinker;
 
-    public ClockWindow()
+    public BlankWindow()
     {
         InitializeComponent();
 
-        // TODO: You need to add Post-build event to make sure icon exists.
-        // mkdir $(TargetDir)Assets
-        // copy $(ProjectDir)Assets\WindowIcon.ico $(TargetDir)Assets\WindowIcon.ico
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
         Title = "AppDisplayName".GetLocalized();
+
+        IsTitleBarVisible = false;
+        IsResizable = false;
 
         // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();

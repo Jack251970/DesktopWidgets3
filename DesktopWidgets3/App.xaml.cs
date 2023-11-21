@@ -57,9 +57,20 @@ public partial class App : Application
     private static WindowEx? ClockWindow { get; set; }
     public static void ShowClockWindow()
     {
-        ClockWindow ??= new ClockWindow();
+        ClockWindow ??= new BlankWindow();
         ClockWindow.Show();
         ClockWindow.Activate();
+    }
+
+    private static WindowEx? CPUWindow
+    {
+        get; set;
+    }
+    public static void ShowCPUWindow()
+    {
+        CPUWindow ??= new BlankWindow();
+        CPUWindow.Show();
+        CPUWindow.Activate();
     }
 
     private static bool closeWindow = false;

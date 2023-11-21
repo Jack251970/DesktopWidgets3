@@ -46,6 +46,7 @@
     <None Remove="Views\SubPages\MainTimingPage.xaml" />
     <None Remove="Views\SubPages\SetMinutesPage.xaml" />
     <None Remove="Views\Windows\BlankWindow.xaml" />
+    <None Remove="Views\Windows\CPUWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
@@ -120,7 +121,11 @@
     <Page Update="Views\SubPages\SetMinutesPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\Windows\BlankWindow.xaml">
+    <Page Update="Views\Windows\CPUWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Windows\ClockWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
