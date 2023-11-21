@@ -15,6 +15,10 @@ public partial class TimingViewModel : ObservableRecipient, INavigationAware
 
     private readonly ITimersService _timersService;
 
+#if DEBUG
+    private int i = 0;
+#endif
+
     public TimingViewModel(ISubNavigationService subNavigationService, ITimersService timersService)
     {
         SubNavigationService = subNavigationService;
@@ -31,6 +35,19 @@ public partial class TimingViewModel : ObservableRecipient, INavigationAware
         {
             _timersService.StartUpdateTimeTimer();
         }
+
+#if DEBUG
+        // for test only: why cannot show two windows in one time?
+        if (i == 0)
+        {
+            App.ShowClockWindow();
+            i++;
+        }
+        else
+        {
+            App.ShowCPUWindow();
+        }
+#endif
     }
 
     public void OnNavigatedFrom()
