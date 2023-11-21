@@ -1,0 +1,24 @@
+﻿<UserControl
+    x:Class="DesktopWidgets3.Views.Controls.TrayMenuControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tb="using:H.NotifyIcon"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <XamlUICommand x:Key="ShowCommand" x:Uid="TrayIcon_Show" ExecuteRequested="ShowWindow" />
+        <XamlUICommand x:Key="ExitCommand" x:Uid="TrayIcon_Exit" ExecuteRequested="ExitApp" />
+        <MenuFlyout x:Key="TrayContextFlyout" AreOpenCloseAnimationsEnabled="False">
+            <MenuFlyoutItem Command="{StaticResource ShowCommand}"/>
+            <MenuFlyoutSeparator />
+            <MenuFlyoutItem Command="{StaticResource ExitCommand}"/>
+        </MenuFlyout>
+    </UserControl.Resources>
+    <!-- Enable Win11 theme by ContextMenuMode="SecondWindow" -->
+    <tb:TaskbarIcon
+        ToolTipText="Time Manager 3"
+        IconSource="/Assets/WindowIcon.ico"
+        ContextFlyout="{StaticResource TrayContextFlyout}"
+        MenuActivation="RightClick"/>
+</UserControl>

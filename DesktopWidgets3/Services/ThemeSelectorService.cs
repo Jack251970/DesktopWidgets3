@@ -1,0 +1,67 @@
+﻿using Microsoft.Extensions.Options;
+using Microsoft.UI.Xaml;
+
+using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Helpers;
+using DesktopWidgets3.Models;
+
+namespace DesktopWidgets3.Services;
+
+public class ThemeSelectorService : IThemeSelectorService
+{
+    public ElementTheme Theme { get; set; } = ElementTheme.Default;
+
+    private readonly ILocalSettingsService _localSettingsService;
+    private readonly LocalSettingsKeys _localSettingsKeys;
+
+    private string SettingsKey => _localSettingsKeys.ThemeKey;
+
+    public ThemeSelectorService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys)
+    {
+        _localSettingsService = localSettingsService;
+        _localSettingsKeys = localSettingsKeys.Value;
+    }
+
+    public async Task InitializeAsync()
+    {
+        Theme = await LoadThemeFromSettingsAsync();
+        await Task.CompletedTask;
+    }
+
+    public async Task SetThemeAsync(ElementTheme theme)
+    {
+        Theme = theme;
+
+        await SetRequestedThemeAsync();
+        await SaveThemeInSettingsAsync(Theme);
+    }
+
+    public async Task SetRequestedThemeAsync()
+    {
+        if (App.MainWindow!.Content is FrameworkElement rootElement)
+        {
+            rootElement.RequestedTheme = Theme;
+
+            TitleBarHelper.UpdateTitleBar(Theme);
+        }
+
+        await Task.CompletedTask;
+    }
+
+    private async Task<ElementTheme> LoadThemeFromSettingsAsync()
+    {
+        var themeName = await _localSettingsService.ReadSettingAsync<string>(SettingsKey);
+
+        if (Enum.TryParse(themeName, out ElementTheme cacheTheme))
+        {
+            return cacheTheme;
+        }
+
+        return ElementTheme.Default;
+    }
+
+    private async Task SaveThemeInSettingsAsync(ElementTheme theme)
+    {
+        await _localSettingsService.SaveSettingAsync(SettingsKey, theme.ToString());
+    }
+}

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "DesktopWidgets3 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DesktopWidgets3 (Unpackaged)": {
+      "commandName": "Project",
+      "commandLineArgs": "/startup"
+    }
+  }
+}
