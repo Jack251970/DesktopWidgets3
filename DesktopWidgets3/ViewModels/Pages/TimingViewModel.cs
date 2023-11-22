@@ -37,7 +37,7 @@ public partial class TimingViewModel : ObservableRecipient, INavigationAware
         }
 
 #if DEBUG
-        // for test only: why cannot show two windows in one time?
+        // for test only: run in debug mode
         if (i == 0)
         {
             App.ShowClockWindow();
@@ -47,6 +47,9 @@ public partial class TimingViewModel : ObservableRecipient, INavigationAware
         {
             App.ShowCPUWindow();
         }
+        // for test only: run the exe file directly
+        /*App.ShowClockWindow();
+        App.ShowCPUWindow();*/
 #endif
     }
 
