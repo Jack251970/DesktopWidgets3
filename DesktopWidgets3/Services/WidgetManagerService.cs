@@ -1,54 +1,80 @@
 ﻿using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.ViewModels.WidgetsPages.Clock;
 using DesktopWidgets3.Views.Windows;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services;
 
 public class WidgetManagerService : IWidgetManagerService
 {
-    private static WindowEx? ClockWindow
-    {
-        get; set;
-    }
-
-    private static WindowEx? CPUWindow
-    {
-        get; set;
-    }
+    private readonly Dictionary<string, WindowEx?> WidgetsDict = new() {};
 
     private readonly IActivationService _activationService;
-
     private readonly IWidgetNavigationService _widgetNavigationService;
+    private readonly IThemeSelectorService _themeSelectorService;
 
-    public WidgetManagerService(IActivationService activationService, IWidgetNavigationService widgetNavigationService)
+    public WidgetManagerService(IActivationService activationService, IWidgetNavigationService widgetNavigationService, IThemeSelectorService themeSelectorService)
     {
         _activationService = activationService;
         _widgetNavigationService = widgetNavigationService;
+        _themeSelectorService = themeSelectorService;
     }
 
     public void ShowWidget(string widgetType)
     {
-        if (widgetType == "Clock")
+        if (!WidgetsDict.TryGetValue(widgetType, out var value))
         {
-            ClockWindow ??= new BlankWindow(widgetType);
-            _ = _activationService.ActivateWidgetWindowAsync(ClockWindow);
-            _widgetNavigationService.Frame = ClockWindow.Content as Frame;
-            _widgetNavigationService.InitializeDefaultPage(typeof(ClockViewModel).FullName!);
-            ClockWindow.Show();
+            WindowEx widgetWindow = new BlankWindow(widgetType);
+            WidgetsDict.Add(widgetType, widgetWindow);
+            _ = _activationService.ActivateWidgetWindowAsync(widgetWindow);
+            _widgetNavigationService.Frame = widgetWindow.Content as Frame;
+            switch (widgetType)
+            {
+                case "Clock":
+                    _widgetNavigationService.InitializeDefaultPage(typeof(ClockViewModel).FullName!);
+                    break;
+                case "CPU":
+                    _widgetNavigationService.InitializeDefaultPage(typeof(ClockViewModel).FullName!);
+                    break;
+            }
+            widgetWindow.Show();
         }
-        else if (widgetType == "CPU")
+        else
         {
-            CPUWindow ??= new BlankWindow(widgetType);
-            _ = _activationService.ActivateWidgetWindowAsync(CPUWindow);
-            CPUWindow.Show();
+            value?.Show();
+        }
+    }
+
+    public void CloseWidget(string widgetType)
+    {
+        if (WidgetsDict.TryGetValue(widgetType, out var value))
+        {
+            value?.Close();
+            WidgetsDict.Remove(widgetType);
         }
     }
 
     public void CloseAllWidgets()
     {
-        ClockWindow?.Close();
-        CPUWindow?.Close();
+        foreach (var window in WidgetsDict.Values)
+        {
+            window?.Close();
+        }
+    }
+
+    public IEnumerable<WindowEx> GetWidgets()
+    {
+        return WidgetsDict.Values.Where(x => x != null)!;
+    }
+
+    public async Task SetThemeAsync()
+    {
+        foreach (var window in WidgetsDict.Values.Where(x => x != null)!)
+        {
+            if (window != null)
+            {
+                await _themeSelectorService.SetRequestedThemeAsync(window);
+            }
+        }
     }
 }

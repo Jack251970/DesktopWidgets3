@@ -35,14 +35,16 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     private readonly IAppSettingsService _appSettingsService;
     private readonly INavigationService _navigationService;
     private readonly IThemeSelectorService _themeSelectorService;
+    private readonly IWidgetManagerService _widgetManagerService;
 
     private bool _isInitialized;
 
-    public SettingsViewModel(IAppSettingsService appSettingsService, INavigationService navigationService, IThemeSelectorService themeSelectorService)
+    public SettingsViewModel(IAppSettingsService appSettingsService, INavigationService navigationService, IThemeSelectorService themeSelectorService, IWidgetManagerService widgetManagerService)
     {
         _navigationService = navigationService;
         _appSettingsService = appSettingsService;
         _themeSelectorService = themeSelectorService;
+        _widgetManagerService = widgetManagerService;
 
         InitializeViewModel();
     }
@@ -75,6 +77,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         if (_isInitialized)
         {
             _themeSelectorService.SetThemeAsync((ElementTheme)value);
+            _widgetManagerService.SetThemeAsync();
         }
     }
 

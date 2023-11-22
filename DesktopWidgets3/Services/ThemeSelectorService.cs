@@ -16,6 +16,8 @@ public class ThemeSelectorService : IThemeSelectorService
 
     private string SettingsKey => _localSettingsKeys.ThemeKey;
 
+    private bool _isInitialized;
+
     public ThemeSelectorService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys)
     {
         _localSettingsService = localSettingsService;
@@ -24,21 +26,18 @@ public class ThemeSelectorService : IThemeSelectorService
 
     public async Task InitializeAsync()
     {
-        Theme = await LoadThemeFromSettingsAsync();
-        await Task.CompletedTask;
+        if (!_isInitialized)
+        {
+            Theme = await LoadThemeFromSettingsAsync();
+            await Task.CompletedTask;
+
+            _isInitialized = true;
+        }
     }
 
-    public async Task SetThemeAsync(ElementTheme theme)
+    public async Task SetRequestedThemeAsync(Window window)
     {
-        Theme = theme;
-
-        await SetRequestedThemeAsync();
-        await SaveThemeInSettingsAsync(Theme);
-    }
-
-    public async Task SetRequestedThemeAsync()
-    {
-        if (App.MainWindow!.Content is FrameworkElement rootElement)
+        if (window.Content is FrameworkElement rootElement)
         {
             rootElement.RequestedTheme = Theme;
 
@@ -46,6 +45,14 @@ public class ThemeSelectorService : IThemeSelectorService
         }
 
         await Task.CompletedTask;
+    }
+
+    public async Task SetThemeAsync(ElementTheme theme)
+    {
+        Theme = theme;
+
+        await SetRequestedThemeAsync(App.MainWindow!);
+        await SaveThemeInSettingsAsync(Theme);
     }
 
     private async Task<ElementTheme> LoadThemeFromSettingsAsync()
