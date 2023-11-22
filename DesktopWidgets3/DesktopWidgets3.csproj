@@ -45,6 +45,7 @@
     <None Remove="Views\SubPages\CompleteTimingPage.xaml" />
     <None Remove="Views\SubPages\MainTimingPage.xaml" />
     <None Remove="Views\SubPages\SetMinutesPage.xaml" />
+    <None Remove="Views\WidgetPages\Clock\ClockPage.xaml" />
     <None Remove="Views\Windows\BlankWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +119,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\SubPages\SetMinutesPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\WidgetPages\Clock\ClockPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Windows\BlankWindow.xaml">

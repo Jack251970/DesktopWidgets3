@@ -16,6 +16,8 @@ using DesktopWidgets3.ViewModels.SubPages;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.SubPages;
 using DesktopWidgets3.Views.Windows;
+using DesktopWidgets3.ViewModels.WidgetsPages.Clock;
+using DesktopWidgets3.Views.WidgetPages.Clock;
 
 namespace DesktopWidgets3;
 
@@ -173,6 +175,10 @@ public partial class App : Application
             services.AddTransient<MainTimingPage>();
             services.AddTransient<CompleteTimingViewModel>();
             services.AddTransient<CompleteTimingPage>();
+
+            // Views and ViewModels of Widget Pages
+            services.AddTransient<ClockViewModel>();
+            services.AddTransient<ClockPage>();
 
             // Configuration
             services.Configure<LocalSettingsKeys>(context.Configuration.GetSection(nameof(LocalSettingsKeys)));
