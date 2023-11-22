@@ -21,7 +21,7 @@ public class ActivationService : IActivationService
         _themeSelectorService = themeSelectorService;
     }
 
-    public async Task ActivateAsync(object activationArgs)
+    public async Task ActivateMainWindowAsync(object activationArgs)
     {
         // Execute tasks before activation.
         await InitializeAsync();
@@ -68,5 +68,23 @@ public class ActivationService : IActivationService
     {
         await _themeSelectorService.SetRequestedThemeAsync();
         await Task.CompletedTask;
+    }
+
+    public async Task ActivateWidgetWindowAsync(Window window)
+    {
+        // Execute tasks before activation.
+        // await InitializeAsync();
+
+        // Set the window Content.
+        if (window.Content == null)
+        {
+            window.Content = new Frame();
+        }
+
+        // Activate the MainWindow.
+        window.Activate();
+
+        // Execute tasks after activation.
+        // await StartupAsync();
     }
 }

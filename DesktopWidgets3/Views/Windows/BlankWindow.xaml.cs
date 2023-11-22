@@ -1,9 +1,6 @@
 ﻿using Microsoft.UI.Dispatching;
 using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
-using DesktopWidgets3.Contracts.Services;
-using Microsoft.UI.Xaml.Controls;
-using DesktopWidgets3.ViewModels.WidgetsPages.Clock;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -14,8 +11,6 @@ public sealed partial class BlankWindow : WindowEx
     private readonly UISettings settings;
 
     private readonly WindowSinker? windowSinker;
-
-    private readonly IWidgetNavigationService _widgetNavigationService = App.GetService<IWidgetNavigationService>();
 
     public BlankWindow(string widgetType)
     {
@@ -33,9 +28,6 @@ public sealed partial class BlankWindow : WindowEx
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
         windowSinker = new WindowSinker(this);
-
-        _widgetNavigationService.Frame = Content as Frame;
-        _widgetNavigationService.InitializeDefaultPage(typeof(ClockViewModel).FullName!);
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open

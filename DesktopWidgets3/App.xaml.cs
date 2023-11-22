@@ -183,7 +183,7 @@ public partial class App : Application
         {
             MainWindow = new MainWindow();
 
-            await GetService<IActivationService>().ActivateAsync(args);
+            await GetService<IActivationService>().ActivateMainWindowAsync(args);
         }
     }
 }
