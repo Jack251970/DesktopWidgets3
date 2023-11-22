@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using WinUIEx.Messaging;
 
 namespace DesktopWidgets3.Helpers;
@@ -64,6 +63,9 @@ public class WindowSinker
 
         monitor = new WindowMessageMonitor(window);
         monitor.WindowMessageReceived += OnWindowMessageReceived;
+
+        var hWnd = WindowExtensions.GetWindowHandle(window);
+        SystemHelper.HideWindowFromTaskbar(hWnd);
     }
 
     protected virtual void Dispose(bool disposing)

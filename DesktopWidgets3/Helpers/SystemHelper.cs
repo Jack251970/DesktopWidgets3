@@ -10,6 +10,12 @@ public partial class SystemHelper
     /// <summary>
     /// Check if window exists and show window.
     /// </summary>
+    internal const int SW_HIDE = 0;
+    internal const int SW_SHOW = 5;
+    internal const int SW_RESTORE = 9;
+    internal const int WM_SHOWWINDOW = 0x0018;
+    internal const int SW_PARENTOPENING = 3;
+
     [LibraryImport("user32.dll", EntryPoint = "FindWindowW", StringMarshalling = StringMarshalling.Utf16)]
     internal static partial IntPtr FindWindow(string? lpClassName, string? lpWindowName);
 
@@ -31,10 +37,6 @@ public partial class SystemHelper
         {
             if (showWindow)
             {
-                const int SW_SHOW = 5;
-                const int SW_RESTORE = 9;
-                const int WM_SHOWWINDOW = 0x0018;
-                const int SW_PARENTOPENING = 3;
                 // show window
                 ShowWindow(handle, SW_RESTORE);
                 ShowWindow(handle, SW_SHOW);
@@ -140,5 +142,20 @@ public partial class SystemHelper
     public static void SystemLogOff()
     {
         DoExitWin(EWX_FORCE | EWX_LOGOFF);
+    }
+
+    internal const int GWL_EXSTYLE = -20;
+    internal const int WS_EX_TOOLWINDOW = 0x00000080;
+
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
+    internal static partial IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    internal static partial IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+
+    public static void HideWindowFromTaskbar(IntPtr hwnd)
+    {
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, GetWindowLongPtr(hwnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
+        ShowWindow(hwnd, SW_HIDE);
     }
 }
