@@ -11,6 +11,8 @@ public sealed partial class MainWindow : WindowEx
 {
     private readonly IAppSettingsService _appSettingsService = App.GetService<IAppSettingsService>();
 
+    private readonly IWidgetManagerService _widgetManagerService = App.GetService<IWidgetManagerService>();
+
     private readonly ITimersService _timersService = App.GetService<ITimersService>();
 
     private readonly DispatcherQueue dispatcherQueue;
@@ -58,8 +60,7 @@ public sealed partial class MainWindow : WindowEx
             }
             else
             {
-                App.CloseClockWindow();
-                App.CloseCPUWindow();
+                _widgetManagerService.CloseAllWidgets();
                 Application.Current.Exit();
             }
         }

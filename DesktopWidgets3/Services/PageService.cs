@@ -5,6 +5,8 @@ using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.Views.Pages;
+using DesktopWidgets3.ViewModels.WidgetsPages.Clock;
+using DesktopWidgets3.Views.WidgetPages.Clock;
 
 namespace DesktopWidgets3.Services;
 
@@ -20,6 +22,8 @@ public class PageService : IPageService
         Configure<SettingsViewModel, SettingsPage>();
         Configure<BlockListViewModel, BlockListPage>();
         Configure<StatisticViewModel, StatisticPage>();
+
+        Configure<ClockViewModel, ClockPage>();
     }
 
     public Type GetPageType(string viewModel)

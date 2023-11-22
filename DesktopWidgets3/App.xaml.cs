@@ -56,33 +56,6 @@ public partial class App : Application
         }
     }
 
-    private static WindowEx? ClockWindow { get; set; }
-    public static void ShowClockWindow()
-    {
-        ClockWindow ??= new BlankWindow();
-        ClockWindow.Show();
-        ClockWindow.Activate();
-    }
-    public static void CloseClockWindow()
-    {
-        ClockWindow?.Close();
-    }
-
-    private static WindowEx? CPUWindow
-    {
-        get; set;
-    }
-    public static void ShowCPUWindow()
-    {
-        CPUWindow ??= new BlankWindow();
-        CPUWindow.Show();
-        CPUWindow.Activate();
-    }
-    public static void CloseCPUWindow()
-    {
-        CPUWindow?.Close();
-    }
-
     private static bool closeWindow = false;
     public static bool CheckCanCloseWindow()
     {
@@ -142,6 +115,9 @@ public partial class App : Application
             services.AddSingleton<ITimersService, TimersService>();
 
             services.AddSingleton<IDataBaseService, DataBaseService>();
+
+            services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
+            services.AddSingleton<IWidgetNavigationService, WidgetNavigationService>();
 
             // unable to register event in SystemEvents?
             // services.AddSingleton<ISessionSwitchService, SessionSwitchService>();
