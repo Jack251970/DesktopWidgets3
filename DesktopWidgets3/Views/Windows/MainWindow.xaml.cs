@@ -58,6 +58,8 @@ public sealed partial class MainWindow : WindowEx
             }
             else
             {
+                App.CloseClockWindow();
+                App.CloseCPUWindow();
                 Application.Current.Exit();
             }
         }

@@ -61,6 +61,10 @@ public partial class App : Application
         ClockWindow.Show();
         ClockWindow.Activate();
     }
+    public static void CloseClockWindow()
+    {
+        ClockWindow?.Close();
+    }
 
     private static WindowEx? CPUWindow
     {
@@ -71,6 +75,10 @@ public partial class App : Application
         CPUWindow ??= new BlankWindow();
         CPUWindow.Show();
         CPUWindow.Activate();
+    }
+    public static void CloseCPUWindow()
+    {
+        CPUWindow?.Close();
     }
 
     private static bool closeWindow = false;
