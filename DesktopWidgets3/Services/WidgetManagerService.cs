@@ -7,7 +7,7 @@ namespace DesktopWidgets3.Services;
 
 public class WidgetManagerService : IWidgetManagerService
 {
-    private readonly Dictionary<string, WindowEx> WidgetsDict = new() {};
+    private readonly Dictionary<string, BlankWindow> WidgetsDict = new() {};
 
     private readonly IActivationService _activationService;
     private readonly IThemeSelectorService _themeSelectorService;
@@ -60,7 +60,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public IEnumerable<WindowEx> GetWidgets()
+    public IEnumerable<BlankWindow> GetWidgets()
     {
         return WidgetsDict.Values.Where(x => x != null)!;
     }

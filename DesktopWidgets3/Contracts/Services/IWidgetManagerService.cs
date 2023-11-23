@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Contracts.Services;
+﻿using DesktopWidgets3.Views.Windows;
+
+namespace DesktopWidgets3.Contracts.Services;
 
 public interface IWidgetManagerService
 {
@@ -8,7 +10,7 @@ public interface IWidgetManagerService
 
     void CloseAllWidgets();
 
-    IEnumerable<WindowEx> GetWidgets();
+    IEnumerable<BlankWindow> GetWidgets();
 
     Task SetThemeAsync();
 }
