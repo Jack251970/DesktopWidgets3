@@ -21,5 +21,5 @@ public interface IWidgetNavigationService
 
     bool GoBack();
 
-    void InitializeDefaultPage(string pageKey, object? parameter = null, bool clearNavigation = false);
+    bool InitializePage(string pageKey, object? parameter = null, bool clearNavigation = false);
 }

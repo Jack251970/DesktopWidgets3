@@ -1,6 +1,8 @@
 ﻿using Microsoft.UI.Dispatching;
 using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
+using DesktopWidgets3.Contracts.Services;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -11,6 +13,8 @@ public sealed partial class BlankWindow : WindowEx
     private readonly UISettings settings;
 
     private readonly WindowSinker? windowSinker;
+
+    private readonly IWidgetNavigationService _widgetNavigationService = App.GetService<IWidgetNavigationService>();
 
     public BlankWindow(string widgetType)
     {
@@ -35,5 +39,11 @@ public sealed partial class BlankWindow : WindowEx
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
+    }
+
+    public void InitializePage(Frame? frame, string pageKey, object? parameter = null, bool clearNavigation = false)
+    {
+        _widgetNavigationService.Frame = frame;
+        _widgetNavigationService.InitializePage(pageKey, parameter, clearNavigation);
     }
 }

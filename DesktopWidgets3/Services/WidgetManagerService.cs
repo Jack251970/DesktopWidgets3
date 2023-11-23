@@ -10,13 +10,11 @@ public class WidgetManagerService : IWidgetManagerService
     private readonly Dictionary<string, WindowEx> WidgetsDict = new() {};
 
     private readonly IActivationService _activationService;
-    private readonly IWidgetNavigationService _widgetNavigationService;
     private readonly IThemeSelectorService _themeSelectorService;
 
-    public WidgetManagerService(IActivationService activationService, IWidgetNavigationService widgetNavigationService, IThemeSelectorService themeSelectorService)
+    public WidgetManagerService(IActivationService activationService, IThemeSelectorService themeSelectorService)
     {
         _activationService = activationService;
-        _widgetNavigationService = widgetNavigationService;
         _themeSelectorService = themeSelectorService;
     }
 
@@ -24,17 +22,17 @@ public class WidgetManagerService : IWidgetManagerService
     {
         if (!WidgetsDict.TryGetValue(widgetType, out var value))
         {
-            WindowEx widgetWindow = new BlankWindow(widgetType);
+            var widgetWindow = new BlankWindow(widgetType);
             WidgetsDict.Add(widgetType, widgetWindow);
             _ = _activationService.ActivateWidgetWindowAsync(widgetWindow);
-            _widgetNavigationService.Frame = widgetWindow.Content as Frame;
+            var frame = widgetWindow.Content as Frame;
             switch (widgetType)
             {
                 case "Clock":
-                    _widgetNavigationService.InitializeDefaultPage(typeof(ClockViewModel).FullName!);
+                    widgetWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
                     break;
                 case "CPU":
-                    _widgetNavigationService.InitializeDefaultPage(typeof(ClockViewModel).FullName!);
+                    widgetWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
                     break;
             }
             widgetWindow.Show();

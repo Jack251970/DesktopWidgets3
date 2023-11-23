@@ -112,7 +112,7 @@ public partial class App : Application
             services.AddSingleton<ITimersService, TimersService>();
 
             services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
-            services.AddSingleton<IWidgetNavigationService, WidgetNavigationService>();
+            services.AddTransient<IWidgetNavigationService, WidgetNavigationService>();
 
             // unable to register event in SystemEvents?
             // services.AddSingleton<ISessionSwitchService, SessionSwitchService>();

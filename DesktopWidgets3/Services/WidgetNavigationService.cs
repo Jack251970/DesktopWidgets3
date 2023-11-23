@@ -124,11 +124,13 @@ public class WidgetNavigationService : IWidgetNavigationService
         }
     }
 
-    public void InitializeDefaultPage(string pageKey, object? parameter = null, bool clearNavigation = false)
+    public bool InitializePage(string pageKey, object? parameter = null, bool clearNavigation = false)
     {
-        if (_frame != null)
+        if (_frame == null)
         {
-            NavigateTo(pageKey, parameter, clearNavigation);
+            throw new NullReferenceException("Frame is null.");
         }
+
+        return NavigateTo(pageKey, parameter, clearNavigation);
     }
 }
