@@ -3,8 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages"
+    xmlns:models="using:DesktopWidgets3.Models"
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
@@ -13,70 +16,137 @@
         <x:Double x:Key="CardSpacing">12</x:Double>
     </Page.Resources>
 
-    <StackPanel x:Name="ContentArea" Spacing="{StaticResource CardSpacing}">
-        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Style="{StaticResource CardPanelStyle}"
-              Padding="{StaticResource SmallMargin}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock x:Uid="Dashboard_Total" 
-                       Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0"
-                       Style="{StaticResource BodyTextBlockStyle}"
-                       Margin="{StaticResource SmallBottomMargin}"/>
-            <TextBlock x:Uid="Dashboard_CompletedTimes" 
-                       Grid.Column="0" Grid.Row="1"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-            <TextBlock Grid.Column="0" Grid.Row="2" 
-                       Text="{x:Bind ViewModel.CompletedTimes, Mode=OneWay}"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-            <TextBlock x:Uid="Dashboard_TotalTime" 
-                       Grid.Column="1" Grid.Row="1"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-            <TextBlock Grid.Column="1" Grid.Row="2" 
-                       Text="{x:Bind ViewModel.TotalTime, Mode=OneWay}"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-            <TextBlock x:Uid="Dashboard_AverageTime"
-                       Grid.Column="2" Grid.Row="1"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-            <TextBlock Grid.Column="2" Grid.Row="2" 
-                       Text="{x:Bind ViewModel.AverageTime, Mode=OneWay}"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-        </Grid>
+    <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
+        <StackPanel Padding="0,0,16,16" Orientation="Vertical">
+            <TextBlock
+                x:Uid="Dashboard_EnabledWidgets"
+                Margin="0,0,0,12"
+                Style="{StaticResource PageTitleStyle}" />
+            
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.EnabledWidgets, Mode=OneWay}">
+                <ItemsRepeater.Layout>
+                    <controls:StaggeredLayout
+                        ColumnSpacing="8"
+                        DesiredColumnWidth="378"
+                        RowSpacing="8" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="models:DashboardListItem">
+                        <Button
+                            Padding="0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Tag="{x:Bind Tag, Mode=OneWay}">
+                            <Grid
+                                Padding="16,12"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="{StaticResource OverlayCornerRadius}"
+                                RowSpacing="12">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <!-- <Image Width="20">
+                                        <Image.Source>
+                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneWay}" />
+                                        </Image.Source>
+                                    </Image> -->
+                                    <FontIcon 
+                                        Width="20" 
+                                        FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                        Glyph="&#xE80F;"/>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        FontWeight="SemiBold"
+                                        Text="{x:Bind Label, Mode=OneWay}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <ToggleSwitch
+                                        Grid.Column="2"
+                                        Margin="0,-2,0,0"
+                                        HorizontalAlignment="Right"
+                                        IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                                        OffContent=""
+                                        OnContent="" 
+                                        Style="{StaticResource RightAlignedCompactToggleSwitchStyle}" />
+                                </Grid>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
 
-        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Style="{StaticResource CardPanelStyle}"
-              Padding="{StaticResource SmallMargin}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                       Style="{StaticResource BodyTextBlockStyle}"
-                       Text="{x:Bind ViewModel.TodaySummary, Mode=OneWay}"
-                       Margin="{StaticResource SmallBottomMargin}"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" 
-                       x:Uid="Dashboard_CompletedTimes"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-            <TextBlock Grid.Row="2" Grid.Column="0"
-                       Text="{x:Bind ViewModel.TodayCompletedTimes, Mode=OneWay}"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-            <TextBlock Grid.Row="1" Grid.Column="1"
-                       x:Uid="Dashboard_TotalTime"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-            <TextBlock Grid.Row="2" Grid.Column="1"
-                       Text="{x:Bind ViewModel.TodayTotalTime, Mode=OneWay}"
-                       Style="{StaticResource AppendTextBlockStyle}"/>
-        </Grid>
-    </StackPanel>
+            <TextBlock
+                x:Uid="Dashboard_DisabledWidgets"
+                Margin="0,24,0,12"
+                Style="{StaticResource PageTitleStyle}" />
+
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.DisabledWidgets, Mode=OneWay}">
+                <ItemsRepeater.Layout>
+                    <controls:StaggeredLayout
+                        ColumnSpacing="8"
+                        DesiredColumnWidth="378"
+                        RowSpacing="8" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="models:DashboardListItem">
+                        <Button
+                            Padding="0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Tag="{x:Bind Tag, Mode=OneWay}">
+                            <Grid
+                                Padding="16,12"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="{StaticResource OverlayCornerRadius}"
+                                RowSpacing="12">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <!-- <Image Width="20">
+                                        <Image.Source>
+                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneWay}" />
+                                        </Image.Source>
+                                    </Image> -->
+                                    <FontIcon 
+                                        Width="20" 
+                                        FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                        Glyph="&#xE80F;"/>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        FontWeight="SemiBold"
+                                        Text="{x:Bind Label, Mode=OneWay}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <ToggleSwitch
+                                        Grid.Column="2"
+                                        Margin="0,-2,0,0"
+                                        HorizontalAlignment="Right"
+                                        IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                                        OffContent=""
+                                        OnContent="" 
+                                        Style="{StaticResource RightAlignedCompactToggleSwitchStyle}" />
+                                </Grid>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </StackPanel>
+
+    </ScrollViewer>
+
 </Page>

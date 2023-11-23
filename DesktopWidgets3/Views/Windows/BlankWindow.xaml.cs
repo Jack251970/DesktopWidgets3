@@ -3,6 +3,7 @@ using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
 using DesktopWidgets3.Contracts.Services;
 using Microsoft.UI.Xaml.Controls;
+using DesktopWidgets3.Models;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -16,12 +17,12 @@ public sealed partial class BlankWindow : WindowEx
 
     private readonly IWidgetNavigationService _widgetNavigationService = App.GetService<IWidgetNavigationService>();
 
-    public BlankWindow(string widgetType)
+    public BlankWindow(WidgetType widgetType)
     {
         InitializeComponent();
 
         Content = null;
-        Title = widgetType;
+        Title = widgetType.ToString();
 
         IsTitleBarVisible = false;
         IsResizable = false;

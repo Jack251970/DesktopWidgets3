@@ -376,4 +376,10 @@
   <data name="Dashboard_Today" xml:space="preserve">
     <value>Today {0}</value>
   </data>
+  <data name="Dashboard_DisabledWidgets.Text" xml:space="preserve">
+    <value>Disabled widgets</value>
+  </data>
+  <data name="Dashboard_EnabledWidgets.Text" xml:space="preserve">
+    <value>Enabled widgets</value>
+  </data>
 </root>

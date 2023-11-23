@@ -1,4 +1,5 @@
 ﻿using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Models;
 using DesktopWidgets3.ViewModels.WidgetsPages.Clock;
 using DesktopWidgets3.Views.Windows;
 using Microsoft.UI.Xaml.Controls;
@@ -7,7 +8,7 @@ namespace DesktopWidgets3.Services;
 
 public class WidgetManagerService : IWidgetManagerService
 {
-    private readonly Dictionary<string, BlankWindow> WidgetsDict = new() {};
+    private readonly Dictionary<WidgetType, BlankWindow> WidgetsDict = new() {};
 
     private readonly IActivationService _activationService;
     private readonly IThemeSelectorService _themeSelectorService;
@@ -18,7 +19,7 @@ public class WidgetManagerService : IWidgetManagerService
         _themeSelectorService = themeSelectorService;
     }
 
-    public void ShowWidget(string widgetType)
+    public void ShowWidget(WidgetType widgetType)
     {
         if (!WidgetsDict.TryGetValue(widgetType, out var value))
         {
@@ -28,10 +29,10 @@ public class WidgetManagerService : IWidgetManagerService
             var frame = widgetWindow.Content as Frame;
             switch (widgetType)
             {
-                case "Clock":
+                case WidgetType.Clock:
                     widgetWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
                     break;
-                case "CPU":
+                case WidgetType.CPU:
                     widgetWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
                     break;
             }
@@ -43,7 +44,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public void CloseWidget(string widgetType)
+    public void CloseWidget(WidgetType widgetType)
     {
         if (WidgetsDict.TryGetValue(widgetType, out var value))
         {
@@ -71,5 +72,27 @@ public class WidgetManagerService : IWidgetManagerService
         {
             await _themeSelectorService.SetRequestedThemeAsync(window);
         }
+    }
+
+    public List<DashboardListItem> GetEnabledWidgets()
+    {
+        List<DashboardListItem> list = new();
+        foreach (var entry in WidgetsDict)
+        {
+            var key = entry.Key;
+            var value = entry.Value;
+
+            list.Add(new DashboardListItem
+            {
+                IsEnabled = true,
+                Tag = key,
+            });
+        }
+        return list;
+    }
+
+    public List<DashboardListItem> GetDisableWidgets()
+    {
+        return new();
     }
 }
