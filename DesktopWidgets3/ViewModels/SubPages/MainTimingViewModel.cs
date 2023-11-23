@@ -192,46 +192,6 @@ public partial class MainTimingViewModel : ObservableRecipient, INavigationAware
     {
         var processesIds = new List<int>();
 
-        try
-        {
-            var processes = Process.GetProcesses();
-            foreach (var process in processes)
-            {
-                var processName = process.ProcessName.ToString();
-                var blockList = _appSettingsService.GetBlockList();
-                foreach (var exeName in blockList)
-                {
-#if DEBUG
-                    if (exeName == "devenv.exe" || exeName == "setup.exe")
-                    {
-                        continue;
-                    }
-#endif
-                    if (exeName[..^4].ToLower().Equals(processName.ToLower()))
-                    {
-                        processesIds.Add(process.Id);
-                    }
-                }
-                foreach (var exeName in AddBlockNames)
-                {
-#if DEBUG
-                    if (exeName == "taskmgr")
-                    {
-                        continue;
-                    }
-#endif
-                    if (exeName.Equals(processName.ToLower()))
-                    {
-                        processesIds.Add(process.Id);
-                    }
-                }
-            }
-        }
-        catch
-        {
-
-        }
-
         return processesIds;
     }
 

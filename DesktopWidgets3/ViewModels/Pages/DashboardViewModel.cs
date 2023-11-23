@@ -43,13 +43,13 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         // Update widget
         if (dashboardListItem.IsEnabled)
         {
-            _widgetManagerService.ShowWidget(dashboardListItem.Tag);
-            allWidgetItems.First(x => x.Tag == dashboardListItem.Tag).IsEnabled = true;
+            _widgetManagerService.ShowWidget(dashboardListItem.Type);
+            allWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = true;
         }
         else
         {
-            _widgetManagerService.CloseWidget(dashboardListItem.Tag);
-            allWidgetItems.First(x => x.Tag == dashboardListItem.Tag).IsEnabled = false;
+            _widgetManagerService.CloseWidget(dashboardListItem.Type);
+            allWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = false;
         }
 
         // Reload lists
@@ -68,7 +68,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
             }
         }
 
-        // Change in local settings
-        // _appSettingsService.SaveBlockList(allWidgetItems);
+        // Save in local settings
+        _appSettingsService.SaveWidgetsList(WidgetItemUtils.ConvertToJsonWidgetItem(dashboardListItem));
     }
 }

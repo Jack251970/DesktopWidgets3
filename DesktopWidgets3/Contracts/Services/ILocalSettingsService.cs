@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Contracts.Services;
+﻿using DesktopWidgets3.Models;
+
+namespace DesktopWidgets3.Contracts.Services;
 
 public interface ILocalSettingsService
 {
@@ -8,7 +10,7 @@ public interface ILocalSettingsService
 
     Task SaveSettingAsync<T>(string key, T value);
 
-    Task<List<string>> ReadBlockListAsync();
+    Task<List<JsonWidgetItem>> ReadWidgetListAsync();
 
-    Task SaveBlockListAsync(List<string> value);
+    Task SaveWidgetListAsync(List<JsonWidgetItem> value);
 }

@@ -4,6 +4,8 @@ namespace DesktopWidgets3.Contracts.Services;
 
 public interface IWidgetManagerService
 {
+    void InitializeWidgets();
+
     void ShowWidget(WidgetType widgetType);
 
     void CloseWidget(WidgetType widgetType);

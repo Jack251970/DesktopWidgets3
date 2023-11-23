@@ -33,7 +33,7 @@
                             HorizontalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="0"
-                            Tag="{x:Bind Tag, Mode=OneWay}">
+                            Tag="{x:Bind Type, Mode=OneWay}">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -97,7 +97,7 @@
                             HorizontalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="0"
-                            Tag="{x:Bind Tag, Mode=OneWay}">
+                            Tag="{x:Bind Type, Mode=OneWay}">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"

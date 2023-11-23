@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Contracts.Services;
+﻿using DesktopWidgets3.Models;
+
+namespace DesktopWidgets3.Contracts.Services;
 
 public interface IAppSettingsService
 {
@@ -51,7 +53,7 @@ public interface IAppSettingsService
 
     Task SaveLockPeriod(DateTime startLockTime, DateTime endLockTime);
 
-    List<string> GetBlockList();
+    List<JsonWidgetItem> GetWidgetsList();
 
-    Task SaveBlockList(string exeName, bool isBlock);
+    Task SaveWidgetsList(JsonWidgetItem item);
 }

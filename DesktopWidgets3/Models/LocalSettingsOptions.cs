@@ -12,7 +12,7 @@ public class LocalSettingsOptions
         get; set;
     }
 
-    public string? BlockListFile
+    public string? WidgetListFile
     {
         get; set;
     }

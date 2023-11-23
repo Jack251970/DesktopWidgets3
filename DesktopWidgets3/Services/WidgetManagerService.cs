@@ -11,12 +11,29 @@ public class WidgetManagerService : IWidgetManagerService
     private readonly Dictionary<WidgetType, BlankWindow> WidgetsDict = new() {};
 
     private readonly IActivationService _activationService;
+    private readonly IAppSettingsService _appSettingsService;
     private readonly IThemeSelectorService _themeSelectorService;
 
-    public WidgetManagerService(IActivationService activationService, IThemeSelectorService themeSelectorService)
+    public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService)
     {
         _activationService = activationService;
+        _appSettingsService = appSettingsService;
         _themeSelectorService = themeSelectorService;
+    }
+
+    public void InitializeWidgets()
+    {
+#if DEBUG
+        return;
+#endif
+        var widgetList = _appSettingsService.GetWidgetsList();
+        foreach (var widget in widgetList)
+        {
+            if (widget.IsEnabled)
+            {
+                ShowWidget(WidgetItemUtils.ConvertToBaseWidgetItem(widget).Type);
+            }
+        }
     }
 
     public void ShowWidget(WidgetType widgetType)
@@ -91,7 +108,7 @@ public class WidgetManagerService : IWidgetManagerService
         {
             dashboardItemList.Add(new DashboardWidgetItem()
             {
-                Tag = moduleType,
+                Type = moduleType,
                 Label = moduleType.ToString(),
                 IsEnabled = WidgetsDict.ContainsKey(moduleType),
                 Icon = null,

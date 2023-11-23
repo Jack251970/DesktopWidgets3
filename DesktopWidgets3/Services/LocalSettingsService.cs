@@ -17,7 +17,7 @@ public class LocalSettingsService : ILocalSettingsService
 {
     private const string _defaultApplicationDataFolder = "DesktopWidgets3/ApplicationData";
     private const string _defaultLocalSettingsFile = "LocalSettings.json";
-    private const string _defaultBlockListFile = "BlockList.json";
+    private const string _defaultWidgetListFile = "WidgetList.json";
 
     private readonly IFileService _fileService;
     private readonly LocalSettingsOptions _options;
@@ -26,7 +26,7 @@ public class LocalSettingsService : ILocalSettingsService
     private readonly string _localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
     private readonly string _localsettingsFile;
-    private readonly string _blockListFile;
+    private readonly string _widgetListFile;
 
     private IDictionary<string, object>? _settings;
 
@@ -38,7 +38,7 @@ public class LocalSettingsService : ILocalSettingsService
         _options = options.Value;
 
         _localsettingsFile = _options.LocalSettingsFile ?? _defaultLocalSettingsFile;
-        _blockListFile = _options.BlockListFile ?? _defaultBlockListFile;
+        _widgetListFile = _options.WidgetListFile ?? _defaultWidgetListFile;
         
         if (RuntimeHelper.IsMSIX)
         {
@@ -120,15 +120,15 @@ public class LocalSettingsService : ILocalSettingsService
         }
     }
 
-    public async Task<List<string>> ReadBlockListAsync()
+    public async Task<List<JsonWidgetItem>> ReadWidgetListAsync()
     {
-        var _blockList = await Task.Run(() => _fileService.Read<List<string>>(_applicationDataFolder, _blockListFile)) ?? new List<string>();
+        var _widgetList = await Task.Run(() => _fileService.Read<List<JsonWidgetItem>>(_applicationDataFolder, _widgetListFile)) ?? new List<JsonWidgetItem>();
 
-        return _blockList;
+        return _widgetList;
     }
 
-    public async Task SaveBlockListAsync(List<string> value)
+    public async Task SaveWidgetListAsync(List<JsonWidgetItem> value)
     {
-        await Task.Run(() => _fileService.Save(_applicationDataFolder, _blockListFile, value));
+        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, value));
     }
 }

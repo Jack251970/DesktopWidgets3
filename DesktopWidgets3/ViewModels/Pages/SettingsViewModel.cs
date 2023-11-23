@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;

@@ -19,9 +19,10 @@ public class AppSettingsService : IAppSettingsService
 
     private async void InitializeAsync()
     {
+        WidgetList = await _localSettingsService.ReadWidgetListAsync();
+
         BatterySaver = await GetBatterySaverAsync();
         ForbidQuit = await GetForbidQuitAsync();
-        BlockList = await _localSettingsService.ReadBlockListAsync();
         IsLocking = IsRelaxing = false;
     }
 
@@ -117,34 +118,28 @@ public class AppSettingsService : IAppSettingsService
         ForbidQuit = value;
     }
 
-    /************ BlockList *************/
+    /************ WidgetList *************/
 
-    private List<string> BlockList = new();
+    private List<JsonWidgetItem> WidgetList = new();
 
-    public List<string> GetBlockList()
+    public List<JsonWidgetItem> GetWidgetsList()
     {
-        return BlockList;
+        return WidgetList;
     }
 
-    public async Task SaveBlockList(string exeName, bool isBlock)
+    public async Task SaveWidgetsList(JsonWidgetItem widgetItem)
     {
-        var count = BlockList.Count;
-        if (isBlock)
+        var index = WidgetList.FindIndex(x => x.Type == widgetItem.Type);
+        if (index == -1)
         {
-            BlockList.Add(exeName);
+            WidgetList.Add(widgetItem);
         }
         else
         {
-            BlockList.Remove(exeName);
+            WidgetList[index] = widgetItem;
         }
-#if DEBUG
-        await Task.CompletedTask;
-#else
-        if (BlockList.Count != count)
-        {
-            await _localSettingsService.SaveBlockListAsync(BlockList);
-        }
-#endif
+
+        await _localSettingsService.SaveWidgetListAsync(WidgetList);
     }
 
     /************ Simultaneously-Stored Data & Method *************/
