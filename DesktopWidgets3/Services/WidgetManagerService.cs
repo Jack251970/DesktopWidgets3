@@ -21,43 +21,52 @@ public class WidgetManagerService : IWidgetManagerService
 
     public void ShowWidget(WidgetType widgetType)
     {
-        if (!WidgetsDict.TryGetValue(widgetType, out var value))
+        if (!WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
         {
-            var widgetWindow = new BlankWindow(widgetType);
-            WidgetsDict.Add(widgetType, widgetWindow);
-            _ = _activationService.ActivateWidgetWindowAsync(widgetWindow);
-            var frame = widgetWindow.Content as Frame;
+            var blankWindow = new BlankWindow(widgetType);
+            WidgetsDict.Add(widgetType, blankWindow);
+            _ = _activationService.ActivateWidgetWindowAsync(blankWindow);
+            var frame = blankWindow.Content as Frame;
             switch (widgetType)
             {
                 case WidgetType.Clock:
-                    widgetWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
+                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
                     break;
                 case WidgetType.CPU:
-                    widgetWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
+                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
+                    break;
+                case WidgetType.Disk:
+                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
+                    break;
+                case WidgetType.Network:
+                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
+                    break;
+                case WidgetType.Folder:
+                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
                     break;
             }
-            widgetWindow.Show();
+            blankWindow.Show();
         }
         else
         {
-            value.Show();
+            widgetWindow.Show();
         }
     }
 
     public void CloseWidget(WidgetType widgetType)
     {
-        if (WidgetsDict.TryGetValue(widgetType, out var value))
+        if (WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
         {
-            value.Close();
+            widgetWindow.Close();
             WidgetsDict.Remove(widgetType);
         }
     }
 
     public void CloseAllWidgets()
     {
-        foreach (var window in WidgetsDict.Values)
+        foreach (var widgetWindow in WidgetsDict.Values)
         {
-            window.Close();
+            widgetWindow.Close();
         }
     }
 
@@ -68,9 +77,9 @@ public class WidgetManagerService : IWidgetManagerService
 
     public async Task SetThemeAsync()
     {
-        foreach (var window in WidgetsDict.Values.Where(x => x != null)!)
+        foreach (var widgetWindow in WidgetsDict.Values.Where(x => x != null)!)
         {
-            await _themeSelectorService.SetRequestedThemeAsync(window);
+            await _themeSelectorService.SetRequestedThemeAsync(widgetWindow);
         }
     }
 

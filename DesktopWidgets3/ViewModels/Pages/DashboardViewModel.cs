@@ -8,78 +8,24 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 {
-    private readonly ILocalSettingsService _localSettingsService;
-    private readonly IWidgetManagerService _widgetManagerService;
-
     public ObservableCollection<WidgetItem> EnabledWidgets { get; set; } = new();
 
     public ObservableCollection<WidgetItem> DisabledWidgets { get; set; } = new();
+
+    private readonly ILocalSettingsService _localSettingsService;
+    private readonly IWidgetManagerService _widgetManagerService;
+
+    private readonly List<WidgetItem> allWidgetItems;
 
     public DashboardViewModel(ILocalSettingsService localSettingsService, IWidgetManagerService widgetManagerService)
     {
         _localSettingsService = localSettingsService;
         _widgetManagerService = widgetManagerService;
 
-        var _allModules = _widgetManagerService.GetAllWidgets(EnabledChangedOnUI);
+        allWidgetItems = _widgetManagerService.GetAllWidgets(EnabledChangedOnUI);
 
-        EnabledWidgets = new ObservableCollection<WidgetItem>(_allModules.Where(x => x.IsEnabled));
-        DisabledWidgets = new ObservableCollection<WidgetItem>(_allModules.Where(x => !x.IsEnabled));
-    }
-
-    private void EnabledChangedOnUI(WidgetItem dashboardListItem)
-    {
-        // Views.ShellPage.UpdateGeneralSettingsCallback(dashboardListItem.Tag, dashboardListItem.IsEnabled);
-
-        if (dashboardListItem.IsEnabled)
-        {
-            _widgetManagerService.ShowWidget(dashboardListItem.Tag);
-        }
-        else
-        {
-            _widgetManagerService.CloseWidget(dashboardListItem.Tag);
-        }
-    }
-
-    public void WidgetsEnabledChanged()
-    {
-        EnabledWidgets.Clear();
-        DisabledWidgets.Clear();
-
-        List<WidgetItem> _allModules = new();
-        foreach (WidgetType moduleType in Enum.GetValues(typeof(WidgetType)))
-        {
-            _allModules.Add(new WidgetItem()
-            {
-                Tag = moduleType,
-                Label = moduleType.ToString(),
-                IsEnabled = true,
-                Icon = null,
-                EnabledChangedCallback = EnabledChangedOnUI,
-                //DashboardModuleItems = null,
-            });
-        }
-
-        EnabledWidgets = new ObservableCollection<WidgetItem>(_allModules.Where(x => x.IsEnabled));
-        DisabledWidgets = new ObservableCollection<WidgetItem>(_allModules.Where(x => !x.IsEnabled));
-
-        /*
-        foreach (DashboardListItem item in _allModules)
-        {
-            item.IsEnabled = ModuleHelper.GetIsModuleEnabled(generalSettingsConfig, item.Tag);
-            if (item.IsEnabled)
-            {
-                EnabledWidgets.Add(item);
-            }
-            else
-            {
-                DisabledWidgets.Add(item);
-            }
-        }
-
-        OnPropertyChanged(nameof(ActiveModules));
-        OnPropertyChanged(nameof(DisabledModules));*/
-
-        // Change in local settings
+        EnabledWidgets = new ObservableCollection<WidgetItem>(allWidgetItems.Where(x => x.IsEnabled));
+        DisabledWidgets = new ObservableCollection<WidgetItem>(allWidgetItems.Where(x => !x.IsEnabled));
     }
 
     public void OnNavigatedTo(object parameter)
@@ -90,5 +36,39 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     public void OnNavigatedFrom()
     {
         
+    }
+
+    private void EnabledChangedOnUI(WidgetItem dashboardListItem)
+    {
+        // Update widget
+        if (dashboardListItem.IsEnabled)
+        {
+            _widgetManagerService.ShowWidget(dashboardListItem.Tag);
+            allWidgetItems.First(x => x.Tag == dashboardListItem.Tag).IsEnabled = true;
+        }
+        else
+        {
+            _widgetManagerService.CloseWidget(dashboardListItem.Tag);
+            allWidgetItems.First(x => x.Tag == dashboardListItem.Tag).IsEnabled = false;
+        }
+
+        // Reload lists
+        EnabledWidgets.Clear();
+        DisabledWidgets.Clear();
+
+        foreach (var item in allWidgetItems)
+        {
+            if (item.IsEnabled)
+            {
+                EnabledWidgets.Add(item);
+            }
+            else
+            {
+                DisabledWidgets.Add(item);
+            }
+        }
+
+        // Change in local settings
+        // _localSettingsService.SetEnabledWidgets(allWidgetItems.Where(x => x.IsEnabled).Select(x => x.Tag).ToList());
     }
 }

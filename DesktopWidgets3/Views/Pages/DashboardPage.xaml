@@ -4,17 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages"
     xmlns:models="using:DesktopWidgets3.Models"
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
-    <Page.Resources>
-        <!--  Spacing between cards  -->
-        <x:Double x:Key="CardSpacing">12</x:Double>
-    </Page.Resources>
 
     <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
         <StackPanel Padding="0,0,16,16" Orientation="Vertical">

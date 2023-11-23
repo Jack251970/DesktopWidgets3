@@ -4,4 +4,7 @@ public enum WidgetType
 {
     Clock,
     CPU,
+    Disk,
+    Folder,
+    Network,
 }
