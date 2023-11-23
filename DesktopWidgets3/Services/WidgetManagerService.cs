@@ -74,25 +74,22 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public List<DashboardListItem> GetEnabledWidgets()
+    public List<WidgetItem> GetAllWidgets(Action<WidgetItem>? EnabledChangedCallback)
     {
-        List<DashboardListItem> list = new();
-        foreach (var entry in WidgetsDict)
-        {
-            var key = entry.Key;
-            var value = entry.Value;
+        List<WidgetItem> dashboardItemList = new();
 
-            list.Add(new DashboardListItem
+        foreach (WidgetType moduleType in Enum.GetValues(typeof(WidgetType)))
+        {
+            dashboardItemList.Add(new WidgetItem()
             {
-                IsEnabled = true,
-                Tag = key,
+                Tag = moduleType,
+                Label = moduleType.ToString(),
+                IsEnabled = WidgetsDict.ContainsKey(moduleType),
+                Icon = null,
+                EnabledChangedCallback = EnabledChangedCallback,
             });
         }
-        return list;
-    }
 
-    public List<DashboardListItem> GetDisableWidgets()
-    {
-        return new();
+        return dashboardItemList;
     }
 }

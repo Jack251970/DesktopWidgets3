@@ -11,44 +11,33 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     private readonly ILocalSettingsService _localSettingsService;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    public ObservableCollection<DashboardListItem> EnabledWidgets { get; set; } = new();
+    public ObservableCollection<WidgetItem> EnabledWidgets { get; set; } = new();
 
-    public ObservableCollection<DashboardListItem> DisabledWidgets { get; set; } = new();
-
-#if DEBUG
-    private static int i = 0;
-#endif
+    public ObservableCollection<WidgetItem> DisabledWidgets { get; set; } = new();
 
     public DashboardViewModel(ILocalSettingsService localSettingsService, IWidgetManagerService widgetManagerService)
     {
         _localSettingsService = localSettingsService;
         _widgetManagerService = widgetManagerService;
 
-        // _widgetManagerService.ShowWidget(WidgetType.Clock);
-        List<DashboardListItem> _allModules = new();
+        var _allModules = _widgetManagerService.GetAllWidgets(EnabledChangedOnUI);
 
-        int i = 0;
-        foreach (WidgetType moduleType in Enum.GetValues(typeof(WidgetType)))
-        {
-            _allModules.Add(new DashboardListItem()
-            {
-                Tag = moduleType,
-                Label = moduleType.ToString(),
-                IsEnabled = (i < 6),
-                Icon = null,
-                EnabledChangedCallback = EnabledChangedOnUI,
-                //DashboardModuleItems = null,
-            });
-            i++;
-        }
-
-        EnabledWidgets = new ObservableCollection<DashboardListItem>(_allModules.Where(x => x.IsEnabled));
-        DisabledWidgets = new ObservableCollection<DashboardListItem>(_allModules.Where(x => !x.IsEnabled));
+        EnabledWidgets = new ObservableCollection<WidgetItem>(_allModules.Where(x => x.IsEnabled));
+        DisabledWidgets = new ObservableCollection<WidgetItem>(_allModules.Where(x => !x.IsEnabled));
     }
 
-    private void EnabledChangedOnUI(DashboardListItem dashboardListItem)
+    private void EnabledChangedOnUI(WidgetItem dashboardListItem)
     {
         // Views.ShellPage.UpdateGeneralSettingsCallback(dashboardListItem.Tag, dashboardListItem.IsEnabled);
+
+        if (dashboardListItem.IsEnabled)
+        {
+            _widgetManagerService.ShowWidget(dashboardListItem.Tag);
+        }
+        else
+        {
+            _widgetManagerService.CloseWidget(dashboardListItem.Tag);
+        }
     }
 
     public void WidgetsEnabledChanged()
@@ -56,10 +45,10 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         EnabledWidgets.Clear();
         DisabledWidgets.Clear();
 
-        List<DashboardListItem> _allModules = new();
+        List<WidgetItem> _allModules = new();
         foreach (WidgetType moduleType in Enum.GetValues(typeof(WidgetType)))
         {
-            _allModules.Add(new DashboardListItem()
+            _allModules.Add(new WidgetItem()
             {
                 Tag = moduleType,
                 Label = moduleType.ToString(),
@@ -70,8 +59,8 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
             });
         }
 
-        EnabledWidgets = new ObservableCollection<DashboardListItem>(_allModules.Where(x => x.IsEnabled));
-        DisabledWidgets = new ObservableCollection<DashboardListItem>(_allModules.Where(x => !x.IsEnabled));
+        EnabledWidgets = new ObservableCollection<WidgetItem>(_allModules.Where(x => x.IsEnabled));
+        DisabledWidgets = new ObservableCollection<WidgetItem>(_allModules.Where(x => !x.IsEnabled));
 
         /*
         foreach (DashboardListItem item in _allModules)
@@ -95,23 +84,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 
     public void OnNavigatedTo(object parameter)
     {
-#if DEBUG
-        // for test only: run in debug mode
-        /*if (i == 0)
-        {
-            _widgetManagerService.ShowWidget(WidgetType.Clock);
-            i++;
-        }
-        else if (i == 1)
-        {
-            _widgetManagerService.ShowWidget(WidgetType.CPU);
-            i++;
-        }
-        else
-        {
-            i++;
-        }*/
-#endif
+
     }
 
     public void OnNavigatedFrom()

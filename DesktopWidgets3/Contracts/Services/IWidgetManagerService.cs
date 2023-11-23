@@ -10,9 +10,7 @@ public interface IWidgetManagerService
 
     void CloseAllWidgets();
 
-    List<DashboardListItem> GetEnabledWidgets();
-
-    List<DashboardListItem> GetDisableWidgets();
-
     Task SetThemeAsync();
+
+    List<WidgetItem> GetAllWidgets(Action<WidgetItem>? EnabledChangedCallback);
 }

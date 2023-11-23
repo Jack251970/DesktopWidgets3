@@ -10,16 +10,6 @@
                 <ResourceDictionary Source="/Styles/Others.xaml" />
                 <ResourceDictionary Source="/Styles/Values.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <!-- Card -->
-            <Style x:Key="CardPanelStyle" TargetType="Grid">
-                <Style.Setters>
-                    <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorQuarternaryBrush}"/>
-                    <Setter Property="BorderThickness" Value="1" />
-                    <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
-                    <Setter Property="CornerRadius" Value="{StaticResource OverlayCornerRadius}" />
-                </Style.Setters>
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

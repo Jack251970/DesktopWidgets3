@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace DesktopWidgets3.Models;
 
-public class DashboardListItem // : INotifyPropertyChanged
+public class WidgetItem // : INotifyPropertyChanged
 {
     private bool _isEnabled;
 
@@ -41,7 +41,7 @@ public class DashboardListItem // : INotifyPropertyChanged
         }
     }
 
-    public Action<DashboardListItem>? EnabledChangedCallback
+    public Action<WidgetItem>? EnabledChangedCallback
     {
         get; set;
     }

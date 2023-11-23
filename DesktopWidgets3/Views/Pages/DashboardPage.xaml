@@ -31,7 +31,7 @@
                         RowSpacing="8" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="models:DashboardListItem">
+                    <DataTemplate x:DataType="models:WidgetItem">
                         <Button
                             Padding="0"
                             HorizontalAlignment="Stretch"
@@ -95,7 +95,7 @@
                         RowSpacing="8" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="models:DashboardListItem">
+                    <DataTemplate x:DataType="models:WidgetItem">
                         <Button
                             Padding="0"
                             HorizontalAlignment="Stretch"
