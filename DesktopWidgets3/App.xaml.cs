@@ -29,10 +29,7 @@ public partial class App : Application
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
-    public IHost? Host
-    {
-        get;
-    }
+    public IHost? Host { get; }
 
     public static T GetService<T>()
         where T : class
@@ -71,10 +68,10 @@ public partial class App : Application
         closeWindow = true;
     }
 
-    private static bool existWindow = false;
-
     public static UIElement? AppTitleBar { get; set; }
     public static UIElement? AppTitleBarText { get; set; }
+
+    private static bool existWindow = false;
 
     public App()
     {
@@ -182,7 +179,6 @@ public partial class App : Application
         if (!existWindow)
         {
             MainWindow = new MainWindow();
-
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
         }
     }

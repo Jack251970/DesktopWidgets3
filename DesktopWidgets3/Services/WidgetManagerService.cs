@@ -7,7 +7,7 @@ namespace DesktopWidgets3.Services;
 
 public class WidgetManagerService : IWidgetManagerService
 {
-    private readonly Dictionary<string, WindowEx?> WidgetsDict = new() {};
+    private readonly Dictionary<string, WindowEx> WidgetsDict = new() {};
 
     private readonly IActivationService _activationService;
     private readonly IWidgetNavigationService _widgetNavigationService;
@@ -41,7 +41,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
         else
         {
-            value?.Show();
+            value.Show();
         }
     }
 
@@ -49,7 +49,7 @@ public class WidgetManagerService : IWidgetManagerService
     {
         if (WidgetsDict.TryGetValue(widgetType, out var value))
         {
-            value?.Close();
+            value.Close();
             WidgetsDict.Remove(widgetType);
         }
     }
@@ -58,7 +58,7 @@ public class WidgetManagerService : IWidgetManagerService
     {
         foreach (var window in WidgetsDict.Values)
         {
-            window?.Close();
+            window.Close();
         }
     }
 
@@ -71,10 +71,7 @@ public class WidgetManagerService : IWidgetManagerService
     {
         foreach (var window in WidgetsDict.Values.Where(x => x != null)!)
         {
-            if (window != null)
-            {
-                await _themeSelectorService.SetRequestedThemeAsync(window);
-            }
+            await _themeSelectorService.SetRequestedThemeAsync(window);
         }
     }
 }
