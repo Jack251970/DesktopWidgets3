@@ -75,13 +75,13 @@ public class ActivationService : IActivationService
         // Execute tasks before activation.
         await InitializeAsync();
 
-        // Set the window Content.
+        // Set the Window Content.
         if (window.Content == null)
         {
             window.Content = new Frame();
         }
 
-        // Activate the widget window.
+        // Activate the Window.
         window.Activate();
 
         // Execute tasks after activation.
