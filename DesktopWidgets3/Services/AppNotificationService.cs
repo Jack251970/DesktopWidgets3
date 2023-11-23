@@ -33,10 +33,10 @@ public class AppNotificationService : IAppNotificationService
     {
         switch (ParseArguments(args.Argument)["action"])
         {
-            case "Statistic":
+            case "Dashboard":
                 App.MainWindow!.DispatcherQueue.TryEnqueue(() =>
                 {
-                    _navigationService.NavigateTo(typeof(StatisticViewModel).FullName!);
+                    _navigationService.NavigateTo(typeof(DashboardViewModel).FullName!);
                     App.ShowMainWindow(true);
                 });
                 break;

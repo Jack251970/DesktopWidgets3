@@ -4,16 +4,16 @@ using DesktopWidgets3.ViewModels.Pages;
 
 namespace DesktopWidgets3.Views.Pages;
 
-public sealed partial class StatisticPage : Page
+public sealed partial class DashboardPage : Page
 {
-    public StatisticViewModel ViewModel
+    public DashboardViewModel ViewModel
     {
         get;
     }
 
-    public StatisticPage()
+    public DashboardPage()
     {
-        ViewModel = App.GetService<StatisticViewModel>();
+        ViewModel = App.GetService<DashboardViewModel>();
         InitializeComponent();
     }
 }

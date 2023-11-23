@@ -21,7 +21,7 @@ public class PageService : IPageService
         Configure<TimingViewModel, TimingPage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<BlockListViewModel, BlockListPage>();
-        Configure<StatisticViewModel, StatisticPage>();
+        Configure<DashboardViewModel, DashboardPage>();
 
         Configure<ClockViewModel, ClockPage>();
     }

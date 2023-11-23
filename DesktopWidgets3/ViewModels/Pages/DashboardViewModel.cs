@@ -1,11 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
-using DesktopWidgets3.Services;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class StatisticViewModel : ObservableRecipient, INavigationAware
+public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 {
     [ObservableProperty]
     private string _completedTimes = string.Empty;
@@ -37,7 +36,7 @@ public partial class StatisticViewModel : ObservableRecipient, INavigationAware
 
     private readonly IWidgetManagerService _widgetManagerService;
 
-    public StatisticViewModel(IWidgetManagerService widgetManagerService)
+    public DashboardViewModel(IWidgetManagerService widgetManagerService)
     {
         _widgetManagerService = widgetManagerService;
     }

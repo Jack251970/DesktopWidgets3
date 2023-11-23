@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Controls\TrayMenuControl.xaml" />
-    <None Remove="Views\Pages\StatisticPage.xaml" />
+    <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\TimingPage.xaml" />
     <None Remove="Views\SubPages\CompleteTimingPage.xaml" />
     <None Remove="Views\SubPages\MainTimingPage.xaml" />
@@ -104,7 +104,7 @@
     <Page Update="Views\Controls\TrayMenuControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\Pages\StatisticPage.xaml">
+    <Page Update="Views\Pages\DashboardPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Pages\TimingPage.xaml">

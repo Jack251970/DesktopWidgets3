@@ -132,8 +132,8 @@ public partial class App : Application
             services.AddTransient<SettingsPage>();
             services.AddTransient<BlockListViewModel>();
             services.AddTransient<BlockListPage>();
-            services.AddTransient<StatisticViewModel>();
-            services.AddTransient<StatisticPage>();
+            services.AddTransient<DashboardViewModel>();
+            services.AddTransient<DashboardPage>();
 
             // View and ViewModels of SubPages
             // TODO: Register your services of new sub pages here.

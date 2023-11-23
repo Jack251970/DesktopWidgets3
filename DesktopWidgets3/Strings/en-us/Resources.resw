@@ -133,7 +133,7 @@
     &lt;/binding&gt;
   &lt;/visual&gt;
   &lt;actions&gt;
-    &lt;action content="View in statistic page" arguments="action=Statistic"/&gt;
+    &lt;action content="View in Dashboard page" arguments="action=Dashboard"/&gt;
   &lt;/actions&gt;
 &lt;/toast&gt;</value>
   </data>
@@ -301,7 +301,7 @@
     &lt;/binding&gt;
   &lt;/visual&gt;
   &lt;actions&gt;
-    &lt;action content="View in statistic page" arguments="action=Timing"/&gt;
+    &lt;action content="View in Dashboard page" arguments="action=Timing"/&gt;
   &lt;/actions&gt;
 &lt;/toast&gt;</value>
   </data>
@@ -349,31 +349,31 @@
   <data name="Settings_RunStartup_Card.Header" xml:space="preserve">
     <value>Run at startup</value>
   </data>
-  <data name="Shell_Statistic.Content" xml:space="preserve">
-    <value>Statistic</value>
+  <data name="Shell_Dashboard.Content" xml:space="preserve">
+    <value>Dashboard</value>
   </data>
-  <data name="Statistic_AverageTime.Text" xml:space="preserve">
+  <data name="Dashboard_AverageTime.Text" xml:space="preserve">
     <value>Average per time:</value>
   </data>
-  <data name="Statistic_CompletedTimes.Text" xml:space="preserve">
+  <data name="Dashboard_CompletedTimes.Text" xml:space="preserve">
     <value>Completed times:</value>
   </data>
-  <data name="Statistic_Total.Text" xml:space="preserve">
+  <data name="Dashboard_Total.Text" xml:space="preserve">
     <value>Total</value>
   </data>
-  <data name="Statistic_TotalTime.Text" xml:space="preserve">
+  <data name="Dashboard_TotalTime.Text" xml:space="preserve">
     <value>Total time:</value>
   </data>
-  <data name="Statistic_TimeTemplate_DayHourMinute" xml:space="preserve">
+  <data name="Dashboard_TimeTemplate_DayHourMinute" xml:space="preserve">
     <value>{0}d {1}h {2}m</value>
   </data>
-  <data name="Statistic_TimeTemplate_HourMinute" xml:space="preserve">
+  <data name="Dashboard_TimeTemplate_HourMinute" xml:space="preserve">
     <value>{0}h {1}m</value>
   </data>
-  <data name="Statistic_TimeTemplate_Minute" xml:space="preserve">
+  <data name="Dashboard_TimeTemplate_Minute" xml:space="preserve">
     <value>{0}m</value>
   </data>
-  <data name="Statistic_Today" xml:space="preserve">
+  <data name="Dashboard_Today" xml:space="preserve">
     <value>Today {0}</value>
   </data>
 </root>
