@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppDisplayName" xml:space="preserve">
-    <value>Time Manager 3</value>
+    <value>Desktop Widgets 3</value>
   </data>
   <data name="BlockList_NoSelection.Text" xml:space="preserve">
     <value>Select an item from the list.</value>
@@ -147,7 +147,7 @@
     <value>About</value>
   </data>
   <data name="Settings_AboutApp_Card.Description" xml:space="preserve">
-    <value>A pomodoro app for scientific time management, designed to improve the execution, overcome procrastination and cultivate self-control.</value>
+    <value>A app for many useful desktop widgets.</value>
   </data>
   <data name="Settings_AboutApp_Card.Header" xml:space="preserve">
     <value>Time Manager 3</value>
@@ -329,7 +329,7 @@
     <value>Filter apps by its name</value>
   </data>
   <data name="AppDescription" xml:space="preserve">
-    <value>A pomodoro app for scientific time management, designed to improve the execution, overcome procrastination and cultivate self-control.</value>
+    <value>A app for many useful desktop widgets.</value>
   </data>
   <data name="Settings_BatterySaver_Card.Description" xml:space="preserve">
     <value>Limit appearance-related background activity</value>
