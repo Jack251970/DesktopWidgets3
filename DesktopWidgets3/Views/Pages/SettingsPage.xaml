@@ -139,11 +139,12 @@
                                            HorizontalContentAlignment="Left"
                                            ContentAlignment="Vertical" >
                             <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                                <HyperlinkButton Content="Files" NavigateUri="https://github.com/files-community/Files" />
                                 <HyperlinkButton Content="H.NotifyIcon" NavigateUri="https://github.com/HavenDV/H.NotifyIcon" />
                                 <HyperlinkButton Content="Newtonsoft.Json" NavigateUri="https://github.com/JamesNK/Newtonsoft.Json" />
+                                <HyperlinkButton Content="PowerToys" NavigateUri="https://github.com/microsoft/PowerToys" />
                                 <HyperlinkButton Content="Template Studio for WinUI (C#)" NavigateUri="https://github.com/microsoft/TemplateStudio" />
-                                <HyperlinkButton Content="TimeManager" NavigateUri="https://github.com/Jack251970/TimeManager" />
-                                <HyperlinkButton Content="TimeManager2" NavigateUri="https://github.com/Jack251970/TimeManager2" />
+                                <HyperlinkButton Content="TimeManager3" NavigateUri="https://github.com/Jack251970/TimeManager3" />
                                 <HyperlinkButton Content="Windows Community Toolkit" NavigateUri="https://github.com/CommunityToolkit/WindowsCommunityToolkit" />
                                 <HyperlinkButton Content="Windows Community Toolkit Labs" NavigateUri="https://github.com/CommunityToolkit/Labs-Windows" />
                                 <HyperlinkButton Content="WinUIEx" NavigateUri="https://github.com/dotMorten/WinUIEx" />
