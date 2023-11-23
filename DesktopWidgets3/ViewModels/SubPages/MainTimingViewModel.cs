@@ -42,17 +42,15 @@ public partial class MainTimingViewModel : ObservableRecipient, INavigationAware
 
     private readonly IAppNotificationService _appNotificationService;
     private readonly IAppSettingsService _appSettingsService;
-    private readonly IDataBaseService _dataBaseService;
     private readonly ISubNavigationService _subNavigationService;
     private readonly ITimersService _timersService;
 
     private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
 
-    public MainTimingViewModel(IAppNotificationService appNotificationService, IAppSettingsService appSettingsService, IDataBaseService dataBaseService, ISubNavigationService subNavigationService, ITimersService timersService)
+    public MainTimingViewModel(IAppNotificationService appNotificationService, IAppSettingsService appSettingsService, ISubNavigationService subNavigationService, ITimersService timersService)
     {
         _appNotificationService = appNotificationService;
         _appSettingsService = appSettingsService;
-        _dataBaseService = dataBaseService;
         _subNavigationService = subNavigationService;
         _timersService = timersService;
 
@@ -147,7 +145,6 @@ public partial class MainTimingViewModel : ObservableRecipient, INavigationAware
             {
                 var totalMinutes = (_endTimingTime - _startTimingTime).TotalMinutes;
                 haveLockingMinutes += (int)totalMinutes;
-                _dataBaseService.AddLockPeriodData(_startTimingTime, _endTimingTime);
                 _timersService.StopBreakReminderKillProcessesTimerAsync();
                 _appSettingsService.IsLocking = false;
                 parameter.Add("CompleteTip", "CompleteTiming_CompleteTip_Locking".GetLocalized());

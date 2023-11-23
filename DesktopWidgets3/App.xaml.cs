@@ -111,8 +111,6 @@ public partial class App : Application
 
             services.AddSingleton<ITimersService, TimersService>();
 
-            services.AddSingleton<IDataBaseService, DataBaseService>();
-
             services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
             services.AddSingleton<IWidgetNavigationService, WidgetNavigationService>();
 
@@ -159,7 +157,6 @@ public partial class App : Application
         }).
         Build();
 
-        GetService<IDataBaseService>().Initialize();
         GetService<IAppNotificationService>().Initialize();
 
         UnhandledException += App_UnhandledException;
