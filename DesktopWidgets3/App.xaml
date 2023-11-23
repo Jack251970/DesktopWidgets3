@@ -20,8 +20,6 @@
                     <Setter Property="CornerRadius" Value="{StaticResource OverlayCornerRadius}" />
                 </Style.Setters>
             </Style>
-
-            
         </ResourceDictionary>
     </Application.Resources>
 </Application>
