@@ -1,9 +1,6 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿namespace DesktopWidgets3.Models;
 
-namespace DesktopWidgets3.Models;
-
-public class WidgetItem // : INotifyPropertyChanged
+public class DashboardWidgetItem
 {
     private bool _isEnabled;
 
@@ -35,21 +32,13 @@ public class WidgetItem // : INotifyPropertyChanged
             if (_isEnabled != value)
             {
                 _isEnabled = value;
-                // OnPropertyChanged();
                 EnabledChangedCallback?.Invoke(this);
             }
         }
     }
 
-    public Action<WidgetItem>? EnabledChangedCallback
+    public Action<DashboardWidgetItem>? EnabledChangedCallback
     {
         get; set;
     }
-
-    /*public event PropertyChangedEventHandler? PropertyChanged;
-
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }*/
 }

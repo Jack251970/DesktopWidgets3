@@ -128,10 +128,4 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
             _appSettingsService.SetBreakIntervalAsync(value);
         }  
     }
-
-    [RelayCommand]
-    private void OnSetBlockListApp()
-    {
-        _navigationService.NavigateTo(typeof(BlockListViewModel).FullName!);
-    }
 }

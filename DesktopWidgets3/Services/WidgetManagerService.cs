@@ -83,13 +83,13 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public List<WidgetItem> GetAllWidgets(Action<WidgetItem>? EnabledChangedCallback)
+    public List<DashboardWidgetItem> GetAllWidgets(Action<DashboardWidgetItem>? EnabledChangedCallback)
     {
-        List<WidgetItem> dashboardItemList = new();
+        List<DashboardWidgetItem> dashboardItemList = new();
 
         foreach (WidgetType moduleType in Enum.GetValues(typeof(WidgetType)))
         {
-            dashboardItemList.Add(new WidgetItem()
+            dashboardItemList.Add(new DashboardWidgetItem()
             {
                 Tag = moduleType,
                 Label = moduleType.ToString(),

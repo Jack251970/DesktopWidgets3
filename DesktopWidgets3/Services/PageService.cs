@@ -20,7 +20,6 @@ public class PageService : IPageService
         Configure<HomeViewModel, HomePage>();
         Configure<TimingViewModel, TimingPage>();
         Configure<SettingsViewModel, SettingsPage>();
-        Configure<BlockListViewModel, BlockListPage>();
         Configure<DashboardViewModel, DashboardPage>();
 
         Configure<ClockViewModel, ClockPage>();

@@ -130,8 +130,6 @@ public partial class App : Application
             services.AddTransient<TimingPage>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
-            services.AddTransient<BlockListViewModel>();
-            services.AddTransient<BlockListPage>();
             services.AddTransient<DashboardViewModel>();
             services.AddTransient<DashboardPage>();
 

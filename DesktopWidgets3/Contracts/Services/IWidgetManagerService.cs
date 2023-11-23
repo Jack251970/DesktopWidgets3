@@ -12,5 +12,5 @@ public interface IWidgetManagerService
 
     Task SetThemeAsync();
 
-    List<WidgetItem> GetAllWidgets(Action<WidgetItem>? EnabledChangedCallback);
+    List<DashboardWidgetItem> GetAllWidgets(Action<DashboardWidgetItem>? EnabledChangedCallback);
 }

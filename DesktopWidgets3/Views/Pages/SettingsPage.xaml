@@ -82,14 +82,6 @@
                         IsOn="{x:Bind ViewModel.StrictMode, Mode=TwoWay}" />
                 </labs:SettingsCard>
 
-                <labs:SettingsCard x:Uid="Settings_BlockList_Card"
-                                   IsClickEnabled="{x:Bind ViewModel.LockOptionsEnabled, Mode=OneWay}"
-                                   Command="{x:Bind ViewModel.SetBlockListAppCommand}">
-                    <labs:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xF140;" />
-                    </labs:SettingsCard.HeaderIcon>
-                </labs:SettingsCard>
-
                 <labs:SettingsCard x:Uid="Settings_BreakInterval_Card">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xF182;" />

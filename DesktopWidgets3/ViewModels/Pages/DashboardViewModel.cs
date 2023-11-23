@@ -8,24 +8,24 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 {
-    public ObservableCollection<WidgetItem> EnabledWidgets { get; set; } = new();
+    public ObservableCollection<DashboardWidgetItem> EnabledWidgets { get; set; } = new();
 
-    public ObservableCollection<WidgetItem> DisabledWidgets { get; set; } = new();
+    public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = new();
 
-    private readonly ILocalSettingsService _localSettingsService;
+    private readonly IAppSettingsService _appSettingsService;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    private readonly List<WidgetItem> allWidgetItems;
+    private readonly List<DashboardWidgetItem> allWidgetItems;
 
-    public DashboardViewModel(ILocalSettingsService localSettingsService, IWidgetManagerService widgetManagerService)
+    public DashboardViewModel(IAppSettingsService appSettingsService, IWidgetManagerService widgetManagerService)
     {
-        _localSettingsService = localSettingsService;
+        _appSettingsService = appSettingsService;
         _widgetManagerService = widgetManagerService;
 
         allWidgetItems = _widgetManagerService.GetAllWidgets(EnabledChangedOnUI);
 
-        EnabledWidgets = new ObservableCollection<WidgetItem>(allWidgetItems.Where(x => x.IsEnabled));
-        DisabledWidgets = new ObservableCollection<WidgetItem>(allWidgetItems.Where(x => !x.IsEnabled));
+        EnabledWidgets = new ObservableCollection<DashboardWidgetItem>(allWidgetItems.Where(x => x.IsEnabled));
+        DisabledWidgets = new ObservableCollection<DashboardWidgetItem>(allWidgetItems.Where(x => !x.IsEnabled));
     }
 
     public void OnNavigatedTo(object parameter)
@@ -38,7 +38,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         
     }
 
-    private void EnabledChangedOnUI(WidgetItem dashboardListItem)
+    private void EnabledChangedOnUI(DashboardWidgetItem dashboardListItem)
     {
         // Update widget
         if (dashboardListItem.IsEnabled)
@@ -69,6 +69,6 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         }
 
         // Change in local settings
-        // _localSettingsService.SetEnabledWidgets(allWidgetItems.Where(x => x.IsEnabled).Select(x => x.Tag).ToList());
+        // _appSettingsService.SaveBlockList(allWidgetItems);
     }
 }
