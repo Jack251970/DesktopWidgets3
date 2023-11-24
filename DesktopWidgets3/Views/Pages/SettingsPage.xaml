@@ -60,48 +60,6 @@
                     </labs:SettingsCard.HeaderIcon>
                     <ToggleSwitch IsOn="{x:Bind ViewModel.BatterySaver, Mode=TwoWay}" />
                 </labs:SettingsCard>
-                
-                <!-- Locking -->
-                <TextBlock x:Uid="Settings_Locking" 
-                           Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
-                <labs:SettingsCard x:Uid="Settings_ShowSeconds_Card">
-                    <labs:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE823;" />
-                    </labs:SettingsCard.HeaderIcon>
-                    <ToggleSwitch 
-                        IsEnabled="{x:Bind ViewModel.LockOptionsEnabled, Mode=OneWay}"
-                        IsOn="{x:Bind ViewModel.ShowSeconds, Mode=TwoWay}" />
-                </labs:SettingsCard>
-
-                <labs:SettingsCard x:Uid="Settings_StrictMode_Card">
-                    <labs:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE72E;" />
-                    </labs:SettingsCard.HeaderIcon>
-                    <ToggleSwitch
-                        IsEnabled="{x:Bind ViewModel.LockOptionsEnabled, Mode=OneWay}"
-                        IsOn="{x:Bind ViewModel.StrictMode, Mode=TwoWay}" />
-                </labs:SettingsCard>
-
-                <labs:SettingsCard x:Uid="Settings_BreakInterval_Card">
-                    <labs:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xF182;" />
-                    </labs:SettingsCard.HeaderIcon>
-                    <NumberBox 
-                        IsEnabled="{x:Bind ViewModel.LockOptionsEnabled, Mode=OneWay}"
-                        Value="{x:Bind ViewModel.BreakInterval, Mode=TwoWay}"
-                        SpinButtonPlacementMode="Compact"
-                        SmallChange="5" Minimum="45" Maximum="120" />
-                </labs:SettingsCard>
-
-                <!-- Self-control -->
-                <TextBlock x:Uid="Settings_SelfControl" 
-                           Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
-                <labs:SettingsCard x:Uid="Settings_ForbidQuit_Card" >
-                    <labs:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xF3B1;" />
-                    </labs:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.ForbidQuit, Mode=TwoWay}" />
-                </labs:SettingsCard>
 
                 <!--  About  -->
                 <TextBlock x:Uid="Settings_About" 

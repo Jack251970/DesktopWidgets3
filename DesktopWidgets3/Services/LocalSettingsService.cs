@@ -12,7 +12,7 @@ namespace DesktopWidgets3.Services;
 
 // For MSIX package:
 // Settings saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\Settings\settings.dat
-// BlockList saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\LocalState\BlockList.json
+// WidgetList saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\LocalState\WidgetList.json
 public class LocalSettingsService : ILocalSettingsService
 {
     private const string _defaultApplicationDataFolder = "DesktopWidgets3/ApplicationData";
@@ -116,7 +116,7 @@ public class LocalSettingsService : ILocalSettingsService
 
             _settings![key] = stringValue;
 
-            await Task.Run(() => _fileService.Save(_applicationDataFolder, _localsettingsFile, _settings));
+            await Task.Run(() => _fileService.Save(_applicationDataFolder, _localsettingsFile, _settings, false));
         }
     }
 
@@ -129,6 +129,6 @@ public class LocalSettingsService : ILocalSettingsService
 
     public async Task SaveWidgetListAsync(List<JsonWidgetItem> value)
     {
-        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, value));
+        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, value, true));
     }
 }

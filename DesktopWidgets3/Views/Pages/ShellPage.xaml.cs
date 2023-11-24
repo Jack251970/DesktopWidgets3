@@ -11,7 +11,6 @@ using Windows.System;
 
 namespace DesktopWidgets3.Views.Pages;
 
-// TODO: Update NavigationViewItem titles and icons in ShellPage.xaml.
 public sealed partial class ShellPage : Page
 {
     public ShellViewModel ViewModel
@@ -19,13 +18,8 @@ public sealed partial class ShellPage : Page
         get;
     }
 
-    private readonly IAppSettingsService _appSettingsService;
-    private readonly INavigationService _navigationService;
-
-    public ShellPage(IAppSettingsService appSettingsService, INavigationService navigationService, ShellViewModel viewModel)
+    public ShellPage(ShellViewModel viewModel)
     {
-        _appSettingsService = appSettingsService;
-        _navigationService = navigationService;
         ViewModel = viewModel;
         InitializeComponent();
 
@@ -48,20 +42,6 @@ public sealed partial class ShellPage : Page
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
-
-        CheckLockPeriod();
-    }
-
-    private async void CheckLockPeriod()
-    {
-        var now = DateTime.Now;
-        var lockPeriod = await _appSettingsService.GetLockPeriod();
-        var startLockTime = (DateTime)lockPeriod["StartLockTime"];
-        var endLockTime = (DateTime)lockPeriod["EndLockTime"];
-        if (now > startLockTime && now < endLockTime)
-        {
-            _navigationService.NavigateTo(typeof(TimingViewModel).FullName!, lockPeriod);
-        }
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

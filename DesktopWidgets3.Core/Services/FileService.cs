@@ -20,14 +20,14 @@ public class FileService : IFileService
         return default;
     }
 
-    public void Save<T>(string folderPath, string fileName, T content)
+    public void Save<T>(string folderPath, string fileName, T content, bool indent)
     {
         if (!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);
         }
 
-        var fileContent = JsonConvert.SerializeObject(content, Formatting.Indented);
+        var fileContent = JsonConvert.SerializeObject(content, indent ? Formatting.Indented : Formatting.None);
         File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
     }
 
