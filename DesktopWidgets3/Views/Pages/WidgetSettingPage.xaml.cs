@@ -4,16 +4,16 @@ using DesktopWidgets3.ViewModels.Pages;
 
 namespace DesktopWidgets3.Views.Pages;
 
-public sealed partial class TimingPage : Page
+public sealed partial class WidgetSettingPage : Page
 {
-    public TimingViewModel ViewModel
+    public WidgetSettingViewModel ViewModel
     {
         get;
     }
 
-    public TimingPage()
+    public WidgetSettingPage()
     {
-        ViewModel = App.GetService<TimingViewModel>();
+        ViewModel = App.GetService<WidgetSettingViewModel>();
         InitializeComponent();
     }
 }

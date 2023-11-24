@@ -132,8 +132,8 @@ public partial class App : Application
             services.AddTransient<ShellViewModel>();
             services.AddTransient<HomeViewModel>();
             services.AddTransient<HomePage>();
-            services.AddTransient<TimingViewModel>();
-            services.AddTransient<TimingPage>();
+            services.AddTransient<WidgetSettingViewModel>();
+            services.AddTransient<WidgetSettingPage>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
             services.AddTransient<DashboardViewModel>();

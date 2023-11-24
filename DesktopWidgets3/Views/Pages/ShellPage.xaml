@@ -44,8 +44,6 @@
             
                 TODO: Update item icons by updating FontIcon.Glyph properties.
                 https://docs.microsoft.com/windows/apps/design/style/segoe-fluent-icons-font#icon-list
-                
-                TODO: Register your navigation items of new pages here.
                 -->
                 <NavigationViewItem x:Uid="Shell_Home" helpers:NavigationHelper.NavigateTo="DesktopWidgets3.ViewModels.Pages.HomeViewModel">
                     <NavigationViewItem.Icon>
@@ -57,9 +55,9 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF246;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_Timing" helpers:NavigationHelper.NavigateTo="DesktopWidgets3.ViewModels.Pages.TimingViewModel">
+                <NavigationViewItem x:Uid="Shell_WidgetSetting" helpers:NavigationHelper.NavigateTo="DesktopWidgets3.ViewModels.Pages.WidgetSettingViewModel">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE916;"/>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE74C;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>

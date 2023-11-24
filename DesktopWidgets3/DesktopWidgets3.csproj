@@ -90,7 +90,7 @@
   <ItemGroup>
     <None Remove="Views\Controls\TrayMenuControl.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
-    <None Remove="Views\Pages\TimingPage.xaml" />
+    <None Remove="Views\Pages\WidgetSettingPage.xaml" />
     <None Remove="Views\WidgetPages\Clock\ClockPage.xaml" />
     <None Remove="Views\Windows\BlankWindow.xaml" />
   </ItemGroup>
@@ -153,7 +153,7 @@
     <Page Update="Views\Pages\DashboardPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\Pages\TimingPage.xaml">
+    <Page Update="Views\Pages\WidgetSettingPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\WidgetPages\Clock\ClockPage.xaml">

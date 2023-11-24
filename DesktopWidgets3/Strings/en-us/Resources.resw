@@ -163,8 +163,8 @@
   <data name="Shell_Home.Content" xml:space="preserve">
     <value>Home</value>
   </data>
-  <data name="Shell_Timing.Content" xml:space="preserve">
-    <value>Timing</value>
+  <data name="Shell_WidgetSetting.Content" xml:space="preserve">
+    <value>Widgets</value>
   </data>
   <data name="TrayIcon_Exit.Description" xml:space="preserve">
     <value>Exit application</value>
@@ -177,18 +177,6 @@
   </data>
   <data name="TrayIcon_Show.Label" xml:space="preserve">
     <value>Show</value>
-  </data>
-  <data name="SetMinutes_InputTip_Locking" xml:space="preserve">
-    <value>Please enter the locking minutes: (From 2 to 720)</value>
-  </data>
-  <data name="SetMinutes_InputTip_Relaxing" xml:space="preserve">
-    <value>Please enter the relaxing minutes: (From 1 to {0})</value>
-  </data>
-  <data name="SetMinutes_StartTiming_Locking" xml:space="preserve">
-    <value>Start Locking</value>
-  </data>
-  <data name="SetMinutes_StartTiming_Relaxing" xml:space="preserve">
-    <value>Start Relaxing</value>
   </data>
   <data name="AppDescription" xml:space="preserve">
     <value>A app for many useful desktop widgets.</value>
