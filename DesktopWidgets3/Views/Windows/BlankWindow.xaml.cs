@@ -45,10 +45,10 @@ public sealed partial class BlankWindow : WindowEx
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
-    public void InitializePage(Frame? frame, string pageKey, object? parameter = null, bool clearNavigation = false)
+    public void InitializePage(Frame? frame, WidgetType widgetType, object? parameter = null, bool clearNavigation = false)
     {
         _widgetNavigationService.Frame = frame;
-        _widgetNavigationService.InitializePage(pageKey, parameter, clearNavigation);
+        _widgetNavigationService.InitializePage(widgetType, parameter, clearNavigation);
         _windowSinkService.Initialize(this);
     }
 }

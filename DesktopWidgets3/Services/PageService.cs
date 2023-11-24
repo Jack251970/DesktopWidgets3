@@ -16,13 +16,10 @@ public class PageService : IPageService
 
     public PageService()
     {
-        // TODO: Register your services of new pages here.
         Configure<HomeViewModel, HomePage>();
         Configure<TimingViewModel, TimingPage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DashboardViewModel, DashboardPage>();
-
-        Configure<ClockViewModel, ClockPage>();
     }
 
     public Type GetPageType(string viewModel)

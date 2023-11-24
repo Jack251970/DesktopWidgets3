@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using DesktopWidgets3.Models;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace DesktopWidgets3.Contracts.Services;
@@ -17,9 +18,9 @@ public interface IWidgetNavigationService
         get; set;
     }
 
-    bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false);
+    bool NavigateTo(WidgetType widgetType, object? parameter = null, bool clearNavigation = false);
 
     bool GoBack();
 
-    bool InitializePage(string pageKey, object? parameter = null, bool clearNavigation = false);
+    bool InitializePage(WidgetType widgetType, object? parameter = null, bool clearNavigation = false);
 }

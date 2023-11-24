@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Navigation;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
+using DesktopWidgets3.Models;
 
 namespace DesktopWidgets3.Services;
 
@@ -13,7 +14,7 @@ namespace DesktopWidgets3.Services;
 // https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/navigation.md
 public class WidgetNavigationService : IWidgetNavigationService
 {
-    private readonly IPageService _pageService;
+    private readonly IWidgetPageService _widgetPageService;
     private object? _lastParameter;
     private Frame? _frame;
 
@@ -43,9 +44,9 @@ public class WidgetNavigationService : IWidgetNavigationService
     [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
     public bool CanGoBack => Frame != null && Frame.CanGoBack;
 
-    public WidgetNavigationService(IPageService pageService)
+    public WidgetNavigationService(IWidgetPageService widgetPageService)
     {
-        _pageService = pageService;
+        _widgetPageService = widgetPageService;
     }
 
     private void RegisterFrameEvents()
@@ -81,9 +82,9 @@ public class WidgetNavigationService : IWidgetNavigationService
         return false;
     }
 
-    public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
+    public bool NavigateTo(WidgetType widgetType, object? parameter = null, bool clearNavigation = false)
     {
-        var pageType = _pageService.GetPageType(pageKey);
+        var pageType = _widgetPageService.GetPageType(widgetType);
 
         if (_frame != null && (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameter))))
         {
@@ -124,13 +125,13 @@ public class WidgetNavigationService : IWidgetNavigationService
         }
     }
 
-    public bool InitializePage(string pageKey, object? parameter = null, bool clearNavigation = false)
+    public bool InitializePage(WidgetType widgetType, object? parameter = null, bool clearNavigation = false)
     {
         if (_frame == null)
         {
             throw new NullReferenceException("Frame is null.");
         }
 
-        return NavigateTo(pageKey, parameter, clearNavigation);
+        return NavigateTo(widgetType, parameter, clearNavigation);
     }
 }

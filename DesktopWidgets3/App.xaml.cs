@@ -97,6 +97,7 @@ public partial class App : Application
             services.AddSingleton<INavigationService, NavigationService>();
 
             // Widgets Window Pages
+            services.AddSingleton<IWidgetPageService, WidgetPageService>();
             services.AddTransient<IWidgetNavigationService, WidgetNavigationService>();
 
             #endregion

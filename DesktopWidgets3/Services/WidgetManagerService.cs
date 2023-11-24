@@ -44,24 +44,7 @@ public class WidgetManagerService : IWidgetManagerService
             WidgetsDict.Add(widgetType, blankWindow);
             _ = _activationService.ActivateWidgetWindowAsync(blankWindow);
             var frame = blankWindow.Content as Frame;
-            switch (widgetType)
-            {
-                case WidgetType.Clock:
-                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
-                    break;
-                case WidgetType.CPU:
-                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
-                    break;
-                case WidgetType.Disk:
-                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
-                    break;
-                case WidgetType.Network:
-                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
-                    break;
-                case WidgetType.Folder:
-                    blankWindow.InitializePage(frame, typeof(ClockViewModel).FullName!);
-                    break;
-            }
+            blankWindow.InitializePage(frame, widgetType);
             blankWindow.Show();
         }
         else
