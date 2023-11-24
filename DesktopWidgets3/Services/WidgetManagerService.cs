@@ -25,7 +25,7 @@ public class WidgetManagerService : IWidgetManagerService
     {
 #if DEBUG
         return;
-#endif
+#else
         var widgetList = _appSettingsService.GetWidgetsList();
         foreach (var widget in widgetList)
         {
@@ -34,6 +34,7 @@ public class WidgetManagerService : IWidgetManagerService
                 ShowWidget(WidgetItemUtils.ConvertToBaseWidgetItem(widget).Type);
             }
         }
+#endif
     }
 
     public void ShowWidget(WidgetType widgetType)
