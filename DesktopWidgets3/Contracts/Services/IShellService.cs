@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Contracts.Services;
 
-public interface INavigationViewService
+public interface IShellService
 {
     IList<object>? MenuItems
     {

@@ -20,12 +20,12 @@ public partial class ShellViewModel : ObservableRecipient
         get;
     }
 
-    public INavigationViewService NavigationViewService
+    public IShellService NavigationViewService
     {
         get;
     }
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
+    public ShellViewModel(INavigationService navigationService, IShellService navigationViewService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;

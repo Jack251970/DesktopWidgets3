@@ -9,11 +9,7 @@ namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class MainWindow : WindowEx
 {
-    private readonly IAppSettingsService _appSettingsService = App.GetService<IAppSettingsService>();
-
-    private readonly IWidgetManagerService _widgetManagerService = App.GetService<IWidgetManagerService>();
-
-    private readonly ITimersService _timersService = App.GetService<ITimersService>();
+    private readonly IWidgetManagerService _widgetManagerService;
 
     private readonly DispatcherQueue dispatcherQueue;
 
@@ -34,55 +30,30 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
+
+        // Load registered services
+        _widgetManagerService = App.GetService<IWidgetManagerService>();
     }
 
-    // this handles updating the caption button colors correctly when indows system theme is changed while the app is open
+    // this handles updating the caption button colors correctly when windows system theme is changed while the app is open
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
-    // this enables the app to continue running in background after clicking close button and the battery saver feature
+    // this enables the app to continue running in background after clicking close button
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
-        if (App.CheckCanCloseWindow())
+        if (App.CanCloseWindow)
         {
-            if (_appSettingsService.ForbidQuit)
-            {
-                args.Handled = true;
-                SystemHelper.MessageBox("TrayMenu_ExitApp_ForbidQuit".GetLocalized(), "MessageBox_Title_Warning".GetLocalized());
-            }
-            else if (_appSettingsService.IsLocking)
-            {
-                args.Handled = true;
-                SystemHelper.MessageBox("TrayMenu_ExitApp_IsLocking".GetLocalized(), "MessageBox_Title_Warning".GetLocalized());
-            }
-            else
-            {
-                _widgetManagerService.CloseAllWidgets();
-                Application.Current.Exit();
-            }
+            _widgetManagerService.CloseAllWidgets();
+            Application.Current.Exit();
         }
         else
         {
             args.Handled = true;
             this.Hide(true);
-            _timersService.StopUpdateTimeTimer();
-        }
-    }
-
-    // this enables the battery saver feature
-    private void WindowEx_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
-    {
-        var visible = args.Visible;
-        if (visible)
-        {
-            _timersService.StartUpdateTimeTimer();
-        }
-        else
-        {
-            _timersService.StopUpdateTimeTimer();
         }
     }
 }

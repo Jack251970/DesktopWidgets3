@@ -9,7 +9,6 @@
     MinHeight="500"
     PersistenceId="MainWindow"
     mc:Ignorable="d"
-    VisibilityChanged="WindowEx_VisibilityChanged"
     Closed="WindowEx_Closed">
     <Window.SystemBackdrop>
         <MicaBackdrop/>

@@ -43,41 +43,19 @@ public partial class App : Application
     }
 
     public static WindowEx? MainWindow { get; set; }
-    public static void ShowMainWindow(bool front)
-    {
-        MainWindow!.Show(true);
-        MainWindow!.Activate();
-        if (front)
-        {
-            MainWindow.BringToFront();
-        }
-    }
-
-    private static bool closeWindow = false;
-    public static bool CheckCanCloseWindow()
-    {
-        if (closeWindow == false)
-        {
-            return false;
-        }
-        closeWindow = false;
-        return true;
-    }
-    public static void EnableCloseWindow()
-    {
-        closeWindow = true;
-    }
 
     public static UIElement? AppTitleBar { get; set; }
     public static UIElement? AppTitleBarText { get; set; }
 
-    private static bool existWindow = false;
+    public static bool CanCloseWindow { get; set; }
+    private static bool IsExistWindow { get; set; }
 
     public App()
     {
+        // Check if app is already running
         if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), true))
         {
-            existWindow = true;
+            IsExistWindow = true;
             Current.Exit();
             return;
         }
@@ -89,39 +67,69 @@ public partial class App : Application
         UseContentRoot(AppContext.BaseDirectory).
         ConfigureServices((context, services) =>
         {
+            #region Core Service
+
             // Default Activation Handler
-            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
+            services.AddSingleton<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
             // Other Activation Handlers
-            services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
+            services.AddSingleton<IActivationHandler, AppNotificationActivationHandler>();
 
-            // Services
-            services.AddSingleton<IAppNotificationService, AppNotificationService>();
-            services.AddSingleton<IAppSettingsService, AppSettingsService>();
-            services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
-            services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
-            services.AddTransient<INavigationViewService, NavigationViewService>();
-
+            // Windows Activation
             services.AddSingleton<IActivationService, ActivationService>();
+
+            // Notifications
+            services.AddSingleton<IAppNotificationService, AppNotificationService>();
+
+            // File Storage
+            services.AddSingleton<IFileService, FileService>();
+
+            // Theme Management
+            services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
+
+            #endregion
+
+            #region Navigation Service
+
+            // MainWindow Shell
+            services.AddTransient<IShellService, ShellService>();
+
+            // MainWindow Pages
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
 
+            // MainWindow SubPages
             services.AddSingleton<ISubPageService, SubPageService>();
             services.AddSingleton<ISubNavigationService, SubNavigationService>();
 
-            services.AddSingleton<ITimersService, TimersService>();
-
-            services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
+            // Widgets Window Pages
             services.AddTransient<IWidgetNavigationService, WidgetNavigationService>();
 
-            // unable to register event in SystemEvents?
-            // services.AddSingleton<ISessionSwitchService, SessionSwitchService>();
+            #endregion
 
-            // Core Services
-            services.AddSingleton<IFileService, FileService>();
+            #region Settings Service
 
-            // Views and ViewModels of Pages
-            // TODO: Register your services of new pages here.
+            // Local Storage
+            services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
+
+            // Settings Management
+            services.AddSingleton<IAppSettingsService, AppSettingsService>();
+
+            #endregion
+
+            #region Functional Service
+
+            // Timers Management
+            services.AddSingleton<ITimersService, TimersService>();
+
+            // Widgets Management
+            services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
+
+            #endregion
+
+            #region Views & ViewModels
+
+            // MainwWindow Pages
             services.AddTransient<ShellPage>();
             services.AddTransient<ShellViewModel>();
             services.AddTransient<HomeViewModel>();
@@ -133,9 +141,7 @@ public partial class App : Application
             services.AddTransient<DashboardViewModel>();
             services.AddTransient<DashboardPage>();
 
-            // View and ViewModels of SubPages
-            // TODO: Register your services of new sub pages here.
-            // Subpages of timing page
+            // MainwWindow SubPages
             services.AddTransient<StartSettingViewModel>();
             services.AddTransient<StartSettingPage>();
             services.AddTransient<SetMinutesViewModel>();
@@ -145,13 +151,19 @@ public partial class App : Application
             services.AddTransient<CompleteTimingViewModel>();
             services.AddTransient<CompleteTimingPage>();
 
-            // Views and ViewModels of Widget Pages
+            // Widgets Window Pages
             services.AddTransient<ClockViewModel>();
             services.AddTransient<ClockPage>();
 
-            // Configuration
+            #endregion
+
+            #region Configurations
+
+            // Local Storage
             services.Configure<LocalSettingsKeys>(context.Configuration.GetSection(nameof(LocalSettingsKeys)));
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+
+            #endregion
         }).
         Build();
 
@@ -171,10 +183,20 @@ public partial class App : Application
     {
         base.OnLaunched(args);
 
-        if (!existWindow)
+        if (!IsExistWindow)
         {
             MainWindow = new MainWindow();
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
+        }
+    }
+
+    public static void ShowMainWindow(bool front)
+    {
+        MainWindow!.Show(true);
+        MainWindow!.Activate();
+        if (front)
+        {
+            MainWindow.BringToFront();
         }
     }
 }

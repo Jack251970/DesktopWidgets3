@@ -8,7 +8,7 @@ using DesktopWidgets3.ViewModels.Pages;
 
 namespace DesktopWidgets3.Services;
 
-public class NavigationViewService : INavigationViewService
+public class ShellService : IShellService
 {
     private readonly INavigationService _navigationService;
 
@@ -20,7 +20,7 @@ public class NavigationViewService : INavigationViewService
 
     public object? SettingsItem => _navigationView?.SettingsItem;
 
-    public NavigationViewService(INavigationService navigationService, IPageService pageService)
+    public ShellService(INavigationService navigationService, IPageService pageService)
     {
         _navigationService = navigationService;
         _pageService = pageService;
