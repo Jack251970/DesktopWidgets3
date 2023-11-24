@@ -19,7 +19,6 @@
     <Authors>Jack251970</Authors>
     <Description>A pomodoro app for scientific time management, designed to improve the execution, overcome procrastination and cultivate self-control.</Description>
     <Copyright>Copyright © 2023 Jack251970</Copyright>
-    <PackageIcon>PackageIcon.png</PackageIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <NeutralLanguage>en</NeutralLanguage>
