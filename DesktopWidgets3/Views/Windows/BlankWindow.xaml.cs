@@ -45,12 +45,6 @@ public sealed partial class BlankWindow : WindowEx
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
-    // this enables the app to continue running in background after clicking close button
-    private void WindowEx_Closed(object sender, WindowEventArgs args)
-    {
-        _windowSinkService.Dispose();
-    }
-
     public void InitializePage(Frame? frame, string pageKey, object? parameter = null, bool clearNavigation = false)
     {
         _widgetNavigationService.Frame = frame;

@@ -1,9 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml;
 using WinUIEx.Messaging;
 
-namespace DesktopWidgets3.Helpers;
+namespace DesktopWidgets3.Services;
 
 // <summary>
 /// Utils to show window on desktop (at bottom of all windows).
@@ -23,8 +24,8 @@ public class WindowSinkService : IWindowSinkService
     [StructLayout(LayoutKind.Sequential)]
     public struct WINDOWPOS
     {
-        public IntPtr hwnd;
-        public IntPtr hwndInsertAfter;
+        public nint hwnd;
+        public nint hwndInsertAfter;
         public int x;
         public int y;
         public int cx;
@@ -32,10 +33,10 @@ public class WindowSinkService : IWindowSinkService
         public uint flags;
     }
 
-    private static readonly IntPtr HWND_BOTTOM = new(1);
+    private static readonly nint HWND_BOTTOM = new(1);
 
     [DllImport("user32.dll")]
-    private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy,
+    private static extern bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int x, int y, int cx, int cy,
         uint uFlags);
 
     #endregion
@@ -50,7 +51,7 @@ public class WindowSinkService : IWindowSinkService
 
     public WindowSinkService()
     {
-        
+
     }
 
     public void Initialize(Window window)
@@ -72,14 +73,14 @@ public class WindowSinkService : IWindowSinkService
             monitor = new WindowMessageMonitor(window);
             monitor.WindowMessageReceived += OnWindowMessageReceived;
 
-            var hWnd = WindowExtensions.GetWindowHandle(window);
+            var hWnd = window.GetWindowHandle();
             SystemHelper.HideWindowFromTaskbar(hWnd);
 
             _isInitialized = true;
         }
     }
 
-    public void Dispose()
+    ~WindowSinkService()
     {
         if (_isInitialized)
         {
@@ -99,11 +100,11 @@ public class WindowSinkService : IWindowSinkService
         if (window != null)
         {
             // Way1
-            var hWnd = WindowExtensions.GetWindowHandle(window);
+            var hWnd = window.GetWindowHandle();
             SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
             // Way2
-            var lParam = new IntPtr(Marshal.AllocHGlobal(Marshal.SizeOf<WINDOWPOS>()));
+            var lParam = new nint(Marshal.AllocHGlobal(Marshal.SizeOf<WINDOWPOS>()));
             var windowPos = new WINDOWPOS
             {
                 hwnd = hWnd,
@@ -138,7 +139,7 @@ public class WindowSinkService : IWindowSinkService
             Marshal.StructureToPtr(windowPos, lParam, false);
 
             e.Handled = true;
-            e.Result = IntPtr.Zero;
+            e.Result = nint.Zero;
         }
     }
 

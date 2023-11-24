@@ -3,7 +3,6 @@ using System.Web;
 using Microsoft.Windows.AppNotifications;
 
 using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.ViewModels.Pages;
 
 namespace DesktopWidgets3.Notifications;
 
@@ -31,7 +30,7 @@ public class AppNotificationService : IAppNotificationService
     // TODO: Handle notification invocations when your app is already running based on the notification arguments.
     public void OnNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
     {
-        switch (ParseArguments(args.Argument)["action"])
+        /*switch (ParseArguments(args.Argument)["action"])
         {
             case "Dashboard":
                 App.MainWindow!.DispatcherQueue.TryEnqueue(() =>
@@ -40,7 +39,7 @@ public class AppNotificationService : IAppNotificationService
                     App.ShowMainWindow(true);
                 });
                 break;
-        }
+        }*/
     }
 
     public bool Show(string payload)

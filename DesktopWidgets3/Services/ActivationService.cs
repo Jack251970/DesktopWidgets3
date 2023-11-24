@@ -43,6 +43,24 @@ public class ActivationService : IActivationService
         await StartupAsync(App.MainWindow);
     }
 
+    public async Task ActivateWidgetWindowAsync(Window window)
+    {
+        // Execute tasks before activation.
+        await InitializeAsync();
+
+        // Set the Window Content.
+        if (window.Content == null)
+        {
+            window.Content = new Frame();
+        }
+
+        // Activate the Window.
+        window.Activate();
+
+        // Execute tasks after activation.
+        await StartupAsync(window);
+    }
+
     private async Task HandleActivationAsync(object activationArgs)
     {
         var activationHandler = _activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));
@@ -68,23 +86,5 @@ public class ActivationService : IActivationService
     {
         await _themeSelectorService.SetRequestedThemeAsync(window);
         await Task.CompletedTask;
-    }
-
-    public async Task ActivateWidgetWindowAsync(Window window)
-    {
-        // Execute tasks before activation.
-        await InitializeAsync();
-
-        // Set the Window Content.
-        if (window.Content == null)
-        {
-            window.Content = new Frame();
-        }
-
-        // Activate the Window.
-        window.Activate();
-
-        // Execute tasks after activation.
-        await StartupAsync(window);
     }
 }
