@@ -36,9 +36,6 @@
     <AppInstallerUri>D:\VS\DesktopWidgets3\DesktopWidgets3\bin\x64\Release\net7.0-windows10.0.19041.0\AppPackages\</AppInstallerUri>
   </PropertyGroup>
   <ItemGroup>
-    <Content Remove="Assets\PackageIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Views\Controls\TrayMenuControl.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\TimingPage.xaml" />
@@ -79,10 +76,6 @@
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\PackageIcon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 
