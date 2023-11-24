@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using DesktopWidgets3.Contracts.Services;
 using Microsoft.UI.Xaml;
 using WinUIEx.Messaging;
 
@@ -8,7 +9,7 @@ namespace DesktopWidgets3.Helpers;
 /// Utils to show window on desktop (at bottom of all windows).
 /// https://stackoverflow.com/questions/365094/window-on-desktop
 /// </summary>
-public class WindowSinker
+public class WindowSinkService : IWindowSinkService
 {
     #region Windows API
 
@@ -41,59 +42,52 @@ public class WindowSinker
 
     #region WindowSinker
 
-    private readonly Window window;
+    private Window? window;
 
-    private bool disposed;
+    private WindowMessageMonitor? monitor;
 
-    private readonly WindowMessageMonitor monitor;
+    private bool _isInitialized;
 
-    public WindowSinker(Window window)
+    public WindowSinkService()
     {
-        this.window = window;
-
-        /*if (page.IsLoaded)
-        {
-            OnPageLoaded(page, null);
-        }
-        else
-        {
-            page.Loaded += OnPageLoaded;
-        }
-        window.Activated += OnWindowActivated;*/
-
-        monitor = new WindowMessageMonitor(window);
-        monitor.WindowMessageReceived += OnWindowMessageReceived;
-
-        var hWnd = WindowExtensions.GetWindowHandle(window);
-        SystemHelper.HideWindowFromTaskbar(hWnd);
+        
     }
 
-    protected virtual void Dispose(bool disposing)
+    public void Initialize(Window window)
     {
-        if (disposed)
+        if (!_isInitialized)
         {
-            return;
+            this.window = window;
+
+            /*if (page.IsLoaded)
+            {
+                OnPageLoaded(page, null);
+            }
+            else
+            {
+                page.Loaded += OnPageLoaded;
+            }
+            window!.Activated += OnWindowActivated;*/
+
+            monitor = new WindowMessageMonitor(window);
+            monitor.WindowMessageReceived += OnWindowMessageReceived;
+
+            var hWnd = WindowExtensions.GetWindowHandle(window);
+            SystemHelper.HideWindowFromTaskbar(hWnd);
+
+            _isInitialized = true;
         }
-
-        monitor.WindowMessageReceived -= OnWindowMessageReceived;
-        // window.Activated -= OnWindowActivated;
-        // page.Loaded -= OnPageLoaded;
-
-        disposed = true;
     }
 
     public void Dispose()
     {
-        monitor.Dispose();
-        Dispose(true);
+        if (_isInitialized)
+        {
+            // window!.Activated -= OnWindowActivated;
+            // page.Loaded -= OnPageLoaded;
 
-        GC.SuppressFinalize(this);
-    }
-
-    ~WindowSinker()
-    {
-        monitor.Dispose();
-        Dispose(false);
+            monitor!.Dispose();
+        }
     }
 
     #endregion
@@ -102,23 +96,26 @@ public class WindowSinker
 
     private void BringToBottom()
     {
-        // Way1
-        var hWnd = WindowExtensions.GetWindowHandle(window);
-        SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
-
-        // Way2
-        var lParam = new IntPtr(Marshal.AllocHGlobal(Marshal.SizeOf<WINDOWPOS>()));
-        var windowPos = new WINDOWPOS
+        if (window != null)
         {
-            hwnd = hWnd,
-            hwndInsertAfter = HWND_BOTTOM,
-            x = 0,
-            y = 0,
-            cx = 0,
-            cy = 0,
-            flags = SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE
-        };
-        Marshal.StructureToPtr(windowPos, lParam, false);
+            // Way1
+            var hWnd = WindowExtensions.GetWindowHandle(window);
+            SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
+
+            // Way2
+            var lParam = new IntPtr(Marshal.AllocHGlobal(Marshal.SizeOf<WINDOWPOS>()));
+            var windowPos = new WINDOWPOS
+            {
+                hwnd = hWnd,
+                hwndInsertAfter = HWND_BOTTOM,
+                x = 0,
+                y = 0,
+                cx = 0,
+                cy = 0,
+                flags = SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE
+            };
+            Marshal.StructureToPtr(windowPos, lParam, false);
+        }
     }
 
     private void OnWindowActivated(object sender, WindowActivatedEventArgs args)

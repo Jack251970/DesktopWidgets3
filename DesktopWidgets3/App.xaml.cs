@@ -90,7 +90,7 @@ public partial class App : Application
             #region Navigation Service
 
             // MainWindow Shell
-            services.AddTransient<IShellService, ShellService>();
+            services.AddSingleton<IShellService, ShellService>();
 
             // MainWindow Pages
             services.AddSingleton<IPageService, PageService>();
@@ -115,6 +115,9 @@ public partial class App : Application
 
             // Timers Management
             services.AddSingleton<ITimersService, TimersService>();
+
+            // Sink Windows
+            services.AddTransient<IWindowSinkService, WindowSinkService>();
 
             // Widgets Management
             services.AddSingleton<IWidgetManagerService, WidgetManagerService>();

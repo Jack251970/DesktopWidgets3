@@ -4,6 +4,8 @@ using Windows.UI.ViewManagement;
 using DesktopWidgets3.Contracts.Services;
 using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Models;
+using DesktopWidgets3.Services;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -13,9 +15,8 @@ public sealed partial class BlankWindow : WindowEx
 
     private readonly UISettings settings;
 
-    private readonly WindowSinker? windowSinker;
-
-    private readonly IWidgetNavigationService _widgetNavigationService = App.GetService<IWidgetNavigationService>();
+    private readonly IWidgetNavigationService _widgetNavigationService;
+    private readonly IWindowSinkService _windowSinkService;
 
     public BlankWindow(WidgetType widgetType)
     {
@@ -32,7 +33,9 @@ public sealed partial class BlankWindow : WindowEx
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
-        windowSinker = new WindowSinker(this);
+        // Load registered services
+        _widgetNavigationService = App.GetService<IWidgetNavigationService>();
+        _windowSinkService = App.GetService<IWindowSinkService>();
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open
@@ -42,9 +45,16 @@ public sealed partial class BlankWindow : WindowEx
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
+    // this enables the app to continue running in background after clicking close button
+    private void WindowEx_Closed(object sender, WindowEventArgs args)
+    {
+        _windowSinkService.Dispose();
+    }
+
     public void InitializePage(Frame? frame, string pageKey, object? parameter = null, bool clearNavigation = false)
     {
         _widgetNavigationService.Frame = frame;
         _widgetNavigationService.InitializePage(pageKey, parameter, clearNavigation);
+        _windowSinkService.Initialize(this);
     }
 }

@@ -153,6 +153,9 @@ public partial class SystemHelper
     [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
     internal static partial IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
 
+    /// <summary>
+    /// Hide window from taskbar.
+    /// </summary>
     public static void HideWindowFromTaskbar(IntPtr hwnd)
     {
         SetWindowLongPtr(hwnd, GWL_EXSTYLE, GetWindowLongPtr(hwnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
