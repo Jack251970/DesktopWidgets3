@@ -20,8 +20,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 #else
     private string _version = $"v{AssemblyHelper.GetVersion()}";
 #endif
-    [ObservableProperty]
-    private bool _lockOptionsEnabled = true;
 
     private readonly IAppSettingsService _appSettingsService;
     private readonly IThemeSelectorService _themeSelectorService;
