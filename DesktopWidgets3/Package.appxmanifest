@@ -14,7 +14,7 @@
   <Identity
     Name="Jack251970.DesktopWidgets3"
     Publisher="CN=11602"
-    Version="3.1.12.0" />
+    Version="3.0.0.0" />
     
   <mp:PhoneIdentity PhoneProductId="46683a90-386e-4b53-8475-1c82074bdb74" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     

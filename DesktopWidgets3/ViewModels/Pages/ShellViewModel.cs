@@ -20,16 +20,16 @@ public partial class ShellViewModel : ObservableRecipient
         get;
     }
 
-    public IShellService NavigationViewService
+    public IShellService ShellService
     {
         get;
     }
 
-    public ShellViewModel(INavigationService navigationService, IShellService navigationViewService)
+    public ShellViewModel(INavigationService navigationService, IShellService shellService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
-        NavigationViewService = navigationViewService;
+        ShellService = shellService;
     }
 
     private void OnNavigated(object sender, NavigationEventArgs e)
@@ -38,11 +38,11 @@ public partial class ShellViewModel : ObservableRecipient
 
         if (e.SourcePageType == typeof(SettingsPage))
         {
-            Selected = NavigationViewService.SettingsItem;
+            Selected = ShellService.SettingsItem;
             return;
         }
 
-        var selectedItem = NavigationViewService.GetSelectedItem(e.SourcePageType);
+        var selectedItem = ShellService.GetSelectedItem(e.SourcePageType);
         if (selectedItem != null)
         {
             Selected = selectedItem;
