@@ -12,9 +12,7 @@ using DesktopWidgets3.Models;
 using DesktopWidgets3.Notifications;
 using DesktopWidgets3.Services;
 using DesktopWidgets3.ViewModels.Pages;
-using DesktopWidgets3.ViewModels.SubPages;
 using DesktopWidgets3.Views.Pages;
-using DesktopWidgets3.Views.SubPages;
 using DesktopWidgets3.Views.Windows;
 using DesktopWidgets3.ViewModels.WidgetsPages.Clock;
 using DesktopWidgets3.Views.WidgetPages.Clock;
@@ -98,10 +96,6 @@ public partial class App : Application
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
 
-            // MainWindow SubPages
-            services.AddSingleton<ISubPageService, SubPageService>();
-            services.AddSingleton<ISubNavigationService, SubNavigationService>();
-
             // Widgets Window Pages
             services.AddTransient<IWidgetNavigationService, WidgetNavigationService>();
 
@@ -140,16 +134,6 @@ public partial class App : Application
             services.AddTransient<SettingsPage>();
             services.AddTransient<DashboardViewModel>();
             services.AddTransient<DashboardPage>();
-
-            // MainwWindow SubPages
-            services.AddTransient<StartSettingViewModel>();
-            services.AddTransient<StartSettingPage>();
-            services.AddTransient<SetMinutesViewModel>();
-            services.AddTransient<SetMinutesPage>();
-            services.AddTransient<MainTimingViewModel>();
-            services.AddTransient<MainTimingPage>();
-            services.AddTransient<CompleteTimingViewModel>();
-            services.AddTransient<CompleteTimingPage>();
 
             // Widgets Window Pages
             services.AddTransient<ClockViewModel>();

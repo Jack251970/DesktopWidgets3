@@ -42,9 +42,6 @@
     <None Remove="Views\Controls\TrayMenuControl.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\TimingPage.xaml" />
-    <None Remove="Views\SubPages\CompleteTimingPage.xaml" />
-    <None Remove="Views\SubPages\MainTimingPage.xaml" />
-    <None Remove="Views\SubPages\SetMinutesPage.xaml" />
     <None Remove="Views\WidgetPages\Clock\ClockPage.xaml" />
     <None Remove="Views\Windows\BlankWindow.xaml" />
   </ItemGroup>
@@ -108,17 +105,6 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Pages\TimingPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\SubPages\MainTimingPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\SubPages\CompleteTimingPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\SubPages\SetMinutesPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\WidgetPages\Clock\ClockPage.xaml">
