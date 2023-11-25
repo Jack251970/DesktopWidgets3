@@ -13,7 +13,7 @@
 
     <Grid x:Name="ContentArea">
         <TextBlock 
-            Text="{x:Bind ViewModel.AppDisplayName, Mode=OneTime}"
+            Text="{x:Bind ViewModel.SystemTime, Mode=OneWay}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Style="{ThemeResource PageTitleStyle}" />
