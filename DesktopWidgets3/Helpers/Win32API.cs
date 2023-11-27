@@ -3,12 +3,15 @@ using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
 using System.Drawing.Imaging;
 using Vanara.PInvoke;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Text;
+using Windows.System;
 
 namespace DesktopWidgets3.Helpers;
 
 /// <summary>
 /// Provides static helper for general Win32API.
-/// https://github.com/files-community/Files/blob/main/src/Files.App/Utils/Shell/Win32API.cs
 /// </summary>
 public class Win32API
 {
@@ -319,4 +322,129 @@ public class Win32API
             Index = index;
         }
     }
+
+    public static IEnumerable<HWND> GetDesktopWindows()
+    {
+        var prevHwnd = HWND.NULL;
+        var windowsList = new List<HWND>();
+
+        while (true)
+        {
+            prevHwnd = User32.FindWindowEx(HWND.NULL, prevHwnd, null, null);
+            if (prevHwnd == HWND.NULL)
+            {
+                break;
+            }
+
+            windowsList.Add(prevHwnd);
+        }
+
+        return windowsList;
+    }
+
+    public static Task<bool> MountVhdDisk(string vhdPath)
+    {
+        // Mounting requires elevation
+        return RunPowershellCommandAsync($"-command \"Mount-DiskImage -ImagePath '{vhdPath}'\"", true);
+    }
+
+    public static async Task<bool> RunPowershellCommandAsync(string command, bool runAsAdmin)
+    {
+        using Process process = CreatePowershellProcess(command, runAsAdmin);
+        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(30 * 1000));
+
+        try
+        {
+            process.Start();
+            await process.WaitForExitAsync(cts.Token);
+            return process.ExitCode == 0;
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        catch (Win32Exception)
+        {
+            // If user cancels UAC
+            return false;
+        }
+    }
+
+    private static Process CreatePowershellProcess(string command, bool runAsAdmin)
+    {
+        Process process = new();
+
+        if (runAsAdmin)
+        {
+            process.StartInfo.UseShellExecute = true;
+            process.StartInfo.Verb = "runas";
+        }
+
+        process.StartInfo.FileName = "powershell.exe";
+        process.StartInfo.CreateNoWindow = true;
+        process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        process.StartInfo.Arguments = command;
+
+        return process;
+    }
+
+    public static void BringToForeground(IEnumerable<HWND> currentWindows)
+    {
+        var cts = new CancellationTokenSource();
+        cts.CancelAfter(5 * 1000);
+
+        Task.Run(async () =>
+        {
+            while (!cts.IsCancellationRequested)
+            {
+                await Task.Delay(500);
+
+                var newWindows = GetDesktopWindows().Except(currentWindows).Where(x => User32.IsWindowVisible(x) && !User32.IsIconic(x));
+                if (newWindows.Any())
+                {
+                    foreach (var newWindow in newWindows)
+                    {
+                        User32.SetWindowPos(
+                            newWindow,
+                            User32.SpecialWindowHandles.HWND_TOPMOST,
+                            0, 0, 0, 0,
+                            User32.SetWindowPosFlags.SWP_NOSIZE | User32.SetWindowPosFlags.SWP_NOMOVE);
+
+                        User32.SetWindowPos(
+                            newWindow,
+                            User32.SpecialWindowHandles.HWND_NOTOPMOST,
+                            0, 0, 0, 0,
+                            User32.SetWindowPosFlags.SWP_SHOWWINDOW | User32.SetWindowPosFlags.SWP_NOSIZE | User32.SetWindowPosFlags.SWP_NOMOVE);
+                    }
+
+                    break;
+                }
+            }
+        });
+    }
+
+    public static async Task<string?> GetFileAssociationAsync(string filename, bool checkDesktopFirst = false)
+    {
+        // Find UWP apps
+        async Task<string?> GetUwpAssoc()
+        {
+            var uwpApps = await Launcher.FindFileHandlersAsync(Path.GetExtension(filename));
+            return uwpApps.Any() ? uwpApps[0].PackageFamilyName : null;
+        }
+
+        // Find desktop apps
+        string? GetDesktopAssoc()
+        {
+            var lpResult = new StringBuilder(2048);
+            var hResult = Shell32.FindExecutable(filename, null, lpResult);
+
+            return hResult.ToInt64() > 32 ? lpResult.ToString() : null;
+        }
+
+        if (checkDesktopFirst)
+            return GetDesktopAssoc() ?? await GetUwpAssoc();
+
+        return await GetUwpAssoc() ?? GetDesktopAssoc();
+    }
+
 }

@@ -9,7 +9,7 @@ namespace DesktopWidgets3.ViewModels.WidgetsPages.Folder;
 
 public partial class FolderViewViewModel : ObservableRecipient
 {
-    private string folderPath = $"C:\\Users\\11602\\Downloads";
+    private static string folderPath = $"C:\\Users\\11602\\Downloads";
 
     [ObservableProperty]
     private string _FolderName = string.Empty;
@@ -21,7 +21,8 @@ public partial class FolderViewViewModel : ObservableRecipient
         LoadFileItemsFromFolderPath();
     }
 
-    internal void FolderViewItemClick(object sender)
+    [Obsolete]
+    internal async void FolderViewItemClick(object sender)
     {
         var button = sender as Button;
         if (button == null)
@@ -33,17 +34,34 @@ public partial class FolderViewViewModel : ObservableRecipient
         {
             return;
         }
-        var fileInfo = new FileInfo(filePath);
-        if (fileInfo.Attributes.HasFlag(FileAttributes.Directory))
+        var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(filePath);
+        if (isShortcut)
+        {
+            var shortcutInfo = new ShellLinkItem();
+            var shInfo = await FileOperationsHelpers.ParseLinkAsync(filePath);
+            if (shInfo is null || shInfo.TargetPath is null || shortcutInfo.InvalidTarget)
+            {
+                return;
+            }
+
+            filePath = shInfo.TargetPath;
+        }
+
+        var isDirectory = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Directory);
+        if (isDirectory)
         {
             folderPath = filePath;
             LoadFileItemsFromFolderPath();
         }
         else
         {
-            if (File.Exists(filePath))
+            if (!File.Exists(filePath))
             {
-                // 打开文件
+                LoadFileItemsFromFolderPath();
+            }
+            else
+            {
+                await OpenPath(filePath);
             }
         }
     }
@@ -58,24 +76,32 @@ public partial class FolderViewViewModel : ObservableRecipient
         {
             var folderName = Path.GetFileName(directory);
             var folderPath = directory;
-            FolderViewFileItems.Add(new FolderViewFileItem()
+            var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(folderPath, FileAttributes.Hidden);
+            if (!isHiddenItem)
             {
-                FileName = folderName,
-                FilePath = folderPath,
-                FileIcon = await GetFileIcon(folderPath, true),
-            });
+                FolderViewFileItems.Add(new FolderViewFileItem()
+                {
+                    FileName = folderName,
+                    FilePath = folderPath,
+                    FileIcon = await GetFileIcon(folderPath, true),
+                });
+            }
         }
 
         foreach (var file in Directory.GetFiles(folderPath))
         {
             var fileName = Path.GetFileName(file);
             var filePath = file;
-            FolderViewFileItems.Add(new FolderViewFileItem()
+            var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
+            if (!isHiddenItem)
             {
-                FileName = fileName,
-                FilePath = filePath,
-                FileIcon = await GetFileIcon(filePath, false),
-            });
+                FolderViewFileItems.Add(new FolderViewFileItem()
+                {
+                    FileName = fileName,
+                    FilePath = filePath,
+                    FileIcon = await GetFileIcon(filePath, false),
+                });
+            }
         }
     }
 
@@ -93,5 +119,30 @@ public partial class FolderViewViewModel : ObservableRecipient
                 item.ShieldIcon = await GetShieldIcon();
             }, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
         }*/
+    }
+
+    [Obsolete]
+    public static async Task OpenPath(string path, string? args = default)
+    {
+        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
+        var isScreenSaver = FileExtensionHelpers.IsScreenSaverFile(path);
+
+        if (isHiddenItem)
+        {
+            // itemType = NativeFileOperationsHelper.HasFileAttribute(path, System.IO.FileAttributes.Directory) ? FilesystemItemType.Directory : FilesystemItemType.File;
+        }
+        else
+        {
+            // TODO: 从网盘下载？
+            // itemType = await StorageHelpers.GetTypeFromPath(path);
+        }
+
+        args ??= string.Empty;
+        if (isScreenSaver)
+        {
+            args += "/s";
+        }
+
+        _ = await LaunchHelper.LaunchAppAsync(path, args, folderPath);
     }
 }

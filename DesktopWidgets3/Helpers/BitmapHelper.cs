@@ -2,9 +2,6 @@
 
 namespace DesktopWidgets3.Helpers;
 
-/// <summary>
-/// https://github.com/files-community/Files/blob/main/src/Files.App/Helpers/BitmapHelper.cs
-/// </summary>
 public static class BitmapHelper
 {
     public static async Task<BitmapImage?> ToBitmapAsync(this byte[]? data, int decodeSize = -1)
