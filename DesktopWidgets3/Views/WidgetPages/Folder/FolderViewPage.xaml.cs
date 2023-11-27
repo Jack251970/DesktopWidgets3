@@ -1,6 +1,8 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
 using DesktopWidgets3.ViewModels.WidgetsPages.Folder;
+using Microsoft.UI.Xaml;
+using DesktopWidgets3.Models;
 
 namespace DesktopWidgets3.Views.WidgetPages.Folder;
 
@@ -15,5 +17,10 @@ public sealed partial class FolderViewPage : Page
     {
         ViewModel = App.GetService<FolderViewViewModel>();
         InitializeComponent();
+    }
+
+    private void FolderViewItemClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.FolderViewItemClick(sender);
     }
 }

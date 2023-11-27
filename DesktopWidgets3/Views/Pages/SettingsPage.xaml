@@ -95,6 +95,7 @@
                                 <HyperlinkButton Content="PowerToys" NavigateUri="https://github.com/microsoft/PowerToys" />
                                 <HyperlinkButton Content="Template Studio for WinUI (C#)" NavigateUri="https://github.com/microsoft/TemplateStudio" />
                                 <HyperlinkButton Content="TimeManager3" NavigateUri="https://github.com/Jack251970/TimeManager3" />
+                                <HyperlinkButton Content="Vanara" NavigateUri="https://github.com/dahall/vanara" />
                                 <HyperlinkButton Content="Windows Community Toolkit" NavigateUri="https://github.com/CommunityToolkit/WindowsCommunityToolkit" />
                                 <HyperlinkButton Content="Windows Community Toolkit Labs" NavigateUri="https://github.com/CommunityToolkit/Labs-Windows" />
                                 <HyperlinkButton Content="WinUIEx" NavigateUri="https://github.com/dotMorten/WinUIEx" />

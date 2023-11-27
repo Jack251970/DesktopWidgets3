@@ -6,6 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:folder="using:DesktopWidgets3.ViewModels.WidgetsPages.Folder"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:models="using:DesktopWidgets3.Models"
     d:DataContext="{d:DesignInstance Type=folder:FolderViewViewModel}"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     NavigationCacheMode="Required"
@@ -17,9 +19,54 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock 
-            Text="{x:Bind ViewModel.FolderPath, Mode=OneWay}"
+            Text="{x:Bind ViewModel.FolderName, Mode=OneWay}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Style="{ThemeResource PageTitleStyle}" />
+            Style="{ThemeResource BodyTextStyle}" />
+        <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.FolderViewFileItems, Mode=OneWay}">
+                <ItemsRepeater.Layout>
+                    <controls:StaggeredLayout
+                        ColumnSpacing="8"
+                        DesiredColumnWidth="400"
+                        RowSpacing="8" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="models:FolderViewFileItem">
+                        <Button
+                            Padding="0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Background="Transparent"
+                            Click="FolderViewItemClick"
+                            BorderThickness="0"
+                            Tag="{x:Bind FilePath}">
+                            <Grid
+                                Padding="16,12"
+                                BorderThickness="1"
+                                RowSpacing="12">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image 
+                                        Width="20" 
+                                        Height="20"
+                                        Source="{x:Bind FileIcon, Mode=OneWay}"/>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        FontWeight="SemiBold"
+                                        Text="{x:Bind FileName, Mode=OneWay}"
+                                        TextTrimming="CharacterEllipsis" /> 
+                                </Grid>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
     </Grid>
 </Page>
