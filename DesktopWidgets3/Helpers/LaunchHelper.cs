@@ -9,13 +9,11 @@ namespace DesktopWidgets3.Helpers;
 
 public class LaunchHelper
 {
-    [Obsolete]
     public static Task<bool> LaunchAppAsync(string application, string arguments, string workingDirectory)
     {
         return HandleApplicationLaunch(application, arguments, workingDirectory);
     }
 
-    [Obsolete]
     private static async Task<bool> HandleApplicationLaunch(string application, string arguments, string workingDirectory)
     {
         var currentWindows = Win32API.GetDesktopWindows();
@@ -103,8 +101,7 @@ public class LaunchHelper
             }
             catch (Win32Exception)
             {
-                return false;
-                /*try
+                try
                 {
                     var opened = await Win32API.StartSTATask(async () =>
                     {
@@ -198,7 +195,7 @@ public class LaunchHelper
                 {
                     // Cannot open file (e.g DLL)
                     return false;
-                }*/
+                }
             }
         }
         catch (InvalidOperationException)

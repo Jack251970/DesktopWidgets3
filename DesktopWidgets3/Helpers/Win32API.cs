@@ -15,6 +15,72 @@ namespace DesktopWidgets3.Helpers;
 /// </summary>
 public class Win32API
 {
+    public static Task StartSTATask(Func<Task> func)
+    {
+        var taskCompletionSource = new TaskCompletionSource();
+        var thread = new Thread(async () =>
+        {
+            Ole32.OleInitialize();
+
+            try
+            {
+                await func();
+                taskCompletionSource.SetResult();
+            }
+            catch (Exception)
+            {
+                taskCompletionSource.SetResult();
+            }
+            finally
+            {
+                Ole32.OleUninitialize();
+            }
+        })
+
+        {
+            IsBackground = true,
+            Priority = ThreadPriority.Normal
+        };
+
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+
+        return taskCompletionSource.Task;
+    }
+
+    public static Task StartSTATask(Action action)
+    {
+        var taskCompletionSource = new TaskCompletionSource();
+        var thread = new Thread(() =>
+        {
+            Ole32.OleInitialize();
+
+            try
+            {
+                action();
+                taskCompletionSource.SetResult();
+            }
+            catch (Exception)
+            {
+                taskCompletionSource.SetResult();
+            }
+            finally
+            {
+                Ole32.OleUninitialize();
+            }
+        })
+
+        {
+            IsBackground = true,
+            Priority = ThreadPriority.Normal
+        };
+
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+
+        return taskCompletionSource.Task;
+    }
+
     public static Task<T?> StartSTATask<T>(Func<T> func)
     {
         var taskCompletionSource = new TaskCompletionSource<T?>();
@@ -30,6 +96,40 @@ public class Win32API
             catch (Exception)
             {
                 taskCompletionSource.SetResult(default);
+                //tcs.SetException(e);
+            }
+            finally
+            {
+                Ole32.OleUninitialize();
+            }
+        })
+
+        {
+            IsBackground = true,
+            Priority = ThreadPriority.Normal
+        };
+
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+
+        return taskCompletionSource.Task;
+    }
+
+    public static Task<T?> StartSTATask<T>(Func<Task<T>> func)
+    {
+        var taskCompletionSource = new TaskCompletionSource<T?>();
+
+        var thread = new Thread(async () =>
+        {
+            Ole32.OleInitialize();
+            try
+            {
+                taskCompletionSource.SetResult(await func());
+            }
+            catch (Exception)
+            {
+                taskCompletionSource.SetResult(default);
+                //tcs.SetException(e);
             }
             finally
             {
