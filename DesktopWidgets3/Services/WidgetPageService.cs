@@ -3,6 +3,7 @@
 using DesktopWidgets3.Views.WidgetPages.Clock;
 using DesktopWidgets3.Models;
 using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Views.WidgetPages.Folder;
 
 namespace DesktopWidgets3.Services;
 
@@ -13,6 +14,7 @@ public class WidgetPageService : IWidgetPageService
     public WidgetPageService()
     {
         Configure<ClockPage>(WidgetType.Clock);
+        Configure<FolderViewPage>(WidgetType.Folder);
     }
 
     public Type GetPageType(WidgetType widgetType)

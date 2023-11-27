@@ -44,6 +44,7 @@
     <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\WidgetSettingPage.xaml" />
     <None Remove="Views\WidgetPages\Clock\ClockPage.xaml" />
+    <None Remove="Views\WidgetPages\Folder\FolderViewPage.xaml" />
     <None Remove="Views\Windows\BlankWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +110,9 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\WidgetPages\Clock\ClockPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\WidgetPages\Folder\FolderViewPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Windows\BlankWindow.xaml">
