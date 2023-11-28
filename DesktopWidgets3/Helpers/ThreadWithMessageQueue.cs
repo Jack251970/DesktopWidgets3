@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using DesktopWidgets3.Models;
 
 namespace DesktopWidgets3.Helpers;
 
@@ -43,7 +44,10 @@ public class ThreadWithMessageQueue : Disposable
             foreach (var message in messageQueue.GetConsumingEnumerable())
             {
                 var res = message.payload();
-                message.tcs.SetResult(res);
+                if (res != null)
+                {
+                    message.tcs.SetResult(res);
+                }
             }
         }));
 
