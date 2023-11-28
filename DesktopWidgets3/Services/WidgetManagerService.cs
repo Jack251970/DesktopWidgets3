@@ -2,6 +2,7 @@
 using DesktopWidgets3.Models;
 using DesktopWidgets3.Views.Windows;
 using Microsoft.UI.Xaml.Controls;
+using Windows.Foundation;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services;
@@ -95,6 +96,36 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
+    public async void UpdateWidgetPosition(WidgetType widgetType, PointInt32 position)
+    {
+        var widgetList = _appSettingsService.GetWidgetsList();
+        var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
+        if (widget != null)
+        {
+            widget.Position = position;
+            await _appSettingsService.SaveWidgetsList(widget);
+        }
+    }
+
+    public async void UpdateWidgetSize(WidgetType widgetType, Size size)
+    {
+        var widgetList = _appSettingsService.GetWidgetsList();
+        var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
+        if (widget != null)
+        {
+            widget.Size = size;
+            await _appSettingsService.SaveWidgetsList(widget);
+        }
+    }
+
+    public void SetEditMode(bool isEditMode)
+    {
+        foreach (var widgetWindow in WidgetsDict.Values)
+        {
+            widgetWindow.SetEditMode(isEditMode);
+        }
+    }
+
     public void CloseWidget(WidgetType widgetType)
     {
         if (WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
@@ -107,6 +138,7 @@ public class WidgetManagerService : IWidgetManagerService
                 _appSettingsService.SaveWidgetsList(widget);
             }
 
+            widgetWindow.SetEditMode(false);
             widgetWindow.Close();
             WidgetsDict.Remove(widgetType);
         }
@@ -120,7 +152,9 @@ public class WidgetManagerService : IWidgetManagerService
     {
         foreach (var widgetWindow in WidgetsDict.Values)
         {
+            widgetWindow.SetEditMode(false);
             widgetWindow.Close();
+            WidgetsDict.Clear();
         }
     }
 

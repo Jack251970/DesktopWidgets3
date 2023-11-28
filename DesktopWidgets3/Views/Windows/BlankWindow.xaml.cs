@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Models;
 using Windows.Graphics;
 using Windows.Foundation;
+using System.Runtime.InteropServices;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -56,7 +57,7 @@ public sealed partial class BlankWindow : WindowEx
     {
         _widgetNavigationService.Frame = frame;
         _widgetNavigationService.InitializePage(widgetType, parameter, clearNavigation);
-        _windowSinkService.Initialize(this);
+        // _windowSinkService.Initialize(this);
 
         Width = size.Width;
         Height = size.Height;
@@ -74,11 +75,19 @@ public sealed partial class BlankWindow : WindowEx
 
     protected override void OnPositionChanged(PointInt32 position)
     {
+        if (_isEditMode)
+        {
+            _widgetManagerService.UpdateWidgetPosition(_widgetType, position);
+        }
         base.OnPositionChanged(position);
     }
 
     protected override bool OnSizeChanged(Size newSize)
     {
+        if (_isEditMode)
+        {
+            _widgetManagerService.UpdateWidgetSize(_widgetType, newSize);
+        }
         return base.OnSizeChanged(newSize);
     }
 }
