@@ -125,6 +125,9 @@ public partial class App : Application
             // Widgets Management
             services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
 
+            // Widgets Resources Management
+            services.AddSingleton<IWidgetResourceService, WidgetResourceService>();
+
             #endregion
 
             #region Views & ViewModels

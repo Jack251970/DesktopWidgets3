@@ -2,6 +2,7 @@
 using DesktopWidgets3.Models;
 using DesktopWidgets3.Views.Windows;
 using Microsoft.UI.Xaml.Controls;
+using Windows.Graphics;
 
 namespace DesktopWidgets3.Services;
 
@@ -21,13 +22,15 @@ public class WidgetManagerService : IWidgetManagerService
     private readonly IAppSettingsService _appSettingsService;
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ITimersService _timersService;
+    private readonly IWidgetResourceService _widgetResourceService;
 
-    public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, ITimersService timersService)
+    public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
         _activationService = activationService;
         _appSettingsService = appSettingsService;
         _themeSelectorService = themeSelectorService;
         _timersService = timersService;
+        _widgetResourceService = widgetResourceService;
     }
 
     public void InitializeWidgets()
@@ -41,8 +44,9 @@ public class WidgetManagerService : IWidgetManagerService
         {
             if (widget.IsEnabled)
             {
-                ShowWidget(WidgetItemUtils.ConvertToBaseWidgetItem(widget).Type);
-                if (timerWidgets.Contains(widget.Type))
+                var widgetType = (WidgetType)Enum.Parse(typeof(WidgetType), widget.Type);
+                ShowWidget(widgetType);
+                if (TimerWidgets.Contains(widgetType))
                 {
                     enableTimer = true;
                 }
@@ -59,16 +63,31 @@ public class WidgetManagerService : IWidgetManagerService
     {
         if (!WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
         {
+            var widgetList = _appSettingsService.GetWidgetsList();
+            var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
+            if (widget == null)
+            {
+                widget = new JsonWidgetItem()
+                {
+                    Type = widgetType.ToString(),
+                    IsEnabled = true,
+                    Position = new PointInt32(-1, -1),
+                    Size = _widgetResourceService.GetDefaultSize(widgetType),
+                };
+                _appSettingsService.SaveWidgetsList(widget);
+            }
+            else
+            {
+                widget.IsEnabled = true;
+                _appSettingsService.SaveWidgetsList(widget);
+            }
+
             var blankWindow = new BlankWindow(widgetType);
             WidgetsDict.Add(widgetType, blankWindow);
             _ = _activationService.ActivateWidgetWindowAsync(blankWindow);
             var frame = blankWindow.Content as Frame;
-            blankWindow.InitializePage(frame, widgetType);
+            blankWindow.InitializePage(frame, widgetType, widget.Position, widget.Size);
             blankWindow.Show();
-        }
-        else
-        {
-            widgetWindow.Show();
         }
         if (TimerWidgets.Contains(widgetType))
         {
@@ -80,6 +99,14 @@ public class WidgetManagerService : IWidgetManagerService
     {
         if (WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
         {
+            var widgetList = _appSettingsService.GetWidgetsList();
+            var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
+            if (widget != null)
+            {
+                widget.IsEnabled = false;
+                _appSettingsService.SaveWidgetsList(widget);
+            }
+
             widgetWindow.Close();
             WidgetsDict.Remove(widgetType);
         }

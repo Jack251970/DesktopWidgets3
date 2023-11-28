@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Windows.Foundation;
+using Windows.Graphics;
 
 namespace DesktopWidgets3.Models;
 
@@ -22,6 +23,16 @@ public class BaseWidgetItem
     {
         get;
         set;
+    }
+
+    public PointInt32 Position
+    {
+        get; set;
+    }
+
+    public Size Size
+    {
+        get; set;
     }
 }
 
@@ -67,26 +78,5 @@ public class DashboardWidgetItem : BaseWidgetItem
     public Action<DashboardWidgetItem>? EnabledChangedCallback
     {
         get; set;
-    }
-}
-
-public static class WidgetItemUtils
-{
-    public static JsonWidgetItem ConvertToJsonWidgetItem(DashboardWidgetItem dashboardWidgetItem)
-    {
-        return new JsonWidgetItem()
-        {
-            Type = dashboardWidgetItem.Type.ToString(),
-            IsEnabled = dashboardWidgetItem.IsEnabled,
-        };
-    }
-
-    public static BaseWidgetItem ConvertToBaseWidgetItem(JsonWidgetItem jsonWidgetItem)
-    {
-        return new BaseWidgetItem()
-        {
-            Type = (WidgetType)Enum.Parse(typeof(WidgetType), jsonWidgetItem.Type),
-            IsEnabled = jsonWidgetItem.IsEnabled,
-        };
     }
 }

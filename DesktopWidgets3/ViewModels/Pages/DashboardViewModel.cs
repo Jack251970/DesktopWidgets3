@@ -67,8 +67,5 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
                 DisabledWidgets.Add(item);
             }
         }
-
-        // Save in local settings
-        _appSettingsService.SaveWidgetsList(WidgetItemUtils.ConvertToJsonWidgetItem(dashboardListItem));
     }
 }
