@@ -3,13 +3,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DesktopWidgets3.ViewModels.WidgetsPages.Folder;
 
 public partial class FolderViewViewModel : ObservableRecipient
 {
-    private static string folderPath = $"C:\\Users\\11602\\Downloads";
+    private static string folderPath = $"C:\\Users\\11602\\OneDrive\\文档\\My-Data";
 
     [ObservableProperty]
     private string _FolderName = string.Empty;
@@ -21,7 +20,6 @@ public partial class FolderViewViewModel : ObservableRecipient
         LoadFileItemsFromFolderPath();
     }
 
-    [Obsolete]
     internal async void FolderViewItemClick(object sender)
     {
         var button = sender as Button;
@@ -61,7 +59,7 @@ public partial class FolderViewViewModel : ObservableRecipient
             }
             else
             {
-                await OpenPath(filePath);
+                await LaunchHelper.OpenPath(filePath, string.Empty, folderPath);
             }
         }
     }
@@ -74,75 +72,36 @@ public partial class FolderViewViewModel : ObservableRecipient
 
         foreach (var directory in Directory.GetDirectories(folderPath))
         {
-            var folderName = Path.GetFileName(directory);
             var folderPath = directory;
             var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(folderPath, FileAttributes.Hidden);
             if (!isHiddenItem)
             {
+                var folderName = Path.GetFileName(directory);
+                var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(folderPath, true);
                 FolderViewFileItems.Add(new FolderViewFileItem()
                 {
                     FileName = folderName,
                     FilePath = folderPath,
-                    FileIcon = await GetFileIcon(folderPath, true),
+                    FileIcon = fileIcon,
                 });
             }
         }
 
         foreach (var file in Directory.GetFiles(folderPath))
         {
-            var fileName = Path.GetFileName(file);
             var filePath = file;
             var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
             if (!isHiddenItem)
             {
+                var fileName = Path.GetFileName(file);
+                var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(folderPath, false);
                 FolderViewFileItems.Add(new FolderViewFileItem()
                 {
                     FileName = fileName,
                     FilePath = filePath,
-                    FileIcon = await GetFileIcon(filePath, false),
+                    FileIcon = fileIcon,
                 });
             }
         }
-    }
-
-    private static async Task<BitmapImage?> GetFileIcon(string filePath, bool isFolder)
-    {
-        var (iconData, _) = await FileIconHelper.LoadIconAndOverlayAsync(filePath, 96, isFolder);
-
-        return await iconData.ToBitmapAsync();
-
-        /*if (iconInfo.OverlayData is not null)
-        {
-            await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
-            {
-                item.IconOverlay = await iconInfo.OverlayData.ToBitmapAsync();
-                item.ShieldIcon = await GetShieldIcon();
-            }, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
-        }*/
-    }
-
-    [Obsolete]
-    public static async Task OpenPath(string path, string? args = default)
-    {
-        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
-        var isScreenSaver = FileExtensionHelpers.IsScreenSaverFile(path);
-
-        if (isHiddenItem)
-        {
-            // itemType = NativeFileOperationsHelper.HasFileAttribute(path, System.IO.FileAttributes.Directory) ? FilesystemItemType.Directory : FilesystemItemType.File;
-        }
-        else
-        {
-            // TODO: 从网盘下载？
-            // itemType = await StorageHelpers.GetTypeFromPath(path);
-        }
-
-        args ??= string.Empty;
-        if (isScreenSaver)
-        {
-            args += "/s";
-        }
-
-        _ = await LaunchHelper.LaunchAppAsync(path, args, folderPath);
     }
 }

@@ -9,9 +9,28 @@ namespace DesktopWidgets3.Helpers;
 
 public class LaunchHelper
 {
-    public static Task<bool> LaunchAppAsync(string application, string arguments, string workingDirectory)
+    public static async Task OpenPath(string path, string args, string workingDirectory)
     {
-        return HandleApplicationLaunch(application, arguments, workingDirectory);
+        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
+        var isScreenSaver = FileExtensionHelpers.IsScreenSaverFile(path);
+
+        if (isHiddenItem)
+        {
+            // itemType = NativeFileOperationsHelper.HasFileAttribute(path, System.IO.FileAttributes.Directory) ? FilesystemItemType.Directory : FilesystemItemType.File;
+        }
+        else
+        {
+            // TODO: 从网盘下载？
+            // itemType = await StorageHelpers.GetTypeFromPath(path);
+        }
+
+        args ??= string.Empty;
+        if (isScreenSaver)
+        {
+            args += "/s";
+        }
+
+        _ = await HandleApplicationLaunch(path, args, workingDirectory);
     }
 
     private static async Task<bool> HandleApplicationLaunch(string application, string arguments, string workingDirectory)
