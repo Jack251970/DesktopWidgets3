@@ -18,8 +18,28 @@ public sealed partial class FolderViewPage : Page
         InitializeComponent();
     }
 
-    private void FolderViewItemClick(object sender, RoutedEventArgs e)
+    private async void NavigateBackButtonClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.FolderViewItemClick(sender);
+        await ViewModel.NavigateBackButtonClick();
+    }
+
+    private async void NavigateUpButtonClick(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.NavigateUpButtonClick();
+    }
+
+    private async void FolderViewItemClick(object sender, RoutedEventArgs e)
+    {
+        var button = sender as Button;
+        if (button == null)
+        {
+            return;
+        }
+
+        if (button.Tag is not string filePath)
+        {
+            return;
+        }
+        await ViewModel.FolderViewItemClick(filePath);
     }
 }

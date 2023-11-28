@@ -6,36 +6,34 @@ using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Files.Core.Data.Items;
 using Files.Shared.Helpers;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.ViewModels.WidgetsPages.Folder;
 
 public partial class FolderViewViewModel : ObservableRecipient
 {
-    private static string folderPath = $"C:\\Users\\11602\\OneDrive\\文档\\My-Data";
+    private readonly Stack<string> navigationFolderPaths = new();
+
+    private string folderPath = $"C:\\Users\\11602\\OneDrive\\文档\\My-Data";
+    private string? parentFolderPath;
 
     [ObservableProperty]
     private string _FolderName = string.Empty;
+
+    [ObservableProperty]
+    private bool _isNavigateBackExecutable = false;
+
+    [ObservableProperty]
+    private bool _isNavigateUpExecutable = false;
 
     public ObservableCollection<FolderViewFileItem> FolderViewFileItems { get; set; } = new();
 
     public FolderViewViewModel()
     {
-        LoadFileItemsFromFolderPath();
+        _ = LoadFileItemsFromFolderPath(true);
     }
 
-    internal async void FolderViewItemClick(object sender)
+    internal async Task FolderViewItemClick(string filePath)
     {
-        var button = sender as Button;
-        if (button == null)
-        {
-            return;
-        }
-
-        if (button.Tag is not string filePath)
-        {
-            return;
-        }
         var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(filePath);
         if (isShortcut)
         {
@@ -53,13 +51,13 @@ public partial class FolderViewViewModel : ObservableRecipient
         if (isDirectory)
         {
             folderPath = filePath;
-            LoadFileItemsFromFolderPath();
+            await LoadFileItemsFromFolderPath(true);
         }
         else
         {
             if (!File.Exists(filePath))
             {
-                LoadFileItemsFromFolderPath();
+                await LoadFileItemsFromFolderPath(false);
             }
             else
             {
@@ -68,9 +66,36 @@ public partial class FolderViewViewModel : ObservableRecipient
         }
     }
 
-    private async void LoadFileItemsFromFolderPath()
+    internal async Task NavigateBackButtonClick()
+    {
+        if (IsNavigateBackExecutable)
+        {
+            navigationFolderPaths.Pop();
+            folderPath = navigationFolderPaths.Peek();
+            await LoadFileItemsFromFolderPath(false);
+        }
+    }
+
+    internal async Task NavigateUpButtonClick()
+    {
+        if (IsNavigateUpExecutable)
+        {
+            folderPath = parentFolderPath!;
+            await LoadFileItemsFromFolderPath(true);
+        }
+    }
+
+    private async Task LoadFileItemsFromFolderPath(bool pushFolderPath)
     {
         FolderName = Path.GetFileName(folderPath);
+
+        if (pushFolderPath)
+        {
+            navigationFolderPaths.Push(folderPath);
+        }
+        IsNavigateBackExecutable = navigationFolderPaths.Count > 1;
+        parentFolderPath = Path.GetDirectoryName(folderPath);
+        IsNavigateUpExecutable = parentFolderPath != null;
 
         FolderViewFileItems.Clear();
 

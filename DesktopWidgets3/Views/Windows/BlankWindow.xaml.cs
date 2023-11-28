@@ -6,7 +6,6 @@ using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Models;
 using Windows.Graphics;
 using Windows.Foundation;
-using System.Runtime.InteropServices;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -57,7 +56,7 @@ public sealed partial class BlankWindow : WindowEx
     {
         _widgetNavigationService.Frame = frame;
         _widgetNavigationService.InitializePage(widgetType, parameter, clearNavigation);
-        // _windowSinkService.Initialize(this);
+        _windowSinkService.Initialize(this);
 
         Width = size.Width;
         Height = size.Height;
@@ -71,6 +70,8 @@ public sealed partial class BlankWindow : WindowEx
     {
         IsTitleBarVisible = IsResizable = isEditMode;
         _isEditMode = isEditMode;
+        // TODO: 监听鼠标事件，鼠标释放时保存窗口位置和大小
+
     }
 
     protected override void OnPositionChanged(PointInt32 position)
