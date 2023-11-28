@@ -1,9 +1,13 @@
-﻿using DesktopWidgets3.Models;
+﻿// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
+
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 using System.Runtime.InteropServices.ComTypes;
+using Files.Core.Data.Items;
+using Files.Shared.Extensions;
 
-namespace DesktopWidgets3.Helpers;
+namespace Files.App.Utils.Shell;
 
 public static class ShellFolderExtensions
 {

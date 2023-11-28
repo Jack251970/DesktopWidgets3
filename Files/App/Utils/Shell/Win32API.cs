@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
+
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
 using System.Drawing.Imaging;
@@ -8,7 +11,7 @@ using System.Diagnostics;
 using System.Text;
 using Windows.System;
 
-namespace DesktopWidgets3.Helpers;
+namespace Files.App.Utils.Shell;
 
 /// <summary>
 /// Provides static helper for general Win32API.
@@ -450,7 +453,7 @@ public class Win32API
 
     public static async Task<bool> RunPowershellCommandAsync(string command, bool runAsAdmin)
     {
-        using Process process = CreatePowershellProcess(command, runAsAdmin);
+        using var process = CreatePowershellProcess(command, runAsAdmin);
         using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(30 * 1000));
 
         try
@@ -541,10 +544,7 @@ public class Win32API
             return hResult.ToInt64() > 32 ? lpResult.ToString() : null;
         }
 
-        if (checkDesktopFirst)
-            return GetDesktopAssoc() ?? await GetUwpAssoc();
-
-        return await GetUwpAssoc() ?? GetDesktopAssoc();
+        return checkDesktopFirst ? GetDesktopAssoc() ?? await GetUwpAssoc() : await GetUwpAssoc() ?? GetDesktopAssoc();
     }
 
 }

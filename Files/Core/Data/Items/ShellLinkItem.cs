@@ -1,4 +1,7 @@
-﻿namespace DesktopWidgets3.Models;
+﻿// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
+
+namespace Files.Core.Data.Items;
 
 public class ShellFileItem
 {
@@ -59,9 +62,7 @@ public class ShellLinkItem : ShellFileItem
 
     public bool InvalidTarget { get; set; }
 
-    public ShellLinkItem()
-    {
-    }
+    public ShellLinkItem() {}
 
     public ShellLinkItem(ShellFileItem baseItem)
     {

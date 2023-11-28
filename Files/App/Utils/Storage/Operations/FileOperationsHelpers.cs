@@ -1,8 +1,10 @@
-﻿using DesktopWidgets3.Models;
+﻿using Files.App.Utils.Shell;
+using Files.Core.Data.Items;
+using Files.Shared.Helpers;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 
-namespace DesktopWidgets3.Helpers;
+namespace Files.App.Utils.Storage;
 
 public class FileOperationsHelpers
 {

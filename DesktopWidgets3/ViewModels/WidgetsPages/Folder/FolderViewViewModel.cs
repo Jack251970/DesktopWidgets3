@@ -2,6 +2,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
+using Files.App.Helpers;
+using Files.App.Utils.Storage;
+using Files.Core.Data.Items;
+using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.ViewModels.WidgetsPages.Folder;
@@ -59,7 +63,7 @@ public partial class FolderViewViewModel : ObservableRecipient
             }
             else
             {
-                await LaunchHelper.OpenPath(filePath, string.Empty, folderPath);
+                await OpenFileHelper.OpenPath(filePath, string.Empty, folderPath);
             }
         }
     }
@@ -94,7 +98,7 @@ public partial class FolderViewViewModel : ObservableRecipient
             if (!isHiddenItem)
             {
                 var fileName = Path.GetFileName(file);
-                var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(folderPath, false);
+                var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(filePath, false);
                 FolderViewFileItems.Add(new FolderViewFileItem()
                 {
                     FileName = fileName,

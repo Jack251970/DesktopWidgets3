@@ -1,10 +1,13 @@
-﻿using System.Runtime.InteropServices;
+﻿// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
+
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 using Vanara.PInvoke;
 
-namespace DesktopWidgets3.Helpers;
+namespace Files.App.Helpers;
 
 public class NativeFileOperationsHelper
 {
@@ -58,7 +61,7 @@ public class NativeFileOperationsHelper
     [DllImport("api-ms-win-core-handle-l1-1-0.dll")]
     public static extern bool CloseHandle(IntPtr hObject);
 
-    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Unicode,
     CallingConvention = CallingConvention.StdCall,
     SetLastError = true)]
     public static extern IntPtr CreateFileFromApp(
@@ -102,7 +105,7 @@ public class NativeFileOperationsHelper
         public char[] PathBuffer;
     }
 
-    [DllImport("api-ms-win-core-io-l1-1-0.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Auto)]
+    [DllImport("api-ms-win-core-io-l1-1-0.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool DeviceIoControl(
         IntPtr hDevice,
@@ -115,7 +118,7 @@ public class NativeFileOperationsHelper
         out uint lpBytesReturned,
         IntPtr lpOverlapped);
 
-    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Unicode,
     CallingConvention = CallingConvention.StdCall,
     SetLastError = true)]
     public static extern IntPtr CreateFile2FromApp(
@@ -126,7 +129,7 @@ public class NativeFileOperationsHelper
         IntPtr pCreateExParams
     );
 
-    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Unicode,
     CallingConvention = CallingConvention.StdCall,
     SetLastError = true)]
     public static extern bool CreateDirectoryFromApp(
@@ -134,7 +137,7 @@ public class NativeFileOperationsHelper
         IntPtr SecurityAttributes
     );
 
-    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Unicode,
     CallingConvention = CallingConvention.StdCall,
     SetLastError = true)]
     public static extern bool MoveFileFromApp(
@@ -142,7 +145,7 @@ public class NativeFileOperationsHelper
         string lpNewFileName
     );
 
-    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Unicode,
     CallingConvention = CallingConvention.StdCall,
     SetLastError = true)]
     public static extern bool CopyFileFromApp(
@@ -151,28 +154,28 @@ public class NativeFileOperationsHelper
         bool bFailIfExists
     );
 
-    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Unicode,
     CallingConvention = CallingConvention.StdCall,
     SetLastError = true)]
     public static extern bool DeleteFileFromApp(
         string lpFileName
     );
 
-    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Unicode,
     CallingConvention = CallingConvention.StdCall,
     SetLastError = true)]
     public static extern bool RemoveDirectoryFromApp(
         string lpPathName
     );
 
-    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool GetFileAttributesExFromApp(
         string lpFileName,
         GET_FILEEX_INFO_LEVELS fInfoLevelId,
         out WIN32_FILE_ATTRIBUTE_DATA lpFileInformation);
 
-    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool SetFileAttributesFromApp(
         string lpFileName,
@@ -188,7 +191,7 @@ public class NativeFileOperationsHelper
         uint dwMoveMethod
     );
 
-    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Unicode,
     CallingConvention = CallingConvention.StdCall,
     SetLastError = true)]
     public static unsafe extern bool ReadFile(
@@ -199,7 +202,7 @@ public class NativeFileOperationsHelper
         IntPtr lpOverlapped
     );
 
-    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Unicode,
     CallingConvention = CallingConvention.StdCall,
     SetLastError = true)]
     public static unsafe extern bool WriteFile(
@@ -210,7 +213,7 @@ public class NativeFileOperationsHelper
         IntPtr lpOverlapped
     );
 
-    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Auto,
+    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Unicode,
         CallingConvention = CallingConvention.StdCall,
         SetLastError = true)]
     public static extern bool WriteFileEx(
@@ -238,10 +241,10 @@ public class NativeFileOperationsHelper
         public uint nFileSizeLow;
     }
 
-    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
     public static extern bool GetFileTime([In] IntPtr hFile, out FILETIME lpCreationTime, out FILETIME lpLastAccessTime, out FILETIME lpLastWriteTime);
 
-    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+    [DllImport("api-ms-win-core-file-l1-2-1.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
     public static extern bool SetFileTime([In] IntPtr hFile, in FILETIME lpCreationTime, in FILETIME lpLastAccessTime, in FILETIME lpLastWriteTime);
 
     private enum FILE_INFO_BY_HANDLE_CLASS
@@ -292,7 +295,7 @@ public class NativeFileOperationsHelper
         public string FileName;
     }
 
-    [DllImport("api-ms-win-core-file-l2-1-1.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+    [DllImport("api-ms-win-core-file-l2-1-1.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
     private static extern bool GetFileInformationByHandleEx(IntPtr hFile, FILE_INFO_BY_HANDLE_CLASS infoClass, out FILE_ID_BOTH_DIR_INFO dirInfo, uint dwBufferSize);
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 8)]
@@ -306,7 +309,7 @@ public class NativeFileOperationsHelper
         public string StreamName;
     }
 
-    [DllImport("api-ms-win-core-file-l2-1-1.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+    [DllImport("api-ms-win-core-file-l2-1-1.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
     private static extern bool GetFileInformationByHandleEx(IntPtr hFile, FILE_INFO_BY_HANDLE_CLASS infoClass, IntPtr dirInfo, uint dwBufferSize);
 
     public static bool GetFileDateModified(string filePath, out FILETIME dateModified)
@@ -490,7 +493,7 @@ public class NativeFileOperationsHelper
         using var handle = OpenFileForRead(path, false, 0x00200000);
         if (!handle.IsInvalid)
         {
-            REPARSE_DATA_BUFFER buffer = new REPARSE_DATA_BUFFER();
+            var buffer = new REPARSE_DATA_BUFFER();
             if (DeviceIoControl(handle.DangerousGetHandle(), FSCTL_GET_REPARSE_POINT, IntPtr.Zero, 0, out buffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, out _, IntPtr.Zero))
             {
                 var subsString = new string(buffer.PathBuffer, ((buffer.SubsNameOffset / 2) + 2), buffer.SubsNameLength / 2);

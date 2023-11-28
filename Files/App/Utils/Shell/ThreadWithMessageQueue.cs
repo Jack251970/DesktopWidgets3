@@ -1,7 +1,9 @@
-﻿using System.Collections.Concurrent;
-using DesktopWidgets3.Models;
+﻿// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
 
-namespace DesktopWidgets3.Helpers;
+using System.Collections.Concurrent;
+
+namespace Files.App.Utils.Shell;
 
 public class ThreadWithMessageQueue : Disposable
 {

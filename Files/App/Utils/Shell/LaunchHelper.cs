@@ -1,36 +1,21 @@
-﻿using System.Collections;
+﻿// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
+
+using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Files.Shared.Helpers;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 
-namespace DesktopWidgets3.Helpers;
+namespace Files.App.Utils.Shell;
 
-public class LaunchHelper
+public static class LaunchHelper
 {
-    public static async Task OpenPath(string path, string args, string workingDirectory)
+    public static Task<bool> LaunchAppAsync(string application, string arguments, string workingDirectory)
     {
-        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
-        var isScreenSaver = FileExtensionHelpers.IsScreenSaverFile(path);
-
-        if (isHiddenItem)
-        {
-            // itemType = NativeFileOperationsHelper.HasFileAttribute(path, System.IO.FileAttributes.Directory) ? FilesystemItemType.Directory : FilesystemItemType.File;
-        }
-        else
-        {
-            // TODO: 从网盘下载？
-            // itemType = await StorageHelpers.GetTypeFromPath(path);
-        }
-
-        args ??= string.Empty;
-        if (isScreenSaver)
-        {
-            args += "/s";
-        }
-
-        _ = await HandleApplicationLaunch(path, args, workingDirectory);
+        return HandleApplicationLaunch(application, arguments, workingDirectory);
     }
 
     private static async Task<bool> HandleApplicationLaunch(string application, string arguments, string workingDirectory)
