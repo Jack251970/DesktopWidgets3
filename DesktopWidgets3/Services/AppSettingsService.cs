@@ -9,8 +9,6 @@ public class AppSettingsService : IAppSettingsService
     private readonly ILocalSettingsService _localSettingsService;
     private readonly LocalSettingsKeys _localSettingsKeys;
 
-    private bool _isInitialized;
-
     public AppSettingsService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys)
     {
         _localSettingsService = localSettingsService;
@@ -22,7 +20,6 @@ public class AppSettingsService : IAppSettingsService
     private async void InitializeAsync()
     {
         BatterySaver = await GetBatterySaverAsync();
-        // WidgetList = await _localSettingsService.ReadWidgetListAsync();
     }
 
     #region Runtime Application Data
@@ -55,14 +52,15 @@ public class AppSettingsService : IAppSettingsService
     #region Widget List Data
 
     private List<JsonWidgetItem> WidgetList = new();
+    private bool _isWidgetListInitialized;
 
     public async Task<List<JsonWidgetItem>> GetWidgetsList()
     {
-        if (!_isInitialized)
+        if (!_isWidgetListInitialized)
         {
             WidgetList = await _localSettingsService.ReadWidgetListAsync();
 
-            _isInitialized = true;
+            _isWidgetListInitialized = true;
         }
         return WidgetList;
     }

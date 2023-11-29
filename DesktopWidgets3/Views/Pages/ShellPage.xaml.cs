@@ -40,9 +40,6 @@ public sealed partial class ShellPage : Page
     {
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
 
-        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
-        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
-
         var _widgetManagerService = App.GetService<IWidgetManagerService>();
         _widgetManagerService.InitializeWidgets();
     }
@@ -64,28 +61,5 @@ public sealed partial class ShellPage : Page
             Right = AppTitleBar.Margin.Right,
             Bottom = AppTitleBar.Margin.Bottom
         };
-    }
-
-    private static KeyboardAccelerator BuildKeyboardAccelerator(VirtualKey key, VirtualKeyModifiers? modifiers = null)
-    {
-        var keyboardAccelerator = new KeyboardAccelerator() { Key = key };
-
-        if (modifiers.HasValue)
-        {
-            keyboardAccelerator.Modifiers = modifiers.Value;
-        }
-
-        keyboardAccelerator.Invoked += OnKeyboardAcceleratorInvoked;
-
-        return keyboardAccelerator;
-    }
-
-    private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
-    {
-        var navigationService = App.GetService<INavigationService>();
-
-        var result = navigationService.GoBack();
-
-        args.Handled = result;
     }
 }
