@@ -2,7 +2,7 @@
 
 using DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 
-namespace DesktopWidgets3.Views.WidgetPages.Clock;
+namespace DesktopWidgets3.Views.Pages.Widget.Clock;
 
 public sealed partial class ClockPage : Page
 {

@@ -43,8 +43,8 @@
     <None Remove="Views\Controls\TrayMenuControl.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\WidgetSettingPage.xaml" />
-    <None Remove="Views\WidgetPages\Clock\ClockPage.xaml" />
-    <None Remove="Views\WidgetPages\Folder\FolderViewPage.xaml" />
+    <None Remove="Views\Pages\Widget\Clock\ClockPage.xaml" />
+    <None Remove="Views\Pages\Widget\FolderView\FolderViewPage.xaml" />
     <None Remove="Views\Windows\BlankWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -110,10 +110,10 @@
     <Page Update="Views\Pages\WidgetSettingPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\WidgetPages\Clock\ClockPage.xaml">
+    <Page Update="Views\Pages\Widget\Clock\ClockPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\WidgetPages\Folder\FolderViewPage.xaml">
+    <Page Update="Views\Pages\Widget\FolderView\FolderViewPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Windows\BlankWindow.xaml">
