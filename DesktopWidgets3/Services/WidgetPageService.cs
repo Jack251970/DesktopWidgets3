@@ -14,7 +14,7 @@ public class WidgetPageService : IWidgetPageService
     public WidgetPageService()
     {
         Configure<ClockPage>(WidgetType.Clock);
-        Configure<FolderViewPage>(WidgetType.Folder);
+        Configure<FolderViewPage>(WidgetType.FolderView);
     }
 
     public Type GetPageType(WidgetType widgetType)

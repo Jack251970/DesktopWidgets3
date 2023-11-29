@@ -47,15 +47,11 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <!-- <Image Width="20">
+                                    <Image Width="20">
                                         <Image.Source>
                                             <BitmapImage UriSource="{x:Bind Icon, Mode=OneWay}" />
                                         </Image.Source>
-                                    </Image> -->
-                                    <FontIcon 
-                                        Width="20" 
-                                        FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                        Glyph="&#xE80F;"/>
+                                    </Image>
                                     <TextBlock
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
@@ -111,15 +107,11 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <!-- <Image Width="20">
+                                    <Image Width="20">
                                         <Image.Source>
                                             <BitmapImage UriSource="{x:Bind Icon, Mode=OneWay}" />
                                         </Image.Source>
-                                    </Image> -->
-                                    <FontIcon 
-                                        Width="20" 
-                                        FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                        Glyph="&#xE80F;"/>
+                                    </Image>
                                     <TextBlock
                                         Grid.Column="1"
                                         VerticalAlignment="Center"

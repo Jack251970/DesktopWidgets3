@@ -163,14 +163,14 @@ public class WidgetManagerService : IWidgetManagerService
     {
         List<DashboardWidgetItem> dashboardItemList = new();
 
-        foreach (WidgetType moduleType in Enum.GetValues(typeof(WidgetType)))
+        foreach (WidgetType widgetType in Enum.GetValues(typeof(WidgetType)))
         {
             dashboardItemList.Add(new DashboardWidgetItem()
             {
-                Type = moduleType,
-                Label = moduleType.ToString(),
-                IsEnabled = WidgetsDict.ContainsKey(moduleType),
-                Icon = null,
+                Type = widgetType,
+                Label = _widgetResourceService.GetWidgetLabel(widgetType),
+                IsEnabled = WidgetsDict.ContainsKey(widgetType),
+                Icon = _widgetResourceService.GetWidgetIconSource(widgetType),
                 EnabledChangedCallback = EnabledChangedCallback,
             });
         }

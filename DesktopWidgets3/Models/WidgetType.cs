@@ -5,6 +5,6 @@ public enum WidgetType
     Clock,
     CPU,
     Disk,
-    Folder,
+    FolderView,
     Network,
 }

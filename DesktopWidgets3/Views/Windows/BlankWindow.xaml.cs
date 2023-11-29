@@ -28,8 +28,8 @@ public sealed partial class BlankWindow : WindowEx
         InitializeComponent();
 
         Content = null;
+        Title = App.GetService<IWidgetResourceService>().GetWidgetLabel(widgetType);
         _widgetType = widgetType;
-        Title = widgetType.ToString();
 
         IsMaximizable = IsMaximizable = false;
         SetEditMode(false);
