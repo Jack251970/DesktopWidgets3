@@ -133,7 +133,7 @@ public partial class App : Application
             #region Views & ViewModels
 
             // MainwWindow Pages
-            services.AddTransient<ShellPage>();
+            services.AddTransient<NavShellPage>();
             services.AddTransient<ShellViewModel>();
             services.AddTransient<HomeViewModel>();
             services.AddTransient<HomePage>();

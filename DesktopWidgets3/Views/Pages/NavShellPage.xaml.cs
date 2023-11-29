@@ -8,14 +8,14 @@ using DesktopWidgets3.ViewModels.Pages;
 
 namespace DesktopWidgets3.Views.Pages;
 
-public sealed partial class ShellPage : Page
+public sealed partial class NavShellPage : Page
 {
     public ShellViewModel ViewModel
     {
         get;
     }
 
-    public ShellPage(ShellViewModel viewModel)
+    public NavShellPage(ShellViewModel viewModel)
     {
         ViewModel = viewModel;
         InitializeComponent();

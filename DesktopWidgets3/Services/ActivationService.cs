@@ -29,7 +29,7 @@ public class ActivationService : IActivationService
         // Set the MainWindow Content.
         if (App.MainWindow!.Content == null)
         {
-            _shell = App.GetService<ShellPage>();
+            _shell = App.GetService<NavShellPage>();
             App.MainWindow.Content = _shell ?? new Frame();
         }
 
