@@ -12,41 +12,6 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <DataTemplate x:Key="DetailLayoutDataTemplate" x:DataType="models:FolderViewFileItem">
-            <Button
-                Padding="0"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
-                Background="Transparent"
-                BorderThickness="0"
-                Tag="{x:Bind FilePath}">
-                <Grid
-                    Padding="16,12"
-                    BorderThickness="1"
-                    RowSpacing="12">
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Image 
-                            Width="20" 
-                            Height="20"
-                            Source="{x:Bind FileIcon, Mode=OneWay}"/>
-                        <TextBlock
-                            Grid.Column="1"
-                            VerticalAlignment="Center"
-                            FontWeight="SemiBold"
-                            Text="{x:Bind FileName, Mode=OneWay}"
-                            TextTrimming="CharacterEllipsis" />
-                    </Grid>
-                </Grid>
-            </Button>
-        </DataTemplate>
-    </Page.Resources>
-
     <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -233,7 +198,6 @@
                         </UserControl>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-
             </ListView>
         </ScrollViewer>
     </Grid>
