@@ -6,12 +6,46 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:folder="using:DesktopWidgets3.ViewModels.WidgetsPages.Folder"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DesktopWidgets3.Models"
     d:DataContext="{d:DesignInstance Type=folder:FolderViewViewModel}"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Key="DetailLayoutDataTemplate" x:DataType="models:FolderViewFileItem">
+            <Button
+                Padding="0"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                Background="Transparent"
+                BorderThickness="0"
+                Tag="{x:Bind FilePath}">
+                <Grid
+                    Padding="16,12"
+                    BorderThickness="1"
+                    RowSpacing="12">
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image 
+                            Width="20" 
+                            Height="20"
+                            Source="{x:Bind FileIcon, Mode=OneWay}"/>
+                        <TextBlock
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            FontWeight="SemiBold"
+                            Text="{x:Bind FileName, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis" />
+                    </Grid>
+                </Grid>
+            </Button>
+        </DataTemplate>
+    </Page.Resources>
 
     <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
@@ -68,51 +102,139 @@
                 <FontIcon FontSize="12" Glyph="&#xE712;" />
             </Button>
         </Grid>
-        
+
         <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.FolderViewFileItems, Mode=OneWay}">
-                <ItemsRepeater.Layout>
-                    <controls:StaggeredLayout
-                        ColumnSpacing="8"
-                        DesiredColumnWidth="400"
-                        RowSpacing="8" />
-                </ItemsRepeater.Layout>
-                <ItemsRepeater.ItemTemplate>
+            <ListView
+				x:Name="FileList"
+				Padding="8,0,8,12"
+				HorizontalAlignment="Stretch"
+				VerticalContentAlignment="Stretch"
+				ScrollViewer.HorizontalScrollBarVisibility="Auto"
+				ScrollViewer.HorizontalScrollMode="Auto"
+                ItemsSource="{x:Bind ViewModel.FolderViewFileItems, Mode=OneWay}"
+                IsDoubleTapEnabled="True"
+                DoubleTapped="FileList_DoubleTapped">
+
+                <!--  Item Template  -->
+                <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:FolderViewFileItem">
-                        <Button
-                            Padding="0"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Stretch"
-                            Background="Transparent"
-                            Click="FolderViewItemClick"
-                            BorderThickness="0"
-                            Tag="{x:Bind FilePath}">
-                            <Grid
-                                Padding="16,12"
-                                BorderThickness="1"
-                                RowSpacing="12">
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Image 
+                        <UserControl>
+                            <StackPanel
+								HorizontalAlignment="Stretch"
+								IsRightTapEnabled="True"
+								Orientation="Horizontal">
+
+                                <!--  Selected Checkbox  -->
+                                <!--  <CheckBox
+				                    x:Name="SelectionCheckbox"
+				                    Width="20"
+				                    HorizontalAlignment="Center"
+				                    Opacity="0"
+                                    Checked="ItemSelected_Checked"
+				                    Unchecked="ItemSelected_Unchecked" /> -->
+
+                                <!--  Item Icon  -->
+                                <Grid
+                                    Name="ItemIcon"
+									Width="24"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch">
+                                    <Image
+                                        x:Name="Icon"
                                         Width="20" 
                                         Height="20"
-                                        Source="{x:Bind FileIcon, Mode=OneWay}"/>
-                                    <TextBlock
-                                        Grid.Column="1"
+                                        HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        FontWeight="SemiBold"
-                                        Text="{x:Bind FileName, Mode=OneWay}"
-                                        TextTrimming="CharacterEllipsis" /> 
+                                        Source="{x:Bind FileIcon, Mode=OneWay}"/>
+                                    <!-- <Image
+				                        x:Name="IconOverlay"
+				                        Width="20"
+				                        Height="20"
+				                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+				                        Source="{x:Bind FileIconOverlay, Mode=OneWay}"/> -->
                                 </Grid>
-                            </Grid>
-                        </Button>
+
+                                <!--  Item Sync Status Badge  -->
+                                <!--  <Border
+				                    x:Name="ItemStatus"
+				                    Width="{Binding ColumnsViewModel.StatusColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
+				                    Padding="10,0,0,0"
+				                    HorizontalAlignment="Stretch"
+				                    VerticalAlignment="Center"
+				                    Visibility="{Binding ColumnsViewModel.StatusColumn.Visibility, ElementName=PageRoot, Mode=OneWay}">
+                                    <uc:OpacityIcon
+								        Width="16"
+								        Height="16"
+								        HorizontalAlignment="Left"
+								        Style="{x:Bind SyncStatusUI.OpacityIcon, Mode=OneWay}" />
+                                </Border>  -->
+
+                                <!--  Item Name  -->
+
+                                <TextBlock
+				                    x:Name="ItemName"
+				                    Padding="9,0,0,0"
+                                    HorizontalAlignment="Stretch"
+				                    VerticalAlignment="Center"
+				                    Text="{x:Bind FileName, Mode=OneWay}"
+				                    TextTrimming="CharacterEllipsis" />
+
+                                <!--  Item Path  -->
+                                <!--  <TextBlock
+									x:Name="ItemPath"
+									Width="{Binding ColumnsViewModel.PathColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
+									Padding="10,0,0,0"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Center"
+									Style="{StaticResource ColumnContentTextBlock}"
+									Text="{x:Bind FilePath, Mode=OneWay}"
+									Visibility="{Binding ColumnsViewModel.PathColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" />  -->
+
+                                <!--  Item Modified Date  -->
+                                <!--  <TextBlock
+									x:Name="ItemDateModified"
+									Width="{Binding ColumnsViewModel.DateModifiedColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
+									Padding="10,0,0,0"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Center"
+									DataContextChanged="TextBlock_DataContextChanged"
+									IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
+									Style="{StaticResource ColumnContentTextBlock}"
+									Text="{x:Bind ItemDateModified, Mode=OneWay}"
+									Visibility="{Binding ColumnsViewModel.DateModifiedColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" /> -->
+
+                                <!--  Item Type  -->
+                                <!--  <TextBlock
+									x:Name="ItemType"
+									Width="{Binding ColumnsViewModel.ItemTypeColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
+									Padding="10,0,0,0"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Center"
+									DataContextChanged="TextBlock_DataContextChanged"
+									IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
+									Style="{StaticResource ColumnContentTextBlock}"
+									Text="{x:Bind ItemType, Mode=OneWay}"
+									Visibility="{Binding ColumnsViewModel.ItemTypeColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" /> -->
+
+                                <!--  Item Size  -->
+                                <!--  <TextBlock
+									x:Name="ItemSize"
+									Width="{Binding ColumnsViewModel.SizeColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
+									Padding="10,0,0,0"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Center"
+									DataContextChanged="TextBlock_DataContextChanged"
+									IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
+									Style="{StaticResource ColumnContentTextBlock}"
+									Text="{x:Bind FileSize, Mode=OneWay}"
+									Visibility="{Binding ColumnsViewModel.SizeColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" /> -->
+                            </StackPanel>
+                        </UserControl>
                     </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
+                </ListView.ItemTemplate>
+
+            </ListView>
         </ScrollViewer>
     </Grid>
 </Page>

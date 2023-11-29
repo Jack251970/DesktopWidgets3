@@ -32,7 +32,7 @@ public partial class FolderViewViewModel : ObservableRecipient
         _ = LoadFileItemsFromFolderPath(true);
     }
 
-    internal async Task FolderViewItemClick(string filePath)
+    internal async Task FolderViewItemDoubleTapped(string filePath)
     {
         var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(filePath);
         if (isShortcut)

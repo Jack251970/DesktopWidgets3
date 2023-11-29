@@ -2,6 +2,8 @@
 
 using DesktopWidgets3.ViewModels.WidgetsPages.Folder;
 using Microsoft.UI.Xaml;
+using DesktopWidgets3.Models;
+using Microsoft.UI.Xaml.Input;
 
 namespace DesktopWidgets3.Views.WidgetPages.Folder;
 
@@ -28,18 +30,12 @@ public sealed partial class FolderViewPage : Page
         await ViewModel.NavigateUpButtonClick();
     }
 
-    private async void FolderViewItemClick(object sender, RoutedEventArgs e)
+    private async void FileList_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
-        var button = sender as Button;
-        if (button == null)
+        if (e.OriginalSource is FrameworkElement { DataContext: FolderViewFileItem item })
         {
-            return;
+            var filePath = item.FilePath;
+            await ViewModel.FolderViewItemDoubleTapped(filePath);
         }
-
-        if (button.Tag is not string filePath)
-        {
-            return;
-        }
-        await ViewModel.FolderViewItemClick(filePath);
     }
 }
