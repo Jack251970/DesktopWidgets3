@@ -3,9 +3,7 @@ using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
 using DesktopWidgets3.Contracts.Services;
 using Microsoft.UI.Xaml.Controls;
-using DesktopWidgets3.Models;
-using Windows.Graphics;
-using Windows.Foundation;
+using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -52,18 +50,11 @@ public sealed partial class BlankWindow : WindowEx
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
-    public void InitializePage(Frame? frame, WidgetType widgetType, PointInt32 position, Size size, object? parameter = null, bool clearNavigation = false)
+    public void InitializePage(Frame? frame, object? parameter = null, bool clearNavigation = false)
     {
         _widgetNavigationService.Frame = frame;
-        _widgetNavigationService.InitializePage(widgetType, parameter, clearNavigation);
+        _widgetNavigationService.InitializePage(_widgetType, parameter, clearNavigation);
         _windowSinkService.Initialize(this);
-
-        Width = size.Width;
-        Height = size.Height;
-        if (position.X != -1 || position.Y != -1)
-        {
-
-        }
     }
 
     public void SetEditMode(bool isEditMode)
@@ -74,7 +65,7 @@ public sealed partial class BlankWindow : WindowEx
 
     }
 
-    protected override void OnPositionChanged(PointInt32 position)
+    /*protected override void OnPositionChanged(PointInt32 position)
     {
         if (_isEditMode)
         {
@@ -90,5 +81,5 @@ public sealed partial class BlankWindow : WindowEx
             _widgetManagerService.UpdateWidgetSize(_widgetType, newSize);
         }
         return base.OnSizeChanged(newSize);
-    }
+    }*/
 }

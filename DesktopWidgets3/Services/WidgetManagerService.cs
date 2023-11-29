@@ -1,8 +1,7 @@
 ﻿using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.Models;
+using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Windows;
 using Microsoft.UI.Xaml.Controls;
-using Windows.Foundation;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services;
@@ -81,9 +80,17 @@ public class WidgetManagerService : IWidgetManagerService
 
             var blankWindow = new BlankWindow(widgetType);
             WidgetsDict.Add(widgetType, blankWindow);
+
             _ = _activationService.ActivateWidgetWindowAsync(blankWindow);
             var frame = blankWindow.Content as Frame;
-            blankWindow.InitializePage(frame, widgetType, widget.Position, widget.Size);
+            blankWindow.InitializePage(frame);
+
+            WindowExtensions.SetWindowSize(blankWindow, widget.Size.Width, widget.Size.Height);
+            if (widget.Position.X != -1 && widget.Position.Y != -1)
+            {
+                WindowExtensions.Move(blankWindow, widget.Position.X, widget.Position.Y);
+            }
+
             blankWindow.Show();
         }
         if (TimerWidgets.Contains(widgetType))
@@ -103,7 +110,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async Task UpdateWidgetSize(WidgetType widgetType, Size size)
+    public async Task UpdateWidgetSize(WidgetType widgetType, WidgetSize size)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
         var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);

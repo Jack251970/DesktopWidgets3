@@ -1,5 +1,4 @@
-﻿using DesktopWidgets3.Models;
-using Windows.Foundation;
+﻿using DesktopWidgets3.Models.Widget;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Contracts.Services;
@@ -12,7 +11,7 @@ public interface IWidgetManagerService
 
     Task UpdateWidgetPosition(WidgetType widgetType, PointInt32 position);
 
-    Task UpdateWidgetSize(WidgetType widgetType, Size size);
+    Task UpdateWidgetSize(WidgetType widgetType, WidgetSize size);
 
     Task CloseWidget(WidgetType widgetType);
 

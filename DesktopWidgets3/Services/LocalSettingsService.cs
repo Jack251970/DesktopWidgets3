@@ -5,6 +5,7 @@ using DesktopWidgets3.Core.Contracts.Services;
 using DesktopWidgets3.Core.Helpers;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
+using DesktopWidgets3.Models.Widget;
 
 using Windows.Storage;
 

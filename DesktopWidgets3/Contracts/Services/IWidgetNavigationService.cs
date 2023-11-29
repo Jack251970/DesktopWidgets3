@@ -1,4 +1,4 @@
-﻿using DesktopWidgets3.Models;
+﻿using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 

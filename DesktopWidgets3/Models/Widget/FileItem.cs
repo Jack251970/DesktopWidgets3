@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace DesktopWidgets3.Models;
+namespace DesktopWidgets3.Models.Widget;
 
 public class BaseFileItem
 {

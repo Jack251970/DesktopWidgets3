@@ -2,7 +2,7 @@
 
 using DesktopWidgets3.ViewModels.WidgetsPages.Folder;
 using Microsoft.UI.Xaml;
-using DesktopWidgets3.Models;
+using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml.Input;
 
 namespace DesktopWidgets3.Views.WidgetPages.Folder;

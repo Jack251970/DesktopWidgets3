@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models;
+using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Services;
 

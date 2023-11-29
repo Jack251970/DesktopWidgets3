@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
 using DesktopWidgets3.Views.WidgetPages.Clock;
-using DesktopWidgets3.Models;
+using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.WidgetPages.Folder;
 

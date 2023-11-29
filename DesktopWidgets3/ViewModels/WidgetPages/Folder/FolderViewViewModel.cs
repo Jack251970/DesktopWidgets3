@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Models;
+using DesktopWidgets3.Models.Widget;
 using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Files.Core.Data.Items;

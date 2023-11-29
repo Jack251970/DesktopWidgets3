@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Navigation;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Models;
+using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Services;
 

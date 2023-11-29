@@ -1,4 +1,4 @@
-﻿using DesktopWidgets3.Models;
+﻿using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Contracts.Services;
 
