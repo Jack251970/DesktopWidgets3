@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:folder="using:DesktopWidgets3.ViewModels.WidgetsPages.Folder"
+    xmlns:folder="using:DesktopWidgets3.ViewModels.Pages.Widget.FolderView"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:models="using:DesktopWidgets3.Models.Widget"
     d:DataContext="{d:DesignInstance Type=folder:FolderViewViewModel}"

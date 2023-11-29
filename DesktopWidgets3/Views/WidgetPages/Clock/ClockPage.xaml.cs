@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-using DesktopWidgets3.ViewModels.WidgetsPages.Clock;
+using DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 
 namespace DesktopWidgets3.Views.WidgetPages.Clock;
 

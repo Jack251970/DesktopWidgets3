@@ -14,10 +14,10 @@ using DesktopWidgets3.Services;
 using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Windows;
-using DesktopWidgets3.ViewModels.WidgetsPages.Clock;
+using DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 using DesktopWidgets3.Views.WidgetPages.Clock;
 using DesktopWidgets3.Views.WidgetPages.Folder;
-using DesktopWidgets3.ViewModels.WidgetsPages.Folder;
+using DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 
 namespace DesktopWidgets3;
 

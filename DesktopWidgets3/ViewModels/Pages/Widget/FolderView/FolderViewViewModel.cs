@@ -8,7 +8,7 @@ using Files.Core.Data.Items;
 using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace DesktopWidgets3.ViewModels.WidgetsPages.Folder;
+namespace DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 
 public partial class FolderViewViewModel : ObservableRecipient
 {

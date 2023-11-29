@@ -5,8 +5,6 @@ using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.Views.Pages;
-using DesktopWidgets3.ViewModels.WidgetsPages.Clock;
-using DesktopWidgets3.Views.WidgetPages.Clock;
 
 namespace DesktopWidgets3.Services;
 

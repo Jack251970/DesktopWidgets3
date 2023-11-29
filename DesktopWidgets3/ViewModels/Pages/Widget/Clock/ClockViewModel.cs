@@ -2,7 +2,7 @@
 using DesktopWidgets3.Contracts.Services;
 using Microsoft.UI.Dispatching;
 
-namespace DesktopWidgets3.ViewModels.WidgetsPages.Clock;
+namespace DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 
 public partial class ClockViewModel : ObservableRecipient
 {

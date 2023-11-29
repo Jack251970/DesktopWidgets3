@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-using DesktopWidgets3.ViewModels.WidgetsPages.Folder;
+using DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 using Microsoft.UI.Xaml;
 using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml.Input;
