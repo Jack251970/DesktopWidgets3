@@ -1,13 +1,10 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages;
-
-using Windows.System;
 
 namespace DesktopWidgets3.Views.Pages;
 
