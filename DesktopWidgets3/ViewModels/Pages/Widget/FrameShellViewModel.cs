@@ -2,9 +2,9 @@
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
-public partial class FrameShellViewModel : ObservableRecipient
+public partial class FrameNavShellViewModel : ObservableRecipient
 {
-    public FrameShellViewModel()
+    public FrameNavShellViewModel()
     {
         
     }

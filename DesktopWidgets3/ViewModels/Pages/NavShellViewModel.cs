@@ -7,7 +7,7 @@ using DesktopWidgets3.Views.Pages;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class ShellViewModel : ObservableRecipient
+public partial class NavShellViewModel : ObservableRecipient
 {
     [ObservableProperty]
     private bool isBackEnabled;
@@ -25,7 +25,7 @@ public partial class ShellViewModel : ObservableRecipient
         get;
     }
 
-    public ShellViewModel(INavigationService navigationService, IShellService shellService)
+    public NavShellViewModel(INavigationService navigationService, IShellService shellService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;

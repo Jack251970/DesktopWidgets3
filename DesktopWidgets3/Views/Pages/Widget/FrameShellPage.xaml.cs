@@ -6,12 +6,12 @@ namespace DesktopWidgets3.Views.Pages.Widget;
 
 public sealed partial class FrameShellPage : Page
 {
-    public FrameShellViewModel ViewModel
+    public FrameNavShellViewModel ViewModel
     {
         get;
     }
 
-    public FrameShellPage(FrameShellViewModel viewModel)
+    public FrameShellPage(FrameNavShellViewModel viewModel)
     {
         ViewModel = viewModel;
         InitializeComponent();

@@ -10,12 +10,12 @@ namespace DesktopWidgets3.Views.Pages;
 
 public sealed partial class NavShellPage : Page
 {
-    public ShellViewModel ViewModel
+    public NavShellViewModel ViewModel
     {
         get;
     }
 
-    public NavShellPage(ShellViewModel viewModel)
+    public NavShellPage(NavShellViewModel viewModel)
     {
         ViewModel = viewModel;
         InitializeComponent();
