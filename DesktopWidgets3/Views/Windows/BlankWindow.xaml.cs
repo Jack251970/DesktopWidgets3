@@ -52,9 +52,12 @@ public sealed partial class BlankWindow : WindowEx
 
     public void InitializePage(Frame? frame, object? parameter = null, bool clearNavigation = false)
     {
+        // Navigate to widget page
         _widgetNavigationService.Frame = frame;
         _widgetNavigationService.InitializePage(_widgetType, parameter, clearNavigation);
-        _windowSinkService.Initialize(this);
+
+        // Sink window to desktop
+        _windowSinkService.Initialize(this, true);
     }
 
     public void SetEditMode(bool isEditMode)

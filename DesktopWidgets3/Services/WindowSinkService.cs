@@ -43,8 +43,6 @@ public class WindowSinkService : IWindowSinkService
 
     #region WindowSinker
 
-    private Window? window;
-
     private WindowMessageMonitor? monitor;
 
     private bool _isInitialized;
@@ -54,27 +52,18 @@ public class WindowSinkService : IWindowSinkService
 
     }
 
-    public void Initialize(Window window)
+    public void Initialize(Window window, bool hideFromTaskBar)
     {
         if (!_isInitialized)
         {
-            this.window = window;
-
-            /*if (page.IsLoaded)
-            {
-                OnPageLoaded(page, null);
-            }
-            else
-            {
-                page.Loaded += OnPageLoaded;
-            }
-            window!.Activated += OnWindowActivated;*/
-
             monitor = new WindowMessageMonitor(window);
             monitor.WindowMessageReceived += OnWindowMessageReceived;
 
-            var hWnd = window.GetWindowHandle();
-            SystemHelper.HideWindowFromTaskbar(hWnd);
+            if (hideFromTaskBar)
+            {
+                var hWnd = window.GetWindowHandle();
+                SystemHelper.HideWindowFromTaskbar(hWnd);
+            }
 
             _isInitialized = true;
         }
@@ -84,9 +73,6 @@ public class WindowSinkService : IWindowSinkService
     {
         if (_isInitialized)
         {
-            // window!.Activated -= OnWindowActivated;
-            // page.Loaded -= OnPageLoaded;
-
             monitor!.Dispose();
         }
     }
@@ -94,40 +80,6 @@ public class WindowSinkService : IWindowSinkService
     #endregion
 
     #region Event Handlers
-
-    private void BringToBottom()
-    {
-        if (window != null)
-        {
-            // Way1
-            var hWnd = window.GetWindowHandle();
-            SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
-
-            // Way2
-            var lParam = new nint(Marshal.AllocHGlobal(Marshal.SizeOf<WINDOWPOS>()));
-            var windowPos = new WINDOWPOS
-            {
-                hwnd = hWnd,
-                hwndInsertAfter = HWND_BOTTOM,
-                x = 0,
-                y = 0,
-                cx = 0,
-                cy = 0,
-                flags = SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE
-            };
-            Marshal.StructureToPtr(windowPos, lParam, false);
-        }
-    }
-
-    private void OnWindowActivated(object sender, WindowActivatedEventArgs args)
-    {
-        BringToBottom();
-    }
-
-    private void OnPageLoaded(object sender, RoutedEventArgs? e)
-    {
-        BringToBottom();
-    }
 
     private void OnWindowMessageReceived(object? sender, WindowMessageEventArgs e)
     {
