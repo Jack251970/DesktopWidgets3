@@ -49,12 +49,32 @@
 		        IsEnabled="{x:Bind ViewModel.IsNavigateUpExecutable, Mode=OneWay}">
                 <FontIcon FontSize="12" Glyph="&#xE74A;" />
             </Button>
-            <TextBlock
-                Grid.Column="2"
-                Text="{x:Bind ViewModel.FolderName, Mode=OneWay}"
-                TextAlignment="Center"
-                VerticalAlignment="Center"
-                Style="{ThemeResource BodyTextStyle}" />
+            <StackPanel Grid.Column="2" HorizontalAlignment="Center" Orientation="Horizontal">
+                <Grid
+                    Height="24"
+                    Width="24"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Stretch">
+                    <Image
+                        x:Name="Icon"
+                        Width="20" 
+                        Height="20"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Source="{x:Bind ViewModel.FolderPathIcon, Mode=OneWay}"/>
+                    <!-- <Image
+                        x:Name="IconOverlay"
+                        Width="20"
+                        Height="20"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Source="{x:Bind FileIconOverlay, Mode=OneWay}"/> -->
+                </Grid>
+                <TextBlock
+                    Text="{x:Bind ViewModel.FolderName, Mode=OneWay}"
+                    VerticalAlignment="Center"
+                    Style="{ThemeResource BodyTextStyle}" />
+            </StackPanel>
             <Button
                 Grid.Column="3"
                 Height="34"
