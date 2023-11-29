@@ -11,7 +11,7 @@ public interface IAppSettingsService
 
     Task SetBatterySaverAsync(bool value);
 
-    List<JsonWidgetItem> GetWidgetsList();
+    Task<List<JsonWidgetItem>> GetWidgetsList();
 
     Task SaveWidgetsList(JsonWidgetItem item);
 }

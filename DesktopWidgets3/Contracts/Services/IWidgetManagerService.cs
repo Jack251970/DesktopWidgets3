@@ -6,17 +6,15 @@ namespace DesktopWidgets3.Contracts.Services;
 
 public interface IWidgetManagerService
 {
-    void InitializeWidgets();
+    Task InitializeWidgets();
 
-    void ShowWidget(WidgetType widgetType);
+    Task ShowWidget(WidgetType widgetType);
 
-    void UpdateWidgetPosition(WidgetType widgetType, PointInt32 position);
+    Task UpdateWidgetPosition(WidgetType widgetType, PointInt32 position);
 
-    void UpdateWidgetSize(WidgetType widgetType, Size size);
+    Task UpdateWidgetSize(WidgetType widgetType, Size size);
 
-    void SetEditMode(bool isEditMode);
-
-    void CloseWidget(WidgetType widgetType);
+    Task CloseWidget(WidgetType widgetType);
 
     void CloseAllWidgets();
 

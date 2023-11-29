@@ -34,19 +34,16 @@ public class WidgetManagerService : IWidgetManagerService
         _widgetResourceService = widgetResourceService;
     }
 
-    public void InitializeWidgets()
+    public async Task InitializeWidgets()
     {
-#if DEBUG
-        return;
-#else
-        var widgetList = _appSettingsService.GetWidgetsList();
+        var widgetList = await _appSettingsService.GetWidgetsList();
         var enableTimer = false;
         foreach (var widget in widgetList)
         {
             if (widget.IsEnabled)
             {
                 var widgetType = (WidgetType)Enum.Parse(typeof(WidgetType), widget.Type);
-                ShowWidget(widgetType);
+                await ShowWidget(widgetType);
                 if (TimerWidgets.Contains(widgetType))
                 {
                     enableTimer = true;
@@ -57,14 +54,13 @@ public class WidgetManagerService : IWidgetManagerService
         {
             _timersService.StartUpdateTimeTimer();
         }
-#endif
     }
 
-    public void ShowWidget(WidgetType widgetType)
+    public async Task ShowWidget(WidgetType widgetType)
     {
         if (!WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
         {
-            var widgetList = _appSettingsService.GetWidgetsList();
+            var widgetList = await _appSettingsService.GetWidgetsList();
             var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
             if (widget == null)
             {
@@ -75,12 +71,12 @@ public class WidgetManagerService : IWidgetManagerService
                     Position = new PointInt32(-1, -1),
                     Size = _widgetResourceService.GetDefaultSize(widgetType),
                 };
-                _appSettingsService.SaveWidgetsList(widget);
+                await _appSettingsService.SaveWidgetsList(widget);
             }
             else
             {
                 widget.IsEnabled = true;
-                _appSettingsService.SaveWidgetsList(widget);
+                await _appSettingsService.SaveWidgetsList(widget);
             }
 
             var blankWindow = new BlankWindow(widgetType);
@@ -96,9 +92,9 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async void UpdateWidgetPosition(WidgetType widgetType, PointInt32 position)
+    public async Task UpdateWidgetPosition(WidgetType widgetType, PointInt32 position)
     {
-        var widgetList = _appSettingsService.GetWidgetsList();
+        var widgetList = await _appSettingsService.GetWidgetsList();
         var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
         if (widget != null)
         {
@@ -107,9 +103,9 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async void UpdateWidgetSize(WidgetType widgetType, Size size)
+    public async Task UpdateWidgetSize(WidgetType widgetType, Size size)
     {
-        var widgetList = _appSettingsService.GetWidgetsList();
+        var widgetList = await _appSettingsService.GetWidgetsList();
         var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
         if (widget != null)
         {
@@ -118,24 +114,16 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public void SetEditMode(bool isEditMode)
-    {
-        foreach (var widgetWindow in WidgetsDict.Values)
-        {
-            widgetWindow.SetEditMode(isEditMode);
-        }
-    }
-
-    public void CloseWidget(WidgetType widgetType)
+    public async Task CloseWidget(WidgetType widgetType)
     {
         if (WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
         {
-            var widgetList = _appSettingsService.GetWidgetsList();
+            var widgetList = await _appSettingsService.GetWidgetsList();
             var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
             if (widget != null)
             {
                 widget.IsEnabled = false;
-                _appSettingsService.SaveWidgetsList(widget);
+                await _appSettingsService.SaveWidgetsList(widget);
             }
 
             widgetWindow.SetEditMode(false);

@@ -42,6 +42,9 @@ public sealed partial class ShellPage : Page
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
+
+        var _widgetManagerService = App.GetService<IWidgetManagerService>();
+        _widgetManagerService.InitializeWidgets();
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
