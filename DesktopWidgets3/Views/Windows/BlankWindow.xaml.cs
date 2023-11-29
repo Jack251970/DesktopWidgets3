@@ -62,10 +62,8 @@ public sealed partial class BlankWindow : WindowEx
 
     public void SetEditMode(bool isEditMode)
     {
-        IsTitleBarVisible = IsResizable = isEditMode;
+        IsResizable = isEditMode;
         _isEditMode = isEditMode;
-        // TODO: 监听鼠标事件，鼠标释放时保存窗口位置和大小
-
     }
 
     /*protected override void OnPositionChanged(PointInt32 position)

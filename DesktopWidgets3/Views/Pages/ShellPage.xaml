@@ -8,6 +8,8 @@
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:control="using:DesktopWidgets3.Views.Controls" 
+    xmlns:pages="using:DesktopWidgets3.ViewModels.Pages" 
+    d:DataContext="{d:DesignInstance Type=pages:ShellViewModel}"
     Loaded="OnLoaded">
     <!-- Do not try to add DataContext! -->
 
