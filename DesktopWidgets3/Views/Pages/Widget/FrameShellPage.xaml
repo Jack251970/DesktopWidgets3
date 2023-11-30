@@ -8,7 +8,7 @@
 
     <Grid>
         <Grid x:Name="AppTitleBar"
-            VerticalAlignment="Top"/>
+    VerticalAlignment="Top"/>
         <Frame x:Name="NavigationFrame"/>
     </Grid>
 </Page>

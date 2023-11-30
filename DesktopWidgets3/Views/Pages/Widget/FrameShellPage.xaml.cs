@@ -45,7 +45,5 @@ public sealed partial class FrameShellPage : Page
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
 
         ViewModel.WidgetNavigationService.NavigateTo(WidgetWindow.WidgetType);
-
-        _widgetManagerService.InitializeDragZone();
     }
 }

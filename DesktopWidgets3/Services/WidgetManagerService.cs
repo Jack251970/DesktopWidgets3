@@ -1,5 +1,4 @@
 ﻿using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Windows;
 using Windows.Graphics;
@@ -143,11 +142,6 @@ public class WidgetManagerService : IWidgetManagerService
         {
             _timersService.StartUpdateTimeTimer();
         }
-    }
-
-    public void InitializeDragZone()
-    {
-        DragZoneHelper.SetDragZones(GetCurrentWidgetWindow(), 0);
     }
 
     public async Task CloseWidget(WidgetType widgetType, int indexTag)
@@ -303,7 +297,6 @@ public class WidgetManagerService : IWidgetManagerService
 
     private static void SetEditMode(BlankWindow window, bool isEditMode)
     {
-        DragZoneHelper.SetDragZones(window, isEditMode ? 32 : 0);
         window.IsResizable = isEditMode;
     }
 }

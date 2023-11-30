@@ -11,8 +11,6 @@ public interface IWidgetManagerService
 
     Task ShowWidget(WidgetType widgetType, int? indexTag);
 
-    void InitializeDragZone();
-
     Task CloseWidget(WidgetType widgetType, int indexTag);
 
     void CloseAllWidgets();
