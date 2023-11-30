@@ -64,7 +64,9 @@
                                         Width="34"
                                         HorizontalAlignment="Right"
                                         VerticalContentAlignment="Center"
-                                        HorizontalContentAlignment="Center">
+                                        HorizontalContentAlignment="Center"
+                                        Click="AllWidgetsItemClick"
+                                        Tag="{x:Bind Type, Mode=OneWay}">
                                         <FontIcon FontSize="12" Glyph="&#xE710;" />
                                     </Button>
                                 </Grid>

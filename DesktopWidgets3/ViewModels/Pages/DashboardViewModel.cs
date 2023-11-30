@@ -49,16 +49,32 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         
     }
 
-    private void EnabledChangedOnUI(DashboardWidgetItem dashboardListItem)
+    public async void AllWidgetsItemClick(WidgetType widgetType)
+    {
+        await _widgetManagerService.ShowWidget(widgetType, null);
+
+        var indexTag = _widgetManagerService.GetIndexTag();
+        /*yourWidgetItems.Add(new DashboardWidgetItem
+        {
+            Type = widgetType,
+            IndexTag = indexTag,
+            IsEnabled = true,
+            EnabledChangedCallback = EnabledChangedOnUI
+        });*/
+
+        RefreshYourWidgets();
+    }
+
+    private async void EnabledChangedOnUI(DashboardWidgetItem dashboardListItem)
     {
         if (dashboardListItem.IsEnabled)
         {
-            _widgetManagerService.ShowWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
+            await _widgetManagerService.ShowWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
             yourWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = true;
         }
         else
         {
-            _widgetManagerService.CloseWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
+            await _widgetManagerService.CloseWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
             yourWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = false;
         }
 

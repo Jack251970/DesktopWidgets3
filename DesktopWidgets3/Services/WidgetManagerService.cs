@@ -222,6 +222,11 @@ public class WidgetManagerService : IWidgetManagerService
         return currentWidgetType;
     }
 
+    public int GetIndexTag()
+    {
+        return currentIndexTag;
+    }
+
     public BlankWindow GetWidgetWindow()
     {
         return GetWidgetWindow(currentWidgetType, currentIndexTag)!;

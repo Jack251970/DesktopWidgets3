@@ -68,7 +68,7 @@ public class AppSettingsService : IAppSettingsService
 
     public async Task UpdateWidgetsList(JsonWidgetItem widgetItem)
     {
-        var index = WidgetList.FindIndex(x => x.Type == widgetItem.Type);
+        var index = WidgetList.FindIndex(x => x.Type == widgetItem.Type && x.IndexTag == widgetItem.IndexTag);
         if (index == -1)
         {
             WidgetList.Add(widgetItem);
