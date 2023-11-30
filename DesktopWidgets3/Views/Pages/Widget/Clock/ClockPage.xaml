@@ -16,7 +16,7 @@
 		    x:Key="FolderViewFlyout">
             <MenuFlyoutItem
 			    x:Uid="FolderViewFlyout_EnterEditMode"
-			    Click="MenuFlyoutItem_Click"/>
+			    Click="MenuFlyoutItemEnterEidtMode_Click"/>
         </MenuFlyout>
     </Page.Resources>
 

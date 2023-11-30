@@ -4,6 +4,7 @@ using DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
+using DesktopWidgets3.Contracts.Services;
 
 namespace DesktopWidgets3.Views.Pages.Widget.Clock;
 
@@ -20,9 +21,9 @@ public sealed partial class ClockPage : Page
         InitializeComponent();
     }
 
-    private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+    private void MenuFlyoutItemEnterEidtMode_Click(object sender, RoutedEventArgs e)
     {
-
+        App.GetService<IWidgetManagerService>().EnterEditMode();
     }
 
     private void ContentArea_RightTapped(object sender, RightTappedRoutedEventArgs e)

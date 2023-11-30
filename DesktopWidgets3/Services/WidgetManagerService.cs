@@ -150,26 +150,6 @@ public class WidgetManagerService : IWidgetManagerService
         DragZoneHelper.SetDragZones(GetCurrentWidgetWindow(), 0);
     }
 
-    public async Task UpdateAllWidgets()
-    {
-        List<JsonWidgetItem> widgetList = new();
-        foreach (var widgetWindow in WidgetsList)
-        {
-            var position = widgetWindow.AppWindow.Position;
-            var size = new WidgetSize(widgetWindow.AppWindow.Size.Width, widgetWindow.AppWindow.Size.Height);
-            var widget = new JsonWidgetItem()
-            {
-                Type = widgetWindow.WidgetType.ToString(),
-                IndexTag = widgetWindow.IndexTag,
-                IsEnabled = false,
-                Position = position,
-                Size = size,
-            };
-            widgetList.Add(widget);
-        }
-        await _appSettingsService.UpdateWidgetsList(widgetList);
-    }
-
     public async Task CloseWidget(WidgetType widgetType, int indexTag)
     {
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
@@ -277,6 +257,40 @@ public class WidgetManagerService : IWidgetManagerService
         return dashboardItemList;
     }
 
+    public void EnterEditMode()
+    {
+        foreach (var widgetWindow in WidgetsList)
+        {
+            SetEditMode(widgetWindow, true);
+        }
+    }
+
+    public async void ExitEditModeAndSave()
+    {
+        foreach (var widgetWindow in WidgetsList)
+        {
+            SetEditMode(widgetWindow, false);
+        }
+
+        List<JsonWidgetItem> widgetList = new();
+        foreach (var widgetWindow in WidgetsList)
+        {
+            var position = widgetWindow.AppWindow.Position;
+            var size = new WidgetSize(widgetWindow.AppWindow.Size.Width, widgetWindow.AppWindow.Size.Height);
+            var widget = new JsonWidgetItem()
+            {
+                Type = widgetWindow.WidgetType.ToString(),
+                IndexTag = widgetWindow.IndexTag,
+                IsEnabled = false,
+                Position = position,
+                Size = size,
+            };
+            widgetList.Add(widget);
+        }
+
+        await _appSettingsService.UpdateWidgetsList(widgetList);
+    }
+
     private BlankWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
     {
         foreach (var widgetWindow in WidgetsList)
@@ -289,7 +303,7 @@ public class WidgetManagerService : IWidgetManagerService
         return null;
     }
 
-    private void SetEditMode(BlankWindow window, bool isEditMode)
+    private static void SetEditMode(BlankWindow window, bool isEditMode)
     {
         DragZoneHelper.SetDragZones(window, isEditMode ? 0 : 32);
         window.IsResizable = isEditMode;

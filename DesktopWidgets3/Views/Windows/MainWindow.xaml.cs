@@ -19,7 +19,7 @@ public sealed partial class MainWindow : WindowEx
     {
         InitializeComponent();
 
-        // TODO: You need to add Post-build event to make sure icon exists.
+        // TODO: You need to add Post-build event to make sure icon exists under unpackaged mode.
         // mkdir $(TargetDir)Assets
         // copy $(ProjectDir)Assets\WindowIcon.ico $(TargetDir)Assets\WindowIcon.ico
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));

@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using DesktopWidgets3.Contracts.Services;
 
 namespace DesktopWidgets3.Views.Pages.Widget.FolderView;
 
@@ -40,9 +41,9 @@ public sealed partial class FolderViewPage : Page
         }
     }
 
-    private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+    private void MenuFlyoutItemEnterEidtMode_Click(object sender, RoutedEventArgs e)
     {
-
+        App.GetService<IWidgetManagerService>().EnterEditMode();
     }
 
     private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)

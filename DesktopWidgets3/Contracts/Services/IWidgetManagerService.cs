@@ -13,8 +13,6 @@ public interface IWidgetManagerService
 
     void InitializeDragZone();
 
-    Task UpdateAllWidgets();
-
     Task CloseWidget(WidgetType widgetType, int indexTag);
 
     void CloseAllWidgets();
@@ -26,4 +24,8 @@ public interface IWidgetManagerService
     List<DashboardWidgetItem> GetAllWidgetItems();
 
     Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync();
+
+    void EnterEditMode();
+
+    void ExitEditModeAndSave();
 }
