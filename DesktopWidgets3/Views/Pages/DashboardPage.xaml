@@ -58,14 +58,15 @@
                                         FontWeight="SemiBold"
                                         Text="{x:Bind Label, Mode=OneWay}"
                                         TextTrimming="CharacterEllipsis" />
-                                    <ToggleSwitch
+                                    <Button
                                         Grid.Column="2"
-                                        Margin="0,-2,0,0"
+                                        Height="34"
+                                        Width="34"
                                         HorizontalAlignment="Right"
-                                        IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
-                                        OffContent=""
-                                        OnContent="" 
-                                        Style="{StaticResource RightAlignedCompactToggleSwitchStyle}" />
+                                        VerticalContentAlignment="Center"
+                                        HorizontalContentAlignment="Center">
+                                        <FontIcon FontSize="12" Glyph="&#xE710;" />
+                                    </Button>
                                 </Grid>
                             </Grid>
                         </Button>
