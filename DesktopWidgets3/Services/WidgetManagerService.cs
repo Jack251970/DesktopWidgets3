@@ -227,6 +227,17 @@ public class WidgetManagerService : IWidgetManagerService
         return currentIndexTag;
     }
 
+    public DashboardWidgetItem GetDashboardWidgetItem()
+    {
+        return new DashboardWidgetItem()
+        {
+            Type = currentWidgetType,
+            IndexTag = currentIndexTag,
+            Label = _widgetResourceService.GetWidgetLabel(currentWidgetType),
+            Icon = _widgetResourceService.GetWidgetIconSource(currentWidgetType),
+        };
+    }
+
     public BlankWindow GetWidgetWindow()
     {
         return GetWidgetWindow(currentWidgetType, currentIndexTag)!;

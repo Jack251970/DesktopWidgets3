@@ -53,14 +53,10 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     {
         await _widgetManagerService.ShowWidget(widgetType, null);
 
-        var indexTag = _widgetManagerService.GetIndexTag();
-        /*yourWidgetItems.Add(new DashboardWidgetItem
-        {
-            Type = widgetType,
-            IndexTag = indexTag,
-            IsEnabled = true,
-            EnabledChangedCallback = EnabledChangedOnUI
-        });*/
+        var widgetItem = _widgetManagerService.GetDashboardWidgetItem();
+        widgetItem.IsEnabled = true;
+        widgetItem.EnabledChangedCallback = EnabledChangedOnUI;
+        yourWidgetItems.Add(widgetItem);
 
         RefreshYourWidgets();
     }

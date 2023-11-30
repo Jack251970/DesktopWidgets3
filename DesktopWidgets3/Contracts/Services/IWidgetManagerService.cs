@@ -24,6 +24,8 @@ public interface IWidgetManagerService
 
     int GetIndexTag();
 
+    DashboardWidgetItem GetDashboardWidgetItem();
+
     BlankWindow GetWidgetWindow();
 
     List<DashboardWidgetItem> GetAllWidgetItems();
