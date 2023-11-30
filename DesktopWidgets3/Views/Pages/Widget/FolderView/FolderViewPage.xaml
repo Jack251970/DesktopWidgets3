@@ -29,7 +29,7 @@
 
         <Grid 
             x:Name="Toolbar"
-            IsRightTapEnabled="True"
+            Background="Transparent"
             RightTapped="Toolbar_RightTapped"
             ContextFlyout="{StaticResource FolderViewFlyout}">
             <Grid.ColumnDefinitions>

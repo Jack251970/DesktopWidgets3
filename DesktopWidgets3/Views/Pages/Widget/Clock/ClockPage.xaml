@@ -20,8 +20,9 @@
         </MenuFlyout>
     </Page.Resources>
 
-    <Grid 
-        x:Name="ContentArea" 
+    <Grid
+        x:Name="ContentArea"
+        Background="Transparent"
         RightTapped="ContentArea_RightTapped"
         ContextFlyout="{StaticResource FolderViewFlyout}">
         <TextBlock 
