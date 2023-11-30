@@ -1,6 +1,5 @@
 ﻿using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Windows;
-using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Contracts.Services;
 
@@ -12,7 +11,7 @@ public interface IWidgetManagerService
 
     Task ShowWidget(WidgetType widgetType, int? indexTag);
 
-    void AddCurrentTitleBar(UIElement titleBar);
+    void InitializeDragZone();
 
     Task UpdateAllWidgets();
 
@@ -20,13 +19,9 @@ public interface IWidgetManagerService
 
     void CloseAllWidgets();
 
-    WidgetType GetWidgetType();
-
-    int GetIndexTag();
+    BlankWindow GetCurrentWidgetWindow();
 
     DashboardWidgetItem GetDashboardWidgetItem();
-
-    BlankWindow GetWidgetWindow();
 
     List<DashboardWidgetItem> GetAllWidgetItems();
 

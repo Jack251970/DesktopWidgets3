@@ -8,11 +8,7 @@
 
     <Grid>
         <Grid x:Name="AppTitleBar"
-              Canvas.ZIndex="1"
-              IsHitTestVisible="True">
-        </Grid>
-        <Grid Canvas.ZIndex="0">
-            <Frame x:Name="NavigationFrame" />
-        </Grid>
+            VerticalAlignment="Top"/>
+        <Frame x:Name="NavigationFrame"/>
     </Grid>
 </Page>

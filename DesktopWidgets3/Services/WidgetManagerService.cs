@@ -1,7 +1,7 @@
 ﻿using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Windows;
-using Microsoft.UI.Xaml;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services;
@@ -26,7 +26,6 @@ public class WidgetManagerService : IWidgetManagerService
 
     private WidgetType currentWidgetType;
     private int currentIndexTag = -1;
-    private UIElement? currentTitleBar = null;
 
     public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
@@ -116,21 +115,24 @@ public class WidgetManagerService : IWidgetManagerService
         }
 
         // create widget window
-        var blankWindow = new BlankWindow(widgetType, currentIndexTag);
-        WidgetsList.Add(blankWindow);
-        _ = _activationService.ActivateWidgetWindowAsync(blankWindow);
-        blankWindow.InitializeTitleBar(currentTitleBar);
-        SetEditMode(blankWindow, false);
+        var widgetWindow = new BlankWindow(widgetType, currentIndexTag);
+        WidgetsList.Add(widgetWindow);
+        await _activationService.ActivateWidgetWindowAsync(widgetWindow);
+#if DBEUG
+        // wait for 1 second to avoid Access Violation under debug mode
+        await Task.Delay(1000);
+#endif
+        widgetWindow.IsResizable = false;
 
         // set window size and position
-        WindowExtensions.SetWindowSize(blankWindow, widget.Size.Width, widget.Size.Height);
+        WindowExtensions.SetWindowSize(widgetWindow, widget.Size.Width, widget.Size.Height);
         if (widget.Position.X != -1 && widget.Position.Y != -1)
         {
-            WindowExtensions.Move(blankWindow, widget.Position.X, widget.Position.Y);
+            WindowExtensions.Move(widgetWindow, widget.Position.X, widget.Position.Y);
         }
 
         // show window
-        blankWindow.Show();
+        widgetWindow.Show();
 
         // enable timer if needed
         if (TimerWidgets.Contains(widgetType))
@@ -139,9 +141,9 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public void AddCurrentTitleBar(UIElement titleBar)
+    public void InitializeDragZone()
     {
-        currentTitleBar = titleBar;
+        DragZoneHelper.SetDragZones(GetCurrentWidgetWindow(), 0);
     }
 
     public async Task UpdateAllWidgets()
@@ -217,14 +219,9 @@ public class WidgetManagerService : IWidgetManagerService
         WidgetsList.Clear();
     }
 
-    public WidgetType GetWidgetType()
+    public BlankWindow GetCurrentWidgetWindow()
     {
-        return currentWidgetType;
-    }
-
-    public int GetIndexTag()
-    {
-        return currentIndexTag;
+        return WidgetsList.Last();
     }
 
     public DashboardWidgetItem GetDashboardWidgetItem()
@@ -236,11 +233,6 @@ public class WidgetManagerService : IWidgetManagerService
             Label = _widgetResourceService.GetWidgetLabel(currentWidgetType),
             Icon = _widgetResourceService.GetWidgetIconSource(currentWidgetType),
         };
-    }
-
-    public BlankWindow GetWidgetWindow()
-    {
-        return GetWidgetWindow(currentWidgetType, currentIndexTag)!;
     }
 
     public List<DashboardWidgetItem> GetAllWidgetItems()
@@ -295,6 +287,7 @@ public class WidgetManagerService : IWidgetManagerService
 
     private void SetEditMode(BlankWindow window, bool isEditMode)
     {
+        DragZoneHelper.SetDragZones(window, isEditMode ? 0 : 32);
         window.IsResizable = isEditMode;
     }
 }

@@ -4,7 +4,7 @@ using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml;
-using DesktopWidgets3.Models.Widget;
+using DesktopWidgets3.Views.Windows;
 
 namespace DesktopWidgets3.Views.Pages.Widget;
 
@@ -15,10 +15,12 @@ public sealed partial class FrameShellPage : Page
         get;
     }
 
-    public WidgetType WidgetType
+    public BlankWindow WidgetWindow
     {
         get;
     }
+
+    private readonly IWidgetManagerService _widgetManagerService;
 
     public FrameShellPage(FrameShellViewModel viewModel, IWidgetManagerService widgetManagerService)
     {
@@ -26,21 +28,24 @@ public sealed partial class FrameShellPage : Page
         InitializeComponent();
 
         ViewModel.WidgetNavigationService.Frame = NavigationFrame;
+        WidgetWindow = widgetManagerService.GetCurrentWidgetWindow();
 
         // A custom title bar is required for full window theme and Mica support.
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
-        var window = widgetManagerService.GetWidgetWindow();
-        window.ExtendsContentIntoTitleBar = true;
-        window.SetTitleBar(AppTitleBar);
+        WidgetWindow.ExtendsContentIntoTitleBar = true;
+        WidgetWindow.SetTitleBar(AppTitleBar);
+        WidgetWindow.InitializeTitleBar(AppTitleBar);
 
-        WidgetType = widgetManagerService.GetWidgetType();
-        widgetManagerService.AddCurrentTitleBar(AppTitleBar);
+        // Load registered services
+        _widgetManagerService = widgetManagerService;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
 
-        ViewModel.WidgetNavigationService.NavigateTo(WidgetType);
+        ViewModel.WidgetNavigationService.NavigateTo(WidgetWindow.WidgetType);
+
+        _widgetManagerService.InitializeDragZone();
     }
 }
