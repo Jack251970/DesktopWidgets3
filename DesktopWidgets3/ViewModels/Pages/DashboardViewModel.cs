@@ -8,14 +8,14 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 {
+    public ObservableCollection<DashboardWidgetItem> AllWidgets { get; set; } = new();
     public ObservableCollection<DashboardWidgetItem> EnabledWidgets { get; set; } = new();
-
     public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = new();
 
     private readonly IAppSettingsService _appSettingsService;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    private readonly List<DashboardWidgetItem> allWidgetItems = new();
+    private List<DashboardWidgetItem> yourWidgetItems = new();
 
     private bool _isInitialized;
 
@@ -23,29 +23,22 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     {
         _appSettingsService = appSettingsService;
         _widgetManagerService = widgetManagerService;
+
+        LoadAllWidgets();
     }
 
     public async void OnNavigatedTo(object parameter)
     {
         if (!_isInitialized)
         {
-            var items = await _widgetManagerService.GetDashboardWidgetItemsAsync();
+            yourWidgetItems = await _widgetManagerService.GetYourWidgetItemsAsync();
 
-            foreach (var item in items)
+            foreach (var item in yourWidgetItems)
             {
-                allWidgetItems.Add(new DashboardWidgetItem
-                {
-                    Type = item.Type,
-                    Label = item.Label,
-                    Description = item.Description,
-                    Icon = item.Icon,
-                    IsEnabled = item.IsEnabled,
-                    EnabledChangedCallback = EnabledChangedOnUI
-                });
+                item.EnabledChangedCallback = EnabledChangedOnUI;
             }
 
-            EnabledWidgets = new ObservableCollection<DashboardWidgetItem>(allWidgetItems.Where(x => x.IsEnabled));
-            DisabledWidgets = new ObservableCollection<DashboardWidgetItem>(allWidgetItems.Where(x => !x.IsEnabled));
+            RefreshYourWidgets();
 
             _isInitialized = true;
         }
@@ -58,23 +51,38 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 
     private void EnabledChangedOnUI(DashboardWidgetItem dashboardListItem)
     {
-        // Update widget
         if (dashboardListItem.IsEnabled)
         {
             _widgetManagerService.ShowWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
-            allWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = true;
+            yourWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = true;
         }
         else
         {
             _widgetManagerService.CloseWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
-            allWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = false;
+            yourWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = false;
         }
 
-        // Reload lists
+        RefreshYourWidgets();
+    }
+
+    private void LoadAllWidgets()
+    {
+        var allWidgets = _widgetManagerService.GetAllWidgetItems();
+
+        AllWidgets.Clear();
+
+        foreach (var item in allWidgets)
+        {
+            AllWidgets.Add(item);
+        }
+    }
+
+    private void RefreshYourWidgets()
+    {
         EnabledWidgets.Clear();
         DisabledWidgets.Clear();
 
-        foreach (var item in allWidgetItems)
+        foreach (var item in yourWidgetItems)
         {
             if (item.IsEnabled)
             {

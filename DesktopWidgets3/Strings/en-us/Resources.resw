@@ -217,4 +217,10 @@
   <data name="WidgetNetworkLabel" xml:space="preserve">
     <value>Network</value>
   </data>
+  <data name="Dashboard_AllWidgets.Text" xml:space="preserve">
+    <value>All widgets</value>
+  </data>
+  <data name="Dashboard_YourWidgets.Text" xml:space="preserve">
+    <value>Your widgets</value>
+  </data>
 </root>

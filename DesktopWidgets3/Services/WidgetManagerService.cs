@@ -213,8 +213,8 @@ public class WidgetManagerService : IWidgetManagerService
         {
             SetEditMode(widgetWindow, false);
             widgetWindow.Close();
-            WidgetsList.Clear();
         }
+        WidgetsList.Clear();
     }
 
     public WidgetType GetWidgetType()
@@ -227,7 +227,24 @@ public class WidgetManagerService : IWidgetManagerService
         return GetWidgetWindow(currentWidgetType, currentIndexTag)!;
     }
 
-    public async Task<List<DashboardWidgetItem>> GetDashboardWidgetItemsAsync()
+    public List<DashboardWidgetItem> GetAllWidgetItems()
+    {
+        List<DashboardWidgetItem> dashboardItemList = new();
+
+        foreach (WidgetType widgetType in Enum.GetValues(typeof(WidgetType)))
+        {
+            dashboardItemList.Add(new DashboardWidgetItem()
+            {
+                Type = widgetType,
+                Label = _widgetResourceService.GetWidgetLabel(widgetType),
+                Icon = _widgetResourceService.GetWidgetIconSource(widgetType),
+            });
+        }
+
+        return dashboardItemList;
+    }
+
+    public async Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync()
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
 

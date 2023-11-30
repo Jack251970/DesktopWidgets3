@@ -12,11 +12,76 @@
     mc:Ignorable="d">
 
     <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
-        <StackPanel Padding="0,0,16,16" Orientation="Vertical">
+        <StackPanel Padding="0,0,0,16" Orientation="Vertical">
             <TextBlock
-                x:Uid="Dashboard_EnabledWidgets"
+                x:Uid="Dashboard_AllWidgets"
                 Margin="0,0,0,12"
                 Style="{StaticResource PageTitleStyle}" />
+
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.AllWidgets, Mode=OneWay}">
+                <ItemsRepeater.Layout>
+                    <controls:StaggeredLayout
+                        ColumnSpacing="8"
+                        DesiredColumnWidth="378"
+                        RowSpacing="8" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="models:DashboardWidgetItem">
+                        <Button
+                            Padding="0"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Tag="{x:Bind Type, Mode=OneWay}">
+                            <Grid
+                                Padding="16,12"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="{StaticResource OverlayCornerRadius}"
+                                RowSpacing="12">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Width="20">
+                                        <Image.Source>
+                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneWay}" />
+                                        </Image.Source>
+                                    </Image>
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        FontWeight="SemiBold"
+                                        Text="{x:Bind Label, Mode=OneWay}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <ToggleSwitch
+                                        Grid.Column="2"
+                                        Margin="0,-2,0,0"
+                                        HorizontalAlignment="Right"
+                                        IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                                        OffContent=""
+                                        OnContent="" 
+                                        Style="{StaticResource RightAlignedCompactToggleSwitchStyle}" />
+                                </Grid>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+
+            <TextBlock
+                x:Uid="Dashboard_YourWidgets"
+                Margin="0,12,0,6"
+                Style="{StaticResource PageTitleStyle}" />
+
+            <TextBlock
+                x:Uid="Dashboard_EnabledWidgets"
+                Margin="0,6,0,6"
+                Style="{StaticResource BodyTextStyle}" />
             
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.EnabledWidgets, Mode=OneWay}">
                 <ItemsRepeater.Layout>
@@ -75,8 +140,8 @@
 
             <TextBlock
                 x:Uid="Dashboard_DisabledWidgets"
-                Margin="0,24,0,12"
-                Style="{StaticResource PageTitleStyle}" />
+                Margin="0,12,0,6"
+                Style="{StaticResource BodyTextStyle}" />
 
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.DisabledWidgets, Mode=OneWay}">
                 <ItemsRepeater.Layout>

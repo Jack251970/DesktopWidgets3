@@ -24,5 +24,7 @@ public interface IWidgetManagerService
 
     BlankWindow GetWidgetWindow();
 
-    Task<List<DashboardWidgetItem>> GetDashboardWidgetItemsAsync();
+    List<DashboardWidgetItem> GetAllWidgetItems();
+
+    Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync();
 }
