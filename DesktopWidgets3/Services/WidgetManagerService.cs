@@ -102,6 +102,11 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
+    public void AddTitleBar(UIElement titleBar)
+    {
+        TitleBarDict.Add(currentWidgetType, titleBar);
+    }
+
     public async Task UpdateWidgetPosition(WidgetType widgetType, PointInt32 position)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
@@ -136,7 +141,7 @@ public class WidgetManagerService : IWidgetManagerService
                 await _appSettingsService.SaveWidgetsList(widget);
             }
 
-            widgetWindow.SetEditMode(false);
+            SetEditMode(widgetWindow, false);
             widgetWindow.Close();
             WidgetsDict.Remove(widgetType);
         }
@@ -150,7 +155,7 @@ public class WidgetManagerService : IWidgetManagerService
     {
         foreach (var widgetWindow in WidgetsDict.Values)
         {
-            widgetWindow.SetEditMode(false);
+            SetEditMode(widgetWindow, false);
             widgetWindow.Close();
             WidgetsDict.Clear();
         }
@@ -204,5 +209,10 @@ public class WidgetManagerService : IWidgetManagerService
         }
 
         return dashboardItemList;
+    }
+
+    private void SetEditMode(BlankWindow window, bool isEditMode)
+    {
+        window.IsResizable = isEditMode;
     }
 }

@@ -34,6 +34,7 @@ public sealed partial class FrameShellPage : Page
         window.SetTitleBar(AppTitleBar);
 
         WidgetType = widgetManagerService.GetWidgetType();
+        widgetManagerService.AddTitleBar(AppTitleBar);
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

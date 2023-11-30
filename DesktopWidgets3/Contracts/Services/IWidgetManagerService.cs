@@ -1,5 +1,6 @@
 ﻿using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Windows;
+using Microsoft.UI.Xaml;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Contracts.Services;
@@ -9,6 +10,8 @@ public interface IWidgetManagerService
     Task InitializeWidgets();
 
     Task ShowWidget(WidgetType widgetType);
+
+    void AddTitleBar(UIElement titleBar);
 
     Task UpdateWidgetPosition(WidgetType widgetType, PointInt32 position);
 

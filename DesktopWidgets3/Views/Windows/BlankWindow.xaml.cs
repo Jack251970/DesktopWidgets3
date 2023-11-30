@@ -2,11 +2,22 @@
 using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
 using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class BlankWindow : WindowEx
 {
+    public WidgetType WidgetType
+    {
+        get;
+    }
+
+    public int IndexTag
+    {
+        get;
+    }
+
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
@@ -44,12 +55,6 @@ public sealed partial class BlankWindow : WindowEx
     public void Initialize()
     {
         IsTitleBarVisible = IsMaximizable = IsMaximizable = false;
-        SetEditMode(false);
-    }
-
-    public void SetEditMode(bool isEditMode)
-    {
-        IsResizable = isEditMode;
     }
 
     /*protected override void OnPositionChanged(PointInt32 position)
