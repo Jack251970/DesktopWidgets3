@@ -1,23 +1,22 @@
 ﻿using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Windows;
 using Microsoft.UI.Xaml;
-using Windows.Graphics;
 
 namespace DesktopWidgets3.Contracts.Services;
 
 public interface IWidgetManagerService
 {
+    Task SetThemeAsync();
+
     Task InitializeWidgets();
 
-    Task ShowWidget(WidgetType widgetType);
+    Task ShowWidget(WidgetType widgetType, int? indexTag);
 
-    void AddTitleBar(UIElement titleBar);
+    void AddCurrentTitleBar(UIElement titleBar);
 
-    Task UpdateWidgetPosition(WidgetType widgetType, PointInt32 position);
+    Task UpdateAllWidgets();
 
-    Task UpdateWidgetSize(WidgetType widgetType, WidgetSize size);
-
-    Task CloseWidget(WidgetType widgetType);
+    Task CloseWidget(WidgetType widgetType, int indexTag);
 
     void CloseAllWidgets();
 
@@ -25,9 +24,5 @@ public interface IWidgetManagerService
 
     BlankWindow GetWidgetWindow();
 
-    BlankWindow? GetWidgetWindow(WidgetType widgetType);
-
-    Task SetThemeAsync();
-
-    List<DashboardWidgetItem> GetAllWidgets(Action<DashboardWidgetItem>? EnabledChangedCallback);
+    Task<List<DashboardWidgetItem>> GetDashboardWidgetItemsAsync();
 }

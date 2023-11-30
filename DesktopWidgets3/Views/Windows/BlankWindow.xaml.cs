@@ -3,20 +3,17 @@ using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class BlankWindow : WindowEx
 {
-    public WidgetType WidgetType
-    {
-        get;
-    }
+    public WidgetType WidgetType { get; }
 
-    public int IndexTag
-    {
-        get;
-    }
+    public int IndexTag { get; }
+
+    public UIElement? TitleBar { get; set; }
 
     private readonly DispatcherQueue dispatcherQueue;
 
@@ -25,9 +22,12 @@ public sealed partial class BlankWindow : WindowEx
     private readonly IWidgetManagerService _widgetManagerService;
     private readonly IWindowSinkService _windowSinkService;
 
-    public BlankWindow()
+    public BlankWindow(WidgetType widgetType, int indexTag)
     {
         InitializeComponent();
+
+        WidgetType = widgetType;
+        IndexTag = indexTag;
 
         Content = null;
         Title = string.Empty;
@@ -52,26 +52,9 @@ public sealed partial class BlankWindow : WindowEx
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
-    public void Initialize()
+    public void InitializeTitleBar(UIElement? titleBar)
     {
+        TitleBar = titleBar;
         IsTitleBarVisible = IsMaximizable = IsMaximizable = false;
     }
-
-    /*protected override void OnPositionChanged(PointInt32 position)
-    {
-        if (_isEditMode)
-        {
-            _widgetManagerService.UpdateWidgetPosition(_widgetType, position);
-        }
-        base.OnPositionChanged(position);
-    }
-
-    protected override bool OnSizeChanged(Size newSize)
-    {
-        if (_isEditMode)
-        {
-            _widgetManagerService.UpdateWidgetSize(_widgetType, newSize);
-        }
-        return base.OnSizeChanged(newSize);
-    }*/
 }

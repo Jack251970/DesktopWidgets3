@@ -13,5 +13,7 @@ public interface IAppSettingsService
 
     Task<List<JsonWidgetItem>> GetWidgetsList();
 
-    Task SaveWidgetsList(JsonWidgetItem item);
+    Task UpdateWidgetsList(JsonWidgetItem item);
+
+    Task UpdateWidgetsList(List<JsonWidgetItem> widgetList);
 }

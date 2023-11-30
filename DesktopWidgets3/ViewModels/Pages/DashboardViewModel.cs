@@ -15,22 +15,40 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     private readonly IAppSettingsService _appSettingsService;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    private readonly List<DashboardWidgetItem> allWidgetItems;
+    private readonly List<DashboardWidgetItem> allWidgetItems = new();
+
+    private bool _isInitialized;
 
     public DashboardViewModel(IAppSettingsService appSettingsService, IWidgetManagerService widgetManagerService)
     {
         _appSettingsService = appSettingsService;
         _widgetManagerService = widgetManagerService;
-
-        allWidgetItems = _widgetManagerService.GetAllWidgets(EnabledChangedOnUI);
-
-        EnabledWidgets = new ObservableCollection<DashboardWidgetItem>(allWidgetItems.Where(x => x.IsEnabled));
-        DisabledWidgets = new ObservableCollection<DashboardWidgetItem>(allWidgetItems.Where(x => !x.IsEnabled));
     }
 
-    public void OnNavigatedTo(object parameter)
+    public async void OnNavigatedTo(object parameter)
     {
+        if (!_isInitialized)
+        {
+            var items = await _widgetManagerService.GetDashboardWidgetItemsAsync();
 
+            foreach (var item in items)
+            {
+                allWidgetItems.Add(new DashboardWidgetItem
+                {
+                    Type = item.Type,
+                    Label = item.Label,
+                    Description = item.Description,
+                    Icon = item.Icon,
+                    IsEnabled = item.IsEnabled,
+                    EnabledChangedCallback = EnabledChangedOnUI
+                });
+            }
+
+            EnabledWidgets = new ObservableCollection<DashboardWidgetItem>(allWidgetItems.Where(x => x.IsEnabled));
+            DisabledWidgets = new ObservableCollection<DashboardWidgetItem>(allWidgetItems.Where(x => !x.IsEnabled));
+
+            _isInitialized = true;
+        }
     }
 
     public void OnNavigatedFrom()
@@ -43,12 +61,12 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         // Update widget
         if (dashboardListItem.IsEnabled)
         {
-            _widgetManagerService.ShowWidget(dashboardListItem.Type);
+            _widgetManagerService.ShowWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
             allWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = true;
         }
         else
         {
-            _widgetManagerService.CloseWidget(dashboardListItem.Type);
+            _widgetManagerService.CloseWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
             allWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = false;
         }
 

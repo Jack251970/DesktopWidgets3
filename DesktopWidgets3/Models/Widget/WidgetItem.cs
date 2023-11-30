@@ -20,9 +20,7 @@ public class BaseWidgetItem
 
     public WidgetType Type { get; set; }
 
-    public PointInt32 Position { get; set; }
-
-    public WidgetSize Size { get; set; }
+    public int IndexTag { get; set; }
 }
 
 public class JsonWidgetItem : BaseWidgetItem
@@ -32,6 +30,10 @@ public class JsonWidgetItem : BaseWidgetItem
         get => base.Type.ToString();
         set => base.Type = (WidgetType)Enum.Parse(typeof(WidgetType), value);
     }
+
+    public PointInt32 Position { get; set; }
+
+    public WidgetSize Size { get; set; }
 }
 
 public class DashboardWidgetItem : BaseWidgetItem
@@ -66,8 +68,6 @@ public struct WidgetSize
     private float _width;
 
     private float _height;
-
-    private static readonly WidgetSize s_empty = CreateEmptySize();
 
     public double Width
     {

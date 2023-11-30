@@ -8,8 +8,7 @@ namespace DesktopWidgets3.Services;
 
 public class WidgetManagerService : IWidgetManagerService
 {
-    private readonly Dictionary<WidgetType, BlankWindow> WidgetsDict = new();
-    private readonly Dictionary<WidgetType, UIElement> TitleBarDict = new();
+    private readonly List<BlankWindow> WidgetsList = new();
 
     private readonly List<WidgetType> TimerWidgets = new()
     {
@@ -26,6 +25,8 @@ public class WidgetManagerService : IWidgetManagerService
     private readonly IWidgetResourceService _widgetResourceService;
 
     private WidgetType currentWidgetType;
+    private int currentIndexTag = -1;
+    private UIElement? currentTitleBar = null;
 
     public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
@@ -34,6 +35,14 @@ public class WidgetManagerService : IWidgetManagerService
         _themeSelectorService = themeSelectorService;
         _timersService = timersService;
         _widgetResourceService = widgetResourceService;
+    }
+
+    public async Task SetThemeAsync()
+    {
+        foreach (var widgetWindow in WidgetsList)
+        {
+            await _themeSelectorService.SetRequestedThemeAsync(widgetWindow);
+        }
     }
 
     public async Task InitializeWidgets()
@@ -45,7 +54,7 @@ public class WidgetManagerService : IWidgetManagerService
             if (widget.IsEnabled)
             {
                 var widgetType = (WidgetType)Enum.Parse(typeof(WidgetType), widget.Type);
-                await ShowWidget(widgetType);
+                await ShowWidget(widgetType, widget.IndexTag);
                 if (TimerWidgets.Contains(widgetType))
                 {
                     enableTimer = true;
@@ -58,94 +67,141 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async Task ShowWidget(WidgetType widgetType)
+    public async Task ShowWidget(WidgetType widgetType, int? indexTag)
     {
-        if (!WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
+        var widgetList = await _appSettingsService.GetWidgetsList();
+
+        // find index tag
+        var sameTypeWidgets = widgetList.Where(x => x.Type == widgetType.ToString());
+        JsonWidgetItem? widget = null;
+        if (indexTag == null)
         {
-            var widgetList = await _appSettingsService.GetWidgetsList();
-            var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
-            if (widget == null)
+            if (sameTypeWidgets.Any())
             {
-                widget = new JsonWidgetItem()
-                {
-                    Type = widgetType.ToString(),
-                    IsEnabled = true,
-                    Position = new PointInt32(-1, -1),
-                    Size = _widgetResourceService.GetDefaultSize(widgetType),
-                };
-                await _appSettingsService.SaveWidgetsList(widget);
+                indexTag = sameTypeWidgets.Max(x => x.IndexTag) + 1;
             }
             else
             {
-                widget.IsEnabled = true;
-                await _appSettingsService.SaveWidgetsList(widget);
+                indexTag = 0;
             }
-
-            currentWidgetType = widgetType;
-            var blankWindow = new BlankWindow();
-            WidgetsDict.Add(widgetType, blankWindow);
-
-            _ = _activationService.ActivateWidgetWindowAsync(blankWindow);
-            blankWindow.Initialize();
-
-            WindowExtensions.SetWindowSize(blankWindow, widget.Size.Width, widget.Size.Height);
-            if (widget.Position.X != -1 && widget.Position.Y != -1)
-            {
-                WindowExtensions.Move(blankWindow, widget.Position.X, widget.Position.Y);
-            }
-
-            blankWindow.Show();
         }
+        else
+        {
+            widget = sameTypeWidgets.FirstOrDefault(x => x.IndexTag == indexTag);
+        }
+
+        currentWidgetType = widgetType;
+        currentIndexTag = (int)indexTag;
+
+        // save widget item
+        if (widget == null)
+        {
+            widget = new JsonWidgetItem()
+            {
+                Type = widgetType.ToString(),
+                IndexTag = currentIndexTag,
+                IsEnabled = true,
+                Position = new PointInt32(-1, -1),
+                Size = _widgetResourceService.GetDefaultSize(widgetType),
+            };
+            await _appSettingsService.UpdateWidgetsList(widget);
+        }
+        else
+        {
+            if (!widget.IsEnabled)
+            {
+                widget.IsEnabled = true;
+                await _appSettingsService.UpdateWidgetsList(widget);
+            }
+        }
+
+        // create widget window
+        var blankWindow = new BlankWindow(widgetType, currentIndexTag);
+        WidgetsList.Add(blankWindow);
+        _ = _activationService.ActivateWidgetWindowAsync(blankWindow);
+        blankWindow.InitializeTitleBar(currentTitleBar);
+        SetEditMode(blankWindow, false);
+
+        // set window size and position
+        WindowExtensions.SetWindowSize(blankWindow, widget.Size.Width, widget.Size.Height);
+        if (widget.Position.X != -1 && widget.Position.Y != -1)
+        {
+            WindowExtensions.Move(blankWindow, widget.Position.X, widget.Position.Y);
+        }
+
+        // show window
+        blankWindow.Show();
+
+        // enable timer if needed
         if (TimerWidgets.Contains(widgetType))
         {
             _timersService.StartUpdateTimeTimer();
         }
     }
 
-    public void AddTitleBar(UIElement titleBar)
+    public void AddCurrentTitleBar(UIElement titleBar)
     {
-        TitleBarDict.Add(currentWidgetType, titleBar);
+        currentTitleBar = titleBar;
     }
 
-    public async Task UpdateWidgetPosition(WidgetType widgetType, PointInt32 position)
+    public async Task UpdateAllWidgets()
     {
-        var widgetList = await _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
-        if (widget != null)
+        List<JsonWidgetItem> widgetList = new();
+        foreach (var widgetWindow in WidgetsList)
         {
-            widget.Position = position;
-            await _appSettingsService.SaveWidgetsList(widget);
+            var position = widgetWindow.AppWindow.Position;
+            var size = new WidgetSize(widgetWindow.AppWindow.Size.Width, widgetWindow.AppWindow.Size.Height);
+            var widget = new JsonWidgetItem()
+            {
+                Type = widgetWindow.WidgetType.ToString(),
+                IndexTag = widgetWindow.IndexTag,
+                IsEnabled = false,
+                Position = position,
+                Size = size,
+            };
+            widgetList.Add(widget);
         }
+        await _appSettingsService.UpdateWidgetsList(widgetList);
     }
 
-    public async Task UpdateWidgetSize(WidgetType widgetType, WidgetSize size)
+    public async Task CloseWidget(WidgetType widgetType, int indexTag)
     {
-        var widgetList = await _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
-        if (widget != null)
-        {
-            widget.Size = size;
-            await _appSettingsService.SaveWidgetsList(widget);
-        }
-    }
-
-    public async Task CloseWidget(WidgetType widgetType)
-    {
-        if (WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
+        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
+        if (widgetWindow != null)
         {
             var widgetList = await _appSettingsService.GetWidgetsList();
-            var widget = widgetList.FirstOrDefault(x => (WidgetType)Enum.Parse(typeof(WidgetType), x.Type) == widgetType);
+            var widget = widgetList.FirstOrDefault(x => x.Type == widgetType.ToString() && x.IndexTag == indexTag);
+
             if (widget != null)
             {
-                widget.IsEnabled = false;
-                await _appSettingsService.SaveWidgetsList(widget);
+                if (widget.IsEnabled)
+                {
+                    widget.IsEnabled = false;
+                    await _appSettingsService.UpdateWidgetsList(widget);
+                }
+            }
+            else
+            {
+                var position = widgetWindow.AppWindow.Position;
+                var size = new WidgetSize(widgetWindow.AppWindow.Size.Width, widgetWindow.AppWindow.Size.Height);
+                widget = new JsonWidgetItem()
+                {
+                    Type = widgetType.ToString(),
+                    IndexTag = indexTag,
+                    IsEnabled = false,
+                    Position = position,
+                    Size = size,
+                };
+                await _appSettingsService.UpdateWidgetsList(widget);
             }
 
             SetEditMode(widgetWindow, false);
             widgetWindow.Close();
-            WidgetsDict.Remove(widgetType);
+            WidgetsList.Remove(widgetWindow);
         }
-        if (!WidgetsDict.Keys.Any(TimerWidgets.Contains))
+
+        // disable timer if needed
+        if (!WidgetsList.Any(x => TimerWidgets.Contains(x.WidgetType)))
         {
             _timersService.StopUpdateTimeTimer();
         }
@@ -153,11 +209,11 @@ public class WidgetManagerService : IWidgetManagerService
 
     public void CloseAllWidgets()
     {
-        foreach (var widgetWindow in WidgetsDict.Values)
+        foreach (var widgetWindow in WidgetsList)
         {
             SetEditMode(widgetWindow, false);
             widgetWindow.Close();
-            WidgetsDict.Clear();
+            WidgetsList.Clear();
         }
     }
 
@@ -168,47 +224,40 @@ public class WidgetManagerService : IWidgetManagerService
 
     public BlankWindow GetWidgetWindow()
     {
-        if (WidgetsDict.TryGetValue(currentWidgetType, out var widgetWindow))
-        {
-            return widgetWindow;
-        }
-        return null!;
+        return GetWidgetWindow(currentWidgetType, currentIndexTag)!;
     }
 
-    public BlankWindow? GetWidgetWindow(WidgetType widgetType)
+    public async Task<List<DashboardWidgetItem>> GetDashboardWidgetItemsAsync()
     {
-        if (WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
-        {
-            return widgetWindow;
-        }
-        return null;
-    }
+        var widgetList = await _appSettingsService.GetWidgetsList();
 
-    public async Task SetThemeAsync()
-    {
-        foreach (var widgetWindow in WidgetsDict.Values.Where(x => x != null)!)
-        {
-            await _themeSelectorService.SetRequestedThemeAsync(widgetWindow);
-        }
-    }
-
-    public List<DashboardWidgetItem> GetAllWidgets(Action<DashboardWidgetItem>? EnabledChangedCallback)
-    {
         List<DashboardWidgetItem> dashboardItemList = new();
-
-        foreach (WidgetType widgetType in Enum.GetValues(typeof(WidgetType)))
+        foreach (var widget in widgetList)
         {
+            var widgetType = (WidgetType)Enum.Parse(typeof(WidgetType), widget.Type);
             dashboardItemList.Add(new DashboardWidgetItem()
             {
                 Type = widgetType,
+                IndexTag = widget.IndexTag,
                 Label = _widgetResourceService.GetWidgetLabel(widgetType),
-                IsEnabled = WidgetsDict.ContainsKey(widgetType),
+                IsEnabled = widget.IsEnabled,
                 Icon = _widgetResourceService.GetWidgetIconSource(widgetType),
-                EnabledChangedCallback = EnabledChangedCallback,
             });
         }
 
         return dashboardItemList;
+    }
+
+    private BlankWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
+    {
+        foreach (var widgetWindow in WidgetsList)
+        {
+            if (widgetWindow.WidgetType == widgetType && widgetWindow.IndexTag == indexTag)
+            {
+                return widgetWindow;
+            }
+        }
+        return null;
     }
 
     private void SetEditMode(BlankWindow window, bool isEditMode)

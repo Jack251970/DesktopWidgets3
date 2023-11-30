@@ -66,7 +66,7 @@ public class AppSettingsService : IAppSettingsService
         return WidgetList;
     }
 
-    public async Task SaveWidgetsList(JsonWidgetItem widgetItem)
+    public async Task UpdateWidgetsList(JsonWidgetItem widgetItem)
     {
         var index = WidgetList.FindIndex(x => x.Type == widgetItem.Type);
         if (index == -1)
@@ -76,6 +76,20 @@ public class AppSettingsService : IAppSettingsService
         else
         {
             WidgetList[index] = widgetItem;
+        }
+
+        await _localSettingsService.SaveWidgetListAsync(WidgetList);
+    }
+
+    public async Task UpdateWidgetsList(List<JsonWidgetItem> widgetList)
+    {
+        foreach (var widget in widgetList)
+        {
+            var index = WidgetList.FindIndex(x => x.Type == widget.Type && x.IndexTag == widget.IndexTag);
+            if (index != -1)
+            {
+                WidgetList[index] = widget;
+            }
         }
 
         await _localSettingsService.SaveWidgetListAsync(WidgetList);
