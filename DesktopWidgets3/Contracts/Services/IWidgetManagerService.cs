@@ -1,4 +1,5 @@
 ﻿using DesktopWidgets3.Models.Widget;
+using DesktopWidgets3.Views.Windows;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Contracts.Services;
@@ -16,6 +17,12 @@ public interface IWidgetManagerService
     Task CloseWidget(WidgetType widgetType);
 
     void CloseAllWidgets();
+
+    WidgetType GetWidgetType();
+
+    BlankWindow GetWidgetWindow();
+
+    BlankWindow? GetWidgetWindow(WidgetType widgetType);
 
     Task SetThemeAsync();
 

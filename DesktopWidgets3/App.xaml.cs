@@ -18,6 +18,8 @@ using DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 using DesktopWidgets3.Views.Pages.Widget.Clock;
 using DesktopWidgets3.Views.Pages.Widget.FolderView;
 using DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
+using DesktopWidgets3.Views.Pages.Widget;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 
 namespace DesktopWidgets3;
 
@@ -145,6 +147,8 @@ public partial class App : Application
             services.AddTransient<DashboardPage>();
 
             // Widgets Window Pages
+            services.AddTransient<FrameShellPage>();
+            services.AddTransient<FrameShellViewModel>();
             services.AddTransient<ClockViewModel>();
             services.AddTransient<ClockPage>();
             services.AddTransient<FolderViewViewModel>();

@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Activation;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.Pages;
+using DesktopWidgets3.Views.Pages.Widget;
 
 namespace DesktopWidgets3.Services;
 
@@ -51,7 +52,8 @@ public class ActivationService : IActivationService
         // Set the Window Content.
         if (window.Content == null)
         {
-            window.Content = new Frame();
+            _shell = App.GetService<FrameShellPage>();
+            window.Content = _shell ?? new Frame();
         }
 
         // Activate the Window.

@@ -1,7 +1,7 @@
 ﻿using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Windows;
-using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services;
@@ -9,6 +9,7 @@ namespace DesktopWidgets3.Services;
 public class WidgetManagerService : IWidgetManagerService
 {
     private readonly Dictionary<WidgetType, BlankWindow> WidgetsDict = new();
+    private readonly Dictionary<WidgetType, UIElement> TitleBarDict = new();
 
     private readonly List<WidgetType> TimerWidgets = new()
     {
@@ -23,6 +24,8 @@ public class WidgetManagerService : IWidgetManagerService
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ITimersService _timersService;
     private readonly IWidgetResourceService _widgetResourceService;
+
+    private WidgetType currentWidgetType;
 
     public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
@@ -78,12 +81,12 @@ public class WidgetManagerService : IWidgetManagerService
                 await _appSettingsService.SaveWidgetsList(widget);
             }
 
-            var blankWindow = new BlankWindow(widgetType);
+            currentWidgetType = widgetType;
+            var blankWindow = new BlankWindow();
             WidgetsDict.Add(widgetType, blankWindow);
 
             _ = _activationService.ActivateWidgetWindowAsync(blankWindow);
-            var frame = blankWindow.Content as Frame;
-            blankWindow.InitializePage(frame);
+            blankWindow.Initialize();
 
             WindowExtensions.SetWindowSize(blankWindow, widget.Size.Width, widget.Size.Height);
             if (widget.Position.X != -1 && widget.Position.Y != -1)
@@ -153,9 +156,27 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public IEnumerable<BlankWindow> GetWidgets()
+    public WidgetType GetWidgetType()
     {
-        return WidgetsDict.Values.Where(x => x != null)!;
+        return currentWidgetType;
+    }
+
+    public BlankWindow GetWidgetWindow()
+    {
+        if (WidgetsDict.TryGetValue(currentWidgetType, out var widgetWindow))
+        {
+            return widgetWindow;
+        }
+        return null!;
+    }
+
+    public BlankWindow? GetWidgetWindow(WidgetType widgetType)
+    {
+        if (WidgetsDict.TryGetValue(widgetType, out var widgetWindow))
+        {
+            return widgetWindow;
+        }
+        return null;
     }
 
     public async Task SetThemeAsync()

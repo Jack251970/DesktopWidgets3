@@ -4,28 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:helpers="using:DesktopWidgets3.Helpers"
-    xmlns:behaviors="using:DesktopWidgets3.Behaviors"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:control="using:DesktopWidgets3.Views.Controls">
+    Loaded="OnLoaded">
 
     <Grid>
         <Grid x:Name="AppTitleBar"
               Canvas.ZIndex="1"
-              Height="{Binding ElementName=NavigationViewControl, Path=CompactPaneLength}"
-              IsHitTestVisible="True"
-              VerticalAlignment="Top">
-            <Image Source="/Assets/WindowIcon.ico"
-                   HorizontalAlignment="Left"
-                   Width="16"
-                   Height="16" />
-            <TextBlock x:Name="AppTitleBarText"
-                       VerticalAlignment="Center"
-                       TextWrapping="NoWrap"
-                       Style="{StaticResource CaptionTextBlockStyle}"
-                       Margin="28,0,0,0"/>
+              IsHitTestVisible="True">
         </Grid>
-        <Grid Margin="{StaticResource NavigationViewPageContentMargin}">
+        <Grid Canvas.ZIndex="0">
             <Frame x:Name="NavigationFrame" />
         </Grid>
     </Grid>

@@ -2,8 +2,6 @@
 using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
 using DesktopWidgets3.Contracts.Services;
-using Microsoft.UI.Xaml.Controls;
-using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -14,23 +12,14 @@ public sealed partial class BlankWindow : WindowEx
     private readonly UISettings settings;
 
     private readonly IWidgetManagerService _widgetManagerService;
-    private readonly IWidgetNavigationService _widgetNavigationService;
     private readonly IWindowSinkService _windowSinkService;
 
-    private readonly WidgetType _widgetType;
-
-    private bool _isEditMode;
-
-    public BlankWindow(WidgetType widgetType)
+    public BlankWindow()
     {
         InitializeComponent();
 
         Content = null;
-        Title = App.GetService<IWidgetResourceService>().GetWidgetLabel(widgetType);
-        _widgetType = widgetType;
-
-        IsMaximizable = IsMaximizable = false;
-        SetEditMode(false);
+        Title = string.Empty;
 
         // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -39,8 +28,10 @@ public sealed partial class BlankWindow : WindowEx
 
         // Load registered services
         _widgetManagerService = App.GetService<IWidgetManagerService>();
-        _widgetNavigationService = App.GetService<IWidgetNavigationService>();
         _windowSinkService = App.GetService<IWindowSinkService>();
+
+        // Sink window to desktop
+        _windowSinkService.Initialize(this, true);
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open
@@ -50,20 +41,15 @@ public sealed partial class BlankWindow : WindowEx
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
-    public void InitializePage(Frame? frame, object? parameter = null, bool clearNavigation = false)
+    public void Initialize()
     {
-        // Navigate to widget page
-        _widgetNavigationService.Frame = frame;
-        _widgetNavigationService.InitializePage(_widgetType, parameter, clearNavigation);
-
-        // Sink window to desktop
-        _windowSinkService.Initialize(this, true);
+        IsTitleBarVisible = IsMaximizable = IsMaximizable = false;
+        SetEditMode(false);
     }
 
     public void SetEditMode(bool isEditMode)
     {
         IsResizable = isEditMode;
-        _isEditMode = isEditMode;
     }
 
     /*protected override void OnPositionChanged(PointInt32 position)
