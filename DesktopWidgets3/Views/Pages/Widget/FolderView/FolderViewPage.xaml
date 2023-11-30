@@ -12,13 +12,26 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <MenuFlyout
+			x:Key="FolderViewFlyout">
+            <MenuFlyoutItem
+				x:Uid="FolderViewFlyout_EnterEditMode"
+				Click="MenuFlyoutItem_Click"/>
+        </MenuFlyout>
+    </Page.Resources>
+
     <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
-        <Grid x:Name="Toolbar">
+
+        <Grid 
+            x:Name="Toolbar"
+            IsRightTapEnabled="True"
+            RightTapped="Toolbar_RightTapped"
+            ContextFlyout="{StaticResource FolderViewFlyout}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
@@ -33,7 +46,7 @@
                 Background="Transparent"
                 VerticalContentAlignment="Center"
                 HorizontalContentAlignment="Center"
-                Click="NavigateBackButtonClick"
+                Click="NavigateBackButton_Click"
 		        IsEnabled="{x:Bind ViewModel.IsNavigateBackExecutable, Mode=OneWay}">
                 <FontIcon FontSize="12" Glyph="&#xE72B;" />
             </Button>
@@ -45,7 +58,7 @@
                 Background="Transparent"
                 VerticalContentAlignment="Center"
                 HorizontalContentAlignment="Center"
-		        Click="NavigateUpButtonClick"
+		        Click="NavigateUpButton_Click"
 		        IsEnabled="{x:Bind ViewModel.IsNavigateUpExecutable, Mode=OneWay}">
                 <FontIcon FontSize="12" Glyph="&#xE74A;" />
             </Button>

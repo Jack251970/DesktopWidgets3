@@ -16,7 +16,8 @@ public partial class ClockViewModel : ObservableRecipient
     public ClockViewModel(ITimersService timersService)
     {
         timingFormat = "T";
-        timersService.InitializeUpdateTimeTimer(UpdateTime);
+        SystemTime = DateTime.Now.ToString(timingFormat);
+        timersService.AddUpdateTimeTimerAction(UpdateTime);
     }
 
     private void UpdateTime(object? sender, EventArgs e)

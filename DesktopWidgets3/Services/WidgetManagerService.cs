@@ -48,6 +48,8 @@ public class WidgetManagerService : IWidgetManagerService
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
         var enableTimer = false;
+
+        // show widgets
         foreach (var widget in widgetList)
         {
             if (widget.IsEnabled)
@@ -60,6 +62,8 @@ public class WidgetManagerService : IWidgetManagerService
                 }
             }
         }
+
+        // enable timer if needed
         if (enableTimer)
         {
             _timersService.StartUpdateTimeTimer();

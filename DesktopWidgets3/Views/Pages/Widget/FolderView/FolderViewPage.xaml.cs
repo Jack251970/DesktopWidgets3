@@ -4,6 +4,7 @@ using DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 using Microsoft.UI.Xaml;
 using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace DesktopWidgets3.Views.Pages.Widget.FolderView;
 
@@ -20,12 +21,12 @@ public sealed partial class FolderViewPage : Page
         InitializeComponent();
     }
 
-    private async void NavigateBackButtonClick(object sender, RoutedEventArgs e)
+    private async void NavigateBackButton_Click(object sender, RoutedEventArgs e)
     {
         await ViewModel.NavigateBackButtonClick();
     }
 
-    private async void NavigateUpButtonClick(object sender, RoutedEventArgs e)
+    private async void NavigateUpButton_Click(object sender, RoutedEventArgs e)
     {
         await ViewModel.NavigateUpButtonClick();
     }
@@ -36,6 +37,21 @@ public sealed partial class FolderViewPage : Page
         {
             var filePath = item.FilePath;
             await ViewModel.FolderViewItemDoubleTapped(filePath);
+        }
+    }
+
+    private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        var element = sender as FrameworkElement;
+        if (element != null)
+        {
+            element.ContextFlyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
+            e.Handled = true;
         }
     }
 }

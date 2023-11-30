@@ -10,23 +10,16 @@ public class TimersService : ITimersService
 
     private readonly IAppSettingsService _appSettingsService;
 
-    private bool _isUpdateTimeTimerInitialized = false;
-
     public TimersService(IAppSettingsService appSettingsService)
     {
         _appSettingsService = appSettingsService;
+
+        InitializeTimers();
     }
 
-    public void InitializeUpdateTimeTimer(Action<object?, ElapsedEventArgs> updateTimeDelegate)
+    public void AddUpdateTimeTimerAction(Action<object?, ElapsedEventArgs> updateTimeDelegate)
     {
-        if (!_isUpdateTimeTimerInitialized)
-        {
-            _updateTimeTimer.Elapsed += (sender, e) => updateTimeDelegate(sender, e);
-            _updateTimeTimer.AutoReset = true;
-            _updateTimeTimer.Enabled = false;
-
-            _isUpdateTimeTimerInitialized = true;
-        }
+        _updateTimeTimer.Elapsed += (sender, e) => updateTimeDelegate(sender, e);
     }
 
     public void StartUpdateTimeTimer()
@@ -45,5 +38,11 @@ public class TimersService : ITimersService
         {
             _updateTimeTimer.Enabled = false;
         }
+    }
+
+    private void InitializeTimers()
+    {
+        _updateTimeTimer.AutoReset = true;
+        _updateTimeTimer.Enabled = false;
     }
 }
