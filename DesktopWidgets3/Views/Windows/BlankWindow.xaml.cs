@@ -19,7 +19,6 @@ public sealed partial class BlankWindow : WindowEx
 
     private readonly UISettings settings;
 
-    private readonly IWidgetManagerService _widgetManagerService;
     private readonly IWindowSinkService _windowSinkService;
 
     public BlankWindow(WidgetType widgetType, int indexTag)
@@ -38,7 +37,6 @@ public sealed partial class BlankWindow : WindowEx
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
         // Load registered services
-        _widgetManagerService = App.GetService<IWidgetManagerService>();
         _windowSinkService = App.GetService<IWindowSinkService>();
 
         // Sink window to desktop

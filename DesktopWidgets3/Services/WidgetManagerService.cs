@@ -119,7 +119,7 @@ public class WidgetManagerService : IWidgetManagerService
         WidgetsList.Add(widgetWindow);
         await _activationService.ActivateWidgetWindowAsync(widgetWindow);
 #if DBEUG
-        // wait for 1 second to avoid Access Violation under debug mode
+        // wait for 1 second to avoid Access Violation exception under debug mode
         await Task.Delay(1000);
 #endif
         widgetWindow.IsResizable = false;
