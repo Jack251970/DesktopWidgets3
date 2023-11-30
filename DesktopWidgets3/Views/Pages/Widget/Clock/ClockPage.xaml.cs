@@ -26,6 +26,11 @@ public sealed partial class ClockPage : Page
         App.GetService<IWidgetManagerService>().EnterEditMode();
     }
 
+    private void MenuFlyoutItemExitEditModeAndSave_Click(object sender, RoutedEventArgs e)
+    {
+        App.GetService<IWidgetManagerService>().ExitEditModeAndSave();
+    }
+
     private void ContentArea_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
         var element = sender as FrameworkElement;

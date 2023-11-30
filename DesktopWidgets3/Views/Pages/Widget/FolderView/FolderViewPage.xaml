@@ -18,6 +18,9 @@
             <MenuFlyoutItem
 				x:Uid="FolderViewFlyout_EnterEditMode"
 				Click="MenuFlyoutItemEnterEidtMode_Click"/>
+            <MenuFlyoutItem
+                x:Uid="FolderViewFlyout_ExitEditModeAndSave"
+                Click="MenuFlyoutItemExitEditModeAndSave_Click" />
         </MenuFlyout>
     </Page.Resources>
 

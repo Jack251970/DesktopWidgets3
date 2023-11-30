@@ -267,21 +267,19 @@ public class WidgetManagerService : IWidgetManagerService
 
     public async void ExitEditModeAndSave()
     {
+        List<JsonWidgetItem> widgetList = new();
+
         foreach (var widgetWindow in WidgetsList)
         {
             SetEditMode(widgetWindow, false);
-        }
 
-        List<JsonWidgetItem> widgetList = new();
-        foreach (var widgetWindow in WidgetsList)
-        {
             var position = widgetWindow.AppWindow.Position;
             var size = new WidgetSize(widgetWindow.AppWindow.Size.Width, widgetWindow.AppWindow.Size.Height);
             var widget = new JsonWidgetItem()
             {
                 Type = widgetWindow.WidgetType.ToString(),
                 IndexTag = widgetWindow.IndexTag,
-                IsEnabled = false,
+                IsEnabled = true,
                 Position = position,
                 Size = size,
             };
@@ -305,7 +303,7 @@ public class WidgetManagerService : IWidgetManagerService
 
     private static void SetEditMode(BlankWindow window, bool isEditMode)
     {
-        DragZoneHelper.SetDragZones(window, isEditMode ? 0 : 32);
+        DragZoneHelper.SetDragZones(window, isEditMode ? 32 : 0);
         window.IsResizable = isEditMode;
     }
 }

@@ -46,6 +46,11 @@ public sealed partial class FolderViewPage : Page
         App.GetService<IWidgetManagerService>().EnterEditMode();
     }
 
+    private void MenuFlyoutItemExitEditModeAndSave_Click(object sender, RoutedEventArgs e)
+    {
+        App.GetService<IWidgetManagerService>().ExitEditModeAndSave();
+    }
+
     private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
         var element = sender as FrameworkElement;
