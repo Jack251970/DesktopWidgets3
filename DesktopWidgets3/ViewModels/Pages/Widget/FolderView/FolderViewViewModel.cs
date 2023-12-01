@@ -101,11 +101,6 @@ public partial class FolderViewViewModel : ObservableRecipient
     private async Task LoadFileItemsFromFolderPath(bool pushFolderPath, BitmapImage? icon)
     {
         FolderName = Path.GetFileName(folderPath);
-        if (icon is null)
-        {
-            (icon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(folderPath, true);
-        }
-        FolderPathIcon = icon;
 
         if (pushFolderPath)
         {
@@ -150,5 +145,12 @@ public partial class FolderViewViewModel : ObservableRecipient
                 });
             }
         }
+
+        // TODO: fix icon loading bug
+        if (icon is null)
+        {
+            (icon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(folderPath, true);
+        }
+        FolderPathIcon = icon;
     }
 }
