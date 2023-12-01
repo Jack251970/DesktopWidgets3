@@ -226,7 +226,7 @@
   <data name="FolderViewFlyout_EnterEditMode.Text" xml:space="preserve">
     <value>Enter edit mode</value>
   </data>
-  <data name="FolderViewFlyout_ExitEditModeAndSave.Text" xml:space="preserve">
-    <value>Exit edit mode and save</value>
+  <data name="FolderViewFlyout_DisableWidget.Text" xml:space="preserve">
+    <value>Disable this widget</value>
   </data>
 </root>

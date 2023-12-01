@@ -1,5 +1,7 @@
 ﻿using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
+using DesktopWidgets3.ViewModels.Pages;
+using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Windows;
 using Windows.Graphics;
 
@@ -54,7 +56,7 @@ public class WidgetManagerService : IWidgetManagerService
             if (widget.IsEnabled)
             {
                 var widgetType = (WidgetType)Enum.Parse(typeof(WidgetType), widget.Type);
-                await ShowWidget(widgetType, widget.IndexTag);
+                await EnableWidget(widgetType, widget.IndexTag);
                 if (TimerWidgets.Contains(widgetType))
                 {
                     enableTimer = true;
@@ -69,7 +71,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async Task ShowWidget(WidgetType widgetType, int? indexTag)
+    public async Task EnableWidget(WidgetType widgetType, int? indexTag)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
 
@@ -144,7 +146,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async Task CloseWidget(WidgetType widgetType, int indexTag)
+    public async Task DisableWidget(WidgetType widgetType, int indexTag)
     {
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
         if (widgetWindow != null)
@@ -185,6 +187,17 @@ public class WidgetManagerService : IWidgetManagerService
         {
             _timersService.StopUpdateTimeTimer();
         }
+    }
+
+    public async Task DisableWidget(BlankWindow widgetWindow)
+    {
+        // invoke from widget window iteself
+        var widgetType = widgetWindow.WidgetType;
+        var indexTag = widgetWindow.IndexTag;
+
+        await DisableWidget(widgetType, indexTag);
+
+        // TODO: refresh dashboard if needed
     }
 
     public void CloseAllWidgets()

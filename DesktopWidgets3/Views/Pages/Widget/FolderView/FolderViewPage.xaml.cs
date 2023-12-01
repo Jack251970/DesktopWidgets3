@@ -6,6 +6,7 @@ using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Views.Windows;
 
 namespace DesktopWidgets3.Views.Pages.Widget.FolderView;
 
@@ -16,10 +17,20 @@ public sealed partial class FolderViewPage : Page
         get;
     }
 
+    public BlankWindow WidgetWindow
+    {
+        get;
+    }
+
+    private readonly IWidgetManagerService _widgetManagerService;
+
     public FolderViewPage()
     {
         ViewModel = App.GetService<FolderViewViewModel>();
         InitializeComponent();
+
+        _widgetManagerService = App.GetService<IWidgetManagerService>();
+        WidgetWindow = _widgetManagerService.GetCurrentWidgetWindow();
     }
 
     private async void NavigateBackButton_Click(object sender, RoutedEventArgs e)
@@ -43,12 +54,12 @@ public sealed partial class FolderViewPage : Page
 
     private void MenuFlyoutItemEnterEidtMode_Click(object sender, RoutedEventArgs e)
     {
-        App.GetService<IWidgetManagerService>().EnterEditMode();
+        _widgetManagerService.EnterEditMode();
     }
 
-    private void MenuFlyoutItemExitEditModeAndSave_Click(object sender, RoutedEventArgs e)
+    private void FolderViewFlyoutDisableWidget_Click(object sender, RoutedEventArgs e)
     {
-        App.GetService<IWidgetManagerService>().ExitEditModeAndSave();
+        _widgetManagerService.DisableWidget(WidgetWindow);
     }
 
     private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)

@@ -49,9 +49,9 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         
     }
 
-    public async void AllWidgetsItemClick(WidgetType widgetType)
+    internal async void AllWidgetsItemClick(WidgetType widgetType)
     {
-        await _widgetManagerService.ShowWidget(widgetType, null);
+        await _widgetManagerService.EnableWidget(widgetType, null);
 
         var widgetItem = _widgetManagerService.GetDashboardWidgetItem();
         widgetItem.IsEnabled = true;
@@ -65,12 +65,12 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     {
         if (dashboardListItem.IsEnabled)
         {
-            await _widgetManagerService.ShowWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
+            await _widgetManagerService.EnableWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
             yourWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = true;
         }
         else
         {
-            await _widgetManagerService.CloseWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
+            await _widgetManagerService.DisableWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
             yourWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = false;
         }
 

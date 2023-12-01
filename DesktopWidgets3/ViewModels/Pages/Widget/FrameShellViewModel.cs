@@ -11,7 +11,7 @@ public partial class FrameShellViewModel : ObservableRecipient
     }
 
     [ObservableProperty]
-    private int _widgetTitleBarHeight = 0;
+    private double _widgetTitleBarHeight = 0;
 
     public FrameShellViewModel(IWidgetNavigationService widgetNavigationService)
     {

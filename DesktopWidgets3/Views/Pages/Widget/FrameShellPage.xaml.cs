@@ -20,8 +20,6 @@ public sealed partial class FrameShellPage : Page
         get;
     }
 
-    private readonly IWidgetManagerService _widgetManagerService;
-
     public FrameShellPage(FrameShellViewModel viewModel, IWidgetManagerService widgetManagerService)
     {
         ViewModel = viewModel;
@@ -35,9 +33,6 @@ public sealed partial class FrameShellPage : Page
         WidgetWindow.ExtendsContentIntoTitleBar = true;
         WidgetWindow.SetTitleBar(WidgetTitleBar);
         WidgetWindow.InitializeTitleBar(WidgetTitleBar);
-
-        // Load registered services
-        _widgetManagerService = widgetManagerService;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

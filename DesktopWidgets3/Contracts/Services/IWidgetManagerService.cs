@@ -9,9 +9,11 @@ public interface IWidgetManagerService
 
     Task InitializeWidgets();
 
-    Task ShowWidget(WidgetType widgetType, int? indexTag);
+    Task EnableWidget(WidgetType widgetType, int? indexTag);
 
-    Task CloseWidget(WidgetType widgetType, int indexTag);
+    Task DisableWidget(WidgetType widgetType, int indexTag);
+
+    Task DisableWidget(BlankWindow widgetWindow);
 
     void CloseAllWidgets();
 

@@ -12,14 +12,14 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <MenuFlyout
-		    x:Key="FolderViewFlyout">
+        <MenuFlyout x:Key="FolderViewFlyout">
             <MenuFlyoutItem
-			    x:Uid="FolderViewFlyout_EnterEditMode"
-			    Click="MenuFlyoutItemEnterEidtMode_Click"/>
+                x:Uid="FolderViewFlyout_DisableWidget"
+                Click="FolderViewFlyoutDisableWidget_Click" />
+            <MenuFlyoutSeparator/>
             <MenuFlyoutItem
-                x:Uid="FolderViewFlyout_ExitEditModeAndSave"
-                Click="MenuFlyoutItemExitEditModeAndSave_Click" />
+                x:Uid="FolderViewFlyout_EnterEditMode"
+                Click="MenuFlyoutItemEnterEidtMode_Click"/>
         </MenuFlyout>
     </Page.Resources>
 
