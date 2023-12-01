@@ -10,9 +10,14 @@ public static class FileIconHelper
 {
     public static async Task<(BitmapImage? Icon, BitmapImage? Overlay)> GetFileIconAndOverlayAsync(string filePath, bool isFolder)
     {
+#if DEBUG
+        await Task.CompletedTask;
+        return (null, null);
+#else
         var (iconData, overlayData) = await Win32API.StartSTATask(() => Win32API.GetFileIconAndOverlay(filePath, 96, isFolder, true, false));
 
         return (iconData is null ? null : await iconData.ToBitmapAsync(), overlayData is null ? null : await overlayData.ToBitmapAsync());
+#endif
     }
 
     private static async Task<BitmapImage?> ToBitmapAsync(this byte[]? data, int decodeSize = -1)

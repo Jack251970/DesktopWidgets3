@@ -105,6 +105,7 @@ public partial class FolderViewViewModel : ObservableRecipient
 
     private async Task LoadFileItemsFromFolderPath(bool pushFolderPath, BitmapImage? icon)
     {
+        
         FolderName = Path.GetFileName(folderPath);
 
         if (pushFolderPath)
@@ -117,7 +118,8 @@ public partial class FolderViewViewModel : ObservableRecipient
 
         FolderViewFileItems.Clear();
 
-        foreach (var directory in Directory.GetDirectories(folderPath))
+        var directories = Directory.GetDirectories(folderPath);
+        foreach (var directory in directories)
         {
             var directoryPath = directory;
             var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(directoryPath, FileAttributes.Hidden);
@@ -134,7 +136,8 @@ public partial class FolderViewViewModel : ObservableRecipient
             }
         }
 
-        foreach (var file in Directory.GetFiles(folderPath))
+        var files = Directory.GetFiles(folderPath);
+        foreach (var file in files)
         {
             var filePath = file;
             var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
