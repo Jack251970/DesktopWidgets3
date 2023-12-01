@@ -64,6 +64,24 @@ public class ActivationService : IActivationService
         await StartupAsync(window);
     }
 
+    public async Task ActivateOverlayWindowAsync(OverlayWindow window)
+    {
+        // Execute tasks before activation.
+        await InitializeAsync();
+
+        // Set the Window Content.
+        if (window.Content == null)
+        {
+            window.Content = new Frame();
+        }
+
+        // Activate the Window.
+        window.Activate();
+
+        // Execute tasks after activation.
+        await StartupAsync(window);
+    }
+
     private async Task HandleActivationAsync(object activationArgs)
     {
         var activationHandler = _activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));

@@ -44,7 +44,7 @@ public partial class App : Application
         return service;
     }
 
-    public static WindowEx? MainWindow { get; set; }
+    public static MainWindow? MainWindow { get; set; }
 
     public static UIElement? AppTitleBar { get; set; }
     public static UIElement? AppTitleBarText { get; set; }
@@ -149,6 +149,8 @@ public partial class App : Application
             // Widgets Window Pages
             services.AddTransient<FrameShellPage>();
             services.AddTransient<FrameShellViewModel>();
+            services.AddTransient<EditModeOverlayPage>();
+            services.AddTransient<EditModeOverlayViewModel>();
             services.AddTransient<ClockViewModel>();
             services.AddTransient<ClockPage>();
             services.AddTransient<FolderViewViewModel>();

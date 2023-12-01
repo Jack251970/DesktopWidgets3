@@ -1,9 +1,9 @@
 ﻿using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
-using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services;
@@ -28,6 +28,8 @@ public class WidgetManagerService : IWidgetManagerService
 
     private WidgetType currentWidgetType;
     private int currentIndexTag = -1;
+    
+    private OverlayWindow? EditModeOverlayWindow { get; set; }
 
     public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
@@ -43,6 +45,10 @@ public class WidgetManagerService : IWidgetManagerService
         foreach (var widgetWindow in WidgetsList)
         {
             await _themeSelectorService.SetRequestedThemeAsync(widgetWindow);
+        }
+        if (EditModeOverlayWindow != null)
+        {
+            await _themeSelectorService.SetRequestedThemeAsync(EditModeOverlayWindow);
         }
     }
 
@@ -265,12 +271,33 @@ public class WidgetManagerService : IWidgetManagerService
         return dashboardItemList;
     }
 
-    public void EnterEditMode()
+    public async void EnterEditMode()
     {
         foreach (var widgetWindow in WidgetsList)
         {
             SetEditMode(widgetWindow, true);
         }
+
+        if (EditModeOverlayWindow == null)
+        {
+            EditModeOverlayWindow = new OverlayWindow();
+
+            await _activationService.ActivateOverlayWindowAsync(EditModeOverlayWindow);
+#if DBEUG
+        // wait for 1 second to avoid Access Violation exception under debug mode
+        await Task.Delay(1000);
+#endif
+            var _shell = EditModeOverlayWindow.Content as Frame;
+            _shell?.Navigate(typeof(EditModeOverlayPage));
+        }
+
+        // set window on top center of screen
+        var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
+        var monitorWidth = primaryMonitorInfo.RectWork.Width;
+        //WindowExtensions.SetWindowSize(EditModeOverlayWindow, widget.Size.Width, widget.Size.Height);
+        WindowExtensions.Move(EditModeOverlayWindow, (int)(monitorWidth / 2), 1);
+
+        EditModeOverlayWindow.Show();
     }
 
     public async void ExitEditModeAndSave()

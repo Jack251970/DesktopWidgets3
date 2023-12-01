@@ -7,4 +7,6 @@ public interface IActivationService
     Task ActivateMainWindowAsync(object activationArgs);
 
     Task ActivateWidgetWindowAsync(WidgetWindow window);
+
+    Task ActivateOverlayWindowAsync(OverlayWindow window);
 }

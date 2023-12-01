@@ -42,9 +42,11 @@
   <ItemGroup>
     <None Remove="Views\Controls\TrayMenuControl.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
+    <None Remove="Views\Pages\EditModeOverlayPage.xaml" />
     <None Remove="Views\Pages\WidgetSettingPage.xaml" />
     <None Remove="Views\Pages\Widget\Clock\ClockPage.xaml" />
     <None Remove="Views\Pages\Widget\FolderView\FolderViewPage.xaml" />
+    <None Remove="Views\Windows\OverlayWindow.xaml" />
     <None Remove="Views\Windows\WidgetWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +109,9 @@
     <Page Update="Views\Pages\DashboardPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="Views\Pages\EditModeOverlayPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\Pages\WidgetSettingPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
@@ -114,6 +119,9 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Pages\Widget\FolderView\FolderViewPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Windows\OverlayWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Windows\WidgetWindow.xaml">
