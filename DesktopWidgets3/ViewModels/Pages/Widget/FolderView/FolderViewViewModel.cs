@@ -98,6 +98,11 @@ public partial class FolderViewViewModel : ObservableRecipient
         }
     }
 
+    internal async Task NavigateRefreshButtonClick()
+    {
+        await LoadFileItemsFromFolderPath(false, FolderPathIcon);
+    }
+
     private async Task LoadFileItemsFromFolderPath(bool pushFolderPath, BitmapImage? icon)
     {
         FolderName = Path.GetFileName(folderPath);

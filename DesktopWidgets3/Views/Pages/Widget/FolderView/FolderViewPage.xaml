@@ -30,12 +30,12 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid 
-            x:Name="Toolbar"
+        <Grid x:Name="Toolbar"
             Background="Transparent"
             RightTapped="Toolbar_RightTapped"
             ContextFlyout="{StaticResource FolderViewFlyout}">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
@@ -65,7 +65,18 @@
 		        IsEnabled="{x:Bind ViewModel.IsNavigateUpExecutable, Mode=OneWay}">
                 <FontIcon FontSize="12" Glyph="&#xE74A;" />
             </Button>
-            <StackPanel Grid.Column="2" HorizontalAlignment="Center" Orientation="Horizontal">
+            <Button
+                Grid.Column="2"
+                Height="34"
+                Width="34"
+                BorderThickness="0"
+                Background="Transparent"
+                VerticalContentAlignment="Center"
+                HorizontalContentAlignment="Center"
+                Click="NavigateRefreshButton_Click">
+                <FontIcon FontSize="12" Glyph="&#xE72C;" />
+            </Button>
+            <StackPanel Grid.Column="3" HorizontalAlignment="Center" Orientation="Horizontal">
                 <Grid
                     Height="24"
                     Width="24"
