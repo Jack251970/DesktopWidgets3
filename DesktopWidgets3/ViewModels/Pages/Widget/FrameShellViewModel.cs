@@ -10,16 +10,8 @@ public partial class FrameShellViewModel : ObservableRecipient
         get;
     }
 
-    [ObservableProperty]
-    private double _widgetTitleBarHeight = 0;
-
     public FrameShellViewModel(IWidgetNavigationService widgetNavigationService)
     {
         WidgetNavigationService = widgetNavigationService;
-    }
-
-    internal void SetWidgetTitleBarHeight(double titleBarHeight)
-    {
-        WidgetTitleBarHeight = titleBarHeight;
     }
 }

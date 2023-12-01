@@ -4,7 +4,6 @@ using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
 using H.NotifyIcon;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 
@@ -374,31 +373,13 @@ public class WidgetManagerService : IWidgetManagerService
         return null;
     }
 
-    private void SetEditMode(WidgetWindow window, bool isEditMode)
+    private static void SetEditMode(WidgetWindow window, bool isEditMode)
     {
         // set window style
         window.IsResizable = isEditMode;
-        
-        // register or unregister size changed event
-        if (isEditMode)
-        {
-            window.SizeChanged += OnSizeChanged;
-        }
-        else
-        {
-            window.SizeChanged -= OnSizeChanged;
-        }
 
-        // set drag zone height
+        // set title bar
         var frameShellPage = window.Content as FrameShellPage;
-        var dragZoneHeight = isEditMode ? _widgetResourceService.GetDragZoneHeight(window.WidgetType) : 0;
-        frameShellPage!.SetWidgetDragZoneHeight(dragZoneHeight);
-    }
-
-    private void OnSizeChanged(object sender, WindowSizeChangedEventArgs e)
-    {
-        var window = sender as WidgetWindow;
-        var frameShellPage = window!.Content as FrameShellPage;
-        frameShellPage!.SetWidgetDragZoneHeight(_widgetResourceService.GetDragZoneHeight(window!.WidgetType));
+        frameShellPage?.SetCustomTitleBar(isEditMode);
     }
 }

@@ -26,8 +26,6 @@ public sealed partial class WidgetWindow : WindowEx
 
     public int IndexTag { get; }
 
-    public UIElement? TitleBar { get; set; }
-
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
@@ -63,9 +61,8 @@ public sealed partial class WidgetWindow : WindowEx
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
-    public void InitializeTitleBar(UIElement? titleBar)
+    public void InitializeTitleBar()
     {
-        TitleBar = titleBar;
         IsTitleBarVisible = IsMaximizable = IsMaximizable = false;
     }
 }

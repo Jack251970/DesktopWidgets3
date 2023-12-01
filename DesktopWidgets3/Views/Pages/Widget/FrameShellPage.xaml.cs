@@ -28,11 +28,14 @@ public sealed partial class FrameShellPage : Page
         ViewModel.WidgetNavigationService.Frame = NavigationFrame;
         WidgetWindow = widgetManagerService.GetCurrentWidgetWindow();
 
-        // A custom title bar is required for full window theme and Mica support.
-        // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
-        WidgetWindow.ExtendsContentIntoTitleBar = true;
-        WidgetWindow.SetTitleBar(WidgetTitleBar);
-        WidgetWindow.InitializeTitleBar(WidgetTitleBar);
+        SetCustomTitleBar(false);
+    }
+
+    public void SetCustomTitleBar(bool customTitleBar)
+    {
+        WidgetWindow.ExtendsContentIntoTitleBar = customTitleBar;
+        WidgetWindow.SetTitleBar(customTitleBar ? WidgetTitleBar : null);
+        WidgetWindow.InitializeTitleBar();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -40,11 +43,5 @@ public sealed partial class FrameShellPage : Page
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
 
         ViewModel.WidgetNavigationService.NavigateTo(WidgetWindow.WidgetType);
-    }
-
-    public void SetWidgetDragZoneHeight(double? dragZoneHeight)
-    {
-        dragZoneHeight ??= ContentArea.ActualHeight - 12;
-        ViewModel.SetWidgetTitleBarHeight((double)dragZoneHeight);
     }
 }
