@@ -3,7 +3,6 @@ using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 
@@ -290,13 +289,16 @@ public class WidgetManagerService : IWidgetManagerService
             _shell?.Navigate(typeof(EditModeOverlayPage));
         }
 
-        // set window on top center of screen
+        // set window size according to xaml
+        var xamlWidth = 320;
+        var xamlHeight = 160;
+        WindowExtensions.SetWindowSize(EditModeOverlayWindow, xamlWidth, xamlHeight);
+
+        // move to center top
         var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
-        var monitorWidth = primaryMonitorInfo.RectWork.Width;
-        var widthPixels = 1320;
-        var heightPixels = 160;
-        WindowExtensions.SetWindowSize(EditModeOverlayWindow, widthPixels, heightPixels);
-        WindowExtensions.Move(EditModeOverlayWindow, (int)((monitorWidth - widthPixels) / 2), 0);  // center top
+        var screenWidth = primaryMonitorInfo.RectWork.Width;
+        var windowWidth = EditModeOverlayWindow.AppWindow.Size.Width;
+        WindowExtensions.Move(EditModeOverlayWindow, (int)((screenWidth - windowWidth) / 2), 0);
 
         EditModeOverlayWindow.Show();
 
