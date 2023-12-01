@@ -5,6 +5,7 @@ using DesktopWidgets3.Activation;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
+using DesktopWidgets3.Views.Windows;
 
 namespace DesktopWidgets3.Services;
 
@@ -44,7 +45,7 @@ public class ActivationService : IActivationService
         await StartupAsync(App.MainWindow);
     }
 
-    public async Task ActivateWidgetWindowAsync(Window window)
+    public async Task ActivateWidgetWindowAsync(WidgetWindow window)
     {
         // Execute tasks before activation.
         await InitializeAsync();

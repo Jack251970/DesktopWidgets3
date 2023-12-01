@@ -17,7 +17,7 @@ public sealed partial class FolderViewPage : Page
         get;
     }
 
-    public BlankWindow WidgetWindow
+    public WidgetWindow WidgetWindow
     {
         get;
     }

@@ -9,7 +9,7 @@ namespace DesktopWidgets3.Services;
 
 public class WidgetManagerService : IWidgetManagerService
 {
-    private readonly List<BlankWindow> WidgetsList = new();
+    private readonly List<WidgetWindow> WidgetsList = new();
 
     private readonly List<WidgetType> TimerWidgets = new()
     {
@@ -120,7 +120,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
 
         // create widget window
-        var widgetWindow = new BlankWindow(widgetType, currentIndexTag);
+        var widgetWindow = new WidgetWindow(widgetType, currentIndexTag);
         WidgetsList.Add(widgetWindow);
         await _activationService.ActivateWidgetWindowAsync(widgetWindow);
 #if DBEUG
@@ -189,7 +189,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async Task DisableWidget(BlankWindow widgetWindow)
+    public async Task DisableWidget(WidgetWindow widgetWindow)
     {
         // invoke from widget window iteself
         var widgetType = widgetWindow.WidgetType;
@@ -210,7 +210,7 @@ public class WidgetManagerService : IWidgetManagerService
         WidgetsList.Clear();
     }
 
-    public BlankWindow GetCurrentWidgetWindow()
+    public WidgetWindow GetCurrentWidgetWindow()
     {
         return WidgetsList.Last();
     }
@@ -296,7 +296,7 @@ public class WidgetManagerService : IWidgetManagerService
         await _appSettingsService.UpdateWidgetsList(widgetList);
     }
 
-    private BlankWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
+    private WidgetWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
     {
         foreach (var widgetWindow in WidgetsList)
         {
@@ -308,7 +308,7 @@ public class WidgetManagerService : IWidgetManagerService
         return null;
     }
 
-    private static void SetEditMode(BlankWindow window, bool isEditMode)
+    private static void SetEditMode(WidgetWindow window, bool isEditMode)
     {
         window.IsResizable = isEditMode;
     }

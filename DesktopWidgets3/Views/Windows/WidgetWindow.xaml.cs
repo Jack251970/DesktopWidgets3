@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Views.Windows;
 
-public sealed partial class BlankWindow : WindowEx
+public sealed partial class WidgetWindow : WindowEx
 {
     public WidgetType WidgetType { get; }
 
@@ -21,7 +21,7 @@ public sealed partial class BlankWindow : WindowEx
 
     private readonly IWindowSinkService _windowSinkService;
 
-    public BlankWindow(WidgetType widgetType, int indexTag)
+    public WidgetWindow(WidgetType widgetType, int indexTag)
     {
         InitializeComponent();
 

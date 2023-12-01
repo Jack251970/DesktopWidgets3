@@ -15,7 +15,7 @@ public sealed partial class FrameShellPage : Page
         get;
     }
 
-    public BlankWindow WidgetWindow
+    public WidgetWindow WidgetWindow
     {
         get;
     }

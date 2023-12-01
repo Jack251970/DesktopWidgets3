@@ -16,7 +16,7 @@ public sealed partial class ClockPage : Page
         get;
     }
 
-    public BlankWindow WidgetWindow
+    public WidgetWindow WidgetWindow
     {
         get;
     }

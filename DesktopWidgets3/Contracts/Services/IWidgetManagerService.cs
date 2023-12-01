@@ -13,11 +13,11 @@ public interface IWidgetManagerService
 
     Task DisableWidget(WidgetType widgetType, int indexTag);
 
-    Task DisableWidget(BlankWindow widgetWindow);
+    Task DisableWidget(WidgetWindow widgetWindow);
 
     void CloseAllWidgets();
 
-    BlankWindow GetCurrentWidgetWindow();
+    WidgetWindow GetCurrentWidgetWindow();
 
     DashboardWidgetItem GetDashboardWidgetItem();
 
