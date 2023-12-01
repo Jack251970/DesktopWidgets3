@@ -1,11 +1,24 @@
 ﻿using Microsoft.UI.Dispatching;
 using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
+using Windows.Graphics;
 
 namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class OverlayWindow : WindowEx
 {
+    public PointInt32 Position
+    {
+        get => AppWindow.Position;
+        set => WindowExtensions.Move(this, value.X, value.Y);
+    }
+
+    public SizeInt32 Size
+    {
+        get => new((int)(AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this)), (int)(AppWindow.Size.Height * 96f / WindowExtensions.GetDpiForWindow(this)));
+        set => WindowExtensions.SetWindowSize(this, value.Width, value.Height);
+    }
+
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;

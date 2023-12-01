@@ -28,4 +28,6 @@ public interface IWidgetManagerService
     void EnterEditMode();
 
     void ExitEditModeAndSave();
+
+    void ExitEditModeAndCancel();
 }

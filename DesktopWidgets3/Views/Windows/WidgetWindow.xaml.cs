@@ -10,9 +10,17 @@ namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class WidgetWindow : WindowEx
 {
-    public PointInt32 Position => AppWindow.Position;
+    public PointInt32 Position
+    {
+        get => AppWindow.Position;
+        set => WindowExtensions.Move(this, value.X, value.Y);
+    }
 
-    public WidgetSize Size => new(AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this), AppWindow.Size.Height * 96f / WindowExtensions.GetDpiForWindow(this));
+    public WidgetSize Size
+    {
+        get => new(AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this), AppWindow.Size.Height * 96f / WindowExtensions.GetDpiForWindow(this));
+        set => WindowExtensions.SetWindowSize(this, value.Width, value.Height);
+    }
 
     public WidgetType WidgetType { get; }
 

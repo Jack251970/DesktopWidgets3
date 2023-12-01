@@ -3,6 +3,7 @@ using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
+using H.NotifyIcon;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 
@@ -30,6 +31,7 @@ public class WidgetManagerService : IWidgetManagerService
     private int currentIndexTag = -1;
     
     private OverlayWindow? EditModeOverlayWindow { get; set; }
+    private readonly List<JsonWidgetItem> originalWidgetList = new();
 
     public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
@@ -137,14 +139,14 @@ public class WidgetManagerService : IWidgetManagerService
         widgetWindow.IsResizable = false;
 
         // set window size and position
-        WindowExtensions.SetWindowSize(widgetWindow, widget.Size.Width, widget.Size.Height);
+        widgetWindow.Size = widget.Size;
         if (widget.Position.X != -1 && widget.Position.Y != -1)
         {
-            WindowExtensions.Move(widgetWindow, widget.Position.X, widget.Position.Y);
+            widgetWindow.Position = widget.Position;
         }
 
         // show window
-        widgetWindow.Show();
+        widgetWindow.Show(true);
 
         // enable timer if needed
         if (TimerWidgets.Contains(widgetType))
@@ -273,6 +275,16 @@ public class WidgetManagerService : IWidgetManagerService
     {
         foreach (var widgetWindow in WidgetsList)
         {
+            var widget = new JsonWidgetItem()
+            {
+                Type = widgetWindow.WidgetType.ToString(),
+                IndexTag = widgetWindow.IndexTag,
+                IsEnabled = true,
+                Position = widgetWindow.Position,
+                Size = widgetWindow.Size,
+            };
+            originalWidgetList.Add(widget);
+
             SetEditMode(widgetWindow, true);
         }
 
@@ -289,18 +301,18 @@ public class WidgetManagerService : IWidgetManagerService
             _shell?.Navigate(typeof(EditModeOverlayPage));
         }
 
-        // set window size according to xaml
-        var xamlWidth = 320;
-        var xamlHeight = 160;
-        WindowExtensions.SetWindowSize(EditModeOverlayWindow, xamlWidth, xamlHeight);
+        // set window size according to xaml, rember larger than 136 x 39
+        var xamlWidth = 136;
+        var xamlHeight = 48;
+        EditModeOverlayWindow.Size = new SizeInt32(xamlWidth, xamlHeight);
 
         // move to center top
         var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
         var screenWidth = primaryMonitorInfo.RectWork.Width;
         var windowWidth = EditModeOverlayWindow.AppWindow.Size.Width;
-        WindowExtensions.Move(EditModeOverlayWindow, (int)((screenWidth - windowWidth) / 2), 0);
+        EditModeOverlayWindow.Position = new PointInt32((int)((screenWidth - windowWidth) / 2), 0);
 
-        EditModeOverlayWindow.Show();
+        EditModeOverlayWindow.Show(true);
 
         App.MainWindow!.Close();
     }
@@ -324,9 +336,29 @@ public class WidgetManagerService : IWidgetManagerService
             widgetList.Add(widget);
         }
 
-        EditModeOverlayWindow?.Hide();
+        EditModeOverlayWindow?.Hide(true);
 
         await _appSettingsService.UpdateWidgetsList(widgetList);
+    }
+
+    public void ExitEditModeAndCancel()
+    {
+        foreach (var widgetWindow in WidgetsList)
+        {
+            SetEditMode(widgetWindow, false);
+
+            var originalWidget = originalWidgetList.First(x => x.Type == widgetWindow.WidgetType.ToString() && x.IndexTag == widgetWindow.IndexTag);
+
+            if (originalWidget != null)
+            {
+                widgetWindow.Position = originalWidget.Position;
+                widgetWindow.Size = originalWidget.Size;
+
+                widgetWindow.Show(true);
+            }
+        }
+
+        EditModeOverlayWindow?.Hide(true);
     }
 
     private WidgetWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)

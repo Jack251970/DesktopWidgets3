@@ -9,15 +9,17 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
     
-    <Grid x:Name="ContentArea" Width="320" Height="160">
+    <Grid x:Name="ContentArea">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
         <Button 
             Grid.Column="0"
-            Height="160"
-            Width="160"
+            Height="40"
+            Width="40"
+            Margin="4,4,0,4"
             Background="Transparent"
             BorderThickness="0"
             HorizontalAlignment="Center"
@@ -27,10 +29,25 @@
             Click="EditModeOverlayPageSaveButton_Click">
             <FontIcon FontSize="14" Glyph="&#xE74E;" />
         </Button>
-        <Button
+        <Button 
             Grid.Column="1"
-            Height="160"
-            Width="160"
+            Height="40"
+            Width="40"
+            Margin="4"
+            Background="Transparent"
+            BorderThickness="0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            VerticalContentAlignment="Center"
+            HorizontalContentAlignment="Center"
+            Click="EditModeOverlayPageSettingButton_Click">
+            <FontIcon FontSize="14" Glyph="&#xE713;" />
+        </Button>
+        <Button
+            Grid.Column="2"
+            Height="40"
+            Width="40"
+            Margin="0,4,4,4"
             Background="Transparent"
             BorderThickness="0"
             HorizontalAlignment="Center"

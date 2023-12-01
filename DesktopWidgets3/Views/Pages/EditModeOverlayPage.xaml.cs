@@ -13,6 +13,7 @@ public sealed partial class EditModeOverlayPage : Page
         get;
     }
 
+    private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;
 
     public EditModeOverlayPage()
@@ -20,6 +21,7 @@ public sealed partial class EditModeOverlayPage : Page
         ViewModel = App.GetService<EditModeOverlayViewModel>();
         InitializeComponent();
 
+        _navigationService = App.GetService<INavigationService>();
         _widgetManagerService = App.GetService<IWidgetManagerService>();
     }
 
@@ -28,8 +30,14 @@ public sealed partial class EditModeOverlayPage : Page
         _widgetManagerService.ExitEditModeAndSave();
     }
 
+    private void EditModeOverlayPageSettingButton_Click(object sender, RoutedEventArgs e)
+    {
+        _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
+        App.ShowMainWindow(true);
+    }
+
     private void EditModeOverlayPageCancelButton_Click(object sender, RoutedEventArgs e)
     {
-
+        _widgetManagerService.ExitEditModeAndCancel();
     }
 }
