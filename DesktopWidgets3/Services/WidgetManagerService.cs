@@ -298,6 +298,8 @@ public class WidgetManagerService : IWidgetManagerService
         WindowExtensions.Move(EditModeOverlayWindow, (int)(monitorWidth / 2), 1);
 
         EditModeOverlayWindow.Show();
+
+        App.MainWindow!.Close();
     }
 
     public async void ExitEditModeAndSave()
