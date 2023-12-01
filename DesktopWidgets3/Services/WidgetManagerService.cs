@@ -1,7 +1,5 @@
 ﻿using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
-using DesktopWidgets3.ViewModels.Pages;
-using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
 using Windows.Graphics;
@@ -271,6 +269,7 @@ public class WidgetManagerService : IWidgetManagerService
         {
             SetEditMode(widgetWindow, true);
         }
+        App.MainWindow!.Close();
     }
 
     public async void ExitEditModeAndSave()
