@@ -8,6 +8,7 @@ using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Files.Core.Data.Items;
 using Files.Shared.Helpers;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
@@ -27,6 +28,14 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
                 folderPath = value;
                 parentFolderPath = Path.GetDirectoryName(FolderPath);
                 fileSystemWatcher.Path = value;
+                if (folderPath != string.Empty)
+                {
+                    fileSystemWatcher.EnableRaisingEvents = true;
+                }
+                else
+                {
+                    fileSystemWatcher.EnableRaisingEvents = false;
+                }
             }
         }
     }
@@ -47,9 +56,115 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
 
     public ObservableCollection<FolderViewFileItem> FolderViewFileItems { get; set; } = new();
 
+    private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
+
     public FolderViewViewModel()
     {
+        fileSystemWatcher.Created += FileSystemWatcher_Created;
+        fileSystemWatcher.Deleted += FileSystemWatcher_Deleted;
+        fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
+    }
+
+    private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
+    {
+        var filePath = e.FullPath;
+        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
+        if (isHiddenItem)
+        {
+            return;
+        }
+
+        var isDirectory = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Directory);
+        _dispatcherQueue.TryEnqueue(async () => {
+            var item = new FolderViewFileItem()
+            {
+                FileName = Path.GetFileName(filePath),
+                FilePath = filePath,
+                FileType = isDirectory ? FileType.Folder : FileType.File,
+                FileIcon = null,
+            };
+
+            var index = 0;
+            var directories = Directory.GetDirectories(FolderPath);
+            if (isDirectory)
+            {
+                foreach (var directory in directories)
+                {
+                    if (directory == filePath)
+                    {
+                        var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(filePath, true);
+                        item.FileIcon = fileIcon;
+                        FolderViewFileItems.Insert(index, item);
+                        return;
+                    }
+                    index++;
+                }
+            }
+
+            index += directories.Length;
+            var files = Directory.GetFiles(FolderPath);
+            foreach (var file in files)
+            {
+                if (file == filePath)
+                {
+                    var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(filePath, false);
+                    item.FileIcon = fileIcon;
+                    FolderViewFileItems.Insert(index, item);
+                    return;
+                }
+                index++;
+            }
+        });
+    }
+
+    private void FileSystemWatcher_Deleted(object sender, FileSystemEventArgs e)
+    {
+        var filePath = e.FullPath;
+        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
+        if (isHiddenItem)
+        {
+            return;
+        }
+
+        _dispatcherQueue.TryEnqueue(() => {
+            foreach (var item in FolderViewFileItems)
+            {
+                if (item.FilePath == filePath)
+                {
+                    FolderViewFileItems.Remove(item);
+                    return;
+                }
+            }
+        });
         
+    }
+
+    private void FileSystemWatcher_Renamed(object sender, RenamedEventArgs e)
+    {
+        var oldFilePath = e.OldFullPath;
+        var filePath = e.FullPath;
+        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
+        if (isHiddenItem)
+        {
+            return;
+        }
+
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            var index = 0;
+            foreach (var item in FolderViewFileItems)
+            {
+                if (item.FilePath == oldFilePath)
+                {
+                    FolderViewFileItems.Remove(item);
+                    item.FileName = Path.GetFileName(filePath);
+                    item.FilePath = filePath;
+                    FolderViewFileItems.Insert(index, item);
+                    break;
+                }
+                index++;
+            }
+        });
     }
 
     public void OnNavigatedTo(object parameter)
@@ -163,6 +278,7 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
                 {
                     FileName = folderName,
                     FilePath = directoryPath,
+                    FileType = FileType.Folder,
                     FileIcon = fileIcon,
                 });
             }
@@ -181,6 +297,7 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
                 {
                     FileName = fileName,
                     FilePath = filePath,
+                    FileType = FileType.File,
                     FileIcon = fileIcon,
                 });
             }

@@ -27,6 +27,11 @@ public class FolderViewFileItem : BaseWidgetItem
         get; set;
     }
 
+    public required FileType FileType
+    {
+        get; set;
+    }
+
     public BitmapImage? FileIcon
     {
         get; set;
