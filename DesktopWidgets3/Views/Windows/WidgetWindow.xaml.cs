@@ -4,11 +4,16 @@ using Windows.UI.ViewManagement;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml;
+using Windows.Graphics;
 
 namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class WidgetWindow : WindowEx
 {
+    public PointInt32 Position => AppWindow.Position;
+
+    public WidgetSize Size => new(AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this), AppWindow.Size.Height * 96f / WindowExtensions.GetDpiForWindow(this));
+
     public WidgetType WidgetType { get; }
 
     public int IndexTag { get; }

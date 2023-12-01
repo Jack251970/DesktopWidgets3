@@ -3,6 +3,7 @@ using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 
@@ -171,15 +172,13 @@ public class WidgetManagerService : IWidgetManagerService
             }
             else
             {
-                var position = widgetWindow.AppWindow.Position;
-                var size = new WidgetSize(widgetWindow.AppWindow.Size.Width, widgetWindow.AppWindow.Size.Height);
                 widget = new JsonWidgetItem()
                 {
                     Type = widgetType.ToString(),
                     IndexTag = indexTag,
                     IsEnabled = false,
-                    Position = position,
-                    Size = size,
+                    Position = widgetWindow.Position,
+                    Size = widgetWindow.Size,
                 };
                 await _appSettingsService.UpdateWidgetsList(widget);
             }
@@ -294,8 +293,10 @@ public class WidgetManagerService : IWidgetManagerService
         // set window on top center of screen
         var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
         var monitorWidth = primaryMonitorInfo.RectWork.Width;
-        //WindowExtensions.SetWindowSize(EditModeOverlayWindow, widget.Size.Width, widget.Size.Height);
-        WindowExtensions.Move(EditModeOverlayWindow, (int)(monitorWidth / 2), 1);
+        var widthPixels = 1320;
+        var heightPixels = 160;
+        WindowExtensions.SetWindowSize(EditModeOverlayWindow, widthPixels, heightPixels);
+        WindowExtensions.Move(EditModeOverlayWindow, (int)((monitorWidth - widthPixels) / 2), 0);  // center top
 
         EditModeOverlayWindow.Show();
 
@@ -310,18 +311,18 @@ public class WidgetManagerService : IWidgetManagerService
         {
             SetEditMode(widgetWindow, false);
 
-            var position = widgetWindow.AppWindow.Position;
-            var size = new WidgetSize(widgetWindow.AppWindow.Size.Width, widgetWindow.AppWindow.Size.Height);
             var widget = new JsonWidgetItem()
             {
                 Type = widgetWindow.WidgetType.ToString(),
                 IndexTag = widgetWindow.IndexTag,
                 IsEnabled = true,
-                Position = position,
-                Size = size,
+                Position = widgetWindow.Position,
+                Size = widgetWindow.Size,
             };
             widgetList.Add(widget);
         }
+
+        EditModeOverlayWindow?.Hide();
 
         await _appSettingsService.UpdateWidgetsList(widgetList);
     }
@@ -343,5 +344,6 @@ public class WidgetManagerService : IWidgetManagerService
         window.IsResizable = isEditMode;
         var frameShellPage = window.Content as FrameShellPage;
         frameShellPage?.SetWidgetDragZoneHeight(isEditMode ? _widgetResourceService.GetDragZoneHeight(window.WidgetType) : 0);
+        // TODO: sizechanged event
     }
 }
