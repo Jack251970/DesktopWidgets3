@@ -7,8 +7,9 @@
     Loaded="OnLoaded">
 
     <Grid>
-        <Grid x:Name="AppTitleBar"
-    VerticalAlignment="Top"/>
+        <Grid x:Name="WidgetTitleBar"
+            Height="{x:Bind ViewModel.WidgetTitleBarHeight, Mode=OneWay}"
+            VerticalAlignment="Top"/>
         <Frame x:Name="NavigationFrame"/>
     </Grid>
 </Page>

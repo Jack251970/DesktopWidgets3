@@ -33,8 +33,8 @@ public sealed partial class FrameShellPage : Page
         // A custom title bar is required for full window theme and Mica support.
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
         WidgetWindow.ExtendsContentIntoTitleBar = true;
-        WidgetWindow.SetTitleBar(AppTitleBar);
-        WidgetWindow.InitializeTitleBar(AppTitleBar);
+        WidgetWindow.SetTitleBar(WidgetTitleBar);
+        WidgetWindow.InitializeTitleBar(WidgetTitleBar);
 
         // Load registered services
         _widgetManagerService = widgetManagerService;
