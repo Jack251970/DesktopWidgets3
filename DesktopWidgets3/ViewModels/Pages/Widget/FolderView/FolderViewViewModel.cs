@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 using Files.App.Helpers;
@@ -10,12 +12,26 @@ using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 
-public partial class FolderViewViewModel : ObservableRecipient
+public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
 {
     private readonly Stack<string> navigationFolderPaths = new();
 
-    private string folderPath = $"C:\\Users\\11602\\OneDrive\\文档\\My-Data";
+    private string folderPath = string.Empty;
+    private string FolderPath
+    {
+        get => folderPath;
+        set
+        {
+            if (folderPath != value)
+            {
+                folderPath = value;
+                parentFolderPath = Path.GetDirectoryName(FolderPath);
+                fileSystemWatcher.Path = value;
+            }
+        }
+    }
     private string? parentFolderPath;
+    private readonly FileSystemWatcher fileSystemWatcher = new();
 
     [ObservableProperty]
     private string _FolderName = string.Empty;
@@ -33,7 +49,18 @@ public partial class FolderViewViewModel : ObservableRecipient
 
     public FolderViewViewModel()
     {
+        
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+        FolderPath = $"C:\\Users\\11602\\OneDrive\\文档\\My-Data";
         _ = LoadFileItemsFromFolderPath(true, null);
+    }
+
+    public void OnNavigatedFrom()
+    {
+        
     }
 
     internal async Task FolderViewItemDoubleTapped(string filePath)
@@ -54,7 +81,7 @@ public partial class FolderViewViewModel : ObservableRecipient
         var isDirectory = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Directory);
         if (isDirectory)
         {
-            folderPath = filePath;
+            FolderPath = filePath;
             BitmapImage? folderPathIcon = null;
             foreach (var item in FolderViewFileItems)
             {
@@ -74,7 +101,7 @@ public partial class FolderViewViewModel : ObservableRecipient
             }
             else
             {
-                await OpenFileHelper.OpenPath(filePath, string.Empty, folderPath);
+                await OpenFileHelper.OpenPath(filePath, string.Empty, FolderPath);
             }
         }
     }
@@ -84,7 +111,7 @@ public partial class FolderViewViewModel : ObservableRecipient
         if (IsNavigateBackExecutable)
         {
             navigationFolderPaths.Pop();
-            folderPath = navigationFolderPaths.Peek();
+            FolderPath = navigationFolderPaths.Peek();
             await LoadFileItemsFromFolderPath(false, null);
         }
     }
@@ -93,7 +120,7 @@ public partial class FolderViewViewModel : ObservableRecipient
     {
         if (IsNavigateUpExecutable)
         {
-            folderPath = parentFolderPath!;
+            FolderPath = parentFolderPath!;
             await LoadFileItemsFromFolderPath(true, null);
         }
     }
@@ -105,20 +132,25 @@ public partial class FolderViewViewModel : ObservableRecipient
 
     private async Task LoadFileItemsFromFolderPath(bool pushFolderPath, BitmapImage? icon)
     {
-        
-        FolderName = Path.GetFileName(folderPath);
+        if (DiskRegex().IsMatch(FolderPath))
+        {
+            FolderName = FolderPath[..1];
+        }
+        else
+        {
+            FolderName = Path.GetFileName(FolderPath);
+        }
 
         if (pushFolderPath)
         {
-            navigationFolderPaths.Push(folderPath);
+            navigationFolderPaths.Push(FolderPath);
         }
         IsNavigateBackExecutable = navigationFolderPaths.Count > 1;
-        parentFolderPath = Path.GetDirectoryName(folderPath);
         IsNavigateUpExecutable = parentFolderPath != null;
 
         FolderViewFileItems.Clear();
 
-        var directories = Directory.GetDirectories(folderPath);
+        var directories = Directory.GetDirectories(FolderPath);
         foreach (var directory in directories)
         {
             var directoryPath = directory;
@@ -136,7 +168,7 @@ public partial class FolderViewViewModel : ObservableRecipient
             }
         }
 
-        var files = Directory.GetFiles(folderPath);
+        var files = Directory.GetFiles(FolderPath);
         foreach (var file in files)
         {
             var filePath = file;
@@ -157,8 +189,11 @@ public partial class FolderViewViewModel : ObservableRecipient
         // TODO: fix icon loading bug
         if (icon is null)
         {
-            (icon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(folderPath, true);
+            (icon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(FolderPath, true);
         }
         FolderPathIcon = icon;
     }
+
+    [GeneratedRegex("^[a-zA-Z]:\\\\$")]
+    private static partial Regex DiskRegex();
 }
