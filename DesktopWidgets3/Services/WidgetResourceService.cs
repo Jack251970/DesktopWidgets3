@@ -35,5 +35,11 @@ public class WidgetResourceService : IWidgetResourceService
         };
     }
 
-    
+    public double? GetDragZoneHeight(WidgetType widgetType)
+    {
+        return widgetType switch
+        {
+            _ => null,
+        };
+    }
 }

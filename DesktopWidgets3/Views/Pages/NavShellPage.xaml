@@ -11,7 +11,7 @@
     Loaded="OnLoaded">
     <!-- Do not try to add DataContext! -->
 
-    <Grid>
+    <Grid x:Name="ContentArea">
         <Grid x:Name="AppTitleBar"
               Canvas.ZIndex="1"
               Height="{Binding ElementName=NavigationViewControl, Path=CompactPaneLength}"

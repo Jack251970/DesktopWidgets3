@@ -2,6 +2,7 @@
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.Views.Pages;
+using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
 using Windows.Graphics;
 
@@ -308,8 +309,10 @@ public class WidgetManagerService : IWidgetManagerService
         return null;
     }
 
-    private static void SetEditMode(WidgetWindow window, bool isEditMode)
+    private void SetEditMode(WidgetWindow window, bool isEditMode)
     {
         window.IsResizable = isEditMode;
+        var frameShellPage = window.Content as FrameShellPage;
+        frameShellPage?.SetWidgetDragZoneHeight(isEditMode ? _widgetResourceService.GetDragZoneHeight(window.WidgetType) : 0);
     }
 }

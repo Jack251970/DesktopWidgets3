@@ -17,4 +17,9 @@ public partial class FrameShellViewModel : ObservableRecipient
     {
         WidgetNavigationService = widgetNavigationService;
     }
+
+    internal void SetWidgetTitleBarHeight(double titleBarHeight)
+    {
+        WidgetTitleBarHeight = titleBarHeight;
+    }
 }

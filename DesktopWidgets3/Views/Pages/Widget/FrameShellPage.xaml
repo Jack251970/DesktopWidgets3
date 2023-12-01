@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Loaded="OnLoaded">
 
-    <Grid>
+    <Grid x:Name="ContentArea">
         <Grid x:Name="WidgetTitleBar"
             Height="{x:Bind ViewModel.WidgetTitleBarHeight, Mode=OneWay}"
             VerticalAlignment="Top"/>

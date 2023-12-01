@@ -41,4 +41,10 @@ public sealed partial class FrameShellPage : Page
 
         ViewModel.WidgetNavigationService.NavigateTo(WidgetWindow.WidgetType);
     }
+
+    public void SetWidgetDragZoneHeight(double? dragZoneHeight)
+    {
+        dragZoneHeight ??= ContentArea.ActualHeight;
+        ViewModel.SetWidgetTitleBarHeight((double)dragZoneHeight);
+    }
 }

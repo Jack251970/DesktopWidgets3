@@ -9,4 +9,6 @@ public interface IWidgetResourceService
     public string GetWidgetIconSource(WidgetType widgetType);
 
     public WidgetSize GetDefaultSize(WidgetType widgetType);
+
+    double? GetDragZoneHeight(WidgetType widgetType);
 }
