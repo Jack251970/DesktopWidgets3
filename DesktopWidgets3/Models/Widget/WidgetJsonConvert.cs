@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Windows.Graphics;
 
 namespace DesktopWidgets3.Models.Widget;
 
-public class WidgetTypeConverter : JsonConverter
+public class JsonWidgetItemConverter : JsonConverter
 {
     public override bool CanConvert(Type objectType)
     {
@@ -13,11 +14,39 @@ public class WidgetTypeConverter : JsonConverter
     public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         var jsonObject = JObject.Load(reader);
-        return jsonObject.ToObject<JsonWidgetItem>();
+
+        var widgetType = jsonObject["Type"]!.Value<string>()!;
+        var widgetItem = new JsonWidgetItem
+        {
+            Type = widgetType,
+            IndexTag = jsonObject["IndexTag"]!.Value<int>(),
+            IsEnabled = jsonObject["IsEnabled"]!.Value<bool>(),
+            Position = jsonObject["Position"]!.ToObject<PointInt32>(serializer),
+            Size = jsonObject["Size"]!.ToObject<WidgetSize>(serializer),
+            Settings = widgetType switch
+            {
+                "Clock" => jsonObject["Settings"]!.ToObject<ClockWidgetSettings>(serializer)!,
+                "FolderView" => jsonObject["Settings"]!.ToObject<FolderViewWidgetSettings>(serializer)!,
+                _ => throw new ArgumentOutOfRangeException(),
+            },
+        };
+
+        return widgetItem;
     }
 
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
     {
-        throw new NotImplementedException();
+        var widgetItem = value as JsonWidgetItem;
+
+        var jsonObject = new JObject(
+            new JProperty("Type", widgetItem!.Type),
+            new JProperty("IndexTag", widgetItem.IndexTag),
+            new JProperty("IsEnabled", widgetItem.IsEnabled),
+            new JProperty("Position", JToken.FromObject(widgetItem.Position, serializer)),
+            new JProperty("Size", JToken.FromObject(widgetItem.Size, serializer)),
+            new JProperty("Settings", JToken.FromObject(widgetItem.Settings, serializer))
+        );
+
+        jsonObject.WriteTo(writer);
     }
 }

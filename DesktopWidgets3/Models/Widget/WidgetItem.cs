@@ -1,4 +1,5 @@
-﻿using Windows.Graphics;
+﻿using Newtonsoft.Json;
+using Windows.Graphics;
 
 namespace DesktopWidgets3.Models.Widget;
 
@@ -34,6 +35,7 @@ public class BaseWidgetItem
     }
 }
 
+[JsonConverter(typeof(JsonWidgetItemConverter))]
 public class JsonWidgetItem : BaseWidgetItem
 {
     public new string Type

@@ -8,6 +8,7 @@ using DesktopWidgets3.Models;
 using DesktopWidgets3.Models.Widget;
 
 using Windows.Storage;
+using Newtonsoft.Json;
 
 namespace DesktopWidgets3.Services;
 
@@ -30,6 +31,8 @@ public class LocalSettingsService : ILocalSettingsService
     private readonly string _widgetListFile;
 
     private IDictionary<string, object>? _settings;
+
+    private readonly JsonSerializerSettings _widgetListJsonSerializerSettings;
 
     private bool _isInitialized;
 
@@ -54,6 +57,8 @@ public class LocalSettingsService : ILocalSettingsService
         {
             Directory.CreateDirectory(_applicationDataFolder);
         }
+
+        _widgetListJsonSerializerSettings = new JsonSerializerSettings { Converters = { new JsonWidgetItemConverter() }};
     }
 
     public string GetApplicationDataFolder()
@@ -123,7 +128,7 @@ public class LocalSettingsService : ILocalSettingsService
 
     public async Task<List<JsonWidgetItem>> ReadWidgetListAsync()
     {
-        var _widgetList = await Task.Run(() => _fileService.Read<List<JsonWidgetItem>>(_applicationDataFolder, _widgetListFile)) ?? new List<JsonWidgetItem>();
+        var _widgetList = await Task.Run(() => _fileService.Read<List<JsonWidgetItem>>(_applicationDataFolder, _widgetListFile, _widgetListJsonSerializerSettings)) ?? new List<JsonWidgetItem>();
 
         return _widgetList;
     }
