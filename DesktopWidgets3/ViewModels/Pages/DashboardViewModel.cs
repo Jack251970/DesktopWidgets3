@@ -66,12 +66,12 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         if (dashboardListItem.IsEnabled)
         {
             await _widgetManagerService.EnableWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
-            yourWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = true;
+            yourWidgetItems.First(x => x.Type == dashboardListItem.Type && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = true;
         }
         else
         {
             await _widgetManagerService.DisableWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
-            yourWidgetItems.First(x => x.Type == dashboardListItem.Type).IsEnabled = false;
+            yourWidgetItems.First(x => x.Type == dashboardListItem.Type && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = false;
         }
 
         RefreshYourWidgets();
