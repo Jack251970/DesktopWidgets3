@@ -31,7 +31,7 @@ public class WidgetResourceService : IWidgetResourceService
             WidgetType.Disk => new WidgetSize(300, 200),
             WidgetType.FolderView => new WidgetSize(500, 500),
             WidgetType.Network => new WidgetSize(300, 200),
-            _ => new WidgetSize(300, 200),
+            _ => throw new ArgumentOutOfRangeException(),
         };
     }
 }
