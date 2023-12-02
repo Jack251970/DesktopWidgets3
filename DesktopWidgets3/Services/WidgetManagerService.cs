@@ -64,7 +64,7 @@ public class WidgetManagerService : IWidgetManagerService
         {
             if (widget.IsEnabled)
             {
-                var widgetType = (WidgetType)Enum.Parse(typeof(WidgetType), widget.Type);
+                var widgetType = widget.Type;
                 await EnableWidget(widgetType, widget.IndexTag);
                 if (TimerWidgets.Contains(widgetType))
                 {
@@ -85,7 +85,7 @@ public class WidgetManagerService : IWidgetManagerService
         var widgetList = await _appSettingsService.GetWidgetsList();
 
         // find index tag
-        var sameTypeWidgets = widgetList.Where(x => x.Type == widgetType.ToString());
+        var sameTypeWidgets = widgetList.Where(x => x.Type == widgetType);
         JsonWidgetItem? widget = null;
         if (indexTag == null)
         {
@@ -111,7 +111,7 @@ public class WidgetManagerService : IWidgetManagerService
         {
             widget = new JsonWidgetItem()
             {
-                Type = widgetType.ToString(),
+                Type = widgetType,
                 IndexTag = currentIndexTag,
                 IsEnabled = true,
                 Position = new PointInt32(-1, -1),
@@ -161,7 +161,7 @@ public class WidgetManagerService : IWidgetManagerService
         if (widgetWindow != null)
         {
             var widgetList = await _appSettingsService.GetWidgetsList();
-            var widget = widgetList.FirstOrDefault(x => x.Type == widgetType.ToString() && x.IndexTag == indexTag);
+            var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
 
             if (widget != null)
             {
@@ -175,7 +175,7 @@ public class WidgetManagerService : IWidgetManagerService
             {
                 widget = new JsonWidgetItem()
                 {
-                    Type = widgetType.ToString(),
+                    Type = widgetType,
                     IndexTag = indexTag,
                     IsEnabled = false,
                     Position = widgetWindow.Position,
@@ -257,7 +257,7 @@ public class WidgetManagerService : IWidgetManagerService
         List<DashboardWidgetItem> dashboardItemList = new();
         foreach (var widget in widgetList)
         {
-            var widgetType = (WidgetType)Enum.Parse(typeof(WidgetType), widget.Type);
+            var widgetType = widget.Type;
             dashboardItemList.Add(new DashboardWidgetItem()
             {
                 Type = widgetType,
@@ -277,7 +277,7 @@ public class WidgetManagerService : IWidgetManagerService
         {
             var widget = new JsonWidgetItem()
             {
-                Type = widgetWindow.WidgetType.ToString(),
+                Type = widgetWindow.WidgetType,
                 IndexTag = widgetWindow.IndexTag,
                 IsEnabled = true,
                 Position = widgetWindow.Position,
@@ -327,7 +327,7 @@ public class WidgetManagerService : IWidgetManagerService
 
             var widget = new JsonWidgetItem()
             {
-                Type = widgetWindow.WidgetType.ToString(),
+                Type = widgetWindow.WidgetType,
                 IndexTag = widgetWindow.IndexTag,
                 IsEnabled = true,
                 Position = widgetWindow.Position,
@@ -347,7 +347,7 @@ public class WidgetManagerService : IWidgetManagerService
         {
             SetEditMode(widgetWindow, false);
 
-            var originalWidget = originalWidgetList.First(x => x.Type == widgetWindow.WidgetType.ToString() && x.IndexTag == widgetWindow.IndexTag);
+            var originalWidget = originalWidgetList.First(x => x.Type == widgetWindow.WidgetType && x.IndexTag == widgetWindow.IndexTag);
 
             if (originalWidget != null)
             {

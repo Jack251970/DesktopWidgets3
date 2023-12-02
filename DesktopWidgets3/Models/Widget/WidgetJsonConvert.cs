@@ -15,7 +15,7 @@ public class JsonWidgetItemConverter : JsonConverter
     {
         var jsonObject = JObject.Load(reader);
 
-        var widgetType = jsonObject["Type"]!.Value<string>()!;
+        var widgetType = (WidgetType)Enum.Parse(typeof(WidgetType), jsonObject["Type"]!.Value<string>()!);
         var widgetItem = new JsonWidgetItem
         {
             Type = widgetType,
@@ -25,8 +25,8 @@ public class JsonWidgetItemConverter : JsonConverter
             Size = jsonObject["Size"]!.ToObject<WidgetSize>(serializer),
             Settings = widgetType switch
             {
-                "Clock" => jsonObject["Settings"]!.ToObject<ClockWidgetSettings>(serializer)!,
-                "FolderView" => jsonObject["Settings"]!.ToObject<FolderViewWidgetSettings>(serializer)!,
+                WidgetType.Clock => jsonObject["Settings"]!.ToObject<ClockWidgetSettings>(serializer)!,
+                WidgetType.FolderView => jsonObject["Settings"]!.ToObject<FolderViewWidgetSettings>(serializer)!,
                 _ => throw new ArgumentOutOfRangeException(),
             },
         };
@@ -39,7 +39,7 @@ public class JsonWidgetItemConverter : JsonConverter
         var widgetItem = value as JsonWidgetItem;
 
         var jsonObject = new JObject(
-            new JProperty("Type", widgetItem!.Type),
+            new JProperty("Type", widgetItem!.Type.ToString()),
             new JProperty("IndexTag", widgetItem.IndexTag),
             new JProperty("IsEnabled", widgetItem.IsEnabled),
             new JProperty("Position", JToken.FromObject(widgetItem.Position, serializer)),

@@ -38,12 +38,6 @@ public class BaseWidgetItem
 [JsonConverter(typeof(JsonWidgetItemConverter))]
 public class JsonWidgetItem : BaseWidgetItem
 {
-    public new string Type
-    {
-        get => base.Type.ToString();
-        set => base.Type = (WidgetType)Enum.Parse(typeof(WidgetType), value);
-    }
-
     public PointInt32 Position { get; set; }
 
     public WidgetSize Size { get; set; }
