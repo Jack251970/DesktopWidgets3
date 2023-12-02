@@ -21,7 +21,7 @@ public interface IWidgetManagerService
 
     WidgetWindow GetCurrentWidgetWindow();
 
-    DashboardWidgetItem GetDashboardWidgetItem();
+    DashboardWidgetItem GetCurrentEnabledDashboardWidgetItem();
 
     List<DashboardWidgetItem> GetAllWidgetItems();
 

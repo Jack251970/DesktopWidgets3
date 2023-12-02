@@ -53,7 +53,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     {
         await _widgetManagerService.EnableWidget(widgetType, null);
 
-        var widgetItem = _widgetManagerService.GetDashboardWidgetItem();
+        var widgetItem = _widgetManagerService.GetCurrentEnabledDashboardWidgetItem();
         widgetItem.IsEnabled = true;
         widgetItem.EnabledChangedCallback = EnabledChangedOnUI;
         yourWidgetItems.Add(widgetItem);
@@ -64,6 +64,10 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     internal async void MenuFlyoutItemDeleteWidgetClick(WidgetType widgetType, int indexTag)
     {
         await _widgetManagerService.DeleteWidget(widgetType, indexTag);
+
+        yourWidgetItems.Remove(yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag));
+
+        RefreshYourWidgets();
     }
 
     private async void EnabledChangedOnUI(DashboardWidgetItem dashboardListItem)

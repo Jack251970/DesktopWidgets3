@@ -89,13 +89,16 @@ public class WidgetManagerService : IWidgetManagerService
         JsonWidgetItem? widget = null;
         if (indexTag == null)
         {
-            if (sameTypeWidgets.Any())
+            var indexTags = sameTypeWidgets.Select(x => x.IndexTag).ToList();
+            indexTags.Sort();
+            indexTag = 0;
+            foreach (var tag in indexTags)
             {
-                indexTag = sameTypeWidgets.Max(x => x.IndexTag) + 1;
-            }
-            else
-            {
-                indexTag = 0;
+                if (tag != indexTag)
+                {
+                    break;
+                }
+                indexTag++;
             }
         }
         else
@@ -200,31 +203,30 @@ public class WidgetManagerService : IWidgetManagerService
 
     public async Task DeleteWidget(WidgetType widgetType, int indexTag)
     {
+        var widgetList = await _appSettingsService.GetWidgetsList();
+        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+
+        widget ??= new JsonWidgetItem()
+        {
+            Type = widgetType,
+            IndexTag = indexTag,
+            IsEnabled = true,
+            Position = new PointInt32(-1, -1),
+            Size = _widgetResourceService.GetDefaultSize(widgetType),
+        };
+        await _appSettingsService.DeleteWidgetsList(widget);
+
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
         if (widgetWindow != null)
         {
-            var widgetList = await _appSettingsService.GetWidgetsList();
-            var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
-
-            widget ??= new JsonWidgetItem()
-            {
-                Type = widgetType,
-                IndexTag = indexTag,
-                IsEnabled = true,
-                Position = widgetWindow.Position,
-                Size = widgetWindow.Size,
-            };
-            await _appSettingsService.DeleteWidgetsList(widget);
-
             SetEditMode(widgetWindow, false);
             widgetWindow.Close();
             WidgetsList.Remove(widgetWindow);
-        }
 
-        // disable timer if needed
-        if (!WidgetsList.Any(x => TimerWidgets.Contains(x.WidgetType)))
-        {
-            _timersService.StopUpdateTimeTimer();
+            if (!WidgetsList.Any(x => TimerWidgets.Contains(x.WidgetType)))
+            {
+                _timersService.StopUpdateTimeTimer();
+            }
         }
     }
 
@@ -254,7 +256,7 @@ public class WidgetManagerService : IWidgetManagerService
         return WidgetsList.Last();
     }
 
-    public DashboardWidgetItem GetDashboardWidgetItem()
+    public DashboardWidgetItem GetCurrentEnabledDashboardWidgetItem()
     {
         return new DashboardWidgetItem()
         {
