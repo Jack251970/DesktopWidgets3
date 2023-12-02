@@ -198,6 +198,36 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
+    public async Task DeleteWidget(WidgetType widgetType, int indexTag)
+    {
+        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
+        if (widgetWindow != null)
+        {
+            var widgetList = await _appSettingsService.GetWidgetsList();
+            var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+
+            widget ??= new JsonWidgetItem()
+            {
+                Type = widgetType,
+                IndexTag = indexTag,
+                IsEnabled = true,
+                Position = widgetWindow.Position,
+                Size = widgetWindow.Size,
+            };
+            await _appSettingsService.DeleteWidgetsList(widget);
+
+            SetEditMode(widgetWindow, false);
+            widgetWindow.Close();
+            WidgetsList.Remove(widgetWindow);
+        }
+
+        // disable timer if needed
+        if (!WidgetsList.Any(x => TimerWidgets.Contains(x.WidgetType)))
+        {
+            _timersService.StopUpdateTimeTimer();
+        }
+    }
+
     public async Task DisableWidget(WidgetWindow widgetWindow)
     {
         // invoke from widget window iteself

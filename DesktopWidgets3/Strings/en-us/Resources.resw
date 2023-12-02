@@ -223,10 +223,13 @@
   <data name="Dashboard_YourWidgets.Text" xml:space="preserve">
     <value>Your widgets</value>
   </data>
-  <data name="FolderViewFlyout_EnterEditMode.Text" xml:space="preserve">
+  <data name="MenuFlyoutItem_EnterEditMode.Text" xml:space="preserve">
     <value>Enter edit mode</value>
   </data>
-  <data name="FolderViewFlyout_DisableWidget.Text" xml:space="preserve">
+  <data name="MenuFlyoutItem_DisableWidget.Text" xml:space="preserve">
     <value>Disable this widget</value>
+  </data>
+  <data name="MenuFlyoutItem_DeleteWidget.Text" xml:space="preserve">
+    <value>Delete this widget</value>
   </data>
 </root>

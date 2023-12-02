@@ -16,4 +16,6 @@ public interface IAppSettingsService
     Task UpdateWidgetsList(JsonWidgetItem item);
 
     Task UpdateWidgetsList(List<JsonWidgetItem> widgetList);
+
+    Task DeleteWidgetsList(JsonWidgetItem widgetItem);
 }

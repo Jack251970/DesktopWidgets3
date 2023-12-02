@@ -11,6 +11,14 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <MenuFlyout x:Key="DashboardFlyout">
+            <MenuFlyoutItem
+                x:Uid="MenuFlyoutItem_DeleteWidget"
+                Click="MenuFlyoutItemDeleteWidget_Click" />
+        </MenuFlyout>
+    </Page.Resources>
+
     <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
         <StackPanel Padding="0,0,0,16" Orientation="Vertical">
             <TextBlock
@@ -32,8 +40,7 @@
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             Background="Transparent"
-                            BorderThickness="0"
-                            Tag="{x:Bind Type, Mode=OneWay}">
+                            BorderThickness="0">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -66,7 +73,7 @@
                                         VerticalContentAlignment="Center"
                                         HorizontalContentAlignment="Center"
                                         Click="AllWidgetsItemClick"
-                                        Tag="{x:Bind Type, Mode=OneWay}">
+                                        models:WidgetProperties.WidgetType="{x:Bind Type, Mode=OneTime}">
                                         <FontIcon FontSize="12" Glyph="&#xE710;" />
                                     </Button>
                                 </Grid>
@@ -101,7 +108,10 @@
                             HorizontalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="0"
-                            Tag="{x:Bind Type, Mode=OneWay}">
+                            ContextFlyout="{StaticResource DashboardFlyout}"
+                            RightTapped="WidgetItem_RightTapped"
+                            models:WidgetProperties.WidgetType="{x:Bind Type, Mode=OneTime}"
+                            models:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -161,7 +171,10 @@
                             HorizontalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="0"
-                            Tag="{x:Bind Type, Mode=OneWay}">
+                            ContextFlyout="{StaticResource DashboardFlyout}"
+                            RightTapped="WidgetItem_RightTapped"
+                            models:WidgetProperties.WidgetType="{x:Bind Type, Mode=OneTime}"
+                            models:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"

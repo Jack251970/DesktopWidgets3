@@ -12,13 +12,13 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <MenuFlyout x:Key="FolderViewFlyout">
+        <MenuFlyout x:Key="ClockFlyout">
             <MenuFlyoutItem
-                x:Uid="FolderViewFlyout_DisableWidget"
-                Click="FolderViewFlyoutDisableWidget_Click" />
+                x:Uid="MenuFlyoutItem_DisableWidget"
+                Click="MenuFlyoutItemDisableWidget_Click" />
             <MenuFlyoutSeparator/>
             <MenuFlyoutItem
-                x:Uid="FolderViewFlyout_EnterEditMode"
+                x:Uid="MenuFlyoutItem_EnterEditMode"
                 Click="MenuFlyoutItemEnterEidtMode_Click"/>
         </MenuFlyout>
     </Page.Resources>
@@ -27,7 +27,7 @@
         x:Name="ContentArea"
         Background="Transparent"
         RightTapped="ContentArea_RightTapped"
-        ContextFlyout="{StaticResource FolderViewFlyout}">
+        ContextFlyout="{StaticResource ClockFlyout}">
         <TextBlock 
             Text="{x:Bind ViewModel.SystemTime, Mode=OneWay}"
             HorizontalAlignment="Center"

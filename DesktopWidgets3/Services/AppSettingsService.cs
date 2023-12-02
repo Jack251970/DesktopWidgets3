@@ -95,6 +95,17 @@ public class AppSettingsService : IAppSettingsService
         await _localSettingsService.SaveWidgetListAsync(WidgetList);
     }
 
+    public async Task DeleteWidgetsList(JsonWidgetItem widgetItem)
+    {
+        var index = WidgetList.FindIndex(x => x.Type == widgetItem.Type && x.IndexTag == widgetItem.IndexTag);
+        if (index != -1)
+        {
+            WidgetList.RemoveAt(index);
+        }
+
+        await _localSettingsService.SaveWidgetListAsync(WidgetList);
+    }
+
     #endregion
 
     #region Storage Ultility Method

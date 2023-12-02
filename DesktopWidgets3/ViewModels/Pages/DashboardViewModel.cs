@@ -61,6 +61,11 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         RefreshYourWidgets();
     }
 
+    internal async void MenuFlyoutItemDeleteWidgetClick(WidgetType widgetType, int indexTag)
+    {
+        await _widgetManagerService.DeleteWidget(widgetType, indexTag);
+    }
+
     private async void EnabledChangedOnUI(DashboardWidgetItem dashboardListItem)
     {
         if (dashboardListItem.IsEnabled)

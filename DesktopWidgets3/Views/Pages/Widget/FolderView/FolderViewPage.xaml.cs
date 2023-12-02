@@ -57,16 +57,6 @@ public sealed partial class FolderViewPage : Page
         }
     }
 
-    private void MenuFlyoutItemEnterEidtMode_Click(object sender, RoutedEventArgs e)
-    {
-        _widgetManagerService.EnterEditMode();
-    }
-
-    private void FolderViewFlyoutDisableWidget_Click(object sender, RoutedEventArgs e)
-    {
-        _widgetManagerService.DisableWidget(WidgetWindow);
-    }
-
     private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
         var element = sender as FrameworkElement;
@@ -75,5 +65,15 @@ public sealed partial class FolderViewPage : Page
             element.ContextFlyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
         }
+    }
+
+    private void MenuFlyoutItemDisableWidget_Click(object sender, RoutedEventArgs e)
+    {
+        _widgetManagerService.DisableWidget(WidgetWindow);
+    }
+
+    private void MenuFlyoutItemEnterEidtMode_Click(object sender, RoutedEventArgs e)
+    {
+        _widgetManagerService.EnterEditMode();
     }
 }

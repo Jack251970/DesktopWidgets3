@@ -13,6 +13,8 @@ public interface IWidgetManagerService
 
     Task DisableWidget(WidgetType widgetType, int indexTag);
 
+    Task DeleteWidget(WidgetType widgetType, int indexTag);
+
     Task DisableWidget(WidgetWindow widgetWindow);
 
     void CloseAllWidgets();
