@@ -123,12 +123,4 @@ public class NavigationService : INavigationService
             Navigated?.Invoke(sender, e);
         }
     }
-
-    public void InitializeDefaultPage(string pageKey, object? parameter = null, bool clearNavigation = false)
-    {
-        if (_frame != null)
-        {
-            NavigateTo(pageKey, parameter, clearNavigation);
-        }
-    }
 }

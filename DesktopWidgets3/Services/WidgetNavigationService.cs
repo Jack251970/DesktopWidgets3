@@ -124,14 +124,4 @@ public class WidgetNavigationService : IWidgetNavigationService
             Navigated?.Invoke(sender, e);
         }
     }
-
-    public bool InitializePage(WidgetType widgetType, object? parameter = null, bool clearNavigation = false)
-    {
-        if (_frame == null)
-        {
-            throw new NullReferenceException("Frame is null.");
-        }
-
-        return NavigateTo(widgetType, parameter, clearNavigation);
-    }
 }

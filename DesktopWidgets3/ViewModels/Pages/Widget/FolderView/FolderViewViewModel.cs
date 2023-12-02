@@ -60,9 +60,31 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
 
     public FolderViewViewModel()
     {
+        InitializeFileSystemWatcher();
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+        FolderPath = $"C:\\Users\\11602\\OneDrive\\文档\\My-Data";
+        _ = LoadFileItemsFromFolderPath(true, null);
+    }
+
+    public void OnNavigatedFrom()
+    {
+
+    }
+
+    private void InitializeFileSystemWatcher()
+    {
+        fileSystemWatcher.IncludeSubdirectories = false;
+        fileSystemWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName;
+        fileSystemWatcher.EnableRaisingEvents = false;
+
         fileSystemWatcher.Created += FileSystemWatcher_Created;
         fileSystemWatcher.Deleted += FileSystemWatcher_Deleted;
         fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
+
+        // TODO: Add changed event and NotifyFilters.LastWrite notify filter
     }
 
     private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
@@ -165,17 +187,6 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
                 index++;
             }
         });
-    }
-
-    public void OnNavigatedTo(object parameter)
-    {
-        FolderPath = $"C:\\Users\\11602\\OneDrive\\文档\\My-Data";
-        _ = LoadFileItemsFromFolderPath(true, null);
-    }
-
-    public void OnNavigatedFrom()
-    {
-        
     }
 
     internal async Task FolderViewItemDoubleTapped(string filePath)

@@ -21,6 +21,4 @@ public interface IWidgetNavigationService
     bool NavigateTo(WidgetType widgetType, object? parameter = null, bool clearNavigation = false);
 
     bool GoBack();
-
-    bool InitializePage(WidgetType widgetType, object? parameter = null, bool clearNavigation = false);
 }
