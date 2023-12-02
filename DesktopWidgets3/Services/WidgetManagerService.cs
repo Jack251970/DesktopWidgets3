@@ -131,14 +131,16 @@ public class WidgetManagerService : IWidgetManagerService
         // create widget window
         var widgetWindow = new WidgetWindow(widgetType, currentIndexTag);
         WidgetsList.Add(widgetWindow);
-        await _activationService.ActivateWidgetWindowAsync(widgetWindow);
+
+        // handle widget settings
+        await _activationService.ActivateWidgetWindowAsync(widgetWindow, widget.Settings);
 #if DBEUG
         // wait for 1 second to avoid Access Violation exception under debug mode
         await Task.Delay(1000);
 #endif
-        widgetWindow.IsResizable = false;
 
-        // set window size and position
+        // set window style, size and position
+        widgetWindow.IsResizable = false;
         widgetWindow.Size = widget.Size;
         if (widget.Position.X != -1 && widget.Position.Y != -1)
         {

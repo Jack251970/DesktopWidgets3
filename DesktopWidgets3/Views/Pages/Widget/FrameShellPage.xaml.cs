@@ -41,7 +41,5 @@ public sealed partial class FrameShellPage : Page
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
-
-        ViewModel.WidgetNavigationService.NavigateTo(WidgetWindow.WidgetType);
     }
 }

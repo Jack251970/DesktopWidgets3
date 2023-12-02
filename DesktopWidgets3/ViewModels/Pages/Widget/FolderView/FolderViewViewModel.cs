@@ -58,6 +58,8 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
 
     private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
 
+    private bool _isInitialized;
+
     public FolderViewViewModel()
     {
         InitializeFileSystemWatcher();
@@ -65,8 +67,21 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
 
     public void OnNavigatedTo(object parameter)
     {
-        FolderPath = $"C:\\Users\\11602\\OneDrive\\文档\\My-Data";
-        _ = LoadFileItemsFromFolderPath(true, null);
+        if (parameter is FolderViewWidgetSettings settings)
+        {
+            FolderPath = settings.FolderPath;
+            _ = LoadFileItemsFromFolderPath(true, null);
+            _isInitialized = true;
+
+            return;
+        }
+        
+        if (!_isInitialized)
+        {
+            FolderPath = $"C:\\";
+            _ = LoadFileItemsFromFolderPath(true, null);
+            _isInitialized = true;
+        }
     }
 
     public void OnNavigatedFrom()

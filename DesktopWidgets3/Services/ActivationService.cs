@@ -14,7 +14,6 @@ public class ActivationService : IActivationService
     private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
-    private UIElement? _shell = null;
 
     public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IThemeSelectorService themeSelectorService)
     {
@@ -31,8 +30,8 @@ public class ActivationService : IActivationService
         // Set the MainWindow Content.
         if (App.MainWindow!.Content == null)
         {
-            _shell = App.GetService<NavShellPage>();
-            App.MainWindow.Content = _shell ?? new Frame();
+            var shell = App.GetService<NavShellPage>();
+            App.MainWindow.Content = shell is null ? new Frame() : shell;
         }
 
         // Handle activation via ActivationHandlers.
@@ -45,16 +44,17 @@ public class ActivationService : IActivationService
         await StartupAsync(App.MainWindow);
     }
 
-    public async Task ActivateWidgetWindowAsync(WidgetWindow window)
+    public async Task ActivateWidgetWindowAsync(WidgetWindow window, object widgetSettings)
     {
         // Execute tasks before activation.
         await InitializeAsync();
 
-        // Set the Window Content.
+        // Set the Window Content and handle widget settings.
         if (window.Content == null)
         {
-            _shell = App.GetService<FrameShellPage>();
-            window.Content = _shell ?? new Frame();
+            var shell = App.GetService<FrameShellPage>();
+            window.Content = shell is null ? new Frame() : shell;
+            shell?.ViewModel.WidgetNavigationService.NavigateTo(window.WidgetType, widgetSettings);
         }
 
         // Activate the Window.
