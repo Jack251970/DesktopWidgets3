@@ -237,8 +237,6 @@ public class WidgetManagerService : IWidgetManagerService
         var indexTag = widgetWindow.IndexTag;
 
         await DisableWidget(widgetType, indexTag);
-
-        // TODO: refresh dashboard if needed
     }
 
     public void CloseAllWidgets()
@@ -262,6 +260,7 @@ public class WidgetManagerService : IWidgetManagerService
         {
             Type = currentWidgetType,
             IndexTag = currentIndexTag,
+            IsEnabled = true,
             Label = _widgetResourceService.GetWidgetLabel(currentWidgetType),
             Icon = _widgetResourceService.GetWidgetIconSource(currentWidgetType),
         };

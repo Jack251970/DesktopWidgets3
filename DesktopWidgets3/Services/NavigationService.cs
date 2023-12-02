@@ -17,6 +17,8 @@ public class NavigationService : INavigationService
     private object? _lastParameter;
     private Frame? _frame;
 
+    private readonly Dictionary<string, object?> _nextParameter = new();
+
     public event NavigatedEventHandler? Navigated;
 
     public Frame? Frame
@@ -83,6 +85,12 @@ public class NavigationService : INavigationService
 
     public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
     {
+        if (_nextParameter.ContainsKey(pageKey) && parameter == null)
+        {
+            parameter = _nextParameter[pageKey];
+            _nextParameter.Remove(pageKey);
+        }
+
         var pageType = _pageService.GetPageType(pageKey);
 
         if (_frame != null && (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameter))))
@@ -103,6 +111,21 @@ public class NavigationService : INavigationService
         }
 
         return false;
+    }
+
+    public string? GetCurrentPageKey()
+    {
+        if (_frame?.Content is Page page)
+        {
+            return _pageService.GetPageKey(page.GetType());
+        }
+
+        return null;
+    }
+
+    public void SetNextParameter(string pageKey, object? parameter)
+    {
+        _nextParameter[pageKey] = parameter;
     }
 
     private void OnNavigated(object sender, NavigationEventArgs e)

@@ -34,6 +34,19 @@ public class PageService : IPageService
         return page;
     }
 
+    public string GetPageKey(Type pageType)
+    {
+        lock (_pages)
+        {
+            if (!_pages.ContainsValue(pageType))
+            {
+                throw new ArgumentException($"Page not found: {pageType}. Did you forget to call PageService.Configure?");
+            }
+
+            return _pages.FirstOrDefault(p => p.Value == pageType).Key;
+        }
+    }
+
     private void Configure<VM, V>()
         where VM : ObservableObject
         where V : Page

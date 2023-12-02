@@ -12,16 +12,14 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     public ObservableCollection<DashboardWidgetItem> EnabledWidgets { get; set; } = new();
     public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = new();
 
-    private readonly IAppSettingsService _appSettingsService;
     private readonly IWidgetManagerService _widgetManagerService;
 
     private List<DashboardWidgetItem> yourWidgetItems = new();
 
     private bool _isInitialized;
 
-    public DashboardViewModel(IAppSettingsService appSettingsService, IWidgetManagerService widgetManagerService)
+    public DashboardViewModel(IWidgetManagerService widgetManagerService)
     {
-        _appSettingsService = appSettingsService;
         _widgetManagerService = widgetManagerService;
 
         LoadAllWidgets();
@@ -32,15 +30,30 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         if (!_isInitialized)
         {
             yourWidgetItems = await _widgetManagerService.GetYourWidgetItemsAsync();
-
             foreach (var item in yourWidgetItems)
             {
-                item.EnabledChangedCallback = EnabledChangedOnUI;
+                item.EnabledChangedCallback = WidgetEnabledChanged;
             }
 
             RefreshYourWidgets();
 
             _isInitialized = true;
+            return;
+        }
+
+        if (parameter is Dictionary<string, object> param)
+        {
+            if (param.TryGetValue("WidgetType", out var widgetTypeObj) && param.TryGetValue("IndexTag", out var indexTagObj))
+            {
+                var widgetType = (WidgetType)widgetTypeObj;
+                var indexTag = (int)indexTagObj;
+            
+                var widgetItem = yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag);
+                widgetItem.IsEnabled = false;
+                widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+            
+                RefreshYourWidgets();
+            }
         }
     }
 
@@ -55,7 +68,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 
         var widgetItem = _widgetManagerService.GetCurrentEnabledDashboardWidgetItem();
         widgetItem.IsEnabled = true;
-        widgetItem.EnabledChangedCallback = EnabledChangedOnUI;
+        widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
         yourWidgetItems.Add(widgetItem);
 
         RefreshYourWidgets();
@@ -64,13 +77,12 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     internal async void MenuFlyoutItemDeleteWidgetClick(WidgetType widgetType, int indexTag)
     {
         await _widgetManagerService.DeleteWidget(widgetType, indexTag);
-
         yourWidgetItems.Remove(yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag));
 
         RefreshYourWidgets();
     }
 
-    private async void EnabledChangedOnUI(DashboardWidgetItem dashboardListItem)
+    private async void WidgetEnabledChanged(DashboardWidgetItem dashboardListItem)
     {
         if (dashboardListItem.IsEnabled)
         {
