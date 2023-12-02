@@ -8,20 +8,13 @@ namespace DesktopWidgets3.Core.Services;
 
 public class FileService : IFileService
 {
-    public T Read<T>(string folderPath, string fileName, JsonConverter jsonConverter = null)
+    public T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null)
     {
         var path = Path.Combine(folderPath, fileName);
         if (File.Exists(path))
         {
             var json = File.ReadAllText(path);
-            if (jsonConverter == null)
-            {
-                return JsonConvert.DeserializeObject<T>(json);
-            }
-            else
-            {
-                return JsonConvert.DeserializeObject<T>(json, jsonConverter);
-            }
+            return JsonConvert.DeserializeObject<T>(json, jsonSerializerSettings);
         }
 
         return default;
