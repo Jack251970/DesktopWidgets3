@@ -163,9 +163,6 @@
   <data name="Shell_Home.Content" xml:space="preserve">
     <value>Home</value>
   </data>
-  <data name="Shell_WidgetSetting.Content" xml:space="preserve">
-    <value>Widgets</value>
-  </data>
   <data name="TrayIcon_Exit.Description" xml:space="preserve">
     <value>Exit application</value>
   </data>

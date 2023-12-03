@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Controls\TrayMenuControl.xaml" />
+    <None Remove="Views\Controls\Widget\WidgetSettingsControl.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\EditModeOverlayPage.xaml" />
     <None Remove="Views\Pages\WidgetSettingPage.xaml" />
@@ -104,6 +105,9 @@
 
   <ItemGroup>
     <Page Update="Views\Controls\TrayMenuControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Controls\Widget\WidgetSettingsControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Pages\DashboardPage.xaml">
