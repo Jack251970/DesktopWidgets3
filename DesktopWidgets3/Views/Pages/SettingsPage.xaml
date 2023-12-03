@@ -9,22 +9,6 @@
     d:DataContext="{d:DesignInstance Type=pages:SettingsViewModel}"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
-    <Page.Resources>
-        <!--  These styles can be referenced to create a consistent SettingsPage layout  -->
-
-        <!--  Spacing between cards  -->
-        <x:Double x:Key="SettingsCardSpacing">3</x:Double>
-
-        <!--  Style (inc. the correct spacing) of a section header  -->
-        <Style
-            x:Key="SettingsSectionHeaderTextBlockStyle"
-            BasedOn="{StaticResource BodyStrongTextBlockStyle}"
-            TargetType="TextBlock">
-            <Style.Setters>
-                <Setter Property="Margin" Value="1,10,0,5" />
-            </Style.Setters>
-        </Style>
-    </Page.Resources>
 
     <Grid x:Name="ContentArea">
         <ScrollViewer

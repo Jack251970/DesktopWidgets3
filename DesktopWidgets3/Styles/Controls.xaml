@@ -63,6 +63,15 @@
         <Setter Property="FontSize" Value="13" />
     </Style>
 
+    <!--  Style (inc. the correct spacing) of a section header  -->
+    <Style x:Key="SettingsSectionHeaderTextBlockStyle"
+        BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+        TargetType="TextBlock">
+        <Style.Setters>
+            <Setter Property="Margin" Value="1,10,0,5" />
+        </Style.Setters>
+    </Style>
+
     <!-- ToggleSwitch -->
     <!-- From: https://github.com/microsoft/PowerToys -->
     <Style
