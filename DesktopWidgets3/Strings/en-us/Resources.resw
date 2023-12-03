@@ -220,15 +220,6 @@
   <data name="Dashboard_YourWidgets.Text" xml:space="preserve">
     <value>Your widgets</value>
   </data>
-  <data name="MenuFlyoutItem_EnterEditMode.Text" xml:space="preserve">
-    <value>Enter edit mode</value>
-  </data>
-  <data name="MenuFlyoutItem_DisableWidget.Text" xml:space="preserve">
-    <value>Disable this widget</value>
-  </data>
-  <data name="MenuFlyoutItem_DeleteWidget.Text" xml:space="preserve">
-    <value>Delete this widget</value>
-  </data>
   <data name="Dialog_Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -258,5 +249,14 @@
   </data>
   <data name="WidgetSettings_ShowSeconds_Card.Description" xml:space="preserve">
     <value>Show seconds in the widget</value>
+  </data>
+  <data name="MenuFlyoutItem_DeleteWidget" xml:space="preserve">
+    <value>Delete this widget</value>
+  </data>
+  <data name="MenuFlyoutItem_DisableWidget" xml:space="preserve">
+    <value>Disable this widget</value>
+  </data>
+  <data name="MenuFlyoutItem_EnterEditMode" xml:space="preserve">
+    <value>Enter edit mode</value>
   </data>
 </root>

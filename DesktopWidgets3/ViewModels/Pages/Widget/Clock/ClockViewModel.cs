@@ -6,14 +6,14 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 
-public partial class ClockViewModel : ObservableRecipient, INavigationAware
+public partial class ClockViewModel : BaseWidgetViewModel, INavigationAware
 {
-    private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
-
     [ObservableProperty]
     private string _systemTime = string.Empty;
 
     private string timingFormat = "T";
+
+    private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
 
     private bool _isInitialized;
 

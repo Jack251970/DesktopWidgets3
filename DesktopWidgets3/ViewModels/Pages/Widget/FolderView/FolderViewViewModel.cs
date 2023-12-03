@@ -14,7 +14,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 
-public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
+public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
 {
     public ObservableCollection<FolderViewFileItem> FolderViewFileItems { get; set; } = new();
 

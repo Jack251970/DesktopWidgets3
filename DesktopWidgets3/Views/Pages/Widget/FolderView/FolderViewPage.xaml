@@ -12,21 +12,6 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <MenuFlyout x:Key="FolderViewFlyout">
-            <MenuFlyoutItem
-                x:Uid="MenuFlyoutItem_DisableWidget"
-                Click="MenuFlyoutItemDisableWidget_Click" />
-            <MenuFlyoutItem
-                x:Uid="MenuFlyoutItem_DeleteWidget"
-                Click="MenuFlyoutItemDeleteWidget_Click" />
-            <MenuFlyoutSeparator/>
-            <MenuFlyoutItem
-	            x:Uid="MenuFlyoutItem_EnterEditMode"
-	            Click="MenuFlyoutItemEnterEidtMode_Click"/>
-        </MenuFlyout>
-    </Page.Resources>
-
     <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -35,8 +20,7 @@
 
         <Grid x:Name="Toolbar"
             Background="Transparent"
-            RightTapped="Toolbar_RightTapped"
-            ContextFlyout="{StaticResource FolderViewFlyout}">
+            RightTapped="Toolbar_RightTapped">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
