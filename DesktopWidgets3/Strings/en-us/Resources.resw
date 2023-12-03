@@ -202,19 +202,19 @@
   <data name="Dashboard_EnabledWidgets.Text" xml:space="preserve">
     <value>Enabled widgets</value>
   </data>
-  <data name="WidgetClockLabel" xml:space="preserve">
+  <data name="Widget_Clock_Label" xml:space="preserve">
     <value>Clock</value>
   </data>
-  <data name="WidgetCPULabel" xml:space="preserve">
+  <data name="Widget_CPU_Label" xml:space="preserve">
     <value>CPU &amp; Memory</value>
   </data>
-  <data name="WidgetDiskLabel" xml:space="preserve">
+  <data name="Widget_Disk_Label" xml:space="preserve">
     <value>Disk</value>
   </data>
-  <data name="WidgetFolderViewLabel" xml:space="preserve">
+  <data name="Widget_FolderView_Label" xml:space="preserve">
     <value>Folder View</value>
   </data>
-  <data name="WidgetNetworkLabel" xml:space="preserve">
+  <data name="Widget_Network_Label" xml:space="preserve">
     <value>Network</value>
   </data>
   <data name="Dashboard_AllWidgets.Text" xml:space="preserve">
