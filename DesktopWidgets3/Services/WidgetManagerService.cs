@@ -342,7 +342,7 @@ public class WidgetManagerService : IWidgetManagerService
         App.MainWindow!.Close();
     }
 
-    public async void ExitEditModeAndSave()
+    public async void SaveAndExitEditMode()
     {
         List<JsonWidgetItem> widgetList = new();
 
@@ -366,7 +366,7 @@ public class WidgetManagerService : IWidgetManagerService
         await _appSettingsService.UpdateWidgetsList(widgetList);
     }
 
-    public void ExitEditModeAndCancel()
+    public void CancelAndExitEditMode()
     {
         foreach (var widgetWindow in WidgetsList)
         {

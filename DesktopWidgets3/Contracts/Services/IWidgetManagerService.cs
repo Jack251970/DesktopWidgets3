@@ -27,9 +27,9 @@ public interface IWidgetManagerService
 
     void EnterEditMode();
 
-    void ExitEditModeAndSave();
+    void SaveAndExitEditMode();
 
-    void ExitEditModeAndCancel();
+    void CancelAndExitEditMode();
 
     Task<BaseWidgetSettings?> GetWidgetSettings(WidgetType widgetType, int indexTag);
 

@@ -26,7 +26,7 @@
             VerticalAlignment="Center"
             VerticalContentAlignment="Center"
             HorizontalContentAlignment="Center"
-            Click="EditModeOverlayPageSaveButton_Click">
+            Command="{x:Bind ViewModel.SaveEventHandler}">
             <FontIcon FontSize="14" Glyph="&#xE74E;" />
         </Button>
         <Button 
@@ -40,7 +40,7 @@
             VerticalAlignment="Center"
             VerticalContentAlignment="Center"
             HorizontalContentAlignment="Center"
-            Click="EditModeOverlayPageSettingButton_Click">
+            Command="{x:Bind ViewModel.SettingEventHandler}">
             <FontIcon FontSize="14" Glyph="&#xE713;" />
         </Button>
         <Button
@@ -54,7 +54,7 @@
             VerticalAlignment="Center"
             VerticalContentAlignment="Center"
             HorizontalContentAlignment="Center"
-            Click="EditModeOverlayPageCancelButton_Click">
+            Command="{x:Bind ViewModel.CancelEventHandler}">
             <FontIcon FontSize="14" Glyph="&#xE711;" />
         </Button>
     </Grid>
