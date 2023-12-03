@@ -13,4 +13,6 @@ public class ClockWidgetSettings : BaseWidgetSettings
 public class FolderViewWidgetSettings : BaseWidgetSettings
 {
     public string FolderPath { get; set; } = string.Empty;
+
+    public bool ShowIconOverlay { get; set; } = true;
 }

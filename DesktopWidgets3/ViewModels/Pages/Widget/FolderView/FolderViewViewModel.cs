@@ -47,32 +47,14 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
             {
                 folderPath = value;
                 parentFolderPath = Path.GetDirectoryName(FolderPath);
+                fileSystemWatcher.EnableRaisingEvents = false;
                 fileSystemWatcher.Path = value;
-                if (folderPath != string.Empty)
-                {
-                    fileSystemWatcher.EnableRaisingEvents = true;
-                }
-                else
-                {
-                    fileSystemWatcher.EnableRaisingEvents = false;
-                }
+                fileSystemWatcher.EnableRaisingEvents = true;
             }
         }
     }
 
-    private bool loadIconOverlay = false;
-    private bool LoadIconOverlay
-    {
-        get => loadIconOverlay;
-        set
-        {
-            if (loadIconOverlay != value)
-            {
-                loadIconOverlay = value;
-                _ = LoadFileItemsFromFolderPath(false, FolderPathIcon, FolderPathIconOverlay);
-            }
-        }
-    }
+    private bool LoadIconOverlay { get; set; } = true;
 
     private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
 
@@ -83,12 +65,22 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
         InitializeFileSystemWatcher();
     }
 
-    public void OnNavigatedTo(object parameter)
+    public async void OnNavigatedTo(object parameter)
     {
         if (parameter is FolderViewWidgetSettings settings)
         {
-            FolderPath = settings.FolderPath;
-            _ = LoadFileItemsFromFolderPath(true, null, null);
+            if (FolderPath != settings.FolderPath)
+            {
+                FolderPath = settings.FolderPath;
+                await LoadFileItemsFromFolderPath(true, null, null);
+            }
+
+            if (LoadIconOverlay != settings.ShowIconOverlay)
+            {
+                LoadIconOverlay = settings.ShowIconOverlay;
+                await LoadFileItemsFromFolderPath(false, FolderPathIcon, FolderPathIconOverlay);
+            }
+
             _isInitialized = true;
 
             return;
@@ -97,7 +89,7 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
         if (!_isInitialized)
         {
             FolderPath = $"C:\\";
-            _ = LoadFileItemsFromFolderPath(true, null, null);
+            await LoadFileItemsFromFolderPath(true, null, null);
             _isInitialized = true;
         }
     }
