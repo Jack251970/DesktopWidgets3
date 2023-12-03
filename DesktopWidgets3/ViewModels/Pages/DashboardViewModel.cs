@@ -8,6 +8,12 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 {
+    public enum UpdateEvent
+    {
+        Disable,
+        Delete
+    }
+
     public ObservableCollection<DashboardWidgetItem> AllWidgets { get; set; } = new();
     public ObservableCollection<DashboardWidgetItem> EnabledWidgets { get; set; } = new();
     public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = new();
@@ -43,14 +49,24 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 
         if (parameter is Dictionary<string, object> param)
         {
-            if (param.TryGetValue("WidgetType", out var widgetTypeObj) && param.TryGetValue("IndexTag", out var indexTagObj))
+            if (param.TryGetValue("UpdateEvent", out var updateEventObj) && 
+                param.TryGetValue("WidgetType", out var widgetTypeObj) && 
+                param.TryGetValue("IndexTag", out var indexTagObj))
             {
+                var updateEvent = (UpdateEvent)updateEventObj;
                 var widgetType = (WidgetType)widgetTypeObj;
                 var indexTag = (int)indexTagObj;
-            
-                var widgetItem = yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag);
-                widgetItem.IsEnabled = false;
-                widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+                
+                if (updateEvent == UpdateEvent.Disable)
+                {
+                    var widgetItem = yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag);
+                    widgetItem.IsEnabled = false;
+                    widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+                }
+                else if (updateEvent == UpdateEvent.Delete)
+                {
+                    yourWidgetItems.Remove(yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag));
+                }
             
                 RefreshYourWidgets();
             }
@@ -77,6 +93,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     internal async void MenuFlyoutItemDeleteWidgetClick(WidgetType widgetType, int indexTag)
     {
         await _widgetManagerService.DeleteWidget(widgetType, indexTag);
+
         yourWidgetItems.Remove(yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag));
 
         RefreshYourWidgets();

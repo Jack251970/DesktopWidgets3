@@ -16,6 +16,9 @@
             <MenuFlyoutItem
                 x:Uid="MenuFlyoutItem_DisableWidget"
                 Click="MenuFlyoutItemDisableWidget_Click" />
+            <MenuFlyoutItem
+                x:Uid="MenuFlyoutItem_DeleteWidget"
+                Click="MenuFlyoutItemDeleteWidget_Click" />
             <MenuFlyoutSeparator/>
             <MenuFlyoutItem
                 x:Uid="MenuFlyoutItem_EnterEditMode"

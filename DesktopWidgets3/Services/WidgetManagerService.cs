@@ -230,15 +230,6 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async Task DisableWidget(WidgetWindow widgetWindow)
-    {
-        // invoke from widget window iteself
-        var widgetType = widgetWindow.WidgetType;
-        var indexTag = widgetWindow.IndexTag;
-
-        await DisableWidget(widgetType, indexTag);
-    }
-
     public void CloseAllWidgets()
     {
         foreach (var widgetWindow in WidgetsList)

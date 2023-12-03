@@ -118,17 +118,20 @@ public partial class App : Application
 
             #region Functional Service
 
-            // Timers Management
-            services.AddSingleton<ITimersService, TimersService>();
+            // Dialogs
+            services.AddSingleton<IDialogService, DialogService>();
 
-            // Sink Windows
-            services.AddTransient<IWindowSinkService, WindowSinkService>();
+            // Timers
+            services.AddSingleton<ITimersService, TimersService>();
 
             // Widgets Management
             services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
 
-            // Widgets Resources Management
+            // Widgets Resources
             services.AddSingleton<IWidgetResourceService, WidgetResourceService>();
+
+            // Sink Windows
+            services.AddTransient<IWindowSinkService, WindowSinkService>();
 
             #endregion
 

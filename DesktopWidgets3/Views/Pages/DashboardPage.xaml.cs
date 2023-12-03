@@ -5,6 +5,8 @@ using Microsoft.UI.Xaml;
 using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using DesktopWidgets3.Contracts.Services;
+using static DesktopWidgets3.Services.DialogService;
 
 namespace DesktopWidgets3.Views.Pages;
 
@@ -18,10 +20,14 @@ public sealed partial class DashboardPage : Page
     private WidgetType _widgetType;
     private int _indexTag = -1;
 
+    private readonly IDialogService _dialogService;
+
     public DashboardPage()
     {
         ViewModel = App.GetService<DashboardViewModel>();
         InitializeComponent();
+
+        _dialogService = App.GetService<IDialogService>();
     }
 
     private void AllWidgetsItemClick(object sender, RoutedEventArgs e)
@@ -47,11 +53,14 @@ public sealed partial class DashboardPage : Page
         }
     }
 
-    private void MenuFlyoutItemDeleteWidget_Click(object sender, RoutedEventArgs e)
+    private async void MenuFlyoutItemDeleteWidget_Click(object sender, RoutedEventArgs e)
     {
         if (_indexTag != -1)
         {
-            ViewModel.MenuFlyoutItemDeleteWidgetClick(_widgetType, _indexTag);
+            if (await _dialogService.ShowDeleteWidgetDialog(App.MainWindow!) == DialogResult.Left)
+            {
+                ViewModel.MenuFlyoutItemDeleteWidgetClick(_widgetType, _indexTag);
+            }
 
             _indexTag = -1;
         }
