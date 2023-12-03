@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:folder="using:DesktopWidgets3.ViewModels.Pages.Widget.FolderView"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
-    xmlns:models="using:DesktopWidgets3.Models.Widget"
+    xmlns:models="using:DesktopWidgets3.Models.Widget.FolderView"
     d:DataContext="{d:DesignInstance Type=folder:FolderViewViewModel}"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     NavigationCacheMode="Required"
@@ -83,19 +83,19 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Stretch">
                     <Image
-                        x:Name="Icon"
+                        Canvas.ZIndex="0"
                         Width="20" 
                         Height="20"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Source="{x:Bind ViewModel.FolderPathIcon, Mode=OneWay}"/>
-                    <!-- <Image
-                        x:Name="IconOverlay"
+                    <Image
+                        Canvas.ZIndex="1"
                         Width="20"
                         Height="20"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Source="{x:Bind FileIconOverlay, Mode=OneWay}"/> -->
+                        Source="{x:Bind ViewModel.FolderPathIconOverlay, Mode=OneWay}"/>
                 </Grid>
                 <TextBlock
                     Text="{x:Bind ViewModel.FolderName, Mode=OneWay}"
@@ -152,19 +152,19 @@
 									HorizontalAlignment="Left"
 									VerticalAlignment="Stretch">
                                     <Image
-                                        x:Name="Icon"
+                                        Canvas.ZIndex="0"
                                         Width="20" 
                                         Height="20"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Source="{x:Bind FileIcon, Mode=OneWay}"/>
-                                    <!-- <Image
-				                        x:Name="IconOverlay"
+                                        Source="{x:Bind Icon, Mode=OneWay}"/>
+                                    <Image
+                                        Canvas.ZIndex="1"
 				                        Width="20"
 				                        Height="20"
 				                        HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-				                        Source="{x:Bind FileIconOverlay, Mode=OneWay}"/> -->
+				                        Source="{x:Bind IconOverlay, Mode=OneWay}"/>
                                 </Grid>
 
                                 <!--  Item Sync Status Badge  -->

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
+using DesktopWidgets3.Models.Widget.FolderView;
 using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Files.Core.Data.Items;
@@ -15,9 +16,28 @@ namespace DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 
 public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
 {
+    public ObservableCollection<FolderViewFileItem> FolderViewFileItems { get; set; } = new();
+
+    [ObservableProperty]
+    private string _FolderName = string.Empty;
+
+    [ObservableProperty]
+    private bool _isNavigateBackExecutable = false;
+
+    [ObservableProperty]
+    private bool _isNavigateUpExecutable = false;
+
+    [ObservableProperty]
+    private BitmapImage? _folderPathIcon = null;
+
+    [ObservableProperty]
+    private BitmapImage? _folderPathIconOverlay = null;
+
     private readonly Stack<string> navigationFolderPaths = new();
 
     private string folderPath = string.Empty;
+    private string? parentFolderPath;
+    private readonly FileSystemWatcher fileSystemWatcher = new();
     private string FolderPath
     {
         get => folderPath;
@@ -39,22 +59,20 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
             }
         }
     }
-    private string? parentFolderPath;
-    private readonly FileSystemWatcher fileSystemWatcher = new();
 
-    [ObservableProperty]
-    private string _FolderName = string.Empty;
-
-    [ObservableProperty]
-    private bool _isNavigateBackExecutable = false;
-
-    [ObservableProperty]
-    private bool _isNavigateUpExecutable = false;
-
-    [ObservableProperty]
-    private BitmapImage? _folderPathIcon = null;
-
-    public ObservableCollection<FolderViewFileItem> FolderViewFileItems { get; set; } = new();
+    private bool loadIconOverlay = false;
+    private bool LoadIconOverlay
+    {
+        get => loadIconOverlay;
+        set
+        {
+            if (loadIconOverlay != value)
+            {
+                loadIconOverlay = value;
+                _ = LoadFileItemsFromFolderPath(false, FolderPathIcon, FolderPathIconOverlay);
+            }
+        }
+    }
 
     private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
 
@@ -70,7 +88,7 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
         if (parameter is FolderViewWidgetSettings settings)
         {
             FolderPath = settings.FolderPath;
-            _ = LoadFileItemsFromFolderPath(true, null);
+            _ = LoadFileItemsFromFolderPath(true, null, null);
             _isInitialized = true;
 
             return;
@@ -79,7 +97,7 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
         if (!_isInitialized)
         {
             FolderPath = $"C:\\";
-            _ = LoadFileItemsFromFolderPath(true, null);
+            _ = LoadFileItemsFromFolderPath(true, null, null);
             _isInitialized = true;
         }
     }
@@ -118,7 +136,6 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
                 FileName = Path.GetFileName(filePath),
                 FilePath = filePath,
                 FileType = isDirectory ? FileType.Folder : FileType.File,
-                FileIcon = null,
             };
 
             var index = 0;
@@ -129,8 +146,9 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
                 {
                     if (directory == filePath)
                     {
-                        var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(filePath, true);
-                        item.FileIcon = fileIcon;
+                        var (icon, iconOverlay) = await GetIcon(filePath, true);
+                        item.Icon = icon;
+                        item.IconOverlay = iconOverlay;
                         FolderViewFileItems.Insert(index, item);
                         return;
                     }
@@ -144,8 +162,9 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
             {
                 if (file == filePath)
                 {
-                    var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(filePath, false);
-                    item.FileIcon = fileIcon;
+                    var (icon, iconOverlay) = await GetIcon(filePath, false);
+                    item.Icon = icon;
+                    item.IconOverlay = iconOverlay;
                     FolderViewFileItems.Insert(index, item);
                     return;
                 }
@@ -223,22 +242,24 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
         if (isDirectory)
         {
             FolderPath = filePath;
-            BitmapImage? folderPathIcon = null;
+            BitmapImage? folderIcon = null;
+            BitmapImage? folderIconOverlay = null;
             foreach (var item in FolderViewFileItems)
             {
                 if (item.FilePath == filePath)
                 {
-                    folderPathIcon = item.FileIcon;
+                    folderIcon = item.Icon;
+                    folderIconOverlay = item.IconOverlay;
                     break;
                 }
             }
-            await LoadFileItemsFromFolderPath(true, folderPathIcon);
+            await LoadFileItemsFromFolderPath(true, folderIcon, folderIconOverlay);
         }
         else
         {
             if (!File.Exists(filePath))
             {
-                await LoadFileItemsFromFolderPath(false, FolderPathIcon);
+                await LoadFileItemsFromFolderPath(false, FolderPathIcon, FolderPathIconOverlay);
             }
             else
             {
@@ -253,7 +274,7 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
         {
             navigationFolderPaths.Pop();
             FolderPath = navigationFolderPaths.Peek();
-            await LoadFileItemsFromFolderPath(false, null);
+            await LoadFileItemsFromFolderPath(false, null, null);
         }
     }
 
@@ -262,16 +283,16 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
         if (IsNavigateUpExecutable)
         {
             FolderPath = parentFolderPath!;
-            await LoadFileItemsFromFolderPath(true, null);
+            await LoadFileItemsFromFolderPath(true, null, null);
         }
     }
 
     internal async Task NavigateRefreshButtonClick()
     {
-        await LoadFileItemsFromFolderPath(false, FolderPathIcon);
+        await LoadFileItemsFromFolderPath(false, FolderPathIcon, FolderPathIconOverlay);
     }
 
-    private async Task LoadFileItemsFromFolderPath(bool pushFolderPath, BitmapImage? icon)
+    private async Task LoadFileItemsFromFolderPath(bool pushFolderPath, BitmapImage? icon, BitmapImage? overlay)
     {
         if (DiskRegex().IsMatch(FolderPath))
         {
@@ -299,13 +320,14 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
             if (!isHiddenItem)
             {
                 var folderName = Path.GetFileName(directory);
-                var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(directoryPath, true);
+                var (fileIcon, fileIconOverlay) = await GetIcon(directoryPath, true);
                 FolderViewFileItems.Add(new FolderViewFileItem()
                 {
                     FileName = folderName,
                     FilePath = directoryPath,
                     FileType = FileType.Folder,
-                    FileIcon = fileIcon,
+                    Icon = fileIcon,
+                    IconOverlay = fileIconOverlay,
                 });
             }
         }
@@ -318,23 +340,36 @@ public partial class FolderViewViewModel : ObservableRecipient, INavigationAware
             if (!isHiddenItem)
             {
                 var fileName = Path.GetFileName(file);
-                var (fileIcon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(filePath, false);
+                var (fileIcon, fileIconOverlay) = await GetIcon(filePath, false);
                 FolderViewFileItems.Add(new FolderViewFileItem()
                 {
                     FileName = fileName,
                     FilePath = filePath,
                     FileType = FileType.File,
-                    FileIcon = fileIcon,
+                    Icon = fileIcon,
+                    IconOverlay = fileIconOverlay,
                 });
             }
         }
 
-        // TODO: fix icon loading bug
         if (icon is null)
         {
-            (icon, _) = await FileIconHelper.GetFileIconAndOverlayAsync(FolderPath, true);
+            (icon, overlay) = await GetIcon(FolderPath, true);
         }
         FolderPathIcon = icon;
+        FolderPathIconOverlay = overlay;
+    }
+
+    private async Task<(BitmapImage? Icon, BitmapImage? Overlay)> GetIcon(string filePath, bool isFolder)
+    {
+        if (LoadIconOverlay)
+        {
+            return await FileIconHelper.GetFileIconAndOverlayAsync(filePath, isFolder);
+        }
+        else
+        {
+            return (await FileIconHelper.GetFileIconWithoutOverlayAsync(filePath, isFolder), null);
+        }
     }
 
     [GeneratedRegex("^[a-zA-Z]:\\\\$")]

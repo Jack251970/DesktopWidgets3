@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using Windows.System;
+using Files.Shared.Extensions;
 
 namespace Files.App.Utils.Shell;
 
@@ -184,7 +185,7 @@ public class Win32API
         {
             if (!onlyGetOverlay)
             {
-                using var shellItem = ShellFolderExtensions.GetShellItemFromPathOrPIDL(path);
+                using var shellItem = SafetyExtensions.IgnoreExceptions(() => ShellFolderExtensions.GetShellItemFromPathOrPIDL(path));
 
                 if (shellItem is not null && shellItem.IShellItem is Shell32.IShellItemImageFactory fctry)
                 {

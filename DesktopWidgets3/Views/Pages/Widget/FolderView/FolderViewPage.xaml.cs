@@ -2,12 +2,12 @@
 
 using DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 using Microsoft.UI.Xaml;
-using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.Windows;
 using DesktopWidgets3.ViewModels.Pages;
+using DesktopWidgets3.Models.Widget.FolderView;
 
 namespace DesktopWidgets3.Views.Pages.Widget.FolderView;
 
