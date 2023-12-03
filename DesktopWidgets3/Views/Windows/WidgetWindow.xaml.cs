@@ -22,6 +22,16 @@ public sealed partial class WidgetWindow : WindowEx
         set => WindowExtensions.SetWindowSize(this, value.Width, value.Height);
     }
 
+    public WidgetSize MinSize
+    {
+        get => new(MinWidth, MinHeight);
+        set
+        {
+            MinWidth = value.Width;
+            MinHeight = value.Height;
+        }
+    }
+
     public WidgetType WidgetType { get; }
 
     public int IndexTag { get; }

@@ -144,6 +144,7 @@ public class WidgetManagerService : IWidgetManagerService
 
         // set window style, size and position
         widgetWindow.IsResizable = false;
+        widgetWindow.MinSize = _widgetResourceService.GetMinSize(widgetType);
         widgetWindow.Size = widget.Size;
         if (widget.Position.X != -1 && widget.Position.Y != -1)
         {

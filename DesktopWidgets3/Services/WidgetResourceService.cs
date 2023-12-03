@@ -26,12 +26,16 @@ public class WidgetResourceService : IWidgetResourceService
     {
         return widgetType switch
         {
-            WidgetType.Clock => new WidgetSize(300, 200),
-            WidgetType.CPU => new WidgetSize(300, 200),
-            WidgetType.Disk => new WidgetSize(300, 200),
             WidgetType.FolderView => new WidgetSize(500, 500),
-            WidgetType.Network => new WidgetSize(300, 200),
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => new WidgetSize(318, 200),
+        };
+    }
+
+    public WidgetSize GetMinSize(WidgetType widgetType)
+    {
+        return widgetType switch
+        {
+            _ => new WidgetSize(318, 200),
         };
     }
 }

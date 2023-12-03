@@ -4,9 +4,11 @@ namespace DesktopWidgets3.Contracts.Services;
 
 public interface IWidgetResourceService
 {
-    public string GetWidgetLabel(WidgetType widgetType);
+    string GetWidgetLabel(WidgetType widgetType);
 
-    public string GetWidgetIconSource(WidgetType widgetType);
+    string GetWidgetIconSource(WidgetType widgetType);
 
-    public WidgetSize GetDefaultSize(WidgetType widgetType);
+    WidgetSize GetDefaultSize(WidgetType widgetType);
+
+    WidgetSize GetMinSize(WidgetType widgetType);
 }
