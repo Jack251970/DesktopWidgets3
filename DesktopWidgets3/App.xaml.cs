@@ -144,8 +144,6 @@ public partial class App : Application
             services.AddTransient<NavShellViewModel>();
             services.AddTransient<HomeViewModel>();
             services.AddTransient<HomePage>();
-            services.AddTransient<WidgetSettingViewModel>();
-            services.AddTransient<WidgetSettingPage>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
             services.AddTransient<DashboardViewModel>();

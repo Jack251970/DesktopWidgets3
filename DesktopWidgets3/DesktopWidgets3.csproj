@@ -43,7 +43,6 @@
     <None Remove="Views\Controls\TrayMenuControl.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\EditModeOverlayPage.xaml" />
-    <None Remove="Views\Pages\WidgetSettingPage.xaml" />
     <None Remove="Views\Pages\Widget\Clock\ClockPage.xaml" />
     <None Remove="Views\Pages\Widget\FolderView\FolderViewPage.xaml" />
     <None Remove="Views\Pages\Widget\Settings\ClockSettingsPage.xaml" />
@@ -112,9 +111,6 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Pages\EditModeOverlayPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\Pages\WidgetSettingPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Pages\Widget\Clock\ClockPage.xaml">

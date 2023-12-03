@@ -17,7 +17,6 @@ public class PageService : IPageService
     public PageService()
     {
         Configure<HomeViewModel, HomePage>();
-        Configure<WidgetSettingViewModel, WidgetSettingPage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DashboardViewModel, DashboardPage>();
         Configure<ClockSettingsViewModel, ClockSettingsPage>();

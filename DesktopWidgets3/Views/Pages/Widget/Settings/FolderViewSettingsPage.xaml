@@ -29,8 +29,9 @@
                             VerticalAlignment="Center"
                             Margin="0,0,8,0"/>
                         <Button
+                            Style="{StaticResource SettingsCardButton}"
                             Command="{x:Bind ViewModel.SelectFolderPathEventHandler}">
-                            <FontIcon FontSize="12" Glyph="&#xe8da;" />
+                            <FontIcon FontSize="14" Glyph="&#xe8da;" />
                         </Button>
                     </StackPanel>
                 </labs:SettingsCard>
