@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Windows.Input;
+using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Commands;
 
@@ -22,4 +23,34 @@ public class ButtonClickCommand : ICommand
     public void Execute(object? parameter) => _execute();
 
     public void OnCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+}
+
+public class ButtonClickCommandWithParam : ICommand
+{
+    private readonly Action<object?> _execute;
+
+    public ButtonClickCommandWithParam(Action<object?> execute)
+    {
+        _execute = execute;
+    }
+
+    public event EventHandler? CanExecuteChanged;
+
+    public bool CanExecute(object? parameter) => true;
+
+    public void Execute(object? parameter) => _execute(parameter);
+
+    public void OnCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+}
+
+public class WidgetParameter
+{
+    public WidgetType WidgetType
+    {
+        get; set;
+    }
+    public int IndexTag
+    {
+        get; set;
+    }
 }

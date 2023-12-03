@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using DesktopWidgets3.Contracts.Services;
 using static DesktopWidgets3.Services.DialogService;
 using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
-using DesktopWidgets3.Helpers;
 
 namespace DesktopWidgets3.Views.Pages;
 
