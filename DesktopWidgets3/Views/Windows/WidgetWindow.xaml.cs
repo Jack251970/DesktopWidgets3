@@ -42,12 +42,12 @@ public sealed partial class WidgetWindow : WindowEx
 
     private readonly IWindowSinkService _windowSinkService;
 
-    public WidgetWindow(WidgetType widgetType, int indexTag)
+    public WidgetWindow(BaseWidgetItem widgetItem)
     {
         InitializeComponent();
 
-        WidgetType = widgetType;
-        IndexTag = indexTag;
+        WidgetType = widgetItem.Type;
+        IndexTag = widgetItem.IndexTag;
 
         Content = null;
         Title = string.Empty;

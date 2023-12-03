@@ -30,4 +30,8 @@ public interface IWidgetManagerService
     void ExitEditModeAndSave();
 
     void ExitEditModeAndCancel();
+
+    Task<BaseWidgetSettings?> GetWidgetSettings(WidgetType widgetType, int indexTag);
+
+    Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings);
 }

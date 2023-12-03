@@ -5,6 +5,8 @@ using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.Views.Pages;
+using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
+using DesktopWidgets3.Views.Pages.Widget.Settings;
 
 namespace DesktopWidgets3.Services;
 
@@ -18,6 +20,8 @@ public class PageService : IPageService
         Configure<WidgetSettingViewModel, WidgetSettingPage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DashboardViewModel, DashboardPage>();
+        Configure<ClockSettingsViewModel, ClockSettingsPage>();
+        Configure<FolderViewSettingsViewModel, FolderViewSettingsPage>();
     }
 
     public Type GetPageType(string viewModel)

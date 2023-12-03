@@ -49,9 +49,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 
         if (parameter is Dictionary<string, object> param)
         {
-            if (param.TryGetValue("UpdateEvent", out var updateEventObj) && 
-                param.TryGetValue("WidgetType", out var widgetTypeObj) && 
-                param.TryGetValue("IndexTag", out var indexTagObj))
+            if (param.TryGetValue("UpdateEvent", out var updateEventObj) && param.TryGetValue("WidgetType", out var widgetTypeObj) && param.TryGetValue("IndexTag", out var indexTagObj))
             {
                 var updateEvent = (UpdateEvent)updateEventObj;
                 var widgetType = (WidgetType)widgetTypeObj;

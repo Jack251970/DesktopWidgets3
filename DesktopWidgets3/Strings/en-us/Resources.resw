@@ -241,4 +241,13 @@
   <data name="Dialog_Ok" xml:space="preserve">
     <value>Ok</value>
   </data>
+  <data name="WidgetSettings_FolderPath_Card.Header" xml:space="preserve">
+    <value>Folder path</value>
+  </data>
+  <data name="WidgetSettings_ShowIconOverlay_Card.Header" xml:space="preserve">
+    <value>Show icon overlay</value>
+  </data>
+  <data name="WidgetSettings_ShowSeconds_Card.Header" xml:space="preserve">
+    <value>Show seconds</value>
+  </data>
 </root>

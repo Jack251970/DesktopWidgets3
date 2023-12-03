@@ -33,10 +33,10 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         _themeSelectorService = themeSelectorService;
         _widgetManagerService = widgetManagerService;
 
-        InitializeViewModel();
+        InitializeSettings();
     }
 
-    private async void InitializeViewModel()
+    private async void InitializeSettings()
     {
         ThemeIndex = (int)_themeSelectorService.Theme;
         RunStartup = await StartupHelper.GetStartup();

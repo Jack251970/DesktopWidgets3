@@ -5,22 +5,25 @@ using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Settings;
 
-public partial class ClockSettingsViewModel : ObservableRecipient, INavigationAware
+public partial class FolderViewSettingsViewModel : ObservableRecipient, INavigationAware
 {
     [ObservableProperty]
-    private bool _showSeconds = true;
+    private string _folderPath = $"C:\\";
+
+    [ObservableProperty]
+    private bool _showIconOverlay = true;
 
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    private readonly WidgetType widgetType = WidgetType.Clock;
+    private readonly WidgetType widgetType = WidgetType.FolderView;
     private int indexTag = -1;
 
     private BaseWidgetSettings? _widgetSettings;
 
     private bool _isInitialized;
 
-    public ClockSettingsViewModel(INavigationService navigationService, IWidgetManagerService widgetManagerService)
+    public FolderViewSettingsViewModel(INavigationService navigationService, IWidgetManagerService widgetManagerService)
     {
         _navigationService = navigationService;
         _widgetManagerService = widgetManagerService;
@@ -28,8 +31,9 @@ public partial class ClockSettingsViewModel : ObservableRecipient, INavigationAw
 
     public void InitializeSettings()
     {
-        var settings = _widgetSettings as ClockWidgetSettings;
-        ShowSeconds = settings!.ShowSeconds;
+        var settings = _widgetSettings as FolderViewWidgetSettings;
+        FolderPath = settings!.FolderPath;
+        ShowIconOverlay = settings.ShowIconOverlay;
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -60,12 +64,12 @@ public partial class ClockSettingsViewModel : ObservableRecipient, INavigationAw
         
     }
 
-    partial void OnShowSecondsChanged(bool value)
+    partial void OnShowIconOverlayChanged(bool value)
     {
         if (_isInitialized)
         {
-            var settings = _widgetSettings as ClockWidgetSettings;
-            settings!.ShowSeconds = value;
+            var settings = _widgetSettings as FolderViewWidgetSettings;
+            settings!.ShowIconOverlay = value;
             _widgetManagerService.UpdateWidgetSettings(widgetType, indexTag, settings);
         }
     }

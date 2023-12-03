@@ -132,7 +132,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
 
         // create widget window
-        var widgetWindow = new WidgetWindow(widgetType, currentIndexTag);
+        var widgetWindow = new WidgetWindow(widget);
         WidgetsList.Add(widgetWindow);
 
         // handle widget settings
@@ -384,6 +384,30 @@ public class WidgetManagerService : IWidgetManagerService
         }
 
         EditModeOverlayWindow?.Hide(true);
+    }
+
+    public async Task<BaseWidgetSettings?> GetWidgetSettings(WidgetType widgetType, int indexTag)
+    {
+        var widgetList = await _appSettingsService.GetWidgetsList();
+        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+        return widget?.Settings;
+    }
+
+    public async Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings)
+    {
+        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
+        if (widgetWindow != null)
+        {
+            // TODO: handle widget settings
+        }
+
+        var widgetList = await _appSettingsService.GetWidgetsList();
+        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+        if (widget != null)
+        {
+            widget.Settings = settings;
+            await _appSettingsService.UpdateWidgetsList(widget);
+        }
     }
 
     private WidgetWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)

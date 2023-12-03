@@ -92,7 +92,7 @@
                 x:Uid="Dashboard_EnabledWidgets"
                 Margin="0,6,0,6"
                 Style="{StaticResource BodyTextStyle}" />
-            
+
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.EnabledWidgets, Mode=OneWay}">
                 <ItemsRepeater.Layout>
                     <controls:StaggeredLayout
@@ -108,6 +108,7 @@
                             HorizontalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="0"
+                            Click="WidgetItem_Click"
                             ContextFlyout="{StaticResource DashboardFlyout}"
                             RightTapped="WidgetItem_RightTapped"
                             models:WidgetProperties.WidgetType="{x:Bind Type, Mode=OneTime}"
@@ -171,6 +172,7 @@
                             HorizontalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="0"
+                            Click="WidgetItem_Click"
                             ContextFlyout="{StaticResource DashboardFlyout}"
                             RightTapped="WidgetItem_RightTapped"
                             models:WidgetProperties.WidgetType="{x:Bind Type, Mode=OneTime}"
@@ -214,7 +216,5 @@
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
         </StackPanel>
-
     </ScrollViewer>
-
 </Page>
