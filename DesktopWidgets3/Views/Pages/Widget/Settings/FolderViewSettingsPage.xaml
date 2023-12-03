@@ -19,6 +19,22 @@
             VerticalScrollBarVisibility="Hidden"
             VerticalScrollMode="Auto">
             <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                <labs:SettingsCard x:Uid="WidgetSettings_FolderPath_Card">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock 
+                            Text="{x:Bind ViewModel.FolderPath, Mode=OneWay}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            IsTextSelectionEnabled="True"
+                            TextWrapping="Wrap"
+                            VerticalAlignment="Center"
+                            Margin="0,0,8,0"/>
+                        <Button
+                            Command="{x:Bind ViewModel.SelectFolderPathEventHandler}">
+                            <FontIcon FontSize="12" Glyph="&#xe8da;" />
+                        </Button>
+                    </StackPanel>
+                </labs:SettingsCard>
+                
                 <labs:SettingsCard x:Uid="WidgetSettings_ShowIconOverlay_Card">
                     <ToggleSwitch IsOn="{x:Bind ViewModel.ShowIconOverlay, Mode=TwoWay}" />
                 </labs:SettingsCard>

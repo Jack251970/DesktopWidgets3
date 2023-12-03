@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
+using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
+using DesktopWidgets3.ViewModels.Commands;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Settings;
 
@@ -12,6 +14,8 @@ public partial class FolderViewSettingsViewModel : ObservableRecipient, INavigat
 
     [ObservableProperty]
     private bool _showIconOverlay = true;
+    
+    public ButtonClickCommand SelectFolderPathEventHandler { get; set; }
 
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;
@@ -27,6 +31,32 @@ public partial class FolderViewSettingsViewModel : ObservableRecipient, INavigat
     {
         _navigationService = navigationService;
         _widgetManagerService = widgetManagerService;
+
+        SelectFolderPathEventHandler = new ButtonClickCommand(SelectFoldePath);
+    }
+
+    private async void SelectFoldePath()
+    {
+        if (_isInitialized)
+        {
+            var newPath = await PickSingleFolderDialog();
+            if (!string.IsNullOrEmpty(newPath))
+            {
+                var settings = _widgetSettings as FolderViewWidgetSettings;
+                settings!.FolderPath = FolderPath = newPath;
+                await _widgetManagerService.UpdateWidgetSettings(widgetType, indexTag, settings);
+            }
+        }
+    }
+
+    private async Task<string> PickSingleFolderDialog()
+    {
+        // This function was changed to use the shell32 API to open folder dialog
+        // as the old one (PickSingleFolderAsync) can't work when the process is elevated
+        // TODO: go back PickSingleFolderAsync when it's fixed
+        var hwnd = WindowExtensions.GetWindowHandle(App.MainWindow!);
+        var r = await Task.FromResult<string>(ShellGetFolder.GetFolderDialog(hwnd));
+        return r;
     }
 
     public void InitializeSettings()
