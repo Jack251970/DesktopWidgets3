@@ -67,9 +67,8 @@ public class WidgetManagerService : IWidgetManagerService
         {
             if (widget.IsEnabled)
             {
-                var widgetType = widget.Type;
-                await EnableWidget(widgetType, widget.IndexTag);
-                if (TimerWidgets.Contains(widgetType))
+                await CreateWidgetWindow(widget);
+                if (TimerWidgets.Contains(widget.Type))
                 {
                     enableTimer = true;
                 }
@@ -109,16 +108,13 @@ public class WidgetManagerService : IWidgetManagerService
             widget = sameTypeWidgets.FirstOrDefault(x => x.IndexTag == indexTag);
         }
 
-        currentWidgetType = widgetType;
-        currentIndexTag = (int)indexTag;
-
         // save widget item
         if (widget == null)
         {
             widget = new JsonWidgetItem()
             {
                 Type = widgetType,
-                IndexTag = currentIndexTag,
+                IndexTag = (int)indexTag,
                 IsEnabled = true,
                 Position = new PointInt32(-1, -1),
                 Size = _widgetResourceService.GetDefaultSize(widgetType),
@@ -135,33 +131,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
 
         // create widget window
-        var widgetWindow = new WidgetWindow(widget);
-        WidgetsList.Add(widgetWindow);
-
-        // handle widget settings
-        await _activationService.ActivateWidgetWindowAsync(widgetWindow, widget.Settings);
-#if DBEUG
-        // wait for 1 second to avoid Access Violation exception under debug mode
-        await Task.Delay(1000);
-#endif
-
-        // set window style, size and position
-        widgetWindow.IsResizable = false;
-        widgetWindow.MinSize = _widgetResourceService.GetMinSize(widgetType);
-        widgetWindow.Size = widget.Size;
-        if (widget.Position.X != -1 && widget.Position.Y != -1)
-        {
-            widgetWindow.Position = widget.Position;
-        }
-
-        // show window
-        widgetWindow.Show(true);
-
-        // enable timer if needed
-        if (TimerWidgets.Contains(widgetType))
-        {
-            _timersService.StartUpdateTimeTimer();
-        }
+        await CreateWidgetWindow(widget);
     }
 
     public async Task DisableWidget(WidgetType widgetType, int indexTag)
@@ -247,6 +217,42 @@ public class WidgetManagerService : IWidgetManagerService
     public WidgetWindow GetLastWidgetWindow()
     {
         return WidgetsList.Last();
+    }
+
+    private async Task CreateWidgetWindow(JsonWidgetItem widget)
+    {
+        // Load widget info
+        currentWidgetType = widget.Type;
+        currentIndexTag = widget.IndexTag;
+
+        // create widget window
+        var widgetWindow = new WidgetWindow(widget);
+        WidgetsList.Add(widgetWindow);
+
+        // handle widget settings
+        await _activationService.ActivateWidgetWindowAsync(widgetWindow, widget.Settings);
+#if DBEUG
+        // wait for 1 second to avoid Access Violation exception under debug mode
+        await Task.Delay(1000);
+#endif
+
+        // set window style, size and position
+        widgetWindow.IsResizable = false;
+        widgetWindow.MinSize = _widgetResourceService.GetMinSize(currentWidgetType);
+        widgetWindow.Size = widget.Size;
+        if (widget.Position.X != -1 && widget.Position.Y != -1)
+        {
+            widgetWindow.Position = widget.Position;
+        }
+
+        // show window
+        widgetWindow.Show(true);
+
+        // enable timer if needed
+        if (TimerWidgets.Contains(currentWidgetType))
+        {
+            _timersService.StartUpdateTimeTimer();
+        }
     }
 
     private WidgetWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
