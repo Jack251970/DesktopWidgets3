@@ -64,9 +64,6 @@ public class ActivationService : IActivationService
             shell?.ViewModel.WidgetNavigationService.NavigateTo(window.WidgetType, widgetSettings);
         }
 
-        // Activate the Window.
-        window.Activate();
-
         // Execute tasks after activation.
         await StartupAsync(window);
     }
@@ -81,9 +78,6 @@ public class ActivationService : IActivationService
         {
             window.Content = new Frame();
         }
-
-        // Activate the Window.
-        window.Activate();
 
         // Execute tasks after activation.
         await StartupAsync(window);
