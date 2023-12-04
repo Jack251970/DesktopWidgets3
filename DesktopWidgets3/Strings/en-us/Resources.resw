@@ -250,13 +250,16 @@
   <data name="WidgetSettings_ShowSeconds_Card.Description" xml:space="preserve">
     <value>Show seconds in the widget</value>
   </data>
-  <data name="MenuFlyoutItem_DeleteWidget" xml:space="preserve">
+  <data name="MenuFlyoutItem_DeleteWidget_Text" xml:space="preserve">
     <value>Delete this widget</value>
   </data>
-  <data name="MenuFlyoutItem_DisableWidget" xml:space="preserve">
+  <data name="MenuFlyoutItem_DisableWidget_Text" xml:space="preserve">
     <value>Disable this widget</value>
   </data>
-  <data name="MenuFlyoutItem_EnterEditMode" xml:space="preserve">
+  <data name="MenuFlyoutItem_EnterEditMode_Text" xml:space="preserve">
     <value>Enter edit mode</value>
+  </data>
+  <data name="MenuFlyoutItem_DeleteWidget.Text" xml:space="preserve">
+    <value>Delete this widget</value>
   </data>
 </root>
