@@ -117,149 +117,136 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppDisplayName" xml:space="preserve">
-    <value>Desktop Widgets 3</value>
-  </data>
   <data name="Settings_PrivacyTermsLink.Content" xml:space="preserve">
-    <value>Privacy Statement</value>
-  </data>
-  <data name="Settings_PrivacyTermsLink.NavigateUri" xml:space="preserve">
-    <value>https://YourPrivacyUrlGoesHere/</value>
-    <comment>TODO</comment>
+    <value>隐私声明</value>
   </data>
   <data name="Settings_About.Text" xml:space="preserve">
-    <value>About</value>
+    <value>关于</value>
   </data>
   <data name="Settings_AboutApp_Card.Description" xml:space="preserve">
-    <value>An app for many useful desktop widgets based on WinUI 3.</value>
-  </data>
-  <data name="Settings_AboutApp_Card.Header" xml:space="preserve">
-    <value>Desktop Widgets 3</value>
+    <value>一个包含许多实用桌面组件的WinUI3应用。</value>
   </data>
   <data name="Settings_Appearance.Text" xml:space="preserve">
-    <value>Apperance &amp; behavior</value>
-  </data>
-  <data name="Settings_CopyRight_Card.Description" xml:space="preserve">
-    <value>CopyRight © 2023 Jack251970. All rights reserved.</value>
+    <value>外观和行为</value>
   </data>
   <data name="Settings_Dependencies_Card.Description" xml:space="preserve">
-    <value>Dependencies &amp; references</value>
+    <value>依赖和引用</value>
   </data>
   <data name="Settings_Theme_Card.Description" xml:space="preserve">
-    <value>Select which app theme to display</value>
+    <value>选择应用显示的主题</value>
   </data>
   <data name="Settings_Theme_Card.Header" xml:space="preserve">
-    <value>App theme</value>
+    <value>应用主题</value>
   </data>
   <data name="Settings_Theme_Dark.Content" xml:space="preserve">
-    <value>Dark</value>
+    <value>深色</value>
   </data>
   <data name="Settings_Theme_Default.Content" xml:space="preserve">
-    <value>Use system setting</value>
+    <value>系统默认</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
-    <value>Light</value>
+    <value>浅色</value>
   </data>
   <data name="Shell_Home.Content" xml:space="preserve">
-    <value>Home</value>
+    <value>主页</value>
   </data>
   <data name="TrayIcon_Exit.Description" xml:space="preserve">
-    <value>Exit application</value>
+    <value>退出应用</value>
   </data>
   <data name="TrayIcon_Exit.Label" xml:space="preserve">
-    <value>Exit</value>
+    <value>退出</value>
   </data>
   <data name="TrayIcon_Show.Description" xml:space="preserve">
-    <value>Show window</value>
+    <value>显示窗口</value>
   </data>
   <data name="TrayIcon_Show.Label" xml:space="preserve">
-    <value>Show</value>
+    <value>显示</value>
   </data>
   <data name="AppDescription" xml:space="preserve">
-    <value>An app for many useful desktop widgets based on WinUI 3.</value>
+    <value>一个包含许多实用桌面组件的WinUI3应用。</value>
   </data>
   <data name="Settings_BatterySaver_Card.Description" xml:space="preserve">
-    <value>Limit appearance-related background activity</value>
+    <value>限制与显示相关的后台活动</value>
   </data>
   <data name="Settings_BatterySaver_Card.Header" xml:space="preserve">
-    <value>Battery saver</value>
+    <value>省电模式</value>
   </data>
   <data name="Settings_RunStartup_Card.Description" xml:space="preserve">
-    <value>Automatically launch app when you log in to Windows</value>
+    <value>登录Windows时应用将自动启动</value>
   </data>
   <data name="Settings_RunStartup_Card.Header" xml:space="preserve">
-    <value>Run at startup</value>
+    <value>启动时运行</value>
   </data>
   <data name="Shell_Dashboard.Content" xml:space="preserve">
-    <value>Dashboard</value>
+    <value>仪表盘</value>
   </data>
   <data name="Dashboard_DisabledWidgets.Text" xml:space="preserve">
-    <value>Disabled widgets</value>
+    <value>已禁用组件</value>
   </data>
   <data name="Dashboard_EnabledWidgets.Text" xml:space="preserve">
-    <value>Enabled widgets</value>
+    <value>已启用组件</value>
   </data>
   <data name="Widget_Clock_Label" xml:space="preserve">
-    <value>Clock</value>
+    <value>时钟</value>
   </data>
   <data name="Widget_CPU_Label" xml:space="preserve">
-    <value>CPU &amp; Memory</value>
+    <value>CPU与内存</value>
   </data>
   <data name="Widget_Disk_Label" xml:space="preserve">
-    <value>Disk</value>
+    <value>磁盘</value>
   </data>
   <data name="Widget_FolderView_Label" xml:space="preserve">
-    <value>Folder View</value>
+    <value>文件夹预览</value>
   </data>
   <data name="Widget_Network_Label" xml:space="preserve">
-    <value>Network</value>
+    <value>网络</value>
   </data>
   <data name="Dashboard_AllWidgets.Text" xml:space="preserve">
-    <value>All widgets</value>
+    <value>所有组件</value>
   </data>
   <data name="Dashboard_YourWidgets.Text" xml:space="preserve">
-    <value>Your widgets</value>
+    <value>你的组件</value>
   </data>
   <data name="Dialog_Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>取消</value>
   </data>
   <data name="Dialog_DeleteWidget_Content" xml:space="preserve">
-    <value>Are you sure?</value>
+    <value>你确定吗？</value>
   </data>
   <data name="Dialog_DeleteWidget_Title" xml:space="preserve">
-    <value>Delete widget</value>
+    <value>删除组件</value>
   </data>
   <data name="Dialog_Ok" xml:space="preserve">
-    <value>Ok</value>
+    <value>确认</value>
   </data>
   <data name="WidgetSettings_FolderPath_Card.Header" xml:space="preserve">
-    <value>Folder path</value>
+    <value>文件夹路径</value>
   </data>
   <data name="WidgetSettings_IconOverlay_Card.Header" xml:space="preserve">
-    <value>Icon overlay</value>
+    <value>上层图标</value>
   </data>
   <data name="WidgetSettings_ShowSeconds_Card.Header" xml:space="preserve">
-    <value>Show seconds</value>
+    <value>显示秒数</value>
   </data>
   <data name="WidgetSettings_FolderPath_Card.Description" xml:space="preserve">
-    <value>The default folder path when loading the widget</value>
+    <value>组件加载的默认路径</value>
   </data>
   <data name="WidgetSettings_IconOverlay_Card.Description" xml:space="preserve">
-    <value>Show the overlay of the icons in the file list</value>
+    <value>在文件列表中显示上层图标</value>
   </data>
   <data name="WidgetSettings_ShowSeconds_Card.Description" xml:space="preserve">
-    <value>Show seconds in the widget</value>
+    <value>在组件中显示秒数</value>
   </data>
   <data name="MenuFlyoutItem_DeleteWidget_Text" xml:space="preserve">
-    <value>Delete this widget</value>
+    <value>删除该组件</value>
   </data>
   <data name="MenuFlyoutItem_DisableWidget_Text" xml:space="preserve">
-    <value>Disable this widget</value>
+    <value>禁用该组件</value>
   </data>
   <data name="MenuFlyoutItem_EnterEditMode_Text" xml:space="preserve">
-    <value>Enter edit mode</value>
+    <value>进入编辑模式</value>
   </data>
   <data name="MenuFlyoutItem_DeleteWidget.Text" xml:space="preserve">
-    <value>Delete this widget</value>
+    <value>删除该组件</value>
   </data>
 </root>

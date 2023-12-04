@@ -23,7 +23,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     private string _folderPath = $"C:\\";
 
     [ObservableProperty]
-    private bool _showIconOverlay = true;
+    private bool _iconOverlay = true;
 
     #endregion
 
@@ -43,7 +43,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     protected override void InitializeWidgetSettings()
     {
         FolderPath = Settings.FolderPath;
-        ShowIconOverlay = Settings.ShowIconOverlay;
+        IconOverlay = Settings.ShowIconOverlay;
     }
 
     private async void SelectFoldePath()
@@ -59,7 +59,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
         }
     }
 
-    partial void OnShowIconOverlayChanged(bool value)
+    partial void OnIconOverlayChanged(bool value)
     {
         if (_isInitialized)
         {

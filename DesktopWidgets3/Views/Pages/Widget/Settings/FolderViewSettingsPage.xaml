@@ -36,8 +36,8 @@
                     </StackPanel>
                 </labs:SettingsCard>
                 
-                <labs:SettingsCard x:Uid="WidgetSettings_ShowIconOverlay_Card">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowIconOverlay, Mode=TwoWay}" />
+                <labs:SettingsCard x:Uid="WidgetSettings_IconOverlay_Card">
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.IconOverlay, Mode=TwoWay}" />
                 </labs:SettingsCard>
             </StackPanel>
         </ScrollViewer>
