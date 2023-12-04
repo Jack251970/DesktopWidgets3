@@ -5,6 +5,7 @@ using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
+using DesktopWidgets3.Views.Pages.Widget;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -35,6 +36,8 @@ public sealed partial class WidgetWindow : WindowEx
     public WidgetType WidgetType { get; }
 
     public int IndexTag { get; }
+
+    public FrameShellPage? ShellPage => Content as FrameShellPage;
 
     private readonly DispatcherQueue dispatcherQueue;
 

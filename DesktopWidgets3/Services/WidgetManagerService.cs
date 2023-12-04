@@ -29,9 +29,6 @@ public class WidgetManagerService : IWidgetManagerService
 
     private WidgetType currentWidgetType;
     private int currentIndexTag = -1;
-    
-    private OverlayWindow? EditModeOverlayWindow { get; set; }
-    private readonly List<JsonWidgetItem> originalWidgetList = new();
 
     public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
@@ -41,6 +38,8 @@ public class WidgetManagerService : IWidgetManagerService
         _timersService = timersService;
         _widgetResourceService = widgetResourceService;
     }
+
+    #region theme setting
 
     public async Task SetThemeAsync()
     {
@@ -54,7 +53,11 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async Task InitializeWidgets()
+    #endregion
+
+    #region widget window
+
+    public async Task EnableAllEnabledWidgets()
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
         var enableTimer = false;
@@ -231,7 +234,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public void CloseAllWidgets()
+    public void DisableAllWidgets()
     {
         foreach (var widgetWindow in WidgetsList)
         {
@@ -241,22 +244,51 @@ public class WidgetManagerService : IWidgetManagerService
         WidgetsList.Clear();
     }
 
-    public WidgetWindow GetCurrentWidgetWindow()
+    public WidgetWindow GetLastWidgetWindow()
     {
         return WidgetsList.Last();
     }
 
-    public DashboardWidgetItem GetCurrentEnabledDashboardWidgetItem()
+    private WidgetWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
     {
-        return new DashboardWidgetItem()
+        foreach (var widgetWindow in WidgetsList)
         {
-            Type = currentWidgetType,
-            IndexTag = currentIndexTag,
-            IsEnabled = true,
-            Label = _widgetResourceService.GetWidgetLabel(currentWidgetType),
-            Icon = _widgetResourceService.GetWidgetIconSource(currentWidgetType),
-        };
+            if (widgetWindow.WidgetType == widgetType && widgetWindow.IndexTag == indexTag)
+            {
+                return widgetWindow;
+            }
+        }
+        return null;
     }
+
+    #endregion
+
+    #region widget settings
+
+    public async Task<BaseWidgetSettings?> GetWidgetSettings(WidgetType widgetType, int indexTag)
+    {
+        var widgetList = await _appSettingsService.GetWidgetsList();
+        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+        return widget?.Settings;
+    }
+
+    public async Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings)
+    {
+        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
+        widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, settings.Clone());
+
+        var widgetList = await _appSettingsService.GetWidgetsList();
+        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+        if (widget != null)
+        {
+            widget.Settings = settings;
+            await _appSettingsService.UpdateWidgetsList(widget);
+        }
+    }
+
+    #endregion
+
+    #region dashboard
 
     public List<DashboardWidgetItem> GetAllWidgetItems()
     {
@@ -295,6 +327,29 @@ public class WidgetManagerService : IWidgetManagerService
 
         return dashboardItemList;
     }
+
+    public DashboardWidgetItem GetCurrentEnabledWidget()
+    {
+        return new DashboardWidgetItem()
+        {
+            Type = currentWidgetType,
+            IndexTag = currentIndexTag,
+            IsEnabled = true,
+            Label = _widgetResourceService.GetWidgetLabel(currentWidgetType),
+            Icon = _widgetResourceService.GetWidgetIconSource(currentWidgetType),
+        };
+    }
+
+    #endregion
+
+    #region edit mode
+
+    private OverlayWindow? EditModeOverlayWindow
+    {
+        get; set;
+    }
+
+    private readonly List<JsonWidgetItem> originalWidgetList = new();
 
     public async void EnterEditMode()
     {
@@ -386,42 +441,6 @@ public class WidgetManagerService : IWidgetManagerService
         EditModeOverlayWindow?.Hide(true);
     }
 
-    public async Task<BaseWidgetSettings?> GetWidgetSettings(WidgetType widgetType, int indexTag)
-    {
-        var widgetList = await _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
-        return widget?.Settings;
-    }
-
-    public async Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings)
-    {
-        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
-        if (widgetWindow != null)
-        {
-            // TODO: handle widget settings
-        }
-
-        var widgetList = await _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
-        if (widget != null)
-        {
-            widget.Settings = settings;
-            await _appSettingsService.UpdateWidgetsList(widget);
-        }
-    }
-
-    private WidgetWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
-    {
-        foreach (var widgetWindow in WidgetsList)
-        {
-            if (widgetWindow.WidgetType == widgetType && widgetWindow.IndexTag == indexTag)
-            {
-                return widgetWindow;
-            }
-        }
-        return null;
-    }
-
     private static void SetEditMode(WidgetWindow window, bool isEditMode)
     {
         // set window style
@@ -431,4 +450,6 @@ public class WidgetManagerService : IWidgetManagerService
         var frameShellPage = window.Content as FrameShellPage;
         frameShellPage?.SetCustomTitleBar(isEditMode);
     }
+
+    #endregion
 }

@@ -80,7 +80,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     {
         await _widgetManagerService.EnableWidget(widgetType, null);
 
-        var widgetItem = _widgetManagerService.GetCurrentEnabledDashboardWidgetItem();
+        var widgetItem = _widgetManagerService.GetCurrentEnabledWidget();
         widgetItem.IsEnabled = true;
         widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
         yourWidgetItems.Add(widgetItem);

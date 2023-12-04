@@ -44,7 +44,7 @@ public sealed partial class MainWindow : WindowEx
     {
         if (App.CanCloseWindow)
         {
-            _widgetManagerService.CloseAllWidgets();
+            _widgetManagerService.DisableAllWidgets();
             Application.Current.Exit();
         }
         else

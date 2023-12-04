@@ -14,6 +14,7 @@ public class ActivationService : IActivationService
     private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
+    private UIElement? _shell = null;
 
     public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IThemeSelectorService themeSelectorService)
     {
@@ -30,8 +31,8 @@ public class ActivationService : IActivationService
         // Set the MainWindow Content.
         if (App.MainWindow!.Content == null)
         {
-            var shell = App.GetService<NavShellPage>();
-            App.MainWindow.Content = shell is null ? new Frame() : shell;
+            _shell = App.GetService<NavShellPage>();
+            App.MainWindow.Content = _shell ?? new Frame();
         }
 
         // Handle activation via ActivationHandlers.

@@ -37,7 +37,7 @@ public sealed partial class NavShellPage : Page
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
 
         var _widgetManagerService = App.GetService<IWidgetManagerService>();
-        _widgetManagerService.InitializeWidgets();
+        _widgetManagerService.EnableAllEnabledWidgets();
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

@@ -32,7 +32,7 @@ public partial class BaseWidgetViewModel : ObservableRecipient
         _navigationService = App.GetService<INavigationService>();
         _widgetManagerService = App.GetService<IWidgetManagerService>();
 
-        WidgetWindow = _widgetManagerService.GetCurrentWidgetWindow();
+        WidgetWindow = _widgetManagerService.GetLastWidgetWindow();
 
         RightTappedMenu = GetRightTappedMenu();
     }

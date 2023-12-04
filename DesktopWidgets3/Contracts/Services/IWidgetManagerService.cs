@@ -7,7 +7,7 @@ public interface IWidgetManagerService
 {
     Task SetThemeAsync();
 
-    Task InitializeWidgets();
+    Task EnableAllEnabledWidgets();
 
     Task EnableWidget(WidgetType widgetType, int? indexTag);
 
@@ -15,11 +15,11 @@ public interface IWidgetManagerService
 
     Task DeleteWidget(WidgetType widgetType, int indexTag);
 
-    void CloseAllWidgets();
+    void DisableAllWidgets();
 
-    WidgetWindow GetCurrentWidgetWindow();
+    WidgetWindow GetLastWidgetWindow();
 
-    DashboardWidgetItem GetCurrentEnabledDashboardWidgetItem();
+    DashboardWidgetItem GetCurrentEnabledWidget();
 
     List<DashboardWidgetItem> GetAllWidgetItems();
 
