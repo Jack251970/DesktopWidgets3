@@ -16,7 +16,7 @@ public class StartupHelper
     private static readonly byte[] ApprovalValue2 = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
     private static readonly string RegistryKey = "AppDisplayName".GetLocalized();
-    private static readonly string StartupTaskName = "StartTimeManagerOnLoginTask";
+    private static readonly string StartupTaskId = "StartAppOnLoginTask";
 
     /// <summary>
     /// Set application startup or not.
@@ -25,7 +25,7 @@ public class StartupHelper
     {
         if (RuntimeHelper.IsMSIX)
         {
-            var startupTask = await StartupTask.GetAsync(StartupTaskName);
+            var startupTask = await StartupTask.GetAsync(StartupTaskId);
             switch (startupTask.State)
             {
                 case StartupTaskState.Disabled:
@@ -83,7 +83,7 @@ public class StartupHelper
     {
         if (RuntimeHelper.IsMSIX)
         {
-            var startupTask = await StartupTask.GetAsync(StartupTaskName);
+            var startupTask = await StartupTask.GetAsync(StartupTaskId);
             return startupTask.State == StartupTaskState.Enabled || startupTask.State == StartupTaskState.EnabledByPolicy;
         }
         else
