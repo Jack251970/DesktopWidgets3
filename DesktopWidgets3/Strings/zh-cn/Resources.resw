@@ -150,16 +150,10 @@
   <data name="Shell_Home.Content" xml:space="preserve">
     <value>主页</value>
   </data>
-  <data name="TrayIcon_Exit.Description" xml:space="preserve">
-    <value>退出应用</value>
-  </data>
-  <data name="TrayIcon_Exit.Label" xml:space="preserve">
+  <data name="TrayMenu_MenuFlyoutItem_ExitApp.Text" xml:space="preserve">
     <value>退出</value>
   </data>
-  <data name="TrayIcon_Show.Description" xml:space="preserve">
-    <value>显示窗口</value>
-  </data>
-  <data name="TrayIcon_Show.Label" xml:space="preserve">
+  <data name="TrayMenu_MenuFlyoutItem_ShowWindow.Text" xml:space="preserve">
     <value>显示</value>
   </data>
   <data name="AppDescription" xml:space="preserve">

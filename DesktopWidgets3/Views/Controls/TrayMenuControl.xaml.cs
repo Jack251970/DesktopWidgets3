@@ -10,14 +10,15 @@ public sealed partial class TrayMenuControl : UserControl
         InitializeComponent();
     }
 
-    private void ExitApp(XamlUICommand sender, ExecuteRequestedEventArgs args)
-    {
-        App.CanCloseWindow = true;
-        App.MainWindow!.Close();
-    }
-
     private void ShowWindow(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
         App.ShowMainWindow(false);
+    }
+    
+    private void ExitApp(XamlUICommand sender, ExecuteRequestedEventArgs args)
+    {
+        TrayIcon.Dispose();
+        App.CanCloseWindow = true;
+        App.MainWindow!.Close();
     }
 }

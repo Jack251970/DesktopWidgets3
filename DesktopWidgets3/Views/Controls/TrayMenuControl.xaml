@@ -6,21 +6,30 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tb="using:H.NotifyIcon"
     mc:Ignorable="d">
-    
+
     <UserControl.Resources>
-        <XamlUICommand x:Key="ShowCommand" x:Uid="TrayIcon_Show" ExecuteRequested="ShowWindow" />
-        <XamlUICommand x:Key="ExitCommand" x:Uid="TrayIcon_Exit" ExecuteRequested="ExitApp" />
-        <MenuFlyout x:Key="TrayContextFlyout" AreOpenCloseAnimationsEnabled="False">
-            <MenuFlyoutItem Command="{StaticResource ShowCommand}"/>
-            <MenuFlyoutSeparator />
-            <MenuFlyoutItem Command="{StaticResource ExitCommand}"/>
-        </MenuFlyout>
+        <XamlUICommand x:Key="ShowCommand" ExecuteRequested="ShowWindow" />
+        <XamlUICommand x:Key="ExitCommand" ExecuteRequested="ExitApp" />
     </UserControl.Resources>
-    
-    <tb:TaskbarIcon
-        x:Uid="TaskBarIcon"
-        IconSource="/Assets/WindowIcon.ico"
-        ContextFlyout="{StaticResource TrayContextFlyout}"
+
+    <tb:TaskbarIcon 
+        x:Name="TrayIcon"
+        x:Uid="TrayMenu_TaskBarIcon"
         ContextMenuMode="PopupMenu"
-        MenuActivation="RightClick"/>
+        IconSource="/Assets/WindowIcon.ico"
+        DoubleClickCommand="{StaticResource ShowCommand}"
+        NoLeftClickDelay="True"
+        MenuActivation="RightClick">
+        <tb:TaskbarIcon.ContextFlyout>
+            <MenuFlyout AreOpenCloseAnimationsEnabled="False">
+                <MenuFlyoutItem
+                    x:Uid="TrayMenu_MenuFlyoutItem_ShowWindow"
+                    Command="{StaticResource ShowCommand}"/>
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem
+                    x:Uid="TrayMenu_MenuFlyoutItem_ExitApp"
+                    Command="{StaticResource ExitCommand}"/>
+            </MenuFlyout>
+        </tb:TaskbarIcon.ContextFlyout>
+    </tb:TaskbarIcon>
 </UserControl>

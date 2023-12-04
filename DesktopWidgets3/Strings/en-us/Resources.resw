@@ -163,16 +163,10 @@
   <data name="Shell_Home.Content" xml:space="preserve">
     <value>Home</value>
   </data>
-  <data name="TrayIcon_Exit.Description" xml:space="preserve">
-    <value>Exit application</value>
-  </data>
-  <data name="TrayIcon_Exit.Label" xml:space="preserve">
+  <data name="TrayMenu_MenuFlyoutItem_ExitApp.Text" xml:space="preserve">
     <value>Exit</value>
   </data>
-  <data name="TrayIcon_Show.Description" xml:space="preserve">
-    <value>Show window</value>
-  </data>
-  <data name="TrayIcon_Show.Label" xml:space="preserve">
+  <data name="TrayMenu_MenuFlyoutItem_ShowWindow.Text" xml:space="preserve">
     <value>Show</value>
   </data>
   <data name="AppDescription" xml:space="preserve">
@@ -268,7 +262,7 @@
   <data name="Settings_SilentStart_Card.Header" xml:space="preserve">
     <value>Silent start</value>
   </data>
-  <data name="TaskBarIcon.ToolTipText" xml:space="preserve">
+  <data name="TrayMenu_TaskBarIcon.ToolTipText" xml:space="preserve">
     <value>Desktop Widget 3</value>
   </data>
 </root>
