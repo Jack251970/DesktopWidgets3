@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tb="using:H.NotifyIcon"
     mc:Ignorable="d">
+    
     <UserControl.Resources>
         <XamlUICommand x:Key="ShowCommand" x:Uid="TrayIcon_Show" ExecuteRequested="ShowWindow" />
         <XamlUICommand x:Key="ExitCommand" x:Uid="TrayIcon_Exit" ExecuteRequested="ExitApp" />
@@ -15,10 +16,11 @@
             <MenuFlyoutItem Command="{StaticResource ExitCommand}"/>
         </MenuFlyout>
     </UserControl.Resources>
-    <!-- Enable Win11 theme by ContextMenuMode="SecondWindow" -->
+    
     <tb:TaskbarIcon
-        ToolTipText="Time Manager 3"
+        x:Uid="TaskBarIcon"
         IconSource="/Assets/WindowIcon.ico"
         ContextFlyout="{StaticResource TrayContextFlyout}"
+        ContextMenuMode="PopupMenu"
         MenuActivation="RightClick"/>
 </UserControl>

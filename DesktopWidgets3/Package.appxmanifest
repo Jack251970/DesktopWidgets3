@@ -61,7 +61,7 @@
 
           <uap5:Extension Category="windows.startupTask">
             <uap5:StartupTask
-              TaskId="StartTimeManagerOnLoginTask"
+              TaskId="StartAppOnLoginTask"
               Enabled="false"
               DisplayName="ms-resource:AppDisplayName" />
           </uap5:Extension>

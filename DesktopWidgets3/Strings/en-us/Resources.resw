@@ -268,4 +268,7 @@
   <data name="Settings_SilentStart_Card.Header" xml:space="preserve">
     <value>Silent start</value>
   </data>
+  <data name="TaskBarIcon.ToolTipText" xml:space="preserve">
+    <value>Desktop Widget 3</value>
+  </data>
 </root>
