@@ -13,13 +13,15 @@ public class ActivationService : IActivationService
 {
     private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
+    private readonly IAppSettingsService _appSettingsService;
     private readonly IThemeSelectorService _themeSelectorService;
     private UIElement? _shell = null;
 
-    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IThemeSelectorService themeSelectorService)
+    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService)
     {
         _defaultHandler = defaultHandler;
         _activationHandlers = activationHandlers;
+        _appSettingsService = appSettingsService;
         _themeSelectorService = themeSelectorService;
     }
 
@@ -27,6 +29,7 @@ public class ActivationService : IActivationService
     {
         // Execute tasks before activation.
         await InitializeAsync();
+        await _appSettingsService.InitializeAsync();
 
         // Set the MainWindow Content.
         if (App.MainWindow!.Content == null)
@@ -39,7 +42,10 @@ public class ActivationService : IActivationService
         await HandleActivationAsync(activationArgs);
 
         // Activate the MainWindow.
-        App.MainWindow.Activate();
+        if (!_appSettingsService.SilentStart)
+        {
+            App.MainWindow.Activate();
+        }
 
         // Execute tasks after activation.
         await StartupAsync(App.MainWindow);

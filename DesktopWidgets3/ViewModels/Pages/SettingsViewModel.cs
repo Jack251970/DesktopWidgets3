@@ -8,18 +8,20 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 {
+    #region observable properties
+
     [ObservableProperty]
     private int _themeIndex;
     [ObservableProperty]
-    private bool _batterySaver;
-    [ObservableProperty]
     private bool _runStartup;
     [ObservableProperty]
-#if DEBUG
-    private string _version = $"v{AssemblyHelper.GetVersion()} - DEBUG";
-#else
+    private bool _silentStart;
+    [ObservableProperty]
+    private bool _batterySaver;
+    [ObservableProperty]
     private string _version = $"v{AssemblyHelper.GetVersion()}";
-#endif
+
+    #endregion
 
     private readonly IAppSettingsService _appSettingsService;
     private readonly IThemeSelectorService _themeSelectorService;
@@ -40,6 +42,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     {
         ThemeIndex = (int)_themeSelectorService.Theme;
         RunStartup = await StartupHelper.GetStartup();
+        SilentStart = _appSettingsService.SilentStart;
         BatterySaver = _appSettingsService.BatterySaver;
 
         _isInitialized = true;
@@ -68,7 +71,17 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     {
         if (_isInitialized)
         {
+#if !DEBUG
             _ = StartupHelper.SetStartupAsync(value);
+#endif
+        }
+    }
+
+    partial void OnSilentStartChanged(bool value)
+    {
+        if (_isInitialized)
+        {
+            _appSettingsService.SetSilentStartAsync(value);
         }
     }
 

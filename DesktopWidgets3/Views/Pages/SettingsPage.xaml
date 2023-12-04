@@ -38,6 +38,11 @@
                     <ToggleSwitch IsOn="{x:Bind ViewModel.RunStartup, Mode=TwoWay}" />
                 </labs:SettingsCard>
 
+                <labs:SettingsCard x:Uid="Settings_SilentStart_Card">
+                    <ToggleSwitch 
+                        IsOn="{x:Bind ViewModel.SilentStart, Mode=TwoWay}" />
+                </labs:SettingsCard>
+
                 <labs:SettingsCard x:Uid="Settings_BatterySaver_Card">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE8BE;" />

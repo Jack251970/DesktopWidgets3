@@ -4,7 +4,7 @@ public class LocalSettingsKeys
 {
     public readonly string ThemeKey = "Theme";
 
-    public readonly string BatterySaverKey = "BatterySaver";
+    public readonly string SilentStartKey = "SilentStart";
 
-    public readonly string BreakIntervalKey = "BreakInterval";
+    public readonly string BatterySaverKey = "BatterySaver";
 }

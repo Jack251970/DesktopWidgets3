@@ -14,16 +14,20 @@ public class AppSettingsService : IAppSettingsService
     {
         _localSettingsService = localSettingsService;
         _localSettingsKeys = localSettingsKeys.Value;
-
-        InitializeAsync();
     }
 
-    private async void InitializeAsync()
+    public async Task InitializeAsync()
     {
+        SilentStart = await GetSilentStartAsync();
         BatterySaver = await GetBatterySaverAsync();
     }
 
     #region Runtime Application Data
+
+    public bool SilentStart
+    {
+        get; set;
+    }
 
     public bool BatterySaver
     {
@@ -33,6 +37,20 @@ public class AppSettingsService : IAppSettingsService
     #endregion
 
     #region Local Application Data
+
+    private const bool DefaultSilentStart = false;
+
+    private async Task<bool> GetSilentStartAsync()
+    {
+        var data = await GetDataFromSettingsAsync(_localSettingsKeys.SilentStartKey, DefaultSilentStart);
+        return data;
+    }
+
+    public async Task SetSilentStartAsync(bool value)
+    {
+        await SaveDataInSettingsAsync(_localSettingsKeys.SilentStartKey, value);
+        SilentStart = value;
+    }
 
     private const bool DefaultBatterySaver = false;
 

@@ -7,7 +7,6 @@ using DesktopWidgets3.Activation;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Core.Contracts.Services;
 using DesktopWidgets3.Core.Services;
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
 using DesktopWidgets3.Notifications;
 using DesktopWidgets3.Services;
@@ -56,6 +55,7 @@ public partial class App : Application
 
     public App()
     {
+#if !DEBUG
         // Check if app is already running
         if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), true))
         {
@@ -63,6 +63,7 @@ public partial class App : Application
             Current.Exit();
             return;
         }
+#endif
 
         InitializeComponent();
 
@@ -196,10 +197,9 @@ public partial class App : Application
     public static void ShowMainWindow(bool front)
     {
         MainWindow!.Show(true);
-        MainWindow!.Activate();
         if (front)
         {
-            MainWindow.BringToFront();
+            MainWindow!.Activate();
         }
     }
 }

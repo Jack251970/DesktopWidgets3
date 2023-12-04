@@ -249,4 +249,10 @@
   <data name="MenuFlyoutItem_DeleteWidget.Text" xml:space="preserve">
     <value>删除该组件</value>
   </data>
+  <data name="Settings_SilentStart_Card.Description" xml:space="preserve">
+    <value>在应用启动时隐藏主窗口</value>
+  </data>
+  <data name="Settings_SilentStart_Card.Header" xml:space="preserve">
+    <value>静默启动</value>
+  </data>
 </root>

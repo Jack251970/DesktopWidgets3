@@ -262,4 +262,10 @@
   <data name="MenuFlyoutItem_DeleteWidget.Text" xml:space="preserve">
     <value>Delete this widget</value>
   </data>
+  <data name="Settings_SilentStart_Card.Description" xml:space="preserve">
+    <value>Hide main window when you start the app</value>
+  </data>
+  <data name="Settings_SilentStart_Card.Header" xml:space="preserve">
+    <value>Silent start</value>
+  </data>
 </root>

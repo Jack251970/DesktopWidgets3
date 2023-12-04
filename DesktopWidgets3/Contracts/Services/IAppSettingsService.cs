@@ -4,10 +4,13 @@ namespace DesktopWidgets3.Contracts.Services;
 
 public interface IAppSettingsService
 {
-    bool BatterySaver
-    {
-        get; set;
-    }
+    Task InitializeAsync();
+
+    bool SilentStart { get; set; }
+
+    Task SetSilentStartAsync(bool value);
+
+    bool BatterySaver { get; set; }
 
     Task SetBatterySaverAsync(bool value);
 
