@@ -36,7 +36,7 @@
                 Background="Transparent"
                 VerticalContentAlignment="Center"
                 HorizontalContentAlignment="Center"
-                Click="NavigateBackButton_Click"
+                Command="{x:Bind ViewModel.NavigateBackCommand}"
 		        IsEnabled="{x:Bind ViewModel.IsNavigateBackExecutable, Mode=OneWay}">
                 <FontIcon FontSize="12" Glyph="&#xE72B;" />
             </Button>
@@ -48,7 +48,7 @@
                 Background="Transparent"
                 VerticalContentAlignment="Center"
                 HorizontalContentAlignment="Center"
-		        Click="NavigateUpButton_Click"
+		        Command="{x:Bind ViewModel.NavigateUpCommand}"
 		        IsEnabled="{x:Bind ViewModel.IsNavigateUpExecutable, Mode=OneWay}">
                 <FontIcon FontSize="12" Glyph="&#xE74A;" />
             </Button>
@@ -60,7 +60,7 @@
                 Background="Transparent"
                 VerticalContentAlignment="Center"
                 HorizontalContentAlignment="Center"
-                Click="NavigateRefreshButton_Click">
+                Command="{x:Bind ViewModel.NavigateRefreshCommand}">
                 <FontIcon FontSize="12" Glyph="&#xE72C;" />
             </Button>
             <StackPanel Grid.Column="3" HorizontalAlignment="Center" Orientation="Horizontal">

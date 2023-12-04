@@ -26,7 +26,7 @@
             VerticalAlignment="Center"
             VerticalContentAlignment="Center"
             HorizontalContentAlignment="Center"
-            Command="{x:Bind ViewModel.SaveEventHandler}">
+            Command="{x:Bind ViewModel.SaveCommand}">
             <FontIcon FontSize="14" Glyph="&#xE74E;" />
         </Button>
         <Button 
@@ -40,7 +40,7 @@
             VerticalAlignment="Center"
             VerticalContentAlignment="Center"
             HorizontalContentAlignment="Center"
-            Command="{x:Bind ViewModel.SettingEventHandler}">
+            Command="{x:Bind ViewModel.SettingCommand}">
             <FontIcon FontSize="14" Glyph="&#xE713;" />
         </Button>
         <Button
@@ -54,7 +54,7 @@
             VerticalAlignment="Center"
             VerticalContentAlignment="Center"
             HorizontalContentAlignment="Center"
-            Command="{x:Bind ViewModel.CancelEventHandler}">
+            Command="{x:Bind ViewModel.CancelCommand}">
             <FontIcon FontSize="14" Glyph="&#xE711;" />
         </Button>
     </Grid>

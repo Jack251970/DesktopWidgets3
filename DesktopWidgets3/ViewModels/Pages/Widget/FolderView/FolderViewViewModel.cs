@@ -5,6 +5,7 @@ using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Models.Widget.FolderView;
+using DesktopWidgets3.ViewModels.Commands;
 using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Files.Core.Data.Items;
@@ -16,6 +17,27 @@ namespace DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 
 public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
 {
+    #region commands
+
+    public ClickCommand NavigateBackCommand
+    {
+        get;
+    }
+
+    public ClickCommand NavigateUpCommand
+    {
+        get;
+    }
+
+    public ClickCommand NavigateRefreshCommand
+    {
+        get;
+    }
+
+    #endregion
+
+    #region observable properties
+
     public ObservableCollection<FolderViewFileItem> FolderViewFileItems { get; set; } = new();
 
     [ObservableProperty]
@@ -32,6 +54,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
 
     [ObservableProperty]
     private BitmapImage? _folderPathIconOverlay = null;
+
+    #endregion
 
     private readonly Stack<string> navigationFolderPaths = new();
 
@@ -63,6 +87,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
     public FolderViewViewModel()
     {
         InitializeFileSystemWatcher();
+
+        NavigateBackCommand = new ClickCommand(NavigateBack);
+        NavigateUpCommand = new ClickCommand(NavigateUp);
+        NavigateRefreshCommand = new ClickCommand(NavigateRefresh);
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -72,13 +100,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
             if (FolderPath != settings.FolderPath)
             {
                 FolderPath = settings.FolderPath;
-                await LoadFileItemsFromFolderPath(true, null, null);
+                await RefreshFileList(true, null, null);
             }
 
             if (LoadIconOverlay != settings.ShowIconOverlay)
             {
                 LoadIconOverlay = settings.ShowIconOverlay;
-                await LoadFileItemsFromFolderPath(false, FolderPathIcon, FolderPathIconOverlay);
+                await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
             }
 
             _isInitialized = true;
@@ -89,7 +117,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
         if (!_isInitialized)
         {
             FolderPath = $"C:\\";
-            await LoadFileItemsFromFolderPath(true, null, null);
+            await RefreshFileList(true, null, null);
             _isInitialized = true;
         }
     }
@@ -98,6 +126,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
     {
 
     }
+
+    #region file system watcher
 
     private void InitializeFileSystemWatcher()
     {
@@ -215,6 +245,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
         });
     }
 
+    #endregion
+
+    #region command events
+
     internal async Task FolderViewItemDoubleTapped(string filePath)
     {
         var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(filePath);
@@ -245,13 +279,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
                     break;
                 }
             }
-            await LoadFileItemsFromFolderPath(true, folderIcon, folderIconOverlay);
+            await RefreshFileList(true, folderIcon, folderIconOverlay);
         }
         else
         {
             if (!File.Exists(filePath))
             {
-                await LoadFileItemsFromFolderPath(false, FolderPathIcon, FolderPathIconOverlay);
+                await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
             }
             else
             {
@@ -260,31 +294,35 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
         }
     }
 
-    internal async Task NavigateBackButtonClick()
+    private async void NavigateBack()
     {
         if (IsNavigateBackExecutable)
         {
             navigationFolderPaths.Pop();
             FolderPath = navigationFolderPaths.Peek();
-            await LoadFileItemsFromFolderPath(false, null, null);
+            await RefreshFileList(false, null, null);
         }
     }
 
-    internal async Task NavigateUpButtonClick()
+    private async void NavigateUp()
     {
         if (IsNavigateUpExecutable)
         {
             FolderPath = parentFolderPath!;
-            await LoadFileItemsFromFolderPath(true, null, null);
+            await RefreshFileList(true, null, null);
         }
     }
 
-    internal async Task NavigateRefreshButtonClick()
+    private async void NavigateRefresh()
     {
-        await LoadFileItemsFromFolderPath(false, FolderPathIcon, FolderPathIconOverlay);
+        await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
     }
 
-    private async Task LoadFileItemsFromFolderPath(bool pushFolderPath, BitmapImage? icon, BitmapImage? overlay)
+    #endregion
+
+    #region refresh & icon
+
+    private async Task RefreshFileList(bool pushFolderPath, BitmapImage? icon, BitmapImage? overlay)
     {
         if (DiskRegex().IsMatch(FolderPath))
         {
@@ -366,4 +404,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
 
     [GeneratedRegex("^[a-zA-Z]:\\\\$")]
     private static partial Regex DiskRegex();
+
+    #endregion
 }

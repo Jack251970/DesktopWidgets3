@@ -7,11 +7,11 @@ using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Commands;
 
-public class ButtonClickCommand : ICommand
+public class ClickCommand : ICommand
 {
     private readonly Action _execute;
 
-    public ButtonClickCommand(Action execute) { _execute = execute; }
+    public ClickCommand(Action execute) { _execute = execute; }
 
     // Occurs when changes occur that affect whether or not the command should execute.
     public event EventHandler? CanExecuteChanged;
@@ -25,11 +25,11 @@ public class ButtonClickCommand : ICommand
     public void OnCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
 
-public class ButtonClickCommandWithParam : ICommand
+public class ClickCommandWithParam : ICommand
 {
     private readonly Action<object?> _execute;
 
-    public ButtonClickCommandWithParam(Action<object?> execute)
+    public ClickCommandWithParam(Action<object?> execute)
     {
         _execute = execute;
     }

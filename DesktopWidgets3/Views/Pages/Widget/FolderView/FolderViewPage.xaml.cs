@@ -20,21 +20,6 @@ public sealed partial class FolderViewPage : Page
         InitializeComponent();
     }
 
-    private async void NavigateBackButton_Click(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.NavigateBackButtonClick();
-    }
-
-    private async void NavigateUpButton_Click(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.NavigateUpButtonClick();
-    }
-
-    private async void NavigateRefreshButton_Click(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.NavigateRefreshButtonClick();
-    }
-
     private async void FileList_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
         if (e.OriginalSource is FrameworkElement { DataContext: FolderViewFileItem item })

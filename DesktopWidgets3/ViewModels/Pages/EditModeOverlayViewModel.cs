@@ -6,17 +6,17 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class EditModeOverlayViewModel : ObservableRecipient
 {
-    public ButtonClickCommand SaveEventHandler
+    public ClickCommand SaveCommand
     {
         get; set;
     }
 
-    public ButtonClickCommand SettingEventHandler
+    public ClickCommand SettingCommand
     {
         get; set;
     }
 
-    public ButtonClickCommand CancelEventHandler
+    public ClickCommand CancelCommand
     {
         get; set;
     }
@@ -29,9 +29,9 @@ public partial class EditModeOverlayViewModel : ObservableRecipient
         _navigationService = navigationService;
         _widgetManagerService = widgetManagerService;
 
-        SaveEventHandler = new ButtonClickCommand(SaveAndExitEditMode);
-        SettingEventHandler = new ButtonClickCommand(NavigateSettingsPage);
-        CancelEventHandler = new ButtonClickCommand(CancelAndExitEditMode);
+        SaveCommand = new ClickCommand(SaveAndExitEditMode);
+        SettingCommand = new ClickCommand(NavigateSettingsPage);
+        CancelCommand = new ClickCommand(CancelAndExitEditMode);
     }
 
     private void SaveAndExitEditMode()

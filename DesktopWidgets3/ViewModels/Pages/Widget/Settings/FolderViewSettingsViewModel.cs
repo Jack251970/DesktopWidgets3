@@ -15,7 +15,7 @@ public partial class FolderViewSettingsViewModel : ObservableRecipient, INavigat
     [ObservableProperty]
     private bool _showIconOverlay = true;
     
-    public ButtonClickCommand SelectFolderPathEventHandler { get; set; }
+    public ClickCommand SelectFolderPathCommand { get; set; }
 
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;
@@ -32,7 +32,7 @@ public partial class FolderViewSettingsViewModel : ObservableRecipient, INavigat
         _navigationService = navigationService;
         _widgetManagerService = widgetManagerService;
 
-        SelectFolderPathEventHandler = new ButtonClickCommand(SelectFoldePath);
+        SelectFolderPathCommand = new ClickCommand(SelectFoldePath);
     }
 
     private async void SelectFoldePath()
