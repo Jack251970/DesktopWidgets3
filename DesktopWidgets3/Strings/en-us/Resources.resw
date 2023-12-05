@@ -120,12 +120,11 @@
   <data name="AppDisplayName" xml:space="preserve">
     <value>Desktop Widgets 3</value>
   </data>
-  <data name="Settings_PrivacyTermsLink.Content" xml:space="preserve">
-    <value>Privacy Statement</value>
+  <data name="Settings_LicenseLink.Content" xml:space="preserve">
+    <value>Open-source License</value>
   </data>
-  <data name="Settings_PrivacyTermsLink.NavigateUri" xml:space="preserve">
-    <value>https://YourPrivacyUrlGoesHere/</value>
-    <comment>TODO</comment>
+  <data name="Settings_LicenseLink.NavigateUri" xml:space="preserve">
+    <value>https://github.com/Jack251970/DesktopWidgets3/blob/master/LICENSE</value>
   </data>
   <data name="Settings_About.Text" xml:space="preserve">
     <value>About</value>
@@ -264,5 +263,11 @@
   </data>
   <data name="TrayMenu_TaskBarIcon.ToolTipText" xml:space="preserve">
     <value>Desktop Widget 3</value>
+  </data>
+  <data name="Settings_Feedback_Card.Header" xml:space="preserve">
+    <value>File a bug or request new features</value>
+  </data>
+  <data name="Settings_Repository_Card.Header" xml:space="preserve">
+    <value>To view this repository</value>
   </data>
 </root>

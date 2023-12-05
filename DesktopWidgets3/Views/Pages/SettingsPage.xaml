@@ -62,17 +62,17 @@
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind ViewModel.Version, Mode=OneTime}" />
                     <labs:SettingsExpander.Items>
-                        <labs:SettingsCard Header="To view this repository">
+                        <labs:SettingsCard x:Uid="Settings_Repository_Card">
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 IsTextSelectionEnabled="True"
                                 Text="https://github.com/Jack251970/DesktopWidgets3" />
                         </labs:SettingsCard>
-                        <labs:SettingsCard Header="File a bug or request new features">
+                        <labs:SettingsCard x:Uid="Settings_Feedback_Card">
                             <TextBlock
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                 IsTextSelectionEnabled="True"
-                                Text="1160210343@qq.com" />
+                                Text="jack1160210343@gmail.com" />
                         </labs:SettingsCard>
                         <labs:SettingsCard x:Uid="Settings_Dependencies_Card"
                                            HorizontalContentAlignment="Left"
@@ -94,7 +94,7 @@
                                            HorizontalContentAlignment="Left"
                                            ContentAlignment="Vertical" >
                             <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                <HyperlinkButton x:Uid="Settings_PrivacyTermsLink" />
+                                <HyperlinkButton x:Uid="Settings_LicenseLink" />
                             </StackPanel>
                         </labs:SettingsCard>
                     </labs:SettingsExpander.Items>

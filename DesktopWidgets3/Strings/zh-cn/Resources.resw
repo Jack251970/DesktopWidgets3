@@ -249,4 +249,16 @@
   <data name="Settings_SilentStart_Card.Header" xml:space="preserve">
     <value>静默启动</value>
   </data>
+  <data name="Settings_Feedback_Card.Header" xml:space="preserve">
+    <value>反馈问题与请求新功能</value>
+  </data>
+  <data name="Settings_Repository_Card.Header" xml:space="preserve">
+    <value>查看存储库</value>
+  </data>
+  <data name="Settings_LicenseLink.Content" xml:space="preserve">
+    <value>开源协议</value>
+  </data>
+  <data name="Settings_LicenseLink.NavigateUri" xml:space="preserve">
+    <value>https://github.com/Jack251970/DesktopWidgets3/blob/master/LICENSE</value>
+  </data>
 </root>
