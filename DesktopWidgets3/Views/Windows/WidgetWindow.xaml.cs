@@ -6,8 +6,7 @@ using DesktopWidgets3.Models.Widget;
 using Windows.Graphics;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Views.Pages.Widget.Clock;
-using DesktopWidgets3.Views.Pages.Widget.FolderView;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -41,12 +40,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     public FrameShellPage? ShellPage => Content as FrameShellPage;
 
-    public BaseWidgetViewModel? PageViewModel => WidgetType switch
-    {
-        WidgetType.Clock => (ShellPage?.NavigationFrame.Content as ClockPage)?.ViewModel,
-        WidgetType.FolderView => (ShellPage?.NavigationFrame.Content as FolderViewPage)?.ViewModel,
-        _ => null,
-    };
+    public BaseWidgetViewModel? PageViewModel => (BaseWidgetViewModel?)(ShellPage?.NavigationFrame?.GetPageViewModel());
 
     private readonly DispatcherQueue dispatcherQueue;
 
