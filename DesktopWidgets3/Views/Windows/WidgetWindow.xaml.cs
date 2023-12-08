@@ -3,7 +3,6 @@ using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
-using Microsoft.UI.Xaml;
 using Windows.Graphics;
 using DesktopWidgets3.Views.Pages.Widget;
 

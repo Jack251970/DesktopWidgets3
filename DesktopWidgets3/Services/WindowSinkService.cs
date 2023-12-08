@@ -16,10 +16,7 @@ public class WindowSinkService : IWindowSinkService
 
     private const int WM_WINDOWPOSCHANGING = 0x0046;
 
-    private const uint SWP_NOSIZE = 0x0001;
-    private const uint SWP_NOMOVE = 0x0002;
     private const uint SWP_NOZORDER = 0x0004;
-    private const uint SWP_NOACTIVATE = 0x0010;
 
     [StructLayout(LayoutKind.Sequential)]
     public struct WINDOWPOS
@@ -33,8 +30,6 @@ public class WindowSinkService : IWindowSinkService
         public uint flags;
     }
 
-    private static readonly nint HWND_BOTTOM = new(1);
-
     [DllImport("user32.dll")]
     private static extern bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int x, int y, int cx, int cy,
         uint uFlags);
@@ -47,11 +42,8 @@ public class WindowSinkService : IWindowSinkService
 
     private bool _isInitialized;
 
-    public WindowSinkService()
-    {
-
-    }
-
+    public WindowSinkService() { }
+    
     public void Initialize(Window window, bool hideFromTaskBar)
     {
         if (!_isInitialized)
