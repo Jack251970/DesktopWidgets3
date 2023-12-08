@@ -359,6 +359,7 @@ public class WidgetManagerService : IWidgetManagerService
 
     public async void EnterEditMode()
     {
+        originalWidgetList.Clear();
         foreach (var widgetWindow in WidgetsList)
         {
             var widget = new JsonWidgetItem()
@@ -373,6 +374,8 @@ public class WidgetManagerService : IWidgetManagerService
 
             SetEditMode(widgetWindow, true);
         }
+
+        _timersService.StopUpdateTimeTimer();
 
         if (EditModeOverlayWindow == null)
         {
@@ -422,6 +425,8 @@ public class WidgetManagerService : IWidgetManagerService
             widgetList.Add(widget);
         }
 
+        _timersService.StartUpdateTimeTimer();
+
         EditModeOverlayWindow?.Hide(true);
 
         await _appSettingsService.UpdateWidgetsList(widgetList);
@@ -443,6 +448,8 @@ public class WidgetManagerService : IWidgetManagerService
                 widgetWindow.Show(true);
             }
         }
+
+        _timersService.StartUpdateTimeTimer();
 
         EditModeOverlayWindow?.Hide(true);
     }

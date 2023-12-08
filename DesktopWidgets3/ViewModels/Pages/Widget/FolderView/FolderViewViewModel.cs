@@ -406,4 +406,17 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
     private static partial Regex DiskRegex();
 
     #endregion
+
+    public async override void SetEditMode(bool editMode)
+    {
+        if (editMode)
+        {
+            fileSystemWatcher.EnableRaisingEvents = false;
+        }
+        else
+        {
+            await RefreshFileList(false, null, null);
+            fileSystemWatcher.EnableRaisingEvents = true;
+        }
+    }
 }

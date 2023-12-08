@@ -15,10 +15,14 @@ public partial class ClockViewModel : BaseWidgetViewModel, INavigationAware
 
     private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
 
+    private readonly ITimersService _timersService;
+
     private bool _isInitialized;
 
     public ClockViewModel(ITimersService timersService)
     {
+        _timersService = timersService;
+
         timersService.AddUpdateTimeTimerAction(UpdateTime);
     }
 
@@ -49,5 +53,10 @@ public partial class ClockViewModel : BaseWidgetViewModel, INavigationAware
     private void UpdateTime(object? sender, EventArgs e)
     {
         _dispatcherQueue.TryEnqueue(() => SystemTime = DateTime.Now.ToString(timingFormat));
+    }
+
+    public override void SetEditMode(bool editMode)
+    {
+        
     }
 }

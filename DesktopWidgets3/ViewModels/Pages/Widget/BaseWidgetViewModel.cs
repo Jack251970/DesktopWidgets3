@@ -10,7 +10,7 @@ using static DesktopWidgets3.Services.DialogService;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
-public partial class BaseWidgetViewModel : ObservableRecipient
+public abstract partial class BaseWidgetViewModel : ObservableRecipient
 {
     protected MenuFlyout RightTappedMenu
     {
@@ -127,4 +127,6 @@ public partial class BaseWidgetViewModel : ObservableRecipient
     {
         _widgetManagerService.EnterEditMode();
     }
+
+    public abstract void SetEditMode(bool editMode);
 }
