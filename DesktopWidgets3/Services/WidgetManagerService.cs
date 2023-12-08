@@ -373,6 +373,7 @@ public class WidgetManagerService : IWidgetManagerService
             originalWidgetList.Add(widget);
 
             SetEditMode(widgetWindow, true);
+            widgetWindow.PageViewModel?.SetEditMode(true);
         }
 
         _timersService.StopUpdateTimeTimer();
@@ -413,6 +414,7 @@ public class WidgetManagerService : IWidgetManagerService
         foreach (var widgetWindow in WidgetsList)
         {
             SetEditMode(widgetWindow, false);
+            widgetWindow.PageViewModel?.SetEditMode(false);
 
             var widget = new JsonWidgetItem()
             {
@@ -437,6 +439,7 @@ public class WidgetManagerService : IWidgetManagerService
         foreach (var widgetWindow in WidgetsList)
         {
             SetEditMode(widgetWindow, false);
+            widgetWindow.PageViewModel?.SetEditMode(false);
 
             var originalWidget = originalWidgetList.First(x => x.Type == widgetWindow.WidgetType && x.IndexTag == widgetWindow.IndexTag);
 

@@ -15,7 +15,12 @@ public sealed partial class FrameShellPage : Page
         get;
     }
 
-    public WidgetWindow WidgetWindow
+    public Frame NavigationFrame
+    {
+        get;
+    }
+
+    private WidgetWindow WidgetWindow
     {
         get;
     }
@@ -25,7 +30,8 @@ public sealed partial class FrameShellPage : Page
         ViewModel = viewModel;
         InitializeComponent();
 
-        ViewModel.WidgetNavigationService.Frame = NavigationFrame;
+        NavigationFrame = WidgetNavigationFrame;
+        ViewModel.WidgetNavigationService.Frame = WidgetNavigationFrame;
         WidgetWindow = widgetManagerService.GetLastWidgetWindow();
 
         SetCustomTitleBar(false);

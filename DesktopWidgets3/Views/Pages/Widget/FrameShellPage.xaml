@@ -8,6 +8,6 @@
 
     <Grid x:Name="ContentArea">
         <Grid x:Name="WidgetTitleBar"/>
-        <Frame x:Name="NavigationFrame"/>
+        <Frame x:Name="WidgetNavigationFrame"/>
     </Grid>
 </Page>
