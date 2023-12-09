@@ -20,6 +20,11 @@ public sealed partial class FolderViewPage : Page
         InitializeComponent();
     }
 
+    private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        ViewModel.ShowRightTappedMenu(sender, e);
+    }
+
     private async void FileList_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
         if (e.OriginalSource is FrameworkElement { DataContext: FolderViewFileItem item })
@@ -29,8 +34,8 @@ public sealed partial class FolderViewPage : Page
         }
     }
 
-    private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    private void FolderTitle_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
-        ViewModel.ShowRightTappedMenu(sender, e);
+        ViewModel.FolderTitleDoubleTapped();
     }
 }

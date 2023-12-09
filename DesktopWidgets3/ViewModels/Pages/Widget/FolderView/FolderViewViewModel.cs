@@ -289,7 +289,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
             }
             else
             {
-                await OpenFileHelper.OpenPath(filePath, string.Empty, FolderPath);
+                await OpenHelper.OpenFile(filePath, FolderPath);
             }
         }
     }
@@ -316,6 +316,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
     private async void NavigateRefresh()
     {
         await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
+    }
+
+    internal void FolderTitleDoubleTapped()
+    {
+        OpenHelper.OpenFolder(FolderPath);
     }
 
     #endregion
@@ -407,6 +412,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
 
     #endregion
 
+    #region abstract methods
+
     public async override void SetEditMode(bool editMode)
     {
         if (editMode)
@@ -419,4 +426,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
             fileSystemWatcher.EnableRaisingEvents = true;
         }
     }
+
+    #endregion
 }

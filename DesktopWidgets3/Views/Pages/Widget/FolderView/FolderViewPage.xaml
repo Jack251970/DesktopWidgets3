@@ -63,32 +63,37 @@
                 Command="{x:Bind ViewModel.NavigateRefreshCommand}">
                 <FontIcon FontSize="12" Glyph="&#xE72C;" />
             </Button>
-            <StackPanel Margin="0,0,68,0" Grid.Column="3" HorizontalAlignment="Center" Orientation="Horizontal">
-                <Grid
-                    Height="24"
-                    Width="24"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Stretch">
-                    <Image
-                        Canvas.ZIndex="0"
-                        Width="20" 
-                        Height="20"
+            <Grid
+                Grid.Column="3"
+                Background="Transparent"
+                DoubleTapped="FolderTitle_DoubleTapped">
+                <StackPanel Margin="0,0,68,0" HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Grid
+                        Height="24"
+                        Width="24"
                         HorizontalAlignment="Left"
+                        VerticalAlignment="Stretch">
+                        <Image
+                            Canvas.ZIndex="0"
+                            Width="20" 
+                            Height="20"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Source="{x:Bind ViewModel.FolderPathIcon, Mode=OneWay}"/>
+                        <Image
+                            Canvas.ZIndex="1"
+                            Width="20"
+                            Height="20"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Source="{x:Bind ViewModel.FolderPathIconOverlay, Mode=OneWay}"/>
+                    </Grid>
+                    <TextBlock
+                        Text="{x:Bind ViewModel.FolderName, Mode=OneWay}"
                         VerticalAlignment="Center"
-                        Source="{x:Bind ViewModel.FolderPathIcon, Mode=OneWay}"/>
-                    <Image
-                        Canvas.ZIndex="1"
-                        Width="20"
-                        Height="20"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Source="{x:Bind ViewModel.FolderPathIconOverlay, Mode=OneWay}"/>
-                </Grid>
-                <TextBlock
-                    Text="{x:Bind ViewModel.FolderName, Mode=OneWay}"
-                    VerticalAlignment="Center"
-                    Style="{ThemeResource BodyTextStyle}" />
-            </StackPanel>
+                        Style="{ThemeResource BodyTextStyle}" />
+                </StackPanel>
+            </Grid>
             <Button
                 Grid.Column="4"
                 Height="34"

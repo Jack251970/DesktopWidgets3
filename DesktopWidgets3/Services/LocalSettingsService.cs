@@ -51,6 +51,9 @@ public class LocalSettingsService : ILocalSettingsService
         else
         {
             _applicationDataFolder = Path.Combine(_localApplicationData, _options.ApplicationDataFolder ?? _defaultApplicationDataFolder);
+#if DEBUG
+            _applicationDataFolder = Path.Combine(_applicationDataFolder, "Debug");
+#endif
         }
 
         if (!Directory.Exists(_applicationDataFolder))
