@@ -4,5 +4,5 @@ namespace DesktopWidgets3.Contracts.Services;
 
 public interface IWindowSinkService
 {
-    void Initialize(Window window, bool hideFromTaskBar);
+    void Initialize(Window window);
 }

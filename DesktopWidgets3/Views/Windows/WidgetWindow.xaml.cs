@@ -6,7 +6,6 @@ using DesktopWidgets3.Models.Widget;
 using Windows.Graphics;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -67,7 +66,10 @@ public sealed partial class WidgetWindow : WindowEx
         _windowSinkService = App.GetService<IWindowSinkService>();
 
         // Sink window to desktop
-        _windowSinkService.Initialize(this, true);
+        _windowSinkService.Initialize(this);
+
+        // Hide window from taskbar
+        SystemHelper.HideWindowFromTaskbar(this.GetWindowHandle());
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open

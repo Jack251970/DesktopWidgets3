@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml;
 using WinUIEx.Messaging;
 
@@ -30,10 +29,6 @@ public class WindowSinkService : IWindowSinkService
         public uint flags;
     }
 
-    [DllImport("user32.dll")]
-    private static extern bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int x, int y, int cx, int cy,
-        uint uFlags);
-
     #endregion
 
     #region WindowSinker
@@ -44,18 +39,12 @@ public class WindowSinkService : IWindowSinkService
 
     public WindowSinkService() { }
     
-    public void Initialize(Window window, bool hideFromTaskBar)
+    public void Initialize(Window window)
     {
         if (!_isInitialized)
         {
             monitor = new WindowMessageMonitor(window);
             monitor.WindowMessageReceived += OnWindowMessageReceived;
-
-            if (hideFromTaskBar)
-            {
-                var hWnd = window.GetWindowHandle();
-                SystemHelper.HideWindowFromTaskbar(hWnd);
-            }
 
             _isInitialized = true;
         }
