@@ -54,18 +54,23 @@ public partial class App : Application
     public static bool CanCloseWindow { get; set; }
     private static bool IsExistWindow { get; set; }
 
+#if DEBUG
+    public static readonly StreamWriter logWriter = new("D:\\log.txt", false);
+#endif
+
     public App()
     {
         // Check if app is already running
+#if DEBUG
+        if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), false)) { }
+#else
         if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), true))
         {
-#if !DEBUG
             IsExistWindow = true;
             Current.Exit();
             return;
-#endif
         }
-
+#endif
         InitializeComponent();
 
         Host = Microsoft.Extensions.Hosting.Host.

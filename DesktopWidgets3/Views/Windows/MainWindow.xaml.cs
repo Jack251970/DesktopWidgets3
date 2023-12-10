@@ -25,6 +25,16 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
+#if DEBUG
+        /*WindowManager.Get(this).WindowMessageReceived += (_, e) =>
+        {
+            App.logWriter.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} - Main - Message: {e.Message}");
+        };
+        VisibilityChanged += (_, e) =>
+        {
+            App.logWriter.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} - Main - Visibility: {e.Visible}");
+        };*/
+#endif
     }
 
     // this handles updating the caption button colors correctly when windows system theme is changed while the app is open

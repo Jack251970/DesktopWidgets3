@@ -83,6 +83,19 @@ public sealed partial class WidgetWindow : WindowEx
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
         _manager = WindowManager.Get(this);
+#if DEBUG
+        /*WindowManager.Get(this).WindowMessageReceived += (_, e) => {
+            App.logWriter.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} - Widget: {e.Message}");
+        };
+        VisibilityChanged += (_, e) =>
+        {
+            App.logWriter.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} - Widget: {e.Visible}");
+        };
+        WindowManager.Get(this).WindowStateChanged += (_, e) =>
+        {
+            // App.logWriter.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} - Widget: {e}");
+        };*/
+#endif
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open
