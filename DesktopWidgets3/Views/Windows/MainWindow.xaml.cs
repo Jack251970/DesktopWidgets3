@@ -9,8 +9,6 @@ namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class MainWindow : WindowEx
 {
-    private readonly IWidgetManagerService _widgetManagerService;
-
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
@@ -27,9 +25,6 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
-
-        // Load registered services
-        _widgetManagerService = App.GetService<IWidgetManagerService>();
     }
 
     // this handles updating the caption button colors correctly when windows system theme is changed while the app is open
@@ -44,7 +39,7 @@ public sealed partial class MainWindow : WindowEx
     {
         if (App.CanCloseWindow)
         {
-            _widgetManagerService.DisableAllWidgets();
+            App.GetService<IWidgetManagerService>().DisableAllWidgets();
             Application.Current.Exit();
         }
         else
