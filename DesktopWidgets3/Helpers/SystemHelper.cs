@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Helpers;
 
@@ -7,9 +8,8 @@ namespace DesktopWidgets3.Helpers;
 /// </summary>
 public partial class SystemHelper
 {
-    /// <summary>
-    /// Check if window exists and show window.
-    /// </summary>
+    #region check window existence
+
     internal const int SW_HIDE = 0;
     internal const int SW_SHOW = 5;
     internal const int SW_RESTORE = 9;
@@ -21,7 +21,7 @@ public partial class SystemHelper
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool ShowWindow(IntPtr hwnd, int nCmdShow);
+    internal static partial bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -30,6 +30,9 @@ public partial class SystemHelper
     [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
     internal static partial IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
 
+    /// <summary>
+    /// Check if window exists and show window.
+    /// </summary>
     public static bool IsWindowExist(string? className, string? windowName, bool showWindow)
     {
         var handle = FindWindow(className, windowName);
@@ -49,20 +52,25 @@ public partial class SystemHelper
         return false;
     }
 
-    /// <summary>
-    /// Show dialog.
-    /// </summary>
+    #endregion
+
+    #region system dialog
+
     [LibraryImport("user32.dll", EntryPoint = "MessageBoxW", StringMarshalling = StringMarshalling.Utf16)]
     internal static partial int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
 
+    /// <summary>
+    /// Show dialog.
+    /// </summary>
     public static int MessageBox(string lpText, string lpCaption, uint uType = 0)
     {
         return MessageBox(new IntPtr(0), lpText, lpCaption, uType);
     }
 
-    /// <summary>
-    /// Exit windows action.
-    /// </summary>
+    #endregion
+
+    #region exit windows
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct TokPriv1Luid
     {
@@ -144,6 +152,10 @@ public partial class SystemHelper
         DoExitWin(EWX_FORCE | EWX_LOGOFF);
     }
 
+    #endregion
+
+    #region hide window icon
+
     internal const int GWL_EXSTYLE = -20;
     internal const int WS_EX_TOOLWINDOW = 0x00000080;
 
@@ -154,11 +166,97 @@ public partial class SystemHelper
     internal static partial IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
 
     /// <summary>
-    /// Hide window from taskbar.
+    /// Hide window icon from taskbar.
     /// </summary>
-    public static void HideWindowFromTaskbar(IntPtr hwnd)
+    public static void HideWindowIconFromTaskbar(IntPtr hWnd)
     {
-        SetWindowLongPtr(hwnd, GWL_EXSTYLE, GetWindowLongPtr(hwnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
-        ShowWindow(hwnd, SW_HIDE);
+        SetWindowLongPtr(hWnd, GWL_EXSTYLE, GetWindowLongPtr(hWnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
+        ShowWindow(hWnd, SW_HIDE);
     }
+
+    #endregion
+
+    #region window z position
+
+    public enum WINDOWZPOS
+    {
+        ONTOP,
+        ONBOTTOM,
+        ONDESKTOP
+    }
+
+    internal const uint GA_PARENT = 1;
+
+    internal const uint WS_EX_TOPMOST = 0x00000008;
+
+    internal const IntPtr HWND_TOPMOST = -1;
+    internal const IntPtr HWND_BOTTOM = 1;
+    internal const IntPtr HWND_NOTOPMOST = -2;
+
+    internal const uint SWP_NOSIZE = 0x0001;
+    internal const uint SWP_NOMOVE = 0x0002;
+    internal const uint SWP_NOZORDER = 0x0004;
+    internal const uint SWP_NOACTIVATE = 0x0010;
+
+    [DllImport("user32.dll")]
+    internal static extern IntPtr GetDesktopWindow();
+
+    [DllImport("user32.dll")]
+    internal static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
+
+    [DllImport("user32.dll")]
+    internal static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+    [DllImport("user32.dll")]
+    internal static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
+    [DllImport("user32.dll")]
+    internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+
+    /// <summary>
+    /// Set window Z position.
+    /// </summary>
+    public static void SetWindowZPos(IntPtr hWnd, WINDOWZPOS pos)
+    {
+        var desktop = GetDesktopWindow();
+        var parent = GetAncestor(hWnd, GA_PARENT);
+        var winPos = HWND_NOTOPMOST;
+
+        switch (pos)
+        {
+            case WINDOWZPOS.ONTOP:
+                if ((GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0)
+                {
+                    return;
+                }
+                winPos = HWND_TOPMOST;
+                break;
+
+            case WINDOWZPOS.ONBOTTOM:
+                winPos = HWND_BOTTOM;
+                break;
+
+            case WINDOWZPOS.ONDESKTOP:
+                // Set the window's parent to progman, so it stays always on desktop
+                var ProgmanHwnd = FindWindow("Progman", "Program Manager");
+                if (ProgmanHwnd != IntPtr.Zero && parent == desktop)
+                {
+                    SetParent(hWnd, ProgmanHwnd);
+                }
+                else
+                {
+                    return; // The window is already on desktop
+                }
+                break;
+        }
+
+        if (pos != WINDOWZPOS.ONDESKTOP && parent != desktop)
+        {
+            SetParent(hWnd, IntPtr.Zero);
+        }
+
+        SetWindowPos(hWnd, winPos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    }
+
+    #endregion
 }

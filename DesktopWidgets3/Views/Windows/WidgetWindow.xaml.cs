@@ -102,13 +102,13 @@ public sealed partial class WidgetWindow : WindowEx
         var _handle = this.GetWindowHandle();
 
         // Hide window icon from taskbar
-        SystemHelper.HideWindowFromTaskbar(_handle);
+        SystemHelper.HideWindowIconFromTaskbar(_handle);
 
         // Get view model of current page
         PageViewModel = (BaseWidgetViewModel?)(ShellPage?.NavigationFrame?.GetPageViewModel());
 
         // Set window to bottom of other windows
-        SetBottomWindow(_handle);
+        SystemHelper.SetWindowZPos(_handle, SystemHelper.WINDOWZPOS.ONBOTTOM);
 
         // Register window sink events
         _manager.WindowMessageReceived += OnWindowMessageReceived;
@@ -129,36 +129,20 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region windows api
 
-    private static readonly nint HWND_BOTTOM = new(1);
-    private static readonly nint HWND_NOTOPMOST = new(-2);
-
-    private const uint SWP_NOSIZE = 0x0001;
-    private const uint SWP_NOMOVE = 0x0002;
-    private const uint SWP_NOZORDER = 0x0004;
-    private const uint SWP_NOACTIVATE = 0x0010;
-
     private const int WM_WINDOWPOSCHANGING = 0x0046;
-
-    [DllImport("user32.dll")]
-    private static extern bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+    private const int SWP_NOZORDER = 0x0004;
 
     [StructLayout(LayoutKind.Sequential)]
     private struct WINDOWPOS
     {
-        internal nint hwnd;
-        internal nint hwndInsertAfter;
+        internal IntPtr hwnd;
+        internal IntPtr hwndInsertAfter;
         internal int x;
         internal int y;
         internal int cx;
         internal int cy;
         internal uint flags;
     }
-
-    #endregion
-
-    #region util methods
-
-    public static bool SetBottomWindow(nint hWnd) => SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
     #endregion
 }

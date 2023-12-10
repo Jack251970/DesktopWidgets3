@@ -58,6 +58,6 @@ public sealed partial class OverlayWindow : WindowEx
         IsAlwaysOnTop = true;
 
         // Hide window icon from taskbar
-        SystemHelper.HideWindowFromTaskbar(this.GetWindowHandle());
+        SystemHelper.HideWindowIconFromTaskbar(this.GetWindowHandle());
     }
 }
