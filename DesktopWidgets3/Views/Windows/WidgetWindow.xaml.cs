@@ -1,16 +1,19 @@
 ﻿using Microsoft.UI.Dispatching;
 using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
-using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
 using Windows.Graphics;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget;
+using System.Runtime.InteropServices;
+using WinUIEx.Messaging;
 
 namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class WidgetWindow : WindowEx
 {
+    #region position & size
+
     public PointInt32 Position
     {
         get => AppWindow.Position;
@@ -33,19 +36,36 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
+    #endregion
+
+    #region type & index
+
     public WidgetType WidgetType { get; }
 
     public int IndexTag { get; }
 
+    #endregion
+
+    #region ui elements
+
     public FrameShellPage? ShellPage => Content as FrameShellPage;
 
-    public BaseWidgetViewModel? PageViewModel => (BaseWidgetViewModel?)(ShellPage?.NavigationFrame?.GetPageViewModel());
+    #endregion
+
+    #region page view model
+
+    public BaseWidgetViewModel? PageViewModel
+    {
+        get; private set;
+    }
+
+    #endregion
 
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
 
-    private readonly IWindowSinkService _windowSinkService;
+    private readonly WindowManager _manager;
 
     public WidgetWindow(BaseWidgetItem widgetItem)
     {
@@ -62,14 +82,7 @@ public sealed partial class WidgetWindow : WindowEx
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
-        // Load registered services
-        _windowSinkService = App.GetService<IWindowSinkService>();
-
-        // Sink window to desktop
-        _windowSinkService.Initialize(this);
-
-        // Hide window from taskbar
-        SystemHelper.HideWindowFromTaskbar(this.GetWindowHandle());
+        _manager = WindowManager.Get(this);
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open
@@ -83,4 +96,69 @@ public sealed partial class WidgetWindow : WindowEx
     {
         IsTitleBarVisible = IsMaximizable = IsMaximizable = false;
     }
+
+    public void InitializeWindow()
+    {
+        var _handle = this.GetWindowHandle();
+
+        // Hide window icon from taskbar
+        SystemHelper.HideWindowFromTaskbar(_handle);
+
+        // Get view model of current page
+        PageViewModel = (BaseWidgetViewModel?)(ShellPage?.NavigationFrame?.GetPageViewModel());
+
+        // Set window to bottom of other windows
+        SetBottomWindow(_handle);
+
+        // Register window sink events
+        _manager.WindowMessageReceived += OnWindowMessageReceived;
+    }
+
+    private void OnWindowMessageReceived(object? sender, WindowMessageEventArgs e)
+    {
+        if (e.Message.MessageId == WM_WINDOWPOSCHANGING)
+        {
+            var lParam = e.Message.LParam;
+            var windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
+            windowPos.flags |= SWP_NOZORDER;
+            Marshal.StructureToPtr(windowPos, lParam, false);
+
+            e.Handled = true;
+        }
+    }
+
+    #region windows api
+
+    private static readonly nint HWND_BOTTOM = new(1);
+    private static readonly nint HWND_NOTOPMOST = new(-2);
+
+    private const uint SWP_NOSIZE = 0x0001;
+    private const uint SWP_NOMOVE = 0x0002;
+    private const uint SWP_NOZORDER = 0x0004;
+    private const uint SWP_NOACTIVATE = 0x0010;
+
+    private const int WM_WINDOWPOSCHANGING = 0x0046;
+
+    [DllImport("user32.dll")]
+    private static extern bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct WINDOWPOS
+    {
+        internal nint hwnd;
+        internal nint hwndInsertAfter;
+        internal int x;
+        internal int y;
+        internal int cx;
+        internal int cy;
+        internal uint flags;
+    }
+
+    #endregion
+
+    #region util methods
+
+    public static bool SetBottomWindow(nint hWnd) => SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
+
+    #endregion
 }

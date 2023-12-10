@@ -245,6 +245,9 @@ public class WidgetManagerService : IWidgetManagerService
             widgetWindow.Position = widget.Position;
         }
 
+        // initialize window
+        widgetWindow.InitializeWindow();
+
         // show window
         widgetWindow.Show(true);
 

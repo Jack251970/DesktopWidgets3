@@ -7,6 +7,8 @@ namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class OverlayWindow : WindowEx
 {
+    #region position & size
+
     public PointInt32 Position
     {
         get => AppWindow.Position;
@@ -18,6 +20,8 @@ public sealed partial class OverlayWindow : WindowEx
         get => new((int)(AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this)), (int)(AppWindow.Size.Height * 96f / WindowExtensions.GetDpiForWindow(this)));
         set => WindowExtensions.SetWindowSize(this, value.Width, value.Height);
     }
+
+    #endregion
 
     private readonly DispatcherQueue dispatcherQueue;
 
@@ -35,9 +39,7 @@ public sealed partial class OverlayWindow : WindowEx
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
-        // Hide title bar, set window unresizable and always on top
-        IsTitleBarVisible = IsMaximizable = IsMaximizable = IsResizable = false;
-        IsAlwaysOnTop = true;
+        Initialize();
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open
@@ -45,5 +47,17 @@ public sealed partial class OverlayWindow : WindowEx
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
+    }
+
+    private void Initialize()
+    {
+        // Hide title bar, set window unresizable
+        IsTitleBarVisible = IsMaximizable = IsMaximizable = IsResizable = false;
+
+        // Set always on top
+        IsAlwaysOnTop = true;
+
+        // Hide window icon from taskbar
+        SystemHelper.HideWindowFromTaskbar(this.GetWindowHandle());
     }
 }
