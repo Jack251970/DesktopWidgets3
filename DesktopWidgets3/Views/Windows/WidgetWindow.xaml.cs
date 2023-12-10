@@ -61,15 +61,23 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
+    #region manager & handle
+
+    private readonly WindowManager _manager;
+    private readonly IntPtr _handle;
+
+    #endregion
+
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
 
-    private readonly WindowManager _manager;
-
     public WidgetWindow(BaseWidgetItem widgetItem)
     {
         InitializeComponent();
+
+        _manager = WindowManager.Get(this);
+        _handle = this.GetWindowHandle();
 
         WidgetType = widgetItem.Type;
         IndexTag = widgetItem.IndexTag;
@@ -81,8 +89,6 @@ public sealed partial class WidgetWindow : WindowEx
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
-
-        _manager = WindowManager.Get(this);
 #if DEBUG
         /*WindowManager.Get(this).WindowMessageReceived += (_, e) => {
             App.logWriter.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} - Widget: {e.Message}");
@@ -112,8 +118,6 @@ public sealed partial class WidgetWindow : WindowEx
 
     public void InitializeWindow()
     {
-        var _handle = this.GetWindowHandle();
-
         // Hide window icon from taskbar
         SystemHelper.HideWindowIconFromTaskbar(_handle);
 
