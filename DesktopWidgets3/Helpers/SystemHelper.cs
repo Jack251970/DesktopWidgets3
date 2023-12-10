@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Helpers;
 
