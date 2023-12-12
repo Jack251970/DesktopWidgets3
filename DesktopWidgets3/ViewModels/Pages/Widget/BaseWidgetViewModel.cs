@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Views.Windows;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -10,7 +12,7 @@ using static DesktopWidgets3.Services.DialogService;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
-public abstract partial class BaseWidgetViewModel : ObservableRecipient
+public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavigationAware where T : new()
 {
     protected MenuFlyout RightTappedMenu
     {
@@ -26,6 +28,10 @@ public abstract partial class BaseWidgetViewModel : ObservableRecipient
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;
 
+    protected readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
+
+    private bool _isInitialized;
+
     public BaseWidgetViewModel()
     {
         _dialogService = App.GetService<IDialogService>();
@@ -36,6 +42,39 @@ public abstract partial class BaseWidgetViewModel : ObservableRecipient
 
         RightTappedMenu = GetRightTappedMenu();
     }
+
+    #region abstract methods
+
+    protected abstract void LoadWidgetSettings(T settings);
+
+    #endregion
+
+    #region navigation aware interface
+
+    public void OnNavigatedTo(object parameter)
+    {
+        if (parameter is T settings)
+        {
+            LoadWidgetSettings(settings);
+            _isInitialized = true;
+            return;
+        }
+
+        if (!_isInitialized)
+        {
+            LoadWidgetSettings(new T());
+            _isInitialized = true;
+        }
+    }
+
+    public void OnNavigatedFrom()
+    {
+
+    }
+
+    #endregion
+
+    #region right tapped menu
 
     public void ShowRightTappedMenu(object sender, RightTappedRoutedEventArgs e)
     {
@@ -128,5 +167,5 @@ public abstract partial class BaseWidgetViewModel : ObservableRecipient
         _widgetManagerService.EnterEditMode();
     }
 
-    public abstract void SetEditMode(bool editMode);
+    #endregion
 }

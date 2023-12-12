@@ -4,9 +4,9 @@ using Windows.UI.ViewManagement;
 using DesktopWidgets3.Models.Widget;
 using Windows.Graphics;
 using DesktopWidgets3.Views.Pages.Widget;
-using DesktopWidgets3.ViewModels.Pages.Widget;
 using System.Runtime.InteropServices;
 using WinUIEx.Messaging;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -48,16 +48,13 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region ui elements
 
-    public FrameShellPage? ShellPage => Content as FrameShellPage;
+    public FrameShellPage ShellPage => (FrameShellPage)Content;
 
     #endregion
 
     #region page view model
 
-    public BaseWidgetViewModel? PageViewModel
-    {
-        get; private set;
-    }
+    public ObservableRecipient? PageViewModel { get; private set; }
 
     #endregion
 
@@ -122,7 +119,7 @@ public sealed partial class WidgetWindow : WindowEx
         SystemHelper.HideWindowIconFromTaskbar(_handle);
 
         // Get view model of current page
-        PageViewModel = (BaseWidgetViewModel?)(ShellPage?.NavigationFrame?.GetPageViewModel());
+        PageViewModel = ShellPage.Frame!.GetPageViewModel() as ObservableRecipient;
 
         // Set window to bottom of other windows
         SystemHelper.SetWindowZPos(_handle, SystemHelper.WINDOWZPOS.ONBOTTOM);

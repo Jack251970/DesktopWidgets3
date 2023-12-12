@@ -1,12 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
-using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 
-public partial class ClockViewModel : BaseWidgetViewModel, INavigationAware
+public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>
 {
     #region observable properties
 
@@ -21,11 +19,7 @@ public partial class ClockViewModel : BaseWidgetViewModel, INavigationAware
 
     #endregion
 
-    private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
-
     private readonly ITimersService _timersService;
-
-    private bool _isInitialized;
 
     public ClockViewModel(ITimersService timersService)
     {
@@ -34,37 +28,28 @@ public partial class ClockViewModel : BaseWidgetViewModel, INavigationAware
         timersService.AddUpdateTimeTimerAction(UpdateTime);
     }
 
-    public void OnNavigatedTo(object parameter)
-    {
-        if (parameter is ClockWidgetSettings settings)
-        {
-            timingFormat = settings.ShowSeconds ? "T" : "t";
-            SystemTime = DateTime.Now.ToString(timingFormat);
-            _isInitialized = true;
-
-            return;
-        }
-
-        if (!_isInitialized)
-        {
-            timingFormat = "T";
-            SystemTime = DateTime.Now.ToString(timingFormat);
-            _isInitialized = true;
-        }
-    }
-
-    public void OnNavigatedFrom()
-    {
-
-    }
-
     private void UpdateTime(object? sender, EventArgs e)
     {
         _dispatcherQueue.TryEnqueue(() => SystemTime = DateTime.Now.ToString(timingFormat));
     }
 
-    public override void SetEditMode(bool editMode)
+    #region abstract methods
+
+    protected override void LoadWidgetSettings(ClockWidgetSettings settings)
     {
-        
+        var needRefresh = false;
+
+        if (settings.ShowSeconds != (timingFormat == "T"))
+        {
+            timingFormat = settings.ShowSeconds ? "T" : "t";
+            needRefresh = true;
+        }
+
+        if (needRefresh)
+        {
+            SystemTime = DateTime.Now.ToString(timingFormat);
+        }
     }
+
+    #endregion
 }

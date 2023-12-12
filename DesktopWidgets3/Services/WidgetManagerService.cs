@@ -1,4 +1,5 @@
 ﻿using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
@@ -163,7 +164,7 @@ public class WidgetManagerService : IWidgetManagerService
                 await _appSettingsService.UpdateWidgetsList(widget);
             }
 
-            SetEditMode(widgetWindow, false);
+            await SetEditMode(widgetWindow, false);
             widgetWindow.Close();
             WidgetsList.Remove(widgetWindow);
         }
@@ -193,7 +194,7 @@ public class WidgetManagerService : IWidgetManagerService
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
         if (widgetWindow != null)
         {
-            SetEditMode(widgetWindow, false);
+            await SetEditMode(widgetWindow, false);
             widgetWindow.Close();
             WidgetsList.Remove(widgetWindow);
 
@@ -204,11 +205,11 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public void DisableAllWidgets()
+    public async void DisableAllWidgets()
     {
         foreach (var widgetWindow in WidgetsList)
         {
-            SetEditMode(widgetWindow, false);
+            await SetEditMode(widgetWindow, false);
             widgetWindow.Close();
         }
         WidgetsList.Clear();
@@ -372,8 +373,7 @@ public class WidgetManagerService : IWidgetManagerService
             };
             originalWidgetList.Add(widget);
 
-            SetEditMode(widgetWindow, true);
-            widgetWindow.PageViewModel?.SetEditMode(true);
+            await SetEditMode(widgetWindow, true);
         }
 
         _timersService.StopUpdateTimeTimer();
@@ -413,8 +413,7 @@ public class WidgetManagerService : IWidgetManagerService
 
         foreach (var widgetWindow in WidgetsList)
         {
-            SetEditMode(widgetWindow, false);
-            widgetWindow.PageViewModel?.SetEditMode(false);
+            await SetEditMode(widgetWindow, false);
 
             var widget = new JsonWidgetItem()
             {
@@ -440,12 +439,11 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public void CancelAndExitEditMode()
+    public async void CancelAndExitEditMode()
     {
         foreach (var widgetWindow in WidgetsList)
         {
-            SetEditMode(widgetWindow, false);
-            widgetWindow.PageViewModel?.SetEditMode(false);
+            await SetEditMode(widgetWindow, false);
 
             var originalWidget = originalWidgetList.First(x => x.Type == widgetWindow.WidgetType && x.IndexTag == widgetWindow.IndexTag);
 
@@ -469,7 +467,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    private static void SetEditMode(WidgetWindow window, bool isEditMode)
+    private static async Task SetEditMode(WidgetWindow window, bool isEditMode)
     {
         // set window style
         window.IsResizable = isEditMode;
@@ -477,6 +475,12 @@ public class WidgetManagerService : IWidgetManagerService
         // set title bar
         var frameShellPage = window.Content as FrameShellPage;
         frameShellPage?.SetCustomTitleBar(isEditMode);
+
+        // set page edit mode
+        if (window.PageViewModel is IEditModeAware editModeAware)
+        {
+            await editModeAware.SetEditMode(isEditMode);
+        }
     }
 
     #endregion

@@ -10,12 +10,11 @@ using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Files.Core.Data.Items;
 using Files.Shared.Helpers;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 
-public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
+public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IEditModeAware
 {
     #region commands
 
@@ -87,11 +86,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
 
     #endregion
 
-    private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
-
     private readonly Stack<string> navigationFolderPaths = new();
-
-    private bool _isInitialized;
 
     public FolderViewViewModel()
     {
@@ -100,59 +95,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
         NavigateBackCommand = new ClickCommand(NavigateBack);
         NavigateUpCommand = new ClickCommand(NavigateUp);
         NavigateRefreshCommand = new ClickCommand(NavigateRefresh);
-    }
-
-    public async void OnNavigatedTo(object parameter)
-    {
-        if (parameter is FolderViewWidgetSettings settings)
-        {
-            var needRefresh = false;
-
-            if (ShowIconOverlay != settings.ShowIconOverlay)
-            {
-                ShowIconOverlay = settings.ShowIconOverlay;
-                needRefresh = true;
-            }
-
-            if (ShowHiddenFile != settings.ShowHiddenFile)
-            {
-                ShowHiddenFile = settings.ShowHiddenFile;
-                needRefresh = true;
-            }
-
-            if (FolderPath != settings.FolderPath)
-            {
-                FolderPath = settings.FolderPath;
-                await RefreshFileList(true, null, null);
-                needRefresh = false;
-            }
-
-            if (AllowNavigation != settings.AllowNavigation)
-            {
-                AllowNavigation = settings.AllowNavigation;
-            }
-
-            if (needRefresh)
-            {
-                await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
-            }
-
-            _isInitialized = true;
-
-            return;
-        }
-        
-        if (!_isInitialized)
-        {
-            FolderPath = $"C:\\";
-            await RefreshFileList(true, null, null);
-            _isInitialized = true;
-        }
-    }
-
-    public void OnNavigatedFrom()
-    {
-
     }
 
     #region file system watcher
@@ -359,6 +301,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
 
     #region refresh & icon
 
+    [GeneratedRegex("^[a-zA-Z]:\\\\$")]
+    private static partial Regex DiskRegex();
+
     private async Task RefreshFileList(bool pushFolderPath, BitmapImage? icon, BitmapImage? overlay)
     {
         if (DiskRegex().IsMatch(FolderPath))
@@ -439,14 +384,49 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
         }
     }
 
-    [GeneratedRegex("^[a-zA-Z]:\\\\$")]
-    private static partial Regex DiskRegex();
-
     #endregion
 
     #region abstract methods
 
-    public async override void SetEditMode(bool editMode)
+    protected async override void LoadWidgetSettings(FolderViewWidgetSettings settings)
+    {
+        var needRefresh = false;
+
+        if (ShowIconOverlay != settings.ShowIconOverlay)
+        {
+            ShowIconOverlay = settings.ShowIconOverlay;
+            needRefresh = true;
+        }
+
+        if (ShowHiddenFile != settings.ShowHiddenFile)
+        {
+            ShowHiddenFile = settings.ShowHiddenFile;
+            needRefresh = true;
+        }
+
+        if (FolderPath != settings.FolderPath)
+        {
+            FolderPath = settings.FolderPath;
+            await RefreshFileList(true, null, null);
+            needRefresh = false;
+        }
+
+        if (AllowNavigation != settings.AllowNavigation)
+        {
+            AllowNavigation = settings.AllowNavigation;
+        }
+
+        if (needRefresh)
+        {
+            await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
+        }
+    }
+
+    #endregion
+
+    #region edit mode
+
+    public async Task SetEditMode(bool editMode)
     {
         if (editMode)
         {
