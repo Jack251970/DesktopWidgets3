@@ -90,6 +90,8 @@ public sealed partial class DashboardPage : Page
                 case WidgetType.FolderView:
                     _navigationService.NavigateTo(typeof(FolderViewSettingsViewModel).FullName!, parameter);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             _indexTag = -1;
