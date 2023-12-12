@@ -87,8 +87,17 @@ public sealed partial class DashboardPage : Page
                 case WidgetType.Clock:
                     _navigationService.NavigateTo(typeof(ClockSettingsViewModel).FullName!, parameter);
                     break;
+                case WidgetType.CPU:
+                    _navigationService.NavigateTo(typeof(CPUSettingsViewModel).FullName!, parameter);
+                    break;
+                case WidgetType.Disk:
+                    _navigationService.NavigateTo(typeof(DiskSettingsViewModel).FullName!, parameter);
+                    break;
                 case WidgetType.FolderView:
                     _navigationService.NavigateTo(typeof(FolderViewSettingsViewModel).FullName!, parameter);
+                    break;
+                case WidgetType.Network:
+                    _navigationService.NavigateTo(typeof(NetworkSettingsViewModel).FullName!, parameter);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

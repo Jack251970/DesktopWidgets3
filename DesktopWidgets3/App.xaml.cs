@@ -160,8 +160,14 @@ public partial class App : Application
             services.AddTransient<DashboardPage>();
             services.AddTransient<ClockSettingsViewModel>();
             services.AddTransient<ClockSettingsPage>();
+            services.AddTransient<CPUSettingsViewModel>();
+            services.AddTransient<CPUSettingsPage>();
+            services.AddTransient<DiskSettingsViewModel>();
+            services.AddTransient<DiskSettingsPage>();
             services.AddTransient<FolderViewSettingsViewModel>();
             services.AddTransient<FolderViewSettingsPage>();
+            services.AddTransient<NetworkSettingsViewModel>();
+            services.AddTransient<NetworkSettingsPage>();
 
             // Widgets Window Pages
             services.AddTransient<FrameShellPage>();

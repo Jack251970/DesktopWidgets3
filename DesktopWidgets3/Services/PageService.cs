@@ -20,7 +20,10 @@ public class PageService : IPageService
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DashboardViewModel, DashboardPage>();
         Configure<ClockSettingsViewModel, ClockSettingsPage>();
+        Configure<CPUSettingsViewModel, CPUSettingsPage>();
+        Configure<DiskSettingsViewModel, DiskSettingsPage>();
         Configure<FolderViewSettingsViewModel, FolderViewSettingsPage>();
+        Configure<NetworkSettingsViewModel, NetworkSettingsPage>();
     }
 
     public Type GetPageType(string viewModel)
