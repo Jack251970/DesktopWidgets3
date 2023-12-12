@@ -55,9 +55,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
     [ObservableProperty]
     private BitmapImage? _folderPathIconOverlay = null;
 
+    [ObservableProperty]
+    private bool _allowNavigation = true;
+
     #endregion
 
-    private readonly Stack<string> navigationFolderPaths = new();
+    #region settings
 
     private string folderPath = string.Empty;
     private string? parentFolderPath;
@@ -78,9 +81,15 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
         }
     }
 
-    private bool LoadIconOverlay { get; set; } = true;
+    private bool ShowIconOverlay { get; set; } = true;
+
+    private bool ShowHiddenFile { get; set; } = false;
+
+    #endregion
 
     private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
+
+    private readonly Stack<string> navigationFolderPaths = new();
 
     private bool _isInitialized;
 
@@ -97,15 +106,34 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
     {
         if (parameter is FolderViewWidgetSettings settings)
         {
+            var needRefresh = false;
+
+            if (ShowIconOverlay != settings.ShowIconOverlay)
+            {
+                ShowIconOverlay = settings.ShowIconOverlay;
+                needRefresh = true;
+            }
+
+            if (ShowHiddenFile != settings.ShowHiddenFile)
+            {
+                ShowHiddenFile = settings.ShowHiddenFile;
+                needRefresh = true;
+            }
+
             if (FolderPath != settings.FolderPath)
             {
                 FolderPath = settings.FolderPath;
                 await RefreshFileList(true, null, null);
+                needRefresh = false;
             }
 
-            if (LoadIconOverlay != settings.ShowIconOverlay)
+            if (AllowNavigation != settings.AllowNavigation)
             {
-                LoadIconOverlay = settings.ShowIconOverlay;
+                AllowNavigation = settings.AllowNavigation;
+            }
+
+            if (needRefresh)
+            {
                 await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
             }
 
@@ -145,8 +173,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
     private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
     {
         var filePath = e.FullPath;
-        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
-        if (isHiddenItem)
+        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden))
         {
             return;
         }
@@ -198,8 +225,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
     private void FileSystemWatcher_Deleted(object sender, FileSystemEventArgs e)
     {
         var filePath = e.FullPath;
-        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
-        if (isHiddenItem)
+        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden))
         {
             return;
         }
@@ -221,8 +247,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
     {
         var oldFilePath = e.OldFullPath;
         var filePath = e.FullPath;
-        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
-        if (isHiddenItem)
+        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden))
         {
             return;
         }
@@ -249,47 +274,54 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
 
     #region command events
 
-    internal async Task FolderViewItemDoubleTapped(string filePath)
+    internal async Task FolderViewItemDoubleTapped(string path)
     {
-        var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(filePath);
+        var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path);
         if (isShortcut)
         {
             var shortcutInfo = new ShellLinkItem();
-            var shInfo = await FileOperationsHelpers.ParseLinkAsync(filePath);
+            var shInfo = await FileOperationsHelpers.ParseLinkAsync(path);
             if (shInfo is null || shInfo.TargetPath is null || shortcutInfo.InvalidTarget)
             {
                 return;
             }
 
-            filePath = shInfo.TargetPath;
+            path = shInfo.TargetPath;
         }
 
-        var isDirectory = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Directory);
+        var isDirectory = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Directory);
         if (isDirectory)
         {
-            FolderPath = filePath;
-            BitmapImage? folderIcon = null;
-            BitmapImage? folderIconOverlay = null;
-            foreach (var item in FolderViewFileItems)
+            if (AllowNavigation)
             {
-                if (item.FilePath == filePath)
+                FolderPath = path;
+                BitmapImage? folderIcon = null;
+                BitmapImage? folderIconOverlay = null;
+                foreach (var item in FolderViewFileItems)
                 {
-                    folderIcon = item.Icon;
-                    folderIconOverlay = item.IconOverlay;
-                    break;
+                    if (item.FilePath == path)
+                    {
+                        folderIcon = item.Icon;
+                        folderIconOverlay = item.IconOverlay;
+                        break;
+                    }
                 }
+                await RefreshFileList(true, folderIcon, folderIconOverlay);
             }
-            await RefreshFileList(true, folderIcon, folderIconOverlay);
+            else
+            {
+                OpenHelper.OpenFolder(path);
+            }
         }
         else
         {
-            if (!File.Exists(filePath))
+            if (!File.Exists(path))
             {
                 await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
             }
             else
             {
-                await OpenHelper.OpenFile(filePath, FolderPath);
+                await OpenHelper.OpenFile(path, FolderPath);
             }
         }
     }
@@ -318,7 +350,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
         await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
     }
 
-    internal void FolderTitleDoubleTapped()
+    internal void ToolbarDoubleTapped()
     {
         OpenHelper.OpenFolder(FolderPath);
     }
@@ -351,40 +383,40 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
         foreach (var directory in directories)
         {
             var directoryPath = directory;
-            var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(directoryPath, FileAttributes.Hidden);
-            if (!isHiddenItem)
+            if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(directoryPath, FileAttributes.Hidden))
             {
-                var folderName = Path.GetFileName(directory);
-                var (fileIcon, fileIconOverlay) = await GetIcon(directoryPath, true);
-                FolderViewFileItems.Add(new FolderViewFileItem()
-                {
-                    FileName = folderName,
-                    FilePath = directoryPath,
-                    FileType = FileType.Folder,
-                    Icon = fileIcon,
-                    IconOverlay = fileIconOverlay,
-                });
+                continue;
             }
+            var folderName = Path.GetFileName(directory);
+            var (fileIcon, fileIconOverlay) = await GetIcon(directoryPath, true);
+            FolderViewFileItems.Add(new FolderViewFileItem()
+            {
+                FileName = folderName,
+                FilePath = directoryPath,
+                FileType = FileType.Folder,
+                Icon = fileIcon,
+                IconOverlay = fileIconOverlay,
+            });
         }
 
         var files = Directory.GetFiles(FolderPath);
         foreach (var file in files)
         {
             var filePath = file;
-            var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
-            if (!isHiddenItem)
+            if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden))
             {
-                var fileName = Path.GetFileName(file);
-                var (fileIcon, fileIconOverlay) = await GetIcon(filePath, false);
-                FolderViewFileItems.Add(new FolderViewFileItem()
-                {
-                    FileName = fileName,
-                    FilePath = filePath,
-                    FileType = FileType.File,
-                    Icon = fileIcon,
-                    IconOverlay = fileIconOverlay,
-                });
+                continue;
             }
+            var fileName = Path.GetFileName(file);
+            var (fileIcon, fileIconOverlay) = await GetIcon(filePath, false);
+            FolderViewFileItems.Add(new FolderViewFileItem()
+            {
+                FileName = fileName,
+                FilePath = filePath,
+                FileType = FileType.File,
+                Icon = fileIcon,
+                IconOverlay = fileIconOverlay,
+            });
         }
 
         if (icon is null)
@@ -397,7 +429,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel, INavigationAware
 
     private async Task<(BitmapImage? Icon, BitmapImage? Overlay)> GetIcon(string filePath, bool isFolder)
     {
-        if (LoadIconOverlay)
+        if (ShowIconOverlay)
         {
             return await FileIconHelper.GetFileIconAndOverlayAsync(filePath, isFolder);
         }

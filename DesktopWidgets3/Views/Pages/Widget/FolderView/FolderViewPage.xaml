@@ -18,93 +18,95 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="Toolbar"
+        <Grid
+            x:Name="Toolbar"
+            Grid.Row="0"
             Background="Transparent"
-            RightTapped="Toolbar_RightTapped">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="auto" />
-            </Grid.ColumnDefinitions>
-            <Button
-                Grid.Column="0"
-                Height="34"
-                Width="34"
-                BorderThickness="0"
-                Background="Transparent"
-                VerticalContentAlignment="Center"
-                HorizontalContentAlignment="Center"
-                Command="{x:Bind ViewModel.NavigateBackCommand}"
-		        IsEnabled="{x:Bind ViewModel.IsNavigateBackExecutable, Mode=OneWay}">
-                <FontIcon FontSize="12" Glyph="&#xE72B;" />
-            </Button>
-            <Button
-                Grid.Column="1"
-                Height="34"
-                Width="34"
-                BorderThickness="0"
-                Background="Transparent"
-                VerticalContentAlignment="Center"
-                HorizontalContentAlignment="Center"
-		        Command="{x:Bind ViewModel.NavigateUpCommand}"
-		        IsEnabled="{x:Bind ViewModel.IsNavigateUpExecutable, Mode=OneWay}">
-                <FontIcon FontSize="12" Glyph="&#xE74A;" />
-            </Button>
-            <Button
-                Grid.Column="2"
-                Height="34"
-                Width="34"
-                BorderThickness="0"
-                Background="Transparent"
-                VerticalContentAlignment="Center"
-                HorizontalContentAlignment="Center"
-                Command="{x:Bind ViewModel.NavigateRefreshCommand}">
-                <FontIcon FontSize="12" Glyph="&#xE72C;" />
-            </Button>
-            <Grid
-                Grid.Column="3"
-                Background="Transparent"
-                DoubleTapped="FolderTitle_DoubleTapped">
-                <StackPanel Margin="0,0,68,0" HorizontalAlignment="Center" Orientation="Horizontal">
-                    <Grid
-                        Height="24"
-                        Width="24"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch">
-                        <Image
-                            Canvas.ZIndex="0"
-                            Width="20" 
-                            Height="20"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            Source="{x:Bind ViewModel.FolderPathIcon, Mode=OneWay}"/>
-                        <Image
-                            Canvas.ZIndex="1"
-                            Width="20"
-                            Height="20"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            Source="{x:Bind ViewModel.FolderPathIconOverlay, Mode=OneWay}"/>
-                    </Grid>
-                    <TextBlock
-                        Text="{x:Bind ViewModel.FolderName, Mode=OneWay}"
-                        VerticalAlignment="Center"
-                        Style="{ThemeResource BodyTextStyle}" />
-                </StackPanel>
+            RightTapped="Toolbar_RightTapped"
+            DoubleTapped="Toolbar_DoubleTapped">
+            <StackPanel Canvas.ZIndex="1" HorizontalAlignment="Center" Orientation="Horizontal">
+                <Grid
+                     Height="24"
+                     Width="24"
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Stretch">
+                    <Image
+                         Canvas.ZIndex="0"
+                         Width="20" 
+                         Height="20"
+                         HorizontalAlignment="Left"
+                         VerticalAlignment="Center"
+                         Source="{x:Bind ViewModel.FolderPathIcon, Mode=OneWay}"/>
+                    <Image
+                         Canvas.ZIndex="1"
+                         Width="20"
+                         Height="20"
+                         HorizontalAlignment="Left"
+                         VerticalAlignment="Center"
+                         Source="{x:Bind ViewModel.FolderPathIconOverlay, Mode=OneWay}"/>
+                </Grid>
+                <TextBlock
+                     Text="{x:Bind ViewModel.FolderName, Mode=OneWay}"
+                     VerticalAlignment="Center"
+                     Style="{ThemeResource BodyTextStyle}" />
+            </StackPanel>
+            <Grid Canvas.ZIndex="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Button
+                    Grid.Column="0"
+                    Height="34"
+                    Width="34"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Visibility="{x:Bind ViewModel.AllowNavigation, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.NavigateBackCommand}"
+                    IsEnabled="{x:Bind ViewModel.IsNavigateBackExecutable, Mode=OneWay}">
+                    <FontIcon FontSize="12" Glyph="&#xE72B;" />
+                </Button>
+                <Button
+                    Grid.Column="1"
+                    Height="34"
+                    Width="34"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Visibility="{x:Bind ViewModel.AllowNavigation, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.NavigateUpCommand}"
+                    IsEnabled="{x:Bind ViewModel.IsNavigateUpExecutable, Mode=OneWay}">
+                    <FontIcon FontSize="12" Glyph="&#xE74A;" />
+                </Button>
+                <Button
+                    Grid.Column="2"
+                    Height="34"
+                    Width="34"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Command="{x:Bind ViewModel.NavigateRefreshCommand}">
+                    <FontIcon FontSize="12" Glyph="&#xE72C;" />
+                </Button>
+                <Button
+                    Grid.Column="4"
+                    Height="34"
+                    Width="34"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    IsEnabled="False">
+                    <FontIcon FontSize="12" Glyph="&#xE712;" />
+                </Button>
             </Grid>
-            <Button
-                Grid.Column="4"
-                Height="34"
-                Width="34"
-                BorderThickness="0"
-                Background="Transparent"
-                VerticalContentAlignment="Center"
-                HorizontalContentAlignment="Center"
-                IsEnabled="False">
-                <FontIcon FontSize="12" Glyph="&#xE712;" />
-            </Button>
         </Grid>
 
         <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">

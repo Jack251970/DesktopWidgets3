@@ -8,10 +8,18 @@ namespace DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 
 public partial class ClockViewModel : BaseWidgetViewModel, INavigationAware
 {
+    #region observable properties
+
     [ObservableProperty]
     private string _systemTime = string.Empty;
 
+    #endregion
+
+    #region settings
+
     private string timingFormat = "T";
+
+    #endregion
 
     private readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
 

@@ -216,7 +216,7 @@
   <data name="WidgetSettings_FolderPath_Card.Header" xml:space="preserve">
     <value>文件夹路径</value>
   </data>
-  <data name="WidgetSettings_IconOverlay_Card.Header" xml:space="preserve">
+  <data name="WidgetSettings_ShowIconOverlay_Card.Header" xml:space="preserve">
     <value>上层图标</value>
   </data>
   <data name="WidgetSettings_ShowSeconds_Card.Header" xml:space="preserve">
@@ -225,7 +225,7 @@
   <data name="WidgetSettings_FolderPath_Card.Description" xml:space="preserve">
     <value>组件加载的默认路径</value>
   </data>
-  <data name="WidgetSettings_IconOverlay_Card.Description" xml:space="preserve">
+  <data name="WidgetSettings_ShowIconOverlay_Card.Description" xml:space="preserve">
     <value>在文件列表中显示上层图标</value>
   </data>
   <data name="WidgetSettings_ShowSeconds_Card.Description" xml:space="preserve">
@@ -260,5 +260,17 @@
   </data>
   <data name="Settings_LicenseLink.NavigateUri" xml:space="preserve">
     <value>https://github.com/Jack251970/DesktopWidgets3/blob/master/LICENSE</value>
+  </data>
+  <data name="WidgetSettings_AllowNavigation_Card.Description" xml:space="preserve">
+    <value>允许根目录改变</value>
+  </data>
+  <data name="WidgetSettings_AllowNavigation_Card.Header" xml:space="preserve">
+    <value>允许导航</value>
+  </data>
+  <data name="WidgetSettings_ShowHiddenFile_Card.Description" xml:space="preserve">
+    <value>显示被系统隐藏的文件</value>
+  </data>
+  <data name="WidgetSettings_ShowHiddenFile_Card.Header" xml:space="preserve">
+    <value>显示隐藏文件</value>
   </data>
 </root>

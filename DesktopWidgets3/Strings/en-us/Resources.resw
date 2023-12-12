@@ -228,7 +228,7 @@
   <data name="WidgetSettings_FolderPath_Card.Header" xml:space="preserve">
     <value>Folder path</value>
   </data>
-  <data name="WidgetSettings_IconOverlay_Card.Header" xml:space="preserve">
+  <data name="WidgetSettings_ShowIconOverlay_Card.Header" xml:space="preserve">
     <value>Icon overlay</value>
   </data>
   <data name="WidgetSettings_ShowSeconds_Card.Header" xml:space="preserve">
@@ -237,7 +237,7 @@
   <data name="WidgetSettings_FolderPath_Card.Description" xml:space="preserve">
     <value>The default folder path when loading the widget</value>
   </data>
-  <data name="WidgetSettings_IconOverlay_Card.Description" xml:space="preserve">
+  <data name="WidgetSettings_ShowIconOverlay_Card.Description" xml:space="preserve">
     <value>Show the overlay of the icons in the file list</value>
   </data>
   <data name="WidgetSettings_ShowSeconds_Card.Description" xml:space="preserve">
@@ -269,5 +269,17 @@
   </data>
   <data name="Settings_Repository_Card.Header" xml:space="preserve">
     <value>To view this repository</value>
+  </data>
+  <data name="WidgetSettings_AllowNavigation_Card.Description" xml:space="preserve">
+    <value>Allow the root path to change</value>
+  </data>
+  <data name="WidgetSettings_AllowNavigation_Card.Header" xml:space="preserve">
+    <value>Allow navigation</value>
+  </data>
+  <data name="WidgetSettings_ShowHiddenFile_Card.Description" xml:space="preserve">
+    <value>Show files that are hidden by the system</value>
+  </data>
+  <data name="WidgetSettings_ShowHiddenFile_Card.Header" xml:space="preserve">
+    <value>Show hidden files</value>
   </data>
 </root>

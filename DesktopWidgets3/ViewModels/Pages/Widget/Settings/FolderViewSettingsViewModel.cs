@@ -23,7 +23,13 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     private string _folderPath = $"C:\\";
 
     [ObservableProperty]
-    private bool _iconOverlay = true;
+    private bool _showIconOverlay = true;
+
+    [ObservableProperty]
+    private bool _showHiddenFile;
+
+    [ObservableProperty]
+    private bool _allowNavigation = true;
 
     #endregion
 
@@ -43,7 +49,9 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     protected override void InitializeWidgetSettings()
     {
         FolderPath = Settings.FolderPath;
-        IconOverlay = Settings.ShowIconOverlay;
+        ShowIconOverlay = Settings.ShowIconOverlay;
+        ShowHiddenFile = Settings.ShowHiddenFile;
+        AllowNavigation = Settings.AllowNavigation;
     }
 
     private async void SelectFoldePath()
@@ -59,11 +67,29 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
         }
     }
 
-    partial void OnIconOverlayChanged(bool value)
+    partial void OnShowIconOverlayChanged(bool value)
     {
         if (_isInitialized)
         {
             Settings.ShowIconOverlay = value;
+            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+        }
+    }
+
+    partial void OnShowHiddenFileChanged(bool value)
+    {
+        if (_isInitialized)
+        {
+            Settings.ShowHiddenFile = value;
+            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+        }
+    }
+
+    partial void OnAllowNavigationChanged(bool value)
+    {
+        if (_isInitialized)
+        {
+            Settings.AllowNavigation = value;
             _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
         }
     }

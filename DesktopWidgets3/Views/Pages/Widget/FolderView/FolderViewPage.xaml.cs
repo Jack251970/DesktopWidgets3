@@ -34,8 +34,8 @@ public sealed partial class FolderViewPage : Page
         }
     }
 
-    private void FolderTitle_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+    private void Toolbar_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
-        ViewModel.FolderTitleDoubleTapped();
+        ViewModel.ToolbarDoubleTapped();
     }
 }
