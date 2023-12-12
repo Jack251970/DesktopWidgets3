@@ -37,18 +37,12 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>
 
     protected override void LoadWidgetSettings(ClockWidgetSettings settings)
     {
-        var needRefresh = false;
-
         if (settings.ShowSeconds != (timingFormat == "T"))
         {
             timingFormat = settings.ShowSeconds ? "T" : "t";
-            needRefresh = true;
         }
 
-        if (needRefresh)
-        {
-            SystemTime = DateTime.Now.ToString(timingFormat);
-        }
+        SystemTime = DateTime.Now.ToString(timingFormat);
     }
 
     #endregion
