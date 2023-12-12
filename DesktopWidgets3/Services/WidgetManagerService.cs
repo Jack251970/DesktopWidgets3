@@ -231,10 +231,6 @@ public class WidgetManagerService : IWidgetManagerService
 
         // handle widget settings
         await _activationService.ActivateWidgetWindowAsync(widgetWindow, widget.Settings);
-#if DBEUG
-        // wait for 1 second to avoid Access Violation exception under debug mode
-        await Task.Delay(1000);
-#endif
 
         // set window style, size and position
         widgetWindow.IsResizable = false;
@@ -270,7 +266,7 @@ public class WidgetManagerService : IWidgetManagerService
         return null;
     }
 
-    #endregion
+#endregion
 
     #region widget settings
 
@@ -359,6 +355,7 @@ public class WidgetManagerService : IWidgetManagerService
     }
 
     private readonly List<JsonWidgetItem> originalWidgetList = new();
+    private bool restoreMainWindow = false;
 
     public async void EnterEditMode()
     {
@@ -386,10 +383,6 @@ public class WidgetManagerService : IWidgetManagerService
             EditModeOverlayWindow = new OverlayWindow();
 
             await _activationService.ActivateOverlayWindowAsync(EditModeOverlayWindow);
-#if DBEUG
-        // wait for 1 second to avoid Access Violation exception under debug mode
-        await Task.Delay(1000);
-#endif
             var _shell = EditModeOverlayWindow.Content as Frame;
             _shell?.Navigate(typeof(EditModeOverlayPage));
         }
@@ -406,8 +399,12 @@ public class WidgetManagerService : IWidgetManagerService
         EditModeOverlayWindow.Position = new PointInt32((int)((screenWidth - windowWidth) / 2), 0);
 
         EditModeOverlayWindow.Show(true);
-
-        App.MainWindow!.Close();
+        
+        if (App.MainWindow!.Visible)
+        {
+            App.MainWindow.Close();
+            restoreMainWindow = true;
+        }
     }
 
     public async void SaveAndExitEditMode()
@@ -435,6 +432,12 @@ public class WidgetManagerService : IWidgetManagerService
         EditModeOverlayWindow?.Hide(true);
 
         await _appSettingsService.UpdateWidgetsList(widgetList);
+
+        if (restoreMainWindow)
+        {
+            App.MainWindow!.Show(true);
+            restoreMainWindow = false;
+        }
     }
 
     public void CancelAndExitEditMode()
@@ -458,6 +461,12 @@ public class WidgetManagerService : IWidgetManagerService
         _timersService.StartUpdateTimeTimer();
 
         EditModeOverlayWindow?.Hide(true);
+
+        if (restoreMainWindow)
+        {
+            App.MainWindow!.Show(true);
+            restoreMainWindow = false;
+        }
     }
 
     private static void SetEditMode(WidgetWindow window, bool isEditMode)
