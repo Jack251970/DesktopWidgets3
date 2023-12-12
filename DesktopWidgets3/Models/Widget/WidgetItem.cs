@@ -28,7 +28,10 @@ public class BaseWidgetItem
         get => Type switch
         {
             WidgetType.Clock => widgetSettings is null ? new ClockWidgetSettings() : (ClockWidgetSettings)widgetSettings,
+            WidgetType.CPU => widgetSettings is null ? new CPUWidgetSettings() : (CPUWidgetSettings)widgetSettings,
+            WidgetType.Disk => widgetSettings is null ? new DiskWidgetSettings() : (DiskWidgetSettings)widgetSettings,
             WidgetType.FolderView => widgetSettings is null ? new FolderViewWidgetSettings() : (FolderViewWidgetSettings)widgetSettings,
+            WidgetType.Network => widgetSettings is null ? new NetworkWidgetSettings() : (NetworkWidgetSettings)widgetSettings,
             _ => throw new ArgumentOutOfRangeException(),
         };
         set => widgetSettings = value;

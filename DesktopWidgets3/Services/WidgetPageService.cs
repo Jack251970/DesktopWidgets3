@@ -4,6 +4,9 @@ using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Pages.Widget.Clock;
 using DesktopWidgets3.Views.Pages.Widget.FolderView;
+using DesktopWidgets3.Views.Pages.Widget.CPU;
+using DesktopWidgets3.Views.Pages.Widget.Disk;
+using DesktopWidgets3.Views.Pages.Widget.Network;
 
 namespace DesktopWidgets3.Services;
 
@@ -14,7 +17,10 @@ public class WidgetPageService : IWidgetPageService
     public WidgetPageService()
     {
         Configure<ClockPage>(WidgetType.Clock);
+        Configure<CPUPage>(WidgetType.CPU);
+        Configure<DiskPage>(WidgetType.Disk);
         Configure<FolderViewPage>(WidgetType.FolderView);
+        Configure<NetworkPage>(WidgetType.Network);
     }
 
     public Type GetPageType(WidgetType widgetType)

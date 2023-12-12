@@ -20,6 +20,24 @@ public class ClockWidgetSettings : BaseWidgetSettings
     }
 }
 
+public class CPUWidgetSettings : BaseWidgetSettings
+{
+    public override BaseWidgetSettings Clone()
+    {
+        var clone = (CPUWidgetSettings)base.Clone();
+        return clone;
+    }
+}
+
+public class DiskWidgetSettings : BaseWidgetSettings
+{
+    public override BaseWidgetSettings Clone()
+    {
+        var clone = (DiskWidgetSettings)base.Clone();
+        return clone;
+    }
+}
+
 public class FolderViewWidgetSettings : BaseWidgetSettings
 {
     public string FolderPath { get; set; } = $"C:\\";
@@ -37,6 +55,15 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
         clone.ShowIconOverlay = ShowIconOverlay;
         clone.ShowHiddenFile = ShowHiddenFile;
         clone.AllowNavigation = AllowNavigation;
+        return clone;
+    }
+}
+
+public class NetworkWidgetSettings : BaseWidgetSettings
+{
+    public override BaseWidgetSettings Clone()
+    {
+        var clone = (NetworkWidgetSettings)base.Clone();
         return clone;
     }
 }

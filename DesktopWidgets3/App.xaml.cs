@@ -22,6 +22,12 @@ using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
 using DesktopWidgets3.Views.Pages.Widget.Settings;
 using DesktopWidgets3.Helpers;
+using DesktopWidgets3.Views.Pages.Widget.CPU;
+using DesktopWidgets3.ViewModels.Pages.Widget.CPU;
+using DesktopWidgets3.ViewModels.Pages.Widget.Disk;
+using DesktopWidgets3.Views.Pages.Widget.Disk;
+using DesktopWidgets3.Views.Pages.Widget.Network;
+using DesktopWidgets3.ViewModels.Pages.Widget.Network;
 
 namespace DesktopWidgets3;
 
@@ -164,8 +170,14 @@ public partial class App : Application
             services.AddTransient<EditModeOverlayViewModel>();
             services.AddTransient<ClockViewModel>();
             services.AddTransient<ClockPage>();
+            services.AddTransient<CPUViewModel>();
+            services.AddTransient<CPUPage>();
+            services.AddTransient<DiskViewModel>();
+            services.AddTransient<DiskPage>();
             services.AddTransient<FolderViewViewModel>();
             services.AddTransient<FolderViewPage>();
+            services.AddTransient<NetworkViewModel>();
+            services.AddTransient<NetworkPage>();
 
             #endregion
 
