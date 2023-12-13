@@ -68,7 +68,7 @@ public class WidgetManagerService : IWidgetManagerService
         {
             if (widget.IsEnabled)
             {
-                await CreateWidgetWindow(widget);
+                await CreateWidgetWindow(widget, false);
                 if (TimerWidgets.Contains(widget.Type))
                 {
                     enableTimer = true;
@@ -132,7 +132,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
 
         // create widget window
-        await CreateWidgetWindow(widget);
+        await CreateWidgetWindow(widget, true);
     }
 
     public async Task DisableWidget(WidgetType widgetType, int indexTag)
@@ -220,7 +220,7 @@ public class WidgetManagerService : IWidgetManagerService
         return WidgetsList.Last();
     }
 
-    private async Task CreateWidgetWindow(JsonWidgetItem widget)
+    private async Task CreateWidgetWindow(JsonWidgetItem widget, bool handleTimer)
     {
         // Load widget info
         currentWidgetType = widget.Type;
@@ -249,7 +249,7 @@ public class WidgetManagerService : IWidgetManagerService
         widgetWindow.Show(true);
 
         // enable timer if needed
-        if (TimerWidgets.Contains(currentWidgetType))
+        if (handleTimer && TimerWidgets.Contains(currentWidgetType))
         {
             _timersService.StartUpdateTimeTimer();
         }

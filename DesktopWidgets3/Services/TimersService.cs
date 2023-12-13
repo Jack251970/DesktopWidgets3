@@ -1,35 +1,48 @@
 ﻿using System.Timers;
 using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Models.Widget;
 using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Services;
 
 public class TimersService : ITimersService
 {
-    private readonly Timer _updateTimeTimer = new();
+    private readonly Timer _updateTimeTimer = new(1000);
+    private readonly Timer _updateNetworkTimer = new(1000);
 
-    private readonly IAppSettingsService _appSettingsService;
-
-    public TimersService(IAppSettingsService appSettingsService)
+    public TimersService()
     {
-        _appSettingsService = appSettingsService;
-
         InitializeTimers();
+    }
+
+    public void AddTimerAction(WidgetType type, Action<object?, ElapsedEventArgs> updateTimeDelegate)
+    {
+        
     }
 
     public void AddUpdateTimeTimerAction(Action<object?, ElapsedEventArgs> updateTimeDelegate)
     {
+        _updateTimeTimer.Enabled = false;
         _updateTimeTimer.Elapsed += (sender, e) => updateTimeDelegate(sender, e);
+        _updateTimeTimer.Enabled = true;
+    }
+
+    public void StartTimer(WidgetType type)
+    {
+    
     }
 
     public void StartUpdateTimeTimer()
     {
         if (!_updateTimeTimer.Enabled)
         {
-            var batterySaver = _appSettingsService.BatterySaver;
-            _updateTimeTimer.Interval = batterySaver ? 500 : 1000;
             _updateTimeTimer.Enabled = true;
         }
+    }
+
+    public void StopTimer(WidgetType type)
+    {
+    
     }
 
     public void StopUpdateTimeTimer()
@@ -44,5 +57,7 @@ public class TimersService : ITimersService
     {
         _updateTimeTimer.AutoReset = true;
         _updateTimeTimer.Enabled = false;
+        _updateNetworkTimer.AutoReset = true;
+        _updateNetworkTimer.Enabled = false;
     }
 }

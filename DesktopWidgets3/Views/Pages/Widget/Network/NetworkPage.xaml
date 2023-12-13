@@ -15,10 +15,41 @@
         x:Name="ContentArea"
         Background="Transparent"
         RightTapped="ContentArea_RightTapped">
-        <TextBlock 
-            Text="Network"
-            HorizontalAlignment="Center"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <FontIcon 
+            Grid.Row="0" 
+            Grid.Column="0"
+            Margin="20,0"
+            Glyph="&#xE898;"
             VerticalAlignment="Center"
-            Style="{ThemeResource PageTitleStyle}" />
+            FontSize="16"/>
+        <TextBlock 
+            Grid.Row="0" 
+            Grid.Column="1"
+            Text="{x:Bind ViewModel.UploadSpeed, Mode=OneWay}"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Style="{ThemeResource BodyTextBlockStyle}" />
+        <FontIcon 
+            Grid.Row="1" 
+            Grid.Column="0"
+            Margin="20,0"
+            Glyph="&#xE896;"
+            VerticalAlignment="Center"
+            FontSize="16"/>
+        <TextBlock 
+            Grid.Row="1" 
+            Grid.Column="1"
+            Text="{x:Bind ViewModel.DownloadSpeed, Mode=OneWay}"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Style="{ThemeResource BodyTextBlockStyle}" />
     </Grid>
 </Page>

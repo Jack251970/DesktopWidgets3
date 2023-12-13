@@ -1,4 +1,5 @@
-﻿using DesktopWidgets3.Contracts.Services;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Network;
@@ -7,31 +8,40 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 {
     #region observable properties
 
+    [ObservableProperty]
+    private string _uploadSpeed = string.Empty;
+
+    [ObservableProperty]
+    private string _downloadSpeed = string.Empty;
+
     #endregion
 
     #region settings
 
     #endregion
 
-    private readonly ITimersService _timersService;
+    private readonly IPerformanceService _performanceService;
 
-    public NetworkViewModel(ITimersService timersService)
+    public NetworkViewModel(IPerformanceService performanceService, ITimersService timersService)
     {
-        _timersService = timersService;
+        _performanceService = performanceService;
 
         timersService.AddUpdateTimeTimerAction(UpdateNetwork);
     }
 
     private void UpdateNetwork(object? sender, EventArgs e)
     {
-        _dispatcherQueue.TryEnqueue(() => { });
+        _dispatcherQueue.TryEnqueue(() => { 
+            (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed();
+            Console.WriteLine($"The Elapsed event was raised at {DateTime.Now.ToString("T")}");
+        });
     }
 
     #region abstract methods
 
     protected override void LoadWidgetSettings(NetworkWidgetSettings settings)
     {
-        
+        (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed();
     }
 
     #endregion

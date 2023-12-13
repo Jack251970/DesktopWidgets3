@@ -145,6 +145,9 @@ public partial class App : Application
             // Widgets Resources
             services.AddSingleton<IWidgetResourceService, WidgetResourceService>();
 
+            // Performance
+            services.AddSingleton<IPerformanceService, PerformanceService>();
+
             #endregion
 
             #region Views & ViewModels
