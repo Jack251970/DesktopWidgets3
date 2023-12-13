@@ -5,6 +5,7 @@ using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
 using H.NotifyIcon;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 
@@ -13,14 +14,6 @@ namespace DesktopWidgets3.Services;
 public class WidgetManagerService : IWidgetManagerService
 {
     private readonly List<WidgetWindow> WidgetsList = new();
-
-    private readonly List<WidgetType> TimerWidgets = new()
-    {
-        WidgetType.Clock,
-        WidgetType.CPU,
-        WidgetType.Disk,
-        WidgetType.Network,
-    };
 
     private readonly IActivationService _activationService;
     private readonly IAppSettingsService _appSettingsService;
@@ -61,25 +54,12 @@ public class WidgetManagerService : IWidgetManagerService
     public async Task EnableAllEnabledWidgets()
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
-        var enableTimer = false;
-
-        // show widgets
         foreach (var widget in widgetList)
         {
             if (widget.IsEnabled)
             {
-                await CreateWidgetWindow(widget, false);
-                if (TimerWidgets.Contains(widget.Type))
-                {
-                    enableTimer = true;
-                }
+                await CreateWidgetWindow(widget);
             }
-        }
-
-        // enable timer if needed
-        if (enableTimer)
-        {
-            _timersService.StartUpdateTimeTimer();
         }
     }
 
@@ -132,7 +112,7 @@ public class WidgetManagerService : IWidgetManagerService
         }
 
         // create widget window
-        await CreateWidgetWindow(widget, true);
+        await CreateWidgetWindow(widget);
     }
 
     public async Task DisableWidget(WidgetType widgetType, int indexTag)
@@ -164,15 +144,8 @@ public class WidgetManagerService : IWidgetManagerService
                 await _appSettingsService.UpdateWidgetsList(widget);
             }
 
-            await SetEditMode(widgetWindow, false);
-            widgetWindow.Close();
-            WidgetsList.Remove(widgetWindow);
-        }
-
-        // disable timer if needed
-        if (!WidgetsList.Any(x => TimerWidgets.Contains(x.WidgetType)))
-        {
-            _timersService.StopUpdateTimeTimer();
+            await CloseWidgetWindow(widgetWindow);
+            _timersService.StopTimer(widgetType);
         }
     }
 
@@ -194,14 +167,8 @@ public class WidgetManagerService : IWidgetManagerService
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
         if (widgetWindow != null)
         {
-            await SetEditMode(widgetWindow, false);
-            widgetWindow.Close();
-            WidgetsList.Remove(widgetWindow);
-
-            if (!WidgetsList.Any(x => TimerWidgets.Contains(x.WidgetType)))
-            {
-                _timersService.StopUpdateTimeTimer();
-            }
+            await CloseWidgetWindow(widgetWindow);
+            _timersService.StopTimer(widgetType);
         }
     }
 
@@ -209,10 +176,8 @@ public class WidgetManagerService : IWidgetManagerService
     {
         foreach (var widgetWindow in WidgetsList)
         {
-            await SetEditMode(widgetWindow, false);
-            widgetWindow.Close();
+            await CloseWidgetWindow(widgetWindow);
         }
-        WidgetsList.Clear();
     }
 
     public WidgetWindow GetLastWidgetWindow()
@@ -220,7 +185,7 @@ public class WidgetManagerService : IWidgetManagerService
         return WidgetsList.Last();
     }
 
-    private async Task CreateWidgetWindow(JsonWidgetItem widget, bool handleTimer)
+    private async Task CreateWidgetWindow(JsonWidgetItem widget)
     {
         // Load widget info
         currentWidgetType = widget.Type;
@@ -248,11 +213,26 @@ public class WidgetManagerService : IWidgetManagerService
         // show window
         widgetWindow.Show(true);
 
-        // enable timer if needed
-        if (handleTimer && TimerWidgets.Contains(currentWidgetType))
+        // handle timer
+        _timersService.StartTimer(widget.Type);
+    }
+
+    private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
+    {
+        // set edit mode
+        await SetEditMode(widgetWindow, false);
+
+        // unregister timer event
+        if (widgetWindow.PageViewModel is IWidgetDispose viewModel)
         {
-            _timersService.StartUpdateTimeTimer();
+            viewModel.DisposeWidget();
         }
+
+        // close windows
+        widgetWindow.Close();
+
+        // remove from widget list
+        WidgetsList.Remove(widgetWindow);
     }
 
     private WidgetWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
@@ -376,8 +356,6 @@ public class WidgetManagerService : IWidgetManagerService
             await SetEditMode(widgetWindow, true);
         }
 
-        _timersService.StopUpdateTimeTimer();
-
         if (EditModeOverlayWindow == null)
         {
             EditModeOverlayWindow = new OverlayWindow();
@@ -426,8 +404,6 @@ public class WidgetManagerService : IWidgetManagerService
             widgetList.Add(widget);
         }
 
-        _timersService.StartUpdateTimeTimer();
-
         EditModeOverlayWindow?.Hide(true);
 
         await _appSettingsService.UpdateWidgetsList(widgetList);
@@ -456,8 +432,6 @@ public class WidgetManagerService : IWidgetManagerService
             }
         }
 
-        _timersService.StartUpdateTimeTimer();
-
         EditModeOverlayWindow?.Hide(true);
 
         if (restoreMainWindow)
@@ -476,10 +450,10 @@ public class WidgetManagerService : IWidgetManagerService
         var frameShellPage = window.Content as FrameShellPage;
         frameShellPage?.SetCustomTitleBar(isEditMode);
 
-        // set page edit mode
-        if (window.PageViewModel is IEditModeAware editModeAware)
+        // set page update status
+        if (window.PageViewModel is IWidgetUpdate viewModel)
         {
-            await editModeAware.SetEditMode(isEditMode);
+            await viewModel.EnableUpdate(!isEditMode);
         }
     }
 

@@ -1,5 +1,4 @@
-﻿using System.Timers;
-using DesktopWidgets3.Contracts.Services;
+﻿using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Models.Widget;
 using Timer = System.Timers.Timer;
 
@@ -7,57 +6,63 @@ namespace DesktopWidgets3.Services;
 
 public class TimersService : ITimersService
 {
-    private readonly Timer _updateTimeTimer = new(1000);
-    private readonly Timer _updateNetworkTimer = new(1000);
+    private readonly Dictionary<WidgetType, Timer> TimersDict = new();
 
     public TimersService()
     {
-        InitializeTimers();
+
     }
 
-    public void AddTimerAction(WidgetType type, Action<object?, ElapsedEventArgs> updateTimeDelegate)
+    public void AddTimerAction(WidgetType type, Action timeDelegate)
     {
-        
+        var timer = GetWidgetTimer(type);
+        if (timer != null)
+        {
+            timer.Elapsed += (s, e) => timeDelegate();
+        }
     }
 
-    public void AddUpdateTimeTimerAction(Action<object?, ElapsedEventArgs> updateTimeDelegate)
+    public void RemoveTimerAction(WidgetType type, Action timeDelegate)
     {
-        _updateTimeTimer.Enabled = false;
-        _updateTimeTimer.Elapsed += (sender, e) => updateTimeDelegate(sender, e);
-        _updateTimeTimer.Enabled = true;
+        var timer = GetWidgetTimer(type);
+        if (timer != null)
+        {
+            timer.Elapsed -= (s, e) => timeDelegate();
+        }
     }
 
     public void StartTimer(WidgetType type)
     {
-    
-    }
-
-    public void StartUpdateTimeTimer()
-    {
-        if (!_updateTimeTimer.Enabled)
-        {
-            _updateTimeTimer.Enabled = true;
-        }
+        var timer = GetWidgetTimer(type);
+        timer?.Start();
     }
 
     public void StopTimer(WidgetType type)
     {
-    
+        var timer = GetWidgetTimer(type);
+        timer?.Stop();
     }
 
-    public void StopUpdateTimeTimer()
+    private Timer? GetWidgetTimer(WidgetType type)
     {
-        if (_updateTimeTimer.Enabled)
+        if (TimersDict.TryGetValue(type, out var timer))
         {
-            _updateTimeTimer.Enabled = false;
+            return timer;
         }
-    }
-
-    private void InitializeTimers()
-    {
-        _updateTimeTimer.AutoReset = true;
-        _updateTimeTimer.Enabled = false;
-        _updateNetworkTimer.AutoReset = true;
-        _updateNetworkTimer.Enabled = false;
+        else
+        {
+            timer = type switch
+            {
+                WidgetType.Clock => new Timer(1000),
+                WidgetType.Network => new Timer(2000),
+                _ => null,
+            };
+            if (timer != null)
+            {
+                timer.AutoReset = timer.AutoReset = true;
+                TimersDict.Add(type, timer);
+            }
+            return timer;
+        }
     }
 }

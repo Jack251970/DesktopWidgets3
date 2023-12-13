@@ -1,11 +1,12 @@
-﻿using System.Timers;
-using DesktopWidgets3.Models.Widget;
+﻿using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Contracts.Services;
 
 public interface ITimersService
 {
-    void AddTimerAction(WidgetType type, Action<object?, ElapsedEventArgs> updateTimeDelegate);
+    void AddTimerAction(WidgetType type, Action timeDelegate);
+
+    void RemoveTimerAction(WidgetType type, Action timeDelegate);
 
     void StartTimer(WidgetType type);
 

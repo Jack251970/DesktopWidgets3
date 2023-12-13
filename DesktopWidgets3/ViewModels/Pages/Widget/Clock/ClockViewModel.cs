@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 
-public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>
+public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, IWidgetUpdate, IWidgetDispose
 {
     #region observable properties
 
@@ -25,10 +26,10 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>
     {
         _timersService = timersService;
 
-        timersService.AddUpdateTimeTimerAction(UpdateTime);
+        timersService.AddTimerAction(WidgetType.Clock, UpdateTime);
     }
 
-    private void UpdateTime(object? sender, EventArgs e)
+    private void UpdateTime()
     {
         _dispatcherQueue.TryEnqueue(() => SystemTime = DateTime.Now.ToString(timingFormat));
     }
@@ -43,6 +44,28 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>
         }
 
         SystemTime = DateTime.Now.ToString(timingFormat);
+    }
+
+    #endregion
+
+    #region interfaces
+
+    public async Task EnableUpdate(bool enable)
+    {
+        if (enable)
+        {
+            _timersService.StartTimer(WidgetType.Clock);
+        }
+        else
+        {
+            _timersService.StopTimer(WidgetType.Clock);
+        }
+        await Task.CompletedTask;
+    }
+
+    public void DisposeWidget()
+    {
+        _timersService.RemoveTimerAction(WidgetType.Clock, UpdateTime);
     }
 
     #endregion

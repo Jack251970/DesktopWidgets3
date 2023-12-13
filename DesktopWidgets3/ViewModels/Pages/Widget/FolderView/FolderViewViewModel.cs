@@ -14,7 +14,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 
-public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IEditModeAware
+public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IWidgetUpdate, IWidgetDispose
 {
     #region commands
 
@@ -424,19 +424,24 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    #region edit mode
+    #region interfaces
 
-    public async Task SetEditMode(bool editMode)
+    public async Task EnableUpdate(bool enable)
     {
-        if (editMode)
-        {
-            fileSystemWatcher.EnableRaisingEvents = false;
-        }
-        else
+        if (enable)
         {
             await RefreshFileList(false, null, null);
             fileSystemWatcher.EnableRaisingEvents = true;
         }
+        else
+        {
+            fileSystemWatcher.EnableRaisingEvents = false;
+        }
+    }
+
+    public void DisposeWidget()
+    {
+        fileSystemWatcher.Dispose();
     }
 
     #endregion

@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Network;
 
-public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSettings>
+public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSettings>, IWidgetUpdate, IWidgetDispose
 {
     #region observable properties
 
@@ -21,20 +22,19 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
     #endregion
 
     private readonly IPerformanceService _performanceService;
+    private readonly ITimersService _timersService;
 
     public NetworkViewModel(IPerformanceService performanceService, ITimersService timersService)
     {
         _performanceService = performanceService;
+        _timersService = timersService;
 
-        timersService.AddUpdateTimeTimerAction(UpdateNetwork);
+        timersService.AddTimerAction(WidgetType.Network, UpdateNetwork);
     }
 
-    private void UpdateNetwork(object? sender, EventArgs e)
+    private void UpdateNetwork()
     {
-        _dispatcherQueue.TryEnqueue(() => { 
-            (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed();
-            Console.WriteLine($"The Elapsed event was raised at {DateTime.Now.ToString("T")}");
-        });
+        _dispatcherQueue.TryEnqueue(() => (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed());
     }
 
     #region abstract methods
@@ -42,6 +42,28 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
     protected override void LoadWidgetSettings(NetworkWidgetSettings settings)
     {
         (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed();
+    }
+
+    #endregion
+
+    #region interfaces
+
+    public async Task EnableUpdate(bool enable)
+    {
+        if (enable)
+        {
+            _timersService.StartTimer(WidgetType.Network);
+        }
+        else
+        {
+            _timersService.StopTimer(WidgetType.Network);
+        }
+        await Task.CompletedTask;
+    }
+
+    public void DisposeWidget()
+    {
+        _timersService.RemoveTimerAction(WidgetType.Network, UpdateNetwork);
     }
 
     #endregion

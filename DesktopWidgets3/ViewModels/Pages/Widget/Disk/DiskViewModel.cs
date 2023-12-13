@@ -1,9 +1,10 @@
 ﻿using DesktopWidgets3.Contracts.Services;
+using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Disk;
 
-public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>
+public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IWidgetUpdate, IWidgetDispose
 {
     #region observable properties
 
@@ -19,10 +20,10 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>
     {
         _timersService = timersService;
 
-        timersService.AddUpdateTimeTimerAction(UpdateDisk);
+        timersService.AddTimerAction(WidgetType.Disk, UpdateDisk);
     }
 
-    private void UpdateDisk(object? sender, EventArgs e)
+    private void UpdateDisk()
     {
         _dispatcherQueue.TryEnqueue(() => { });
     }
@@ -32,6 +33,28 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>
     protected override void LoadWidgetSettings(DiskWidgetSettings settings)
     {
         
+    }
+
+    #endregion
+
+    #region interfaces
+
+    public async Task EnableUpdate(bool enable)
+    {
+        if (enable)
+        {
+            _timersService.StartTimer(WidgetType.Disk);
+        }
+        else
+        {
+            _timersService.StopTimer(WidgetType.Disk);
+        }
+        await Task.CompletedTask;
+    }
+
+    public void DisposeWidget()
+    {
+        _timersService.RemoveTimerAction(WidgetType.Disk, UpdateDisk);
     }
 
     #endregion
