@@ -48,7 +48,10 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
             showBps = settings.ShowBps;
         }
 
-        (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed(showBps);
+        if (UploadSpeed == string.Empty && DownloadSpeed == string.Empty)
+        {
+            (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed(showBps);
+        }
     }
 
     #endregion
