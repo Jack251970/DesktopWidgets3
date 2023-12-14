@@ -61,9 +61,12 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
 
 public class NetworkWidgetSettings : BaseWidgetSettings
 {
+    public bool ShowBps { get; set; } = false;
+
     public override BaseWidgetSettings Clone()
     {
         var clone = (NetworkWidgetSettings)base.Clone();
+        clone.ShowBps = ShowBps;
         return clone;
     }
 }

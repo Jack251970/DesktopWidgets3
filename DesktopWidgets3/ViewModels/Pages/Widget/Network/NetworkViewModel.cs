@@ -19,12 +19,14 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     #region settings
 
+    private bool showBps = false;
+
     #endregion
 
-    private readonly IPerformanceService _performanceService;
+    private readonly ISystemInfoService _performanceService;
     private readonly ITimersService _timersService;
 
-    public NetworkViewModel(IPerformanceService performanceService, ITimersService timersService)
+    public NetworkViewModel(ISystemInfoService performanceService, ITimersService timersService)
     {
         _performanceService = performanceService;
         _timersService = timersService;
@@ -34,14 +36,19 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     private void UpdateNetwork()
     {
-        _dispatcherQueue.TryEnqueue(() => (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed());
+        _dispatcherQueue.TryEnqueue(() => (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed(showBps));
     }
 
     #region abstract methods
 
     protected override void LoadWidgetSettings(NetworkWidgetSettings settings)
     {
-        (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed();
+        if (settings.ShowBps != showBps)
+        {
+            showBps = settings.ShowBps;
+        }
+
+        (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed(showBps);
     }
 
     #endregion
