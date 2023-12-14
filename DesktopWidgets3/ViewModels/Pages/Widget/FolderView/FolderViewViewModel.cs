@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.ViewModels;
@@ -112,7 +114,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         // TODO: Add changed event and NotifyFilters.LastWrite notify filter
     }
 
-    private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
+    private async void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
     {
         var filePath = e.FullPath;
         if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden))
@@ -121,47 +123,28 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
 
         var isDirectory = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Directory);
-        RunOnDispatcherQueue(async () => {
-            var item = new FolderViewFileItem()
-            {
-                FileName = Path.GetFileName(filePath),
-                FilePath = filePath,
-                FileType = isDirectory ? FileType.Folder : FileType.File,
-            };
+        var (icon, iconOverlay) = await GetIcon(filePath, isDirectory);
+        var item = new FolderViewFileItem()
+        {
+            FileName = Path.GetFileName(filePath),
+            FilePath = filePath,
+            FileType = isDirectory ? FileType.Folder : FileType.File,
+            Icon = icon,
+            IconOverlay = iconOverlay,
+        };
 
-            var index = 0;
-            var directories = Directory.GetDirectories(FolderPath);
-            if (isDirectory)
-            {
-                foreach (var directory in directories)
-                {
-                    if (directory == filePath)
-                    {
-                        var (icon, iconOverlay) = await GetIcon(filePath, true);
-                        item.Icon = icon;
-                        item.IconOverlay = iconOverlay;
-                        FolderViewFileItems.Insert(index, item);
-                        return;
-                    }
-                    index++;
-                }
-            }
-
-            index += directories.Length;
-            var files = Directory.GetFiles(FolderPath);
-            foreach (var file in files)
-            {
-                if (file == filePath)
-                {
-                    var (icon, iconOverlay) = await GetIcon(filePath, false);
-                    item.Icon = icon;
-                    item.IconOverlay = iconOverlay;
-                    FolderViewFileItems.Insert(index, item);
-                    return;
-                }
-                index++;
-            }
-        });
+        var directories = GetDirectories();
+        if (isDirectory)
+        {
+            var index = directories.ToList().IndexOf(filePath);
+            RunOnDispatcherQueue(() => FolderViewFileItems.Insert(index, item));
+        }
+        else
+        {
+            var files = GetFiles();
+            var index = directories.Length + files.ToList().IndexOf(filePath);
+            RunOnDispatcherQueue(() => FolderViewFileItems.Insert(index, item));
+        }
     }
 
     private void FileSystemWatcher_Deleted(object sender, FileSystemEventArgs e)
@@ -172,17 +155,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             return;
         }
 
-        RunOnDispatcherQueue(() => {
-            foreach (var item in FolderViewFileItems)
-            {
-                if (item.FilePath == filePath)
-                {
-                    FolderViewFileItems.Remove(item);
-                    return;
-                }
-            }
-        });
-        
+        var item = FolderViewFileItems.FirstOrDefault(item => item.FilePath == filePath);
+        if (item != null)
+        {
+            var index = FolderViewFileItems.IndexOf(item);
+            RunOnDispatcherQueue(() => FolderViewFileItems.RemoveAt(index));
+        }
     }
 
     private void FileSystemWatcher_Renamed(object sender, RenamedEventArgs e)
@@ -194,22 +172,36 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             return;
         }
 
-        RunOnDispatcherQueue(() =>
+        var item = FolderViewFileItems.FirstOrDefault(item => item.FilePath == oldFilePath);
+        if (item != null)
         {
-            var index = 0;
-            foreach (var item in FolderViewFileItems)
+            item.FileName = Path.GetFileName(filePath);
+            item.FilePath = filePath;
+
+            var oldIndex = FolderViewFileItems.IndexOf(item);
+
+            var isDirectory = item.FileType == FileType.Folder;
+            var directories = GetDirectories();
+            if (isDirectory)
             {
-                if (item.FilePath == oldFilePath)
+                var index = directories.ToList().IndexOf(filePath);
+                RunOnDispatcherQueue(() =>
                 {
-                    FolderViewFileItems.Remove(item);
-                    item.FileName = Path.GetFileName(filePath);
-                    item.FilePath = filePath;
+                    FolderViewFileItems.RemoveAt(oldIndex);
                     FolderViewFileItems.Insert(index, item);
-                    break;
-                }
-                index++;
+                });
             }
-        });
+            else
+            {
+                var files = GetFiles();
+                var index = directories.Length + files.ToList().IndexOf(filePath);
+                RunOnDispatcherQueue(() =>
+                {
+                    FolderViewFileItems.RemoveAt(oldIndex);
+                    FolderViewFileItems.Insert(index, item);
+                });
+            }
+        }
     }
 
     #endregion
@@ -324,14 +316,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
         FolderViewFileItems.Clear();
 
-        var directories = Directory.GetDirectories(FolderPath);
+        var directories = GetDirectories();
         foreach (var directory in directories)
         {
             var directoryPath = directory;
-            if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(directoryPath, FileAttributes.Hidden))
-            {
-                continue;
-            }
             var folderName = Path.GetFileName(directory);
             var (fileIcon, fileIconOverlay) = await GetIcon(directoryPath, true);
             FolderViewFileItems.Add(new FolderViewFileItem()
@@ -344,14 +332,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             });
         }
 
-        var files = Directory.GetFiles(FolderPath);
+        var files = GetFiles();
         foreach (var file in files)
         {
             var filePath = file;
-            if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden))
-            {
-                continue;
-            }
             var fileName = Path.GetFileName(file);
             var (fileIcon, fileIconOverlay) = await GetIcon(filePath, false);
             FolderViewFileItems.Add(new FolderViewFileItem()
@@ -382,6 +366,26 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             return (await FileIconHelper.GetFileIconWithoutOverlayAsync(filePath, isFolder), null);
         }
+    }
+
+    private string[] GetDirectories()
+    {
+        var directories = Directory.GetDirectories(FolderPath);
+        if (!ShowHiddenFile)
+        {
+            directories = directories.Where(directory => !NativeFileOperationsHelper.HasFileAttribute(directory, FileAttributes.Hidden)).ToArray();
+        }
+        return directories;
+    }
+
+    private string[] GetFiles()
+    {
+        var files = Directory.GetFiles(FolderPath);
+        if (!ShowHiddenFile)
+        {
+            files = files.Where(file => !NativeFileOperationsHelper.HasFileAttribute(file, FileAttributes.Hidden)).ToArray();
+        }
+        return files;
     }
 
     #endregion

@@ -23,25 +23,27 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     #endregion
 
-    private readonly ISystemInfoService _performanceService;
+    private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;
 
-    public NetworkViewModel(ISystemInfoService performanceService, ITimersService timersService)
+    public NetworkViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
     {
-        _performanceService = performanceService;
+        _systemInfoService = systemInfoService;
         _timersService = timersService;
 
         timersService.AddTimerAction(WidgetType.Network, UpdateNetwork);
     }
 
-    private void UpdateNetwork()
+    private async void UpdateNetwork()
     {
-        RunOnDispatcherQueue(() => (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed(showBps));
+        var networkSpeed = await Task.Run(() => _systemInfoService.GetNetworkSpeed(showBps));
+
+        RunOnDispatcherQueue(() => (UploadSpeed, DownloadSpeed) = networkSpeed);
     }
 
     #region abstract methods
 
-    protected override void LoadWidgetSettings(NetworkWidgetSettings settings)
+    protected async override void LoadWidgetSettings(NetworkWidgetSettings settings)
     {
         if (settings.ShowBps != showBps)
         {
@@ -50,7 +52,9 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
         if (UploadSpeed == string.Empty && DownloadSpeed == string.Empty)
         {
-            (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed(showBps);
+            var networkSpeed = await Task.Run(() => _systemInfoService.GetInitNetworkSpeed(showBps));
+
+            (UploadSpeed, DownloadSpeed) = networkSpeed;
         }
     }
 

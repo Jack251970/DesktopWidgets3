@@ -28,6 +28,14 @@ public class SystemInfoService : ISystemInfoService
         return (FormatSpeed(totalBytesReceivedPersec, showBps), FormatSpeed(totalBytesSentPersec, showBps));  
     }
 
+    public (string UploadSpeed, string DownloadSpeed) GetInitNetworkSpeed(bool showBps)
+    {
+        ulong totalBytesSentPersec = 0;
+        ulong totalBytesReceivedPersec = 0;
+
+        return (FormatSpeed(totalBytesReceivedPersec, showBps), FormatSpeed(totalBytesSentPersec, showBps));
+    }
+
     private static string FormatSpeed(ulong bytes, bool showBps)
     {
         var unit = showBps ? "bps" : "B/s";

@@ -29,9 +29,11 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
         timersService.AddTimerAction(WidgetType.Clock, UpdateTime);
     }
 
-    private void UpdateTime()
+    private async void UpdateTime()
     {
-        RunOnDispatcherQueue(() => SystemTime = DateTime.Now.ToString(timingFormat));
+        var systemTime = await Task.Run(() => DateTime.Now.ToString(timingFormat));
+
+        RunOnDispatcherQueue(() => SystemTime = systemTime);
     }
 
     #region abstract methods
