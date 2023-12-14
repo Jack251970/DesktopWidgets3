@@ -31,7 +31,7 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
 
     private void UpdateTime()
     {
-        _dispatcherQueue.TryEnqueue(() => SystemTime = DateTime.Now.ToString(timingFormat));
+        RunOnDispatcherQueue(() => SystemTime = DateTime.Now.ToString(timingFormat));
     }
 
     #region abstract methods

@@ -60,7 +60,7 @@ public sealed partial class DashboardPage : Page
     {
         if (_indexTag != -1)
         {
-            if (await _dialogService.ShowDeleteWidgetDialog(App.MainWindow!) == DialogResult.Left)
+            if (await _dialogService.ShowDeleteWidgetDialog(App.MainWindow) == DialogResult.Left)
             {
                 ViewModel.MenuFlyoutItemDeleteWidgetClick(_widgetType, _indexTag);
             }

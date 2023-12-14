@@ -28,6 +28,7 @@ using DesktopWidgets3.ViewModels.Pages.Widget.Disk;
 using DesktopWidgets3.Views.Pages.Widget.Disk;
 using DesktopWidgets3.Views.Pages.Widget.Network;
 using DesktopWidgets3.ViewModels.Pages.Widget.Network;
+using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3;
 
@@ -52,7 +53,8 @@ public partial class App : Application
         return service;
     }
 
-    public static MainWindow? MainWindow { get; set; }
+    public static MainWindow MainWindow { get; set; } = null!;
+    public static DispatcherQueue DispatcherQueue => MainWindow.DispatcherQueue;
 
     public static UIElement? AppTitleBar { get; set; }
     public static UIElement? AppTitleBarText { get; set; }
@@ -220,10 +222,10 @@ public partial class App : Application
 
     public static void ShowMainWindow(bool front)
     {
-        MainWindow!.Show(true);
+        MainWindow.Show(true);
         if (front)
         {
-            MainWindow!.Activate();
+            MainWindow.Activate();
         }
     }
 }

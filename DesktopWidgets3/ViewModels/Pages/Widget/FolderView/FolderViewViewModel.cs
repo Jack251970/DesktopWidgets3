@@ -121,7 +121,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
 
         var isDirectory = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Directory);
-        _dispatcherQueue.TryEnqueue(async () => {
+        RunOnDispatcherQueue(async () => {
             var item = new FolderViewFileItem()
             {
                 FileName = Path.GetFileName(filePath),
@@ -172,7 +172,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             return;
         }
 
-        _dispatcherQueue.TryEnqueue(() => {
+        RunOnDispatcherQueue(() => {
             foreach (var item in FolderViewFileItems)
             {
                 if (item.FilePath == filePath)
@@ -194,7 +194,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             return;
         }
 
-        _dispatcherQueue.TryEnqueue(() =>
+        RunOnDispatcherQueue(() =>
         {
             var index = 0;
             foreach (var item in FolderViewFileItems)

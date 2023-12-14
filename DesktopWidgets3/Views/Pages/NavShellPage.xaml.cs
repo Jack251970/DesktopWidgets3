@@ -25,7 +25,7 @@ public sealed partial class NavShellPage : Page
 
         // A custom title bar is required for full window theme and Mica support.
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
-        App.MainWindow!.ExtendsContentIntoTitleBar = true;
+        App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
         App.AppTitleBar = AppTitleBar;

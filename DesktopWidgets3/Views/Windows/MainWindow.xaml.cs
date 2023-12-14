@@ -43,7 +43,7 @@ public sealed partial class MainWindow : WindowEx
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
-        dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
+        dispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
     // this enables the app to continue running in background after clicking close button

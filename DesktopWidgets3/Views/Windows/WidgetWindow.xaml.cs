@@ -67,8 +67,6 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    private readonly DispatcherQueue dispatcherQueue;
-
     private readonly UISettings settings;
 
     public WidgetWindow(BaseWidgetItem widgetItem)
@@ -84,8 +82,6 @@ public sealed partial class WidgetWindow : WindowEx
         Content = null;
         Title = string.Empty;
 
-        // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
-        dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
@@ -109,7 +105,7 @@ public sealed partial class WidgetWindow : WindowEx
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
-        dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
+        App.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
     // this handles free resources when the window is closed

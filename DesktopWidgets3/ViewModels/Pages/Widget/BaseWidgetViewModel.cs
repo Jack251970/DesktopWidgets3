@@ -28,7 +28,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    protected readonly DispatcherQueue _dispatcherQueue = App.MainWindow!.DispatcherQueue;
+    protected readonly DispatcherQueue _dispatcherQueue = App.DispatcherQueue;
 
     private bool _isInitialized;
 
@@ -46,6 +46,15 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
     #region abstract methods
 
     protected abstract void LoadWidgetSettings(T settings);
+
+    #endregion
+
+    #region dispatcher queue
+
+    protected void RunOnDispatcherQueue(Action action)
+    {
+        _dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => action());
+    }
 
     #endregion
 

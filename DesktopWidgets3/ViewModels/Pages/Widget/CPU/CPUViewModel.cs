@@ -25,7 +25,7 @@ public partial class CPUViewModel : BaseWidgetViewModel<CPUWidgetSettings>, IWid
 
     private void UpdateCPU()
     {
-        _dispatcherQueue.TryEnqueue(() => { });
+        RunOnDispatcherQueue(() => { });
     }
 
     #region abstract methods

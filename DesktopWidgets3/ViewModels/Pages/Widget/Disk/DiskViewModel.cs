@@ -25,7 +25,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     private void UpdateDisk()
     {
-        _dispatcherQueue.TryEnqueue(() => { });
+        RunOnDispatcherQueue(() => { });
     }
 
     #region abstract methods

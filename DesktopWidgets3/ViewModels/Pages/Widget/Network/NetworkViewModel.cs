@@ -36,7 +36,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     private void UpdateNetwork()
     {
-        _dispatcherQueue.TryEnqueue(() => (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed(showBps));
+        RunOnDispatcherQueue(() => (UploadSpeed, DownloadSpeed) = _performanceService.GetNetworkSpeed(showBps));
     }
 
     #region abstract methods

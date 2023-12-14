@@ -51,7 +51,7 @@ public class ThemeSelectorService : IThemeSelectorService
     {
         Theme = theme;
 
-        await SetRequestedThemeAsync(App.MainWindow!);
+        await SetRequestedThemeAsync(App.MainWindow);
         await SaveThemeInSettingsAsync(Theme);
     }
 

@@ -33,13 +33,13 @@ public class AppNotificationActivationHandler : ActivationHandler<LaunchActivate
         //// if (_notificationService.ParseArguments(activatedEventArgs.Argument)["action"] == "Settings")
         //// {
         ////     // Queue navigation with low priority to allow the UI to initialize.
-        ////     App.MainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+        ////     App.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
         ////     {
         ////         _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
         ////     });
         //// }
 
-        App.MainWindow!.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+        App.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
         {
             App.MainWindow.ShowMessageDialogAsync("TODO: Handle notification activations.", "Notification Activation");
         });

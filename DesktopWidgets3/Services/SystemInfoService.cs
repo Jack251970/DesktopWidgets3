@@ -5,7 +5,7 @@ namespace DesktopWidgets3.Services;
 
 public class SystemInfoService : ISystemInfoService
 {
-    private readonly IHardwareInfo hardwareInfo = new HardwareInfo();
+    private readonly IHardwareInfo hardwareInfo = new HardwareInfo(useAsteriskInWMI:false);
 
     public SystemInfoService()
     {
@@ -14,7 +14,7 @@ public class SystemInfoService : ISystemInfoService
 
     public (string UploadSpeed, string DownloadSpeed) GetNetworkSpeed(bool showBps)
     {
-        hardwareInfo.RefreshNetworkAdapterList();
+        hardwareInfo.RefreshNetworkAdapterList(includeNetworkAdapterConfiguration:false);
 
         ulong totalBytesSentPersec = 0;
         ulong totalBytesReceivedPersec = 0;

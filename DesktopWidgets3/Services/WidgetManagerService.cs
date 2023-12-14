@@ -372,7 +372,7 @@ public class WidgetManagerService : IWidgetManagerService
 
         EditModeOverlayWindow.Show(true);
         
-        if (App.MainWindow!.Visible)
+        if (App.MainWindow.Visible)
         {
             App.MainWindow.Close();
             restoreMainWindow = true;
@@ -404,7 +404,7 @@ public class WidgetManagerService : IWidgetManagerService
 
         if (restoreMainWindow)
         {
-            App.MainWindow!.Show(true);
+            App.MainWindow.Show(true);
             restoreMainWindow = false;
         }
     }
@@ -430,7 +430,7 @@ public class WidgetManagerService : IWidgetManagerService
 
         if (restoreMainWindow)
         {
-            App.MainWindow!.Show(true);
+            App.MainWindow.Show(true);
             restoreMainWindow = false;
         }
     }

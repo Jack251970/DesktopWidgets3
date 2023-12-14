@@ -32,7 +32,7 @@ public class ActivationService : IActivationService
         await _appSettingsService.InitializeAsync();
 
         // Set the MainWindow Content.
-        if (App.MainWindow!.Content == null)
+        if (App.MainWindow.Content == null)
         {
             _shell = App.GetService<NavShellPage>();
             App.MainWindow.Content = _shell ?? new Frame();
