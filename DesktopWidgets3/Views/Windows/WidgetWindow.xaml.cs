@@ -89,7 +89,7 @@ public sealed partial class WidgetWindow : WindowEx
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
-        Closed += (s, e) => WindowEx_Closed();
+        Closed += (s, a) => WindowEx_Closed();
 #if DEBUG
         /*WindowManager.Get(this).WindowMessageReceived += (_, e) => {
             App.logWriter.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} - Widget: {e.Message}");

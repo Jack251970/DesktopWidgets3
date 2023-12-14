@@ -26,7 +26,7 @@ public sealed partial class MainWindow : WindowEx
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
-        Closed += (s, e) => WindowEx_Closed(e);
+        Closed += (s, a) => WindowEx_Closed(a);
 #if DEBUG
         /*WindowManager.Get(this).WindowMessageReceived += (_, e) =>
         {
