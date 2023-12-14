@@ -25,6 +25,8 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
+
+        Closed += (s, e) => WindowEx_Closed(e);
 #if DEBUG
         /*WindowManager.Get(this).WindowMessageReceived += (_, e) =>
         {
@@ -45,7 +47,7 @@ public sealed partial class MainWindow : WindowEx
     }
 
     // this enables the app to continue running in background after clicking close button
-    private void WindowEx_Closed(object sender, WindowEventArgs args)
+    private void WindowEx_Closed(WindowEventArgs args)
     {
         if (App.CanCloseWindow)
         {

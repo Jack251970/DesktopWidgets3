@@ -5,7 +5,7 @@ using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Clock;
 
-public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, IWidgetUpdate, IWidgetDispose
+public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
     #region observable properties
 
@@ -63,7 +63,7 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
         await Task.CompletedTask;
     }
 
-    public void DisposeWidget()
+    public void WidgetClosed()
     {
         _timersService.RemoveTimerAction(WidgetType.Clock, UpdateTime);
     }

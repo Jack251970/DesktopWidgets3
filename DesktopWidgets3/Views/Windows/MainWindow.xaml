@@ -8,8 +8,7 @@
     Width="945"
     Height="667"
     PersistenceId="MainWindow"
-    mc:Ignorable="d"
-    Closed="WindowEx_Closed">
+    mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop/>
     </Window.SystemBackdrop>

@@ -7,6 +7,8 @@ using DesktopWidgets3.Views.Pages.Widget;
 using System.Runtime.InteropServices;
 using WinUIEx.Messaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DesktopWidgets3.Contracts.ViewModels;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -86,6 +88,8 @@ public sealed partial class WidgetWindow : WindowEx
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
+
+        Closed += (s, e) => WindowEx_Closed();
 #if DEBUG
         /*WindowManager.Get(this).WindowMessageReceived += (_, e) => {
             App.logWriter.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} - Widget: {e.Message}");
@@ -106,6 +110,15 @@ public sealed partial class WidgetWindow : WindowEx
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
+    }
+
+    // this handles free resources when the window is closed
+    private void WindowEx_Closed()
+    {
+        if (PageViewModel is IWidgetClose viewModel)
+        {
+            viewModel.WidgetClosed();
+        }
     }
 
     public void InitializeTitleBar()

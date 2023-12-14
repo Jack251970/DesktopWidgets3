@@ -5,7 +5,7 @@ using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Network;
 
-public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSettings>, IWidgetUpdate, IWidgetDispose
+public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
     #region observable properties
 
@@ -61,7 +61,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
         await Task.CompletedTask;
     }
 
-    public void DisposeWidget()
+    public void WidgetClosed()
     {
         _timersService.RemoveTimerAction(WidgetType.Network, UpdateNetwork);
     }

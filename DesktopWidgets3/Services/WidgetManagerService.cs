@@ -222,12 +222,6 @@ public class WidgetManagerService : IWidgetManagerService
         // set edit mode
         await SetEditMode(widgetWindow, false);
 
-        // unregister timer event
-        if (widgetWindow.PageViewModel is IWidgetDispose viewModel)
-        {
-            viewModel.DisposeWidget();
-        }
-
         // close windows
         widgetWindow.Close();
 

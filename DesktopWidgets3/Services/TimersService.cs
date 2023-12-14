@@ -59,7 +59,8 @@ public class TimersService : ITimersService
             };
             if (timer != null)
             {
-                timer.AutoReset = timer.AutoReset = true;
+                timer.AutoReset = true;
+                timer.Enabled = false;
                 TimersDict.Add(type, timer);
             }
             return timer;

@@ -4,7 +4,7 @@ using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget.Disk;
 
-public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IWidgetUpdate, IWidgetDispose
+public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
     #region observable properties
 
@@ -52,7 +52,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
         await Task.CompletedTask;
     }
 
-    public void DisposeWidget()
+    public void WidgetClosed()
     {
         _timersService.RemoveTimerAction(WidgetType.Disk, UpdateDisk);
     }
