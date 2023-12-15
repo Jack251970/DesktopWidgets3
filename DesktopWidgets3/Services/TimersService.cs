@@ -54,7 +54,7 @@ public class TimersService : ITimersService
             timer = type switch
             {
                 WidgetType.Clock => new Timer(1000),
-                WidgetType.Network => new Timer(2000),
+                WidgetType.Network => new Timer(1000),
                 _ => null,
             };
             if (timer != null)
