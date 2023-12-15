@@ -1,42 +1,44 @@
 ﻿using DesktopWidgets3.Contracts.Services;
-using Hardware.Info;
+using DesktopWidgets3.Models.Widget;
+using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Services;
 
 public class SystemInfoService : ISystemInfoService
 {
-    private readonly IHardwareInfo hardwareInfo = new HardwareInfo(useAsteriskInWMI:false);
+    private readonly IAppSettingsService _appSettingsService;
 
-    public SystemInfoService()
+    private readonly Timer sampleTimer = new();
+
+    private readonly NetWorkMonitor netWorkMonitor = new();
+
+    public SystemInfoService(IAppSettingsService appSettingsService)
     {
-        
+        _appSettingsService = appSettingsService;
+
+        sampleTimer.AutoReset = true;
+        sampleTimer.Enabled = false;
+        sampleTimer.Interval = _appSettingsService.BatterySaver ? 1000 : 100;
     }
 
     public (string UploadSpeed, string DownloadSpeed) GetNetworkSpeed(bool showBps)
     {
-        hardwareInfo.RefreshNetworkAdapterList(includeNetworkAdapterConfiguration:false);
+        var (uploadSpeed, downloadSpeed) = netWorkMonitor.GetNetworkSpeed();
 
-        ulong totalBytesSentPersec = 0;
-        ulong totalBytesReceivedPersec = 0;
-
-        foreach (var hardware in hardwareInfo.NetworkAdapterList)
-        {
-            totalBytesSentPersec += hardware.BytesSentPersec;
-            totalBytesReceivedPersec += hardware.BytesReceivedPersec;
-        }
-
-        return (FormatSpeed(totalBytesReceivedPersec, showBps), FormatSpeed(totalBytesSentPersec, showBps));  
+        return (FormatSpeed(uploadSpeed, showBps), FormatSpeed(downloadSpeed, showBps));  
     }
 
     public (string UploadSpeed, string DownloadSpeed) GetInitNetworkSpeed(bool showBps)
     {
-        ulong totalBytesSentPersec = 0;
-        ulong totalBytesReceivedPersec = 0;
+        netWorkMonitor.Open();
 
-        return (FormatSpeed(totalBytesReceivedPersec, showBps), FormatSpeed(totalBytesSentPersec, showBps));
+        sampleTimer.Elapsed += (s, e) => { netWorkMonitor.Update(); };
+        sampleTimer.Start();
+
+        return (FormatSpeed(0, showBps), FormatSpeed(0, showBps));
     }
 
-    private static string FormatSpeed(ulong bytes, bool showBps)
+    private static string FormatSpeed(float bytes, bool showBps)
     {
         var unit = showBps ? "bps" : "B/s";
         if (showBps)
@@ -54,15 +56,15 @@ public class SystemInfoService : ISystemInfoService
         }
         else if (bytes < megabyte)
         {
-            return $"{bytes * 1.0 / kilobyte:F2} K{unit}";
+            return $"{bytes / kilobyte:F2} K{unit}";
         }
         else if (bytes < gigabyte)
         {
-            return $"{bytes * 1.0 / megabyte:F2} M{unit}";
+            return $"{bytes / megabyte:F2} M{unit}";
         }
         else
         {
-            return $"{bytes * 1.0 / gigabyte:F2} G{unit}";
+            return $"{bytes / gigabyte:F2} G{unit}";
         }
     }
 }

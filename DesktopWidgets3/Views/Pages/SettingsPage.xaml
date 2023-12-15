@@ -80,6 +80,7 @@
                             <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
                                 <HyperlinkButton Content="Files" NavigateUri="https://github.com/files-community/Files" />
                                 <HyperlinkButton Content="H.NotifyIcon" NavigateUri="https://github.com/HavenDV/H.NotifyIcon" />
+                                <HyperlinkButton Content="LibreHardwareMonitor" NavigateUri="https://github.com/LibreHardwareMonitor/LibreHardwareMonitor"/>
                                 <HyperlinkButton Content="Newtonsoft.Json" NavigateUri="https://github.com/JamesNK/Newtonsoft.Json" />
                                 <HyperlinkButton Content="PowerToys" NavigateUri="https://github.com/microsoft/PowerToys" />
                                 <HyperlinkButton Content="Template Studio for WinUI (C#)" NavigateUri="https://github.com/microsoft/TemplateStudio" />
