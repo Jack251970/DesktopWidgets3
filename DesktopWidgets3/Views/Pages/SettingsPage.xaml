@@ -79,7 +79,9 @@
                                            ContentAlignment="Vertical" >
                             <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
                                 <HyperlinkButton Content="Files" NavigateUri="https://github.com/files-community/Files" />
+                                <HyperlinkButton Content="fluentui-system-icons" NavigateUri="https://github.com/microsoft/fluentui-system-icons"/>
                                 <HyperlinkButton Content="H.NotifyIcon" NavigateUri="https://github.com/HavenDV/H.NotifyIcon" />
+                                <HyperlinkButton Content="ICONS8" NavigateUri="https://icons8.com/icons"/>
                                 <HyperlinkButton Content="Newtonsoft.Json" NavigateUri="https://github.com/JamesNK/Newtonsoft.Json" />
                                 <HyperlinkButton Content="PowerToys" NavigateUri="https://github.com/microsoft/PowerToys" />
                                 <HyperlinkButton Content="Template Studio for WinUI (C#)" NavigateUri="https://github.com/microsoft/TemplateStudio" />
@@ -92,7 +94,7 @@
                         </labs:SettingsCard>
                         <labs:SettingsCard x:Uid="Settings_CopyRight_Card"
                                            HorizontalContentAlignment="Left"
-                                           ContentAlignment="Vertical" >
+                                           ContentAlignment="Vertical">
                             <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
                                 <HyperlinkButton x:Uid="Settings_LicenseLink" />
                             </StackPanel>

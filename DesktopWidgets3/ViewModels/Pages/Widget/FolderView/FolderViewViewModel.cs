@@ -307,6 +307,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             FolderName = Path.GetFileName(FolderPath);
         }
 
+        if (icon is null)
+        {
+            (icon, overlay) = await GetIcon(FolderPath, true);
+        }
+        FolderPathIcon = icon;
+        FolderPathIconOverlay = overlay;
+
         if (pushFolderPath)
         {
             navigationFolderPaths.Push(FolderPath);
@@ -347,13 +354,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 IconOverlay = fileIconOverlay,
             });
         }
-
-        if (icon is null)
-        {
-            (icon, overlay) = await GetIcon(FolderPath, true);
-        }
-        FolderPathIcon = icon;
-        FolderPathIconOverlay = overlay;
     }
 
     private async Task<(BitmapImage? Icon, BitmapImage? Overlay)> GetIcon(string filePath, bool isFolder)
