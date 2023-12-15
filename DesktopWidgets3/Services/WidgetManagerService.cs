@@ -187,7 +187,8 @@ public class WidgetManagerService : IWidgetManagerService
 
     public async void DisableAllWidgets()
     {
-        foreach (var widgetWindow in WidgetsList)
+        var widgetsList = new List<WidgetWindow>(WidgetsList);
+        foreach (var widgetWindow in widgetsList)
         {
             await CloseWidgetWindow(widgetWindow);
         }
