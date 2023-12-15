@@ -52,7 +52,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
         await Task.CompletedTask;
     }
 
-    public void WidgetClosed()
+    public void WidgetWindow_Closing()
     {
         _timersService.RemoveTimerAction(WidgetType.Disk, UpdateDisk);
     }

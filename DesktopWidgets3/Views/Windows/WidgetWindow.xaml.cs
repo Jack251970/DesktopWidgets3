@@ -84,8 +84,6 @@ public sealed partial class WidgetWindow : WindowEx
 
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
-
-        Closed += (s, a) => WindowEx_Closed();
 #if DEBUG
         /*WindowManager.Get(this).WindowMessageReceived += (_, e) => {
             App.logWriter.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} - Widget: {e.Message}");
@@ -106,15 +104,6 @@ public sealed partial class WidgetWindow : WindowEx
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
         App.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, TitleBarHelper.ApplySystemThemeToCaptionButtons);
-    }
-
-    // this handles free resources when the window is closed
-    private void WindowEx_Closed()
-    {
-        if (PageViewModel is IWidgetClose viewModel)
-        {
-            viewModel.WidgetClosed();
-        }
     }
 
     public void InitializeTitleBar()

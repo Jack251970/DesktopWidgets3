@@ -2,5 +2,5 @@
 
 public interface IWidgetClose
 {
-    void WidgetClosed();
+    void WidgetWindow_Closing();
 }

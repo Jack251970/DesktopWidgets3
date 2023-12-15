@@ -52,7 +52,7 @@ public partial class CPUViewModel : BaseWidgetViewModel<CPUWidgetSettings>, IWid
         await Task.CompletedTask;
     }
 
-    public void WidgetClosed()
+    public void WidgetWindow_Closing()
     {
         _timersService.RemoveTimerAction(WidgetType.CPU, UpdateCPU);
     }

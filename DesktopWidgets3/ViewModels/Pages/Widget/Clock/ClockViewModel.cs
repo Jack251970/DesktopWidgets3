@@ -65,7 +65,7 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
         await Task.CompletedTask;
     }
 
-    public void WidgetClosed()
+    public void WidgetWindow_Closing()
     {
         _timersService.RemoveTimerAction(WidgetType.Clock, UpdateTime);
     }

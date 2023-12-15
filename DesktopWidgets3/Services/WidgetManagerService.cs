@@ -5,7 +5,6 @@ using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
 using H.NotifyIcon;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 
@@ -17,6 +16,7 @@ public class WidgetManagerService : IWidgetManagerService
 
     private readonly IActivationService _activationService;
     private readonly IAppSettingsService _appSettingsService;
+    private readonly ISystemInfoService _systemInfoService;
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ITimersService _timersService;
     private readonly IWidgetResourceService _widgetResourceService;
@@ -24,10 +24,11 @@ public class WidgetManagerService : IWidgetManagerService
     private WidgetType currentWidgetType;
     private int currentIndexTag = -1;
 
-    public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
+    public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
         _activationService = activationService;
         _appSettingsService = appSettingsService;
+        _systemInfoService = systemInfoService;
         _themeSelectorService = themeSelectorService;
         _timersService = timersService;
         _widgetResourceService = widgetResourceService;
@@ -145,7 +146,13 @@ public class WidgetManagerService : IWidgetManagerService
             }
 
             await CloseWidgetWindow(widgetWindow);
-            _timersService.StopTimer(widgetType);
+
+            var sameTypeWidgets = WidgetsList.Count(x => x.WidgetType == widgetType);
+            if (sameTypeWidgets == 0)
+            {
+                _timersService.StopTimer(widgetType);
+                _systemInfoService.StopMonitor(widgetType);
+            }
         }
     }
 
@@ -168,7 +175,13 @@ public class WidgetManagerService : IWidgetManagerService
         if (widgetWindow != null)
         {
             await CloseWidgetWindow(widgetWindow);
-            _timersService.StopTimer(widgetType);
+
+            var sameTypeWidgets = WidgetsList.Count(x => x.WidgetType == widgetType);
+            if (sameTypeWidgets == 0)
+            {
+                _timersService.StopTimer(widgetType);
+                _systemInfoService.StopMonitor(widgetType);
+            }
         }
     }
 
@@ -177,6 +190,13 @@ public class WidgetManagerService : IWidgetManagerService
         foreach (var widgetWindow in WidgetsList)
         {
             await CloseWidgetWindow(widgetWindow);
+        }
+
+        var allWidgetType = Enum.GetValues(typeof(WidgetType));
+        foreach (WidgetType widgetType in allWidgetType)
+        {
+            _timersService.StopTimer(widgetType);
+            _systemInfoService.StopMonitor(widgetType);
         }
     }
 
@@ -213,6 +233,9 @@ public class WidgetManagerService : IWidgetManagerService
         // show window
         widgetWindow.Show(true);
 
+        // handle monitor
+        _systemInfoService.StartMonitor(widget.Type);
+
         // handle timer
         _timersService.StartTimer(widget.Type);
     }
@@ -221,6 +244,12 @@ public class WidgetManagerService : IWidgetManagerService
     {
         // set edit mode
         await SetEditMode(widgetWindow, false);
+
+        // widget close event
+        if (widgetWindow.PageViewModel is IWidgetClose viewModel)
+        {
+            viewModel.WidgetWindow_Closing();
+        }
 
         // close windows
         widgetWindow.Close();

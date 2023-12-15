@@ -75,7 +75,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
         await Task.CompletedTask;
     }
 
-    public void WidgetClosed()
+    public void WidgetWindow_Closing()
     {
         _timersService.RemoveTimerAction(WidgetType.Network, UpdateNetwork);
     }

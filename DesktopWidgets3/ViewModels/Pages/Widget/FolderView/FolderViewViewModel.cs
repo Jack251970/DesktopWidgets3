@@ -441,7 +441,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
     }
 
-    public void WidgetClosed()
+    public void WidgetWindow_Closing()
     {
         fileSystemWatcher.Dispose();
     }

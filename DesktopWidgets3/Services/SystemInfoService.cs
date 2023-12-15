@@ -10,8 +10,6 @@ public class SystemInfoService : ISystemInfoService
 
     private readonly Timer sampleTimer = new();
 
-    private readonly NetWorkMonitor netWorkMonitor = new();
-
     public SystemInfoService(IAppSettingsService appSettingsService)
     {
         _appSettingsService = appSettingsService;
@@ -19,6 +17,61 @@ public class SystemInfoService : ISystemInfoService
         sampleTimer.AutoReset = true;
         sampleTimer.Enabled = false;
         sampleTimer.Interval = _appSettingsService.BatterySaver ? 1000 : 100;
+    }
+
+    private bool IsMonitorOpen => _isNetworkMonitorOpen;
+
+    public void StartMonitor(WidgetType type)
+    {
+        switch (type)
+        {
+            case WidgetType.Network:
+                IsNetworkMonitorOpen = true;
+                break;
+        }
+    }
+
+    public void StopMonitor(WidgetType type)
+    {
+        switch (type)
+        {
+            case WidgetType.Network:
+                IsNetworkMonitorOpen = false;
+                break;
+        }
+    }
+
+    #region network speed
+
+    private readonly NetWorkMonitor netWorkMonitor = new();
+
+    private bool _isNetworkMonitorOpen;
+    private bool IsNetworkMonitorOpen
+    {
+        get => _isNetworkMonitorOpen;
+        set
+        {
+            if (value != _isNetworkMonitorOpen)
+            {
+                _isNetworkMonitorOpen = value;
+
+                if (value)
+                {
+                    netWorkMonitor.Open();
+                    sampleTimer.Elapsed += (s, e) => UpdateNetworkSpeed();
+                    sampleTimer.Start();
+                }
+                else
+                {
+                    netWorkMonitor.Close();
+                    sampleTimer.Elapsed -= (s, e) => UpdateNetworkSpeed();
+                    if (!IsMonitorOpen)
+                    {
+                        sampleTimer.Stop();
+                    }
+                }
+            }
+        }
     }
 
     public (string UploadSpeed, string DownloadSpeed) GetNetworkSpeed(bool showBps)
@@ -30,12 +83,12 @@ public class SystemInfoService : ISystemInfoService
 
     public (string UploadSpeed, string DownloadSpeed) GetInitNetworkSpeed(bool showBps)
     {
-        netWorkMonitor.Open();
-
-        sampleTimer.Elapsed += (s, e) => { netWorkMonitor.Update(); };
-        sampleTimer.Start();
-
         return (FormatSpeed(0, showBps), FormatSpeed(0, showBps));
+    }
+
+    private void UpdateNetworkSpeed()
+    {
+        netWorkMonitor.Update();
     }
 
     private static string FormatSpeed(float bytes, bool showBps)
@@ -67,4 +120,6 @@ public class SystemInfoService : ISystemInfoService
             return $"{bytes / gigabyte:F2} G{unit}";
         }
     }
+
+    #endregion
 }
