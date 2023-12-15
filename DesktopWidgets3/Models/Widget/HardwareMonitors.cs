@@ -75,7 +75,7 @@ public class NetWorkMonitor : BaseMonitor
             }
         }
 
-        return (totalDownloadSpeed, totalUploadSpeed);
+        return (totalUploadSpeed, totalDownloadSpeed);
     }
 }
 

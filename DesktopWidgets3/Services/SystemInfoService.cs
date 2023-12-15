@@ -10,16 +10,22 @@ public class SystemInfoService : ISystemInfoService
 
     private readonly Timer sampleTimer = new();
 
+    private bool IsMonitorOpen => _isNetworkMonitorOpen;
+
     public SystemInfoService(IAppSettingsService appSettingsService)
     {
         _appSettingsService = appSettingsService;
 
         sampleTimer.AutoReset = true;
         sampleTimer.Enabled = false;
-        sampleTimer.Interval = _appSettingsService.BatterySaver ? 1000 : 100;
+        OnBatterySaverChanged(_appSettingsService.BatterySaver);
     }
 
-    private bool IsMonitorOpen => _isNetworkMonitorOpen;
+    public bool OnBatterySaverChanged(bool batterySaver)
+    {
+        sampleTimer.Interval = batterySaver ? 1000 : 100;
+        return true;
+    }
 
     public void StartMonitor(WidgetType type)
     {

@@ -10,6 +10,8 @@ public class AppSettingsService : IAppSettingsService
     private readonly ILocalSettingsService _localSettingsService;
     private readonly LocalSettingsKeys _localSettingsKeys;
 
+    private bool _isInitialized;
+
     public AppSettingsService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys)
     {
         _localSettingsService = localSettingsService;
@@ -18,8 +20,13 @@ public class AppSettingsService : IAppSettingsService
 
     public async Task InitializeAsync()
     {
-        SilentStart = await GetSilentStartAsync();
-        BatterySaver = await GetBatterySaverAsync();
+        if (!_isInitialized)
+        {
+            SilentStart = await GetSilentStartAsync();
+            BatterySaver = await GetBatterySaverAsync();
+
+            _isInitialized = true;
+        }
     }
 
     #region Runtime Application Data
@@ -29,9 +36,21 @@ public class AppSettingsService : IAppSettingsService
         get; set;
     }
 
+    private bool _batterySaver;
     public bool BatterySaver
     {
-        get; set;
+        get => _batterySaver;
+        set
+        {
+            if (_batterySaver != value)
+            {
+                _batterySaver = value;
+                if (_isInitialized)
+                {
+                    App.GetService<ISystemInfoService>().OnBatterySaverChanged(value);
+                }
+            }
+        }
     }
 
     #endregion
