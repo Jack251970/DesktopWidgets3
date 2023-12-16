@@ -22,18 +22,24 @@ public class BaseWidgetItem
 
     public int IndexTag { get; set; }
 
-    protected BaseWidgetSettings? widgetSettings = null;
+    protected BaseWidgetSettings widgetSettings = null!;
     public BaseWidgetSettings Settings
     {
-        get => Type switch
-        {
-            WidgetType.Clock => widgetSettings is null ? new ClockWidgetSettings() : (ClockWidgetSettings)widgetSettings,
-            WidgetType.CPU => widgetSettings is null ? new CPUWidgetSettings() : (CPUWidgetSettings)widgetSettings,
-            WidgetType.Disk => widgetSettings is null ? new DiskWidgetSettings() : (DiskWidgetSettings)widgetSettings,
-            WidgetType.FolderView => widgetSettings is null ? new FolderViewWidgetSettings() : (FolderViewWidgetSettings)widgetSettings,
-            WidgetType.Network => widgetSettings is null ? new NetworkWidgetSettings() : (NetworkWidgetSettings)widgetSettings,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        get {
+            if (widgetSettings is null)
+            {
+                throw new NullReferenceException();
+            }
+            return Type switch
+            {
+                WidgetType.Clock => (ClockWidgetSettings)widgetSettings,
+                WidgetType.CPU => (CPUWidgetSettings)widgetSettings,
+                WidgetType.Disk => (DiskWidgetSettings)widgetSettings,
+                WidgetType.FolderView => (FolderViewWidgetSettings)widgetSettings,
+                WidgetType.Network => (NetworkWidgetSettings)widgetSettings,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+        }
         set => widgetSettings = value;
     }
 }
