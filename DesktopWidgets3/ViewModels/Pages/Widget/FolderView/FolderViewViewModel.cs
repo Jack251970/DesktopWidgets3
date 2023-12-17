@@ -409,7 +409,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (FolderPath != settings.FolderPath)
         {
             FolderPath = settings.FolderPath;
-            await RefreshFileList(true, null, null);
+            await RefreshFileList(false, null, null);
             needRefresh = false;
         }
 
