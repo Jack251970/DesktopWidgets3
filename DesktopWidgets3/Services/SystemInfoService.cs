@@ -8,6 +8,7 @@ public class SystemInfoService : ISystemInfoService
 {
     private readonly IAppSettingsService _appSettingsService;
 
+    private readonly HardwareMonitor hardwareMonitor = new();
     private readonly Timer sampleTimer = new();
 
     private bool IsMonitorOpen => _isNetworkMonitorOpen;
@@ -32,7 +33,7 @@ public class SystemInfoService : ISystemInfoService
         switch (type)
         {
             case WidgetType.Network:
-                IsNetworkMonitorOpen = true;
+                SetNetworkMonitor(true);
                 break;
         }
     }
@@ -42,47 +43,43 @@ public class SystemInfoService : ISystemInfoService
         switch (type)
         {
             case WidgetType.Network:
-                IsNetworkMonitorOpen = false;
+                SetNetworkMonitor(false);
                 break;
         }
     }
 
     #region network speed
 
-    private readonly NetWorkMonitor netWorkMonitor = new();
-
     private bool _isNetworkMonitorOpen;
-    private bool IsNetworkMonitorOpen
+    private void SetNetworkMonitor(bool enabled)
     {
-        get => _isNetworkMonitorOpen;
-        set
+        if (enabled != _isNetworkMonitorOpen)
         {
-            if (value != _isNetworkMonitorOpen)
-            {
-                _isNetworkMonitorOpen = value;
+            _isNetworkMonitorOpen = enabled;
 
-                if (value)
+            if (enabled)
+            {
+                hardwareMonitor.NetworkEnabled = true;
+                hardwareMonitor.Open();
+                sampleTimer.Start();
+                sampleTimer.Elapsed += (s, e) => UpdateNetworkSpeed();
+            }
+            else
+            {
+                hardwareMonitor.NetworkEnabled = false;
+                if (!IsMonitorOpen)
                 {
-                    netWorkMonitor.Open();
-                    sampleTimer.Elapsed += (s, e) => UpdateNetworkSpeed();
-                    sampleTimer.Start();
+                    hardwareMonitor.Close();
+                    sampleTimer.Stop();
                 }
-                else
-                {
-                    netWorkMonitor.Close();
-                    sampleTimer.Elapsed -= (s, e) => UpdateNetworkSpeed();
-                    if (!IsMonitorOpen)
-                    {
-                        sampleTimer.Stop();
-                    }
-                }
+                sampleTimer.Elapsed -= (s, e) => UpdateNetworkSpeed();
             }
         }
     }
 
     public (string UploadSpeed, string DownloadSpeed) GetNetworkSpeed(bool showBps)
     {
-        var (uploadSpeed, downloadSpeed) = netWorkMonitor.GetNetworkSpeed();
+        var (uploadSpeed, downloadSpeed) = hardwareMonitor.GetNetworkSpeed();
 
         return (FormatSpeed(uploadSpeed, showBps), FormatSpeed(downloadSpeed, showBps));  
     }
@@ -94,7 +91,7 @@ public class SystemInfoService : ISystemInfoService
 
     private void UpdateNetworkSpeed()
     {
-        netWorkMonitor.Update();
+        hardwareMonitor.Update();
     }
 
     private static string FormatSpeed(float bytes, bool showBps)

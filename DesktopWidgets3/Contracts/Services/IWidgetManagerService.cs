@@ -9,7 +9,9 @@ public interface IWidgetManagerService
 
     Task EnableAllEnabledWidgets();
 
-    Task EnableWidget(WidgetType widgetType, int? indexTag);
+    Task AddWidget(WidgetType widgetType);
+
+    Task EnableWidget(WidgetType widgetType, int indexTag);
 
     Task DisableWidget(WidgetType widgetType, int indexTag);
 

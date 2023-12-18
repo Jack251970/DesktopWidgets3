@@ -43,7 +43,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     #region abstract methods
 
-    protected async override void LoadWidgetSettings(NetworkWidgetSettings settings)
+    protected async override void LoadSettings(NetworkWidgetSettings settings)
     {
         if (settings.ShowBps != showBps)
         {
@@ -56,6 +56,14 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
             (UploadSpeed, DownloadSpeed) = networkSpeed;
         }
+    }
+
+    protected override NetworkWidgetSettings GetSettings()
+    {
+        return new NetworkWidgetSettings
+        {
+            ShowBps = showBps
+        };
     }
 
     #endregion

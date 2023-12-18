@@ -5,6 +5,10 @@ namespace DesktopWidgets3.Models.Widget;
 
 public class BaseWidgetItem
 {
+    public required WidgetType Type { get; set; }
+
+    public required int IndexTag { get; set; }
+
     protected bool _isEnabled;
     public bool IsEnabled
     {
@@ -18,28 +22,18 @@ public class BaseWidgetItem
         }
     }
 
-    public WidgetType Type { get; set; }
-
-    public int IndexTag { get; set; }
-
     protected BaseWidgetSettings widgetSettings = null!;
     public BaseWidgetSettings Settings
     {
-        get {
-            if (widgetSettings is null)
-            {
-                throw new NullReferenceException();
-            }
-            return Type switch
-            {
-                WidgetType.Clock => (ClockWidgetSettings)widgetSettings,
-                WidgetType.CPU => (CPUWidgetSettings)widgetSettings,
-                WidgetType.Disk => (DiskWidgetSettings)widgetSettings,
-                WidgetType.FolderView => (FolderViewWidgetSettings)widgetSettings,
-                WidgetType.Network => (NetworkWidgetSettings)widgetSettings,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-        }
+        get => Type switch
+        {
+            WidgetType.Clock => (ClockWidgetSettings)widgetSettings,
+            WidgetType.CPU => (CPUWidgetSettings)widgetSettings,
+            WidgetType.Disk => (DiskWidgetSettings)widgetSettings,
+            WidgetType.FolderView => (FolderViewWidgetSettings)widgetSettings,
+            WidgetType.Network => (NetworkWidgetSettings)widgetSettings,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
         set => widgetSettings = value;
     }
 }
@@ -47,14 +41,20 @@ public class BaseWidgetItem
 [JsonConverter(typeof(JsonWidgetItemConverter))]
 public class JsonWidgetItem : BaseWidgetItem
 {
-    public PointInt32 Position { get; set; }
+    public required PointInt32 Position { get; set; }
 
-    public WidgetSize Size { get; set; }
+    public required WidgetSize Size { get; set; }
+
+    public new required BaseWidgetSettings Settings
+    {
+        get => base.Settings;
+        set => base.Settings = value;
+    }
 }
 
 public class DashboardWidgetItem : BaseWidgetItem
 {
-    public string? Label { get; set; }
+    public required string Label { get; set; }
 
     public string? Description { get; set; }
 

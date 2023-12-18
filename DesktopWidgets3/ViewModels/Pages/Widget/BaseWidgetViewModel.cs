@@ -2,6 +2,7 @@
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
+using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Windows;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -12,7 +13,7 @@ using static DesktopWidgets3.Services.DialogService;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
-public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavigationAware where T : new()
+public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavigationAware, IWidgetSettings where T : new()
 {
     protected MenuFlyout RightTappedMenu
     {
@@ -45,7 +46,9 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     #region abstract methods
 
-    protected abstract void LoadWidgetSettings(T settings);
+    protected abstract void LoadSettings(T settings);
+
+    protected abstract T GetSettings();
 
     #endregion
 
@@ -58,20 +61,20 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     #endregion
 
-    #region navigation aware interface
+    #region interfaces
 
     public void OnNavigatedTo(object parameter)
     {
         if (parameter is T settings)
         {
-            LoadWidgetSettings(settings);
+            LoadSettings(settings);
             _isInitialized = true;
             return;
         }
 
         if (!_isInitialized)
         {
-            LoadWidgetSettings(new T());
+            LoadSettings(new T());
             _isInitialized = true;
         }
     }
@@ -80,6 +83,8 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
     {
 
     }
+
+    public BaseWidgetSettings GetWidgetSettings() => GetWidgetSettings();
 
     #endregion
 

@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using WinUIEx.Messaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.ViewModels;
-using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -54,9 +53,11 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region page view model
+    #region page view model & settings
 
     public ObservableRecipient? PageViewModel { get; private set; }
+
+    public BaseWidgetSettings Settings => ((IWidgetSettings)PageViewModel!).GetWidgetSettings();
 
     #endregion
 

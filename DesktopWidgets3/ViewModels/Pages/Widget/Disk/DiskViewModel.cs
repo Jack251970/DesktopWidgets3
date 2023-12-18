@@ -30,9 +30,17 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     #region abstract methods
 
-    protected override void LoadWidgetSettings(DiskWidgetSettings settings)
+    protected override void LoadSettings(DiskWidgetSettings settings)
     {
         
+    }
+
+    protected override DiskWidgetSettings GetSettings()
+    {
+        return new DiskWidgetSettings()
+        {
+
+        };
     }
 
     #endregion

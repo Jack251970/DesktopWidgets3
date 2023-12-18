@@ -390,7 +390,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region abstract methods
 
-    protected async override void LoadWidgetSettings(FolderViewWidgetSettings settings)
+    protected async override void LoadSettings(FolderViewWidgetSettings settings)
     {
         var needRefresh = false;
 
@@ -422,6 +422,17 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             await RefreshFileList(false, FolderPathIcon, FolderPathIconOverlay);
         }
+    }
+
+    protected override FolderViewWidgetSettings GetSettings()
+    {
+        return new FolderViewWidgetSettings()
+        {
+            ShowIconOverlay = ShowIconOverlay,
+            ShowHiddenFile = ShowHiddenFile,
+            FolderPath = FolderPath,
+            AllowNavigation = AllowNavigation,
+        };
     }
 
     #endregion

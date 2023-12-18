@@ -38,4 +38,35 @@ public class WidgetResourceService : IWidgetResourceService
             _ => new WidgetSize(318, 200),
         };
     }
+
+    public BaseWidgetSettings GetDefaultSettings(WidgetType widgetType)
+    {
+        return widgetType switch
+        {
+            WidgetType.Clock => new ClockWidgetSettings()
+            {
+                ShowSeconds = true,
+            },
+            WidgetType.CPU => new CPUWidgetSettings()
+            {
+
+            },
+            WidgetType.Disk => new DiskWidgetSettings()
+            {
+
+            },
+            WidgetType.FolderView => new FolderViewWidgetSettings()
+            {
+                FolderPath = "C:\\",
+                ShowIconOverlay = true,
+                ShowHiddenFile = false,
+                AllowNavigation = true,
+            },
+            WidgetType.Network => new NetworkWidgetSettings()
+            {
+                ShowBps = false,
+            },
+            _ => throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null),
+        };
+    }
 }

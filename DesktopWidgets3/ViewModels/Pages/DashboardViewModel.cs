@@ -78,7 +78,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 
     internal async void AllWidgetsItemClick(WidgetType widgetType)
     {
-        await _widgetManagerService.EnableWidget(widgetType, null);
+        await _widgetManagerService.AddWidget(widgetType);
 
         var widgetItem = _widgetManagerService.GetCurrentEnabledWidget();
         widgetItem.IsEnabled = true;

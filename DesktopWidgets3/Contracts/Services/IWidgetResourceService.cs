@@ -11,4 +11,6 @@ public interface IWidgetResourceService
     WidgetSize GetDefaultSize(WidgetType widgetType);
 
     WidgetSize GetMinSize(WidgetType widgetType);
+
+    BaseWidgetSettings GetDefaultSettings(WidgetType widgetType);
 }

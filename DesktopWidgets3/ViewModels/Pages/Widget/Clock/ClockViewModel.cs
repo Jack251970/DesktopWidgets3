@@ -38,7 +38,7 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
 
     #region abstract methods
 
-    protected override void LoadWidgetSettings(ClockWidgetSettings settings)
+    protected override void LoadSettings(ClockWidgetSettings settings)
     {
         if (settings.ShowSeconds != (timingFormat == "T"))
         {
@@ -46,6 +46,14 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
         }
 
         SystemTime = DateTime.Now.ToString(timingFormat);
+    }
+
+    protected override ClockWidgetSettings GetSettings()
+    {
+        return new ClockWidgetSettings
+        {
+            ShowSeconds = timingFormat == "T"
+        };
     }
 
     #endregion

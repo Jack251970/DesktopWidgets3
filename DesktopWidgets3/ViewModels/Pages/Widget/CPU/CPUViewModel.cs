@@ -30,9 +30,17 @@ public partial class CPUViewModel : BaseWidgetViewModel<CPUWidgetSettings>, IWid
 
     #region abstract methods
 
-    protected override void LoadWidgetSettings(CPUWidgetSettings settings)
+    protected override void LoadSettings(CPUWidgetSettings settings)
     {
         
+    }
+
+    protected override CPUWidgetSettings GetSettings()
+    {
+        return new CPUWidgetSettings()
+        {
+
+        };
     }
 
     #endregion

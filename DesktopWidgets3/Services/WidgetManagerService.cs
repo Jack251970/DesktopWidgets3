@@ -64,56 +64,55 @@ public class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public async Task EnableWidget(WidgetType widgetType, int? indexTag)
+    public async Task AddWidget(WidgetType widgetType)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
 
         // find index tag
-        var sameTypeWidgets = widgetList.Where(x => x.Type == widgetType);
-        JsonWidgetItem? widget = null;
-        if (indexTag == null)
+        var indexTags = widgetList.Where(x => x.Type == widgetType).Select(x => x.IndexTag).ToList();
+        indexTags.Sort();
+        var indexTag = 0;
+        foreach (var tag in indexTags)
         {
-            var indexTags = sameTypeWidgets.Select(x => x.IndexTag).ToList();
-            indexTags.Sort();
-            indexTag = 0;
-            foreach (var tag in indexTags)
+            if (tag != indexTag)
             {
-                if (tag != indexTag)
-                {
-                    break;
-                }
-                indexTag++;
+                break;
             }
-        }
-        else
-        {
-            widget = sameTypeWidgets.FirstOrDefault(x => x.IndexTag == indexTag);
+            indexTag++;
         }
 
         // save widget item
-        if (widget == null)
+        var widget = new JsonWidgetItem()
         {
-            widget = new JsonWidgetItem()
-            {
-                Type = widgetType,
-                IndexTag = (int)indexTag,
-                IsEnabled = true,
-                Position = new PointInt32(-1, -1),
-                Size = _widgetResourceService.GetDefaultSize(widgetType),
-            };
-            await _appSettingsService.UpdateWidgetsList(widget);
-        }
-        else
-        {
-            if (!widget.IsEnabled)
-            {
-                widget.IsEnabled = true;
-                await _appSettingsService.UpdateWidgetsList(widget);
-            }
-        }
+            Type = widgetType,
+            IndexTag = indexTag,
+            IsEnabled = true,
+            Position = new PointInt32(-1, -1),
+            Size = _widgetResourceService.GetDefaultSize(widgetType),
+            Settings = _widgetResourceService.GetDefaultSettings(widgetType),
+        };
+        await _appSettingsService.UpdateWidgetsList(widget);
 
         // create widget window
         await CreateWidgetWindow(widget);
+    }
+
+    public async Task EnableWidget(WidgetType widgetType, int indexTag)
+    {
+        var widgetList = await _appSettingsService.GetWidgetsList();
+
+        // find target widget
+        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+
+        if (widget != null && !widget.IsEnabled)
+        {
+            // update widget item
+            widget.IsEnabled = true;
+            await _appSettingsService.UpdateWidgetsList(widget);
+
+            // create widget window
+            await CreateWidgetWindow(widget);
+        }
     }
 
     public async Task DisableWidget(WidgetType widgetType, int indexTag)
@@ -122,36 +121,21 @@ public class WidgetManagerService : IWidgetManagerService
         if (widgetWindow != null)
         {
             var widgetList = await _appSettingsService.GetWidgetsList();
+
+            // find target widget
             var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
 
-            if (widget != null)
+            if (widget != null && widget.IsEnabled)
             {
-                if (widget.IsEnabled)
-                {
-                    widget.IsEnabled = false;
-                    await _appSettingsService.UpdateWidgetsList(widget);
-                }
-            }
-            else
-            {
-                widget = new JsonWidgetItem()
-                {
-                    Type = widgetType,
-                    IndexTag = indexTag,
-                    IsEnabled = false,
-                    Position = widgetWindow.Position,
-                    Size = widgetWindow.Size,
-                };
+                // update widget item
+                widget.IsEnabled = false;
                 await _appSettingsService.UpdateWidgetsList(widget);
-            }
 
-            await CloseWidgetWindow(widgetWindow);
+                // close widget window
+                await CloseWidgetWindow(widgetWindow);
 
-            var sameTypeWidgets = WidgetsList.Count(x => x.WidgetType == widgetType);
-            if (sameTypeWidgets == 0)
-            {
-                _timersService.StopTimer(widgetType);
-                _systemInfoService.StopMonitor(widgetType);
+                // stop monitor and timer if no more widgets of this type
+                CheckMonitorAndTimer(widgetType);
             }
         }
     }
@@ -159,29 +143,29 @@ public class WidgetManagerService : IWidgetManagerService
     public async Task DeleteWidget(WidgetType widgetType, int indexTag)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
+
+        // find target widget
         var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
 
+        // update widget item
         widget ??= new JsonWidgetItem()
         {
             Type = widgetType,
             IndexTag = indexTag,
-            IsEnabled = true,
             Position = new PointInt32(-1, -1),
             Size = _widgetResourceService.GetDefaultSize(widgetType),
+            Settings = _widgetResourceService.GetDefaultSettings(widgetType),
         };
         await _appSettingsService.DeleteWidgetsList(widget);
 
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
         if (widgetWindow != null)
         {
+            // close widget window
             await CloseWidgetWindow(widgetWindow);
 
-            var sameTypeWidgets = WidgetsList.Count(x => x.WidgetType == widgetType);
-            if (sameTypeWidgets == 0)
-            {
-                _timersService.StopTimer(widgetType);
-                _systemInfoService.StopMonitor(widgetType);
-            }
+            // stop monitor and timer if no more widgets of this type
+            CheckMonitorAndTimer(widgetType);
         }
     }
 
@@ -190,11 +174,12 @@ public class WidgetManagerService : IWidgetManagerService
         var widgetsList = new List<WidgetWindow>(WidgetsList);
         foreach (var widgetWindow in widgetsList)
         {
+            // close widget window
             await CloseWidgetWindow(widgetWindow);
         }
 
-        var allWidgetType = Enum.GetValues(typeof(WidgetType));
-        foreach (WidgetType widgetType in allWidgetType)
+        // stop all monitors and timers
+        foreach (WidgetType widgetType in Enum.GetValues(typeof(WidgetType)))
         {
             _timersService.StopTimer(widgetType);
             _systemInfoService.StopMonitor(widgetType);
@@ -259,6 +244,16 @@ public class WidgetManagerService : IWidgetManagerService
         WidgetsList.Remove(widgetWindow);
     }
 
+    private void CheckMonitorAndTimer(WidgetType widgetType)
+    {
+        var sameTypeWidgets = WidgetsList.Count(x => x.WidgetType == widgetType);
+        if (sameTypeWidgets == 0)
+        {
+            _timersService.StopTimer(widgetType);
+            _systemInfoService.StopMonitor(widgetType);
+        }
+    }
+
     private WidgetWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
     {
         foreach (var widgetWindow in WidgetsList)
@@ -309,6 +304,7 @@ public class WidgetManagerService : IWidgetManagerService
             dashboardItemList.Add(new DashboardWidgetItem()
             {
                 Type = widgetType,
+                IndexTag = 0,
                 Label = _widgetResourceService.GetWidgetLabel(widgetType),
                 Icon = _widgetResourceService.GetWidgetIconSource(widgetType),
             });
@@ -374,6 +370,7 @@ public class WidgetManagerService : IWidgetManagerService
                 IsEnabled = true,
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
+                Settings = widgetWindow.Settings,
             };
             originalWidgetList.Add(widget);
 
@@ -424,6 +421,7 @@ public class WidgetManagerService : IWidgetManagerService
                 IsEnabled = true,
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
+                Settings = widgetWindow.Settings,
             };
             widgetList.Add(widget);
         }

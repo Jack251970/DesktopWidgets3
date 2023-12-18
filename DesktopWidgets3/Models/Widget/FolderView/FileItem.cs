@@ -9,12 +9,8 @@ public class BaseFileItem
     public required string FilePath { get; set; }
 }
 
-public class FolderViewFileItem : BaseWidgetItem
+public class FolderViewFileItem : BaseFileItem
 {
-    public required string FileName { get; set; }
-
-    public required string FilePath { get; set; }
-
     public required FileType FileType { get; set; }
 
     public BitmapImage? Icon { get; set; } = null;

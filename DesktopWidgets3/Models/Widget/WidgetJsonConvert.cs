@@ -30,7 +30,7 @@ public class JsonWidgetItemConverter : JsonConverter
                 WidgetType.Disk => jsonObject["Settings"]!.ToObject<DiskWidgetSettings>(serializer)!,
                 WidgetType.FolderView => jsonObject["Settings"]!.ToObject<FolderViewWidgetSettings>(serializer)!,
                 WidgetType.Network => jsonObject["Settings"]!.ToObject<NetworkWidgetSettings>(serializer)!,
-                _ => throw new ArgumentOutOfRangeException(),
+                _ => throw new ArgumentOutOfRangeException(nameof(reader), reader, null)
             },
         };
 
