@@ -118,7 +118,7 @@ public sealed partial class WidgetWindow : WindowEx
         SystemHelper.HideWindowIconFromTaskbar(_handle);
 
         // Get view model of current page
-        PageViewModel = ShellPage.Frame!.GetPageViewModel() as ObservableRecipient;
+        PageViewModel = ShellPage.NavigationFrame.GetPageViewModel() as ObservableRecipient;
 
         // Set window to bottom of other windows
         SystemHelper.SetWindowZPos(_handle, SystemHelper.WINDOWZPOS.ONBOTTOM);

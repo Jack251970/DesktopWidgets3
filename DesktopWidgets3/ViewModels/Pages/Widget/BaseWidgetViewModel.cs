@@ -84,7 +84,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     }
 
-    public BaseWidgetSettings GetWidgetSettings() => GetWidgetSettings();
+    public BaseWidgetSettings GetWidgetSettings() => (GetSettings() as BaseWidgetSettings)!;
 
     #endregion
 
