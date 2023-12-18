@@ -6,6 +6,12 @@ public class HardwareMonitor
 {
     #region monitor options
 
+    public bool CpuEnabled
+    {
+        get => _computer.IsCpuEnabled;
+        set => _computer.IsCpuEnabled = value;
+    }
+
     public bool GpuEnabled
     {
         get => _computer.IsGpuEnabled;
@@ -18,15 +24,18 @@ public class HardwareMonitor
         set => _computer.IsNetworkEnabled = value;
     }
 
+    public bool MemoryEnabled
+    {
+        get => _computer.IsMemoryEnabled;
+        set => _computer.IsMemoryEnabled = value;
+    }
+
     #endregion
 
     private readonly Computer _computer = new();
     private readonly UpdateVisitor _updateVisitor = new();
 
     private IList<IHardware> Hardware => _computer.Hardware;
-
-    private readonly string UploadSpeedSensorName = "Upload Speed";
-    private readonly string DownloadSpeedSensorName = "Download Speed";
 
     public HardwareMonitor() { }
 
@@ -45,7 +54,46 @@ public class HardwareMonitor
         _computer.Accept(_updateVisitor);
     }
 
-    public (float UploadSpeed, float DownloadSpeed) GetNetworkSpeed()
+    #region cpu info
+
+    private readonly string CpuTotalName = "CPU Total";
+
+    /// <summary>
+    /// Get cpu infomation.
+    /// </summary>
+    public float GetCpuInfo()
+    {
+        if (CpuEnabled)
+        {
+            float cpuTotal = 0;
+
+            foreach (var hardware in Hardware)
+            {
+                foreach (var sensor in hardware.Sensors)
+                {
+                    if (sensor.Name == CpuTotalName && sensor.Value != null)
+                    {
+                        cpuTotal = (float)sensor.Value;
+                    }
+                }
+            }
+
+            return cpuTotal;
+        }
+        return 0;
+    }
+
+    #endregion
+
+    #region network info
+
+    private readonly string UploadSpeedSensorName = "Upload Speed";
+    private readonly string DownloadSpeedSensorName = "Download Speed";
+
+    /// <summary>
+    /// Get network infomation in K/s unit.
+    /// </summary>
+    public (float UploadSpeed, float DownloadSpeed) GetNetworkInfo()
     {
         if (NetworkEnabled)
         {
@@ -71,6 +119,45 @@ public class HardwareMonitor
         }
         return (0, 0);
     }
+
+    #endregion
+
+    #region memory info
+
+    private readonly string MemoryUsedName = "Memory Used";
+    private readonly string MemoryAvailableName = "Memory Available";
+
+    /// <summary>
+    /// Get memory infomation in GB unit.
+    /// </summary>
+    public (float UsedMemory, float AvailableMemory) GetMemoryInfo()
+    {
+        if (MemoryEnabled)
+        {
+            float memoryUsed = 0;
+            float memoryAvailable = 0;
+
+            foreach (var hardware in Hardware)
+            {
+                foreach (var sensor in hardware.Sensors)
+                {
+                    if (sensor.Name == MemoryUsedName && sensor.Value != null)
+                    {
+                        memoryUsed = (float)sensor.Value;
+                    }
+                    else if (sensor.Name == MemoryAvailableName && sensor.Value != null)
+                    {
+                        memoryAvailable = (float)sensor.Value;
+                    }
+                }
+            }
+
+            return (memoryUsed, memoryAvailable);
+        }
+        return (0, 0);
+    }
+
+    #endregion
 }
 
 internal class UpdateVisitor : IVisitor

@@ -79,7 +79,7 @@ public class SystemInfoService : ISystemInfoService
 
     public (string UploadSpeed, string DownloadSpeed) GetNetworkSpeed(bool showBps)
     {
-        var (uploadSpeed, downloadSpeed) = hardwareMonitor.GetNetworkSpeed();
+        var (uploadSpeed, downloadSpeed) = hardwareMonitor.GetNetworkInfo();
 
         return (FormatSpeed(uploadSpeed, showBps), FormatSpeed(downloadSpeed, showBps));  
     }
