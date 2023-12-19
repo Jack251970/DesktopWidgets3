@@ -118,31 +118,29 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         // TODO: Add changed event and NotifyFilters.LastWrite notify filter
     }
 
-    private async void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
+    private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
     {
-        var filePath = e.FullPath;
-        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden))
+        var path = e.FullPath;
+        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden))
         {
             return;
         }
 
-        var isDirectory = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Directory);
-        // TODO: Cannot get icon here?
-        var (icon, iconOverlay) = await GetIcon(filePath, isDirectory);
-        var item = new FolderViewFileItem()
-        {
-            FileName = Path.GetFileName(filePath),
-            FilePath = filePath,
-            FileType = isDirectory ? FileType.Folder : FileType.File,
-            Icon = icon,
-            IconOverlay = iconOverlay,
-        };
-
+        var isDirectory = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Directory);
         var directories = GetDirectories();
         if (isDirectory)
         {
-            var index = directories.ToList().IndexOf(filePath);
-            RunOnDispatcherQueue(async () => { 
+            var index = directories.ToList().IndexOf(path);
+            RunOnDispatcherQueue(async () => {
+                var (fileIcon, fileIconOverlay) = await GetIcon(path, true);
+                var item = new FolderViewFileItem()
+                {
+                    FileName = Path.GetFileName(path),
+                    FilePath = path,
+                    FileType = FileType.Folder,
+                    Icon = fileIcon,
+                    IconOverlay = fileIconOverlay,
+                };
                 FolderViewFileItems.Insert(index, item);
                 await RefreshFolderIcon();
             });
@@ -150,8 +148,17 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         else
         {
             var files = GetFiles();
-            var index = directories.Length + files.ToList().IndexOf(filePath);
-            RunOnDispatcherQueue(async () => { 
+            var index = directories.Length + files.ToList().IndexOf(path);
+            RunOnDispatcherQueue(async () => {
+                var (fileIcon, fileIconOverlay) = await GetIcon(path, false);
+                var item = new FolderViewFileItem()
+                {
+                    FileName = Path.GetFileName(path),
+                    FilePath = path,
+                    FileType = FileType.File,
+                    Icon = fileIcon,
+                    IconOverlay = fileIconOverlay,
+                };
                 FolderViewFileItems.Insert(index, item);
                 await RefreshFolderIcon();
             });
@@ -160,13 +167,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private void FileSystemWatcher_Deleted(object sender, FileSystemEventArgs e)
     {
-        var filePath = e.FullPath;
-        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden))
+        var path = e.FullPath;
+        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden))
         {
             return;
         }
 
-        var item = FolderViewFileItems.FirstOrDefault(item => item.FilePath == filePath);
+        var item = FolderViewFileItems.FirstOrDefault(item => item.FilePath == path);
         if (item != null)
         {
             var index = FolderViewFileItems.IndexOf(item);
@@ -179,18 +186,18 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private void FileSystemWatcher_Renamed(object sender, RenamedEventArgs e)
     {
-        var oldFilePath = e.OldFullPath;
-        var filePath = e.FullPath;
-        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden))
+        var oldPath = e.OldFullPath;
+        var path = e.FullPath;
+        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden))
         {
             return;
         }
 
-        var item = FolderViewFileItems.FirstOrDefault(item => item.FilePath == oldFilePath);
+        var item = FolderViewFileItems.FirstOrDefault(item => item.FilePath == oldPath);
         if (item != null)
         {
-            item.FileName = Path.GetFileName(filePath);
-            item.FilePath = filePath;
+            item.FileName = Path.GetFileName(path);
+            item.FilePath = path;
 
             var oldIndex = FolderViewFileItems.IndexOf(item);
 
@@ -198,7 +205,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             var directories = GetDirectories();
             if (isDirectory)
             {
-                var index = directories.ToList().IndexOf(filePath);
+                var index = directories.ToList().IndexOf(path);
                 RunOnDispatcherQueue(async () =>
                 {
                     FolderViewFileItems.RemoveAt(oldIndex);
@@ -209,7 +216,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             else
             {
                 var files = GetFiles();
-                var index = directories.Length + files.ToList().IndexOf(filePath);
+                var index = directories.Length + files.ToList().IndexOf(path);
                 RunOnDispatcherQueue(async () =>
                 {
                     FolderViewFileItems.RemoveAt(oldIndex);
@@ -331,8 +338,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (pushFolderPath)
         {
             navigationFolderPaths.Push(CurFolderPath);
+            IsNavigateBackExecutable = navigationFolderPaths.Count > 0;
         }
-        IsNavigateBackExecutable = navigationFolderPaths.Count > 0;
         IsNavigateUpExecutable = curParentFolderPath != null;
 
         FolderViewFileItems.Clear();
