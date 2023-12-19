@@ -3,7 +3,7 @@ using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
 
-namespace DesktopWidgets3.ViewModels.Pages.Widget.Network;
+namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
 public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSettings>, IWidgetUpdate, IWidgetClose
 {

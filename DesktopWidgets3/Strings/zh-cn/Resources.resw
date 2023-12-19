@@ -183,8 +183,8 @@
   <data name="Widget_Clock_Label" xml:space="preserve">
     <value>时钟</value>
   </data>
-  <data name="Widget_CPU_Label" xml:space="preserve">
-    <value>CPU与内存</value>
+  <data name="Widget_Performance_Label" xml:space="preserve">
+    <value>性能</value>
   </data>
   <data name="Widget_Disk_Label" xml:space="preserve">
     <value>磁盘</value>

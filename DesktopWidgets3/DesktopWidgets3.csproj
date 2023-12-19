@@ -44,10 +44,10 @@
     <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\EditModeOverlayPage.xaml" />
     <None Remove="Views\Pages\Widget\Clock\ClockPage.xaml" />
-    <None Remove="Views\Pages\Widget\CPU\CPUPage.xaml" />
     <None Remove="Views\Pages\Widget\Disk\DiskPage.xaml" />
     <None Remove="Views\Pages\Widget\FolderView\FolderViewPage.xaml" />
     <None Remove="Views\Pages\Widget\Disk\NetworkPage.xaml" />
+    <None Remove="Views\Pages\Widget\Performance\PerformancePage.xaml" />
     <None Remove="Views\Pages\Widget\Settings\ClockSettingsPage.xaml" />
     <None Remove="Views\Pages\Widget\Settings\FolderViewSettingsPage.xaml" />
     <None Remove="Views\Windows\OverlayWindow.xaml" />
@@ -120,10 +120,6 @@
     <Page Update="Views\Pages\Widget\Clock\ClockPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\Pages\Widget\CPU\CPUPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Update="Views\Pages\Widget\Disk\DiskPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
@@ -132,6 +128,10 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Pages\Widget\Network\NetworkPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Pages\Widget\Performance\PerformancePage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

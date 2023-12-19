@@ -3,16 +3,16 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Views.Pages.Widget.Settings;
 
-public sealed partial class CPUSettingsPage : Page
+public sealed partial class PerformanceSettingsPage : Page
 {
-    public CPUSettingsViewModel ViewModel
+    public PerformanceSettingsViewModel ViewModel
     {
         get;
     }
 
-    public CPUSettingsPage()
+    public PerformanceSettingsPage()
     {
-        ViewModel = App.GetService<CPUSettingsViewModel>();
+        ViewModel = App.GetService<PerformanceSettingsViewModel>();
         InitializeComponent();
     }
 }

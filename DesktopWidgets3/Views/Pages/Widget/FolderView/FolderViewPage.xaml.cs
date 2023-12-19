@@ -1,11 +1,11 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-using DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using DesktopWidgets3.Models.Widget.FolderView;
 
-namespace DesktopWidgets3.Views.Pages.Widget.FolderView;
+namespace DesktopWidgets3.Views.Pages.Widget;
 
 public sealed partial class FolderViewPage : Page
 {

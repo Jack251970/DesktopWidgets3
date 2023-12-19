@@ -26,7 +26,7 @@ public class JsonWidgetItemConverter : JsonConverter
             Settings = widgetType switch
             {
                 WidgetType.Clock => jsonObject["Settings"]!.ToObject<ClockWidgetSettings>(serializer)!,
-                WidgetType.CPU => jsonObject["Settings"]!.ToObject<CPUWidgetSettings>(serializer)!,
+                WidgetType.Performance => jsonObject["Settings"]!.ToObject<PerformanceWidgetSettings>(serializer)!,
                 WidgetType.Disk => jsonObject["Settings"]!.ToObject<DiskWidgetSettings>(serializer)!,
                 WidgetType.FolderView => jsonObject["Settings"]!.ToObject<FolderViewWidgetSettings>(serializer)!,
                 WidgetType.Network => jsonObject["Settings"]!.ToObject<NetworkWidgetSettings>(serializer)!,

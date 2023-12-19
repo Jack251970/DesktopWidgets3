@@ -1,20 +1,20 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-using DesktopWidgets3.ViewModels.Pages.Widget.CPU;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using Microsoft.UI.Xaml.Input;
 
-namespace DesktopWidgets3.Views.Pages.Widget.CPU;
+namespace DesktopWidgets3.Views.Pages.Widget;
 
-public sealed partial class CPUPage : Page
+public sealed partial class PerformancePage : Page
 {
-    public CPUViewModel ViewModel
+    public PerformanceViewModel ViewModel
     {
         get;
     }
 
-    public CPUPage()
+    public PerformancePage()
     {
-        ViewModel = App.GetService<CPUViewModel>();
+        ViewModel = App.GetService<PerformanceViewModel>();
         InitializeComponent();
     }
 

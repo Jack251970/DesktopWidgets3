@@ -195,8 +195,8 @@
   <data name="Widget_Clock_Label" xml:space="preserve">
     <value>Clock</value>
   </data>
-  <data name="Widget_CPU_Label" xml:space="preserve">
-    <value>CPU &amp; Memory</value>
+  <data name="Widget_Performance_Label" xml:space="preserve">
+    <value>Performance</value>
   </data>
   <data name="Widget_Disk_Label" xml:space="preserve">
     <value>Disk</value>

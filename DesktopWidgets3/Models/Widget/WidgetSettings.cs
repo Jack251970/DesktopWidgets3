@@ -20,15 +20,6 @@ public class ClockWidgetSettings : BaseWidgetSettings
     }
 }
 
-public class CPUWidgetSettings : BaseWidgetSettings
-{
-    public override BaseWidgetSettings Clone()
-    {
-        var clone = (CPUWidgetSettings)base.Clone();
-        return clone;
-    }
-}
-
 public class DiskWidgetSettings : BaseWidgetSettings
 {
     public override BaseWidgetSettings Clone()
@@ -67,6 +58,15 @@ public class NetworkWidgetSettings : BaseWidgetSettings
     {
         var clone = (NetworkWidgetSettings)base.Clone();
         clone.ShowBps = ShowBps;
+        return clone;
+    }
+}
+
+public class PerformanceWidgetSettings : BaseWidgetSettings
+{
+    public override BaseWidgetSettings Clone()
+    {
+        var clone = (PerformanceWidgetSettings)base.Clone();
         return clone;
     }
 }

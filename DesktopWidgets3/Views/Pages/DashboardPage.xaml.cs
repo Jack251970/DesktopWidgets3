@@ -87,8 +87,8 @@ public sealed partial class DashboardPage : Page
                 case WidgetType.Clock:
                     _navigationService.NavigateTo(typeof(ClockSettingsViewModel).FullName!, parameter);
                     break;
-                case WidgetType.CPU:
-                    _navigationService.NavigateTo(typeof(CPUSettingsViewModel).FullName!, parameter);
+                case WidgetType.Performance:
+                    _navigationService.NavigateTo(typeof(PerformanceSettingsViewModel).FullName!, parameter);
                     break;
                 case WidgetType.Disk:
                     _navigationService.NavigateTo(typeof(DiskSettingsViewModel).FullName!, parameter);

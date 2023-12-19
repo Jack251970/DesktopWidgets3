@@ -47,7 +47,7 @@ public class WidgetResourceService : IWidgetResourceService
             {
                 ShowSeconds = true,
             },
-            WidgetType.CPU => new CPUWidgetSettings()
+            WidgetType.Performance => new PerformanceWidgetSettings()
             {
 
             },

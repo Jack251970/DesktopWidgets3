@@ -4,7 +4,7 @@ using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
-public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IWidgetUpdate, IWidgetClose
+public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
     #region observable properties
 
@@ -16,28 +16,28 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     private readonly ITimersService _timersService;
 
-    public DiskViewModel(ITimersService timersService)
+    public PerformanceViewModel(ITimersService timersService)
     {
         _timersService = timersService;
 
-        timersService.AddTimerAction(WidgetType.Disk, UpdateDisk);
+        timersService.AddTimerAction(WidgetType.Performance, UpdatePerformance);
     }
 
-    private void UpdateDisk()
+    private void UpdatePerformance()
     {
         RunOnDispatcherQueue(() => { });
     }
 
     #region abstract methods
 
-    protected override void LoadSettings(DiskWidgetSettings settings)
+    protected override void LoadSettings(PerformanceWidgetSettings settings)
     {
         
     }
 
-    protected override DiskWidgetSettings GetSettings()
+    protected override PerformanceWidgetSettings GetSettings()
     {
-        return new DiskWidgetSettings()
+        return new PerformanceWidgetSettings()
         {
 
         };
@@ -51,18 +51,18 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
     {
         if (enable)
         {
-            _timersService.StartTimer(WidgetType.Disk);
+            _timersService.StartTimer(WidgetType.Performance);
         }
         else
         {
-            _timersService.StopTimer(WidgetType.Disk);
+            _timersService.StopTimer(WidgetType.Performance);
         }
         await Task.CompletedTask;
     }
 
     public void WidgetWindow_Closing()
     {
-        _timersService.RemoveTimerAction(WidgetType.Disk, UpdateDisk);
+        _timersService.RemoveTimerAction(WidgetType.Performance, UpdatePerformance);
     }
 
     #endregion

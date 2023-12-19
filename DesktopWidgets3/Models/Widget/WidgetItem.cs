@@ -28,7 +28,7 @@ public class BaseWidgetItem
         get => Type switch
         {
             WidgetType.Clock => (ClockWidgetSettings)widgetSettings,
-            WidgetType.CPU => (CPUWidgetSettings)widgetSettings,
+            WidgetType.Performance => (PerformanceWidgetSettings)widgetSettings,
             WidgetType.Disk => (DiskWidgetSettings)widgetSettings,
             WidgetType.FolderView => (FolderViewWidgetSettings)widgetSettings,
             WidgetType.Network => (NetworkWidgetSettings)widgetSettings,

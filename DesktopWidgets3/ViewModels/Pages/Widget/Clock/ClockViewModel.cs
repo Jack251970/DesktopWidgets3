@@ -3,7 +3,7 @@ using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
 
-namespace DesktopWidgets3.ViewModels.Pages.Widget.Clock;
+namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
 public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, IWidgetUpdate, IWidgetClose
 {

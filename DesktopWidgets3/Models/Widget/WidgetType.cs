@@ -3,8 +3,8 @@
 public enum WidgetType
 {
     Clock,
-    CPU,
     Disk,
     FolderView,
     Network,
+    Performance,
 }

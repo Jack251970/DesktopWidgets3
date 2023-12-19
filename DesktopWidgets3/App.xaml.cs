@@ -1,4 +1,6 @@
 ﻿using H.NotifyIcon;
+
+using Microsoft.UI.Dispatching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -7,28 +9,17 @@ using DesktopWidgets3.Activation;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Core.Contracts.Services;
 using DesktopWidgets3.Core.Services;
+using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
 using DesktopWidgets3.Notifications;
 using DesktopWidgets3.Services;
-using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.Views.Pages;
-using DesktopWidgets3.Views.Windows;
-using DesktopWidgets3.ViewModels.Pages.Widget.Clock;
-using DesktopWidgets3.Views.Pages.Widget.Clock;
-using DesktopWidgets3.Views.Pages.Widget.FolderView;
-using DesktopWidgets3.ViewModels.Pages.Widget.FolderView;
 using DesktopWidgets3.Views.Pages.Widget;
+using DesktopWidgets3.Views.Pages.Widget.Settings;
+using DesktopWidgets3.Views.Windows;
+using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
-using DesktopWidgets3.Views.Pages.Widget.Settings;
-using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Views.Pages.Widget.CPU;
-using DesktopWidgets3.ViewModels.Pages.Widget.CPU;
-using DesktopWidgets3.ViewModels.Pages.Widget.Disk;
-using DesktopWidgets3.Views.Pages.Widget.Disk;
-using DesktopWidgets3.Views.Pages.Widget.Network;
-using DesktopWidgets3.ViewModels.Pages.Widget.Network;
-using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3;
 
@@ -70,7 +61,10 @@ public partial class App : Application
     {
         // Check if app is already running
 #if DEBUG
-        if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), false)) { }
+        if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), false))
+        {
+            // Do nothing here to let the debug app run
+        }
 #else
         if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), true))
         {
@@ -165,8 +159,8 @@ public partial class App : Application
             services.AddTransient<DashboardPage>();
             services.AddTransient<ClockSettingsViewModel>();
             services.AddTransient<ClockSettingsPage>();
-            services.AddTransient<CPUSettingsViewModel>();
-            services.AddTransient<CPUSettingsPage>();
+            services.AddTransient<PerformanceSettingsViewModel>();
+            services.AddTransient<PerformanceSettingsPage>();
             services.AddTransient<DiskSettingsViewModel>();
             services.AddTransient<DiskSettingsPage>();
             services.AddTransient<FolderViewSettingsViewModel>();
@@ -181,8 +175,8 @@ public partial class App : Application
             services.AddTransient<EditModeOverlayViewModel>();
             services.AddTransient<ClockViewModel>();
             services.AddTransient<ClockPage>();
-            services.AddTransient<CPUViewModel>();
-            services.AddTransient<CPUPage>();
+            services.AddTransient<PerformanceViewModel>();
+            services.AddTransient<PerformancePage>();
             services.AddTransient<DiskViewModel>();
             services.AddTransient<DiskPage>();
             services.AddTransient<FolderViewViewModel>();
