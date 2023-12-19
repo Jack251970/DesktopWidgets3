@@ -127,6 +127,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
 
         var isDirectory = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Directory);
+        // TODO: Cannot get icon here?
         var (icon, iconOverlay) = await GetIcon(filePath, isDirectory);
         var item = new FolderViewFileItem()
         {
