@@ -137,12 +137,12 @@ public class ContextMenu : Win32ContextMenu, IDisposable
                     shellItems.Add(ShellFolderExtensions.GetShellItemFromPathOrPIDL(filePathItem));
                 }
 
-                return GetContextMenuForFiles(shellItems.ToArray(), flags, owningThread, itemFilter);
+                return GetContextMenuForFiles(shellItems.ToArray(), flags, owningThread, itemFilter)!;
             }
             catch
             {
                 // Return empty context menu
-                return null;
+                return null!;
             }
             finally
             {
@@ -158,7 +158,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
     {
         var owningThread = new ThreadWithMessageQueue();
 
-        return await owningThread.PostMethod<ContextMenu>(() => GetContextMenuForFiles(shellItems, flags, owningThread, itemFilter));
+        return await owningThread.PostMethod<ContextMenu>(() => GetContextMenuForFiles(shellItems, flags, owningThread, itemFilter)!);
     }
 
     private static ContextMenu? GetContextMenuForFiles(ShellItem[] shellItems, Shell32.CMF flags, ThreadWithMessageQueue owningThread, Func<string, bool>? itemFilter = null)
@@ -177,7 +177,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
             var hMenu = User32.CreatePopupMenu();
             menu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, flags);
             var contextMenu = new ContextMenu(menu, hMenu, shellItems.Select(x => x.ParsingName), owningThread, itemFilter);
-            contextMenu.EnumMenuItems(hMenu, contextMenu.Items);
+            contextMenu.EnumMenuItems(hMenu, contextMenu.Items!);
 
             return contextMenu;
         }
@@ -237,7 +237,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
                 menuItem.Label = menuItemInfo.dwTypeData;
                 menuItem.CommandString = GetCommandString(_cMenu, menuItemInfo.wID - 1);
 
-                if (_itemFilter is not null && (_itemFilter(menuItem.CommandString) || _itemFilter(menuItem.Label)))
+                if (_itemFilter is not null && (_itemFilter(menuItem.CommandString!) || _itemFilter(menuItem.Label)))
                 {
                     // Skip items implemented in UWP
                     container.Dispose();
@@ -253,7 +253,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
                         // Make the icon background transparent
                         bitmap.MakeTransparent();
 
-                        var bitmapData = (byte[])new ImageConverter().ConvertTo(bitmap, typeof(byte[]));
+                        var bitmapData = (byte[])new ImageConverter().ConvertTo(bitmap, typeof(byte[]))!;
                         menuItem.Icon = bitmapData;
                     }
                 }
@@ -378,7 +378,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
             if (_cMenu is not null)
             {
                 Marshal.ReleaseComObject(_cMenu);
-                _cMenu = null;
+                _cMenu = null!;
             }
 
             _owningThread.Dispose();
