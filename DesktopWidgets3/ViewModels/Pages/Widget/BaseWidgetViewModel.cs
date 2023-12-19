@@ -63,6 +63,9 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     #region interfaces
 
+    public event EventHandler<object>? NavigatedTo;
+    public event EventHandler? NavigatedFrom;
+
     public void OnNavigatedTo(object parameter)
     {
         if (parameter is T settings)
@@ -71,7 +74,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
             _isInitialized = true;
             return;
         }
-
+        NavigatedTo?.Invoke(this, parameter);
         if (!_isInitialized)
         {
             LoadSettings(new T());
@@ -81,8 +84,12 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     public void OnNavigatedFrom()
     {
-
+        NavigatedFrom?.Invoke(this, EventArgs.Empty);
     }
+
+    #endregion
+
+    #region widget settings
 
     public BaseWidgetSettings GetWidgetSettings() => (GetSettings() as BaseWidgetSettings)!;
 
