@@ -5,6 +5,34 @@ namespace Files.App.Helpers;
 
 public static class PathNormalization
 {
+    public static string GetPathRoot(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            return string.Empty;
+        }
+
+        var rootPath = string.Empty;
+        try
+        {
+            var pathAsUri = new Uri(path.Replace("\\", "/", StringComparison.Ordinal));
+            rootPath = pathAsUri.GetLeftPart(UriPartial.Authority);
+            if (pathAsUri.IsFile && !string.IsNullOrEmpty(rootPath))
+            {
+                rootPath = new Uri(rootPath).LocalPath;
+            }
+        }
+        catch (UriFormatException)
+        {
+        }
+        if (string.IsNullOrEmpty(rootPath))
+        {
+            rootPath = Path.GetPathRoot(path) ?? string.Empty;
+        }
+
+        return rootPath;
+    }
+
     public static string GetParentDir(string path)
     {
         if (string.IsNullOrEmpty(path))
