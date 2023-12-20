@@ -6,11 +6,14 @@ using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Models.Widget.FolderView;
 using DesktopWidgets3.ViewModels.Commands;
+using Files.App;
 using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Files.Core.Data.Items;
 using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Storage;
+using FileAttributes = System.IO.FileAttributes;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -37,7 +40,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region observable properties
 
-    public ObservableCollection<FolderViewFileItem> FolderViewFileItems { get; set; } = new();
+    public ObservableCollection<ListedItem> ListedItems { get; set; } = new();
 
     [ObservableProperty]
     private string _FolderName = string.Empty;
@@ -121,45 +124,48 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
     {
         var path = e.FullPath;
-        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden))
+        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
+        if (!ShowHiddenFile && isHiddenItem)
         {
             return;
         }
 
         var isDirectory = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Directory);
-        var directories = GetDirectories();
+        var directories = GetDirectories(!ShowHiddenFile);
         if (isDirectory)
         {
             var index = directories.ToList().IndexOf(path);
             RunOnDispatcherQueue(async () => {
                 var (fileIcon, fileIconOverlay) = await GetIcon(path, true);
-                var item = new FolderViewFileItem()
+                var item = new ListedItem()
                 {
-                    FileName = Path.GetFileName(path),
-                    FilePath = path,
-                    FileType = FileType.Folder,
-                    Icon = fileIcon,
+                    ItemNameRaw = Path.GetFileName(path),
+                    ItemPath = path,
+                    PrimaryItemAttribute = StorageItemTypes.Folder,
+                    FileImage = fileIcon,
                     IconOverlay = fileIconOverlay,
+                    IsHiddenItem = isHiddenItem,
                 };
-                FolderViewFileItems.Insert(index, item);
+                ListedItems.Insert(index, item);
                 await RefreshFolderIcon();
             });
         }
         else
         {
-            var files = GetFiles();
+            var files = GetFiles(!ShowHiddenFile);
             var index = directories.Length + files.ToList().IndexOf(path);
             RunOnDispatcherQueue(async () => {
                 var (fileIcon, fileIconOverlay) = await GetIcon(path, false);
-                var item = new FolderViewFileItem()
+                var item = new ListedItem()
                 {
-                    FileName = Path.GetFileName(path),
-                    FilePath = path,
-                    FileType = FileType.File,
-                    Icon = fileIcon,
+                    ItemNameRaw = Path.GetFileName(path),
+                    ItemPath = path,
+                    PrimaryItemAttribute = StorageItemTypes.File,
+                    FileImage = fileIcon,
                     IconOverlay = fileIconOverlay,
+                    IsHiddenItem = isHiddenItem,
                 };
-                FolderViewFileItems.Insert(index, item);
+                ListedItems.Insert(index, item);
                 await RefreshFolderIcon();
             });
         }
@@ -168,17 +174,18 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private void FileSystemWatcher_Deleted(object sender, FileSystemEventArgs e)
     {
         var path = e.FullPath;
-        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden))
+        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
+        if (!ShowHiddenFile && isHiddenItem)
         {
             return;
         }
 
-        var item = FolderViewFileItems.FirstOrDefault(item => item.FilePath == path);
+        var item = ListedItems.FirstOrDefault(item => item.ItemPath == path);
         if (item != null)
         {
-            var index = FolderViewFileItems.IndexOf(item);
+            var index = ListedItems.IndexOf(item);
             RunOnDispatcherQueue(async () => {
-                FolderViewFileItems.RemoveAt(index);
+                ListedItems.RemoveAt(index);
                 await RefreshFolderIcon();
             });
         }
@@ -188,39 +195,40 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         var oldPath = e.OldFullPath;
         var path = e.FullPath;
-        if (!ShowHiddenFile && NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden))
+        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
+        if (!ShowHiddenFile && isHiddenItem)
         {
             return;
         }
 
-        var item = FolderViewFileItems.FirstOrDefault(item => item.FilePath == oldPath);
+        var item = ListedItems.FirstOrDefault(item => item.ItemPath == oldPath);
         if (item != null)
         {
-            item.FileName = Path.GetFileName(path);
-            item.FilePath = path;
+            item.ItemNameRaw = Path.GetFileName(path);
+            item.ItemPath = path;
 
-            var oldIndex = FolderViewFileItems.IndexOf(item);
+            var oldIndex = ListedItems.IndexOf(item);
 
-            var isDirectory = item.FileType == FileType.Folder;
-            var directories = GetDirectories();
+            var isDirectory = item.PrimaryItemAttribute == StorageItemTypes.Folder;
+            var directories = GetDirectories(!ShowHiddenFile);
             if (isDirectory)
             {
                 var index = directories.ToList().IndexOf(path);
                 RunOnDispatcherQueue(async () =>
                 {
-                    FolderViewFileItems.RemoveAt(oldIndex);
-                    FolderViewFileItems.Insert(index, item);
+                    ListedItems.RemoveAt(oldIndex);
+                    ListedItems.Insert(index, item);
                     await RefreshFolderIcon();
                 });
             }
             else
             {
-                var files = GetFiles();
+                var files = GetFiles(!ShowHiddenFile);
                 var index = directories.Length + files.ToList().IndexOf(path);
                 RunOnDispatcherQueue(async () =>
                 {
-                    FolderViewFileItems.RemoveAt(oldIndex);
-                    FolderViewFileItems.Insert(index, item);
+                    ListedItems.RemoveAt(oldIndex);
+                    ListedItems.Insert(index, item);
                     await RefreshFolderIcon();
                 });
             }
@@ -342,38 +350,65 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
         IsNavigateUpExecutable = curParentFolderPath != null;
 
-        FolderViewFileItems.Clear();
+        ListedItems.Clear();
 
-        var directories = GetDirectories();
+        var directories = GetDirectories(false);
         foreach (var directory in directories)
         {
             var directoryPath = directory;
             var folderName = Path.GetFileName(directory);
-            var (fileIcon, fileIconOverlay) = await GetIcon(directoryPath, true);
-            FolderViewFileItems.Add(new FolderViewFileItem()
+            var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(directory, FileAttributes.Hidden);
+            if (!ShowHiddenFile && isHiddenItem)
             {
-                FileName = folderName,
-                FilePath = directoryPath,
-                FileType = FileType.Folder,
-                Icon = fileIcon,
+                continue;
+            }
+
+            var (fileIcon, fileIconOverlay) = await GetIcon(directoryPath, true);
+            ListedItems.Add(new ListedItem()
+            {
+                ItemNameRaw = folderName,
+                ItemPath = directoryPath,
+                PrimaryItemAttribute = StorageItemTypes.Folder,
+                FileImage = fileIcon,
                 IconOverlay = fileIconOverlay,
+                IsHiddenItem = isHiddenItem,
             });
         }
 
-        var files = GetFiles();
+        var files = GetFiles(false);
         foreach (var file in files)
         {
             var filePath = file;
             var fileName = Path.GetFileName(file);
-            var (fileIcon, fileIconOverlay) = await GetIcon(filePath, false);
-            FolderViewFileItems.Add(new FolderViewFileItem()
+            var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(filePath, FileAttributes.Hidden);
+            if (!ShowHiddenFile && isHiddenItem)
             {
-                FileName = fileName,
-                FilePath = filePath,
-                FileType = FileType.File,
-                Icon = fileIcon,
+                continue;
+            }
+
+            var (fileIcon, fileIconOverlay) = await GetIcon(filePath, false);
+            ListedItems.Add(new ListedItem()
+            {
+                ItemNameRaw = fileName,
+                ItemPath = filePath,
+                PrimaryItemAttribute = StorageItemTypes.File,
+                FileImage = fileIcon,
                 IconOverlay = fileIconOverlay,
+                IsHiddenItem = isHiddenItem,
             });
+        }
+
+        ResetItemOpacity();
+    }
+
+    public virtual void ResetItemOpacity()
+    {
+        foreach (var item in ListedItems)
+        {
+            if (item is not null)
+            {
+                item.Opacity = item.IsHiddenItem ? Constants.UI.DimItemOpacity : 1.0d;
+            }
         }
     }
 
@@ -394,20 +429,20 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
     }
 
-    private string[] GetDirectories()
+    private string[] GetDirectories(bool removeHidden)
     {
         var directories = Directory.GetDirectories(CurFolderPath);
-        if (!ShowHiddenFile)
+        if (removeHidden)
         {
             directories = directories.Where(directory => !NativeFileOperationsHelper.HasFileAttribute(directory, FileAttributes.Hidden)).ToArray();
         }
         return directories;
     }
 
-    private string[] GetFiles()
+    private string[] GetFiles(bool removeHidden)
     {
         var files = Directory.GetFiles(CurFolderPath);
-        if (!ShowHiddenFile)
+        if (removeHidden)
         {
             files = files.Where(file => !NativeFileOperationsHelper.HasFileAttribute(file, FileAttributes.Hidden)).ToArray();
         }

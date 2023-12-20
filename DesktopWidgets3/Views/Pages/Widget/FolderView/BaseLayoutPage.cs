@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Models.Widget.FolderView;
 using Files.App.Data.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -45,6 +46,64 @@ public class BaseLayoutPage : Page // , INotifyPropertyChanged
 
                 // NotifyPropertyChanged(nameof(IsItemSelected));
             }
+        }
+    }
+
+    public ListedItem? SelectedItem
+    {
+        get; private set;
+    }
+
+    private List<ListedItem>? selectedItems = new();
+    public List<ListedItem>? SelectedItems
+    {
+        get => selectedItems;
+        internal set
+        {
+            if (value != selectedItems)
+            {
+                selectedItems = value;
+
+                /*if (selectedItems?.Count == 0 || selectedItems?[0] is null)
+                {
+                    IsItemSelected = false;
+                    SelectedItem = null;
+                    SelectedItemsPropertiesViewModel.IsItemSelected = false;
+
+                    ResetRenameDoubleClick();
+                    UpdateSelectionSize();
+                }
+                else if (selectedItems is not null)
+                {
+                    IsItemSelected = true;
+                    SelectedItem = selectedItems.First();
+                    SelectedItemsPropertiesViewModel.IsItemSelected = true;
+
+                    UpdateSelectionSize();
+
+                    SelectedItemsPropertiesViewModel.SelectedItemsCount = selectedItems.Count;
+
+                    if (selectedItems.Count == 1)
+                    {
+                        SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems.Count} {"ItemSelected/Text".GetLocalizedResource()}";
+                        DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                        {
+                            // Tapped event must be executed first
+                            await Task.Delay(50);
+                            preRenamingItem = SelectedItem;
+                        });
+                    }
+                    else
+                    {
+                        SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems!.Count} {"ItemsSelected/Text".GetLocalizedResource()}";
+                        ResetRenameDoubleClick();
+                    }
+                }
+
+                NotifyPropertyChanged(nameof(SelectedItems));*/
+            }
+
+            // ParentShellPageInstance!.ToolbarViewModel.SelectedItems = value;
         }
     }
 

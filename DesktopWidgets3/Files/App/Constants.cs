@@ -4,6 +4,8 @@ public class Constants
 {
     public static class UI
     {
+        public const float DimItemOpacity = 0.4f;
+
         // For contextmenu hacks, must match WinUI style
         public const double ContextMenuMaxHeight = 480;
 

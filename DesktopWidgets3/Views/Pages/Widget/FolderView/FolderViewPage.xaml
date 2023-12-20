@@ -13,6 +13,10 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <CornerRadius x:Key="DetailsLayoutThumbnailCornerRadius">2</CornerRadius>
+    </Page.Resources>
+
     <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -113,18 +117,20 @@
         <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
             <ListView
 				x:Name="FileList"
-				Padding="8,0,8,12"
+				Padding="0,0,0,12"
 				HorizontalAlignment="Stretch"
 				VerticalContentAlignment="Stretch"
 				ScrollViewer.HorizontalScrollBarVisibility="Auto"
 				ScrollViewer.HorizontalScrollMode="Auto"
-                ItemsSource="{x:Bind ViewModel.FolderViewFileItems, Mode=OneWay}"
+                ItemsSource="{x:Bind ViewModel.ListedItems, Mode=OneWay}"
                 IsDoubleTapEnabled="True"
-                DoubleTapped="FileList_DoubleTapped">
+                DoubleTapped="FileList_DoubleTapped"
+                SelectionMode="Extended"
+                SelectionChanged="FileList_SelectionChanged">
 
                 <!--  Item Template  -->
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:FolderViewFileItem">
+                    <DataTemplate x:DataType="models:ListedItem">
                         <UserControl>
                             <StackPanel
 								HorizontalAlignment="Stretch"
@@ -132,36 +138,176 @@
                                 Loaded="StackPanel_Loaded"
 								Orientation="Horizontal">
 
-                                <!--  Selected Checkbox  -->
-                                <!--  <CheckBox
-				                    x:Name="SelectionCheckbox"
-				                    Width="20"
-				                    HorizontalAlignment="Center"
-				                    Opacity="0"
-                                    Checked="ItemSelected_Checked"
-				                    Unchecked="ItemSelected_Unchecked" /> -->
-
-                                <!--  Item Icon  -->
+                                <!--  Item Thumbnail  -->
                                 <Grid
-                                    Name="ItemIcon"
-									Width="24"
-									HorizontalAlignment="Left"
-									VerticalAlignment="Stretch">
-                                    <Image
-                                        Canvas.ZIndex="0"
-                                        Width="20" 
-                                        Height="20"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Source="{x:Bind Icon, Mode=OneWay}"/>
-                                    <Image
-                                        Canvas.ZIndex="1"
-				                        Width="20"
-				                        Height="20"
-				                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-				                        Source="{x:Bind IconOverlay, Mode=OneWay}"/>
+				                    Width="24"
+				                    HorizontalAlignment="Left"
+				                    VerticalAlignment="Stretch">
+
+                                    <!--  Thumbnail  -->
+                                    <Grid
+								        x:Name="IconBox"
+								        Width="20"
+								        Height="Auto"
+								        HorizontalAlignment="Center"
+								        VerticalAlignment="Center"
+								        Opacity="{x:Bind Opacity, Mode=OneWay}"
+								        TabFocusNavigation="Local"
+								        Tag="ItemImage">
+                                        <ContentPresenter
+									        x:Name="PicturePresenter"
+									        Width="20"
+									        Height="20"
+									        HorizontalAlignment="Center"
+									        VerticalAlignment="Center"
+									        x:Load="{x:Bind LoadFileIcon, Mode=OneWay}"
+									        CornerRadius="{StaticResource DetailsLayoutThumbnailCornerRadius}">
+                                            <Image
+										        x:Name="Picture"
+										        Source="{x:Bind FileImage, Mode=OneWay}"
+										        Stretch="Uniform" />
+                                        </ContentPresenter>
+                                        <Border
+									        x:Name="TypeUnknownGlyph"
+									        Width="20"
+									        Height="20"
+									        HorizontalAlignment="Stretch"
+									        VerticalAlignment="Stretch"
+									        x:Load="{x:Bind NeedsPlaceholderGlyph, Mode=OneWay}"
+									        CornerRadius="4" />
+                                        <!-- ="{ThemeResource SystemChromeHighColor}" -->
+                                        <FontIcon
+									        x:Name="WebShortcutGlyph"
+									        x:Load="{x:Bind LoadWebShortcutGlyph, Mode=OneWay}"
+									        Glyph="&#xE71B;" />
+                                        <Image
+									        x:Name="IconOverlay"
+									        Width="16"
+									        Height="16"
+									        Margin="2"
+									        HorizontalAlignment="Left"
+									        VerticalAlignment="Bottom"
+									        x:Load="True"
+									        Source="{x:Bind IconOverlay, Mode=OneWay}"
+									        Stretch="Uniform" />
+                                        <!-- <Border
+									        x:Name="ShortcutGlyphElement"
+									        HorizontalAlignment="Left"
+									        VerticalAlignment="Bottom"
+									        x:Load="{x:Bind IsShortcut}">
+                                            <uc:OpacityIcon Style="{StaticResource ColorIconShortcut}" />
+                                        </Border>
+                                        <Image
+									        x:Name="ShieldOverlay"
+									        Width="8"
+									        Height="8"
+									        HorizontalAlignment="Right"
+									        VerticalAlignment="Bottom"
+									        x:Load="{x:Bind IsElevated}"
+									        Source="{x:Bind ShieldIcon, Mode=OneWay}"
+									        Stretch="Uniform" /> -->
+                                    </Grid>
+
+                                    <!--  Selection Check Box  -->
+                                    <CheckBox
+								        x:Name="SelectionCheckbox"
+								        Width="20"
+								        MinWidth="0"
+								        HorizontalAlignment="Center"
+								        Checked="ItemSelected_Checked"
+                                        Unchecked="ItemSelected_Unchecked"
+								        Opacity="0"/>
+                                    <!-- DoubleTapped="SelectionCheckbox_DoubleTapped" -->
+
                                 </Grid>
+
+                                <!--  Item Name  -->
+                                <Grid
+				                    Padding="12,0,0,0"
+				                    HorizontalAlignment="Stretch"
+				                    VerticalAlignment="Center"
+				                    Canvas.ZIndex="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+								        x:Name="ItemName"
+								        Padding="6,0,0,0"
+								        VerticalAlignment="Center"
+								        Opacity="{x:Bind Opacity, Mode=OneWay}"
+								        Text="{x:Bind Name, Mode=OneWay}"
+								        TextTrimming="CharacterEllipsis" />
+                                    <!-- 
+								        DataContextChanged="TextBlock_DataContextChanged"
+								        IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged" -->
+
+                                    <!-- <TextBox
+								        x:Name="ItemNameTextBox"
+								        MaxWidth="{Binding MaxWidthForRenameTextbox, ElementName=PageRoot, Mode=OneWay}"
+								        HorizontalAlignment="Left"
+								        VerticalAlignment="Center"
+								        BeforeTextChanging="ItemNameTextBox_BeforeTextChanging"
+								        Visibility="Collapsed">
+                                        <TextBox.Resources>
+                                            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{ThemeResource SolidBackgroundFillColorSecondary}" />
+                                        </TextBox.Resources>
+                                    </TextBox> -->
+
+                                </Grid>
+
+                                <!--  Item Modified Date  -->
+                                <!--  <TextBlock
+				                    x:Name="ItemDateModified"
+				                    Width="{Binding ColumnsViewModel.DateModifiedColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
+				                    Padding="10,0,0,0"
+				                    HorizontalAlignment="Stretch"
+				                    VerticalAlignment="Center"
+				                    DataContextChanged="TextBlock_DataContextChanged"
+				                    IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
+				                    Style="{StaticResource ColumnContentTextBlock}"
+				                    Text="{x:Bind ItemDateModified, Mode=OneWay}"
+				                    Visibility="{Binding ColumnsViewModel.DateModifiedColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" /> -->
+
+                                <!--  Item Created Date  -->
+                                <!--  <TextBlock
+				                    x:Name="ItemDateCreated"
+				                    Width="{Binding ColumnsViewModel.DateCreatedColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
+				                    Padding="10,0,0,0"
+				                    HorizontalAlignment="Stretch"
+				                    VerticalAlignment="Center"
+				                    DataContextChanged="TextBlock_DataContextChanged"
+				                    IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
+				                    Style="{StaticResource ColumnContentTextBlock}"
+				                    Text="{x:Bind ItemDateCreated, Mode=OneWay}"
+				                    Visibility="{Binding ColumnsViewModel.DateCreatedColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" />  -->
+                                
+                                <!--  Item Type  -->
+                                <!--  <TextBlock
+				                    x:Name="ItemType"
+				                    Width="{Binding ColumnsViewModel.ItemTypeColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
+				                    Padding="10,0,0,0"
+				                    HorizontalAlignment="Stretch"
+				                    VerticalAlignment="Center"
+				                    DataContextChanged="TextBlock_DataContextChanged"
+				                    IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
+				                    Style="{StaticResource ColumnContentTextBlock}"
+				                    Text="{x:Bind ItemType, Mode=OneWay}"
+				                    Visibility="{Binding ColumnsViewModel.ItemTypeColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" />  -->
+
+                                <!--  Item Size  -->
+                                <!--  <TextBlock
+				                    x:Name="ItemSize"
+				                    Width="{Binding ColumnsViewModel.SizeColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
+				                    Padding="10,0,0,0"
+				                    HorizontalAlignment="Stretch"
+				                    VerticalAlignment="Center"
+				                    DataContextChanged="TextBlock_DataContextChanged"
+				                    IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
+				                    Style="{StaticResource ColumnContentTextBlock}"
+				                    Text="{x:Bind FileSize, Mode=OneWay}"
+				                    Visibility="{Binding ColumnsViewModel.SizeColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" />  -->
 
                                 <!--  Item Sync Status Badge  -->
                                 <!--  <Border
@@ -170,73 +316,14 @@
 				                    Padding="10,0,0,0"
 				                    HorizontalAlignment="Stretch"
 				                    VerticalAlignment="Center"
+				                    AutomationProperties.Name="{x:Bind SyncStatusString, Mode=OneWay}"
 				                    Visibility="{Binding ColumnsViewModel.StatusColumn.Visibility, ElementName=PageRoot, Mode=OneWay}">
                                     <uc:OpacityIcon
-								        Width="16"
-								        Height="16"
-								        HorizontalAlignment="Left"
-								        Style="{x:Bind SyncStatusUI.OpacityIcon, Mode=OneWay}" />
-                                </Border>  -->
-
-                                <!--  Item Name  -->
-
-                                <TextBlock
-				                    x:Name="ItemName"
-				                    Padding="9,0,0,0"
-                                    HorizontalAlignment="Stretch"
-				                    VerticalAlignment="Center"
-				                    Text="{x:Bind FileName, Mode=OneWay}"
-				                    TextTrimming="CharacterEllipsis" />
-
-                                <!--  Item Path  -->
-                                <!--  <TextBlock
-									x:Name="ItemPath"
-									Width="{Binding ColumnsViewModel.PathColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
-									Padding="10,0,0,0"
-									HorizontalAlignment="Stretch"
-									VerticalAlignment="Center"
-									Style="{StaticResource ColumnContentTextBlock}"
-									Text="{x:Bind FilePath, Mode=OneWay}"
-									Visibility="{Binding ColumnsViewModel.PathColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" />  -->
-
-                                <!--  Item Modified Date  -->
-                                <!--  <TextBlock
-									x:Name="ItemDateModified"
-									Width="{Binding ColumnsViewModel.DateModifiedColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
-									Padding="10,0,0,0"
-									HorizontalAlignment="Stretch"
-									VerticalAlignment="Center"
-									DataContextChanged="TextBlock_DataContextChanged"
-									IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
-									Style="{StaticResource ColumnContentTextBlock}"
-									Text="{x:Bind ItemDateModified, Mode=OneWay}"
-									Visibility="{Binding ColumnsViewModel.DateModifiedColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" /> -->
-
-                                <!--  Item Type  -->
-                                <!--  <TextBlock
-									x:Name="ItemType"
-									Width="{Binding ColumnsViewModel.ItemTypeColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
-									Padding="10,0,0,0"
-									HorizontalAlignment="Stretch"
-									VerticalAlignment="Center"
-									DataContextChanged="TextBlock_DataContextChanged"
-									IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
-									Style="{StaticResource ColumnContentTextBlock}"
-									Text="{x:Bind ItemType, Mode=OneWay}"
-									Visibility="{Binding ColumnsViewModel.ItemTypeColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" /> -->
-
-                                <!--  Item Size  -->
-                                <!--  <TextBlock
-									x:Name="ItemSize"
-									Width="{Binding ColumnsViewModel.SizeColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
-									Padding="10,0,0,0"
-									HorizontalAlignment="Stretch"
-									VerticalAlignment="Center"
-									DataContextChanged="TextBlock_DataContextChanged"
-									IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged"
-									Style="{StaticResource ColumnContentTextBlock}"
-									Text="{x:Bind FileSize, Mode=OneWay}"
-									Visibility="{Binding ColumnsViewModel.SizeColumn.Visibility, ElementName=PageRoot, Mode=OneWay}" /> -->
+								    Width="16"
+								    Height="16"
+								    HorizontalAlignment="Left"
+								    Style="{x:Bind SyncStatusUI.OpacityIcon, Mode=OneWay}" />
+                                </Border> -->
                             </StackPanel>
                         </UserControl>
                     </DataTemplate>

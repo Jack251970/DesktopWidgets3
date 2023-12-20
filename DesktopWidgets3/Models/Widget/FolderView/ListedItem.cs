@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.ObjectModel;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Files.App.Extensions;
@@ -34,7 +35,7 @@ public class ListedItem : ObservableObject, IGroupableItem
         set => Interlocked.Exchange(ref itemPropertiesInitialized, value ? 1 : 0);
     }
 
-    /*public string ItemTooltipText
+    public string ItemTooltipText
     {
         get
         {
@@ -47,14 +48,14 @@ public class ListedItem : ObservableObject, IGroupableItem
                 tooltipBuilder.Append($"{Environment.NewLine}{"SizeLabel".GetLocalizedResource()} {FileSize}");
             }
 
-            if (SyncStatusUI.LoadSyncStatus)
+            /*if (SyncStatusUI.LoadSyncStatus)
             {
                 tooltipBuilder.Append($"{Environment.NewLine}{"syncStatusColumn/Header".GetLocalizedResource()}: {syncStatusUI.SyncStatusString}");
-            }
+            }*/
 
             return tooltipBuilder.ToString();
         }
-    }*/
+    }
 
     public string FolderRelativeId
     {
@@ -84,6 +85,52 @@ public class ListedItem : ObservableObject, IGroupableItem
         set => SetProperty(ref loadWebShortcutGlyph, value);
     }
 
+    private bool loadCustomIcon;
+    public bool LoadCustomIcon
+    {
+        get => loadCustomIcon;
+        set => SetProperty(ref loadCustomIcon, value);
+    }
+
+    // Note: Never attempt to call this from a secondary window or another thread, create a new instance from CustomIconSource instead
+    // TODO: eventually we should remove this b/c it's not thread safe
+    private BitmapImage? customIcon;
+    public BitmapImage? CustomIcon
+    {
+        get => customIcon;
+        set
+        {
+            LoadCustomIcon = true;
+            SetProperty(ref customIcon, value);
+        }
+    }
+
+    public ulong? FileFRN
+    {
+        get; set;
+    }
+
+    private Uri customIconSource;
+    public Uri CustomIconSource
+    {
+        get => customIconSource;
+        set => SetProperty(ref customIconSource, value);
+    }
+
+    private double opacity;
+    public double Opacity
+    {
+        get => opacity;
+        set => SetProperty(ref opacity, value);
+    }
+
+    private bool hasTags;
+    public bool HasTags
+    {
+        get => hasTags;
+        set => SetProperty(ref hasTags, value);
+    }
+
     /*private CloudDriveSyncStatusUI syncStatusUI = new();
     public CloudDriveSyncStatusUI SyncStatusUI
     {
@@ -101,17 +148,20 @@ public class ListedItem : ObservableObject, IGroupableItem
     }
 
     // This is used to avoid passing a null value to AutomationProperties.Name, which causes a crash
-    public string SyncStatusString => string.IsNullOrEmpty(SyncStatusUI?.SyncStatusString) ? "CloudDriveSyncStatus_Unknown".GetLocalizedResource() : SyncStatusUI.SyncStatusString;*/
+    public string SyncStatusString
+    {
+        get => string.IsNullOrEmpty(SyncStatusUI?.SyncStatusString) ? "CloudDriveSyncStatus_Unknown".GetLocalizedResource() : SyncStatusUI.SyncStatusString;
+    }*/
 
-    private BitmapImage fileImage;
-    public BitmapImage FileImage
+    private BitmapImage? fileImage;
+    public BitmapImage? FileImage
     {
         get => fileImage;
         set
         {
             if (SetProperty(ref fileImage, value))
             {
-                if (value is not null)
+                if (value is BitmapImage)
                 {
                     LoadFileIcon = true;
                     NeedsPlaceholderGlyph = false;
@@ -121,8 +171,8 @@ public class ListedItem : ObservableObject, IGroupableItem
         }
     }
 
-    private BitmapImage iconOverlay;
-    public BitmapImage IconOverlay
+    private BitmapImage? iconOverlay;
+    public BitmapImage? IconOverlay
     {
         get => iconOverlay;
         set
@@ -134,8 +184,8 @@ public class ListedItem : ObservableObject, IGroupableItem
         }
     }
 
-    private BitmapImage shieldIcon;
-    public BitmapImage ShieldIcon
+    private BitmapImage? shieldIcon;
+    public BitmapImage? ShieldIcon
     {
         get => shieldIcon;
         set
@@ -174,7 +224,7 @@ public class ListedItem : ObservableObject, IGroupableItem
             if (PrimaryItemAttribute == StorageItemTypes.File)
             {
                 var nameWithoutExtension = Path.GetFileNameWithoutExtension(itemNameRaw);
-                if (!string.IsNullOrEmpty(nameWithoutExtension))
+                if (!string.IsNullOrEmpty(nameWithoutExtension)) //&& !UserSettingsService.FoldersSettingsService.ShowFileExtensions)
                 {
                     return nameWithoutExtension;
                 }
@@ -301,10 +351,18 @@ public class ListedItem : ObservableObject, IGroupableItem
     public override string ToString()
     {
         string suffix;
-        if (IsShortcut)
+        if (IsRecycleBinItem)
+        {
+            suffix = "RecycleBinItemAutomation".GetLocalizedResource();
+        }
+        else if (IsShortcut)
         {
             suffix = "ShortcutItemAutomation".GetLocalizedResource();
         }
+        /*else if (IsLibrary)
+        {
+            suffix = "Library".GetLocalizedResource();
+        }*/
         else
         {
             suffix = PrimaryItemAttribute == StorageItemTypes.File ? "Folder".GetLocalizedResource() : "FolderItemAutomation".GetLocalizedResource();
@@ -314,13 +372,18 @@ public class ListedItem : ObservableObject, IGroupableItem
     }
 
     public bool IsFolder => PrimaryItemAttribute is StorageItemTypes.Folder;
+    public bool IsRecycleBinItem => this is RecycleBinItem;
     public bool IsShortcut => this is ShortcutItem;
+    // public bool IsLibrary => this is LibraryItem;
     public bool IsLinkItem => IsShortcut && ((ShortcutItem)this).IsUrl;
     public bool IsFtpItem => this is FtpItem;
     public bool IsArchive => this is ZipItem;
+    public bool IsAlternateStream => this is AlternateStreamItem;
+    // public bool IsGitItem => this is GitItem;
     public virtual bool IsExecutable => FileExtensionHelpers.IsExecutableFile(ItemPath);
-    //public bool IsDriveRoot => ItemPath == PathNormalization.GetPathRoot(ItemPath);
-    //public bool IsElevated => CheckElevationRights();
+    public virtual bool IsPythonFile => FileExtensionHelpers.IsPythonFile(ItemPath);
+    public bool IsDriveRoot => ItemPath == PathNormalization.GetPathRoot(ItemPath);
+    // public bool IsElevated => CheckElevationRights();
 
     private BaseStorageFile itemFile;
     public BaseStorageFile ItemFile
@@ -329,10 +392,70 @@ public class ListedItem : ObservableObject, IGroupableItem
         set => SetProperty(ref itemFile, value);
     }
 
+    // This is a hack used because x:Bind casting did not work properly
+    public RecycleBinItem AsRecycleBinItem => this as RecycleBinItem;
+
+    // public GitItem AsGitItem => this as GitItem;
+
     public string Key
     {
         get; set;
     }
+
+    /*/// <summary>
+    /// Manually check if a folder path contains child items,
+    /// updating the ContainsFilesOrFolders property from its default value of true
+    /// </summary>
+    public void UpdateContainsFilesFolders()
+    {
+        ContainsFilesOrFolders = FolderHelpers.CheckForFilesFolders(ItemPath);
+    }
+
+    private bool CheckElevationRights()
+    {
+        // Avoid downloading file to check elevation
+        if (SyncStatusUI.LoadSyncStatus)
+            return false;
+
+        return IsShortcut
+            ? ElevationHelpers.IsElevationRequired(((ShortcutItem)this).TargetPath)
+            : ElevationHelpers.IsElevationRequired(this.ItemPath);
+    }*/
+}
+
+public class RecycleBinItem : ListedItem
+{
+    public RecycleBinItem(string folderRelativeId) : base(folderRelativeId)
+    {
+    }
+
+    public string ItemDateDeleted
+    {
+        get; private set;
+    }
+
+    public DateTimeOffset ItemDateDeletedReal
+    {
+        get => itemDateDeletedReal;
+        set
+        {
+            ItemDateDeleted = dateTimeFormatter.ToShortLabel(value);
+            itemDateDeletedReal = value;
+        }
+    }
+
+    private DateTimeOffset itemDateDeletedReal;
+
+    // For recycle bin elements (path + name)
+    public string ItemOriginalPath
+    {
+        get; set;
+    }
+
+    // For recycle bin elements (path)
+    public string ItemOriginalFolder => Path.IsPathRooted(ItemOriginalPath) ? Path.GetDirectoryName(ItemOriginalPath)! : ItemOriginalPath;
+
+    public string ItemOriginalFolderName => Path.GetFileName(ItemOriginalFolder);
 }
 
 public class FtpItem : ListedItem
@@ -437,3 +560,136 @@ public class ZipItem : ListedItem
     {
     }
 }
+
+/*public class LibraryItem : ListedItem
+{
+    public LibraryItem(LibraryLocationItem library) : base(null!)
+    {
+        ItemPath = library.Path;
+        ItemNameRaw = library.Text;
+        PrimaryItemAttribute = StorageItemTypes.Folder;
+        ItemType = "Library".GetLocalizedResource();
+        LoadCustomIcon = true;
+        CustomIcon = library.Icon;
+        //CustomIconSource = library.IconSource;
+        LoadFileIcon = true;
+
+        IsEmpty = library.IsEmpty;
+        DefaultSaveFolder = library.DefaultSaveFolder;
+        Folders = library.Folders;
+    }
+
+    public bool IsEmpty
+    {
+        get;
+    }
+
+    public string DefaultSaveFolder
+    {
+        get;
+    }
+
+    public override string Name => ItemNameRaw;
+
+    public ReadOnlyCollection<string> Folders
+    {
+        get;
+    }
+}*/
+
+public class AlternateStreamItem : ListedItem
+{
+    public string MainStreamPath => ItemPath.Substring(0, ItemPath.LastIndexOf(':'));
+    public string MainStreamName => Path.GetFileName(MainStreamPath);
+
+    public override string Name
+    {
+        get
+        {
+            var nameWithoutExtension = Path.GetFileNameWithoutExtension(ItemNameRaw);
+            var mainStreamNameWithoutExtension = Path.GetFileNameWithoutExtension(MainStreamName);
+            /*if (!UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+            {
+                return $"{(string.IsNullOrEmpty(mainStreamNameWithoutExtension) ? MainStreamName : mainStreamNameWithoutExtension)}:{(string.IsNullOrEmpty(nameWithoutExtension) ? ItemNameRaw : nameWithoutExtension)}";
+            }*/
+            return $"{MainStreamName}:{ItemNameRaw}";
+        }
+    }
+}
+
+/*public class GitItem : ListedItem
+{
+    private volatile int statusPropertiesInitialized = 0;
+    public bool StatusPropertiesInitialized
+    {
+        get => statusPropertiesInitialized == 1;
+        set => Interlocked.Exchange(ref statusPropertiesInitialized, value ? 1 : 0);
+    }
+
+    private volatile int commitPropertiesInitialized = 0;
+    public bool CommitPropertiesInitialized
+    {
+        get => commitPropertiesInitialized == 1;
+        set => Interlocked.Exchange(ref commitPropertiesInitialized, value ? 1 : 0);
+    }
+
+    private Style? _UnmergedGitStatusIcon;
+    public Style? UnmergedGitStatusIcon
+    {
+        get => _UnmergedGitStatusIcon;
+        set => SetProperty(ref _UnmergedGitStatusIcon, value);
+    }
+
+    private string? _UnmergedGitStatusName;
+    public string? UnmergedGitStatusName
+    {
+        get => _UnmergedGitStatusName;
+        set => SetProperty(ref _UnmergedGitStatusName, value);
+    }
+
+    private DateTimeOffset? _GitLastCommitDate;
+    public DateTimeOffset? GitLastCommitDate
+    {
+        get => _GitLastCommitDate;
+        set
+        {
+            SetProperty(ref _GitLastCommitDate, value);
+            GitLastCommitDateHumanized = value is DateTimeOffset dto ? dateTimeFormatter.ToShortLabel(dto) : "";
+        }
+    }
+
+    private string? _GitLastCommitDateHumanized;
+    public string? GitLastCommitDateHumanized
+    {
+        get => _GitLastCommitDateHumanized;
+        set => SetProperty(ref _GitLastCommitDateHumanized, value);
+    }
+
+    private string? _GitLastCommitMessage;
+    public string? GitLastCommitMessage
+    {
+        get => _GitLastCommitMessage;
+        set => SetProperty(ref _GitLastCommitMessage, value);
+    }
+
+    private string? _GitCommitAuthor;
+    public string? GitLastCommitAuthor
+    {
+        get => _GitCommitAuthor;
+        set => SetProperty(ref _GitCommitAuthor, value);
+    }
+
+    private string? _GitLastCommitSha;
+    public string? GitLastCommitSha
+    {
+        get => _GitLastCommitSha;
+        set => SetProperty(ref _GitLastCommitSha, value);
+    }
+
+    private string? _GitLastCommitFullSha;
+    public string? GitLastCommitFullSha
+    {
+        get => _GitLastCommitFullSha;
+        set => SetProperty(ref _GitLastCommitFullSha, value);
+    }
+}*/
