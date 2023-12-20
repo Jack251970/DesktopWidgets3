@@ -1,0 +1,70 @@
+﻿// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
+
+using FluentFTP;
+
+namespace Files.App.Utils.Storage;
+
+public static class FtpHelpers
+{
+    public static async Task<bool> EnsureConnectedAsync(this AsyncFtpClient ftpClient)
+    {
+        if (!ftpClient.IsConnected)
+        {
+            await ftpClient.Connect();
+        }
+
+        return true;
+    }
+
+    public static bool IsFtpPath(string path)
+    {
+        if (!string.IsNullOrEmpty(path))
+        {
+            return path.StartsWith("ftp://", StringComparison.OrdinalIgnoreCase)
+                || path.StartsWith("ftps://", StringComparison.OrdinalIgnoreCase)
+                || path.StartsWith("ftpes://", StringComparison.OrdinalIgnoreCase);
+        }
+        return false;
+    }
+
+    public static bool VerifyFtpPath(string path)
+    {
+        var authority = GetFtpAuthority(path);
+        var index = authority.IndexOf(':', StringComparison.Ordinal);
+
+        return index == -1 || ushort.TryParse(authority.AsSpan(index + 1), out _);
+    }
+
+    public static string GetFtpHost(string path)
+    {
+        var authority = GetFtpAuthority(path);
+        var index = authority.IndexOf(':', StringComparison.Ordinal);
+
+        return index == -1 ? authority : authority[..index];
+    }
+
+    public static ushort GetFtpPort(string path)
+    {
+        var authority = GetFtpAuthority(path);
+        var index = authority.IndexOf(':', StringComparison.Ordinal);
+
+        return index == -1
+            ? path.StartsWith("ftps://", StringComparison.OrdinalIgnoreCase) ? (ushort)990 : (ushort)21
+            : ushort.Parse(authority.Substring(index + 1));
+    }
+
+    public static string GetFtpAuthority(string path)
+    {
+        path = path.Replace("\\", "/", StringComparison.Ordinal);
+        return Uri.TryCreate(path, UriKind.Absolute, out var uri) ? uri.Authority : string.Empty;
+    }
+
+    public static string GetFtpPath(string path)
+    {
+        path = path.Replace("\\", "/", StringComparison.Ordinal);
+        var schemaIndex = path.IndexOf("://", StringComparison.Ordinal) + 3;
+        var hostIndex = path.IndexOf("/", schemaIndex, StringComparison.Ordinal);
+        return hostIndex == -1 ? "/" : path[hostIndex..];
+    }
+}

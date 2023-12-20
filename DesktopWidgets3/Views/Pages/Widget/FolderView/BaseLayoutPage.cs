@@ -1,12 +1,10 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App;
 using Files.App.Data.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Windows.System;
 
 namespace DesktopWidgets3.Views.Pages.Widget;
 
@@ -17,12 +15,12 @@ public class BaseLayoutPage : Page // , INotifyPropertyChanged
 {
     // ViewModels
     public SelectedItemsPropertiesViewModel SelectedItemsPropertiesViewModel { get; }
-    public ItemManipulationModel ItemManipulationModel { get; private set; }
+    /*public ItemManipulationModel ItemManipulationModel { get; private set; }
 
     // Fields
     private CancellationTokenSource? shellContextMenuItemCancellationToken;
 
-    private bool shiftPressed;
+    private bool shiftPressed;*/
 
     // Properties
 
@@ -54,7 +52,7 @@ public class BaseLayoutPage : Page // , INotifyPropertyChanged
     {
         LastOpenedFlyout = sender as CommandBarFlyout;
 
-        try
+        /*try
         {
             // Workaround for item sometimes not getting selected
             if (!IsItemSelected && sender is CommandBarFlyout { Target: ListViewItem { Content: ListedItem li } })
@@ -112,7 +110,7 @@ public class BaseLayoutPage : Page // , INotifyPropertyChanged
         catch (Exception)
         {
 
-        }
+        }*/
     }
 
     public class ContextMenuExtensions : DependencyObject

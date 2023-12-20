@@ -4,7 +4,13 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
+using Files.App.Extensions;
+using Files.App.ViewModels.Properties;
+using Files.Core.Services.DateTimeFormatter;
 using Files.Shared.Helpers;
+
 namespace Files.App.Data.Models;
 
 public class SelectedItemsPropertiesViewModel : ObservableObject
@@ -287,10 +293,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
     public string DriveUsedSpaceLongSize
     {
         get => driveUsedSpaceLongSize;
-        set
-        {
-            SetProperty(ref driveUsedSpaceLongSize, value);
-        }
+        set => SetProperty(ref driveUsedSpaceLongSize, value);
     }
 
     public bool driveUsedSpaceVisibility = false;
@@ -328,10 +331,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
     public string DriveFreeSpaceLongSize
     {
         get => driveFreeSpaceLongSize;
-        set
-        {
-            SetProperty(ref driveFreeSpaceLongSize, value);
-        }
+        set => SetProperty(ref driveFreeSpaceLongSize, value);
     }
 
     public bool driveFreeSpaceVisibility = false;
@@ -451,10 +451,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
     public string DriveCapacityLongSize
     {
         get => driveCapacityLongSize;
-        set
-        {
-            SetProperty(ref driveCapacityLongSize, value);
-        }
+        set => SetProperty(ref driveCapacityLongSize, value);
     }
 
     public bool driveCapacityVisibility = false;
@@ -464,10 +461,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
         set => SetProperty(ref driveCapacityVisibility, value);
     }
 
-    public double DrivePercentageValue
-    {
-        get => DriveCapacityValue > 0 ? DriveUsedSpaceValue / (double)DriveCapacityValue * 100 : 0;
-    }
+    public double DrivePercentageValue => DriveCapacityValue > 0 ? DriveUsedSpaceValue / (double)DriveCapacityValue * 100 : 0;
 
     private ICommand cleanupDriveCommand;
     public ICommand CleanupDriveCommand
@@ -539,7 +533,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
     public void CheckAllFileExtensions(List<string> itemExtensions)
     {
         // Checks if all the item extensions are image extensions of some kind.
-        IsSelectedItemImage = itemExtensions.TrueForAll(itemExtension => FileExtensionHelpers.IsImageFile(itemExtension));
+        IsSelectedItemImage = itemExtensions.TrueForAll(FileExtensionHelpers.IsImageFile);
         // Checks if there is only one selected item and if it's a shortcut.
         IsSelectedItemShortcut = (itemExtensions.Count == 1) && (itemExtensions.TrueForAll(itemExtension => FileExtensionHelpers.IsShortcutFile(itemExtension)));
     }
@@ -583,10 +577,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
     public string ShortcutItemArguments
     {
         get => shortcutItemArguments;
-        set
-        {
-            SetProperty(ref shortcutItemArguments, value);
-        }
+        set => SetProperty(ref shortcutItemArguments, value);
     }
 
     private bool shortcutItemArgumentsVisibility = false;
@@ -607,10 +598,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
     public RelayCommand ShortcutItemOpenLinkCommand
     {
         get => shortcutItemOpenLinkCommand;
-        set
-        {
-            SetProperty(ref shortcutItemOpenLinkCommand, value);
-        }
+        set => SetProperty(ref shortcutItemOpenLinkCommand, value);
     }
 
     public bool ContainsFilesOrFolders
@@ -618,13 +606,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
         get; set;
     }
 
-    public Uri FolderIconSource
-    {
-        get
-        {
-            return ContainsFilesOrFolders ? new Uri("ms-appx:///Assets/FolderIcon2.svg") : new Uri("ms-appx:///Assets/FolderIcon.svg");
-        }
-    }
+    public Uri FolderIconSource => ContainsFilesOrFolders ? new Uri("ms-appx:///Assets/Files/FolderIcon2.svg") : new Uri("ms-appx:///Assets/Files/FolderIcon.svg");
 
     private ObservableCollection<FilePropertySection> propertySections = new();
     public ObservableCollection<FilePropertySection> PropertySections
