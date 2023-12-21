@@ -108,7 +108,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region select items
 
-    public new event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public bool HasSelection => SelectedItems.Count != 0;
 
@@ -463,8 +463,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (pushFolderPath)
         {
             navigationFolderPaths.Push(CurFolderPath);
-            IsNavigateBackExecutable = navigationFolderPaths.Count > 0;
         }
+        IsNavigateBackExecutable = navigationFolderPaths.Count > 0;
         IsNavigateUpExecutable = curParentFolderPath != null;
 
         ListedItems.Clear();
@@ -520,7 +520,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         ResetItemOpacity();
     }
 
-    public virtual void ResetItemOpacity()
+    private void ResetItemOpacity()
     {
         foreach (var item in ListedItems)
         {
