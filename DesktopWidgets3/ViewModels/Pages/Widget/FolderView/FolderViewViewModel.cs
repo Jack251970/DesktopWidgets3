@@ -25,7 +25,7 @@ using FileAttributes = System.IO.FileAttributes;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
-public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IWidgetUpdate, IWidgetClose, INotifyPropertyChanged
+public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
     #region commands
 
@@ -108,8 +108,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region select items
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
     public bool HasSelection => SelectedItems.Count != 0;
 
     private bool isItemSelected = false;
@@ -122,7 +120,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             {
                 isItemSelected = value;
 
-                NotifyPropertyChanged(nameof(IsItemSelected));
+                //NotifyPropertyChanged(nameof(IsItemSelected));
             }
         }
     }
@@ -173,16 +171,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                     }*/
                 }
 
-                NotifyPropertyChanged(nameof(SelectedItems));
+                //NotifyPropertyChanged(nameof(SelectedItems));
             }
 
             // ParentShellPageInstance!.ToolbarViewModel.SelectedItems = value;
         }
     }
 
-    // This method is called by the Set accessor of each property.  
-    // The CallerMemberName attribute that is applied to the optional propertyName  
-    // parameter causes the property name of the caller to be substituted as an argument.  
     private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

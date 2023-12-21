@@ -17,7 +17,6 @@ using Files.App.ViewModels.Layouts;
 using Files.App.Helpers.ContextFlyouts;
 using Files.Shared.Extensions;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
-using DesktopWidgets3.Views.Windows;
 using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
 using Windows.Foundation;
