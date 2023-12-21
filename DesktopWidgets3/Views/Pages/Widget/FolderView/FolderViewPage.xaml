@@ -54,7 +54,7 @@
                      VerticalAlignment="Center"
                      Style="{ThemeResource BodyTextStyle}" />
             </StackPanel>
-            <Grid Margin="16,0" Canvas.ZIndex="0">
+            <Grid Margin="12,0" Canvas.ZIndex="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="auto" />

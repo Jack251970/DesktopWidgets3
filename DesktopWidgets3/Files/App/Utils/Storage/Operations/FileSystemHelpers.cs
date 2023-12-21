@@ -13,7 +13,7 @@ using Files.Shared.Helpers;
 using Windows.Storage;
 using static DesktopWidgets3.Services.DialogService;
 
-namespace DesktopWidgets3.Services;
+namespace Files.App.Utils.Storage;
 
 public sealed class FileSystemHelpers : IFileSystemHelpers
 {
@@ -37,7 +37,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
             showDialog is DeleteConfirmationPolicies.PermanentOnly &&
             (permanently || !canBeSentToBin))
         {
-            var dialogService = App.GetService<IDialogService>();
+            var dialogService = DesktopWidgets3.App.GetService<IDialogService>();
 
             // Return if the result isn't delete
             if (await dialogService.ShowDeleteWidgetDialog(viewModel.WidgetWindow) != DialogResult.Left)

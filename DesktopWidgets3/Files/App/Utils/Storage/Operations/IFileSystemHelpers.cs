@@ -5,7 +5,7 @@ using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Utils.Storage;
 using Files.Core.Data.Enums;
 
-namespace DesktopWidgets3.Contracts.Services;
+namespace Files.App.Utils.Storage;
 
 public interface IFileSystemHelpers : IDisposable
 {

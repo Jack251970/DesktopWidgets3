@@ -1,9 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
@@ -108,7 +105,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region select items
 
-    public bool HasSelection => SelectedItems.Count != 0;
+    [ObservableProperty]
+    public bool _hasSelection = false;
 
     private bool isItemSelected = false;
     public bool IsItemSelected
@@ -119,8 +117,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             if (value != isItemSelected)
             {
                 isItemSelected = value;
-
-                //NotifyPropertyChanged(nameof(IsItemSelected));
             }
         }
     }
@@ -138,8 +134,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 if (selectedItems?.Count == 0 || selectedItems?[0] is null)
                 {
                     IsItemSelected = false;
-                    //SelectedItem = null;
-                    SelectedItemsPropertiesViewModel.IsItemSelected = false;
+                    /*SelectedItem = null;
+                    SelectedItemsPropertiesViewModel.IsItemSelected = false;*/
 
                     /*ResetRenameDoubleClick();
                     UpdateSelectionSize();*/
@@ -147,8 +143,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 else if (selectedItems is not null)
                 {
                     IsItemSelected = true;
-                    //SelectedItem = selectedItems.First();
-                    SelectedItemsPropertiesViewModel.IsItemSelected = true;
+                    /*SelectedItem = selectedItems.First();
+                    SelectedItemsPropertiesViewModel.IsItemSelected = true;*/
 
                     /*UpdateSelectionSize();
 
@@ -171,16 +167,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                     }*/
                 }
 
-                //NotifyPropertyChanged(nameof(SelectedItems));
+                HasSelection = SelectedItems.Count != 0;
             }
 
             // ParentShellPageInstance!.ToolbarViewModel.SelectedItems = value;
         }
-    }
-
-    private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     #endregion

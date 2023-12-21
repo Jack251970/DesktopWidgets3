@@ -21,6 +21,7 @@ using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
 using Files.App.Data.Commands;
+using Files.App.Utils.Storage;
 
 namespace DesktopWidgets3;
 
