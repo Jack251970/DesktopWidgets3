@@ -6,9 +6,11 @@ using DesktopWidgets3.Models.Widget.FolderView;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Commands;
 using Files.App.Data.Models;
+using Files.App.Helpers.ContextFlyouts;
 using Files.App.ViewModels.Layouts;
 using Files.Core.Data.Enums;
 using Files.Shared.Helpers;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
 
 namespace Files.App.Helpers;
@@ -22,6 +24,8 @@ namespace Files.App.Helpers;
 public static class ContextFlyoutItemHelper
 {
     //private static readonly IAddItemService addItemService = Ioc.Default.GetRequiredService<IAddItemService>();
+
+    #region base menu items
 
     public static List<ContextMenuFlyoutItemViewModel> GetItemContextCommandsWithoutShellItems(
         CurrentInstanceViewModel currentInstanceViewModel, 
@@ -676,4 +680,33 @@ public static class ContextFlyoutItemHelper
 
         return list;
     }
+
+    #endregion
+
+    #region shell menu
+
+    public static Task<List<ContextMenuFlyoutItemViewModel>> GetItemContextShellCommandsAsync(string workingDir, List<ListedItem> selectedItems, bool shiftPressed, bool showOpenMenu, CancellationToken cancellationToken)
+            => ShellContextmenuHelper.GetShellContextmenuAsync(shiftPressed: shiftPressed, showOpenMenu: showOpenMenu, workingDirectory: workingDir, selectedItems: selectedItems, cancellationToken: cancellationToken);
+
+    public static void SwapPlaceholderWithShellOption(CommandBarFlyout contextMenu, string placeholderName, ContextMenuFlyoutItemViewModel? replacingItem, int position)
+    {
+        var placeholder = contextMenu.SecondaryCommands
+                                                        .Where(x => Equals((x as AppBarButton)?.Tag, placeholderName))
+                                                        .FirstOrDefault() as AppBarButton;
+        if (placeholder is not null)
+        {
+            placeholder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+        }
+
+        if (replacingItem is not null)
+        {
+            var (_, bitLockerCommands) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(new List<ContextMenuFlyoutItemViewModel>() { replacingItem });
+            contextMenu.SecondaryCommands.Insert(
+                position,
+                bitLockerCommands.FirstOrDefault()
+            );
+        }
+    }
+
+    #endregion
 }

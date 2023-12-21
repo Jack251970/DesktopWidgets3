@@ -65,6 +65,18 @@ public static class ItemModelListToContextFlyoutHelper
         return (primary, secondary);
     }
 
+    /// <summary>
+    /// Same as GetAppBarItemsFromModel, but ignores the IsPrimary property and returns one list
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static List<ICommandBarElement> GetAppBarButtonsFromModelIgnorePrimary(List<ContextMenuFlyoutItemViewModel> items)
+    {
+        var elements = new List<ICommandBarElement>();
+        items.ForEach(i => elements.Add(GetCommandBarItem(i)));
+        return elements;
+    }
+
     public static MenuFlyoutItemBase GetMenuItem(ContextMenuFlyoutItemViewModel item)
     {
         return item.ItemType switch

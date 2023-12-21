@@ -152,6 +152,17 @@ public class Win32API
         return taskCompletionSource.Task;
     }
 
+    public static string ExtractStringFromDLL(string file, int number)
+    {
+        var lib = Kernel32.LoadLibrary(file);
+        StringBuilder result = new StringBuilder(2048);
+
+        _ = User32.LoadString(lib, number, result, result.Capacity);
+        Kernel32.FreeLibrary(lib);
+
+        return result.ToString();
+    }
+
     private class IconAndOverlayCacheEntry
     {
         public byte[]? Icon { get; set; }
@@ -342,6 +353,13 @@ public class Win32API
         }
 
         return iconsList;
+    }
+
+    public static Task OpenFormatDriveDialog(string drive)
+    {
+        // Format requires elevation
+        var driveIndex = drive.ToUpperInvariant()[0] - 'A';
+        return RunPowershellCommandAsync($"-command \"$Signature = '[DllImport(\\\"shell32.dll\\\", SetLastError = false)]public static extern uint SHFormatDrive(IntPtr hwnd, uint drive, uint fmtID, uint options);'; $SHFormatDrive = Add-Type -MemberDefinition $Signature -Name \"Win32SHFormatDrive\" -Namespace Win32Functions -PassThru; $SHFormatDrive::SHFormatDrive(0, {driveIndex}, 0xFFFF, 0x0001)\"", true);
     }
 
     public static Bitmap? GetBitmapFromHBitmap(HBITMAP hBitmap)
@@ -548,4 +566,18 @@ public class Win32API
         return checkDesktopFirst ? GetDesktopAssoc() ?? await GetUwpAssoc() : await GetUwpAssoc() ?? GetDesktopAssoc();
     }
 
+    public static Task InstallFont(string fontFilePath, bool forAllUsers)
+    {
+        var fontDirectory = forAllUsers
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Fonts")
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "Windows", "Fonts");
+
+        var registryKey = forAllUsers
+            ? "HKLM:\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts"
+            : "HKCU:\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
+
+        var destinationPath = Path.Combine(fontDirectory, Path.GetFileName(fontFilePath));
+
+        return RunPowershellCommandAsync($"-command \"Copy-Item '{fontFilePath}' '{fontDirectory}'; New-ItemProperty -Name '{Path.GetFileNameWithoutExtension(fontFilePath)}' -Path '{registryKey}' -PropertyType string -Value '{destinationPath}'\"", forAllUsers);
+    }
 }

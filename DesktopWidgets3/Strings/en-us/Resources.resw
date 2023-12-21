@@ -357,4 +357,7 @@
   <data name="FolderItemAutomation" xml:space="preserve">
     <value>Folder item</value>
   </data>
+  <data name="ShowMoreOptions" xml:space="preserve">
+    <value>Show more options</value>
+  </data>
 </root>

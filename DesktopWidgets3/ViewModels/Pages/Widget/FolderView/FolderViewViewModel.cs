@@ -99,6 +99,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 fileSystemWatcher.EnableRaisingEvents = false;
                 fileSystemWatcher.Path = value;
                 fileSystemWatcher.EnableRaisingEvents = true;
+                WorkingDirectory = value;
             }
         }
     }
@@ -107,7 +108,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region select items
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public new event PropertyChangedEventHandler? PropertyChanged;
 
     public bool HasSelection => SelectedItems.Count != 0;
 
@@ -642,7 +643,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    #region methods form Files.App.Data.Models.ItemViewModel
+    #region Files.App.Data.Models.ItemViewModel
+
+    public string WorkingDirectory { get; private set; } = null!;
 
     public Task<FilesystemResult<BaseStorageFile>> GetFileFromPathAsync(string path)
     {
