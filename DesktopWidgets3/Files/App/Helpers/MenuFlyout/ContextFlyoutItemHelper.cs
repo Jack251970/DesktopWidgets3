@@ -3,6 +3,7 @@
 
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget.FolderView;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Commands;
 using Files.App.Data.Models;
 using Files.App.ViewModels.Layouts;
@@ -28,6 +29,7 @@ public static class ContextFlyoutItemHelper
         BaseLayoutViewModel commandsViewModel, 
         bool shiftPressed, 
         SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel,
+        FolderViewViewModel viewModel,
         ICommandManager commands)
     {
         var menuItemsList = GetBaseItemMenuItems(
@@ -35,6 +37,7 @@ public static class ContextFlyoutItemHelper
             selectedItems: selectedItems, 
             selectedItemsPropertiesViewModel: selectedItemsPropertiesViewModel, 
             currentInstanceViewModel: currentInstanceViewModel,
+            viewModel: viewModel,
             commands: commands);
         menuItemsList = Filter(
             items: menuItemsList, 
@@ -50,8 +53,8 @@ public static class ContextFlyoutItemHelper
             SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel,
             List<ListedItem> selectedItems,
             CurrentInstanceViewModel currentInstanceViewModel,
+            FolderViewViewModel viewModel,
             ICommandManager commands)
-            //ItemViewModel? itemViewModel = null)
     {
         var itemsSelected = true;//itemViewModel is null;
         var canDecompress = selectedItems.Any() && selectedItems.All(x => x.IsArchive)
@@ -65,9 +68,9 @@ public static class ContextFlyoutItemHelper
             Path.GetFileName(selectedItems.Count is 1 ? selectedItems[0].ItemPath : Path.GetDirectoryName(selectedItems[0].ItemPath))
             ?? string.Empty;
 
-        var isDriveRoot = false;// itemViewModel?.CurrentFolder is not null && (itemViewModel.CurrentFolder.ItemPath == Path.GetPathRoot(itemViewModel.CurrentFolder.ItemPath));
+        //var isDriveRoot = false; itemViewModel?.CurrentFolder is not null && (itemViewModel.CurrentFolder.ItemPath == Path.GetPathRoot(itemViewModel.CurrentFolder.ItemPath));
 
-        return new List<ContextMenuFlyoutItemViewModel>()
+        var list =  new List<ContextMenuFlyoutItemViewModel>()
             {
                 /*new()
                 {
@@ -561,6 +564,8 @@ public static class ContextFlyoutItemHelper
                     IsEnabled = false
                 },
             }.Where(x => x.ShowItem).ToList();
+
+        return list;
     }
 
     public static List<ContextMenuFlyoutItemViewModel> Filter(

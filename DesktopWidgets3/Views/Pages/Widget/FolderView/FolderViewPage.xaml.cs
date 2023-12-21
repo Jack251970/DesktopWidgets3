@@ -183,6 +183,7 @@ public sealed partial class FolderViewPage : Page
                     selectedItemsPropertiesViewModel: SelectedItemsPropertiesViewModel,
                     commandsViewModel: CommandsViewModel!,
                     shiftPressed: shiftPressed,
+                    viewModel: ViewModel,
                     commands: ViewModel.CommandManager);
                 var (primaryElements, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(items);
                 AddCloseHandler(ItemContextMenuFlyout, primaryElements, secondaryElements);

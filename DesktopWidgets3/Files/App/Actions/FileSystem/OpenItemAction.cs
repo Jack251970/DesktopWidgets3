@@ -42,6 +42,7 @@ internal class OpenItemAction : ObservableObject, IAction
 
     public async Task ExecuteAsync()
     {
+        // TODO: Optimize multiple file opening here in OpenFile
         var items = _viewModel.SelectedItems;
         var paths = _viewModel.SelectedItems.Select(i => i.ItemPath).ToArray();
         await FileSystemHelper.OpenFile(paths, _viewModel.CurFolderPath);
