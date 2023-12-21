@@ -1,18 +1,67 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Microsoft.Extensions.Logging;
+
 namespace Files.Shared.Extensions;
 
 public class SafetyExtensions
 {
-    public static T? IgnoreExceptions<T>(Func<T> action)
+    public static bool IgnoreExceptions(Action action, ILogger? logger = null)
+    {
+        try
+        {
+            action();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger?.LogInformation(ex, ex.Message);
+
+            return false;
+        }
+    }
+
+    public static async Task<bool> IgnoreExceptions(Func<Task> action, ILogger? logger = null)
+    {
+        try
+        {
+            await action();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger?.LogInformation(ex, ex.Message);
+
+            return false;
+        }
+    }
+
+    public static T? IgnoreExceptions<T>(Func<T> action, ILogger? logger = null)
     {
         try
         {
             return action();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            logger?.LogInformation(ex, ex.Message);
+
+            return default;
+        }
+    }
+
+    public static async Task<T?> IgnoreExceptions<T>(Func<Task<T>> action, ILogger? logger = null)
+    {
+        try
+        {
+            return await action();
+        }
+        catch (Exception ex)
+        {
+            logger?.LogInformation(ex, ex.Message);
+
             return default;
         }
     }

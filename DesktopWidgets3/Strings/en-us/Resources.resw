@@ -315,4 +315,46 @@
   <data name="Folder" xml:space="preserve">
     <value>Folder</value>
   </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="OpenWith" xml:space="preserve">
+    <value>Open with</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteItemDescription" xml:space="preserve">
+    <value>Delete item(s)</value>
+  </data>
+  <data name="OpenItemDescription" xml:space="preserve">
+    <value>Open item(s)</value>
+  </data>
+  <data name="NameWithColon" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="ItemType" xml:space="preserve">
+    <value>Type:</value>
+  </data>
+  <data name="ToolTipDescriptionDate" xml:space="preserve">
+    <value>Date modified:</value>
+  </data>
+  <data name="SizeLabel" xml:space="preserve">
+    <value>Size:</value>
+  </data>
+  <data name="ItemSizeNotCalculated" xml:space="preserve">
+    <value>Not calculated</value>
+  </data>
+  <data name="RecycleBinItemAutomation" xml:space="preserve">
+    <value>Recycle bin item</value>
+  </data>
+  <data name="ShortcutItemAutomation" xml:space="preserve">
+    <value>Shortcut item</value>
+  </data>
+  <data name="FolderItemAutomation" xml:space="preserve">
+    <value>Folder item</value>
+  </data>
 </root>

@@ -1,14 +1,22 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Models.Widget.FolderView;
 using DesktopWidgets3.ViewModels.Commands;
 using Files.App;
+using Files.App.Data.Commands;
+using Files.App.Data.Models;
 using Files.App.Helpers;
+using Files.App.Utils;
 using Files.App.Utils.Storage;
+using Files.App.Utils.Storage.Helpers;
+using Files.App.ViewModels.Layouts;
 using Files.Core.Data.Items;
 using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -17,7 +25,7 @@ using FileAttributes = System.IO.FileAttributes;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
-public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IWidgetUpdate, IWidgetClose
+public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IWidgetUpdate, IWidgetClose, INotifyPropertyChanged
 {
     #region commands
 
@@ -79,7 +87,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private string curFolderPath = string.Empty;
     private string? curParentFolderPath;
     private readonly FileSystemWatcher fileSystemWatcher = new();
-    private string CurFolderPath
+    public string CurFolderPath
     {
         get => curFolderPath;
         set
@@ -97,13 +105,119 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    public FolderViewViewModel()
+    #region select items
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public bool HasSelection => SelectedItems.Count != 0;
+
+    private bool isItemSelected = false;
+    public bool IsItemSelected
     {
-        InitializeFileSystemWatcher();
+        get => isItemSelected;
+        internal set
+        {
+            if (value != isItemSelected)
+            {
+                isItemSelected = value;
+
+                NotifyPropertyChanged(nameof(IsItemSelected));
+            }
+        }
+    }
+
+    private List<ListedItem> selectedItems = new();
+    public List<ListedItem> SelectedItems
+    {
+        get => selectedItems;
+        internal set
+        {
+            if (value != selectedItems)
+            {
+                selectedItems = value;
+
+                if (selectedItems?.Count == 0 || selectedItems?[0] is null)
+                {
+                    IsItemSelected = false;
+                    //SelectedItem = null;
+                    SelectedItemsPropertiesViewModel.IsItemSelected = false;
+
+                    /*ResetRenameDoubleClick();
+                    UpdateSelectionSize();*/
+                }
+                else if (selectedItems is not null)
+                {
+                    IsItemSelected = true;
+                    //SelectedItem = selectedItems.First();
+                    SelectedItemsPropertiesViewModel.IsItemSelected = true;
+
+                    /*UpdateSelectionSize();
+
+                    SelectedItemsPropertiesViewModel.SelectedItemsCount = selectedItems.Count;
+
+                    if (selectedItems.Count == 1)
+                    {
+                        SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems.Count} {"ItemSelected/Text".GetLocalizedResource()}";
+                        DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                        {
+                            // Tapped event must be executed first
+                            await Task.Delay(50);
+                            preRenamingItem = SelectedItem;
+                        });
+                    }
+                    else
+                    {
+                        SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems!.Count} {"ItemsSelected/Text".GetLocalizedResource()}";
+                        ResetRenameDoubleClick();
+                    }*/
+                }
+
+                NotifyPropertyChanged(nameof(SelectedItems));
+            }
+
+            // ParentShellPageInstance!.ToolbarViewModel.SelectedItems = value;
+        }
+    }
+
+    // This method is called by the Set accessor of each property.  
+    // The CallerMemberName attribute that is applied to the optional propertyName  
+    // parameter causes the property name of the caller to be substituted as an argument.  
+    private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    #endregion
+
+    #region some models (will be removed)
+
+    public CurrentInstanceViewModel? InstanceViewModel = new();
+
+    public BaseLayoutViewModel? CommandsViewModel = new();
+
+    public ItemManipulationModel ItemManipulationModel = new();
+
+    public SelectedItemsPropertiesViewModel SelectedItemsPropertiesViewModel = new();
+
+    #endregion
+
+    private readonly ICommandManager _commandManager;
+    private readonly IFileSystemHelpers _fileSystemHelpers;
+
+    public ICommandManager CommandManager => _commandManager;
+    public IFileSystemHelpers FileSystemHelpers => _fileSystemHelpers;
+
+    public FolderViewViewModel(ICommandManager commandManager, IFileSystemHelpers fileSystemHelpers)
+    {
+        _commandManager = commandManager;
+        _commandManager.Initialize(this);
+        _fileSystemHelpers = fileSystemHelpers;
 
         NavigateBackCommand = new ClickCommand(NavigateBack);
         NavigateUpCommand = new ClickCommand(NavigateUp);
         NavigateRefreshCommand = new ClickCommand(NavigateRefresh);
+
+        InitializeFileSystemWatcher();
     }
 
     #region file system watcher
@@ -136,6 +250,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             var index = directories.ToList().IndexOf(path);
             RunOnDispatcherQueue(async () => {
+                var fileExtension = Path.GetExtension(path);
                 var (fileIcon, fileIconOverlay) = await GetIcon(path, true);
                 var item = new ListedItem()
                 {
@@ -145,6 +260,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                     FileImage = fileIcon,
                     IconOverlay = fileIconOverlay,
                     IsHiddenItem = isHiddenItem,
+                    FileExtension = fileExtension,
                 };
                 ListedItems.Insert(index, item);
                 await RefreshFolderIcon();
@@ -239,7 +355,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region command events
 
-    internal async Task FolderViewItemDoubleTapped(string path)
+    internal async Task OpenItem(string path)
     {
         var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path);
         if (isShortcut)
@@ -266,7 +382,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 }
                 else
                 {
-                    OpenHelper.OpenFolder(path);
+                    Helpers.FileSystemHelper.OpenFolder(path);
                 }
             }
             else
@@ -278,7 +394,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             if (File.Exists(path))
             {
-                await OpenHelper.OpenFile(path, CurFolderPath);
+                await Helpers.FileSystemHelper.OpenFile(path, CurFolderPath);
             }
             else
             {
@@ -320,7 +436,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     internal void ToolbarDoubleTapped()
     {
-        OpenHelper.OpenFolder(CurFolderPath);
+        Helpers.FileSystemHelper.OpenFolder(CurFolderPath);
     }
 
     #endregion
@@ -386,6 +502,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 continue;
             }
 
+            var fileExtension = Path.GetExtension(filePath);
             var (fileIcon, fileIconOverlay) = await GetIcon(filePath, false);
             ListedItems.Add(new ListedItem()
             {
@@ -395,6 +512,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 FileImage = fileIcon,
                 IconOverlay = fileIconOverlay,
                 IsHiddenItem = isHiddenItem,
+                FileExtension = fileExtension,
             });
         }
 
@@ -522,5 +640,21 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         fileSystemWatcher.Dispose();
     }
 
+    #endregion
+
+    #region methods form Files.App.Data.Models.ItemViewModel
+
+    public Task<FilesystemResult<BaseStorageFile>> GetFileFromPathAsync(string path)
+    {
+        var paranetFolder = new StorageFolderWithPath(null!, CurFolderPath);
+        return FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileFromPathAsync(path, null!, paranetFolder));
+    }
+
+    public Task<FilesystemResult<BaseStorageFolder>> GetFolderFromPathAsync(string path)
+    {
+        var paranetFolder = new StorageFolderWithPath(null!, CurFolderPath);
+        return FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(path, null!, paranetFolder));
+    }
+    
     #endregion
 }

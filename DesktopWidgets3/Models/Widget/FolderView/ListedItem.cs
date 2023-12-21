@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.App.Utils.Storage;
@@ -40,12 +41,12 @@ public class ListedItem : ObservableObject, IGroupableItem
         get
         {
             var tooltipBuilder = new StringBuilder();
-            tooltipBuilder.AppendLine($"{"NameWithColon".GetLocalizedResource()} {Name}");
-            tooltipBuilder.AppendLine($"{"ItemType".GetLocalizedResource()} {itemType}");
-            tooltipBuilder.Append($"{"ToolTipDescriptionDate".GetLocalizedResource()} {ItemDateModified}");
+            tooltipBuilder.AppendLine($"{"NameWithColon".GetLocalized()} {Name}");
+            tooltipBuilder.AppendLine($"{"ItemType".GetLocalized()} {itemType}");
+            tooltipBuilder.Append($"{"ToolTipDescriptionDate".GetLocalized()} {ItemDateModified}");
             if (!string.IsNullOrWhiteSpace(FileSize))
             {
-                tooltipBuilder.Append($"{Environment.NewLine}{"SizeLabel".GetLocalizedResource()} {FileSize}");
+                tooltipBuilder.Append($"{Environment.NewLine}{"SizeLabel".GetLocalized()} {FileSize}");
             }
 
             /*if (SyncStatusUI.LoadSyncStatus)
@@ -161,7 +162,7 @@ public class ListedItem : ObservableObject, IGroupableItem
         {
             if (SetProperty(ref fileImage, value))
             {
-                if (value is BitmapImage)
+                if (value is not null)
                 {
                     LoadFileIcon = true;
                     NeedsPlaceholderGlyph = false;
@@ -262,7 +263,7 @@ public class ListedItem : ObservableObject, IGroupableItem
         }
     }
 
-    public string FileSizeDisplay => string.IsNullOrEmpty(FileSize) ? "ItemSizeNotCalculated".GetLocalizedResource() : FileSize;
+    public string FileSizeDisplay => string.IsNullOrEmpty(FileSize) ? "ItemSizeNotCalculated".GetLocalized() : FileSize;
 
     public long FileSizeBytes
     {
@@ -353,11 +354,11 @@ public class ListedItem : ObservableObject, IGroupableItem
         string suffix;
         if (IsRecycleBinItem)
         {
-            suffix = "RecycleBinItemAutomation".GetLocalizedResource();
+            suffix = "RecycleBinItemAutomation".GetLocalized();
         }
         else if (IsShortcut)
         {
-            suffix = "ShortcutItemAutomation".GetLocalizedResource();
+            suffix = "ShortcutItemAutomation".GetLocalized();
         }
         /*else if (IsLibrary)
         {
@@ -365,7 +366,7 @@ public class ListedItem : ObservableObject, IGroupableItem
         }*/
         else
         {
-            suffix = PrimaryItemAttribute == StorageItemTypes.File ? "Folder".GetLocalizedResource() : "FolderItemAutomation".GetLocalizedResource();
+            suffix = PrimaryItemAttribute == StorageItemTypes.File ? "Folder".GetLocalized() : "FolderItemAutomation".GetLocalized();
         }
 
         return $"{Name}, {suffix}";
@@ -471,7 +472,7 @@ public class FtpItem : ListedItem
         PrimaryItemAttribute = isFile ? StorageItemTypes.File : StorageItemTypes.Folder;
         ItemPropertiesInitialized = false;
 
-        var itemType = isFile ? "File".GetLocalizedResource() : "Folder".GetLocalizedResource();
+        var itemType = isFile ? "File".GetLocalized() : "Folder".GetLocalized();
         if (isFile && Name.Contains('.', StringComparison.Ordinal))
         {
             itemType = FileExtension.Trim('.') + " " + itemType;

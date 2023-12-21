@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Helpers;
 using Files.App.Data.Exceptions;
 using Files.App.Extensions;
 using Files.App.Helpers;
@@ -28,7 +29,7 @@ public sealed class FtpStorageFolder : BaseStorageFolder, IPasswordProtectedItem
         get;
     }
     public override string DisplayName => Name;
-    public override string DisplayType => "Folder".GetLocalizedResource();
+    public override string DisplayType => "Folder".GetLocalized();
     public string FtpPath
     {
         get;

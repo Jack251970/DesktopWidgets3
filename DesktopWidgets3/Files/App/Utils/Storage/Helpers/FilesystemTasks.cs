@@ -25,6 +25,18 @@ public static class FilesystemTasks
         _ => FileSystemStatusCode.Generic,
     };
 
+    public static async Task<FilesystemResult> Wrap(Func<Task> wrapped)
+    {
+        try
+        {
+            await wrapped();
+            return new FilesystemResult(FileSystemStatusCode.Success);
+        }
+        catch (Exception ex)
+        {
+            return new FilesystemResult(GetErrorCode(ex));
+        }
+    }
     public static async Task<FilesystemResult<T>> Wrap<T>(Func<Task<T>> wrapped)
     {
         try
@@ -35,6 +47,34 @@ public static class FilesystemTasks
         {
             return new FilesystemResult<T>(default!, GetErrorCode(ex, typeof(T)));
         }
+    }
+
+    public static async Task<FilesystemResult> OnSuccess<T>(this Task<FilesystemResult<T>> wrapped, Action<T> func)
+    {
+        var res = await wrapped;
+        if (res)
+        {
+            func(res.Result);
+        }
+        return res;
+    }
+    public static async Task<FilesystemResult> OnSuccess<T>(this Task<FilesystemResult<T>> wrapped, Func<T, Task> func)
+    {
+        var res = await wrapped;
+        if (res)
+        {
+            return await Wrap(() => func(res.Result));
+        }
+        return res;
+    }
+    public static async Task<FilesystemResult<V>> OnSuccess<V, T>(this Task<FilesystemResult<T>> wrapped, Func<T, Task<V>> func)
+    {
+        var res = await wrapped;
+        if (res)
+        {
+            return await Wrap(() => func(res.Result));
+        }
+        return new FilesystemResult<V>(default!, res.ErrorCode);
     }
 
     private static FileSystemStatusCode ToStatusCode(Type T)

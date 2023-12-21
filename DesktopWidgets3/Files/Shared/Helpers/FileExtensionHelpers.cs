@@ -120,4 +120,14 @@ public class FileExtensionHelpers
     {
         return HasExtension(filePathToCheck, ".py");
     }
+
+    /// <summary>
+    /// Check if the file extension is a zip file.
+    /// </summary>
+    /// <param name="fileExtensionToCheck">The file extension to check.</param>
+    /// <returns><c>true</c> if the fileExtensionToCheck is a zip bundle file; otherwise, <c>false</c>.</returns>
+    public static bool IsZipFile(string? fileExtensionToCheck)
+    {
+        return HasExtension(fileExtensionToCheck, ".zip", ".msix", ".appx", ".msixbundle", ".appxbundle", ".7z", ".rar", ".tar", ".mcpack", ".mcworld", ".jar", ".gz", ".lzh");
+    }
 }

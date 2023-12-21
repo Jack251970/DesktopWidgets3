@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
+using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.App.Utils.Storage.Helpers;
@@ -32,7 +33,7 @@ public class VirtualStorageFile : BaseStorageFile
     {
         get
         {
-            var itemType = "File".GetLocalizedResource();
+            var itemType = "File".GetLocalized();
             if (Name.Contains('.', StringComparison.Ordinal))
             {
                 itemType = IO.Path.GetExtension(Name).Trim('.') + " " + itemType;

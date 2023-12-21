@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.App.Utils.Storage.Helpers;
@@ -38,7 +39,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
     {
         get
         {
-            var itemType = "File".GetLocalizedResource();
+            var itemType = "File".GetLocalized();
             if (Name.Contains('.', StringComparison.Ordinal))
             {
                 itemType = FileType.Trim('.') + " " + itemType;

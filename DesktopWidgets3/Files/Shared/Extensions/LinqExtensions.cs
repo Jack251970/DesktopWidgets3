@@ -102,6 +102,30 @@ public static class LinqExtensions
         return dictionary[key];
     }
 
+    public static async Task<IEnumerable<T>> WhereAsync<T>(this IEnumerable<T> source, Func<T, Task<bool>> predicate)
+    {
+        var results = await Task.WhenAll(source.Select(async x => (x, await predicate(x))));
+
+        return results.Where(x => x.Item2).Select(x => x.x);
+    }
+
+    public static IEnumerable<TSource> ExceptBy<TSource, TKey>(this IEnumerable<TSource> source, IEnumerable<TSource> other, Func<TSource, TKey> keySelector)
+    {
+        var set = new HashSet<TKey>(other.Select(keySelector));
+
+        foreach (var item in source)
+        {
+            if (set.Add(keySelector(item)))
+            {
+                yield return item;
+            }
+        }
+    }
+
+    public static IEnumerable<T> IntersectBy<T, TKey>(this IEnumerable<T> items, IEnumerable<T> others, Func<T, TKey> keySelector)
+    {
+        return items.Join(others.Select(keySelector), keySelector, id => id, (o, id) => o);
+    }
 
     /// <summary>
     /// Enumerates through <see cref="IEnumerable{T}"/> of elements and executes <paramref name="action"/>
@@ -115,5 +139,47 @@ public static class LinqExtensions
         {
             action(value);
         }
+    }
+
+    public static int AddSorted<T>(this IList<T> list, T item) where T : IComparable<T>
+    {
+        if (!list.Any() || list.Last().CompareTo(item) <= 0)
+        {
+            list.Add(item);
+
+            return list.Count;
+        }
+
+        if (list[0].CompareTo(item) >= 0)
+        {
+            list.Insert(0, item);
+
+            return 0;
+        }
+
+        var index = list.ToList().BinarySearch(item);
+        if (index < 0)
+        {
+            index = ~index;
+        }
+
+        list.Insert(index, item);
+
+        return index;
+    }
+
+    /// <summary>
+    /// Removes all elements from the specified index to the end of the list.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="index"></param>
+    public static List<T> RemoveFrom<T>(this List<T> list, int index)
+    {
+        return !list.Any()
+            ? list
+            : index <= 0
+            ? new List<T>(0)
+            : list.Take(index - 1).ToList();
     }
 }

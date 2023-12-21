@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.Shared.Helpers;
@@ -41,7 +42,7 @@ public partial class NativeStorageFile : BaseStorageFile
     {
         get
         {
-            var itemType = "File".GetLocalizedResource();
+            var itemType = "File".GetLocalized();
 
             if (Name.Contains('.', StringComparison.Ordinal))
             {

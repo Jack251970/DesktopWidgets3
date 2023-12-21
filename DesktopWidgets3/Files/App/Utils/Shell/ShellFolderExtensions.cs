@@ -146,6 +146,11 @@ public static class ShellFolderExtensions
 
         return value;
     }
+
+    public static string GetParsingPath(this ShellItem item)
+    {
+        return item is null ? null! : item.IsFileSystem ? item.FileSystemPath : item.ParsingName;
+    }
 }
 
 public static class DateExtensions

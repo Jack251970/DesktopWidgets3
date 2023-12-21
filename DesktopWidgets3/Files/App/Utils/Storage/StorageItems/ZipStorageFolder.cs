@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.Shared.Extensions;
@@ -31,7 +32,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
         get;
     }
     public override string DisplayName => Name;
-    public override string DisplayType => "Folder".GetLocalizedResource();
+    public override string DisplayType => "Folder".GetLocalized();
     public override string FolderRelativeId => $"0\\{Name}";
 
     public override DateTimeOffset DateCreated

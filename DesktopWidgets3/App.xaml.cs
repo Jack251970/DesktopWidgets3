@@ -20,6 +20,7 @@ using DesktopWidgets3.Views.Windows;
 using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
+using Files.App.Data.Commands;
 
 namespace DesktopWidgets3;
 
@@ -143,6 +144,12 @@ public partial class App : Application
 
             // System Info
             services.AddSingleton<ISystemInfoService, SystemInfoService>();
+
+            // File commands
+            services.AddTransient<ICommandManager, CommandManager>();
+
+            // Filesystem Helpers
+            services.AddSingleton<IFileSystemHelpers, FileSystemHelpers>();
 
             #endregion
 

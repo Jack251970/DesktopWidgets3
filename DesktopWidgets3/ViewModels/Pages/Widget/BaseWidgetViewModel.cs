@@ -20,7 +20,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
         get;
     }
 
-    protected WidgetWindow WidgetWindow
+    public WidgetWindow WidgetWindow
     {
         get;
     }
@@ -71,13 +71,14 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
         if (parameter is T settings)
         {
             LoadSettings(settings);
+            NavigatedTo?.Invoke(this, parameter);
             _isInitialized = true;
             return;
         }
-        NavigatedTo?.Invoke(this, parameter);
         if (!_isInitialized)
         {
             LoadSettings(new T());
+            NavigatedTo?.Invoke(this, parameter);
             _isInitialized = true;
         }
     }

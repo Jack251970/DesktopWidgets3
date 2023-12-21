@@ -27,5 +27,7 @@ public class StorageFolderWithPath : IStorageItemWithPath
     public StorageFolderWithPath(BaseStorageFolder folder)
         : this(folder, folder.Path) { }
     public StorageFolderWithPath(BaseStorageFolder folder, string path)
-        => (Item, Path) = (folder, path);
+    {
+        (Item, Path) = (folder, path);
+    }
 }

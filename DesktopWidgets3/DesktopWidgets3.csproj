@@ -40,6 +40,8 @@
     <Content Remove="Assets\PackageIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Files\App\TrayMenuControl.xaml" />
+    <None Remove="Files\App\UserContols\Menus\MenuFlyoutItemWithImage.xaml" />
     <None Remove="Views\Controls\TrayIconView.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\EditModeOverlayPage.xaml" />
@@ -114,6 +116,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Files\App\TrayMenuControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Files\App\UserContols\Menus\MenuFlyoutItemWithImage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\Controls\TrayIconView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>

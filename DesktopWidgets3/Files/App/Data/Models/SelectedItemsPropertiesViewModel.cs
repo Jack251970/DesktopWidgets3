@@ -535,7 +535,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
         // Checks if all the item extensions are image extensions of some kind.
         IsSelectedItemImage = itemExtensions.TrueForAll(FileExtensionHelpers.IsImageFile);
         // Checks if there is only one selected item and if it's a shortcut.
-        IsSelectedItemShortcut = (itemExtensions.Count == 1) && (itemExtensions.TrueForAll(itemExtension => FileExtensionHelpers.IsShortcutFile(itemExtension)));
+        IsSelectedItemShortcut = (itemExtensions.Count == 1) && (itemExtensions.TrueForAll(FileExtensionHelpers.IsShortcutFile));
     }
 
     private string shortcutItemType;

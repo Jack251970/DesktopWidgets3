@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Helpers;
 using Files.Shared.Extensions;
 using ByteSize = ByteSizeLib.ByteSize;
 
@@ -53,13 +54,13 @@ public static class StringExtensions
 
     private static readonly Dictionary<string, string> abbreviations = new()
     {
-        { "KiB", "KiloByteSymbol".GetLocalizedResource() },
-        { "MiB", "MegaByteSymbol".GetLocalizedResource() },
-        { "GiB", "GigaByteSymbol".GetLocalizedResource() },
-        { "TiB", "TeraByteSymbol".GetLocalizedResource() },
-        { "PiB", "PetaByteSymbol".GetLocalizedResource() },
-        { "B", "ByteSymbol".GetLocalizedResource() },
-        { "b", "ByteSymbol".GetLocalizedResource() }
+        { "KiB", "KiloByteSymbol".GetLocalized() },
+        { "MiB", "MegaByteSymbol".GetLocalized() },
+        { "GiB", "GigaByteSymbol".GetLocalized() },
+        { "TiB", "TeraByteSymbol".GetLocalized() },
+        { "PiB", "PetaByteSymbol".GetLocalized() },
+        { "B", "ByteSymbol".GetLocalized() },
+        { "b", "ByteSymbol".GetLocalized() }
     };
 
     public static string ConvertSizeAbbreviation(this string value)
@@ -79,8 +80,5 @@ public static class StringExtensions
 
     public static string ToLongSizeString(this long size) => ByteSize.FromBytes(size).ToLongSizeString();
     public static string ToLongSizeString(this ulong size) => ByteSize.FromBytes(size).ToLongSizeString();
-    public static string ToLongSizeString(this ByteSize size) => $"{size.ToSizeString()} ({size.Bytes:#,##0} {"ItemSizeBytes".GetLocalizedResource()})";
-
-    // TODO!!
-    public static string GetLocalizedResource(this string resourceKey) => resourceKey;
+    public static string ToLongSizeString(this ByteSize size) => $"{size.ToSizeString()} ({size.Bytes:#,##0} {"ItemSizeBytes".GetLocalized()})";
 }

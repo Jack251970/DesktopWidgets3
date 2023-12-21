@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
+using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Windows.Foundation;
 using Windows.Storage;
@@ -21,7 +22,7 @@ public class VirtualStorageFolder : BaseStorageFolder
         get;
     }
     public override string DisplayName => Name;
-    public override string DisplayType => "Folder".GetLocalizedResource();
+    public override string DisplayType => "Folder".GetLocalized();
     public override string FolderRelativeId => $"0\\{Name}";
 
     public override DateTimeOffset DateCreated
