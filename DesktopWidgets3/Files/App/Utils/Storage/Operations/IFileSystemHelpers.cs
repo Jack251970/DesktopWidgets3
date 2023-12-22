@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Utils.Storage;
 using Files.Core.Data.Enums;
 
 namespace Files.App.Utils.Storage;
