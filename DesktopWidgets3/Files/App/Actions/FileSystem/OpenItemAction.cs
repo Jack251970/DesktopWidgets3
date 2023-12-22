@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Commands;
+using Files.App.Helpers;
 
 namespace Files.App.Actions;
 
@@ -40,12 +41,9 @@ internal class OpenItemAction : ObservableObject, IAction
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
 
-    public async Task ExecuteAsync()
+    public Task ExecuteAsync()
     {
-        // TODO: Optimize multiple file opening here in OpenFile
-        var items = _viewModel.SelectedItems;
-        var paths = _viewModel.SelectedItems.Select(i => i.ItemPath).ToArray();
-        await FileSystemHelper.OpenFile(paths, _viewModel.CurFolderPath);
+        return NavigationHelpers.OpenSelectedItemsAsync(_viewModel);
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

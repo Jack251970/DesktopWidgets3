@@ -1,7 +1,6 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.Mvvm.DependencyInjection;
 using Files.Core.Services.DateTimeFormatter;
 using Microsoft.UI.Xaml.Data;
 
@@ -9,7 +8,7 @@ namespace Files.App.Converts;
 
 internal sealed class DateTimeOffsetToStringConverter : IValueConverter
 {
-    private static readonly IDateTimeFormatter formatter = Ioc.Default.GetService<IDateTimeFormatter>()!;
+    private static readonly IDateTimeFormatter formatter = DesktopWidgets3.App.GetService<IDateTimeFormatter>();
 
     public object Convert(object value, Type targetType, object parameter, string language)
     {

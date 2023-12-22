@@ -16,12 +16,16 @@ public static class Fractions
         if (w > 0)
         {
             if (n > 0)
+            {
                 ret = $"{w} {n}/{d}";
+            }
         }
         else
         {
             if (n > 0)
+            {
                 ret = $"{n}/{d}";
+            }
         }
         return ret;
     }

@@ -11,7 +11,7 @@ using Vanara.Windows.Shell;
 
 namespace Files.App.Utils.Shell;
 
-public static class LaunchHelper
+public static partial class LaunchHelper
 {
     public static Task<bool> LaunchAppAsync(string application, string arguments, string workingDirectory)
     {
@@ -153,7 +153,7 @@ public static class LaunchHelper
 
                                 if (cMenu is not null)
                                 {
-                                    await cMenu.InvokeItem(cMenu.Items.FirstOrDefault()?.ID ?? -1);
+                                    await cMenu.InvokeItem(cMenu.Items!.FirstOrDefault()?.ID ?? -1);
                                 }
 
                                 return true;
@@ -163,10 +163,10 @@ public static class LaunchHelper
 
                     if (!opened)
                     {
-                        var isAlternateStream = Regex.IsMatch(application, @"\w:\w");
+                        var isAlternateStream = MyRegex().IsMatch(application);
                         if (isAlternateStream)
                         {
-                            var basePath = Path.Combine(Environment.GetEnvironmentVariable("TEMP"), Guid.NewGuid().ToString("n"));
+                            var basePath = Path.Combine(Environment.GetEnvironmentVariable("TEMP")!, Guid.NewGuid().ToString("n"));
                             Kernel32.CreateDirectory(basePath);
 
                             var tempPath = Path.Combine(basePath, new string(Path.GetFileName(application).SkipWhile(x => x != ':').Skip(1).ToArray()));
@@ -220,10 +220,15 @@ public static class LaunchHelper
             using var computer = new ShellFolder(Shell32.KNOWNFOLDERID.FOLDERID_ComputerFolder);
             using var device = computer.FirstOrDefault(i => executable.Replace("\\\\?\\", "", StringComparison.Ordinal).StartsWith(i.Name, StringComparison.Ordinal));
             var deviceId = device?.ParsingName;
-            var itemPath = Regex.Replace(executable, @"^\\\\\?\\[^\\]*\\?", "");
+            var itemPath = MyRegex1().Replace(executable, "");
             return deviceId is not null ? Path.Combine(deviceId, itemPath) : executable;
         }
 
         return executable;
     }
+
+    [GeneratedRegex("\\w:\\w")]
+    private static partial Regex MyRegex();
+    [GeneratedRegex("^\\\\\\\\\\?\\\\[^\\\\]*\\\\?")]
+    private static partial Regex MyRegex1();
 }

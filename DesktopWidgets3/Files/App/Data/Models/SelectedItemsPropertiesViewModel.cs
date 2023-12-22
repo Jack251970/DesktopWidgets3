@@ -4,7 +4,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Files.App.Extensions;
 using Files.App.ViewModels.Properties;
@@ -15,7 +14,7 @@ namespace Files.App.Data.Models;
 
 public class SelectedItemsPropertiesViewModel : ObservableObject
 {
-    private static readonly IDateTimeFormatter dateTimeFormatter = Ioc.Default.GetRequiredService<IDateTimeFormatter>();
+    private static readonly IDateTimeFormatter dateTimeFormatter = DesktopWidgets3.App.GetService<IDateTimeFormatter>();
 
     private bool loadFolderGlyph;
     public bool LoadFolderGlyph

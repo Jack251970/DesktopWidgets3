@@ -22,6 +22,8 @@ using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
 using Files.App.Data.Commands;
 using Files.App.Utils.Storage;
+using Files.App.Services.DateTimeFormatter;
+using Files.Core.Services.DateTimeFormatter;
 
 namespace DesktopWidgets3;
 
@@ -146,11 +148,15 @@ public partial class App : Application
             // System Info
             services.AddSingleton<ISystemInfoService, SystemInfoService>();
 
-            // File commands
+            // File Commands
             services.AddTransient<ICommandManager, CommandManager>();
 
             // Filesystem Helpers
             services.AddSingleton<IFileSystemHelpers, FileSystemHelpers>();
+
+            // DateTime Format
+            services.AddSingleton<IDateTimeFormatter, UserDateTimeFormatter>();
+            services.AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>();
 
             #endregion
 

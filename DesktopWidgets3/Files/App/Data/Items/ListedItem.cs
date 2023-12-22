@@ -4,15 +4,15 @@
 using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Files.App.Helpers;
+using Files.App.Utils.Library;
 using Files.App.Utils.Storage;
-using Files.App.ViewModels.Properties;
 using Files.Core.Services.DateTimeFormatter;
 using Files.Shared.Helpers;
 using FluentFTP;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;
 
@@ -20,14 +20,11 @@ namespace Files.App.Utils;
 
 public class ListedItem : ObservableObject, IGroupableItem
 {
-    protected static readonly IDateTimeFormatter dateTimeFormatter = Ioc.Default.GetRequiredService<IDateTimeFormatter>();
+    protected static readonly IDateTimeFormatter dateTimeFormatter = DesktopWidgets3.App.GetService<IDateTimeFormatter>();
 
     public bool IsHiddenItem { get; set; } = false;
 
-    public StorageItemTypes PrimaryItemAttribute
-    {
-        get; set;
-    }
+    public StorageItemTypes PrimaryItemAttribute { get; set; }
 
     private volatile int itemPropertiesInitialized = 0;
     public bool ItemPropertiesInitialized
@@ -58,10 +55,7 @@ public class ListedItem : ObservableObject, IGroupableItem
         }
     }
 
-    public string FolderRelativeId
-    {
-        get; set;
-    }
+    /*public string FolderRelativeId { get; set; }*/
 
     public bool ContainsFilesOrFolders { get; set; } = true;
 
@@ -106,10 +100,7 @@ public class ListedItem : ObservableObject, IGroupableItem
         }
     }
 
-    public ulong? FileFRN
-    {
-        get; set;
-    }
+    /*public ulong? FileFRN { get; set; }*/
 
     private Uri customIconSource;
     public Uri CustomIconSource
@@ -125,12 +116,12 @@ public class ListedItem : ObservableObject, IGroupableItem
         set => SetProperty(ref opacity, value);
     }
 
-    private bool hasTags;
+    /*private bool hasTags;
     public bool HasTags
     {
         get => hasTags;
         set => SetProperty(ref hasTags, value);
-    }
+    }*/
 
     /*private CloudDriveSyncStatusUI syncStatusUI = new();
     public CloudDriveSyncStatusUI SyncStatusUI
@@ -316,33 +307,29 @@ public class ListedItem : ObservableObject, IGroupableItem
         }
     }
 
-    private ObservableCollection<FileProperty> itemProperties;
+    /*private ObservableCollection<FileProperty> itemProperties;
     public ObservableCollection<FileProperty> ItemProperties
     {
         get => itemProperties;
         set => SetProperty(ref itemProperties, value);
-    }
+    }*/
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ListedItem" /> class.
-    /// </summary>
-    /// <param name="folderRelativeId"></param>
-    public ListedItem(string folderRelativeId)
+    /*public ListedItem(string folderRelativeId)
     {
         FolderRelativeId = folderRelativeId;
-    }
+    }*/
 
     // Parameterless constructor for JsonConvert
     public ListedItem()
     {
     }
 
-    private ObservableCollection<FileProperty> fileDetails;
+    /*private ObservableCollection<FileProperty> fileDetails;
     public ObservableCollection<FileProperty> FileDetails
     {
         get => fileDetails;
         set => SetProperty(ref fileDetails, value);
-    }
+    }*/
 
     public override string ToString()
     {
@@ -375,28 +362,25 @@ public class ListedItem : ObservableObject, IGroupableItem
     public bool IsFtpItem => this is FtpItem;
     public bool IsArchive => this is ZipItem;
     public bool IsAlternateStream => this is AlternateStreamItem;
-    // public bool IsGitItem => this is GitItem;
+    public bool IsGitItem => this is GitItem;
     public virtual bool IsExecutable => FileExtensionHelpers.IsExecutableFile(ItemPath);
     public virtual bool IsPythonFile => FileExtensionHelpers.IsPythonFile(ItemPath);
     public bool IsDriveRoot => ItemPath == PathNormalization.GetPathRoot(ItemPath);
     // public bool IsElevated => CheckElevationRights();
 
-    private BaseStorageFile itemFile;
+    /*private BaseStorageFile itemFile;
     public BaseStorageFile ItemFile
     {
         get => itemFile;
         set => SetProperty(ref itemFile, value);
-    }
+    }*/
 
     // This is a hack used because x:Bind casting did not work properly
-    public RecycleBinItem AsRecycleBinItem => this as RecycleBinItem;
+    public RecycleBinItem? AsRecycleBinItem => this as RecycleBinItem;
 
-    // public GitItem AsGitItem => this as GitItem;
+    public GitItem? AsGitItem => this as GitItem;
 
-    public string Key
-    {
-        get; set;
-    }
+    public string Key { get; set; }
 
     /*/// <summary>
     /// Manually check if a folder path contains child items,
@@ -421,9 +405,9 @@ public class ListedItem : ObservableObject, IGroupableItem
 
 public class RecycleBinItem : ListedItem
 {
-    public RecycleBinItem(string folderRelativeId) : base(folderRelativeId)
+    /*public RecycleBinItem(string folderRelativeId) : base(folderRelativeId)
     {
-    }
+    }*/
 
     public string ItemDateDeleted
     {
@@ -456,7 +440,7 @@ public class RecycleBinItem : ListedItem
 
 public class FtpItem : ListedItem
 {
-    public FtpItem(FtpListItem item, string folder) : base(null!)
+    public FtpItem(FtpListItem item, string folder) : base()
     {
         var isFile = item.Type == FtpObjectType.File;
         ItemDateCreatedReal = item.RawCreated < DateTime.FromFileTimeUtc(0) ? DateTimeOffset.MinValue : item.RawCreated;
@@ -491,9 +475,9 @@ public class FtpItem : ListedItem
 
 public class ShortcutItem : ListedItem
 {
-    public ShortcutItem(string folderRelativeId) : base(folderRelativeId)
+    /*public ShortcutItem(string folderRelativeId) : base(folderRelativeId)
     {
-    }
+    }*/
 
     // Parameterless constructor for JsonConvert
     public ShortcutItem() : base()
@@ -534,19 +518,20 @@ public class ShortcutItem : ListedItem
 
 public class ZipItem : ListedItem
 {
-    public ZipItem(string folderRelativeId) : base(folderRelativeId)
+    /*public ZipItem(string folderRelativeId) : base(folderRelativeId)
     {
-    }
+    }*/
 
     public override string Name
     {
         get
         {
-            /*var nameWithoutExtension = Path.GetFileNameWithoutExtension(ItemNameRaw);
-            if (!string.IsNullOrEmpty(nameWithoutExtension) && !UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+            var nameWithoutExtension = Path.GetFileNameWithoutExtension(ItemNameRaw);
+            // TODO: Add UserSettingsService.FoldersSettingsService.ShowFileExtensions into settings.
+            if (!string.IsNullOrEmpty(nameWithoutExtension) && true)//&& !UserSettingsService.FoldersSettingsService.ShowFileExtensions)
             {
                 return nameWithoutExtension;
-            }*/
+            }
             return ItemNameRaw;
         }
     }
@@ -557,14 +542,14 @@ public class ZipItem : ListedItem
     }
 }
 
-/*public class LibraryItem : ListedItem
+public class LibraryItem : ListedItem
 {
-    public LibraryItem(LibraryLocationItem library) : base(null!)
+    public LibraryItem(LibraryLocationItem library) : base()
     {
         ItemPath = library.Path;
         ItemNameRaw = library.Text;
         PrimaryItemAttribute = StorageItemTypes.Folder;
-        ItemType = "Library".GetLocalizedResource();
+        ItemType = "Library".GetLocalized();
         LoadCustomIcon = true;
         CustomIcon = library.Icon;
         //CustomIconSource = library.IconSource;
@@ -591,7 +576,7 @@ public class ZipItem : ListedItem
     {
         get;
     }
-}*/
+}
 
 public class AlternateStreamItem : ListedItem
 {
@@ -613,7 +598,7 @@ public class AlternateStreamItem : ListedItem
     }
 }
 
-/*public class GitItem : ListedItem
+public class GitItem : ListedItem
 {
     private volatile int statusPropertiesInitialized = 0;
     public bool StatusPropertiesInitialized
@@ -688,4 +673,4 @@ public class AlternateStreamItem : ListedItem
         get => _GitLastCommitFullSha;
         set => SetProperty(ref _GitLastCommitFullSha, value);
     }
-}*/
+}

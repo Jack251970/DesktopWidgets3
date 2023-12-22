@@ -42,6 +42,7 @@ public class FileSystemHelper
         _ = await Win32Helpers.InvokeWin32ComponentAsync(path, args, workingDirectory);
     }
 
+    // Undone
     public static void OpenFolder(string path) => OpenFolder(path, string.Empty);
 
     public static void OpenFolder(string path, string args)

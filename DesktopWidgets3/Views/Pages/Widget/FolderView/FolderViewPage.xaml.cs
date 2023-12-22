@@ -41,15 +41,21 @@ public sealed partial class FolderViewPage : BaseLayoutPage
 
     #endregion
 
-    #region item double tapped event
+    #region item open
 
     private async void FileList_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
-        if (e.OriginalSource is FrameworkElement { DataContext: ListedItem item })
+        // Skip opening selected items if the double tap doesn't capture an item
+        if (e.OriginalSource is FrameworkElement { DataContext: ListedItem })
         {
-            var filePath = item.ItemPath;
-            await ViewModel.OpenItem(filePath);
+            await ViewModel.CommandManager.OpenItem.ExecuteAsync();
         }
+        // TODO: Add UserSettingsService.FoldersSettingsService.DoubleClickToGoUp here.
+        /*else if (UserSettingsService.FoldersSettingsService.DoubleClickToGoUp)
+        {
+            await Commands.NavigateUp.ExecuteAsync();
+        }*/
+        ResetRenameDoubleClick();
     }
 
     #endregion
