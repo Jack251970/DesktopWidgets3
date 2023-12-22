@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.ViewModels;
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 using Files.App.Utils;
 using DesktopWidgets3.ViewModels.Commands;
@@ -537,11 +536,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         if (ShowIconOverlay)
         {
-            return await FileIconHelper.GetFileIconAndOverlayAsync(filePath, isFolder);
+            var iconInfo = await FileThumbnailHelper.LoadIconAndOverlayAsync(filePath, 96, isFolder);
+            return (await iconInfo.IconData.ToBitmapAsync(), await iconInfo.OverlayData.ToBitmapAsync());
         }
         else
         {
-            return (await FileIconHelper.GetFileIconWithoutOverlayAsync(filePath, isFolder), null);
+            var iconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(filePath, 96, isFolder);
+            return (await iconData.ToBitmapAsync(), null);
         }
     }
 

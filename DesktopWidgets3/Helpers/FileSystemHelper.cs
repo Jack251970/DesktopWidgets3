@@ -54,16 +54,4 @@ public class FileSystemHelper
         process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
         process.Start();
     }
-
-    public static void DeleteFile(string path)
-    {
-        if (NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Directory))
-        {
-            Directory.Delete(path, true);
-        }
-        else
-        {
-            File.Delete(path);
-        }
-    }
 }
