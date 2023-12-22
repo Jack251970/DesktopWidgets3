@@ -176,11 +176,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    #region some models (will be removed)
+    #region some models (maybe will be removed)
 
-    public CurrentInstanceViewModel? InstanceViewModel = new();
+    public CurrentInstanceViewModel InstanceViewModel = new();
 
-    public BaseLayoutViewModel? CommandsViewModel = new();
+    public BaseLayoutViewModel CommandsViewModel = new();
 
     public ItemManipulationModel ItemManipulationModel = new();
 
