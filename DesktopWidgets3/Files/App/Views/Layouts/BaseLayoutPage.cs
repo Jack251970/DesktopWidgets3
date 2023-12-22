@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Models.Widget.FolderView;
+using Files.App.Utils;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Models;
 using Files.App.Helpers.ContextFlyouts;

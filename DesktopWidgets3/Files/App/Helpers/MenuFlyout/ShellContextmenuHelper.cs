@@ -3,7 +3,7 @@
 
 using CommunityToolkit.Mvvm.Input;
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Models.Widget.FolderView;
+using Files.App.Utils;
 using Files.App.Data.Models;
 using Files.App.Helpers.ContextFlyouts;
 using Files.App.Utils.Shell;

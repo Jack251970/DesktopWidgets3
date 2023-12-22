@@ -16,7 +16,7 @@ using FluentFTP;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Models.Widget.FolderView;
+namespace Files.App.Utils;
 
 public class ListedItem : ObservableObject, IGroupableItem
 {

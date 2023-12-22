@@ -3,7 +3,7 @@
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
-using DesktopWidgets3.Models.Widget.FolderView;
+using Files.App.Utils;
 using Microsoft.UI.Xaml.Media;
 using CommunityToolkit.WinUI.UI;
 using Files.App.Views.Layouts;

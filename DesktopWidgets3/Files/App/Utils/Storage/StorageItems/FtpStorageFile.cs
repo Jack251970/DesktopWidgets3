@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Models.Widget.FolderView;
+using Files.App.Utils;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.App.Storage.FtpStorage;

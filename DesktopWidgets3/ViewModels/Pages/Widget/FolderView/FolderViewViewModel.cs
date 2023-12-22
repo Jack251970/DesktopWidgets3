@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
-using DesktopWidgets3.Models.Widget.FolderView;
+using Files.App.Utils;
 using DesktopWidgets3.ViewModels.Commands;
 using Files.App;
 using Files.App.Data.Commands;

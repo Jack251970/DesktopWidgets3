@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
-using DesktopWidgets3.Models.Widget.FolderView;
+using Files.App.Utils;
 using Files.App.Helpers;
 using Windows.Foundation;
 using Windows.Storage;
