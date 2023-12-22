@@ -22,6 +22,8 @@ using Windows.Foundation;
 using Files.App.Data.Commands;
 using Files.App.ViewModels.Layouts;
 using CommunityToolkit.WinUI.UI;
+using Files.App.Utils.Storage;
+using Files.App.Extensions;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
 
 namespace Files.App.Views.Layouts;
@@ -40,6 +42,7 @@ public abstract class BaseLayoutPage : Page
     // Abstract methods
     protected abstract bool CanGetItemFromElement(object element);
     protected abstract void InitializeItemManipulationModel();
+    protected abstract void EndRename(TextBox textBox);
 
     #endregion
 
@@ -52,10 +55,26 @@ public abstract class BaseLayoutPage : Page
     protected SelectedItemsPropertiesViewModel SelectedItemsPropertiesViewModel => ViewModel.SelectedItemsPropertiesViewModel;
     protected BaseLayoutViewModel CommandsViewModel => ViewModel.CommandsViewModel;
     protected ICommandManager CommandsManager => ViewModel.CommandManager;
+    protected ListedItem? SelectedItem => ViewModel.SelectedItem;
     protected List<ListedItem> SelectedItems
     {
         get => ViewModel.SelectedItems;
         set => ViewModel.SelectedItems = value;
+    }
+    protected bool IsRenamingItem
+    {
+        get => ViewModel.IsRenamingItem;
+        set => ViewModel.IsRenamingItem = value;
+    }
+    protected ListedItem? RenamingItem
+    {
+        get => ViewModel.RenamingItem;
+        set => ViewModel.RenamingItem = value;
+    }
+    protected string? OldItemName
+    {
+        get => ViewModel.OldItemName;
+        set => ViewModel.OldItemName = value;
     }
 
     // Context menu properties
@@ -72,6 +91,8 @@ public abstract class BaseLayoutPage : Page
     // Item rename properties
     private readonly DispatcherQueueTimer tapDebounceTimer;
     private ListedItem? preRenamingItem = null;
+    private const int KEY_DOWN_MASK = 0x8000;
+    protected int NextRenameIndex = 0;
 
     #endregion
 
@@ -439,6 +460,190 @@ public abstract class BaseLayoutPage : Page
 
     #region Item rename
 
+    protected async virtual Task CommitRenameAsync(TextBox textBox)
+    {
+        EndRename(textBox);
+        var newItemName = textBox.Text.Trim().TrimEnd('.');
+
+        //await UIFileSystemHelpers.RenameFileItemAsync(RenamingItem, newItemName, ParentShellPageInstance);
+        await UIFileSystemHelpers.RenameFileItemAsync(ViewModel, RenamingItem!, newItemName);
+    }
+
+    public void CheckRenameDoubleClick(object clickedItem)
+    {
+        if (clickedItem is ListedItem item)
+        {
+            if (item == preRenamingItem)
+            {
+                tapDebounceTimer.Debounce(() =>
+                {
+                    if (item == preRenamingItem)
+                    {
+                        StartRenameItem();
+                        tapDebounceTimer.Stop();
+                    }
+                },
+                TimeSpan.FromMilliseconds(500));
+            }
+            else
+            {
+                tapDebounceTimer.Stop();
+                preRenamingItem = item;
+            }
+        }
+        else
+        {
+            ResetRenameDoubleClick();
+        }
+    }
+
+    public virtual void StartRenameItem()
+    {
+    }
+
+    protected virtual void StartRenameItem(string itemNameTextBox)
+    {
+        RenamingItem = SelectedItem;
+        if (RenamingItem is null)
+        {
+            return;
+        }
+
+        if (ItemsControl.ContainerFromItem(RenamingItem) is not ListViewItem listViewItem)
+        {
+            return;
+        }
+
+        var textBlock = listViewItem.FindDescendant("ItemName") as TextBlock;
+        var textBox = listViewItem.FindDescendant(itemNameTextBox) as TextBox;
+        textBox!.Text = textBlock!.Text;
+        OldItemName = textBlock.Text;
+        textBlock.Visibility = Visibility.Collapsed;
+        textBox.Visibility = Visibility.Visible;
+
+        if (textBox.FindParent<Grid>() is null)
+        {
+            textBlock.Visibility = Visibility.Visible;
+            textBox.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        Grid.SetColumnSpan(textBox.FindParent<Grid>(), 8);
+
+        textBox.Focus(FocusState.Pointer);
+        textBox.LostFocus += RenameTextBox_LostFocus;
+        textBox.KeyDown += RenameTextBox_KeyDown;
+
+        var selectedTextLength = SelectedItem!.Name.Length;
+
+        // TODO: Add UserSettingsService.FoldersSettingsService.ShowFileExtensions into settings.
+        /*if (!SelectedItem.IsShortcut && UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+        {
+            var extensionLength = RenamingItem.FileExtension?.Length ?? 0;
+            selectedTextLength -= extensionLength;
+        }*/
+
+        textBox.Select(0, selectedTextLength);
+        IsRenamingItem = true;
+    }
+
+    protected async virtual void RenameTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        var mainWindowInstance = ViewModel.WidgetWindow;
+        // This check allows the user to use the text box context menu without ending the rename
+        if (!(FocusManager.GetFocusedElement(mainWindowInstance.Content.XamlRoot) is AppBarButton or Popup))
+        {
+            var textBox = (TextBox)e.OriginalSource;
+            await CommitRenameAsync(textBox);
+        }
+    }
+
+    protected async void RenameTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        var textBox = (TextBox)sender;
+        var listViewBase = ItemsControl as ListViewBase;
+        switch (e.Key)
+        {
+            case VirtualKey.Escape:
+                textBox.LostFocus -= RenameTextBox_LostFocus;
+                textBox.Text = OldItemName;
+                EndRename(textBox);
+                e.Handled = true;
+                break;
+            case VirtualKey.Enter:
+                textBox.LostFocus -= RenameTextBox_LostFocus;
+                await CommitRenameAsync(textBox);
+                e.Handled = true;
+                break;
+            case VirtualKey.Up:
+                textBox.SelectionStart = 0;
+                e.Handled = true;
+                break;
+            case VirtualKey.Down:
+                textBox.SelectionStart = textBox.Text.Length;
+                e.Handled = true;
+                break;
+            case VirtualKey.Left:
+                e.Handled = textBox.SelectionStart == 0;
+                break;
+            case VirtualKey.Right:
+                e.Handled = (textBox.SelectionStart + textBox.SelectionLength) == textBox.Text.Length;
+                break;
+            case VirtualKey.Tab:
+                textBox.LostFocus -= RenameTextBox_LostFocus;
+
+                var isShiftPressed = (InteropHelpers.GetKeyState((int)VirtualKey.Shift) & KEY_DOWN_MASK) != 0;
+                NextRenameIndex = isShiftPressed ? -1 : 1;
+
+                if (textBox.Text != OldItemName)
+                {
+                    await CommitRenameAsync(textBox);
+                }
+                else
+                {
+                    var newIndex = listViewBase!.SelectedIndex + NextRenameIndex;
+                    NextRenameIndex = 0;
+                    EndRename(textBox);
+
+                    if (newIndex >= 0 &&
+                        newIndex < listViewBase.Items.Count)
+                    {
+                        listViewBase.SelectedIndex = newIndex;
+                        StartRenameItem();
+                    }
+                }
+
+                e.Handled = true;
+                break;
+        }
+    }
+
+    public void ResetRenameDoubleClick()
+    {
+        preRenamingItem = null;
+        tapDebounceTimer.Stop();
+    }
+
+    protected async Task ValidateItemNameInputTextAsync(TextBox textBox, TextBoxBeforeTextChangingEventArgs args, Action<bool> showError)
+    {
+        if (FileSystemHelpers.ContainsRestrictedCharacters(args.NewText))
+        {
+            args.Cancel = true;
+
+            await DispatcherQueue.EnqueueOrInvokeAsync(() =>
+            {
+                var oldSelection = textBox.SelectionStart + textBox.SelectionLength;
+                var oldText = textBox.Text;
+                textBox.Text = FileSystemHelpers.FilterRestrictedCharacters(args.NewText);
+                textBox.SelectionStart = oldSelection + textBox.Text.Length - oldText.Length;
+                showError?.Invoke(true);
+            });
+        }
+        else
+        {
+            showError?.Invoke(false);
+        }
+    }
 
     #endregion
 

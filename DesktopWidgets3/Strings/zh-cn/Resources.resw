@@ -351,4 +351,7 @@
   <data name="ShowMoreOptions" xml:space="preserve">
     <value>显示更多选项</value>
   </data>
+  <data name="Rename" xml:space="preserve">
+    <value>重命名</value>
+  </data>
 </root>

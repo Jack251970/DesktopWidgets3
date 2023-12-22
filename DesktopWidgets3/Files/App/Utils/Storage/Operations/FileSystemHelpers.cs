@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using System.Threading;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Helpers;
 using Files.App.Utils.RecycleBin;
-using Files.App.Utils.Storage;
+using Files.App.Utils.StatusCenter;
 using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
 using Files.Shared.Extensions;
@@ -17,6 +18,13 @@ namespace Files.App.Utils.Storage;
 
 public sealed class FileSystemHelpers : IFileSystemHelpers
 {
+    private IFileSystemOperations fileSystemOperations;
+
+    public FileSystemHelpers()
+    {
+        fileSystemOperations = new ShellFileSystemOperations();
+    }
+
     #region delete items
 
     public async Task<ReturnResult> DeleteItemsAsync(
@@ -154,8 +162,108 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
 
     #endregion
 
+    #region rename items
+
+    // Her UserSettingsService.FoldersSettingsService.AreAlternateStreamsVisible = false.
+    private static char[] RestrictedCharacters => new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+
+    private static readonly string[] RestrictedFileNames = new string[]
+    {
+            "CON", "PRN", "AUX",
+            "NUL", "COM1", "COM2",
+            "COM3", "COM4", "COM5",
+            "COM6", "COM7", "COM8",
+            "COM9", "LPT1", "LPT2",
+            "LPT3", "LPT4", "LPT5",
+            "LPT6", "LPT7", "LPT8", "LPT9"
+    };
+
+    public static string FilterRestrictedCharacters(string input)
+    {
+        int invalidCharIndex;
+        while ((invalidCharIndex = input.IndexOfAny(RestrictedCharacters)) >= 0)
+        {
+            input = input.Remove(invalidCharIndex, 1);
+        }
+        return input;
+    }
+
+    public static bool ContainsRestrictedCharacters(string input)
+    {
+        return input.IndexOfAny(RestrictedCharacters) >= 0;
+    }
+
+    public async Task<ReturnResult> RenameAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, string newName, NameCollisionOption collision, bool showExtensionDialog = true)
+    {
+        var returnStatus = ReturnResult.InProgress;
+        var progress = new Progress<StatusCenterItemProgressModel>();
+        progress.ProgressChanged += (s, e) => returnStatus = returnStatus < ReturnResult.Failed ? e.Status!.Value.ToStatus() : returnStatus;
+
+        if (!IsValidForFilename(newName))
+        {
+            // TODO: Show error dialog
+            /*await DialogDisplayHelper.ShowDialogAsync(
+                "ErrorDialogThisActionCannotBeDone".GetLocalizedResource(),
+                "ErrorDialogNameNotAllowed".GetLocalizedResource());*/
+            return ReturnResult.Failed;
+        }
+
+        switch (source.ItemType)
+        {
+            case FilesystemItemType.Directory:
+                returnStatus = await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress);
+                break;
+
+            // Prompt user when extension has changed, not when file name has changed
+            case FilesystemItemType.File:
+                if(showExtensionDialog && Path.GetExtension(source.Path) != Path.GetExtension(newName))
+                {
+                    // TODO: Show dialog here!
+                    //var yesSelected = await DialogDisplayHelper.ShowDialogAsync("Rename".GetLocalizedResource(), "RenameFileDialog/Text".GetLocalizedResource(), "Yes".GetLocalizedResource(), "No".GetLocalizedResource());
+                    var yesSelected = true;
+                    if (yesSelected)
+                    {
+                        returnStatus = await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress);
+                        break;
+                    }
+
+                    break;
+                }
+
+                returnStatus = await fileSystemOperations.RenameAsync(viewModel,source, newName, collision, progress);
+                break;
+
+            default:
+                returnStatus = await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress);
+                break;
+        }
+
+        //await jumpListService.RemoveFolderAsync(source.Path); // Remove items from jump list
+
+        await Task.Yield();
+        return returnStatus;
+    }
+
+    public static bool IsValidForFilename(string name) => !string.IsNullOrWhiteSpace(name) && !ContainsRestrictedCharacters(name) && !ContainsRestrictedFileName(name);
+
+    public static bool ContainsRestrictedFileName(string input)
+    {
+        foreach (var name in RestrictedFileNames)
+        {
+            if (input.StartsWith(name, StringComparison.OrdinalIgnoreCase) && (input.Length == name.Length || input[name.Length] == '.'))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    #endregion
+
     public void Dispose()
     {
-
+        fileSystemOperations?.Dispose();
+        fileSystemOperations = null!;
     }
 }

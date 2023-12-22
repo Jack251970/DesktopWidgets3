@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.ViewModels.Pages.Widget;
+using Files.App.Utils;
 using Files.Core.Data.Enums;
-using Files.Core.Data.Items;
 using Windows.Storage;
 
 namespace Files.App.Helpers;
 
-public static class UIFilesystemHelpers
+public static class UIFileSystemHelpers
 {
     /*public static async Task CreateFileFromDialogResultTypeAsync(AddItemDialogItemType itemType, ShellNewEntry? itemInfo)//IShellPage associatedInstance)
     {
@@ -76,4 +77,78 @@ public static class UIFilesystemHelpers
         return created.Item;
     }*/
 
+    /*public static async Task<bool> RenameFileItemAsync(ListedItem item, string newName, IShellPage associatedInstance, bool showExtensionDialog = true)
+    {
+        if (item is AlternateStreamItem ads) // For alternate streams Name is not a substring ItemNameRaw
+        {
+            newName = item.ItemNameRaw.Replace(
+                item.Name[(item.Name.LastIndexOf(':') + 1)..],
+                newName[(newName.LastIndexOf(':') + 1)..],
+                StringComparison.Ordinal);
+            newName = $"{ads.MainStreamName}:{newName}";
+        }
+        else if (string.IsNullOrEmpty(item.Name))
+        {
+            newName = string.Concat(newName, item.FileExtension);
+        }
+        else
+        {
+            newName = item.ItemNameRaw.Replace(item.Name, newName, StringComparison.Ordinal);
+        }
+
+        if (item.ItemNameRaw == newName || string.IsNullOrEmpty(newName))
+        {
+            return true;
+        }
+
+        var itemType = (item.PrimaryItemAttribute == StorageItemTypes.Folder) ? FilesystemItemType.Directory : FilesystemItemType.File;
+
+        ReturnResult renamed = await associatedInstance.FilesystemHelpers.RenameAsync(StorageHelpers.FromPathAndType(item.ItemPath, itemType), newName, NameCollisionOption.FailIfExists, true, showExtensionDialog);
+
+        if (renamed == ReturnResult.Success)
+        {
+            associatedInstance.ToolbarViewModel.CanGoForward = false;
+            await associatedInstance.RefreshIfNoWatcherExistsAsync();
+            return true;
+        }
+
+        return false;
+    }*/
+    public static async Task<bool> RenameFileItemAsync(FolderViewViewModel viewModel, ListedItem item, string newName, bool showExtensionDialog = true)
+    {
+        if (item is AlternateStreamItem ads) // For alternate streams Name is not a substring ItemNameRaw
+        {
+            newName = item.ItemNameRaw.Replace(
+                item.Name[(item.Name.LastIndexOf(':') + 1)..],
+                newName[(newName.LastIndexOf(':') + 1)..],
+                StringComparison.Ordinal);
+            newName = $"{ads.MainStreamName}:{newName}";
+        }
+        else if (string.IsNullOrEmpty(item.Name))
+        {
+            newName = string.Concat(newName, item.FileExtension);
+        }
+        else
+        {
+            newName = item.ItemNameRaw.Replace(item.Name, newName, StringComparison.Ordinal);
+        }
+
+        if (item.ItemNameRaw == newName || string.IsNullOrEmpty(newName))
+        {
+            return true;
+        }
+
+        var itemType = (item.PrimaryItemAttribute == StorageItemTypes.Folder) ? FilesystemItemType.Directory : FilesystemItemType.File;
+
+        var renamed = await viewModel.FileSystemHelpers.RenameAsync(viewModel, StorageHelpers.FromPathAndType(item.ItemPath, itemType), newName, NameCollisionOption.FailIfExists, showExtensionDialog);
+
+        if (renamed == ReturnResult.Success)
+        {
+            /*associatedInstance.ToolbarViewModel.CanGoForward = false;
+            await associatedInstance.RefreshIfNoWatcherExistsAsync();*/
+            return true;
+        }
+
+        return false;
+    }
 }

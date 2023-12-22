@@ -209,13 +209,7 @@ public class ListedItem : ObservableObject, IGroupableItem
     public string ItemNameRaw
     {
         get => itemNameRaw;
-        set
-        {
-            if (SetProperty(ref itemNameRaw, value))
-            {
-                OnPropertyChanged(nameof(Name));
-            }
-        }
+        set => SetProperty(ref itemNameRaw, value);
     }
 
     public virtual string Name
@@ -224,13 +218,14 @@ public class ListedItem : ObservableObject, IGroupableItem
         {
             if (PrimaryItemAttribute == StorageItemTypes.File)
             {
-                var nameWithoutExtension = Path.GetFileNameWithoutExtension(itemNameRaw);
+                var nameWithoutExtension = Path.GetFileNameWithoutExtension(ItemNameRaw);
+                // TODO: Add UserSettingsService.FoldersSettingsService.ShowFileExtensions into settings.
                 if (!string.IsNullOrEmpty(nameWithoutExtension)) //&& !UserSettingsService.FoldersSettingsService.ShowFileExtensions)
                 {
                     return nameWithoutExtension;
                 }
             }
-            return itemNameRaw;
+            return ItemNameRaw;
         }
     }
 

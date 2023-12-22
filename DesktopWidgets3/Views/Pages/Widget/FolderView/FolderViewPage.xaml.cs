@@ -7,6 +7,9 @@ using Files.App.Utils;
 using Microsoft.UI.Xaml.Media;
 using CommunityToolkit.WinUI.UI;
 using Files.App.Views.Layouts;
+using Microsoft.UI.Input;
+using Windows.System;
+using Windows.UI.Core;
 
 namespace DesktopWidgets3.Views.Pages.Widget;
 
@@ -161,21 +164,23 @@ public sealed partial class FolderViewPage : BaseLayoutPage
 
     #region item rename
 
-    private void FileList_Tapped(object sender, TappedRoutedEventArgs e)
+    private async void FileList_ItemTapped(object sender, TappedRoutedEventArgs e)
     {
-        /*var clickedItem = e.OriginalSource as FrameworkElement;
+        var clickedItem = e.OriginalSource as FrameworkElement;
         var ctrlPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
         var shiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
-        if (clickedItem?.DataContext is not ListedItem item)
+        if (clickedItem?.DataContext is not ListedItem)
         {
             if (IsRenamingItem && RenamingItem is not null)
             {
-                ListViewItem? listViewItem = FileList.ContainerFromItem(RenamingItem) as ListViewItem;
+                var listViewItem = FileList.ContainerFromItem(RenamingItem) as ListViewItem;
                 if (listViewItem is not null)
                 {
                     var textBox = listViewItem.FindDescendant("ItemNameTextBox") as TextBox;
                     if (textBox is not null)
+                    {
                         await CommitRenameAsync(textBox);
+                    }
                 }
             }
             return;
@@ -193,21 +198,87 @@ public sealed partial class FolderViewPage : BaseLayoutPage
             return;
         }
 
-        // Handle tapped event to select item
         if (clickedItem is TextBlock block && block.Name == "ItemName")
         {
             CheckRenameDoubleClick(clickedItem.DataContext);
         }
         else if (IsRenamingItem && RenamingItem is not null)
         {
-            ListViewItem? listViewItem = FileList.ContainerFromItem(RenamingItem) as ListViewItem;
+            var listViewItem = FileList.ContainerFromItem(RenamingItem) as ListViewItem;
             if (listViewItem is not null)
             {
                 var textBox = listViewItem.FindDescendant("ItemNameTextBox") as TextBox;
                 if (textBox is not null)
+                {
                     await CommitRenameAsync(textBox);
+                }
             }
-        }*/
+        }
+    }
+
+    public override void StartRenameItem()
+    {
+        StartRenameItem("ItemNameTextBox");
+
+        if (FileList.ContainerFromItem(RenamingItem) is not ListViewItem listViewItem)
+        {
+            return;
+        }
+
+        if (listViewItem.FindDescendant("ItemNameTextBox") is not TextBox textBox || 
+            textBox.FindParent<Grid>() is null)
+        {
+            return;
+        }
+
+        Grid.SetColumnSpan(textBox.FindParent<Grid>(), 8);
+    }
+
+    private void ItemNameTextBox_BeforeTextChanging(TextBox textBox, TextBoxBeforeTextChangingEventArgs args)
+    {
+        if (IsRenamingItem)
+        {
+            //TODO: Add error message in xmal.
+            /*ValidateItemNameInputTextAsync(textBox, args, (showError) =>
+            {
+                FileNameTeachingTip.Visibility = showError ? Visibility.Visible : Visibility.Collapsed;
+                FileNameTeachingTip.IsOpen = showError;
+            });*/
+        }
+    }
+
+    protected override void EndRename(TextBox textBox)
+    {
+        if (textBox is not null && textBox.FindParent<Grid>() is FrameworkElement parent)
+        {
+            Grid.SetColumnSpan(parent, 1);
+        }
+
+        var listViewItem = FileList.ContainerFromItem(RenamingItem) as ListViewItem;
+
+        if (textBox is null || listViewItem is null)
+        {
+            // Navigating away, do nothing
+        }
+        else
+        {
+            var textBlock = listViewItem.FindDescendant("ItemName") as TextBlock;
+            textBox.Visibility = Visibility.Collapsed;
+            textBlock!.Visibility = Visibility.Visible;
+        }
+
+        // Unsubscribe from events
+        if (textBox is not null)
+        {
+            textBox!.LostFocus -= RenameTextBox_LostFocus;
+            textBox.KeyDown -= RenameTextBox_KeyDown;
+        }
+
+        //FileNameTeachingTip.IsOpen = false;
+        IsRenamingItem = false;
+
+        // Re-focus selected list item
+        listViewItem?.Focus(FocusState.Programmatic);
     }
 
     #endregion

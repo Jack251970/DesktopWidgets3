@@ -6,7 +6,7 @@ namespace DesktopWidgets3.ViewModels.Pages.Widget.Settings;
 
 public partial class ClockSettingsViewModel : BaseWidgetSettingsViewModel
 {
-    #region observable properties
+    #region view properties
 
     [ObservableProperty]
     private bool _showSeconds = true;

@@ -5,7 +5,7 @@ namespace DesktopWidgets3.ViewModels.Pages.Widget.Settings;
 
 public partial class PerformanceSettingsViewModel : BaseWidgetSettingsViewModel
 {
-    #region observable properties
+    #region view properties
 
     #endregion
 

@@ -8,7 +8,7 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 {
-    #region observable properties
+    #region view properties
 
     [ObservableProperty]
     private int _themeIndex;

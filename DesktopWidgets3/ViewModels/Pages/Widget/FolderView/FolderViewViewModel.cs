@@ -10,7 +10,6 @@ using Files.App;
 using Files.App.Data.Commands;
 using Files.App.Data.Models;
 using Files.App.Helpers;
-using Files.App.Utils;
 using Files.App.Utils.Storage;
 using Files.App.Utils.Storage.Helpers;
 using Files.App.ViewModels.Layouts;
@@ -43,7 +42,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    #region observable properties
+    #region view properties
 
     public ObservableCollection<ListedItem> ListedItems { get; set; } = new();
 
@@ -77,7 +76,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    #region current paths
+    #region current path
 
     private readonly Stack<string> navigationFolderPaths = new();
 
@@ -121,6 +120,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
     }
 
+    public ListedItem? SelectedItem { get; private set; }
+
     private List<ListedItem> selectedItems = new();
     public List<ListedItem> SelectedItems
     {
@@ -134,8 +135,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 if (selectedItems?.Count == 0 || selectedItems?[0] is null)
                 {
                     IsItemSelected = false;
-                    /*SelectedItem = null;
-                    SelectedItemsPropertiesViewModel.IsItemSelected = false;*/
+                    SelectedItem = null;
+                    /*SelectedItemsPropertiesViewModel.IsItemSelected = false;*/
 
                     /*ResetRenameDoubleClick();
                     UpdateSelectionSize();*/
@@ -143,8 +144,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 else if (selectedItems is not null)
                 {
                     IsItemSelected = true;
-                    /*SelectedItem = selectedItems.First();
-                    SelectedItemsPropertiesViewModel.IsItemSelected = true;*/
+                    SelectedItem = selectedItems.First();
+                    /*SelectedItemsPropertiesViewModel.IsItemSelected = true;*/
 
                     /*UpdateSelectionSize();
 
@@ -173,6 +174,16 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             // ParentShellPageInstance!.ToolbarViewModel.SelectedItems = value;
         }
     }
+
+    #endregion
+
+    #region rename items
+
+    public bool IsRenamingItem { get; set; }
+
+    public ListedItem? RenamingItem { get; set; }
+
+    public string? OldItemName { get; set; }
 
     #endregion
 

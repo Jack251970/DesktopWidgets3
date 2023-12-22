@@ -7,7 +7,7 @@ namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
 public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
-    #region observable properties
+    #region view properties
 
     [ObservableProperty]
     private string _systemTime = string.Empty;

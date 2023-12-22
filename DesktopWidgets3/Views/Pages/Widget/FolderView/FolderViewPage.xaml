@@ -127,7 +127,7 @@
                 IsDoubleTapEnabled="True"
                 DoubleTapped="FileList_DoubleTapped"
                 IsTapEnabled="True"
-                Tapped="FileList_Tapped"
+                Tapped="FileList_ItemTapped"
                 SelectionMode="Extended"
                 SelectionChanged="FileList_SelectionChanged">
 
@@ -246,9 +246,8 @@
 								        DataContextChanged="TextBlock_DataContextChanged"
 								        IsTextTrimmedChanged="TextBlock_IsTextTrimmedChanged" -->
 
-                                    <!-- <TextBox
+                                    <TextBox
 								        x:Name="ItemNameTextBox"
-								        MaxWidth="{Binding MaxWidthForRenameTextbox, ElementName=PageRoot, Mode=OneWay}"
 								        HorizontalAlignment="Left"
 								        VerticalAlignment="Center"
 								        BeforeTextChanging="ItemNameTextBox_BeforeTextChanging"
@@ -256,7 +255,8 @@
                                         <TextBox.Resources>
                                             <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{ThemeResource SolidBackgroundFillColorSecondary}" />
                                         </TextBox.Resources>
-                                    </TextBox> -->
+                                    </TextBox>
+                                    <!-- MaxWidth="{Binding MaxWidthForRenameTextbox, ElementName=PageRoot, Mode=OneWay}" -->
 
                                 </Grid>
 

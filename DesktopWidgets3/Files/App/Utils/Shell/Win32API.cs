@@ -470,6 +470,21 @@ public class Win32API
         return RunPowershellCommandAsync($"-command \"Mount-DiskImage -ImagePath '{vhdPath}'\"", true);
     }
 
+    public static Shell32.ITaskbarList4? CreateTaskbarObject()
+    {
+        try
+        {
+            var taskbar2 = new Shell32.ITaskbarList2();
+            taskbar2.HrInit();
+            return taskbar2 as Shell32.ITaskbarList4;
+        }
+        catch (Exception)
+        {
+            // explorer.exe is not running as a shell
+            return null;
+        }
+    }
+
     public static async Task<bool> RunPowershellCommandAsync(string command, bool runAsAdmin)
     {
         using var process = CreatePowershellProcess(command, runAsAdmin);

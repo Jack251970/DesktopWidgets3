@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.Utils.Storage;
+
 namespace Files.App.Helpers;
 
 public static class PathNormalization
@@ -31,6 +33,35 @@ public static class PathNormalization
         }
 
         return rootPath;
+    }
+
+    public static string NormalizePath(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            return path;
+        }
+
+        if (path.StartsWith("\\\\", StringComparison.Ordinal) || path.StartsWith("//", StringComparison.Ordinal) || FtpHelpers.IsFtpPath(path))
+        {
+            return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
+        }
+
+        if (!path.EndsWith(Path.DirectorySeparatorChar))
+        {
+            path += Path.DirectorySeparatorChar;
+        }
+
+        try
+        {
+            return Path.GetFullPath(new Uri(path).LocalPath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .ToUpperInvariant();
+        }
+        catch (UriFormatException)
+        {
+            return path;
+        }
     }
 
     public static string GetParentDir(string path)

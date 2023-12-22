@@ -6,7 +6,7 @@ namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
 public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
-    #region observable properties
+    #region view properties
 
     #endregion
 

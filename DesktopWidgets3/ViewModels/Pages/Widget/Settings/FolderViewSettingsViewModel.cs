@@ -17,7 +17,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
 
     #endregion
 
-    #region observable properties
+    #region view properties
 
     [ObservableProperty]
     private string _folderPath = $"C:\\";
