@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Utils.Shell;
 using Files.App.Utils;
@@ -178,7 +179,8 @@ public static class NavigationHelpers
         var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
         if (isHiddenItem)
         {
-            await OpenPath(viewModel, forceOpenInExplore, path);
+            var allowNavigation = ((FolderViewWidgetSettings)viewModel.GetWidgetSettings()).AllowNavigation;
+            await OpenPath(viewModel, forceOpenInExplore, allowNavigation, path);
             opened = (FilesystemResult)true;
         }
         /*else if (App.LibraryManager.TryGetLibrary(path, out LibraryLocationItem library))
@@ -197,6 +199,7 @@ public static class NavigationHelpers
         var opened = (FilesystemResult)false;
         var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
         var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path);
+        var allowNavigation = ((FolderViewWidgetSettings)viewModel.GetWidgetSettings()).AllowNavigation;
 
         if (isShortcut)
         {
@@ -207,13 +210,13 @@ public static class NavigationHelpers
             }
             else
             {
-                await OpenPath(viewModel, forceOpenInExplore, shortcutInfo.TargetPath, selectItems);
+                await OpenPath(viewModel, forceOpenInExplore, allowNavigation, shortcutInfo.TargetPath, selectItems);
                 opened = (FilesystemResult)true;
             }
         }
         else if (isHiddenItem)
         {
-            await OpenPath(viewModel, forceOpenInExplore, path);
+            await OpenPath(viewModel, forceOpenInExplore, allowNavigation, path);
             opened = (FilesystemResult)true;
         }
         else
@@ -227,7 +230,7 @@ public static class NavigationHelpers
 
             if (opened)
             {
-                await OpenPath(viewModel, forceOpenInExplore, path, selectItems);
+                await OpenPath(viewModel, forceOpenInExplore, allowNavigation, path, selectItems);
             }
             else
             {
@@ -381,12 +384,12 @@ public static class NavigationHelpers
         return obj;
     }
 
-    private static Task OpenPath(FolderViewViewModel viewModel, bool forceOpenInExplore, string path, IEnumerable<string>? selectItems = null)
-            => OpenPathAsync(viewModel, forceOpenInExplore, path, path, selectItems);
+    private static Task OpenPath(FolderViewViewModel viewModel, bool forceOpenInExplore, bool allowNavigation, string path, IEnumerable<string>? selectItems = null)
+            => OpenPathAsync(viewModel, forceOpenInExplore, allowNavigation, path, path, selectItems);
 
-    private static async Task OpenPathAsync(FolderViewViewModel viewModel, bool forceOpenInExplore, string path, string text, IEnumerable<string>? selectItems = null)
+    private static async Task OpenPathAsync(FolderViewViewModel viewModel, bool forceOpenInExplore, bool allowNavigation, string path, string text, IEnumerable<string>? selectItems = null)
     {
-        if (forceOpenInExplore)
+        if (forceOpenInExplore || !allowNavigation)
         {
             //await OpenPathInNewTab(text);
             FileSystemHelper.OpenInExplorer(path);
@@ -398,7 +401,8 @@ public static class NavigationHelpers
             viewModel.NavigateWithArguments(new NavigationArguments()
             {
                 NavPathParam = path,
-                SelectItems = selectItems
+                SelectItems = selectItems,
+                PushFolderPath = true
             });
         }
         await Task.CompletedTask;

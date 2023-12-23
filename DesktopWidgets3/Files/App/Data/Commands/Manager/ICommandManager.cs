@@ -517,18 +517,18 @@ public interface ICommandManager : IEnumerable<IRichCommand>
         get;
     }*/
 
-    /*IRichCommand NavigateBack
+    IRichCommand NavigateBack
     {
         get;
     }
-    IRichCommand NavigateForward
-    {
-        get;
-    }
-    IRichCommand NavigateUp
+    /*IRichCommand NavigateForward
     {
         get;
     }*/
+    IRichCommand NavigateUp
+    {
+        get;
+    }
 
     /*IRichCommand NewTab
     {

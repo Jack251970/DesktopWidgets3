@@ -73,6 +73,21 @@ public sealed partial class FolderViewPage : BaseLayoutPage
         FileSystemHelper.OpenInExplorer(ViewModel.CurFolderPath);
     }
 
+    private async void NavigateBack_Click(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.CommandManager.NavigateBack.ExecuteAsync();
+    }
+
+    private async void NavigateUp_Click(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.CommandManager.NavigateUp.ExecuteAsync();
+    }
+
+    private async void NavigateRefresh_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel.NavigateRefresh();
+    }
+
     #endregion
 
     #region item open

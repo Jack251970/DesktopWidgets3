@@ -19,5 +19,7 @@ public class NavigationArguments
 
     public bool IsLayoutSwitch { get; set; } = false;
 
-    public IEnumerable<string>? SelectItems { get; set; }
+    public IEnumerable<string>? SelectItems { get; set; } = null;
+
+    public required bool PushFolderPath { get; set; } = false;
 }

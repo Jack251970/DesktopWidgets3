@@ -177,9 +177,9 @@ internal class CommandManager : ICommandManager
     public IRichCommand GroupByMonth => commands[CommandCodes.GroupByMonth];
     public IRichCommand ToggleGroupByDateUnit => commands[CommandCodes.ToggleGroupByDateUnit];*/
     /*public IRichCommand FormatDrive => commands[CommandCodes.FormatDrive];*/
-    /*public IRichCommand NavigateBack => commands[CommandCodes.NavigateBack];
-    public IRichCommand NavigateForward => commands[CommandCodes.NavigateForward];
-    public IRichCommand NavigateUp => commands[CommandCodes.NavigateUp];*/
+    public IRichCommand NavigateBack => commands[CommandCodes.NavigateBack];
+    /*public IRichCommand NavigateForward => commands[CommandCodes.NavigateForward];*/
+    public IRichCommand NavigateUp => commands[CommandCodes.NavigateUp];
     /*public IRichCommand NewTab => commands[CommandCodes.NewTab];
     public IRichCommand DuplicateCurrentTab => commands[CommandCodes.DuplicateCurrentTab];
     public IRichCommand DuplicateSelectedTab => commands[CommandCodes.DuplicateSelectedTab];
@@ -337,9 +337,9 @@ internal class CommandManager : ICommandManager
         [CommandCodes.GroupByMonth] = new GroupByMonthAction(),
         [CommandCodes.ToggleGroupByDateUnit] = new ToggleGroupByDateUnitAction(),*/
         /*[CommandCodes.FormatDrive] = new FormatDriveAction(),*/
-        /*[CommandCodes.NavigateBack] = new NavigateBackAction(),
-        [CommandCodes.NavigateForward] = new NavigateForwardAction(),
-        [CommandCodes.NavigateUp] = new NavigateUpAction(),*/
+        [CommandCodes.NavigateBack] = new NavigateBackAction(viewModel),
+        /*[CommandCodes.NavigateForward] = new NavigateForwardAction(),*/
+        [CommandCodes.NavigateUp] = new NavigateUpAction(viewModel),
         /*[CommandCodes.NewTab] = new NewTabAction(),
         [CommandCodes.DuplicateCurrentTab] = new DuplicateCurrentTabAction(),
         [CommandCodes.DuplicateSelectedTab] = new DuplicateSelectedTabAction(),

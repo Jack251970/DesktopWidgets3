@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
 using Files.App.Utils;
-using DesktopWidgets3.ViewModels.Commands;
 using Files.App;
 using Files.App.Data.Commands;
 using Files.App.Data.Models;
@@ -13,32 +12,12 @@ using Files.App.ViewModels.Layouts;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Files.App.Data.EventArguments;
 using Microsoft.UI.Xaml.Data;
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Contracts.Services;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
 public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
-    #region commands
-
-    public ClickCommand NavigateBackCommand
-    {
-        get;
-    }
-
-    public ClickCommand NavigateUpCommand
-    {
-        get;
-    }
-
-    public ClickCommand NavigateRefreshCommand
-    {
-        get;
-    }
-
-    #endregion
-
     #region view properties
 
     [ObservableProperty]
@@ -81,23 +60,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region current path
 
-    private readonly Stack<string> navigationFolderPaths = new();
-
-    private string curFolderPath = string.Empty;
-    private string? curParentFolderPath;
-    public string CurFolderPath
-    {
-        get => curFolderPath;
-        set
-        {
-            if (curFolderPath != value)
-            {
-                curFolderPath = value;
-                curParentFolderPath = Path.GetDirectoryName(CurFolderPath);
-                _ = ItemViewModel.SetWorkingDirectoryAsync(value);
-            }
-        }
-    }
+    public string CurFolderPath => ItemViewModel.WorkingDirectory;
 
     #endregion
 
@@ -204,6 +167,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public LayoutPreferencesManager FolderSettings => InstanceViewModel.FolderSettings;
 
+    public FolderViewViewModel ToolbarViewModel => this;
+
     #endregion
 
     private readonly ICommandManager _commandManager;
@@ -216,10 +181,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         _commandManager.Initialize(this);
         _fileSystemHelpers = fileSystemHelpers;
         _widgetManagerService = widgetManagerService;
-
-        NavigateBackCommand = new ClickCommand(NavigateBack);
-        NavigateUpCommand = new ClickCommand(NavigateUp);
-        NavigateRefreshCommand = new ClickCommand(NavigateRefresh);
 
         InstanceViewModel = new();
         CommandsViewModel = new();
@@ -253,41 +214,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         catch (Exception) { }
     }*/
 
-    #region command events
-
-    private async void NavigateBack()
-    {
-        if (IsNavigateBackExecutable)
-        {
-            navigationFolderPaths.Pop();
-            if (navigationFolderPaths.Count == 0)
-            {
-                CurFolderPath = FolderPath;
-            }
-            else
-            {
-                CurFolderPath = navigationFolderPaths.Peek();
-            }
-            await RefreshFileList(false);
-        }
-    }
-
-    private async void NavigateUp()
-    {
-        if (IsNavigateUpExecutable)
-        {
-            CurFolderPath = curParentFolderPath!;
-            await RefreshFileList(true);
-        }
-    }
-
-    private async void NavigateRefresh()
-    {
-        await RefreshFileList(false);
-    }
-
-    #endregion
-
     #region refresh items
 
     private async void FolderViewViewModel_NavigatedTo(object? sender, object e)
@@ -301,13 +227,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             {
                 FocusOnNavigation = true,
                 NavPathParam = settings.FolderPath,
+                PushFolderPath = false,
             };
         }
 
         if (e is NavigationArguments navigationArguments)
         {
-            var ToolbarViewModel = this;
-
             // Git properties are not loaded by default
             //ItemViewModel.EnabledGitProperties = GitProperties.None;
 
@@ -370,10 +295,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 await ItemViewModel.SetWorkingDirectoryAsync(navigationArguments.SearchPathParam);
 
                 //ToolbarViewModel.CanGoForward = false;
-
-                // Impose no artificial restrictions on back navigation. Even in a search results page.
-                ToolbarViewModel.IsNavigateBackExecutable = true;
-
                 ToolbarViewModel.IsNavigateUpExecutable = false;
 
                 var workingDir = ItemViewModel.WorkingDirectory ?? string.Empty;
@@ -410,8 +331,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
             //SetSelectedItemsOnNavigation();
 
-            //ItemContextMenuFlyout.Opening += ItemContextFlyout_Opening;
-            //BaseContextMenuFlyout.Opening += BaseContextFlyout_Opening;
+            if (navigationArguments.PushFolderPath)
+            {
+                navigationFolderPaths.Push(CurFolderPath);
+            }
+            ToolbarViewModel.IsNavigateBackExecutable = navigationFolderPaths.Count > 0;
+
+            await RefreshToolbar();
         }
     }
 
@@ -436,10 +362,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
     }
 
-    [GeneratedRegex("^[a-zA-Z]:\\\\$")]
-    private static partial Regex DiskRegex();
-
-    private async Task RefreshFileList(bool pushFolderPath)
+    private async Task RefreshToolbar()
     {
         if (DiskRegex().IsMatch(CurFolderPath))
         {
@@ -450,18 +373,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             FolderName = Path.GetFileName(CurFolderPath);
         }
 
-        await RefreshFolderIcon();
-
-        if (pushFolderPath)
-        {
-            navigationFolderPaths.Push(CurFolderPath);
-        }
-        IsNavigateBackExecutable = navigationFolderPaths.Count > 0;
-        IsNavigateUpExecutable = curParentFolderPath != null;
-    }
-
-    private async Task RefreshFolderIcon()
-    {
         (FolderPathIcon, FolderPathIconOverlay) = await GetIcon(CurFolderPath, true);
     }
 
@@ -478,6 +389,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             return (await iconData.ToBitmapAsync(), null);
         }
     }
+
+    [GeneratedRegex("^[a-zA-Z]:\\\\$")]
+    private static partial Regex DiskRegex();
 
     #endregion
 
@@ -502,7 +416,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (FolderPath != settings.FolderPath)
         {
             FolderPath = settings.FolderPath;
-            CurFolderPath = FolderPath;
             navigationFolderPaths.Clear();
             needRefresh = true;
         }
@@ -526,7 +439,52 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    #region navigation
+    #region path navigation
+
+    private readonly Stack<string> navigationFolderPaths = new();
+
+    public void NavigateBack()
+    {
+        navigationFolderPaths.Pop();
+        var path = navigationFolderPaths.Count == 0 ? FolderPath : navigationFolderPaths.Peek();
+        NavigateWithArguments(new NavigationArguments()
+        {
+            NavPathParam = path,
+            PushFolderPath = false
+        });
+    }
+
+    public void NavigateUp()
+    {
+        var workingDirectory = ItemViewModel.WorkingDirectory;
+        if (workingDirectory is null || string.Equals(workingDirectory, PathNormalization.GetPathRoot(workingDirectory), StringComparison.OrdinalIgnoreCase))
+        {
+            //ParentShellPageInstance?.NavigateHome();
+        }
+        else
+        {
+            var path = PathNormalization.GetParentDir(workingDirectory);
+            NavigateWithArguments(new NavigationArguments()
+            {
+                NavPathParam = path,
+                PushFolderPath = true
+            });
+        }
+    }
+
+    public void NavigateRefresh()
+    {
+        var path = ItemViewModel.WorkingDirectory;
+        NavigateWithArguments(new NavigationArguments()
+        {
+            NavPathParam = path,
+            PushFolderPath = false
+        });
+    }
+
+    #endregion
+
+    #region page navigation
 
     public void NavigateWithArguments(NavigationArguments navArgs)
     {
@@ -537,27 +495,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region interfaces
 
-    public async Task<bool> NavigateToPath(string path)
-    {
-        if (AllowNavigation)
-        {
-            CurFolderPath = path;
-            await RefreshFileList(true);
-            return true;
-        }
-        else
-        {
-            FileSystemHelper.OpenInExplorer(CurFolderPath);
-            return false;
-        }
-    }
-
     public async Task EnableUpdate(bool enable)
     {
         if (enable)
         {
-            await RefreshFileList(false);
+            NavigateRefresh();
         }
+        await Task.CompletedTask;
     }
 
     public void WidgetWindow_Closing()

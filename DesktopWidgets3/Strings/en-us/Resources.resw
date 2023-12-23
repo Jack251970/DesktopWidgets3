@@ -462,4 +462,16 @@
   <data name="GroupItemsCount_Plural" xml:space="preserve">
     <value>{0} items</value>
   </data>
+  <data name="Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="NavigateUpDescription" xml:space="preserve">
+    <value>Navigate up one directory</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="NavigateBackDescription" xml:space="preserve">
+    <value>Navigate backward in navigation history</value>
+  </data>
 </root>

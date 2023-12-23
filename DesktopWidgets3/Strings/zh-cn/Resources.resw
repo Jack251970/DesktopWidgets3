@@ -453,4 +453,16 @@
   <data name="GroupItemsCount_Plural" xml:space="preserve">
     <value>{0} 个项目</value>
   </data>
+  <data name="Up" xml:space="preserve">
+    <value>上移</value>
+  </data>
+  <data name="NavigateUpDescription" xml:space="preserve">
+    <value>导航至上一级目录</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>后退</value>
+  </data>
+  <data name="NavigateBackDescription" xml:space="preserve">
+    <value>在导航历史中向后导航</value>
+  </data>
 </root>
