@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
@@ -15,8 +14,9 @@ using Files.Core.Data.Items;
 using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Files.App.Data.EventArguments;
-using FileAttributes = System.IO.FileAttributes;
 using Microsoft.UI.Xaml.Data;
+using DesktopWidgets3.Helpers;
+using FileAttributes = System.IO.FileAttributes;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -87,7 +87,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private string curFolderPath = string.Empty;
     private string? curParentFolderPath;
-    /*private readonly FileSystemWatcher fileSystemWatcher = new();*/
     public string CurFolderPath
     {
         get => curFolderPath;
@@ -97,9 +96,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             {
                 curFolderPath = value;
                 curParentFolderPath = Path.GetDirectoryName(CurFolderPath);
-                /*fileSystemWatcher.EnableRaisingEvents = false;
-                fileSystemWatcher.Path = value;
-                fileSystemWatcher.EnableRaisingEvents = true;*/
                 _ = ItemViewModel.SetWorkingDirectoryAsync(value);
             }
         }
@@ -231,8 +227,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         ItemViewModel = new(FolderSettings);
 
         NavigatedTo += FolderViewViewModel_NavigatedTo;
-
-        //InitializeFileSystemWatcher();
     }
 
     /*private void SetSelectedItemsOnNavigation(NavigationArguments navigationArguments)
@@ -257,139 +251,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
         catch (Exception) { }
     }*/
-
-    /*#region file system watcher
-
-    private void InitializeFileSystemWatcher()
-    {
-        fileSystemWatcher.IncludeSubdirectories = false;
-        fileSystemWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName;
-        fileSystemWatcher.EnableRaisingEvents = false;
-
-        fileSystemWatcher.Created += FileSystemWatcher_Created;
-        fileSystemWatcher.Deleted += FileSystemWatcher_Deleted;
-        fileSystemWatcher.Renamed += FileSystemWatcher_Renamed;
-
-        // TODO: Add changed event and NotifyFilters.LastWrite notify filter
-    }
-
-    private void FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
-    {
-        var path = e.FullPath;
-        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
-        if (!ShowHiddenFile && isHiddenItem)
-        {
-            return;
-        }
-
-        var isDirectory = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Directory);
-        var directories = GetDirectories(!ShowHiddenFile);
-        if (isDirectory)
-        {
-            var index = directories.ToList().IndexOf(path);
-            RunOnDispatcherQueue(async () => {
-                var fileExtension = Path.GetExtension(path);
-                var (fileIcon, fileIconOverlay) = await GetIcon(path, true);
-                var item = new ListedItem()
-                {
-                    ItemNameRaw = Path.GetFileName(path),
-                    ItemPath = path,
-                    PrimaryItemAttribute = StorageItemTypes.Folder,
-                    FileImage = fileIcon,
-                    IconOverlay = fileIconOverlay,
-                    IsHiddenItem = isHiddenItem,
-                    FileExtension = fileExtension,
-                };
-                ListedItems.Insert(index, item);
-                await RefreshFolderIcon();
-            });
-        }
-        else
-        {
-            var files = GetFiles(!ShowHiddenFile);
-            var index = directories.Length + files.ToList().IndexOf(path);
-            RunOnDispatcherQueue(async () => {
-                var (fileIcon, fileIconOverlay) = await GetIcon(path, false);
-                var item = new ListedItem()
-                {
-                    ItemNameRaw = Path.GetFileName(path),
-                    ItemPath = path,
-                    PrimaryItemAttribute = StorageItemTypes.File,
-                    FileImage = fileIcon,
-                    IconOverlay = fileIconOverlay,
-                    IsHiddenItem = isHiddenItem,
-                };
-                ListedItems.Insert(index, item);
-                await RefreshFolderIcon();
-            });
-        }
-    }
-
-    private void FileSystemWatcher_Deleted(object sender, FileSystemEventArgs e)
-    {
-        var path = e.FullPath;
-        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
-        if (!ShowHiddenFile && isHiddenItem)
-        {
-            return;
-        }
-
-        var item = ListedItems.FirstOrDefault(item => item.ItemPath == path);
-        if (item != null)
-        {
-            var index = ListedItems.IndexOf(item);
-            RunOnDispatcherQueue(async () => {
-                ListedItems.RemoveAt(index);
-                await RefreshFolderIcon();
-            });
-        }
-    }
-
-    private void FileSystemWatcher_Renamed(object sender, RenamedEventArgs e)
-    {
-        var oldPath = e.OldFullPath;
-        var path = e.FullPath;
-        var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
-        if (!ShowHiddenFile && isHiddenItem)
-        {
-            return;
-        }
-
-        var item = ListedItems.FirstOrDefault(item => item.ItemPath == oldPath);
-        if (item != null)
-        {
-            item.ItemNameRaw = Path.GetFileName(path);
-            item.ItemPath = path;
-
-            var oldIndex = ListedItems.IndexOf(item);
-
-            var isDirectory = item.PrimaryItemAttribute == StorageItemTypes.Folder;
-            var directories = GetDirectories(!ShowHiddenFile);
-            if (isDirectory)
-            {
-                var index = directories.ToList().IndexOf(path);
-                RunOnDispatcherQueue(async () =>
-                {
-                    ListedItems.RemoveAt(oldIndex);
-                    ListedItems.Insert(index, item);
-                    await RefreshFolderIcon();
-                });
-            }
-            else
-            {
-                var files = GetFiles(!ShowHiddenFile);
-                var index = directories.Length + files.ToList().IndexOf(path);
-                RunOnDispatcherQueue(async () =>
-                {
-                    ListedItems.RemoveAt(oldIndex);
-                    ListedItems.Insert(index, item);
-                    await RefreshFolderIcon();
-                });
-            }
-        }
-    }
-
-    #endregion*/
 
     #region command events
 
@@ -420,7 +281,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 }
                 else
                 {
-                    Helpers.FileSystemHelper.OpenFolder(path);
+                    FileSystemHelper.OpenFolder(path);
                 }
             }
             else
@@ -432,7 +293,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             if (File.Exists(path))
             {
-                await Helpers.FileSystemHelper.OpenFile(path, CurFolderPath);
+                await FileSystemHelper.OpenFile(path, CurFolderPath);
             }
             else
             {
@@ -474,12 +335,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     internal void ToolbarDoubleTapped()
     {
-        Helpers.FileSystemHelper.OpenFolder(CurFolderPath);
+        FileSystemHelper.OpenFolder(CurFolderPath);
     }
 
     #endregion
 
-    #region refresh & icon
+    #region refresh items
 
     private async void FolderViewViewModel_NavigatedTo(object? sender, object e)
     {
@@ -651,17 +512,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         IsNavigateUpExecutable = curParentFolderPath != null;
     }
 
-    /*private void ResetItemOpacity()
-    {
-        foreach (var item in ListedItems)
-        {
-            if (item is not null)
-            {
-                item.Opacity = item.IsHiddenItem ? Constants.UI.DimItemOpacity : 1.0d;
-            }
-        }
-    }*/
-
     private async Task RefreshFolderIcon()
     {
         (FolderPathIcon, FolderPathIconOverlay) = await GetIcon(CurFolderPath, true);
@@ -680,26 +530,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             return (await iconData.ToBitmapAsync(), null);
         }
     }
-
-    /*private string[] GetDirectories(bool removeHidden)
-    {
-        var directories = Directory.GetDirectories(CurFolderPath);
-        if (removeHidden)
-        {
-            directories = directories.Where(directory => !NativeFileOperationsHelper.HasFileAttribute(directory, FileAttributes.Hidden)).ToArray();
-        }
-        return directories;
-    }
-
-    private string[] GetFiles(bool removeHidden)
-    {
-        var files = Directory.GetFiles(CurFolderPath);
-        if (removeHidden)
-        {
-            files = files.Where(file => !NativeFileOperationsHelper.HasFileAttribute(file, FileAttributes.Hidden)).ToArray();
-        }
-        return files;
-    }*/
 
     #endregion
 
@@ -758,7 +588,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             await RefreshFileList(true);
             return true;
         }
-        return false;
+        else
+        {
+            FileSystemHelper.OpenFolder(CurFolderPath);
+            return false;
+        }
     }
 
     public async Task EnableUpdate(bool enable)
@@ -766,17 +600,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (enable)
         {
             await RefreshFileList(false);
-            //fileSystemWatcher.EnableRaisingEvents = true;
-        }
-        else
-        {
-            //fileSystemWatcher.EnableRaisingEvents = false;
         }
     }
 
     public void WidgetWindow_Closing()
     {
-        //fileSystemWatcher.Dispose();
         CommandsViewModel.Dispose();
         ItemViewModel.Dispose();
     }
