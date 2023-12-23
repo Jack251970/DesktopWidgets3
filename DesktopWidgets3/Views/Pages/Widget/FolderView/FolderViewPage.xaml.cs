@@ -10,6 +10,7 @@ using Files.App.Views.Layouts;
 using Microsoft.UI.Input;
 using Windows.System;
 using Windows.UI.Core;
+using DesktopWidgets3.Helpers;
 
 namespace DesktopWidgets3.Views.Pages.Widget;
 
@@ -60,7 +61,7 @@ public sealed partial class FolderViewPage : BaseLayoutPage
 
     #endregion
 
-    #region widget context menu
+    #region widget tool bar
 
     private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
@@ -69,7 +70,7 @@ public sealed partial class FolderViewPage : BaseLayoutPage
 
     private void Toolbar_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
-        ViewModel.ToolbarDoubleTapped();
+        FileSystemHelper.OpenInExplorer(ViewModel.CurFolderPath);
     }
 
     #endregion

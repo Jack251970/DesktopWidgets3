@@ -10,13 +10,10 @@ using Files.App.Data.Models;
 using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Files.App.ViewModels.Layouts;
-using Files.Core.Data.Items;
-using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Files.App.Data.EventArguments;
 using Microsoft.UI.Xaml.Data;
 using DesktopWidgets3.Helpers;
-using FileAttributes = System.IO.FileAttributes;
 using DesktopWidgets3.Contracts.Services;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
@@ -257,54 +254,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region command events
 
-    internal async Task OpenItem(string path)
-    {
-        var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path);
-        if (isShortcut)
-        {
-            var shortcutInfo = new ShellLinkItem();
-            var shInfo = await FileOperationsHelpers.ParseLinkAsync(path);
-            if (shInfo is null || shInfo.TargetPath is null || shortcutInfo.InvalidTarget)
-            {
-                return;
-            }
-
-            path = shInfo.TargetPath;
-        }
-
-        var isDirectory = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Directory);
-        if (isDirectory)
-        {
-            if (Directory.Exists(path))
-            {
-                if (AllowNavigation)
-                {
-                    CurFolderPath = path;
-                    await RefreshFileList(true);
-                }
-                else
-                {
-                    FileSystemHelper.OpenInExplorer(path);
-                }
-            }
-            else
-            {
-                await RefreshFileList(false);
-            }
-        }
-        else
-        {
-            if (File.Exists(path))
-            {
-                await FileSystemHelper.OpenFile(path, CurFolderPath);
-            }
-            else
-            {
-                await RefreshFileList(false);
-            }
-        }
-    }
-
     private async void NavigateBack()
     {
         if (IsNavigateBackExecutable)
@@ -334,11 +283,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private async void NavigateRefresh()
     {
         await RefreshFileList(false);
-    }
-
-    internal void ToolbarDoubleTapped()
-    {
-        FileSystemHelper.OpenInExplorer(CurFolderPath);
     }
 
     #endregion
