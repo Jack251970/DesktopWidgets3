@@ -122,10 +122,16 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
     #region get base storage item
 
     public Task<FilesystemResult<BaseStorageFile>> GetFileFromPathAsync(string path)
-        => FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileFromPathAsync(path, workingRoot!, currentStorageFolder!));
+        => FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileFromPathAsync(path, workingRoot, currentStorageFolder!));
 
     public Task<FilesystemResult<BaseStorageFolder>> GetFolderFromPathAsync(string path)
-        => FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(path, workingRoot!, currentStorageFolder!));
+        => FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(path, workingRoot, currentStorageFolder!));
+
+    public Task<FilesystemResult<StorageFolderWithPath>> GetFolderWithPathFromPathAsync(string value)
+            => FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderWithPathFromPathAsync(value, workingRoot, currentStorageFolder!));
+
+    public Task<FilesystemResult<StorageFileWithPath>> GetFileWithPathFromPathAsync(string value)
+        => FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileWithPathFromPathAsync(value, workingRoot, currentStorageFolder!));
 
     #endregion
 
@@ -1014,7 +1020,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
     {
         await dispatcherQueue.EnqueueOrInvokeAsync(() =>
         {
-            RefreshItems(null, currentSettings);
+            RefreshItems(null);
         });
     }
 
@@ -1022,7 +1028,12 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
     #region refresh items
 
-    public async void RefreshItems(string? previousDir, FolderViewWidgetSettings settings,  Action postLoadCallback = null!)
+    public async void RefreshItems(string? previousDir, Action postLoadCallback = null!)
+    {
+        await RefreshItems(previousDir, currentSettings, postLoadCallback);
+    }
+
+    public async Task RefreshItems(string? previousDir, FolderViewWidgetSettings settings,  Action postLoadCallback = null!)
     {
         currentSettings = settings;
         await RapidAddItemsToCollectionAsync(WorkingDirectory, previousDir, postLoadCallback);

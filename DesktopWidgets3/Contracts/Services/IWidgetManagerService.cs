@@ -36,4 +36,6 @@ public interface IWidgetManagerService
     Task<BaseWidgetSettings?> GetWidgetSettings(WidgetType widgetType, int indexTag);
 
     Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings);
+
+    void WidgetNavigateTo(WidgetType widgetType, int indexTag, object? parameter = null, bool clearNavigation = false);
 }

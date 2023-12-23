@@ -42,10 +42,9 @@ public class FileSystemHelper
         _ = await Win32Helpers.InvokeWin32ComponentAsync(path, args, workingDirectory);
     }
 
-    // Undone
-    public static void OpenFolder(string path) => OpenFolder(path, string.Empty);
+    public static void OpenInExplorer(string path) => OpenInExplorer(path, string.Empty);
 
-    public static void OpenFolder(string path, string args)
+    public static void OpenInExplorer(string path, string args)
     {
         var process = new Process();
         process.StartInfo.FileName = "explorer.exe";

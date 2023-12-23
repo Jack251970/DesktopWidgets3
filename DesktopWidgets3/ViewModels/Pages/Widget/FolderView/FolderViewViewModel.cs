@@ -17,6 +17,7 @@ using Files.App.Data.EventArguments;
 using Microsoft.UI.Xaml.Data;
 using DesktopWidgets3.Helpers;
 using FileAttributes = System.IO.FileAttributes;
+using DesktopWidgets3.Contracts.Services;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -206,15 +207,17 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private readonly ICommandManager _commandManager;
     private readonly IFileSystemHelpers _fileSystemHelpers;
+    private readonly IWidgetManagerService _widgetManagerService;
 
     public ICommandManager CommandManager => _commandManager;
     public IFileSystemHelpers FileSystemHelpers => _fileSystemHelpers;
 
-    public FolderViewViewModel(ICommandManager commandManager, IFileSystemHelpers fileSystemHelpers)
+    public FolderViewViewModel(ICommandManager commandManager, IFileSystemHelpers fileSystemHelpers, IWidgetManagerService widgetManagerService)
     {
         _commandManager = commandManager;
         _commandManager.Initialize(this);
         _fileSystemHelpers = fileSystemHelpers;
+        _widgetManagerService = widgetManagerService;
 
         NavigateBackCommand = new ClickCommand(NavigateBack);
         NavigateUpCommand = new ClickCommand(NavigateUp);
@@ -281,7 +284,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 }
                 else
                 {
-                    FileSystemHelper.OpenFolder(path);
+                    FileSystemHelper.OpenInExplorer(path);
                 }
             }
             else
@@ -335,7 +338,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     internal void ToolbarDoubleTapped()
     {
-        FileSystemHelper.OpenFolder(CurFolderPath);
+        FileSystemHelper.OpenInExplorer(CurFolderPath);
     }
 
     #endregion
@@ -410,7 +413,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
                 if (!navigationArguments.IsLayoutSwitch || previousDir != workingDir)
                 {
-                    ItemViewModel.RefreshItems(previousDir, (FolderViewWidgetSettings)GetWidgetSettings());//, SetSelectedItemsOnNavigation);
+                    await ItemViewModel.RefreshItems(previousDir, (FolderViewWidgetSettings)GetWidgetSettings());//, SetSelectedItemsOnNavigation);
                 }
                 /*else
                 {
@@ -578,6 +581,15 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
+    #region navigation
+
+    public void NavigateWithArguments(NavigationArguments navArgs)
+    {
+        _widgetManagerService.WidgetNavigateTo(WidgetWindow.WidgetType, WidgetWindow.IndexTag, navArgs);
+    }
+
+    #endregion
+
     #region interfaces
 
     public async Task<bool> NavigateToPath(string path)
@@ -590,7 +602,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
         else
         {
-            FileSystemHelper.OpenFolder(CurFolderPath);
+            FileSystemHelper.OpenInExplorer(CurFolderPath);
             return false;
         }
     }

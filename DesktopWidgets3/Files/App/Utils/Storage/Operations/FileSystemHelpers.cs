@@ -27,6 +27,9 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
 
     #region delete items
 
+    public Task<ReturnResult> DeleteItemAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, DeleteConfirmationPolicies showDialog, bool permanently)
+            => DeleteItemsAsync(viewModel, source.CreateEnumerable(), showDialog, permanently);
+
     public async Task<ReturnResult> DeleteItemsAsync(
         FolderViewViewModel viewModel, 
         IEnumerable<IStorageItemWithPath> source, 

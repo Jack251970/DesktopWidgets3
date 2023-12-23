@@ -480,4 +480,14 @@ public class WidgetManagerService : IWidgetManagerService
     }
 
     #endregion
+
+    #region navigation
+
+    public void WidgetNavigateTo(WidgetType widgetType, int indexTag, object? parameter = null, bool clearNavigation = false)
+    {
+        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
+        widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, parameter, clearNavigation);
+    }
+
+    #endregion
 }
