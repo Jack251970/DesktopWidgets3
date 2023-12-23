@@ -188,6 +188,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region models from Files
 
+    public ItemViewModel ItemViewModel;
+
     public CurrentInstanceViewModel InstanceViewModel;
 
     public BaseLayoutViewModel CommandsViewModel;
@@ -196,7 +198,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public SelectedItemsPropertiesViewModel SelectedItemsPropertiesViewModel;
 
-    public ItemViewModel ItemViewModel;
+    public ICommandManager CommandManager => _commandManager;
+
+    public IFileSystemHelpers FileSystemHelpers => _fileSystemHelpers;
 
     public LayoutPreferencesManager FolderSettings => InstanceViewModel.FolderSettings;
 
@@ -205,9 +209,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private readonly ICommandManager _commandManager;
     private readonly IFileSystemHelpers _fileSystemHelpers;
     private readonly IWidgetManagerService _widgetManagerService;
-
-    public ICommandManager CommandManager => _commandManager;
-    public IFileSystemHelpers FileSystemHelpers => _fileSystemHelpers;
 
     public FolderViewViewModel(ICommandManager commandManager, IFileSystemHelpers fileSystemHelpers, IWidgetManagerService widgetManagerService)
     {
