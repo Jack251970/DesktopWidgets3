@@ -41,6 +41,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
     // Abstract properties
     public abstract FolderViewViewModel ViewModel { get; }
     protected abstract ItemsControl ItemsControl { get; }
+    protected abstract uint IconSize { get; }
 
     // Abstract methods
     protected abstract bool CanGetItemFromElement(object element);
@@ -660,7 +661,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
     protected void FileList_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
     {
         RefreshContainer(args.ItemContainer, args.InRecycleQueue);
-        // RefreshItem(args.ItemContainer, args.Item, args.InRecycleQueue, args);
+        RefreshItem(args.ItemContainer, args.Item, args.InRecycleQueue, args);
     }
 
     private void RefreshContainer(SelectorItem container, bool inRecycleQueue)
@@ -709,31 +710,35 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
         }
     }
 
-    /*private void RefreshItem(SelectorItem container, object item, bool inRecycleQueue, ContainerContentChangingEventArgs args)
+    private void RefreshItem(SelectorItem container, object item, bool inRecycleQueue, ContainerContentChangingEventArgs args)
     {
         if (item is not ListedItem listedItem)
+        {
             return;
+        }
 
         if (inRecycleQueue)
         {
-            ParentShellPageInstance!.FilesystemViewModel.CancelExtendedPropertiesLoadingForItem(listedItem);
+            ViewModel.ItemViewModel.CancelExtendedPropertiesLoadingForItem(listedItem);
         }
         else
         {
-            InitializeDrag(container, listedItem);
+            //InitializeDrag(container, listedItem);
 
             if (!listedItem.ItemPropertiesInitialized)
             {
                 uint callbackPhase = 3;
                 args.RegisterUpdateCallback(callbackPhase, async (s, c) =>
                 {
-                    await ParentShellPageInstance!.FilesystemViewModel.LoadExtendedItemPropertiesAsync(listedItem, IconSize);
-                    if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None && listedItem is GitItem gitItem)
-                        await ParentShellPageInstance.FilesystemViewModel.LoadGitPropertiesAsync(gitItem);
+                    await ViewModel.ItemViewModel.LoadExtendedItemPropertiesAsync(listedItem, IconSize);
+                    /*if (ViewModel.ItemViewModel.EnabledGitProperties is not GitProperties.None && listedItem is GitItem gitItem)
+                    {
+                        await ViewModel.ItemViewModel.LoadGitPropertiesAsync(gitItem);
+                    }*/
                 });
             }
         }
-    }*/
+    }
 
     #endregion
 

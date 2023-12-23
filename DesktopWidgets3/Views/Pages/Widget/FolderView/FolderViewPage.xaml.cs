@@ -24,13 +24,16 @@ public sealed partial class FolderViewPage : BaseLayoutPage
     {
         ViewModel = App.GetService<FolderViewViewModel>();
         InitializeComponent();
+
         Initialize();
+        ViewModel.NavigatedTo += (s, e) => RefreshIconSize();
     }
 
     #region abstract
 
     // Abstract properties
     protected override ItemsControl ItemsControl => FileList;
+    protected override uint IconSize => currentIconSize;
 
     // Abstract methods
     protected override bool CanGetItemFromElement(object element) => element is ListViewItem;
@@ -338,6 +341,17 @@ public sealed partial class FolderViewPage : BaseLayoutPage
                 VisualStateManager.GoToState(userControl, "HideCheckbox", true);
             }
         }
+    }
+
+    #endregion
+
+    #region icon size
+
+    private uint currentIconSize;
+
+    private void RefreshIconSize()
+    {
+        currentIconSize = ViewModel.FolderSettings.GetIconSize();
     }
 
     #endregion

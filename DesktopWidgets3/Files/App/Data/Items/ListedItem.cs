@@ -10,6 +10,7 @@ using Files.App.Helpers;
 using Files.App.Utils.Cloud;
 using Files.App.Utils.Library;
 using Files.App.Utils.Storage;
+using Files.App.ViewModels.Properties;
 using Files.Core.Services.DateTimeFormatter;
 using Files.Shared.Helpers;
 using FluentFTP;
@@ -322,12 +323,12 @@ public class ListedItem : ObservableObject, IGroupableItem
     {
     }
 
-    /*private ObservableCollection<FileProperty> fileDetails;
+    private ObservableCollection<FileProperty> fileDetails;
     public ObservableCollection<FileProperty> FileDetails
     {
         get => fileDetails;
         set => SetProperty(ref fileDetails, value);
-    }*/
+    }
 
     public override string ToString()
     {
@@ -355,7 +356,7 @@ public class ListedItem : ObservableObject, IGroupableItem
     public bool IsFolder => PrimaryItemAttribute is StorageItemTypes.Folder;
     public bool IsRecycleBinItem => this is RecycleBinItem;
     public bool IsShortcut => this is ShortcutItem;
-    // public bool IsLibrary => this is LibraryItem;
+    public bool IsLibrary => this is LibraryItem;
     public bool IsLinkItem => IsShortcut && ((ShortcutItem)this).IsUrl;
     public bool IsFtpItem => this is FtpItem;
     public bool IsArchive => this is ZipItem;
@@ -366,12 +367,12 @@ public class ListedItem : ObservableObject, IGroupableItem
     public bool IsDriveRoot => ItemPath == PathNormalization.GetPathRoot(ItemPath);
     // public bool IsElevated => CheckElevationRights();
 
-    /*private BaseStorageFile itemFile;
+    private BaseStorageFile itemFile;
     public BaseStorageFile ItemFile
     {
         get => itemFile;
         set => SetProperty(ref itemFile, value);
-    }*/
+    }
 
     // This is a hack used because x:Bind casting did not work properly
     public RecycleBinItem? AsRecycleBinItem => this as RecycleBinItem;

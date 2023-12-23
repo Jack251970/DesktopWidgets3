@@ -545,8 +545,8 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
 
     private static class EventArgsCache
     {
-        internal static readonly PropertyChangedEventArgs CountPropertyChanged = new PropertyChangedEventArgs("Count");
-        internal static readonly PropertyChangedEventArgs IndexerPropertyChanged = new PropertyChangedEventArgs("Item[]");
-        internal static readonly NotifyCollectionChangedEventArgs ResetCollectionChanged = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+        internal static readonly PropertyChangedEventArgs CountPropertyChanged = new("Count");
+        internal static readonly PropertyChangedEventArgs IndexerPropertyChanged = new("Item[]");
+        internal static readonly NotifyCollectionChangedEventArgs ResetCollectionChanged = new(NotifyCollectionChangedAction.Reset);
     }
 }

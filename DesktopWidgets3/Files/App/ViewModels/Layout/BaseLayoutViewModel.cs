@@ -3,8 +3,6 @@
 
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using Files.App.Helpers;
-using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
 
 namespace Files.App.ViewModels.Layouts;

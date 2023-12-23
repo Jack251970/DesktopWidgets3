@@ -21,6 +21,9 @@ using System.Diagnostics;
 using Windows.Storage.FileProperties;
 using Files.App.Extensions;
 using DesktopWidgets3.Models.Widget;
+using System.Collections.Concurrent;
+using Microsoft.UI.Xaml.Media;
+using Files.App.ViewModels.Previews;
 using FileAttributes = System.IO.FileAttributes;
 using static Files.Core.Helpers.NativeFindStorageItemHelper;
 
@@ -28,9 +31,12 @@ namespace Files.App.Data.Models;
 
 public sealed class ItemViewModel : ObservableObject, IDisposable
 {
-    private readonly SemaphoreSlim enumFolderSemaphore;
+    #region properties
 
+    private readonly SemaphoreSlim enumFolderSemaphore;
+    private readonly ConcurrentDictionary<string, bool> itemLoadQueue;
     private readonly DispatcherQueue dispatcherQueue;
+    private readonly IStorageCacheController fileListCache = StorageCacheController.GetInstance();
     private readonly string folderTypeTextLocalized = "Folder".GetLocalized();
 
     private Task? aProcessQueueAction;
@@ -71,6 +77,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
     private FileSystemWatcher watcher = null!;
 
+    private static BitmapImage shieldIcon = null!;
+
     public event EventHandler? DirectoryInfoUpdated;
 
     public bool HasNoWatcher { get; private set; }
@@ -86,19 +94,24 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
     private CancellationTokenSource addFilesCTS;
     private CancellationTokenSource semaphoreCTS;
+    private CancellationTokenSource loadPropsCTS;
     private CancellationTokenSource watcherCTS;
 
     private bool IsSearchResults { get; set; }
 
     private FolderViewWidgetSettings currentSettings;
 
+    #endregion
+
     public ItemViewModel(LayoutPreferencesManager folderSettingsViewModel)
     {
         folderSettings = folderSettingsViewModel;
         filesAndFolders = new ConcurrentCollection<ListedItem>();
         FilesAndFolders = new BulkConcurrentObservableCollection<ListedItem>();
+        itemLoadQueue = new ConcurrentDictionary<string, bool>();
         addFilesCTS = new CancellationTokenSource();
         semaphoreCTS = new CancellationTokenSource();
+        loadPropsCTS = new CancellationTokenSource();
         watcherCTS = new CancellationTokenSource();
         enumFolderSemaphore = new SemaphoreSlim(1, 1);
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -1081,6 +1094,362 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         }
 
         postLoadCallback?.Invoke();
+    }
+
+    public void CancelExtendedPropertiesLoadingForItem(ListedItem item)
+    {
+        itemLoadQueue.TryUpdate(item.ItemPath, true, false);
+    }
+
+    public async Task LoadExtendedItemPropertiesAsync(ListedItem item, uint thumbnailSize = 20)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        itemLoadQueue[item.ItemPath] = false;
+
+        var cts = loadPropsCTS;
+
+        try
+        {
+            await Task.Run(async () =>
+            {
+                if (itemLoadQueue.TryGetValue(item.ItemPath, out var canceled) && canceled)
+                {
+                    return;
+                }
+
+                item.ItemPropertiesInitialized = true;
+                var wasSyncStatusLoaded = false;
+                var loadGroupHeaderInfo = false;
+                ImageSource? groupImage = null;
+                GroupedCollection<ListedItem>? gp = null;
+                try
+                {
+                    BaseStorageFile? matchingStorageFile = null;
+                    if (item.Key is not null && FilesAndFolders.IsGrouped && FilesAndFolders.GetExtendedGroupHeaderInfo is not null)
+                    {
+                        gp = FilesAndFolders.GroupedCollection?.Where(x => x.Model.Key == item.Key).FirstOrDefault();
+                        loadGroupHeaderInfo = gp is not null && !gp.Model.Initialized && gp.GetExtendedGroupHeaderInfo is not null;
+                    }
+
+                    if (item.IsLibrary || item.PrimaryItemAttribute == StorageItemTypes.File || item.IsArchive)
+                    {
+                        if (!item.IsShortcut && !item.IsHiddenItem && !FtpHelpers.IsFtpPath(item.ItemPath))
+                        {
+                            cts.Token.ThrowIfCancellationRequested();
+                            matchingStorageFile = await GetFileFromPathAsync(item.ItemPath);
+                            if (matchingStorageFile is not null)
+                            {
+                                cts.Token.ThrowIfCancellationRequested();
+                                await LoadItemThumbnailAsync(item, thumbnailSize, matchingStorageFile);
+
+                                var syncStatus = await CheckCloudDriveSyncStatusAsync(matchingStorageFile);
+                                /*var fileFRN = await FileTagsHelper.GetFileFRN(matchingStorageFile);
+                                var fileTag = FileTagsHelper.ReadFileTag(item.ItemPath);*/
+                                var itemType = (item.ItemType == "Folder".GetLocalized()) ? item.ItemType : matchingStorageFile.DisplayType;
+                                cts.Token.ThrowIfCancellationRequested();
+
+                                await dispatcherQueue.EnqueueOrInvokeAsync(() =>
+                                {
+                                    /*item.FolderRelativeId = matchingStorageFile.FolderRelativeId;*/
+                                    item.ItemType = itemType;
+                                    item.SyncStatusUI = CloudDriveSyncStatusUI.FromCloudDriveSyncStatus(syncStatus);
+                                    /*item.FileFRN = fileFRN;
+                                    item.FileTags = fileTag;*/
+                                }, DispatcherQueuePriority.Low);
+
+                                /*SetFileTag(item);*/
+                                wasSyncStatusLoaded = true;
+                            }
+                        }
+
+                        if (!wasSyncStatusLoaded)
+                        {
+                            await LoadItemThumbnailAsync(item, thumbnailSize, null);
+                        }
+                    }
+                    else
+                    {
+                        if (!item.IsShortcut && !item.IsHiddenItem && !FtpHelpers.IsFtpPath(item.ItemPath))
+                        {
+                            cts.Token.ThrowIfCancellationRequested();
+                            BaseStorageFolder matchingStorageFolder = await GetFolderFromPathAsync(item.ItemPath);
+                            if (matchingStorageFolder is not null)
+                            {
+                                cts.Token.ThrowIfCancellationRequested();
+                                await LoadItemThumbnailAsync(item, thumbnailSize, matchingStorageFolder);
+                                if (matchingStorageFolder.DisplayName != item.Name && !matchingStorageFolder.DisplayName.StartsWith("$R", StringComparison.Ordinal))
+                                {
+                                    cts.Token.ThrowIfCancellationRequested();
+                                    await dispatcherQueue.EnqueueOrInvokeAsync(() =>
+                                    {
+                                        item.ItemNameRaw = matchingStorageFolder.DisplayName;
+                                    });
+                                    await fileListCache.SaveFileDisplayNameToCache(item.ItemPath, matchingStorageFolder.DisplayName);
+                                    if (/*folderSettings.DirectorySortOption == SortOption.Name && */!isLoadingItems)
+                                    {
+                                        await OrderFilesAndFoldersAsync();
+                                        await ApplySingleFileChangeAsync(item);
+                                    }
+                                }
+
+                                cts.Token.ThrowIfCancellationRequested();
+                                var syncStatus = await CheckCloudDriveSyncStatusAsync(matchingStorageFolder);
+                                /*var fileFRN = await FileTagsHelper.GetFileFRN(matchingStorageFolder);
+                                var fileTag = FileTagsHelper.ReadFileTag(item.ItemPath);*/
+                                var itemType = (item.ItemType == "Folder".GetLocalized()) ? item.ItemType : matchingStorageFolder.DisplayType;
+                                cts.Token.ThrowIfCancellationRequested();
+
+                                await dispatcherQueue.EnqueueOrInvokeAsync(() =>
+                                {
+                                    //item.FolderRelativeId = matchingStorageFolder.FolderRelativeId;
+                                    item.ItemType = itemType;
+                                    item.SyncStatusUI = CloudDriveSyncStatusUI.FromCloudDriveSyncStatus(syncStatus);
+                                    /*item.FileFRN = fileFRN;
+                                    item.FileTags = fileTag;*/
+                                }, DispatcherQueuePriority.Low);
+
+                                /*SetFileTag(item);*/
+                                wasSyncStatusLoaded = true;
+                            }
+                        }
+                        if (!wasSyncStatusLoaded)
+                        {
+                            cts.Token.ThrowIfCancellationRequested();
+                            await LoadItemThumbnailAsync(item, thumbnailSize, null);
+                        }
+                    }
+
+                    /*var isFileTypeGroupMode = folderSettings.DirectoryGroupOption == GroupOption.FileType;
+                    if (loadGroupHeaderInfo && isFileTypeGroupMode)
+                    {
+                        cts.Token.ThrowIfCancellationRequested();
+                        groupImage = await GetItemTypeGroupIcon(item, matchingStorageFile);
+                    }*/
+                }
+                catch (Exception)
+                {
+                }
+                finally
+                {
+                    if (!wasSyncStatusLoaded)
+                    {
+                        cts.Token.ThrowIfCancellationRequested();
+                        await FilesystemTasks.Wrap(async () =>
+                        {
+                            /*var fileTag = FileTagsHelper.ReadFileTag(item.ItemPath);*/
+
+                            await dispatcherQueue.EnqueueOrInvokeAsync(() =>
+                            {
+                                // Reset cloud sync status icon
+                                item.SyncStatusUI = new CloudDriveSyncStatusUI();
+
+                                /*item.FileTags = fileTag;*/
+                            }, DispatcherQueuePriority.Low);
+
+                            /*SetFileTag(item);*/
+                        });
+                    }
+
+                    if (loadGroupHeaderInfo)
+                    {
+                        cts.Token.ThrowIfCancellationRequested();
+                        await SafetyExtensions.IgnoreExceptions(() =>
+                            dispatcherQueue.EnqueueOrInvokeAsync(() =>
+                            {
+                                gp!.Model.ImageSource = groupImage!;
+                                gp.InitializeExtendedGroupHeaderInfoAsync();
+                            }));
+                    }
+                }
+            }, cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // Ignored
+        }
+        finally
+        {
+            itemLoadQueue.TryRemove(item.ItemPath, out _);
+        }
+    }
+
+    // ThumbnailSize is set to 96 so that unless we override it, mode is in turn set to SingleItem
+    private async Task LoadItemThumbnailAsync(
+        ListedItem item, 
+        uint thumbnailSize = 96, 
+        IStorageItem? matchingStorageItem = null,
+        bool showThumbnails = true) // TODO: Add UserSettingsService.FoldersSettingsService.ShowThumbnails
+    {
+        var wasIconLoaded = false;
+        if (item.IsLibrary || item.PrimaryItemAttribute == StorageItemTypes.File || item.IsArchive)
+        {
+            if (showThumbnails && !item.IsShortcut && !item.IsHiddenItem && !FtpHelpers.IsFtpPath(item.ItemPath))
+            {
+                var matchingStorageFile = matchingStorageItem?.AsBaseStorageFile() ?? await GetFileFromPathAsync(item.ItemPath);
+
+                if (matchingStorageFile is not null)
+                {
+                    // SingleItem returns image thumbnails in the correct aspect ratio for the grid layouts
+                    // ListView is used for the details and columns layout
+                    var thumbnailMode = thumbnailSize < 96 ? ThumbnailMode.ListView : ThumbnailMode.SingleItem;
+
+                    using StorageItemThumbnail Thumbnail = await FilesystemTasks.Wrap(() => matchingStorageFile.GetThumbnailAsync(thumbnailMode, thumbnailSize, ThumbnailOptions.ResizeThumbnail).AsTask());
+
+                    if (!(Thumbnail is null || Thumbnail.Size == 0 || Thumbnail.OriginalHeight == 0 || Thumbnail.OriginalWidth == 0))
+                    {
+                        await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                        {
+                            var img = new BitmapImage
+                            {
+                                DecodePixelType = DecodePixelType.Logical,
+                                DecodePixelWidth = (int)thumbnailSize
+                            };
+                            await img.SetSourceAsync(Thumbnail);
+                            item.FileImage = img;
+                            if (!string.IsNullOrEmpty(item.FileExtension) &&
+                                !item.IsShortcut && !item.IsExecutable &&
+                                !ImagePreviewViewModel.ContainsExtension(item.FileExtension.ToLowerInvariant()))
+                            {
+                                DefaultIcons.AddIfNotPresent(item.FileExtension.ToLowerInvariant(), item.FileImage);
+                            }
+                        }, DispatcherQueuePriority.Low);
+                        wasIconLoaded = true;
+                    }
+
+                    var overlayInfo = await FileThumbnailHelper.LoadOverlayAsync(item.ItemPath, thumbnailSize);
+                    if (overlayInfo is not null)
+                    {
+                        await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                        {
+                            item.IconOverlay = await overlayInfo.ToBitmapAsync();
+                            item.ShieldIcon = await GetShieldIcon();
+                        }, DispatcherQueuePriority.Low);
+                    }
+                }
+            }
+
+            if (!wasIconLoaded)
+            {
+                var (IconData, OverlayData) = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, false);
+                if (IconData is not null)
+                {
+                    await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                    {
+                        item.FileImage = await IconData.ToBitmapAsync();
+                        if (!string.IsNullOrEmpty(item.FileExtension) &&
+                            !item.IsShortcut && !item.IsExecutable &&
+                            !ImagePreviewViewModel.ContainsExtension(item.FileExtension.ToLowerInvariant()))
+                        {
+                            DefaultIcons!.AddIfNotPresent(item.FileExtension.ToLowerInvariant(), item.FileImage);
+                        }
+                    }, DispatcherQueuePriority.Low);
+                }
+
+                if (OverlayData is not null)
+                {
+                    await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                    {
+                        item.IconOverlay = await OverlayData.ToBitmapAsync();
+                        item.ShieldIcon = await GetShieldIcon();
+                    }, DispatcherQueuePriority.Low);
+                }
+            }
+        }
+        else
+        {
+            if (!item.IsShortcut && !item.IsHiddenItem && !FtpHelpers.IsFtpPath(item.ItemPath))
+            {
+                var matchingStorageFolder = matchingStorageItem?.AsBaseStorageFolder() ?? await GetFolderFromPathAsync(item.ItemPath);
+                if (matchingStorageFolder is not null)
+                {
+                    // SingleItem returns image thumbnails in the correct aspect ratio for the grid layouts
+                    // ListView is used for the details and columns layout
+                    var thumbnailMode = thumbnailSize < 96 ? ThumbnailMode.ListView : ThumbnailMode.SingleItem;
+
+                    // We use ReturnOnlyIfCached because otherwise folders thumbnails have a black background, this has the downside the folder previews don't work
+                    using StorageItemThumbnail Thumbnail = await FilesystemTasks.Wrap(() => matchingStorageFolder.GetThumbnailAsync(thumbnailMode, thumbnailSize, ThumbnailOptions.ReturnOnlyIfCached).AsTask());
+                    if (!(Thumbnail is null || Thumbnail.Size == 0 || Thumbnail.OriginalHeight == 0 || Thumbnail.OriginalWidth == 0))
+                    {
+                        await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                        {
+                            var img = new BitmapImage
+                            {
+                                DecodePixelType = DecodePixelType.Logical,
+                                DecodePixelWidth = (int)thumbnailSize
+                            };
+                            await img.SetSourceAsync(Thumbnail);
+                            item.FileImage = img;
+                        }, DispatcherQueuePriority.Normal);
+                        wasIconLoaded = true;
+                    }
+
+                    var overlayInfo = await FileThumbnailHelper.LoadOverlayAsync(item.ItemPath, thumbnailSize);
+                    if (overlayInfo is not null)
+                    {
+                        await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                        {
+                            item.IconOverlay = await overlayInfo.ToBitmapAsync();
+                            item.ShieldIcon = await GetShieldIcon();
+                        }, DispatcherQueuePriority.Low);
+                    }
+                }
+            }
+
+            if (!wasIconLoaded)
+            {
+                var iconInfo = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, true);
+                if (iconInfo.IconData is not null)
+                {
+                    await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                    {
+                        item.FileImage = await iconInfo.IconData.ToBitmapAsync();
+                    }, DispatcherQueuePriority.Low);
+                }
+
+                if (iconInfo.OverlayData is not null)
+                {
+                    await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                    {
+                        item.IconOverlay = await iconInfo.OverlayData.ToBitmapAsync();
+                        item.ShieldIcon = await GetShieldIcon();
+                    }, DispatcherQueuePriority.Low);
+                }
+            }
+        }
+    }
+
+    private async Task<BitmapImage> GetShieldIcon()
+    {
+        shieldIcon ??= (await UIHelpers.GetShieldIconResource())!;
+
+        return shieldIcon!;
+    }
+
+    public async Task ApplySingleFileChangeAsync(ListedItem item)
+    {
+        var newIndex = filesAndFolders.IndexOf(item);
+        await dispatcherQueue.EnqueueOrInvokeAsync(() =>
+        {
+            FilesAndFolders.Remove(item);
+            if (newIndex != -1)
+            {
+                FilesAndFolders.Insert(Math.Min(newIndex, FilesAndFolders.Count), item);
+            }
+
+            /*if (folderSettings.DirectoryGroupOption != GroupOption.None)
+            {
+                var key = FilesAndFolders.ItemGroupKeySelector?.Invoke(item);
+                var group = FilesAndFolders.GroupedCollection?.FirstOrDefault(x => x.Model.Key == key);
+                group?.OrderOne(list => SortingHelper.OrderFileList(list, folderSettings.DirectorySortOption, folderSettings.DirectorySortDirection, folderSettings.SortDirectoriesAlongsideFiles), item);
+            }*/
+
+            //UpdateEmptyTextType();
+            DirectoryInfoUpdated?.Invoke(this, EventArgs.Empty);
+        });
     }
 
     #endregion
