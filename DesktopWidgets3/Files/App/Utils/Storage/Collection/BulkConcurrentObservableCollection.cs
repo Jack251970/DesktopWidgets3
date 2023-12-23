@@ -145,7 +145,14 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             }
 
             PropertyChanged?.Invoke(this, EventArgsCache.IndexerPropertyChanged);
-            CollectionChanged?.Invoke(this, e);
+            try
+            {
+                CollectionChanged?.Invoke(this, e);
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         if (IsGrouped)
