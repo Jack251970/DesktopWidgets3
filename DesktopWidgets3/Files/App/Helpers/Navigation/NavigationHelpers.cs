@@ -16,7 +16,7 @@ public static class NavigationHelpers
     public static async Task OpenSelectedItemsAsync(FolderViewViewModel viewModel, bool openViaApplicationPicker = false)
     {
         // Don't open files and folders inside recycle bin
-        if (viewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
+        if (viewModel.ItemViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
             viewModel.SelectedItems is null)
         {
             return;

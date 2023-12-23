@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Files.App.Helpers;
+using Files.App.Utils.Cloud;
 using Files.App.Utils.Library;
 using Files.App.Utils.Storage;
 using Files.Core.Services.DateTimeFormatter;
@@ -123,7 +124,7 @@ public class ListedItem : ObservableObject, IGroupableItem
         set => SetProperty(ref hasTags, value);
     }*/
 
-    /*private CloudDriveSyncStatusUI syncStatusUI = new();
+    private CloudDriveSyncStatusUI syncStatusUI = new();
     public CloudDriveSyncStatusUI SyncStatusUI
     {
         get => syncStatusUI;
@@ -140,10 +141,7 @@ public class ListedItem : ObservableObject, IGroupableItem
     }
 
     // This is used to avoid passing a null value to AutomationProperties.Name, which causes a crash
-    public string SyncStatusString
-    {
-        get => string.IsNullOrEmpty(SyncStatusUI?.SyncStatusString) ? "CloudDriveSyncStatus_Unknown".GetLocalizedResource() : SyncStatusUI.SyncStatusString;
-    }*/
+    public string SyncStatusString => string.IsNullOrEmpty(SyncStatusUI?.SyncStatusString) ? "CloudDriveSyncStatus_Unknown".GetLocalized() : SyncStatusUI.SyncStatusString;
 
     private BitmapImage? fileImage;
     public BitmapImage? FileImage

@@ -27,6 +27,36 @@ public sealed partial class FolderViewPage : BaseLayoutPage
         Initialize();
     }
 
+    #region abstract
+
+    // Abstract properties
+    protected override ItemsControl ItemsControl => FileList;
+
+    // Abstract methods
+    protected override bool CanGetItemFromElement(object element) => element is ListViewItem;
+
+    protected override void InitializeItemManipulationModel()
+    {
+        ItemManipulationModel.ClearSelectionInvoked += (s, e) =>
+        {
+            FileList.SelectedItems.Clear();
+        };
+        ItemManipulationModel.AddSelectedItemInvoked += (s, e) =>
+        {
+            /*if (NextRenameIndex != 0)
+            {
+                _nextItemToSelect = e;
+                FileList.LayoutUpdated += FileList_LayoutUpdated;
+            } else */
+            if (FileList?.Items.Contains(e) ?? false)
+            {
+                FileList!.SelectedItems.Add(e);
+            }
+        };
+    }
+
+    #endregion
+
     #region widget context menu
 
     private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)
@@ -56,36 +86,6 @@ public sealed partial class FolderViewPage : BaseLayoutPage
             await Commands.NavigateUp.ExecuteAsync();
         }*/
         ResetRenameDoubleClick();
-    }
-
-    #endregion
-
-    #region abstract
-
-    // Abstract properties
-    protected override ItemsControl ItemsControl => FileList;
-
-    // Abstract methods
-    protected override bool CanGetItemFromElement(object element) => element is ListViewItem;
-
-    protected override void InitializeItemManipulationModel()
-    {
-        ItemManipulationModel.ClearSelectionInvoked += (s, e) =>
-        {
-            FileList.SelectedItems.Clear();
-        };
-        ItemManipulationModel.AddSelectedItemInvoked += (s, e) =>
-        {
-            /*if (NextRenameIndex != 0)
-            {
-                _nextItemToSelect = e;
-                FileList.LayoutUpdated += FileList_LayoutUpdated;
-            } else */
-            if (FileList?.Items.Contains(e) ?? false)
-            {
-                FileList!.SelectedItems.Add(e);
-            }
-        };
     }
 
     #endregion

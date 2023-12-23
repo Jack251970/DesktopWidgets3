@@ -24,6 +24,9 @@ using Files.App.ViewModels.Layouts;
 using CommunityToolkit.WinUI.UI;
 using Files.App.Utils.Storage;
 using Files.App.Extensions;
+using Microsoft.UI.Xaml.Data;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
 
 namespace Files.App.Views.Layouts;
@@ -31,7 +34,7 @@ namespace Files.App.Views.Layouts;
 /// <summary>
 /// Represents the base class which every layout page must derive from
 /// </summary>
-public abstract class BaseLayoutPage : Page
+public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 {
     #region Abstract
 
@@ -123,8 +126,13 @@ public abstract class BaseLayoutPage : Page
 
     private void InitilizeItemContextFlyout()
     {
-        ViewModel.NavigatedTo += (s, e) => { ItemContextMenuFlyout.Opened += ItemContextFlyout_Opening; };
-        ViewModel.NavigatedFrom += (s, e) => { ItemContextMenuFlyout.Opened -= ItemContextFlyout_Opening; };
+        ViewModel.NavigatedTo += (s, e) => {
+            ItemContextMenuFlyout.Opened -= ItemContextFlyout_Opening;
+            ItemContextMenuFlyout.Opened += ItemContextFlyout_Opening;
+        };
+        ViewModel.NavigatedFrom += (s, e) => { 
+            ItemContextMenuFlyout.Opened -= ItemContextFlyout_Opening; 
+        };
     }
 
     private async void ItemContextFlyout_Opening(object? sender, object e)
@@ -179,7 +187,7 @@ public abstract class BaseLayoutPage : Page
                 if (!InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
                 {
                     var shellMenuItems = await ContextFlyoutItemHelper.GetItemContextShellCommandsAsync(
-                        workingDir: ViewModel.WorkingDirectory,
+                        workingDir: ViewModel.ItemViewModel.WorkingDirectory,
                         selectedItems: SelectedItems,
                         shiftPressed: shiftPressed,
                         showOpenMenu: false,
@@ -647,7 +655,7 @@ public abstract class BaseLayoutPage : Page
 
     #endregion
 
-    #region FileList_ContainerContentChanging
+    #region Container Content
 
     protected void FileList_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
     {
@@ -726,6 +734,17 @@ public abstract class BaseLayoutPage : Page
             }
         }
     }*/
+
+    #endregion
+
+    #region Notify property changed
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
     #endregion
 

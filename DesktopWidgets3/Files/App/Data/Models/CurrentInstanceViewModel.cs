@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using Files.Core.Data.Enums;
 
 namespace Files.App.Data.Models;
 
@@ -12,20 +13,20 @@ public class CurrentInstanceViewModel : ObservableObject
     //  a single enum property providing simplified customization of the
     //  values being manipulated inside the setter blocks
 
-    /*public LayoutPreferencesManager FolderSettings
+    public LayoutPreferencesManager FolderSettings
     {
         get;
-    }*/
+    }
 
     public CurrentInstanceViewModel()
     {
-        // FolderSettings = new LayoutPreferencesManager();
+        FolderSettings = new LayoutPreferencesManager();
     }
 
-    /*public CurrentInstanceViewModel(FolderLayoutModes rootLayoutMode)
+    public CurrentInstanceViewModel(FolderLayoutModes rootLayoutMode)
     {
         FolderSettings = new LayoutPreferencesManager(rootLayoutMode);
-    }*/
+    }
 
     private bool isPageTypeSearchResults = false;
     public bool IsPageTypeSearchResults

@@ -45,18 +45,17 @@ public class Constants
 
         public static readonly string RecentItemsPath = Environment.GetFolderPath(Environment.SpecialFolder.Recent);
 
-        public static Dictionary<string, string> ShellPlaces =
-            new()
-            {
-                    { "::{645FF040-5081-101B-9F08-00AA002F954E}", RecycleBinPath },
-                    { "::{5E5F29CE-E0A8-49D3-AF32-7A7BDC173478}", "Home" /*MyComputerPath*/ },
-                    { "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", MyComputerPath },
-                    { "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", NetworkFolderPath },
-                    { "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", NetworkFolderPath },
-                    { RecycleBinPath.ToUpperInvariant(), RecycleBinPath },
-                    { MyComputerPath.ToUpperInvariant(), MyComputerPath },
-                    { NetworkFolderPath.ToUpperInvariant(), NetworkFolderPath },
-            };
+        public static Dictionary<string, string> ShellPlaces = new()
+        {
+                { "::{645FF040-5081-101B-9F08-00AA002F954E}", RecycleBinPath },
+                { "::{5E5F29CE-E0A8-49D3-AF32-7A7BDC173478}", "Home" /*MyComputerPath*/ },
+                { "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", MyComputerPath },
+                { "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", NetworkFolderPath },
+                { "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", NetworkFolderPath },
+                { RecycleBinPath.ToUpperInvariant(), RecycleBinPath },
+                { MyComputerPath.ToUpperInvariant(), MyComputerPath },
+                { NetworkFolderPath.ToUpperInvariant(), NetworkFolderPath },
+        };
     }
 
     public static class ResourceFilePaths
@@ -70,5 +69,43 @@ public class Constants
         /// The path to the json file containing a list of file properties to be loaded in the preview pane.
         /// </summary>
         public const string PreviewPaneDetailsPropertiesJsonPath = @"ms-appx:///Resources/PreviewPanePropertiesInformation.json";
+    }
+
+    public static class Browser
+    {
+        public static class GridViewBrowser
+        {
+            public const int GridViewIncrement = 20;
+
+            // Max achievable ctrl + scroll, not a default layout size
+            public const int GridViewSizeMax = 300;
+
+            public const int GridViewSizeLarge = 220;
+
+            public const int GridViewSizeMedium = 160;
+
+            public const int GridViewSizeSmall = 100;
+
+            public const int TilesView = 260;
+        }
+
+        public static class DetailsLayoutBrowser
+        {
+            public const int DetailsViewSize = 32;
+        }
+
+        public static class ColumnViewBrowser
+        {
+            public const int ColumnViewSize = 32;
+
+            public const int ColumnViewSizeSmall = 24;
+        }
+    }
+
+    public static class Filesystem
+    {
+        public const int ExtendedAsciiCodePage = 437;
+
+        public const string CachedEmptyItemName = "fileicon_cache";
     }
 }

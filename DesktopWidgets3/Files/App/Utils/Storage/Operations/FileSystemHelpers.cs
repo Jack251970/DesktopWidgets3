@@ -102,12 +102,12 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         {
             if (source.ItemType == FilesystemItemType.File)
             {
-                fsResult = await viewModel.GetFileFromPathAsync(source.Path)
+                fsResult = await viewModel.ItemViewModel.GetFileFromPathAsync(source.Path)
                     .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
             }
             else if (source.ItemType == FilesystemItemType.Directory)
             {
-                fsResult = await viewModel.GetFolderFromPathAsync(source.Path)
+                fsResult = await viewModel.ItemViewModel.GetFolderFromPathAsync(source.Path)
                     .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
             }
         }
@@ -129,7 +129,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
             // Recycle bin also stores a file starting with $I for each item
             var iFilePath = Path.Combine(Path.GetDirectoryName(source.Path)!, Path.GetFileName(source.Path).Replace("$R", "$I", StringComparison.Ordinal));
 
-            await viewModel.GetFileFromPathAsync(iFilePath)
+            await viewModel.ItemViewModel.GetFileFromPathAsync(iFilePath)
                 .OnSuccess(iFile => iFile.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask());
         }
 

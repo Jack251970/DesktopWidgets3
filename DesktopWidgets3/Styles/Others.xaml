@@ -261,6 +261,135 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style x:Key="ColorIconCloud" TargetType="local:OpacityIcon">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Viewbox Stretch="Fill">
+                                <Grid Width="16" Height="16">
+                                    <Path
+				x:Name="Path1"
+				Data="M8 2C10.8166 2 12.4145 3.92329 12.6469 6.24599L12.7179 6.24599C14.5306 6.24599 16 7.75792 16 9.62299C16 11.4881 14.5306 13 12.7179 13H3.28205C1.46942 13 0 11.4881 0 9.62299C0 7.82009 1.3731 6.34717 3.10199 6.25098L3.35314 6.24599C3.58687 3.90802 5.18335 2 8 2ZM8 3C5.88606 3 4.55108 4.31588 4.34818 6.34547C4.29707 6.85669 3.86688 7.24601 3.3531 7.24599L3.28207 7.24599C2.02819 7.24599 1 8.30392 1 9.62299C1 10.9421 2.02819 12 3.28205 12H12.7179C13.9718 12 15 10.9421 15 9.62299C15 8.30393 13.9718 7.24599 12.718 7.24599L12.6469 7.24599C12.1332 7.24601 11.703 6.85673 11.6518 6.34554C11.4497 4.32493 10.1085 3 8 3Z"
+				Fill="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </Grid>
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup>
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Disabled" />
+                                        <VisualState x:Name="Selected" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Viewbox>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ColorIconCloudSyncing" TargetType="local:OpacityIcon">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Viewbox Stretch="Fill">
+                                <Grid Width="16" Height="16">
+                                    <Path
+							x:Name="Path1"
+							Data="M7.14645 0.646447C7.34171 0.451184 7.65829 0.451184 7.85355 0.646447L9.35355 2.14645C9.54882 2.34171 9.54882 2.65829 9.35355 2.85355L7.85355 4.35355C7.65829 4.54882 7.34171 4.54882 7.14645 4.35355C6.95118 4.15829 6.95118 3.84171 7.14645 3.64645L7.7885 3.00439C5.12517 3.11522 3 5.30943 3 8C3 9.56799 3.72118 10.9672 4.85185 11.8847C5.06627 12.0587 5.09904 12.3736 4.92503 12.588C4.75103 12.8024 4.43615 12.8352 4.22172 12.6612C2.86712 11.5619 2 9.88205 2 8C2 4.75447 4.57689 2.1108 7.79629 2.00339L7.14645 1.35355C6.95118 1.15829 6.95118 0.841709 7.14645 0.646447ZM11.075 3.41199C11.249 3.19756 11.5639 3.1648 11.7783 3.3388C13.1329 4.43806 14 6.11795 14 8C14 11.2455 11.4231 13.8892 8.20371 13.9966L8.85355 14.6464C9.04882 14.8417 9.04882 15.1583 8.85355 15.3536C8.65829 15.5488 8.34171 15.5488 8.14645 15.3536L6.64645 13.8536C6.55268 13.7598 6.5 13.6326 6.5 13.5C6.5 13.3674 6.55268 13.2402 6.64645 13.1464L8.14645 11.6464C8.34171 11.4512 8.65829 11.4512 8.85355 11.6464C9.04882 11.8417 9.04882 12.1583 8.85355 12.3536L8.2115 12.9956C10.8748 12.8848 13 10.6906 13 8C13 6.43201 12.2788 5.03283 11.1482 4.1153C10.9337 3.94129 10.901 3.62641 11.075 3.41199Z"
+							Fill="{ThemeResource SystemFillColorAttentionBrush}" />
+                                </Grid>
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup>
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Disabled" />
+                                        <VisualState x:Name="Selected" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Viewbox>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ColorIconCloudUnavailable" TargetType="local:OpacityIcon">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Viewbox Stretch="Fill">
+                                <Grid Width="16" Height="16">
+                                    <Path
+							x:Name="Path1"
+							Data="M8 3C5.23858 3 3 5.23858 3 8C3 9.20063 3.42318 10.3024 4.12853 11.1644L11.1644 4.12853C10.3024 3.42318 9.20063 3 8 3ZM11.8715 4.83563L4.83563 11.8715C5.69757 12.5768 6.79937 13 8 13C10.7614 13 13 10.7614 13 8C13 6.79937 12.5768 5.69757 11.8715 4.83563ZM2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8Z"
+							Fill="{ThemeResource SystemFillColorCriticalBrush}" />
+                                </Grid>
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup>
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Disabled" />
+                                        <VisualState x:Name="Selected" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Viewbox>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ColorIconCloudSynced" TargetType="local:OpacityIcon">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Viewbox Stretch="Fill">
+                                <Grid Width="16" Height="16">
+                                    <Path
+							x:Name="Path1"
+							Data="M1.37371 8.16782C1.19025 7.96143 0.874215 7.94284 0.667823 8.1263C0.461432 8.30975 0.442842 8.62579 0.626301 8.83218L4.6263 13.3322C4.81743 13.5472 5.15013 13.557 5.35356 13.3536L15.8536 2.85355C16.0488 2.65829 16.0488 2.34171 15.8536 2.14645C15.6583 1.95118 15.3417 1.95118 15.1465 2.14645L5.02141 12.2715L1.37371 8.16782Z"
+							Fill="{ThemeResource SystemFillColorSuccessBrush}" />
+                                </Grid>
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup>
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Disabled" />
+                                        <VisualState x:Name="Selected" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Viewbox>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ColorIconCloudKeepOffline" TargetType="local:OpacityIcon">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Viewbox Stretch="Fill">
+                                <Grid Width="16" Height="16">
+                                    <Path
+							x:Name="Path1"
+							Data="M2.66782 6.1263C2.87421 5.94284 3.19025 5.96143 3.37371 6.16782L6.02141 9.27148L13.1465 2.14645C13.3417 1.95118 13.6583 1.95118 13.8536 2.14645C14.0488 2.34171 14.0488 2.65829 13.8536 2.85355L6.35356 10.3536C6.15013 10.557 5.81743 10.5472 5.6263 10.3322L2.6263 6.83218C2.44284 6.62579 2.46143 6.30975 2.66782 6.1263Z"
+							Fill="{ThemeResource SystemFillColorSuccessBrush}" />
+                                    <Path
+							x:Name="Path2"
+							Data="M2.5 11C2.22386 11 2 11.2239 2 11.5V13.5C2 13.7761 2.22386 14 2.5 14H13.5C13.7761 14 14 13.7761 14 13.5V11.5C14 11.2239 13.7761 11 13.5 11C13.2239 11 13 11.2239 13 11.5V13H3V11.5C3 11.2239 2.77614 11 2.5 11Z"
+							Fill="{ThemeResource SystemFillColorSuccessBrush}" />
+                                </Grid>
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup>
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Disabled" />
+                                        <VisualState x:Name="Selected" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Viewbox>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

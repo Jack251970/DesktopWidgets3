@@ -61,26 +61,28 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     #endregion
 
-    #region interfaces
+    #region navigation aware
 
     public event EventHandler<object>? NavigatedTo;
     public event EventHandler? NavigatedFrom;
 
     public void OnNavigatedTo(object parameter)
     {
+        // Load settings
         if (parameter is T settings)
         {
             LoadSettings(settings);
-            NavigatedTo?.Invoke(this, parameter);
             _isInitialized = true;
-            return;
         }
+
+        // Make sure we have loaded settings
         if (!_isInitialized)
         {
             LoadSettings(new T());
-            NavigatedTo?.Invoke(this, parameter);
             _isInitialized = true;
         }
+
+        NavigatedTo?.Invoke(this, parameter);
     }
 
     public void OnNavigatedFrom()

@@ -123,7 +123,7 @@
 				VerticalContentAlignment="Stretch"
 				ScrollViewer.HorizontalScrollBarVisibility="Auto"
 				ScrollViewer.HorizontalScrollMode="Auto"
-                ItemsSource="{x:Bind ViewModel.ListedItems, Mode=OneWay}"
+                ItemsSource="{x:Bind ViewModel.CollectionViewSource.View, Mode=OneWay}"
                 IsDoubleTapEnabled="True"
                 DoubleTapped="FileList_DoubleTapped"
                 IsTapEnabled="True"
