@@ -227,7 +227,6 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        var showHiddenFile = ViewModel.GetSettings().ShowHiddenFile;
         var isRecycleBin = path.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
         var enumerated = await EnumerateItemsFromStandardFolderAsync(path, null, library);
 
@@ -531,13 +530,12 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             {
                 await Task.Run(async () =>
                 {
-                    var showHiddenFile = ViewModel.GetSettings().ShowHiddenFile;
                     var fileList = await Win32StorageEnumerator.ListEntries(ViewModel, path, hFile, findData, cancellationToken, -1, intermediateAction: async (intermediateList) =>
                     {
                         filesAndFolders.AddRange(intermediateList);
                         await OrderFilesAndFoldersAsync();
                         await ApplyFilesAndFoldersChangesAsync();
-                    }, defaultIconPairs: DefaultIcons, showHiddenFile: showHiddenFile);
+                    }, defaultIconPairs: DefaultIcons, showHiddenFile: ViewModel.GetSettings().ShowHiddenFile);
 
                     filesAndFolders.AddRange(fileList);
 
