@@ -64,7 +64,7 @@ public class ContextMenuFlyoutItemViewModelBuilder
             IsEnabled = isExecutable,
             IsChecked = command.IsOn,
             IsPrimary = IsPrimary,
-            Items = Items,
+            Items = Items!,
             ItemType = type,
             ShowItem = true,
             ShowOnShift = ShowOnShift,

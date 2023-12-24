@@ -40,7 +40,7 @@ public class GroupedCollection<T> : BulkConcurrentObservableCollection<T>, IGrou
 
     private void AddEvents()
     {
-        PropertyChanged += GroupedCollection_PropertyChanged;
+        PropertyChanged += GroupedCollection_PropertyChanged!;
     }
 
     private void GroupedCollection_PropertyChanged(object sender, PropertyChangedEventArgs e)

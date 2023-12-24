@@ -21,7 +21,7 @@ public class BlockingListEnumerator<T> : IEnumerator<T>
         {
             lock (m_Lock)
             {
-                return m_Current;
+                return m_Current!;
             }
         }
     }

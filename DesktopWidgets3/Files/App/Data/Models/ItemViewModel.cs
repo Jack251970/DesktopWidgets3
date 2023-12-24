@@ -1019,9 +1019,9 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
     private async void DirectoryWatcher_Changed(object sender, FileSystemEventArgs e)
     {
-        await dispatcherQueue.EnqueueOrInvokeAsync(() =>
+        await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
         {
-            RefreshItems(null);
+            await RefreshItems(null);
         });
     }
 

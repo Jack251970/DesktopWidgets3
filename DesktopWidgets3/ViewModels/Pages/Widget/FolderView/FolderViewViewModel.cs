@@ -595,7 +595,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         if (enable)
         {
-            Refresh_Click();
+            await Refresh_Click();
         }
         await Task.CompletedTask;
     }

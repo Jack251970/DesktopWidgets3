@@ -166,8 +166,8 @@ public static class NavigationHelpers
                 // TODO: Show dialog here!
                 /*await DialogDisplayHelper.ShowDialogAsync("FileNotFoundDialog/Title".GetLocalizedResource(), "FileNotFoundDialog/Text".GetLocalizedResource());*/
             }
-            //associatedInstance.ToolbarViewModel.CanRefresh = false;
-            viewModel.ItemViewModel.RefreshItems(previousDir);
+            viewModel.ToolbarViewModel.CanRefresh = false;
+            await viewModel.ItemViewModel.RefreshItems(previousDir);
         }
 
         return opened;

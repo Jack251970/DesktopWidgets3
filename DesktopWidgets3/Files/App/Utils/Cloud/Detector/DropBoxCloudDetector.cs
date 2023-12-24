@@ -27,18 +27,18 @@ public class DropBoxCloudDetector : AbstractCloudDetector
             yield return new CloudProvider(CloudProviders.DropBox)
             {
                 Name = "Dropbox",
-                SyncFolder = dropBoxPath,
+                SyncFolder = dropBoxPath!,
             };
         }
 
         if (jsonElem.TryGetProperty("business", out JsonElement innerBusiness))
         {
-            string dropBoxPath = innerBusiness.GetProperty("path").GetString();
+            var dropBoxPath = innerBusiness.GetProperty("path").GetString();
 
             yield return new CloudProvider(CloudProviders.DropBox)
             {
                 Name = "Dropbox Business",
-                SyncFolder = dropBoxPath,
+                SyncFolder = dropBoxPath!,
             };
         }
     }

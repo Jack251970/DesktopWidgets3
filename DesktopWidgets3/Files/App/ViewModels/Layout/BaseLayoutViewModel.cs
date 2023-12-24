@@ -19,7 +19,7 @@ public class BaseLayoutViewModel : IDisposable
 
     public BaseLayoutViewModel()
     {
-        CreateNewFileCommand = new RelayCommand<ShellNewEntry>(CreateNewFile);
+        CreateNewFileCommand = new RelayCommand<ShellNewEntry>(CreateNewFile!);
     }
 
     private async void CreateNewFile(ShellNewEntry f)
