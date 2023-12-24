@@ -626,7 +626,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
     }
 
     // Apply changes immediately after manipulating on filesAndFolders completed
-    private async Task ApplyFilesAndFoldersChangesAsync()
+    public async Task ApplyFilesAndFoldersChangesAsync()
     {
         try
         {

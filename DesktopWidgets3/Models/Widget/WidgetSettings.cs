@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Models.Widget;
+﻿using Files.Core.Data.Enums;
+
+namespace DesktopWidgets3.Models.Widget;
 
 public class BaseWidgetSettings
 {
@@ -41,6 +43,8 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
 
     public bool ShowExtension { get; set; } = false;
 
+    public DeleteConfirmationPolicies DeleteConfirmationPolicy { get; set; } = DeleteConfirmationPolicies.Always;
+
     public override BaseWidgetSettings Clone()
     {
         var clone = (FolderViewWidgetSettings)base.Clone();
@@ -49,6 +53,7 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
         clone.ShowHiddenFile = ShowHiddenFile;
         clone.AllowNavigation = AllowNavigation;
         clone.ShowExtension = ShowExtension;
+        clone.DeleteConfirmationPolicy = DeleteConfirmationPolicy;
         return clone;
     }
 }

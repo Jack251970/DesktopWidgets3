@@ -26,7 +26,7 @@ internal class NavigateUpAction : ObservableObject, IAction
         => new(Keys.Up, KeyModifiers.Menu);*/
 
     public bool IsExecutable
-        => _viewModel.CanNavigateToParent;
+        => _viewModel.CanNavigateToParent && _viewModel.AllowNavigation;
 
     public NavigateUpAction(FolderViewViewModel viewModel)
     {
@@ -44,7 +44,8 @@ internal class NavigateUpAction : ObservableObject, IAction
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(_viewModel.CanNavigateToParent))
+        if (e.PropertyName is nameof(_viewModel.CanNavigateToParent) ||
+            e.PropertyName is nameof(_viewModel.AllowNavigation))
         {
             OnPropertyChanged(nameof(IsExecutable));
         }

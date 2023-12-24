@@ -14,8 +14,8 @@ internal abstract class BaseDeleteAction : BaseUIAction
     private readonly FolderViewViewModel _viewModel;
 
     public override bool IsExecutable =>
-        _viewModel.HasSelection; /*&&
-        (!context.ShellPage?.SlimContentPage?.IsRenamingItem ?? false) &&
+        _viewModel.HasSelection &&
+        !_viewModel.IsRenamingItem; /*&&
         UIHelpers.CanShowDialog;*/
 
     public BaseDeleteAction(FolderViewViewModel viewModel)
@@ -34,10 +34,10 @@ internal abstract class BaseDeleteAction : BaseUIAction
                         ? FilesystemItemType.File
                         : FilesystemItemType.Directory));
 
-        // TODO: use settings.DeleteConfirmationPolicies instead.
-        await _viewModel.FileSystemHelpers.DeleteItemsAsync(_viewModel, items, DeleteConfirmationPolicies.Always, permanently);
+        var deleteConfirmationPolicy = _viewModel.GetSettings().DeleteConfirmationPolicy;
+        await _viewModel.FileSystemHelpers.DeleteItemsAsync(_viewModel, items, deleteConfirmationPolicy, permanently);
 
-        //await context.ShellPage.FilesystemViewModel.ApplyFilesAndFoldersChangesAsync();
+        await _viewModel.ItemViewModel.ApplyFilesAndFoldersChangesAsync();
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

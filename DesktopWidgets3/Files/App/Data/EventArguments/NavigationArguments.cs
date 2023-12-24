@@ -22,4 +22,13 @@ public class NavigationArguments
     public IEnumerable<string>? SelectItems { get; set; } = null;
 
     public required bool PushFolderPath { get; set; } = false;
+
+    public required RefreshBehaviours RefreshBehaviour { get; set; } = RefreshBehaviours.None;
+
+    public enum RefreshBehaviours
+    {
+        None,
+        RefreshItems,
+        NavigateToPath,
+    }
 }

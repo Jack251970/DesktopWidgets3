@@ -13,8 +13,9 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Files.App.Data.EventArguments;
 using Microsoft.UI.Xaml.Data;
 using DesktopWidgets3.Contracts.Services;
-using static Files.App.Data.Models.ItemViewModel;
 using DesktopWidgets3.Views.Windows;
+using Files.Core.Data.Enums;
+using static Files.App.Data.Models.ItemViewModel;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -53,7 +54,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region settings
 
-    private bool needRefresh = false;
+    private NavigationArguments.RefreshBehaviours refreshBehaviour;
 
     private string FolderPath { get; set; } = string.Empty;
 
@@ -62,6 +63,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private bool ShowHiddenFile { get; set; } = false;
 
     private bool ShowExtension { get; set; } = false;
+
+    private DeleteConfirmationPolicies DeleteConfirmationPolicy { get; set; } = DeleteConfirmationPolicies.Always;
 
     #endregion
 
@@ -204,127 +207,132 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private async void FolderViewViewModel_NavigatedTo(object? sender, object e)
     {
-        if (e is FolderViewWidgetSettings settings && needRefresh)
+        if (e is FolderViewWidgetSettings settings)
         {
-            needRefresh = false;
-
             // Prepare navigation arguments
             e = new NavigationArguments()
             {
-                FocusOnNavigation = true,
                 NavPathParam = settings.FolderPath,
                 PushFolderPath = false,
+                RefreshBehaviour = refreshBehaviour
             };
         }
 
         if (e is NavigationArguments navigationArguments)
         {
-            // Git properties are not loaded by default
-            //ItemViewModel.EnabledGitProperties = GitProperties.None;
-
-            //InitializeCommandsViewModel();
-
-            IsItemSelected = false;
-
-            /*FolderSettings!.LayoutModeChangeRequested += BaseFolderSettings_LayoutModeChangeRequested;
-            FolderSettings.GroupOptionPreferenceUpdated += FolderSettings_GroupOptionPreferenceUpdated;
-            FolderSettings.GroupDirectionPreferenceUpdated += FolderSettings_GroupDirectionPreferenceUpdated;
-            FolderSettings.GroupByDateUnitPreferenceUpdated += FolderSettings_GroupByDateUnitPreferenceUpdated;*/
-
-            /*ItemViewModel.EmptyTextType = EmptyTextType.None;*/
-            ToolbarViewModel.CanRefresh = true;
-
-            if (!navigationArguments.IsSearchResultPage)
+            if (navigationArguments.RefreshBehaviour == NavigationArguments.RefreshBehaviours.NavigateToPath)
             {
-                var previousDir = ItemViewModel.WorkingDirectory;
-                await ItemViewModel.SetWorkingDirectoryAsync(navigationArguments.NavPathParam);
+                // Git properties are not loaded by default
+                //ItemViewModel.EnabledGitProperties = GitProperties.None;
 
-                // pathRoot will be empty on recycle bin path
-                var workingDir = ItemViewModel.WorkingDirectory ?? string.Empty;
-                var pathRoot = PathNormalization.GetPathRoot(workingDir);
-                var isRoot = workingDir == pathRoot;
+                //InitializeCommandsViewModel();
 
-                var isRecycleBin = workingDir.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
-                InstanceViewModel.IsPageTypeRecycleBin = isRecycleBin;
+                IsItemSelected = false;
 
-                // Can't go up from recycle bin
-                ToolbarViewModel.CanNavigateToParent = !(string.IsNullOrEmpty(pathRoot) || isRoot || isRecycleBin);
+                /*FolderSettings!.LayoutModeChangeRequested += BaseFolderSettings_LayoutModeChangeRequested;
+                FolderSettings.GroupOptionPreferenceUpdated += FolderSettings_GroupOptionPreferenceUpdated;
+                FolderSettings.GroupDirectionPreferenceUpdated += FolderSettings_GroupDirectionPreferenceUpdated;
+                FolderSettings.GroupByDateUnitPreferenceUpdated += FolderSettings_GroupByDateUnitPreferenceUpdated;*/
 
-                InstanceViewModel.IsPageTypeMtpDevice = workingDir.StartsWith("\\\\?\\", StringComparison.Ordinal);
-                InstanceViewModel.IsPageTypeFtp = FtpHelpers.IsFtpPath(workingDir);
-                InstanceViewModel.IsPageTypeZipFolder = ZipStorageFolder.IsZipPath(workingDir);
-                //InstanceViewModel.IsPageTypeLibrary = LibraryManager.IsLibraryPath(workingDir);
-                InstanceViewModel.IsPageTypeSearchResults = false;
-                //ToolbarViewModel.PathControlDisplayText = navigationArguments.NavPathParam;
+                /*ItemViewModel.EmptyTextType = EmptyTextType.None;*/
+                ToolbarViewModel.CanRefresh = true;
 
-                /*if (InstanceViewModel.FolderSettings.DirectorySortOption == SortOption.Path)
+                if (!navigationArguments.IsSearchResultPage)
                 {
-                    InstanceViewModel.FolderSettings.DirectorySortOption = SortOption.Name;
-                }
+                    var previousDir = ItemViewModel.WorkingDirectory;
+                    await ItemViewModel.SetWorkingDirectoryAsync(navigationArguments.NavPathParam);
 
-                if (InstanceViewModel.FolderSettings.DirectoryGroupOption == GroupOption.FolderPath &&
-                    !InstanceViewModel.IsPageTypeLibrary)
-                {
-                    InstanceViewModel.FolderSettings.DirectoryGroupOption = GroupOption.None;
-                }*/
+                    // pathRoot will be empty on recycle bin path
+                    var workingDir = ItemViewModel.WorkingDirectory ?? string.Empty;
+                    var pathRoot = PathNormalization.GetPathRoot(workingDir);
+                    var isRoot = workingDir == pathRoot;
 
-                if (!navigationArguments.IsLayoutSwitch || previousDir != workingDir)
-                {
-                    await ItemViewModel.RefreshItems(previousDir);//, SetSelectedItemsOnNavigation);
-                }
-                /*else
-                {
-                    ToolbarViewModel.CanGoForward = false;
-                }*/
-            }
-            else
-            {
-                await ItemViewModel.SetWorkingDirectoryAsync(navigationArguments.SearchPathParam);
+                    var isRecycleBin = workingDir.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
+                    InstanceViewModel.IsPageTypeRecycleBin = isRecycleBin;
 
-                //ToolbarViewModel.CanGoForward = false;
-                ToolbarViewModel.CanNavigateToParent = false;
+                    // Can't go up from recycle bin
+                    ToolbarViewModel.CanNavigateToParent = (!(string.IsNullOrEmpty(pathRoot) || isRoot || isRecycleBin)) && AllowNavigation;
 
-                var workingDir = ItemViewModel.WorkingDirectory ?? string.Empty;
+                    InstanceViewModel.IsPageTypeMtpDevice = workingDir.StartsWith("\\\\?\\", StringComparison.Ordinal);
+                    InstanceViewModel.IsPageTypeFtp = FtpHelpers.IsFtpPath(workingDir);
+                    InstanceViewModel.IsPageTypeZipFolder = ZipStorageFolder.IsZipPath(workingDir);
+                    //InstanceViewModel.IsPageTypeLibrary = LibraryManager.IsLibraryPath(workingDir);
+                    InstanceViewModel.IsPageTypeSearchResults = false;
+                    //ToolbarViewModel.PathControlDisplayText = navigationArguments.NavPathParam;
 
-                InstanceViewModel.IsPageTypeRecycleBin = workingDir.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
-                InstanceViewModel.IsPageTypeMtpDevice = workingDir.StartsWith("\\\\?\\", StringComparison.Ordinal);
-                InstanceViewModel.IsPageTypeFtp = FtpHelpers.IsFtpPath(workingDir);
-                InstanceViewModel.IsPageTypeZipFolder = ZipStorageFolder.IsZipPath(workingDir);
-                //InstanceViewModel.IsPageTypeLibrary = LibraryManager.IsLibraryPath(workingDir);
-                InstanceViewModel.IsPageTypeSearchResults = true;
-
-                /*if (!navigationArguments.IsLayoutSwitch)
-                {
-                    var displayName = App.LibraryManager.TryGetLibrary(navigationArguments.SearchPathParam, out var lib) ? lib.Text : navigationArguments.SearchPathParam;
-                    ParentShellPageInstance.UpdatePathUIToWorkingDirectory(null, string.Format("SearchPagePathBoxOverrideText".GetLocalizedResource(), navigationArguments.SearchQuery, displayName));
-                    var searchInstance = new Utils.Storage.FolderSearch
+                    /*if (InstanceViewModel.FolderSettings.DirectorySortOption == SortOption.Path)
                     {
-                        Query = navigationArguments.SearchQuery,
-                        Folder = navigationArguments.SearchPathParam,
-                        ThumbnailSize = InstanceViewModel!.FolderSettings.GetIconSize(),
-                        SearchUnindexedItems = navigationArguments.SearchUnindexedItems
-                    };
+                        InstanceViewModel.FolderSettings.DirectorySortOption = SortOption.Name;
+                    }
 
-                    _ = ItemViewModel.SearchAsync(searchInstance);
-                }*/
+                    if (InstanceViewModel.FolderSettings.DirectoryGroupOption == GroupOption.FolderPath &&
+                        !InstanceViewModel.IsPageTypeLibrary)
+                    {
+                        InstanceViewModel.FolderSettings.DirectoryGroupOption = GroupOption.None;
+                    }*/
+
+                    if (!navigationArguments.IsLayoutSwitch || previousDir != workingDir)
+                    {
+                        await ItemViewModel.RefreshItems(previousDir);//, SetSelectedItemsOnNavigation);
+                    }
+                    /*else
+                    {
+                        ToolbarViewModel.CanGoForward = false;
+                    }*/
+                }
+                else
+                {
+                    await ItemViewModel.SetWorkingDirectoryAsync(navigationArguments.SearchPathParam);
+
+                    //ToolbarViewModel.CanGoForward = false;
+                    ToolbarViewModel.CanNavigateToParent = false;
+
+                    var workingDir = ItemViewModel.WorkingDirectory ?? string.Empty;
+
+                    InstanceViewModel.IsPageTypeRecycleBin = workingDir.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
+                    InstanceViewModel.IsPageTypeMtpDevice = workingDir.StartsWith("\\\\?\\", StringComparison.Ordinal);
+                    InstanceViewModel.IsPageTypeFtp = FtpHelpers.IsFtpPath(workingDir);
+                    InstanceViewModel.IsPageTypeZipFolder = ZipStorageFolder.IsZipPath(workingDir);
+                    //InstanceViewModel.IsPageTypeLibrary = LibraryManager.IsLibraryPath(workingDir);
+                    InstanceViewModel.IsPageTypeSearchResults = true;
+
+                    /*if (!navigationArguments.IsLayoutSwitch)
+                    {
+                        var displayName = App.LibraryManager.TryGetLibrary(navigationArguments.SearchPathParam, out var lib) ? lib.Text : navigationArguments.SearchPathParam;
+                        ParentShellPageInstance.UpdatePathUIToWorkingDirectory(null, string.Format("SearchPagePathBoxOverrideText".GetLocalizedResource(), navigationArguments.SearchQuery, displayName));
+                        var searchInstance = new Utils.Storage.FolderSearch
+                        {
+                            Query = navigationArguments.SearchQuery,
+                            Folder = navigationArguments.SearchPathParam,
+                            ThumbnailSize = InstanceViewModel!.FolderSettings.GetIconSize(),
+                            SearchUnindexedItems = navigationArguments.SearchUnindexedItems
+                        };
+
+                        _ = ItemViewModel.SearchAsync(searchInstance);
+                    }*/
+                }
+
+                // Show controls that were hidden on the home page
+                InstanceViewModel.IsPageTypeNotHome = true;
+                //ItemViewModel.UpdateGroupOptions();
+
+                UpdateCollectionViewSource();
+                //InstanceViewModel.FolderSettings.IsLayoutModeChanging = false;
+
+                //SetSelectedItemsOnNavigation();
+
+                if (navigationArguments.PushFolderPath)
+                {
+                    navigationFolderPaths.Push(CurFolderPath);
+                }
+                ToolbarViewModel.CanGoBack = navigationFolderPaths.Count > 0 && AllowNavigation;
+
+                await RefreshToolbar();
             }
-
-            // Show controls that were hidden on the home page
-            InstanceViewModel.IsPageTypeNotHome = true;
-            //ItemViewModel.UpdateGroupOptions();
-
-            UpdateCollectionViewSource();
-            //InstanceViewModel.FolderSettings.IsLayoutModeChanging = false;
-
-            //SetSelectedItemsOnNavigation();
-
-            if (navigationArguments.PushFolderPath)
+            else if (navigationArguments.RefreshBehaviour == NavigationArguments.RefreshBehaviours.RefreshItems)
             {
-                navigationFolderPaths.Push(CurFolderPath);
+                await ItemViewModel.RefreshItems(null);
             }
-            ToolbarViewModel.CanGoBack = navigationFolderPaths.Count > 0;
-
-            await RefreshToolbar();
         }
     }
 
@@ -476,47 +484,72 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     protected override void LoadSettings(FolderViewWidgetSettings settings)
     {
-        needRefresh = false;
+        var behaviour = NavigationArguments.RefreshBehaviours.None;
 
         if (ShowIconOverlay != settings.ShowIconOverlay)
         {
             ShowIconOverlay = settings.ShowIconOverlay;
-            needRefresh = true;
+            behaviour = NavigationArguments.RefreshBehaviours.RefreshItems;
         }
 
         if (ShowHiddenFile != settings.ShowHiddenFile)
         {
             ShowHiddenFile = settings.ShowHiddenFile;
-            needRefresh = true;
-        }
-
-        if (ShowExtension != settings.ShowExtension)
-        {
-            ShowExtension = settings.ShowExtension;
-            needRefresh = true;
-        }
-
-        if (FolderPath != settings.FolderPath)
-        {
-            FolderPath = settings.FolderPath;
-            navigationFolderPaths.Clear();
-            needRefresh = true;
+            behaviour = NavigationArguments.RefreshBehaviours.RefreshItems;
         }
 
         if (AllowNavigation != settings.AllowNavigation)
         {
             AllowNavigation = settings.AllowNavigation;
+            if (!AllowNavigation)
+            {
+                CanGoBack = false;
+                CanNavigateToParent = false;
+            }
+            else
+            {
+                CanGoBack = navigationFolderPaths.Count > 0;
+
+                var workingDir = ItemViewModel.WorkingDirectory ?? string.Empty;
+                var pathRoot = PathNormalization.GetPathRoot(workingDir);
+                var isRoot = workingDir == pathRoot;
+                var isRecycleBin = workingDir.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
+                CanNavigateToParent = (!(string.IsNullOrEmpty(pathRoot) || isRoot || isRecycleBin)) && AllowNavigation;
+            }
         }
+
+        if (ShowExtension != settings.ShowExtension)
+        {
+            ShowExtension = settings.ShowExtension;
+            behaviour = NavigationArguments.RefreshBehaviours.RefreshItems;
+        }
+
+        if (DeleteConfirmationPolicy != settings.DeleteConfirmationPolicy)
+        {
+            DeleteConfirmationPolicy = settings.DeleteConfirmationPolicy;
+        }
+
+        // Put this last so that we will navigate to the new path even if we need to refresh items
+        if (FolderPath != settings.FolderPath)
+        {
+            FolderPath = settings.FolderPath;
+            navigationFolderPaths.Clear();
+            behaviour = NavigationArguments.RefreshBehaviours.NavigateToPath;
+        }
+
+        refreshBehaviour = behaviour;
     }
 
     public override FolderViewWidgetSettings GetSettings()
     {
         return new FolderViewWidgetSettings()
         {
+            FolderPath = CurFolderPath,
             ShowIconOverlay = ShowIconOverlay,
             ShowHiddenFile = ShowHiddenFile,
-            FolderPath = CurFolderPath,
             AllowNavigation = AllowNavigation,
+            ShowExtension = ShowExtension,
+            DeleteConfirmationPolicy = DeleteConfirmationPolicy,
         };
     }
 
@@ -533,7 +566,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         NavigateWithArguments(new NavigationArguments()
         {
             NavPathParam = path,
-            PushFolderPath = false
+            PushFolderPath = false,
+            RefreshBehaviour = NavigationArguments.RefreshBehaviours.NavigateToPath
         });
     }
 
@@ -550,7 +584,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             NavigateWithArguments(new NavigationArguments()
             {
                 NavPathParam = path,
-                PushFolderPath = true
+                PushFolderPath = true,
+                RefreshBehaviour = NavigationArguments.RefreshBehaviours.NavigateToPath
             });
         }
     }

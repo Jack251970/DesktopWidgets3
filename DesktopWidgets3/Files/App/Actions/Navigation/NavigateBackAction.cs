@@ -35,7 +35,7 @@ internal class NavigateBackAction : ObservableObject, IAction
         => new("\uE72B");
 
     public bool IsExecutable
-        => _viewModel.CanGoBack;
+        => _viewModel.CanGoBack && _viewModel.AllowNavigation;
 
     public NavigateBackAction(FolderViewViewModel viewModel)
     {
@@ -53,7 +53,8 @@ internal class NavigateBackAction : ObservableObject, IAction
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(_viewModel.CanGoBack))
+        if (e.PropertyName is nameof(_viewModel.CanGoBack) ||
+            e.PropertyName is nameof(_viewModel.AllowNavigation))
         {
             OnPropertyChanged(nameof(IsExecutable));
         }

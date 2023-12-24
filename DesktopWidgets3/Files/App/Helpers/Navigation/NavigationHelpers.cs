@@ -402,7 +402,8 @@ public static class NavigationHelpers
             {
                 NavPathParam = path,
                 SelectItems = selectItems,
-                PushFolderPath = true
+                PushFolderPath = true,
+                RefreshBehaviour = NavigationArguments.RefreshBehaviours.NavigateToPath
             });
         }
         await Task.CompletedTask;
