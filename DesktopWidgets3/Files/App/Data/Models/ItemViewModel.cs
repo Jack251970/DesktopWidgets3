@@ -26,6 +26,7 @@ using Microsoft.UI.Xaml.Media;
 using Files.App.ViewModels.Previews;
 using FileAttributes = System.IO.FileAttributes;
 using static Files.Core.Helpers.NativeFindStorageItemHelper;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 
 namespace Files.App.Data.Models;
 
@@ -99,11 +100,11 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
     private bool IsSearchResults { get; set; }
 
-    private FolderViewWidgetSettings currentSettings;
+    private readonly FolderViewViewModel ViewModel;
 
     #endregion
 
-    public ItemViewModel(LayoutPreferencesManager folderSettingsViewModel)
+    public ItemViewModel(FolderViewViewModel viewModel, LayoutPreferencesManager folderSettingsViewModel)
     {
         folderSettings = folderSettingsViewModel;
         filesAndFolders = new ConcurrentCollection<ListedItem>();
@@ -116,7 +117,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         enumFolderSemaphore = new SemaphoreSlim(1, 1);
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-        currentSettings = new();
+        ViewModel = viewModel;
     }
 
     #region get base storage item
@@ -422,7 +423,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         if (enumFromStorageFolder)
         {
             var basicProps = await rootFolder?.GetBasicPropertiesAsync();
-            var currentFolder = library ?? new ListedItem()//rootFolder?.FolderRelativeId ?? string.Empty)
+            var currentFolder = library ?? new ListedItem(ViewModel)//rootFolder?.FolderRelativeId ?? string.Empty)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemPropertiesInitialized = true,
@@ -484,7 +485,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             var isHidden = ((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden;
             var opacity = isHidden ? Constants.UI.DimItemOpacity : 1d;
 
-            var currentFolder = library ?? new ListedItem()//null)
+            var currentFolder = library ?? new ListedItem(ViewModel)//null)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemPropertiesInitialized = true,
@@ -530,7 +531,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             {
                 await Task.Run(async () =>
                 {
-                    var fileList = await Win32StorageEnumerator.ListEntries(path, hFile, findData, cancellationToken, -1, intermediateAction: async (intermediateList) =>
+                    var fileList = await Win32StorageEnumerator.ListEntries(ViewModel, path, hFile, findData, cancellationToken, -1, intermediateAction: async (intermediateList) =>
                     {
                         filesAndFolders.AddRange(intermediateList);
                         await OrderFilesAndFoldersAsync();
@@ -571,7 +572,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         await Task.Run(async () =>
         {
-            var finalList = await UniversalStorageEnumerator.ListEntries(rootFolder, currentStorageFolder, cancellationToken, -1,
+            var finalList = await UniversalStorageEnumerator.ListEntries(ViewModel, rootFolder, currentStorageFolder, cancellationToken, -1,
                 async (intermediateList) =>
                 {
                     filesAndFolders.AddRange(intermediateList);
@@ -625,7 +626,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
     }
 
     // Apply changes immediately after manipulating on filesAndFolders completed
-    public async Task ApplyFilesAndFoldersChangesAsync()
+    private async Task ApplyFilesAndFoldersChangesAsync()
     {
         try
         {
@@ -1028,14 +1029,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
     #region refresh items
 
-    public async void RefreshItems(string? previousDir, Action postLoadCallback = null!)
+    public async Task RefreshItems(string? previousDir, Action postLoadCallback = null!)
     {
-        await RefreshItems(previousDir, currentSettings, postLoadCallback);
-    }
-
-    public async Task RefreshItems(string? previousDir, FolderViewWidgetSettings settings,  Action postLoadCallback = null!)
-    {
-        currentSettings = settings;
         await RapidAddItemsToCollectionAsync(WorkingDirectory, previousDir, postLoadCallback);
     }
 

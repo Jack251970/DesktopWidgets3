@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.App.Utils.Storage.Helpers;
@@ -13,6 +14,7 @@ namespace Files.App.Utils.Storage;
 public static class UniversalStorageEnumerator
 {
     public static async Task<List<ListedItem>> ListEntries(
+        FolderViewViewModel viewModel,
         BaseStorageFolder rootFolder,
         StorageFolderWithPath currentStorageFolder,
         CancellationToken? cancellationToken,
@@ -75,7 +77,7 @@ public static class UniversalStorageEnumerator
                 {
                     if (item.IsOfType(StorageItemTypes.Folder))
                     {
-                        var folder = await AddFolderAsync(item.AsBaseStorageFolder()!, currentStorageFolder, cancellationToken);
+                        var folder = await AddFolderAsync(viewModel, item.AsBaseStorageFolder()!, currentStorageFolder, cancellationToken);
                         if (folder is not null)
                         {
                             if (defaultIconPairs?.ContainsKey(string.Empty) ?? false)
@@ -88,7 +90,7 @@ public static class UniversalStorageEnumerator
                     }
                     else
                     {
-                        var fileEntry = await AddFileAsync(item.AsBaseStorageFile()!, currentStorageFolder, cancellationToken);
+                        var fileEntry = await AddFileAsync(viewModel,item.AsBaseStorageFile()!, currentStorageFolder, cancellationToken);
                         if (fileEntry is not null)
                         {
                             if (defaultIconPairs is not null)
@@ -173,7 +175,8 @@ public static class UniversalStorageEnumerator
         return tempList;
     }
 
-    public static async Task<ListedItem> AddFolderAsync(
+    private static async Task<ListedItem> AddFolderAsync(
+        FolderViewViewModel viewModel,
         BaseStorageFolder folder,
         StorageFolderWithPath currentStorageFolder,
         CancellationToken? cancellationToken)
@@ -187,7 +190,7 @@ public static class UniversalStorageEnumerator
 
         if (folder is ShortcutStorageFolder linkFolder)
         {
-            return new ShortcutItem()//(folder.FolderRelativeId)
+            return new ShortcutItem(viewModel)//(folder.FolderRelativeId)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 IsHiddenItem = false,
@@ -209,7 +212,7 @@ public static class UniversalStorageEnumerator
         }
         else if (folder is BinStorageFolder binFolder)
         {
-            return new RecycleBinItem()//(folder.FolderRelativeId)
+            return new RecycleBinItem(viewModel)//(folder.FolderRelativeId)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemNameRaw = folder.DisplayName,
@@ -229,7 +232,7 @@ public static class UniversalStorageEnumerator
         }
         else
         {
-            return new ListedItem()//(folder.FolderRelativeId)
+            return new ListedItem(viewModel)//(folder.FolderRelativeId)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemNameRaw = folder.DisplayName,
@@ -247,7 +250,8 @@ public static class UniversalStorageEnumerator
         }
     }
 
-    public static async Task<ListedItem> AddFileAsync(
+    private static async Task<ListedItem> AddFileAsync(
+        FolderViewViewModel viewModel,
         BaseStorageFile file,
         StorageFolderWithPath currentStorageFolder,
         CancellationToken? cancellationToken)
@@ -272,7 +276,7 @@ public static class UniversalStorageEnumerator
         if (file is ShortcutStorageFile linkFile)
         {
             var isUrl = FileExtensionHelpers.IsWebLinkFile(linkFile.Name);
-            return new ShortcutItem()//(file.FolderRelativeId)
+            return new ShortcutItem(viewModel)//(file.FolderRelativeId)
             {
                 PrimaryItemAttribute = StorageItemTypes.File,
                 FileExtension = itemFileExtension,
@@ -307,7 +311,7 @@ public static class UniversalStorageEnumerator
         }*/
         else if (file is BinStorageFile binFile)
         {
-            return new RecycleBinItem()//(file.FolderRelativeId)
+            return new RecycleBinItem(viewModel)//(file.FolderRelativeId)
             {
                 PrimaryItemAttribute = StorageItemTypes.File,
                 FileExtension = itemFileExtension,
@@ -328,7 +332,7 @@ public static class UniversalStorageEnumerator
         }
         else
         {
-            return new ListedItem()//(file.FolderRelativeId)
+            return new ListedItem(viewModel)//(file.FolderRelativeId)
             {
                 PrimaryItemAttribute = StorageItemTypes.File,
                 FileExtension = itemFileExtension,

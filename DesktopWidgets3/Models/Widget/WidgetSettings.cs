@@ -39,6 +39,8 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
 
     public bool AllowNavigation { get; set; } = true;
 
+    public bool ShowExtension { get; set; } = false;
+
     public override BaseWidgetSettings Clone()
     {
         var clone = (FolderViewWidgetSettings)base.Clone();
@@ -46,6 +48,7 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
         clone.ShowIconOverlay = ShowIconOverlay;
         clone.ShowHiddenFile = ShowHiddenFile;
         clone.AllowNavigation = AllowNavigation;
+        clone.ShowExtension = ShowExtension;
         return clone;
     }
 }

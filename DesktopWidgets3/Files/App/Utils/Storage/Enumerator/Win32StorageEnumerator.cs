@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.App.Utils.Git;
@@ -21,6 +22,7 @@ public static class Win32StorageEnumerator
     private static readonly IStorageCacheController fileListCache = StorageCacheController.GetInstance();
 
     public static async Task<List<ListedItem>> ListEntries(
+        FolderViewViewModel viewModel,
         string path,
         IntPtr hFile,
         WIN32_FIND_DATA findData,
@@ -48,7 +50,7 @@ public static class Win32StorageEnumerator
             {
                 if (((FileAttributes)findData.dwFileAttributes & FileAttributes.Directory) != FileAttributes.Directory)
                 {
-                    var file = await GetFile(findData, path, isGitRepo, cancellationToken);
+                    var file = await GetFile(viewModel, findData, path, isGitRepo, cancellationToken);
                     if (file is not null)
                     {
                         if (defaultIconPairs is not null)
@@ -68,7 +70,7 @@ public static class Win32StorageEnumerator
 
                         if (areAlternateStreamsVisible)
                         {
-                            tempList.AddRange(EnumAdsForPath(file.ItemPath, file));
+                            tempList.AddRange(EnumAdsForPath(viewModel, file.ItemPath, file));
                         }
                     }
                 }
@@ -76,7 +78,7 @@ public static class Win32StorageEnumerator
                 {
                     if (findData.cFileName != "." && findData.cFileName != "..")
                     {
-                        var folder = await GetFolder(findData, path, isGitRepo, cancellationToken);
+                        var folder = await GetFolder(viewModel, findData, path, isGitRepo, cancellationToken);
                         if (folder is not null)
                         {
                             if (defaultIconPairs?.ContainsKey(string.Empty) ?? false)
@@ -90,7 +92,7 @@ public static class Win32StorageEnumerator
 
                             if (areAlternateStreamsVisible)
                             {
-                                tempList.AddRange(EnumAdsForPath(folder.ItemPath, folder));
+                                tempList.AddRange(EnumAdsForPath(viewModel,folder.ItemPath, folder));
                             }
                         }
                     }
@@ -116,15 +118,21 @@ public static class Win32StorageEnumerator
         return tempList;
     }
 
-    private static IEnumerable<ListedItem> EnumAdsForPath(string itemPath, ListedItem main)
+    private static IEnumerable<ListedItem> EnumAdsForPath(
+        FolderViewViewModel viewModel, 
+        string itemPath, 
+        ListedItem main)
     {
         foreach (var ads in NativeFileOperationsHelper.GetAlternateStreams(itemPath))
         {
-            yield return GetAlternateStream(ads, main);
+            yield return GetAlternateStream(viewModel, ads, main);
         }
     }
 
-    public static ListedItem GetAlternateStream((string Name, long Size) ads, ListedItem main)
+    public static ListedItem GetAlternateStream(
+        FolderViewViewModel viewModel, 
+        (string Name, long Size) ads, 
+        ListedItem main)
     {
         var itemType = "File".GetLocalized();
         string itemFileExtension = null!;
@@ -135,9 +143,9 @@ public static class Win32StorageEnumerator
             itemType = itemFileExtension.Trim('.') + " " + itemType;
         }
 
-        var adsName = ads.Name.Substring(1, ads.Name.Length - 7); // Remove ":" and ":$DATA"
+        var adsName = ads.Name[1..^6]; // Remove ":" and ":$DATA"
 
-        return new AlternateStreamItem()
+        return new AlternateStreamItem(viewModel)
         {
             PrimaryItemAttribute = StorageItemTypes.File,
             FileExtension = itemFileExtension,
@@ -157,6 +165,7 @@ public static class Win32StorageEnumerator
     }
 
     public static async Task<ListedItem> GetFolder(
+        FolderViewViewModel viewModel,
         WIN32_FIND_DATA findData,
         string pathRoot,
         bool isGitRepo,
@@ -203,7 +212,7 @@ public static class Win32StorageEnumerator
 
         if (isGitRepo)
         {
-            return new GitItem()
+            return new GitItem(viewModel)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemNameRaw = itemName,
@@ -221,7 +230,7 @@ public static class Win32StorageEnumerator
         }
         else
         {
-            return new ListedItem()
+            return new ListedItem(viewModel)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemNameRaw = itemName,
@@ -240,6 +249,7 @@ public static class Win32StorageEnumerator
     }
 
     public static async Task<ListedItem> GetFile(
+        FolderViewViewModel viewModel,
         WIN32_FIND_DATA findData,
         string pathRoot,
         bool isGitRepo,
@@ -298,7 +308,7 @@ public static class Win32StorageEnumerator
         {
             var targetPath = NativeFileOperationsHelper.ParseSymLink(itemPath);
 
-            return new ShortcutItem()
+            return new ShortcutItem(viewModel)
             {
                 PrimaryItemAttribute = StorageItemTypes.File,
                 FileExtension = itemFileExtension!,
@@ -329,7 +339,7 @@ public static class Win32StorageEnumerator
                 return null!;
             }
 
-            return new ShortcutItem()
+            return new ShortcutItem(viewModel)
             {
                 PrimaryItemAttribute = shInfo.IsFolder ? StorageItemTypes.Folder : StorageItemTypes.File,
                 FileExtension = itemFileExtension!,
@@ -355,7 +365,7 @@ public static class Win32StorageEnumerator
         }
         /*else if (App.LibraryManager.TryGetLibrary(itemPath, out LibraryLocationItem library))
         {
-            return new LibraryItem(library)
+            return new LibraryItem(viewModel, library)
             {
                 Opacity = opacity,
                 ItemDateModifiedReal = itemModifiedDate,
@@ -366,7 +376,7 @@ public static class Win32StorageEnumerator
         {
             if (ZipStorageFolder.IsZipPath(itemPath) && await ZipStorageFolder.CheckDefaultZipApp(itemPath))
             {
-                return new ZipItem()
+                return new ZipItem(viewModel)
                 {
                     PrimaryItemAttribute = StorageItemTypes.Folder, // Treat zip files as folders
                     FileExtension = itemFileExtension,
@@ -386,7 +396,7 @@ public static class Win32StorageEnumerator
             }
             else if (isGitRepo)
             {
-                return new GitItem()
+                return new GitItem(viewModel)
                 {
                     PrimaryItemAttribute = StorageItemTypes.File,
                     FileExtension = itemFileExtension!,
@@ -406,7 +416,7 @@ public static class Win32StorageEnumerator
             }
             else
             {
-                return new ListedItem()
+                return new ListedItem(viewModel)
                 {
                     PrimaryItemAttribute = StorageItemTypes.File,
                     FileExtension = itemFileExtension,

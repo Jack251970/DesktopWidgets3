@@ -35,7 +35,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
         
     }
 
-    protected override PerformanceWidgetSettings GetSettings()
+    public override PerformanceWidgetSettings GetSettings()
     {
         return new PerformanceWidgetSettings()
         {

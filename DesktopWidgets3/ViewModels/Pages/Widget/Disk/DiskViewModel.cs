@@ -35,7 +35,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
         
     }
 
-    protected override DiskWidgetSettings GetSettings()
+    public override DiskWidgetSettings GetSettings()
     {
         return new DiskWidgetSettings()
         {

@@ -58,7 +58,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
         }
     }
 
-    protected override NetworkWidgetSettings GetSettings()
+    public override NetworkWidgetSettings GetSettings()
     {
         return new NetworkWidgetSettings
         {

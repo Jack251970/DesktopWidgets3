@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.App.Utils.Cloud;
@@ -22,6 +23,8 @@ namespace Files.App.Utils;
 
 public class ListedItem : ObservableObject, IGroupableItem
 {
+    protected readonly FolderViewViewModel ViewModel;
+
     protected static readonly IDateTimeFormatter dateTimeFormatter = DesktopWidgets3.App.GetService<IDateTimeFormatter>();
 
     public bool IsHiddenItem { get; set; } = false;
@@ -209,8 +212,7 @@ public class ListedItem : ObservableObject, IGroupableItem
             if (PrimaryItemAttribute == StorageItemTypes.File)
             {
                 var nameWithoutExtension = Path.GetFileNameWithoutExtension(ItemNameRaw);
-                // TODO: Add UserSettingsService.FoldersSettingsService.ShowFileExtensions into settings.
-                if (!string.IsNullOrEmpty(nameWithoutExtension)) //&& !UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+                if (!string.IsNullOrEmpty(nameWithoutExtension) && !ViewModel.GetSettings().ShowExtension)
                 {
                     return nameWithoutExtension;
                 }
@@ -306,12 +308,12 @@ public class ListedItem : ObservableObject, IGroupableItem
         }
     }
 
-    /*private ObservableCollection<FileProperty> itemProperties;
+    private ObservableCollection<FileProperty> itemProperties;
     public ObservableCollection<FileProperty> ItemProperties
     {
         get => itemProperties;
         set => SetProperty(ref itemProperties, value);
-    }*/
+    }
 
     /*public ListedItem(string folderRelativeId)
     {
@@ -319,8 +321,9 @@ public class ListedItem : ObservableObject, IGroupableItem
     }*/
 
     // Parameterless constructor for JsonConvert
-    public ListedItem()
+    public ListedItem(FolderViewViewModel viewModel)
     {
+        ViewModel = viewModel;
     }
 
     private ObservableCollection<FileProperty> fileDetails;
@@ -407,6 +410,9 @@ public class RecycleBinItem : ListedItem
     /*public RecycleBinItem(string folderRelativeId) : base(folderRelativeId)
     {
     }*/
+    public RecycleBinItem(FolderViewViewModel viewModel) : base(viewModel)
+    {
+    }
 
     public string ItemDateDeleted
     {
@@ -439,7 +445,7 @@ public class RecycleBinItem : ListedItem
 
 public class FtpItem : ListedItem
 {
-    public FtpItem(FtpListItem item, string folder) : base()
+    public FtpItem(FolderViewViewModel viewModel, FtpListItem item, string folder) : base(viewModel)
     {
         var isFile = item.Type == FtpObjectType.File;
         ItemDateCreatedReal = item.RawCreated < DateTime.FromFileTimeUtc(0) ? DateTimeOffset.MinValue : item.RawCreated;
@@ -479,7 +485,7 @@ public class ShortcutItem : ListedItem
     }*/
 
     // Parameterless constructor for JsonConvert
-    public ShortcutItem() : base()
+    public ShortcutItem(FolderViewViewModel viewModel) : base(viewModel)
     {
     }
 
@@ -521,29 +527,28 @@ public class ZipItem : ListedItem
     {
     }*/
 
+    // Parameterless constructor for JsonConvert
+    public ZipItem(FolderViewViewModel viewModel) : base(viewModel)
+    {
+    }
+
     public override string Name
     {
         get
         {
             var nameWithoutExtension = Path.GetFileNameWithoutExtension(ItemNameRaw);
-            // TODO: Add UserSettingsService.FoldersSettingsService.ShowFileExtensions into settings.
-            if (!string.IsNullOrEmpty(nameWithoutExtension) && true)//&& !UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+            if (!string.IsNullOrEmpty(nameWithoutExtension) && !ViewModel.GetSettings().ShowExtension)
             {
                 return nameWithoutExtension;
             }
             return ItemNameRaw;
         }
     }
-
-    // Parameterless constructor for JsonConvert
-    public ZipItem() : base()
-    {
-    }
 }
 
 public class LibraryItem : ListedItem
 {
-    public LibraryItem(LibraryLocationItem library) : base()
+    public LibraryItem(FolderViewViewModel viewModel, LibraryLocationItem library) : base(viewModel)
     {
         ItemPath = library.Path;
         ItemNameRaw = library.Text;
@@ -579,7 +584,12 @@ public class LibraryItem : ListedItem
 
 public class AlternateStreamItem : ListedItem
 {
-    public string MainStreamPath => ItemPath.Substring(0, ItemPath.LastIndexOf(':'));
+    public AlternateStreamItem(FolderViewViewModel viewModel) : base(viewModel)
+    {
+
+    }
+
+    public string MainStreamPath => ItemPath[..ItemPath.LastIndexOf(':')];
     public string MainStreamName => Path.GetFileName(MainStreamPath);
 
     public override string Name
@@ -588,10 +598,10 @@ public class AlternateStreamItem : ListedItem
         {
             var nameWithoutExtension = Path.GetFileNameWithoutExtension(ItemNameRaw);
             var mainStreamNameWithoutExtension = Path.GetFileNameWithoutExtension(MainStreamName);
-            /*if (!UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+            if (!ViewModel.GetSettings().ShowExtension)
             {
                 return $"{(string.IsNullOrEmpty(mainStreamNameWithoutExtension) ? MainStreamName : mainStreamNameWithoutExtension)}:{(string.IsNullOrEmpty(nameWithoutExtension) ? ItemNameRaw : nameWithoutExtension)}";
-            }*/
+            }
             return $"{MainStreamName}:{ItemNameRaw}";
         }
     }
@@ -599,6 +609,11 @@ public class AlternateStreamItem : ListedItem
 
 public class GitItem : ListedItem
 {
+    public GitItem(FolderViewViewModel viewModel) : base(viewModel)
+    {
+    
+    }
+
     private volatile int statusPropertiesInitialized = 0;
     public bool StatusPropertiesInitialized
     {

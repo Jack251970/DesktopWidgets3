@@ -48,7 +48,7 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
         SystemTime = DateTime.Now.ToString(timingFormat);
     }
 
-    protected override ClockWidgetSettings GetSettings()
+    public override ClockWidgetSettings GetSettings()
     {
         return new ClockWidgetSettings
         {

@@ -48,7 +48,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     protected abstract void LoadSettings(T settings);
 
-    protected abstract T GetSettings();
+    public abstract T GetSettings();
 
     #endregion
 

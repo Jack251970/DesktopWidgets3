@@ -474,7 +474,6 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
         EndRename(textBox);
         var newItemName = textBox.Text.Trim().TrimEnd('.');
 
-        //await UIFileSystemHelpers.RenameFileItemAsync(RenamingItem, newItemName, ParentShellPageInstance);
         await UIFileSystemHelpers.RenameFileItemAsync(ViewModel, RenamingItem!, newItemName);
     }
 
@@ -545,12 +544,11 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
         var selectedTextLength = SelectedItem!.Name.Length;
 
-        // TODO: Add UserSettingsService.FoldersSettingsService.ShowFileExtensions into settings.
-        /*if (!SelectedItem.IsShortcut && UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+        if (!SelectedItem.IsShortcut && ViewModel.GetSettings().ShowExtension)
         {
             var extensionLength = RenamingItem.FileExtension?.Length ?? 0;
             selectedTextLength -= extensionLength;
-        }*/
+        }
 
         textBox.Select(0, selectedTextLength);
         IsRenamingItem = true;

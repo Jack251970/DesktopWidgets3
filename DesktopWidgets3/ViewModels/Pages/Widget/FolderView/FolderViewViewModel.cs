@@ -56,6 +56,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private bool ShowHiddenFile { get; set; } = false;
 
+    private bool ShowExtension { get; set; } = false;
+
     #endregion
 
     #region current path
@@ -186,33 +188,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         CommandsViewModel = new();
         ItemManipulationModel = new();
         SelectedItemsPropertiesViewModel = new();
-        ItemViewModel = new(FolderSettings);
+        ItemViewModel = new(this, FolderSettings);
 
         NavigatedTo += FolderViewViewModel_NavigatedTo;
     }
-
-    /*private void SetSelectedItemsOnNavigation(NavigationArguments navigationArguments)
-    {
-        try
-        {
-            if (navigationArguments is not null && 
-                navigationArguments.SelectItems is not null &&
-                navigationArguments.SelectItems.Any())
-            {
-                List<ListedItem> listedItemsToSelect = new();
-                listedItemsToSelect.AddRange(ItemViewModel.FilesAndFolders.Where((li) => navigationArguments.SelectItems.Contains(li.ItemNameRaw)));
-
-                ItemManipulationModel.SetSelectedItems(listedItemsToSelect);
-                ItemManipulationModel.FocusSelectedItems();
-            }
-            else if (navigationArguments is not null && navigationArguments.FocusOnNavigation)
-            {
-                // Set focus on layout specific file list control
-                ItemManipulationModel.FocusFileList();
-            }
-        }
-        catch (Exception) { }
-    }*/
 
     #region refresh items
 
@@ -283,7 +262,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
                 if (!navigationArguments.IsLayoutSwitch || previousDir != workingDir)
                 {
-                    await ItemViewModel.RefreshItems(previousDir, (FolderViewWidgetSettings)GetWidgetSettings());//, SetSelectedItemsOnNavigation);
+                    await ItemViewModel.RefreshItems(previousDir);//, SetSelectedItemsOnNavigation);
                 }
                 /*else
                 {
@@ -413,6 +392,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             needRefresh = true;
         }
 
+        if (ShowExtension != settings.ShowExtension)
+        {
+            ShowExtension = settings.ShowExtension;
+            needRefresh = true;
+        }
+
         if (FolderPath != settings.FolderPath)
         {
             FolderPath = settings.FolderPath;
@@ -426,7 +411,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
     }
 
-    protected override FolderViewWidgetSettings GetSettings()
+    public override FolderViewWidgetSettings GetSettings()
     {
         return new FolderViewWidgetSettings()
         {
