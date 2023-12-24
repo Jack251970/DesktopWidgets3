@@ -20,13 +20,12 @@ using Files.Core.Utils.Cloud;
 using System.Diagnostics;
 using Windows.Storage.FileProperties;
 using Files.App.Extensions;
-using DesktopWidgets3.Models.Widget;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using System.Collections.Concurrent;
 using Microsoft.UI.Xaml.Media;
 using Files.App.ViewModels.Previews;
 using FileAttributes = System.IO.FileAttributes;
 using static Files.Core.Helpers.NativeFindStorageItemHelper;
-using DesktopWidgets3.ViewModels.Pages.Widget;
 
 namespace Files.App.Data.Models;
 
@@ -218,7 +217,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
     #region load and sort items
 
-    private async Task RapidAddItemsToCollectionAsync(string? path, LibraryItem? library = null, bool showHiddenFile = false)
+    private async Task RapidAddItemsToCollectionAsync(string? path, LibraryItem? library = null)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -228,8 +227,9 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
+        var showHiddenFile = ViewModel.GetSettings().ShowHiddenFile;
         var isRecycleBin = path.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
-        var enumerated = await EnumerateItemsFromStandardFolderAsync(path, null, library, showHiddenFile);
+        var enumerated = await EnumerateItemsFromStandardFolderAsync(path, null, library);
 
         // Hide progressbar after enumeration
         IsLoadingItems = false;
@@ -327,7 +327,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             : (CloudDriveSyncStatus)syncStatus;
     }
 
-    private async Task<int> EnumerateItemsFromStandardFolderAsync(string path, CancellationToken? cancellationToken = null, LibraryItem? library = null, bool showHiddenFile = false)
+    private async Task<int> EnumerateItemsFromStandardFolderAsync(string path, CancellationToken? cancellationToken = null, LibraryItem? library = null)
     {
         // Flag to use FindFirstFileExFromApp or StorageFolder enumeration - Use storage folder for Box Drive (#4629)
         var isBoxFolder = CloudDrivesManager.Drives.FirstOrDefault(x => x.Text == "Box")?.Path?.TrimEnd('\\') is string boxFolder && path.StartsWith(boxFolder);
@@ -531,6 +531,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             {
                 await Task.Run(async () =>
                 {
+                    var showHiddenFile = ViewModel.GetSettings().ShowHiddenFile;
                     var fileList = await Win32StorageEnumerator.ListEntries(ViewModel, path, hFile, findData, cancellationToken, -1, intermediateAction: async (intermediateList) =>
                     {
                         filesAndFolders.AddRange(intermediateList);
