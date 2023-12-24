@@ -26,7 +26,7 @@ internal class NavigateUpAction : ObservableObject, IAction
         => new(Keys.Up, KeyModifiers.Menu);*/
 
     public bool IsExecutable
-        => _viewModel.IsNavigateUpExecutable;
+        => _viewModel.CanNavigateToParent;
 
     public NavigateUpAction(FolderViewViewModel viewModel)
     {
@@ -37,14 +37,14 @@ internal class NavigateUpAction : ObservableObject, IAction
 
     public Task ExecuteAsync()
     {
-        _viewModel.NavigateUp();
+        _viewModel.Up_Click();
 
         return Task.CompletedTask;
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(_viewModel.IsNavigateUpExecutable))
+        if (e.PropertyName is nameof(_viewModel.CanNavigateToParent))
         {
             OnPropertyChanged(nameof(IsExecutable));
         }

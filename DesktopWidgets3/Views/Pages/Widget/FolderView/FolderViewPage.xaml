@@ -74,7 +74,7 @@
                     HorizontalContentAlignment="Center"
                     Visibility="{x:Bind ViewModel.AllowNavigation, Mode=OneWay}"
                     Click="NavigateBack_Click"
-                    IsEnabled="{x:Bind ViewModel.IsNavigateBackExecutable, Mode=OneWay}">
+                    IsEnabled="{x:Bind ViewModel.CanGoBack, Mode=OneWay}">
                     <FontIcon FontSize="12" Glyph="&#xE72B;" />
                 </Button>
                 <Button
@@ -88,7 +88,7 @@
                     HorizontalContentAlignment="Center"
                     Visibility="{x:Bind ViewModel.AllowNavigation, Mode=OneWay}"
                     Click="NavigateUp_Click"
-                    IsEnabled="{x:Bind ViewModel.IsNavigateUpExecutable, Mode=OneWay}">
+                    IsEnabled="{x:Bind ViewModel.CanNavigateToParent, Mode=OneWay}">
                     <FontIcon FontSize="12" Glyph="&#xE74A;" />
                 </Button>
                 <Button
@@ -100,7 +100,8 @@
                     Background="Transparent"
                     VerticalContentAlignment="Center"
                     HorizontalContentAlignment="Center"
-                    Click="NavigateRefresh_Click">
+                    Click="NavigateRefresh_Click"
+                    IsEnabled="{x:Bind ViewModel.CanRefresh, Mode=OneWay}">
                     <FontIcon FontSize="12" Glyph="&#xE72C;" />
                 </Button>
                 <Button

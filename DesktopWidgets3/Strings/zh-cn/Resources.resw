@@ -465,4 +465,10 @@
   <data name="NavigateBackDescription" xml:space="preserve">
     <value>在导航历史中向后导航</value>
   </data>
+  <data name="WidgetSettings_ShowExtension_Card.Description" xml:space="preserve">
+    <value>显示已知文件类型的扩展名</value>
+  </data>
+  <data name="WidgetSettings_ShowExtension_Card.Header" xml:space="preserve">
+    <value>显示扩展名</value>
+  </data>
 </root>

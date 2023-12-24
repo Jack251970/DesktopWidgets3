@@ -47,6 +47,10 @@
                 <labs:SettingsCard x:Uid="WidgetSettings_AllowNavigation_Card">
                     <ToggleSwitch IsOn="{x:Bind ViewModel.AllowNavigation, Mode=TwoWay}" />
                 </labs:SettingsCard>
+
+                <labs:SettingsCard x:Uid="WidgetSettings_ShowExtension_Card">
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowExtension, Mode=TwoWay}" />
+                </labs:SettingsCard>
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -57,6 +57,11 @@ public sealed partial class FolderViewPage : BaseLayoutPage
                 FileList!.SelectedItems.Add(e);
             }
         };
+        ItemManipulationModel.ScrollIntoViewInvoked += (s, e) =>
+        {
+            FileList.ScrollIntoView(e);
+            //ContentScroller?.ChangeView(null, FileList.Items.IndexOf(e) * Convert.ToInt32(Application.Current.Resources["ListItemHeight"]), null, true); // Scroll to index * item height
+        };
     }
 
     #endregion
@@ -85,7 +90,7 @@ public sealed partial class FolderViewPage : BaseLayoutPage
 
     private async void NavigateRefresh_Click(object sender, RoutedEventArgs e)
     {
-        ViewModel.NavigateRefresh();
+        ViewModel.Refresh_Click();
     }
 
     #endregion

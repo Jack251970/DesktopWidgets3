@@ -21,11 +21,11 @@ public class ItemManipulationModel
 
     public event EventHandler? FocusSelectedItemsInvoked;
 
-    public event EventHandler? StartRenameItemInvoked;
+    public event EventHandler? StartRenameItemInvoked;*/
 
     public event EventHandler<ListedItem>? ScrollIntoViewInvoked;
 
-    public event EventHandler? SetDragModeForItemsInvoked;
+    /*public event EventHandler? SetDragModeForItemsInvoked;
 
     public event EventHandler? RefreshItemsOpacityInvoked;
 
@@ -58,7 +58,7 @@ public class ItemManipulationModel
         AddSelectedItemInvoked?.Invoke(this, item);
     }
 
-    /*public void AddSelectedItems(List<ListedItem> items)
+    public void AddSelectedItems(List<ListedItem> items)
     {
         foreach (var item in items)
         {
@@ -66,7 +66,7 @@ public class ItemManipulationModel
         }
     }
 
-    public void RemoveSelectedItem(ListedItem item)
+    /*public void RemoveSelectedItem(ListedItem item)
     {
         RemoveSelectedItemInvoked?.Invoke(this, item);
     }
@@ -85,13 +85,13 @@ public class ItemManipulationModel
         AddSelectedItem(item);
     }
 
-    /*public void SetSelectedItems(List<ListedItem> items)
+    public void SetSelectedItems(List<ListedItem> items)
     {
         ClearSelection();
         AddSelectedItems(items);
     }
 
-    public void FocusSelectedItems()
+    /*public void FocusSelectedItems()
     {
         FocusSelectedItemsInvoked?.Invoke(this, EventArgs.Empty);
     }
@@ -99,14 +99,14 @@ public class ItemManipulationModel
     public void StartRenameItem()
     {
         StartRenameItemInvoked?.Invoke(this, EventArgs.Empty);
-    }
+    }*/
 
     public void ScrollIntoView(ListedItem item)
     {
         ScrollIntoViewInvoked?.Invoke(this, item);
     }
 
-    public void SetDragModeForItems()
+    /*public void SetDragModeForItems()
     {
         SetDragModeForItemsInvoked?.Invoke(this, EventArgs.Empty);
     }

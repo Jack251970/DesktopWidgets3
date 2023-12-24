@@ -31,6 +31,9 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     [ObservableProperty]
     private bool _allowNavigation = true;
 
+    [ObservableProperty]
+    private bool _showExtension = false;
+
     #endregion
 
     private readonly IWidgetManagerService _widgetManagerService;
@@ -52,6 +55,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
         ShowIconOverlay = Settings.ShowIconOverlay;
         ShowHiddenFile = Settings.ShowHiddenFile;
         AllowNavigation = Settings.AllowNavigation;
+        ShowExtension = Settings.ShowExtension;
     }
 
     private async void SelectFoldePath()
@@ -90,6 +94,15 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
         if (_isInitialized)
         {
             Settings.AllowNavigation = value;
+            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+        }
+    }
+
+    partial void OnShowExtensionChanged(bool value)
+    {
+        if (_isInitialized)
+        {
+            Settings.ShowExtension = value;
             _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
         }
     }
