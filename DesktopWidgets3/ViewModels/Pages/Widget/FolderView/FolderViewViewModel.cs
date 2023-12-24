@@ -16,6 +16,7 @@ using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.Windows;
 using Files.Core.Data.Enums;
 using static Files.App.Data.Models.ItemViewModel;
+using static Files.App.Data.EventArguments.NavigationArguments;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -54,7 +55,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region settings
 
-    private NavigationArguments.RefreshBehaviours refreshBehaviour;
+    private RefreshBehaviours refreshBehaviour;
 
     private string FolderPath { get; set; } = string.Empty;
 
@@ -220,7 +221,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
         if (e is NavigationArguments navigationArguments)
         {
-            if (navigationArguments.RefreshBehaviour == NavigationArguments.RefreshBehaviours.NavigateToPath)
+            if (navigationArguments.RefreshBehaviour == RefreshBehaviours.NavigateToPath)
             {
                 // Git properties are not loaded by default
                 //ItemViewModel.EnabledGitProperties = GitProperties.None;
@@ -329,7 +330,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
                 await RefreshToolbar();
             }
-            else if (navigationArguments.RefreshBehaviour == NavigationArguments.RefreshBehaviours.RefreshItems)
+            else if (navigationArguments.RefreshBehaviour == RefreshBehaviours.RefreshItems)
             {
                 await ItemViewModel.RefreshItems(null);
             }
@@ -484,18 +485,18 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     protected override void LoadSettings(FolderViewWidgetSettings settings)
     {
-        var behaviour = NavigationArguments.RefreshBehaviours.None;
+        var behaviour = RefreshBehaviours.None;
 
         if (ShowIconOverlay != settings.ShowIconOverlay)
         {
             ShowIconOverlay = settings.ShowIconOverlay;
-            behaviour = NavigationArguments.RefreshBehaviours.RefreshItems;
+            behaviour = RefreshBehaviours.RefreshItems;
         }
 
         if (ShowHiddenFile != settings.ShowHiddenFile)
         {
             ShowHiddenFile = settings.ShowHiddenFile;
-            behaviour = NavigationArguments.RefreshBehaviours.RefreshItems;
+            behaviour = RefreshBehaviours.RefreshItems;
         }
 
         if (AllowNavigation != settings.AllowNavigation)
@@ -521,7 +522,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (ShowExtension != settings.ShowExtension)
         {
             ShowExtension = settings.ShowExtension;
-            behaviour = NavigationArguments.RefreshBehaviours.RefreshItems;
+            behaviour = RefreshBehaviours.RefreshItems;
         }
 
         if (DeleteConfirmationPolicy != settings.DeleteConfirmationPolicy)
@@ -534,7 +535,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             FolderPath = settings.FolderPath;
             navigationFolderPaths.Clear();
-            behaviour = NavigationArguments.RefreshBehaviours.NavigateToPath;
+            behaviour = RefreshBehaviours.NavigateToPath;
         }
 
         refreshBehaviour = behaviour;
@@ -567,7 +568,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             NavPathParam = path,
             PushFolderPath = false,
-            RefreshBehaviour = NavigationArguments.RefreshBehaviours.NavigateToPath
+            RefreshBehaviour = RefreshBehaviours.NavigateToPath
         });
     }
 
@@ -585,7 +586,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             {
                 NavPathParam = path,
                 PushFolderPath = true,
-                RefreshBehaviour = NavigationArguments.RefreshBehaviours.NavigateToPath
+                RefreshBehaviour = RefreshBehaviours.NavigateToPath
             });
         }
     }
