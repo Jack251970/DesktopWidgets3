@@ -47,6 +47,8 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
 
     public bool ShowThumbnail { get; set; } = true;
 
+    public FileNameConflictResolveOptionType ConflictsResolveOption { get; set; } = FileNameConflictResolveOptionType.GenerateNewName;
+
     public override BaseWidgetSettings Clone()
     {
         var clone = (FolderViewWidgetSettings)base.Clone();
@@ -57,6 +59,7 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
         clone.ShowExtension = ShowExtension;
         clone.DeleteConfirmationPolicy = DeleteConfirmationPolicy;
         clone.ShowThumbnail = ShowThumbnail;
+        clone.ConflictsResolveOption = ConflictsResolveOption;
         return clone;
     }
 }

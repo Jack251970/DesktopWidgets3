@@ -1,18 +1,17 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using System.Threading;
-using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Helpers;
 using Files.App.Utils.RecycleBin;
 using Files.App.Utils.StatusCenter;
 using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
+using Files.Core.Services;
+using Files.Core.ViewModels.Dialogs.FileSystemDialog;
 using Files.Shared.Extensions;
 using Files.Shared.Helpers;
 using Windows.Storage;
-using static DesktopWidgets3.Services.DialogService;
 
 namespace Files.App.Utils.Storage;
 
@@ -48,17 +47,47 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
             showDialog is DeleteConfirmationPolicies.PermanentOnly &&
             (permanently || !canBeSentToBin))
         {
-            var dialogService = DesktopWidgets3.App.GetService<IDialogService>();
+            var incomingItems = new List<BaseFileSystemDialogItemViewModel>();
+            List<ShellFileItem>? binItems = null;
+
+            foreach (var src in source)
+            {
+                if (RecycleBinHelpers.IsPathUnderRecycleBin(src.Path))
+                {
+                    binItems ??= await RecycleBinHelpers.EnumerateRecycleBin();
+
+                    // Might still be null because we're deserializing the list from Json
+                    if (!binItems.IsEmpty())
+                    {
+                        // Get original file name
+                        var matchingItem = binItems.FirstOrDefault(x => x.RecyclePath == src.Path);
+                        incomingItems.Add(new FileSystemDialogDefaultItemViewModel() { SourcePath = src.Path, DisplayName = matchingItem?.FileName ?? src.Name });
+                    }
+                }
+                else
+                {
+                    incomingItems.Add(new FileSystemDialogDefaultItemViewModel() { SourcePath = src.Path });
+                }
+            }
+
+            var dialogViewModel = FileSystemDialogViewModel.GetDialogViewModel(
+                viewModel,
+                new() { IsInDeleteMode = true },
+                (!canBeSentToBin || permanently, canBeSentToBin),
+                FileSystemOperationType.Delete,
+                incomingItems,
+                new());
+
+            var dialogService = viewModel.DialogService;
 
             // Return if the result isn't delete
-            if (await dialogService.ShowDeleteWidgetDialog(viewModel.WidgetWindow) != DialogResult.Left)
+            if (await dialogService.ShowDialogAsync(dialogViewModel) != DialogResult.Primary)
             {
                 return ReturnResult.Cancelled;
             }
 
-            // TODO: Add permanent delete option here!
             // Delete selected items if the result is Yes
-            //permanently = dialogViewModel.DeletePermanently;
+            permanently = dialogViewModel.DeletePermanently;
         }
         else
         {
@@ -167,7 +196,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
 
     #region rename items
 
-    // Her UserSettingsService.FoldersSettingsService.AreAlternateStreamsVisible = false.
+    // TODO: Here UserSettingsService.FoldersSettingsService.AreAlternateStreamsVisible = false.
     private static char[] RestrictedCharacters => new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
 
     private static readonly string[] RestrictedFileNames = new string[]

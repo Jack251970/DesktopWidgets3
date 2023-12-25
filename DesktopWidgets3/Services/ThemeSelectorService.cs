@@ -4,12 +4,26 @@ using Microsoft.UI.Xaml;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
+using Files.App.Helpers;
 
 namespace DesktopWidgets3.Services;
 
 public class ThemeSelectorService : IThemeSelectorService
 {
-    public ElementTheme Theme { get; set; } = ElementTheme.Default;
+    private ElementTheme theme = ElementTheme.Default;
+    public ElementTheme Theme {
+        get => theme;
+        set
+        {
+            if (theme != value)
+            {
+                theme = value;
+
+                // Update theme for dialogs of Files
+                ThemeHelper.RootTheme = value;
+            }
+        } 
+    }
 
     private readonly ILocalSettingsService _localSettingsService;
     private readonly LocalSettingsKeys _localSettingsKeys;

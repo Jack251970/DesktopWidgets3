@@ -24,6 +24,8 @@ using Files.App.Data.Commands;
 using Files.App.Utils.Storage;
 using Files.App.Services.DateTimeFormatter;
 using Files.Core.Services.DateTimeFormatter;
+using Files.App.Services;
+using Files.Core.Services;
 
 namespace DesktopWidgets3;
 
@@ -133,8 +135,8 @@ public partial class App : Application
 
             #region Functional Service
 
-            // Dialogs
-            services.AddSingleton<IDialogService, DialogService>();
+            // Widget Dialogs
+            services.AddSingleton<IWidgetDialogService, WidgetDialogService>();
 
             // Timers
             services.AddSingleton<ITimersService, TimersService>();
@@ -157,6 +159,12 @@ public partial class App : Application
             // DateTime Format
             services.AddSingleton<IDateTimeFormatter, UserDateTimeFormatter>();
             services.AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>();
+
+            // File Commands
+            services.AddSingleton<IImagingService, ImagingService>();
+
+            // File Dialogs
+            services.AddTransient<IDialogService, DialogService>();
 
             #endregion
 

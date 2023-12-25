@@ -15,6 +15,7 @@ using Microsoft.UI.Xaml.Data;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.Windows;
 using Files.Core.Data.Enums;
+using Files.Core.Services;
 using static Files.App.Data.Models.ItemViewModel;
 using static Files.App.Data.EventArguments.NavigationArguments;
 
@@ -57,17 +58,19 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private RefreshBehaviours refreshBehaviour;
 
-    private string FolderPath { get; set; } = string.Empty;
+    private string FolderPath = string.Empty;
 
-    private bool ShowIconOverlay { get; set; } = true;
+    private bool ShowIconOverlay = true;
 
-    private bool ShowHiddenFile { get; set; } = false;
+    private bool ShowHiddenFile = false;
 
-    private bool ShowExtension { get; set; } = false;
+    private bool ShowExtension = false;
 
-    private DeleteConfirmationPolicies DeleteConfirmationPolicy { get; set; } = DeleteConfirmationPolicies.Always;
+    private DeleteConfirmationPolicies DeleteConfirmationPolicy = DeleteConfirmationPolicies.Always;
 
     private bool ShowThumbnail = true;
+
+    private FileNameConflictResolveOptionType ConflictsResolveOption = FileNameConflictResolveOptionType.GenerateNewName;
 
     #endregion
 
@@ -162,6 +165,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
+    #region dialog
+
+    [ObservableProperty]
+    public static bool _canShowDialog = true;
+
+    #endregion
+
     #region models from Files
 
     public ItemViewModel ItemViewModel;
@@ -182,16 +192,21 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public FolderViewViewModel ToolbarViewModel => this;
 
+    public IDialogService DialogService => _dialogService;
+
     #endregion
 
     private readonly ICommandManager _commandManager;
+    private readonly IDialogService _dialogService;
     private readonly IFileSystemHelpers _fileSystemHelpers;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    public FolderViewViewModel(ICommandManager commandManager, IFileSystemHelpers fileSystemHelpers, IWidgetManagerService widgetManagerService)
+    public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, IFileSystemHelpers fileSystemHelpers, IWidgetManagerService widgetManagerService)
     {
         _commandManager = commandManager;
         _commandManager.Initialize(this);
+        _dialogService = dialogService;
+        _dialogService.Initialize(this);
         _fileSystemHelpers = fileSystemHelpers;
         _widgetManagerService = widgetManagerService;
 
@@ -538,6 +553,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             behaviour = RefreshBehaviours.RefreshItems;
         }
 
+        if (ConflictsResolveOption != settings.ConflictsResolveOption)
+        {
+            ConflictsResolveOption = settings.ConflictsResolveOption;
+        }
+
         // Put this last so that it will navigate to the new path even if it needs to refresh items
         if (FolderPath != settings.FolderPath)
         {
@@ -560,6 +580,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             ShowExtension = ShowExtension,
             DeleteConfirmationPolicy = DeleteConfirmationPolicy,
             ShowThumbnail = ShowThumbnail,
+            ConflictsResolveOption = ConflictsResolveOption,
         };
     }
 

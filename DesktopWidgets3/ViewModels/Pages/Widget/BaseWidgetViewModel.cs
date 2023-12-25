@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
-using static DesktopWidgets3.Services.DialogService;
+using static DesktopWidgets3.Services.WidgetDialogService;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -25,7 +25,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
         get;
     }
 
-    private readonly IDialogService _dialogService;
+    private readonly IWidgetDialogService _dialogService;
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;
 
@@ -35,7 +35,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     public BaseWidgetViewModel()
     {
-        _dialogService = App.GetService<IDialogService>();
+        _dialogService = App.GetService<IWidgetDialogService>();
         _navigationService = App.GetService<INavigationService>();
         _widgetManagerService = App.GetService<IWidgetManagerService>();
 
@@ -163,7 +163,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     private async void DeleteWidget()
     {
-        if (await _dialogService.ShowDeleteWidgetDialog(WidgetWindow) == DialogResult.Left)
+        if (await _dialogService.ShowDeleteWidgetDialog(WidgetWindow) == WidgetDialogResult.Left)
         {
             var widgetType = WidgetWindow.WidgetType;
             var indexTag = WidgetWindow.IndexTag;
