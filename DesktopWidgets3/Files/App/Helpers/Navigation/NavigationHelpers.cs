@@ -108,11 +108,10 @@ public static class NavigationHelpers
 
                 if (shortcutInfo.InvalidTarget)
                 {
-                    // TODO: Show dialog
-                    /*if (await DialogDisplayHelper.ShowDialogAsync(DynamicDialogFactory.GetFor_ShortcutNotFound(shortcutInfo.TargetPath)) != DynamicDialogResult.Primary)
+                    if (await DialogDisplayHelper.ShowDialogAsync(DynamicDialogFactory.GetFor_ShortcutNotFound(shortcutInfo.TargetPath!)) != DynamicDialogResult.Primary)
                     {
                         return false;
-                    }*/
+                    }
 
                     // Delete shortcut
                     var shortcutItem = StorageHelpers.FromPathAndType(path, FilesystemItemType.File);
@@ -163,8 +162,7 @@ public static class NavigationHelpers
         {
             if (!openSilent)
             {
-                // TODO: Show dialog here!
-                /*await DialogDisplayHelper.ShowDialogAsync("FileNotFoundDialog/Title".GetLocalizedResource(), "FileNotFoundDialog/Text".GetLocalizedResource());*/
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".GetLocalized(), "FileNotFoundDialog/Text".GetLocalized());
             }
             viewModel.ToolbarViewModel.CanRefresh = false;
             await viewModel.ItemViewModel.RefreshItems(previousDir);

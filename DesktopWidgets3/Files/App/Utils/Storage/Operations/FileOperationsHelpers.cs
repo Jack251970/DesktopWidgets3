@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Files.App.Helpers;
 using Files.App.Utils.Shell;
+using Files.App.Utils.StatusCenter;
+using Files.App.Utils.Storage.Operations;
+using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
 using Files.Shared.Extensions;
 using Files.Shared.Helpers;
@@ -187,6 +190,147 @@ public class FileOperationsHelpers
         return null;
     }
 
+    public static Task<(bool, ShellOperationResult)> DeleteItemAsync(string[] fileToDeletePath, bool permanently, long ownerHwnd, bool asAdmin, IProgress<StatusCenterItemProgressModel> progress, string operationID = "")
+    {
+        operationID = string.IsNullOrEmpty(operationID) ? Guid.NewGuid().ToString() : operationID;
+
+        StatusCenterItemProgressModel fsProgress = new(
+            progress,
+            false,
+            FileSystemStatusCode.InProgress);
+
+        var cts = new CancellationTokenSource();
+        var sizeCalculator = new FileSizeCalculator(fileToDeletePath);
+        var sizeTask = sizeCalculator.ComputeSizeAsync(cts.Token);
+        sizeTask.ContinueWith(_ =>
+        {
+            fsProgress.TotalSize = 0;
+            fsProgress.ItemsCount = sizeCalculator.ItemsCount;
+            fsProgress.EnumerationCompleted = true;
+            fsProgress.Report();
+        });
+
+        fsProgress.Report();
+        progressHandler ??= new();
+
+        return Win32API.StartSTATask(async () =>
+        {
+            using var op = new ShellFileOperations2();
+
+            op.Options =
+                ShellFileOperations.OperationFlags.Silent |
+                ShellFileOperations.OperationFlags.NoConfirmation |
+                ShellFileOperations.OperationFlags.NoErrorUI;
+
+            if (asAdmin)
+            {
+                op.Options |=
+                    ShellFileOperations.OperationFlags.ShowElevationPrompt |
+                    ShellFileOperations.OperationFlags.RequireElevation;
+            }
+
+            op.OwnerWindow = new IntPtr((int)ownerHwnd);
+
+            if (!permanently)
+            {
+                op.Options |=
+                    ShellFileOperations.OperationFlags.RecycleOnDelete |
+                    ShellFileOperations.OperationFlags.WantNukeWarning;
+            }
+
+            var shellOperationResult = new ShellOperationResult();
+
+            for (var i = 0; i < fileToDeletePath.Length; i++)
+            {
+                if (!SafetyExtensions.IgnoreExceptions(() =>
+                {
+                    using var shi = new ShellItem(fileToDeletePath[i]);
+
+                    op.QueueDeleteOperation(shi);
+                }))
+                {
+                    shellOperationResult.Items.Add(new ShellOperationItemResult()
+                    {
+                        Succeeded = false,
+                        Source = fileToDeletePath[i],
+                        HResult = -1
+                    });
+                }
+            }
+
+            progressHandler.OwnerWindow = op.OwnerWindow;
+            progressHandler.AddOperation(operationID);
+
+            var deleteTcs = new TaskCompletionSource<bool>();
+
+            // Right before deleting item
+            op.PreDeleteItem += (s, e) =>
+            {
+                // E_FAIL, stops operation
+                if (!permanently && !e.Flags.HasFlag(ShellFileOperations.TransferFlags.DeleteRecycleIfPossible))
+                {
+                    throw new Win32Exception(HRESULT.COPYENGINE_E_RECYCLE_BIN_NOT_FOUND);
+                }
+
+                sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath);
+                fsProgress.FileName = e.SourceItem.Name;
+                fsProgress.Report();
+            };
+
+            // Right after deleted item
+            op.PostDeleteItem += (s, e) =>
+            {
+                if (!e.SourceItem.IsFolder)
+                {
+                    if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath, out _))
+                    {
+                        fsProgress.AddProcessedItemsCount(1);
+                    }
+                }
+
+                shellOperationResult.Items.Add(new ShellOperationItemResult()
+                {
+                    Succeeded = e.Result.Succeeded,
+                    Source = e.SourceItem.GetParsingPath(),
+                    Destination = e.DestItem.GetParsingPath(),
+                    HResult = (int)e.Result
+                });
+
+                /*UpdateFileTagsDb(e, "delete");*/
+            };
+
+            op.FinishOperations += (s, e)
+                => deleteTcs.TrySetResult(e.Result.Succeeded);
+
+            op.UpdateProgress += (s, e) =>
+            {
+                // E_FAIL, stops operation
+                if (progressHandler.CheckCanceled(operationID))
+                {
+                    throw new Win32Exception(unchecked((int)0x80004005));
+                }
+
+                fsProgress.Report(e.ProgressPercentage);
+                progressHandler.UpdateOperation(operationID, e.ProgressPercentage);
+            };
+
+            try
+            {
+                op.PerformOperations();
+            }
+            catch
+            {
+                deleteTcs.TrySetResult(false);
+            }
+
+            progressHandler.RemoveOperation(operationID);
+
+            cts.Cancel();
+
+            return (await deleteTcs.Task, shellOperationResult);
+        });
+    }
+
     #endregion
 
     #region rename item
@@ -284,6 +428,12 @@ public class FileOperationsHelpers
             return null;
         }
     }
+
+    #endregion
+
+    #region cancel operation
+
+    public static void TryCancelOperation(string operationId) => progressHandler?.TryCancel(operationId);
 
     #endregion
 

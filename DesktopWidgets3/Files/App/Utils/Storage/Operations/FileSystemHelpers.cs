@@ -1,16 +1,15 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Helpers;
 using Files.App.Utils.RecycleBin;
 using Files.App.Utils.StatusCenter;
 using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
-using Files.Core.Services;
 using Files.Core.ViewModels.Dialogs.FileSystemDialog;
 using Files.Shared.Extensions;
-using Files.Shared.Helpers;
 using Windows.Storage;
 
 namespace Files.App.Utils.Storage;
@@ -19,25 +18,23 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
 {
     private IFileSystemOperations fileSystemOperations;
 
+    private readonly CancellationToken cancellationToken = CancellationToken.None;
+
     public FileSystemHelpers()
     {
         fileSystemOperations = new ShellFileSystemOperations();
     }
 
-    #region delete items
+    #region Delete
 
-    public Task<ReturnResult> DeleteItemAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, DeleteConfirmationPolicies showDialog, bool permanently)
-            => DeleteItemsAsync(viewModel, source.CreateEnumerable(), showDialog, permanently);
-
-    public async Task<ReturnResult> DeleteItemsAsync(
-        FolderViewViewModel viewModel, 
-        IEnumerable<IStorageItemWithPath> source, 
-        DeleteConfirmationPolicies showDialog, 
-        bool permanently)
+    public async Task<ReturnResult> DeleteItemsAsync(FolderViewViewModel viewModel, IEnumerable<IStorageItemWithPath> source, DeleteConfirmationPolicies showDialog, bool permanently)
     {
         source = await source.ToListAsync();
 
         var returnStatus = ReturnResult.InProgress;
+
+        var progress = new Progress<StatusCenterItemProgressModel>();
+        progress.ProgressChanged += (s, e) => returnStatus = returnStatus < ReturnResult.Failed ? e.Status!.Value.ToStatus() : returnStatus;
 
         var deleteFromRecycleBin = source.Select(item => item.Path).Any(RecycleBinHelpers.IsPathUnderRecycleBin);
         var canBeSentToBin = !deleteFromRecycleBin && await RecycleBinHelpers.HasRecycleBin(source.FirstOrDefault()?.Path);
@@ -96,105 +93,79 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         }
 
         // Delete file
-        returnStatus = await DeleteItemsAsync(viewModel, (IList<IStorageItemWithPath>)source, permanently);
-
+        await fileSystemOperations.DeleteItemsAsync(viewModel, (IList<IStorageItemWithPath>)source, progress, permanently, cancellationToken);
+        
         return returnStatus;
     }
 
-    public async Task<ReturnResult> DeleteItemsAsync(FolderViewViewModel viewModel, IList<IStorageItemWithPath> source, bool permanently, bool asAdmin = false)
-    {
-        var originalPermanently = permanently;
-        var result = ReturnResult.Success;
+    public Task<ReturnResult> DeleteItemAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, DeleteConfirmationPolicies showDialog, bool permanently)
+            => DeleteItemsAsync(viewModel, source.CreateEnumerable(), showDialog, permanently);
 
-        for (var i = 0; i < source.Count; i++)
-        {
-            permanently = RecycleBinHelpers.IsPathUnderRecycleBin(source[i].Path) || originalPermanently;
-            if (await DeleteAsync(viewModel, source[i], permanently) != ReturnResult.Success)
-            {
-                result = ReturnResult.Failed;
-            };
-        }
+    public Task<ReturnResult> DeleteItemsAsync(FolderViewViewModel viewModel, IEnumerable<IStorageItem> source, DeleteConfirmationPolicies showDialog, bool permanently)
+        => DeleteItemsAsync(viewModel, source.Select((item) => item.FromStorageItem()), showDialog, permanently);
 
-        return result;
-    }
-
-    public async Task<ReturnResult> DeleteAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, bool permanently)
-    {
-        var deleteFromRecycleBin = RecycleBinHelpers.IsPathUnderRecycleBin(source.Path);
-        FilesystemResult fsResult = FileSystemStatusCode.InProgress;
-
-        // use generic delete method
-        if (permanently)
-        {
-            fsResult = (FilesystemResult)NativeFileOperationsHelper.DeleteFileFromApp(source.Path);
-        }
-
-        // use other delete method
-        if (!fsResult)
-        {
-            if (source.ItemType == FilesystemItemType.File)
-            {
-                fsResult = await viewModel.ItemViewModel.GetFileFromPathAsync(source.Path)
-                    .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
-            }
-            else if (source.ItemType == FilesystemItemType.Directory)
-            {
-                fsResult = await viewModel.ItemViewModel.GetFolderFromPathAsync(source.Path)
-                    .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
-            }
-        }
-
-        if (fsResult == FileSystemStatusCode.Unauthorized)
-        {
-            // Cannot do anything, already tried with admin FTP
-            return ReturnResult.AccessUnauthorized;
-        }
-        else if (fsResult == FileSystemStatusCode.InUse)
-        {
-            // TODO: Show inuse dialog
-            //await DialogDisplayHelper.ShowDialogAsync(DynamicDialogFactory.GetFor_FileInUseDialog());
-            return ReturnResult.Failed;
-        }
-
-        if (deleteFromRecycleBin)
-        {
-            // Recycle bin also stores a file starting with $I for each item
-            var iFilePath = Path.Combine(Path.GetDirectoryName(source.Path)!, Path.GetFileName(source.Path).Replace("$R", "$I", StringComparison.Ordinal));
-
-            await viewModel.ItemViewModel.GetFileFromPathAsync(iFilePath)
-                .OnSuccess(iFile => iFile.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask());
-        }
-
-        if (fsResult)
-        {
-            //await viewModel.RemoveFileOrFolderAsync(source.Path);
-
-            if (!permanently)
-            {
-                // Enumerate Recycle Bin
-                IEnumerable<ShellFileItem> nameMatchItems, items = await RecycleBinHelpers.EnumerateRecycleBin();
-
-                // Get name matching files
-                nameMatchItems = FileExtensionHelpers.IsShortcutOrUrlFile(source.Path)
-                    ? items.Where((item) => item.FilePath == Path.Combine(Path.GetDirectoryName(source.Path)!, Path.GetFileNameWithoutExtension(source.Path)))
-                    : items.Where((item) => item.FilePath == source.Path);
-
-                // Get newest file
-                ShellFileItem item = nameMatchItems.OrderBy((item) => item.RecycleDate).FirstOrDefault()!;
-            }
-
-            return ReturnResult.Success;
-        }
-        else
-        {
-            // Stop at first error
-            return ReturnResult.Failed;
-        }
-    }
+    public Task<ReturnResult> DeleteItemAsync(FolderViewViewModel viewModel, IStorageItem source, DeleteConfirmationPolicies showDialog, bool permanently)
+        => DeleteItemAsync(viewModel, source.FromStorageItem(), showDialog, permanently);
 
     #endregion
 
-    #region rename items
+    #region Rename
+
+    public async Task<ReturnResult> RenameAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, string newName, NameCollisionOption collision, bool showExtensionDialog = true)
+    {
+        var returnStatus = ReturnResult.InProgress;
+        var progress = new Progress<StatusCenterItemProgressModel>();
+        progress.ProgressChanged += (s, e) => returnStatus = returnStatus < ReturnResult.Failed ? e.Status!.Value.ToStatus() : returnStatus;
+
+        if (!IsValidForFilename(newName))
+        {
+            await DialogDisplayHelper.ShowDialogAsync(
+                viewModel,
+                "ErrorDialogThisActionCannotBeDone".GetLocalized(),
+                "ErrorDialogNameNotAllowed".GetLocalized());
+            return ReturnResult.Failed;
+        }
+
+        switch (source.ItemType)
+        {
+            case FilesystemItemType.Directory:
+                await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress, cancellationToken);
+                break;
+
+            // Prompt user when extension has changed, not when file name has changed
+            case FilesystemItemType.File:
+                if(showExtensionDialog && Path.GetExtension(source.Path) != Path.GetExtension(newName))
+                {
+                    var yesSelected = await DialogDisplayHelper.ShowDialogAsync(viewModel, "Rename".GetLocalized(), "RenameFileDialog/Text".GetLocalized(), "Yes".GetLocalized(), "No".GetLocalized());
+                    if (yesSelected)
+                    {
+                        await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress, cancellationToken);
+                        break;
+                    }
+
+                    break;
+                }
+
+                await fileSystemOperations.RenameAsync(viewModel,source, newName, collision, progress, cancellationToken);
+                break;
+
+            default:
+                await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress, cancellationToken);
+                break;
+        }
+
+        //await jumpListService.RemoveFolderAsync(source.Path); // Remove items from jump list
+
+        await Task.Yield();
+        return returnStatus;
+    }
+
+    public Task<ReturnResult> RenameAsync(FolderViewViewModel viewModel, IStorageItem source, string newName, NameCollisionOption collision, bool showExtensionDialog = true)
+            => RenameAsync(viewModel, source.FromStorageItem(), newName, collision, showExtensionDialog);
+
+    #endregion
+
+    #region Static Methods
 
     // TODO: Here UserSettingsService.FoldersSettingsService.AreAlternateStreamsVisible = false.
     private static char[] RestrictedCharacters => new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
@@ -223,57 +194,6 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
     public static bool ContainsRestrictedCharacters(string input)
     {
         return input.IndexOfAny(RestrictedCharacters) >= 0;
-    }
-
-    public async Task<ReturnResult> RenameAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, string newName, NameCollisionOption collision, bool showExtensionDialog = true)
-    {
-        var returnStatus = ReturnResult.InProgress;
-        var progress = new Progress<StatusCenterItemProgressModel>();
-        progress.ProgressChanged += (s, e) => returnStatus = returnStatus < ReturnResult.Failed ? e.Status!.Value.ToStatus() : returnStatus;
-
-        if (!IsValidForFilename(newName))
-        {
-            // TODO: Show error dialog
-            /*await DialogDisplayHelper.ShowDialogAsync(
-                "ErrorDialogThisActionCannotBeDone".GetLocalizedResource(),
-                "ErrorDialogNameNotAllowed".GetLocalizedResource());*/
-            return ReturnResult.Failed;
-        }
-
-        switch (source.ItemType)
-        {
-            case FilesystemItemType.Directory:
-                returnStatus = await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress);
-                break;
-
-            // Prompt user when extension has changed, not when file name has changed
-            case FilesystemItemType.File:
-                if(showExtensionDialog && Path.GetExtension(source.Path) != Path.GetExtension(newName))
-                {
-                    // TODO: Show dialog here!
-                    //var yesSelected = await DialogDisplayHelper.ShowDialogAsync("Rename".GetLocalizedResource(), "RenameFileDialog/Text".GetLocalizedResource(), "Yes".GetLocalizedResource(), "No".GetLocalizedResource());
-                    var yesSelected = true;
-                    if (yesSelected)
-                    {
-                        returnStatus = await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress);
-                        break;
-                    }
-
-                    break;
-                }
-
-                returnStatus = await fileSystemOperations.RenameAsync(viewModel,source, newName, collision, progress);
-                break;
-
-            default:
-                returnStatus = await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress);
-                break;
-        }
-
-        //await jumpListService.RemoveFolderAsync(source.Path); // Remove items from jump list
-
-        await Task.Yield();
-        return returnStatus;
     }
 
     public static bool IsValidForFilename(string name) => !string.IsNullOrWhiteSpace(name) && !ContainsRestrictedCharacters(name) && !ContainsRestrictedFileName(name);

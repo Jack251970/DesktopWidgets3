@@ -380,28 +380,28 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             }
             else if (res == FileSystemStatusCode.Unauthorized)
             {
-                // TODO: Show dialog
-                /*await DialogDisplayHelper.ShowDialogAsync(
-                    "AccessDenied".GetLocalizedResource(),
-                    "AccessDeniedToFolder".GetLocalizedResource());*/
+                await DialogDisplayHelper.ShowDialogAsync(
+                    ViewModel,
+                    "AccessDenied".GetLocalized(),
+                    "AccessDeniedToFolder".GetLocalized());
 
                 return -1;
             }
             else if (res == FileSystemStatusCode.NotFound)
             {
-                // TODO: Show dialog
-                /*await DialogDisplayHelper.ShowDialogAsync(
-                    "FolderNotFoundDialog/Title".GetLocalizedResource(),
-                    "FolderNotFoundDialog/Text".GetLocalizedResource());*/
+                await DialogDisplayHelper.ShowDialogAsync(
+                    ViewModel,
+                    "FolderNotFoundDialog/Title".GetLocalized(),
+                    "FolderNotFoundDialog/Text".GetLocalized());
 
                 return -1;
             }
             else
             {
-                // TODO: Show dialog
-                /*await DialogDisplayHelper.ShowDialogAsync(
-                    "DriveUnpluggedDialog/Title".GetLocalizedResource(),
-                    res.ErrorCode.ToString());*/
+                await DialogDisplayHelper.ShowDialogAsync(
+                    ViewModel,
+                    "DriveUnpluggedDialog/Title".GetLocalized(),
+                    res.ErrorCode.ToString());
 
                 return -1;
             }
@@ -505,24 +505,23 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
             if (hFile == IntPtr.Zero)
             {
-                // TODO: Show dialog
-                /*await DialogDisplayHelper.ShowDialogAsync("DriveUnpluggedDialog/Title".GetLocalizedResource(), "");*/
+                await DialogDisplayHelper.ShowDialogAsync(ViewModel, "DriveUnpluggedDialog/Title".GetLocalized(), "");
                 return -1;
             }
             else if (hFile.ToInt64() == -1)
             {
                 await EnumFromStorageFolderAsync(path, rootFolder, currentStorageFolder!, cancellationToken);
 
-                // TODO: Show dialog
-                /*// errorCode == ERROR_ACCESS_DENIED
+                // errorCode == ERROR_ACCESS_DENIED
                 if (filesAndFolders.Count == 0 && errorCode == 0x5)
                 {
                     await DialogDisplayHelper.ShowDialogAsync(
-                        "AccessDenied".GetLocalizedResource(),
-                        "AccessDeniedToFolder".GetLocalizedResource());
+                        ViewModel,
+                        "AccessDenied".GetLocalized(),
+                        "AccessDeniedToFolder".GetLocalized());
 
                     return -1;
-                }*/
+                }
 
                 return 1;
             }
@@ -1471,6 +1470,46 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             //UpdateEmptyTextType();
             DirectoryInfoUpdated?.Invoke(this, EventArgs.Empty);
         });
+    }
+
+    public async Task<ListedItem?> RemoveFileOrFolderAsync(string path)
+    {
+        try
+        {
+            await enumFolderSemaphore.WaitAsync(semaphoreCTS.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+
+        try
+        {
+            var matchingItem = filesAndFolders.ToList().FirstOrDefault(x => x.ItemPath.Equals(path, StringComparison.OrdinalIgnoreCase));
+
+            if (matchingItem is not null)
+            {
+                filesAndFolders.Remove(matchingItem);
+
+                // TODO: Add UserSettingsService.FoldersSettingsService.AreAlternateStreamsVisible
+                /*if (UserSettingsService.FoldersSettingsService.AreAlternateStreamsVisible)
+                {
+                    // Main file is removed, remove connected ADS
+                    foreach (var adsItem in filesAndFolders.ToList().Where(x => x is AlternateStreamItem ads && ads.MainStreamPath == matchingItem.ItemPath))
+                    {
+                        filesAndFolders.Remove(adsItem);
+                    }
+                }*/
+
+                return matchingItem;
+            }
+        }
+        finally
+        {
+            enumFolderSemaphore.Release();
+        }
+
+        return null;
     }
 
     #endregion
