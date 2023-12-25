@@ -108,7 +108,7 @@ public static class NavigationHelpers
 
                 if (shortcutInfo.InvalidTarget)
                 {
-                    if (await DialogDisplayHelper.ShowDialogAsync(DynamicDialogFactory.GetFor_ShortcutNotFound(shortcutInfo.TargetPath!)) != DynamicDialogResult.Primary)
+                    if (await DialogDisplayHelper.ShowDialogAsync(viewModel, DynamicDialogFactory.GetFor_ShortcutNotFound(shortcutInfo.TargetPath!)) != DynamicDialogResult.Primary)
                     {
                         return false;
                     }
