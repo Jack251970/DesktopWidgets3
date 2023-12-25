@@ -1284,16 +1284,12 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
     }
 
     // ThumbnailSize is set to 96 so that unless we override it, mode is in turn set to SingleItem
-    private async Task LoadItemThumbnailAsync(
-        ListedItem item, 
-        uint thumbnailSize = 96, 
-        IStorageItem? matchingStorageItem = null,
-        bool showThumbnails = true) // TODO: Add UserSettingsService.FoldersSettingsService.ShowThumbnails
+    private async Task LoadItemThumbnailAsync(ListedItem item, uint thumbnailSize = 96, IStorageItem? matchingStorageItem = null)
     {
         var wasIconLoaded = false;
         if (item.IsLibrary || item.PrimaryItemAttribute == StorageItemTypes.File || item.IsArchive)
         {
-            if (showThumbnails && !item.IsShortcut && !item.IsHiddenItem && !FtpHelpers.IsFtpPath(item.ItemPath))
+            if (ViewModel.GetSettings().ShowThumbnail && !item.IsShortcut && !item.IsHiddenItem && !FtpHelpers.IsFtpPath(item.ItemPath))
             {
                 var matchingStorageFile = matchingStorageItem?.AsBaseStorageFile() ?? await GetFileFromPathAsync(item.ItemPath);
 

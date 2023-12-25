@@ -34,6 +34,9 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     [ObservableProperty]
     private bool _showExtension = false;
 
+    [ObservableProperty]
+    private bool _showThumbnail = true;
+
     #endregion
 
     private readonly IWidgetManagerService _widgetManagerService;
@@ -56,6 +59,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
         ShowHiddenFile = Settings.ShowHiddenFile;
         AllowNavigation = Settings.AllowNavigation;
         ShowExtension = Settings.ShowExtension;
+        ShowThumbnail = Settings.ShowThumbnail;
     }
 
     private async void SelectFoldePath()
@@ -103,6 +107,15 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
         if (_isInitialized)
         {
             Settings.ShowExtension = value;
+            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+        }
+    }
+
+    partial void OnShowThumbnailChanged(bool value)
+    {
+        if (_isInitialized)
+        {
+            Settings.ShowThumbnail = value;
             _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
         }
     }

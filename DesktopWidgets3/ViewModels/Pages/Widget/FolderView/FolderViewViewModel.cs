@@ -67,6 +67,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private DeleteConfirmationPolicies DeleteConfirmationPolicy { get; set; } = DeleteConfirmationPolicies.Always;
 
+    private bool ShowThumbnail = true;
+
     #endregion
 
     #region current path
@@ -530,7 +532,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             DeleteConfirmationPolicy = settings.DeleteConfirmationPolicy;
         }
 
-        // Put this last so that we will navigate to the new path even if we need to refresh items
+        if (ShowThumbnail != settings.ShowThumbnail)
+        {
+            ShowThumbnail = settings.ShowThumbnail;
+            behaviour = RefreshBehaviours.RefreshItems;
+        }
+
+        // Put this last so that it will navigate to the new path even if it needs to refresh items
         if (FolderPath != settings.FolderPath)
         {
             FolderPath = settings.FolderPath;
@@ -551,6 +559,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             AllowNavigation = AllowNavigation,
             ShowExtension = ShowExtension,
             DeleteConfirmationPolicy = DeleteConfirmationPolicy,
+            ShowThumbnail = ShowThumbnail,
         };
     }
 
