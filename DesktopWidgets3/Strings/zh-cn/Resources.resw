@@ -528,6 +528,9 @@
   <data name="DeleteItemsDialogSubtitleMultiple" xml:space="preserve">
     <value>将删除 {0} 个项目</value>
   </data>
+  <data name="Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
   <data name="GenerateNewName" xml:space="preserve">
     <value>生成新名称</value>
   </data>

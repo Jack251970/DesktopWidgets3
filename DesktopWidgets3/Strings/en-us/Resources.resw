@@ -537,6 +537,9 @@
   <data name="DeleteItemsDialogSubtitleMultiple" xml:space="preserve">
     <value>{0} items will be deleted</value>
   </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
   <data name="GenerateNewName" xml:space="preserve">
     <value>Generate new name</value>
   </data>
