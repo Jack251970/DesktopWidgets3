@@ -26,6 +26,7 @@ using Microsoft.UI.Xaml.Media;
 using Files.App.ViewModels.Previews;
 using FileAttributes = System.IO.FileAttributes;
 using static Files.Core.Helpers.NativeFindStorageItemHelper;
+using static Vanara.PInvoke.Ole32;
 
 namespace Files.App.Data.Models;
 
@@ -1339,7 +1340,17 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
             if (!wasIconLoaded)
             {
-                var (IconData, OverlayData) = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, false);
+                byte[] IconData = null!;
+                byte[] OverlayData = null!;
+                if (ViewModel.GetSettings().ShowIconOverlay)
+                {
+                    (IconData, OverlayData) = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, false);
+                }
+                else
+                {
+                    IconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(item.ItemPath, thumbnailSize, false);
+                }
+                
                 if (IconData is not null)
                 {
                     await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
@@ -1406,20 +1417,30 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
             if (!wasIconLoaded)
             {
-                var iconInfo = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, true);
-                if (iconInfo.IconData is not null)
+                byte[] IconData = null!;
+                byte[] OverlayData = null!;
+                if (ViewModel.GetSettings().ShowIconOverlay)
+                {
+                    (IconData, OverlayData) = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, false);
+                }
+                else
+                {
+                    IconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(item.ItemPath, thumbnailSize, false);
+                }
+
+                if (IconData is not null)
                 {
                     await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
                     {
-                        item.FileImage = await iconInfo.IconData.ToBitmapAsync();
+                        item.FileImage = await IconData.ToBitmapAsync();
                     }, DispatcherQueuePriority.Low);
                 }
 
-                if (iconInfo.OverlayData is not null)
+                if (OverlayData is not null)
                 {
                     await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
                     {
-                        item.IconOverlay = await iconInfo.OverlayData.ToBitmapAsync();
+                        item.IconOverlay = await OverlayData.ToBitmapAsync();
                         item.ShieldIcon = await GetShieldIcon();
                     }, DispatcherQueuePriority.Low);
                 }
