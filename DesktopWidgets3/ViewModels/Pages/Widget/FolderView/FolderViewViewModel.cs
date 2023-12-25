@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
 using Files.App.Utils;
@@ -9,13 +8,17 @@ using Files.App.Data.Models;
 using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Files.App.ViewModels.Layouts;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Files.App.Data.EventArguments;
 using Microsoft.UI.Xaml.Data;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.Windows;
 using Files.Core.Data.Enums;
 using Files.Core.Services;
+using Files.App.Utils.Cloud;
+using Files.App.Utils.Storage.Helpers;
+using Microsoft.UI.Xaml.Controls;
+using DesktopWidgets3.Helpers;
+using Microsoft.UI.Xaml.Media;
 using static Files.App.Data.Models.ItemViewModel;
 using static Files.App.Data.EventArguments.NavigationArguments;
 
@@ -32,7 +35,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     };
 
     [ObservableProperty]
-    private string _FolderName = string.Empty;
+    private string _header = string.Empty;
+
+    [ObservableProperty]
+    private string _toolTipText = string.Empty;
 
     [ObservableProperty]
     private bool _canGoBack = false;
@@ -44,10 +50,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private bool _canRefresh = true;
 
     [ObservableProperty]
-    private BitmapImage? _folderPathIcon = null;
-
-    [ObservableProperty]
-    private BitmapImage? _folderPathIconOverlay = null;
+    private ImageSource? _imageSource = null;
 
     [ObservableProperty]
     private bool _allowNavigation = true;
@@ -223,12 +226,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region refresh items
 
-    private async void FolderViewViewModel_NavigatedTo(object? sender, object e)
+    private async void FolderViewViewModel_NavigatedTo(object? sender, object parameter)
     {
-        if (e is FolderViewWidgetSettings settings)
+        if (parameter is FolderViewWidgetSettings settings)
         {
             // Prepare navigation arguments
-            e = new NavigationArguments()
+            parameter = new NavigationArguments()
             {
                 NavPathParam = settings.FolderPath,
                 PushFolderPath = false,
@@ -236,7 +239,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             };
         }
 
-        if (e is NavigationArguments navigationArguments)
+        if (parameter is NavigationArguments navigationArguments)
         {
             if (navigationArguments.RefreshBehaviour == RefreshBehaviours.NavigateToPath)
             {
@@ -345,7 +348,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 }
                 ToolbarViewModel.CanGoBack = navigationFolderPaths.Count > 0 && AllowNavigation;
 
-                await RefreshToolbar();
+                await UpdateTabInfoAsync(navigationArguments);
             }
             else if (navigationArguments.RefreshBehaviour == RefreshBehaviours.RefreshItems)
             {
@@ -456,35 +459,115 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region refresh toolbar
 
-    private async Task RefreshToolbar()
+    private async Task UpdateTabInfoAsync(object parameter)
     {
-        if (DiskRegex().IsMatch(CurFolderPath))
+        string header = null!;
+        ImageIconSource iconSource = null!;
+        string toolTipText = null!;
+
+        if (parameter is NavigationArguments navigationArguments)
         {
-            FolderName = CurFolderPath[..1];
-        }
-        else
-        {
-            FolderName = Path.GetFileName(CurFolderPath);
+            (header, iconSource, toolTipText) = await GetSelectedTabInfoAsync(navigationArguments.NavPathParam!);
         }
 
-        (FolderPathIcon, FolderPathIconOverlay) = await GetIcon(CurFolderPath, true);
+        // Don't update tabItem if the contents of the tab have already changed
+        if (header is not null)
+        {
+            Header = header;
+            (Header, ImageSource, ToolTipText) = (header, iconSource.ImageSource, toolTipText);
+        }
     }
 
-    [GeneratedRegex("^[a-zA-Z]:\\\\$")]
-    private static partial Regex DiskRegex();
-
-    private async Task<(BitmapImage? Icon, BitmapImage? Overlay)> GetIcon(string filePath, bool isFolder)
+    private async Task<(string tabLocationHeader, ImageIconSource tabIcon, string toolTipText)> GetSelectedTabInfoAsync(string currentPath)
     {
-        if (ShowIconOverlay)
+        string? tabLocationHeader;
+        var iconSource = new ImageIconSource();
+        var toolTipText = currentPath;
+
+        /*if (string.IsNullOrEmpty(currentPath) || currentPath == "Home")
         {
-            var iconInfo = await FileThumbnailHelper.LoadIconAndOverlayAsync(filePath, 96, isFolder);
-            return (await iconInfo.IconData.ToBitmapAsync(), await iconInfo.OverlayData.ToBitmapAsync());
+            tabLocationHeader = "Home".GetLocalizedResource();
+            iconSource.ImageSource = new BitmapImage(new Uri(Constants.FluentIconsPaths.HomeIcon));
+        }*/
+        if (currentPath.Equals(Constants.UserEnvironmentPaths.DesktopPath, StringComparison.OrdinalIgnoreCase))
+        {
+            tabLocationHeader = "Desktop".GetLocalized();
         }
+        else if (currentPath.Equals(Constants.UserEnvironmentPaths.DownloadsPath, StringComparison.OrdinalIgnoreCase))
+        {
+            tabLocationHeader = "Downloads".GetLocalized();
+        }
+        /*else if (currentPath.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
+        {
+            tabLocationHeader = "RecycleBin".GetLocalizedResource();
+
+            // Use 48 for higher resolution, the other items look fine with 16.
+            var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(currentPath, 48u, Windows.Storage.FileProperties.ThumbnailMode.ListView, Windows.Storage.FileProperties.ThumbnailOptions.UseCurrentScale, true);
+            if (iconData is not null)
+            {
+                iconSource.ImageSource = await iconData.ToBitmapAsync();
+            }
+        }*/
+        /*else if (currentPath.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
+        {
+            tabLocationHeader = "ThisPC".GetLocalizedResource();
+        }*/
+        /*else if (currentPath.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
+        {
+            tabLocationHeader = "SidebarNetworkDrives".GetLocalizedResource();
+        }*/
+        /*else if (App.LibraryManager.TryGetLibrary(currentPath, out LibraryLocationItem library))
+        {
+            var libName = System.IO.Path.GetFileNameWithoutExtension(library.Path).GetLocalizedResource();
+            // If localized string is empty use the library name.
+            tabLocationHeader = string.IsNullOrEmpty(libName) ? library.Text : libName;
+        }*/
+        /*else if (WSLDistroManager.TryGetDistro(currentPath, out WslDistroItem? wslDistro) && currentPath.Equals(wslDistro.Path))
+        {
+            tabLocationHeader = wslDistro.Text;
+            iconSource.ImageSource = new BitmapImage(wslDistro.Icon);
+        }*/
         else
         {
-            var iconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(filePath, 96, isFolder);
-            return (await iconData.ToBitmapAsync(), null);
+            var normalizedCurrentPath = PathNormalization.NormalizePath(currentPath);
+            var matchingCloudDrive = CloudDrivesManager.Drives.FirstOrDefault(x => normalizedCurrentPath.Equals(PathNormalization.NormalizePath(x.Path), StringComparison.OrdinalIgnoreCase));
+            if (matchingCloudDrive is not null)
+            {
+                iconSource.ImageSource = matchingCloudDrive.Icon;
+                tabLocationHeader = matchingCloudDrive.Text;
+            }
+            /*else if (PathNormalization.NormalizePath(PathNormalization.GetPathRoot(currentPath)) == normalizedCurrentPath) // If path is a drive's root
+            {
+                var matchingDrive = NetworkDrivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(netDrive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(netDrive.Path), StringComparison.OrdinalIgnoreCase));
+                matchingDrive ??= DrivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(drive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(drive.Path), StringComparison.OrdinalIgnoreCase));
+                tabLocationHeader = matchingDrive is not null ? matchingDrive.Text : normalizedCurrentPath;
+            }*/
+            else
+            {
+                tabLocationHeader = currentPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Split('\\', StringSplitOptions.RemoveEmptyEntries).Last();
+
+                var rootItem = await FilesystemTasks.Wrap(() => DriveHelpers.GetRootFromPathAsync(currentPath));
+                if (rootItem)
+                {
+                    BaseStorageFolder currentFolder = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(currentPath, rootItem));
+                    if (currentFolder is not null && !string.IsNullOrEmpty(currentFolder.DisplayName))
+                    {
+                        tabLocationHeader = currentFolder.DisplayName;
+                    }
+                }
+            }
         }
+
+        if (iconSource.ImageSource is null)
+        {
+            var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(currentPath, 16u, Windows.Storage.FileProperties.ThumbnailMode.ListView, Windows.Storage.FileProperties.ThumbnailOptions.UseCurrentScale, true);
+            if (iconData is not null)
+            {
+                iconSource.ImageSource = await iconData.ToBitmapAsync();
+            }
+        }
+
+        return (tabLocationHeader, iconSource, toolTipText);
     }
 
     private void SetLoadingIndicatorForTabs(bool isLoading)

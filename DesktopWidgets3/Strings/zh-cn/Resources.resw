@@ -528,9 +528,6 @@
   <data name="DeleteItemsDialogSubtitleMultiple" xml:space="preserve">
     <value>将删除 {0} 个项目</value>
   </data>
-  <data name="Delete" xml:space="preserve">
-    <value>删除</value>
-  </data>
   <data name="GenerateNewName" xml:space="preserve">
     <value>生成新名称</value>
   </data>
@@ -632,5 +629,11 @@
   </data>
   <data name="DeleteShortcutDescription" xml:space="preserve">
     <value>在目标位置找不到 {0}。要删除此快捷方式吗？</value>
+  </data>
+  <data name="Desktop" xml:space="preserve">
+    <value>桌面</value>
+  </data>
+  <data name="Downloads" xml:space="preserve">
+    <value>下载</value>
   </data>
 </root>
