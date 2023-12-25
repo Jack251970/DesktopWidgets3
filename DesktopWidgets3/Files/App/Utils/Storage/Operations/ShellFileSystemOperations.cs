@@ -35,7 +35,7 @@ public class ShellFileSystemOperations : IFileSystemOperations
         fsProgress.Report();
 
         var renameResult = new ShellOperationResult();
-        var (status, response) = await FileOperationsHelpers.RenameItemAsync(source.Path, newName, collision == NameCollisionOption.ReplaceExisting, mainWindowInstance.GetWindowHandle().ToInt64(), asAdmin);
+        var (status, response) = await FileOperationsHelpers.RenameItemAsync(source.Path, newName, collision == NameCollisionOption.ReplaceExisting, mainWindowInstance.WindowHandle.ToInt64(), asAdmin);
         var result = (FilesystemResult)status;
 
         renameResult.Items.AddRange(response?.Final ?? Enumerable.Empty<ShellOperationItemResult>());

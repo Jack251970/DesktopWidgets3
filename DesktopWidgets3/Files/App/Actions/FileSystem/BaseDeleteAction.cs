@@ -34,8 +34,7 @@ internal abstract class BaseDeleteAction : BaseUIAction
                         ? FilesystemItemType.File
                         : FilesystemItemType.Directory));
 
-        var deleteConfirmationPolicy = _viewModel.GetSettings().DeleteConfirmationPolicy;
-        await _viewModel.FileSystemHelpers.DeleteItemsAsync(_viewModel, items, deleteConfirmationPolicy, permanently);
+        await _viewModel.FileSystemHelpers.DeleteItemsAsync(_viewModel, items, _viewModel.GetSettings().DeleteConfirmationPolicy, permanently);
 
         await _viewModel.ItemViewModel.ApplyFilesAndFoldersChangesAsync();
     }

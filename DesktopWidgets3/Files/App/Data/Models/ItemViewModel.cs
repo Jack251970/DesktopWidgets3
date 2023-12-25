@@ -26,7 +26,6 @@ using Microsoft.UI.Xaml.Media;
 using Files.App.ViewModels.Previews;
 using FileAttributes = System.IO.FileAttributes;
 using static Files.Core.Helpers.NativeFindStorageItemHelper;
-using static Vanara.PInvoke.Ole32;
 
 namespace Files.App.Data.Models;
 
@@ -117,7 +116,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         enumFolderSemaphore = new SemaphoreSlim(1, 1);
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-        ViewModel = viewModel;
+        ViewModel = viewModel; 
     }
 
     #region get base storage item

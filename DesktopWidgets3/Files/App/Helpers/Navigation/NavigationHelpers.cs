@@ -179,7 +179,7 @@ public static class NavigationHelpers
         var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
         if (isHiddenItem)
         {
-            var allowNavigation = ((FolderViewWidgetSettings)viewModel.GetWidgetSettings()).AllowNavigation;
+            var allowNavigation = viewModel.GetSettings().AllowNavigation;
             await OpenPath(viewModel, forceOpenInExplore, allowNavigation, path);
             opened = (FilesystemResult)true;
         }
@@ -199,7 +199,7 @@ public static class NavigationHelpers
         var opened = (FilesystemResult)false;
         var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Hidden);
         var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path);
-        var allowNavigation = ((FolderViewWidgetSettings)viewModel.GetWidgetSettings()).AllowNavigation;
+        var allowNavigation = viewModel.GetSettings().AllowNavigation;
 
         if (isShortcut)
         {
@@ -379,8 +379,7 @@ public static class NavigationHelpers
     // WINUI3
     private static LauncherOptions InitializeWithWindow(FolderViewViewModel viewModel, LauncherOptions obj)
     {
-        var mainWindowInstance = viewModel.WidgetWindow;
-        WinRT.Interop.InitializeWithWindow.Initialize(obj, mainWindowInstance.GetWindowHandle());
+        WinRT.Interop.InitializeWithWindow.Initialize(obj, viewModel.WidgetWindow.WindowHandle);
         return obj;
     }
 
