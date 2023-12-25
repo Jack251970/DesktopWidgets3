@@ -22,7 +22,7 @@ public class FileProperty : ObservableObject
     /// <summary>
     /// The name to display
     /// </summary>
-    // TODO: check the resources?
+    // FILESTODO: check the resources?
     public string Name => LocalizedName ?? NameResource.GetLocalized();
 
     /// <summary>
@@ -41,7 +41,7 @@ public class FileProperty : ObservableObject
     /// <summary>
     /// The name of the section to display
     /// </summary>
-    // TODO: check the resources?
+    // FILESTODO: check the resources?
     public string Section => SectionResource?.GetLocalized()!;
 
     /// <summary>
@@ -273,7 +273,7 @@ public class FileProperty : ObservableObject
         {
             try
             {
-                // TODO: check the resources?
+                // FILESTODO: check the resources?
                 return EnumeratedList.TryGetValue(Convert.ToInt32(Value), out var value) ? value.GetLocalized() : null;
             }
             catch

@@ -37,7 +37,7 @@ public class StartupHelper
                 case StartupTaskState.DisabledByUser:
                     if (startup)
                     {
-                        // TODO: GH#6254: define UX for other StartupTaskStates
+                        // FILESTODO: GH#6254: define UX for other StartupTaskStates
                         // Reference: terminal_main\src\cascadia\TerminalSettingsEditor\AppLogic.cpp
                     }
                     break;

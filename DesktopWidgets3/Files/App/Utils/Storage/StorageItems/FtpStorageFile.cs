@@ -261,7 +261,7 @@ public sealed class FtpStorageFile : BaseStorageFile, IPasswordProtectedItem
             var isSuccessful = await ftpClient.MoveFile(FtpPath, destination, remoteExists, cancellationToken);
             if (!isSuccessful && option is NameCollisionOption.GenerateUniqueName)
             {
-                // TODO: handle name generation
+                // FILESTODO: handle name generation
             }
         }, ((IPasswordProtectedItem)this).RetryWithCredentialsAsync));
     }

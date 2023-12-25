@@ -19,7 +19,7 @@ internal class UserDateTimeFormatter : IDateTimeFormatter
         factory = DesktopWidgets3.App.GetService<IDateTimeFormatterFactory>();
 
         Update();
-        //TODO: Add Callback of settings
+        // TODO: Add Callback of settings
         //UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
     }
 

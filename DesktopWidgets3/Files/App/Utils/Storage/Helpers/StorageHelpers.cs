@@ -9,7 +9,6 @@ using Files.App.Utils.Storage.Helpers;
 using Files.Core.Data.Enums;
 using Files.Shared.Helpers;
 using Windows.Storage;
-using Windows.Storage.FileProperties;
 
 namespace Files.App.Helpers;
 
@@ -30,7 +29,7 @@ public static class StorageHelpers
 
         if (FileExtensionHelpers.IsShortcutOrUrlFile(path))
         {
-            // TODO: In the future, when IStorageItemWithPath will inherit from IStorageItem,
+            // FILESTODO: In the future, when IStorageItemWithPath will inherit from IStorageItem,
             // we could implement this code here for getting .lnk files
             // for now, we can't
             return default!;

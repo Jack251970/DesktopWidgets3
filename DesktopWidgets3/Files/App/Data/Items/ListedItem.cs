@@ -93,7 +93,7 @@ public class ListedItem : ObservableObject, IGroupableItem
     }
 
     // Note: Never attempt to call this from a secondary window or another thread, create a new instance from CustomIconSource instead
-    // TODO: eventually we should remove this b/c it's not thread safe
+    // FILESTODO: eventually we should remove this b/c it's not thread safe
     private BitmapImage? customIcon;
     public BitmapImage? CustomIcon
     {

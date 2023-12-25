@@ -299,7 +299,6 @@ public static class UniversalStorageEnumerator
                 IsUrl = isUrl,
             };
         }
-        // TODO: is this needed to be handled here?
         /*else if (App.LibraryManager.TryGetLibrary(file.Path, out LibraryLocationItem library))
         {
             return new LibraryItem(library)

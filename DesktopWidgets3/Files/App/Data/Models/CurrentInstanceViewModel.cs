@@ -8,7 +8,7 @@ namespace Files.App.Data.Models;
 
 public class CurrentInstanceViewModel : ObservableObject
 {
-    // TODO:
+    // FILESTODO:
     //  In the future, we should consolidate these public variables into
     //  a single enum property providing simplified customization of the
     //  values being manipulated inside the setter blocks

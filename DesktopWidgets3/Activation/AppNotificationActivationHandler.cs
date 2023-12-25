@@ -24,7 +24,7 @@ public class AppNotificationActivationHandler : ActivationHandler<LaunchActivate
 
     protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
     {
-        // TODO: Handle notification activations.
+        // Handle notification activations here.
 
         //// // Access the AppNotificationActivatedEventArgs.
         //// var activatedEventArgs = (AppNotificationActivatedEventArgs)AppInstance.GetCurrent().GetActivatedEventArgs().Data;
@@ -39,10 +39,10 @@ public class AppNotificationActivationHandler : ActivationHandler<LaunchActivate
         ////     });
         //// }
 
-        App.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
-        {
-            App.MainWindow.ShowMessageDialogAsync("TODO: Handle notification activations.", "Notification Activation");
-        });
+        //// App.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+        //// {
+        ////         App.MainWindow.ShowMessageDialogAsync("TODO: Handle notification activations.", "Notification Activation");
+        //// });*/
 
         await Task.CompletedTask;
     }

@@ -137,7 +137,7 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 
     public void SaveConflictResolveOption()
     {
-        // TODO: Save the option to the settings here!
+        // TODO: Save the option to the settings
         /*if (AggregatedResolveOption != FileNameConflictResolveOptionType.None &&
             AggregatedResolveOption != _viewModel.GetSettings().ConflictsResolveOption)
         {

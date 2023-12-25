@@ -26,7 +26,7 @@ public class FilePropertySection : List<FileProperty>
         get; set;
     }
 
-    // TODO: check the resources?
+    // FILESTODO: check the resources?
     public string Title => Key.GetLocalized();
 
     public int Priority => sectionPriority.TryGetValue(Key, out var value) ? value : 0;

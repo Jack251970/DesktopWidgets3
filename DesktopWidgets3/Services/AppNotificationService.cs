@@ -27,7 +27,7 @@ public class AppNotificationService : IAppNotificationService
         AppNotificationManager.Default.Register();
     }
 
-    // TODO: Handle notification invocations when your app is already running based on the notification arguments.
+    // Handle notification invocations when your app is already running based on the notification arguments.
     public void OnNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
     {
         /*switch (ParseArguments(args.Argument)["action"])
