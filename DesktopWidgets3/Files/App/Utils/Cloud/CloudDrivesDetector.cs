@@ -259,8 +259,7 @@ public class CloudDrivesDetector
             var iconPath = Path.Combine(programFilesFolder, "pCloud Drive", "pCloud.exe");
             var iconFile = Win32API.ExtractSelectedIconsFromDLL(iconPath, new List<int>() { 32512 }, 32).FirstOrDefault();
 
-            // TODO: Store the path in AppModel
-            //App.AppModel.PCloudDrivePath = syncedFolder;
+            DesktopWidgets3.App.AppModel.PCloudDrivePath = syncedFolder;
 
             results.Add(new CloudProvider(CloudProviders.pCloud)
             {

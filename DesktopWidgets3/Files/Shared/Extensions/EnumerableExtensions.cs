@@ -26,7 +26,7 @@ public static class EnumerableExtensions
     public static IList<T> AddIfNotPresent<T>(this IList<T> list, T element)
     {
         if (!list.Contains(element))
-        {
+            {
             list.Add(element);
         }
 
@@ -36,7 +36,7 @@ public static class EnumerableExtensions
     public static ICollection<T> EnumeratedAdd<T>(this ICollection<T> collection, IEnumerable<T> source)
     {
         foreach (var item in source)
-        {
+            {
             collection.Add(item);
         }
 
@@ -46,7 +46,7 @@ public static class EnumerableExtensions
     public static IDictionary<TKey, TValue> AddIfNotPresent<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
     {
         if (!dictionary.ContainsKey(key))
-        {
+            {
             dictionary.Add(key, value);
         }
 

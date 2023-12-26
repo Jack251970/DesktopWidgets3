@@ -537,9 +537,6 @@
   <data name="DeleteItemsDialogSubtitleMultiple" xml:space="preserve">
     <value>{0} items will be deleted</value>
   </data>
-  <data name="Delete" xml:space="preserve">
-    <value>Delete</value>
-  </data>
   <data name="GenerateNewName" xml:space="preserve">
     <value>Generate new name</value>
   </data>
@@ -647,5 +644,27 @@
   </data>
   <data name="Downloads" xml:space="preserve">
     <value>Downloads</value>
+  </data>
+  <data name="Network" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="DriveFreeSpaceAndCapacity" xml:space="preserve">
+    <value>{0} free of {1}</value>
+  </data>
+  <data name="DriveWithLetter" xml:space="preserve">
+    <value>Drive ({0})</value>
+    <comment>{0} is the drive letter.</comment>
+  </data>
+  <data name="RecycleBin" xml:space="preserve">
+    <value>Recycle Bin</value>
+  </data>
+  <data name="SidebarNetworkDrives" xml:space="preserve">
+    <value>Network Drives</value>
+  </data>
+  <data name="ThisPC" xml:space="preserve">
+    <value>This PC</value>
   </data>
 </root>

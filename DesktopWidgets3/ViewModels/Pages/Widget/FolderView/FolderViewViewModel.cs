@@ -14,11 +14,13 @@ using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.Windows;
 using Files.Core.Data.Enums;
 using Files.Core.Services;
+using Files.App.Data.Items;
 using Files.App.Utils.Cloud;
 using Files.App.Utils.Storage.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml.Media;
+using Windows.Storage.FileProperties;
 using static Files.App.Data.Models.ItemViewModel;
 using static Files.App.Data.EventArguments.NavigationArguments;
 
@@ -200,20 +202,28 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public IDialogService DialogService => _dialogService;
 
+    public DrivesViewModel DrivesViewModel => _drivesViewModel;
+
+    public NetworkDrivesViewModel NetworkDrivesViewModel => _networkDrivesViewModel;
+
     #endregion
 
     private readonly ICommandManager _commandManager;
     private readonly IDialogService _dialogService;
+    private readonly DrivesViewModel _drivesViewModel;
     private readonly IFileSystemHelpers _fileSystemHelpers;
+    private readonly NetworkDrivesViewModel _networkDrivesViewModel;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, IFileSystemHelpers fileSystemHelpers, IWidgetManagerService widgetManagerService)
+    public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, DrivesViewModel drivesViewModel, IFileSystemHelpers fileSystemHelpers, NetworkDrivesViewModel networkDrivesViewModel, IWidgetManagerService widgetManagerService)
     {
         _commandManager = commandManager;
         _commandManager.Initialize(this);
         _dialogService = dialogService;
         _dialogService.Initialize(this);
+        _drivesViewModel = drivesViewModel;
         _fileSystemHelpers = fileSystemHelpers;
+        _networkDrivesViewModel = networkDrivesViewModel;
         _widgetManagerService = widgetManagerService;
 
         NavigatedTo += FolderViewViewModel_NavigatedTo;
@@ -351,7 +361,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 }
                 ToolbarViewModel.CanGoBack = navigationFolderPaths.Count > 0 && AllowNavigation;
 
-                await UpdateTabTextInfoAsync(navigationArguments);
+                await UpdateToolbarTextInfoAsync(navigationArguments);
             }
             else if (navigationArguments.RefreshBehaviour == RefreshBehaviours.RefreshItems)
             {
@@ -460,16 +470,16 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    #region refresh toolbar
+    #region update toolbar
 
-    private async Task UpdateTabTextInfoAsync(object parameter)
+    private async Task UpdateToolbarTextInfoAsync(object parameter)
     {
         string header = null!;
         string toolTipText = null!;
 
         if (parameter is NavigationArguments navigationArguments)
         {
-            (header, toolTipText) = await GetSelectedTabTextInfoAsync(navigationArguments.NavPathParam!);
+            (header, toolTipText) = await GetToolbarTextInfoAsync(navigationArguments.NavPathParam!);
         }
 
         // Don't update tabItem if the contents of the tab have already changed
@@ -480,15 +490,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
     }
 
-    private async Task<(string tabLocationHeader, string toolTipText)> GetSelectedTabTextInfoAsync(string currentPath)
+    private async Task<(string tabLocationHeader, string toolTipText)> GetToolbarTextInfoAsync(string currentPath)
     {
         string? tabLocationHeader;
         var toolTipText = currentPath;
 
-        /*if (string.IsNullOrEmpty(currentPath) || currentPath == "Home")
-        {
-            tabLocationHeader = "Home".GetLocalizedResource();
-        }*/
         if (currentPath.Equals(Constants.UserEnvironmentPaths.DesktopPath, StringComparison.OrdinalIgnoreCase))
         {
             tabLocationHeader = "Desktop".GetLocalized();
@@ -497,18 +503,18 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             tabLocationHeader = "Downloads".GetLocalized();
         }
-        /*else if (currentPath.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
+        else if (currentPath.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
         {
-            tabLocationHeader = "RecycleBin".GetLocalizedResource();
-        }*/
-        /*else if (currentPath.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
+            tabLocationHeader = "RecycleBin".GetLocalized();
+        }
+        else if (currentPath.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
         {
-            tabLocationHeader = "ThisPC".GetLocalizedResource();
-        }*/
-        /*else if (currentPath.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
+            tabLocationHeader = "ThisPC".GetLocalized();
+        }
+        else if (currentPath.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
         {
-            tabLocationHeader = "SidebarNetworkDrives".GetLocalizedResource();
-        }*/
+            tabLocationHeader = "SidebarNetworkDrives".GetLocalized();
+        }
         /*else if (App.LibraryManager.TryGetLibrary(currentPath, out LibraryLocationItem library))
         {
             var libName = System.IO.Path.GetFileNameWithoutExtension(library.Path).GetLocalizedResource();
@@ -527,13 +533,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             {
                 tabLocationHeader = matchingCloudDrive.Text;
             }
-            // TODO: Load disk name
-            /*else if (PathNormalization.NormalizePath(PathNormalization.GetPathRoot(currentPath)) == normalizedCurrentPath) // If path is a drive's root
+            else if (PathNormalization.NormalizePath(PathNormalization.GetPathRoot(currentPath)) == normalizedCurrentPath) // If path is a drive's root
             {
                 var matchingDrive = NetworkDrivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(netDrive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(netDrive.Path), StringComparison.OrdinalIgnoreCase));
                 matchingDrive ??= DrivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(drive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(drive.Path), StringComparison.OrdinalIgnoreCase));
                 tabLocationHeader = matchingDrive is not null ? matchingDrive.Text : normalizedCurrentPath;
-            }*/
+            }
             else
             {
                 tabLocationHeader = currentPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Split('\\', StringSplitOptions.RemoveEmptyEntries).Last();
@@ -553,13 +558,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         return (tabLocationHeader, toolTipText);
     }
 
-    private async Task UpdateTabIconInfoAsync()
+    private async Task UpdateToolbarIconInfoAsync()
     {
         ImageIconSource iconSource = null!;
 
         if (!string.IsNullOrEmpty(CurFolderPath))
         {
-            iconSource = await GetSelectedTabInfoAsync(CurFolderPath);
+            iconSource = await GetToolbarIconInfoAsync(CurFolderPath);
         }
 
         if (iconSource is not null)
@@ -568,14 +573,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
     }
 
-    private async Task<ImageIconSource> GetSelectedTabInfoAsync(string currentPath)
+    private async Task<ImageIconSource> GetToolbarIconInfoAsync(string currentPath)
     {
         var iconSource = new ImageIconSource();
 
-        /*if (string.IsNullOrEmpty(currentPath) || currentPath == "Home")
-        {
-            iconSource.ImageSource = new BitmapImage(new Uri(Constants.FluentIconsPaths.HomeIcon));
-        }*/
         if (currentPath.Equals(Constants.UserEnvironmentPaths.DesktopPath, StringComparison.OrdinalIgnoreCase))
         {
 
@@ -584,7 +585,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
 
         }
-        /*else if (currentPath.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
+        else if (currentPath.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
         {
             // Use 48 for higher resolution, the other items look fine with 16.
             var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(currentPath, 48u, Windows.Storage.FileProperties.ThumbnailMode.ListView, Windows.Storage.FileProperties.ThumbnailOptions.UseCurrentScale, true);
@@ -592,15 +593,15 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             {
                 iconSource.ImageSource = await iconData.ToBitmapAsync();
             }
-        }*/
-        /*else if (currentPath.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
+        }
+        else if (currentPath.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
         {
 
-        }*/
-        /*else if (currentPath.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
+        }
+        else if (currentPath.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
         {
 
-        }*/
+        }
         /*else if (App.LibraryManager.TryGetLibrary(currentPath, out LibraryLocationItem library))
         {
 
@@ -621,18 +622,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
         if (iconSource.ImageSource is null)
         {
-            var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(currentPath, 16u, Windows.Storage.FileProperties.ThumbnailMode.ListView, Windows.Storage.FileProperties.ThumbnailOptions.UseCurrentScale, true);
+            var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(currentPath, 16u, ThumbnailMode.ListView, ThumbnailOptions.UseCurrentScale, true);
             if (iconData is not null)
             {
                 iconSource.ImageSource = await iconData.ToBitmapAsync();
-            }
-            /*else if (PathNormalization.NormalizePath(PathNormalization.GetPathRoot(currentPath)) == normalizedCurrentPath) // If path is a drive's root
-            {
-
-            }*/
-            else
-            {
-
             }
         }
 
@@ -652,7 +645,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             // Make sure the ImageIconSource instance is created in UI thread
             RunOnDispatcherQueue(async () =>
             {
-                await UpdateTabIconInfoAsync();
+                await UpdateToolbarIconInfoAsync();
             });
         }
     }

@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.Immutable;
+using DesktopWidgets3.Helpers;
 using Files.App.Data.Items;
+using Files.App.Data.Models;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.Shared.Extensions;
@@ -193,26 +195,26 @@ public static class StorageFileExtensions
     {
         string title;
 
-        /*if (component.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal))
+        if (component.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal))
         {
             // Handle the recycle bin: use the localized folder name
-            title = "RecycleBin".GetLocalizedResource();
+            title = "RecycleBin".GetLocalized();
         }
         else if (component.StartsWith(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.Ordinal))
         {
-            title = "ThisPC".GetLocalizedResource();
+            title = "ThisPC".GetLocalized();
         }
         else if (component.StartsWith(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.Ordinal))
         {
-            title = "SidebarNetworkDrives".GetLocalizedResource();
+            title = "SidebarNetworkDrives".GetLocalized();
         }
         else if (component.Contains(':', StringComparison.Ordinal))
         {
-            var drivesViewModel = Ioc.Default.GetRequiredService<DrivesViewModel>();
+            var drivesViewModel = DesktopWidgets3.App.GetService<DrivesViewModel>();
 
             var drives = drivesViewModel.Drives.Cast<DriveItem>();
-            var drive = drives.FirstOrDefault(y => y.ItemType is NavigationControlItemType.Drive && y.Path.Contains(component, StringComparison.OrdinalIgnoreCase));
-            title = drive is not null ? drive.Text : string.Format("DriveWithLetter".GetLocalizedResource(), component);
+            var drive = drives.FirstOrDefault(y => /*y.ItemType is NavigationControlItemType.Drive && */y.Path.Contains(component, StringComparison.OrdinalIgnoreCase));
+            title = drive is not null ? drive.Text : string.Format("DriveWithLetter".GetLocalized(), component);
         }
         else
         {
@@ -222,7 +224,7 @@ public static class StorageFileExtensions
             }
 
             title = component;
-        }*/
+        }
 
         if (path.EndsWith('\\') || path.EndsWith('/'))
         {

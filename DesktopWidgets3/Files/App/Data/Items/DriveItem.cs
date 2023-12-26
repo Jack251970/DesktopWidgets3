@@ -2,11 +2,16 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Views.Windows;
+using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Files.App.Helpers;
+using Files.App.Storage.WindowsStorage;
 using Files.App.UserControls;
 using Files.App.Utils.Storage;
+using Files.Core.Storage;
+using Files.Core.Storage.Enums;
+using Files.Core.Storage.LocatableStorage;
+using Files.Core.Storage.NestedStorage;
 using Files.Shared.Extensions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -17,7 +22,7 @@ using ByteSize = ByteSizeLib.ByteSize;
 
 namespace Files.App.Data.Items;
 
-public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableFolder
+public class DriveItem : ObservableObject, ILocatableFolder//, INavigationControlItem
 {
     private BitmapImage icon;
     public BitmapImage Icon
@@ -135,7 +140,7 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
             type = value;
             if (value == DriveType.Network)
             {
-                //ToolTip = "Network".GetLocalizedResource();
+                ToolTip = "Network".GetLocalized();
             }
             else if (value == DriveType.CloudDrive)
             {
@@ -179,10 +184,10 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
                 return;
             }
 
-            /*if (Type == DriveType.Fixed)
+            if (Type == DriveType.Fixed)
             {
                 ShowStorageSense = percentageUsed >= Constants.Widgets.Drives.LowStorageSpacePercentageThreshold;
-            }*/
+            }
         }
     }
 
@@ -218,7 +223,7 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
         ImageSource = Icon
     };
 
-    public FrameworkElement? ItemDecorator
+    /*public FrameworkElement? ItemDecorator
     {
         get
         {
@@ -238,7 +243,7 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
                 }
             };
 
-            /*ToolTipService.SetToolTip(itemDecorator, "Eject".GetLocalizedResource());*/
+            ToolTipService.SetToolTip(itemDecorator, "Eject".GetLocalizedResource());
 
             itemDecorator.Click += ItemDecorator_Click;
 
@@ -248,9 +253,9 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
 
     private async void ItemDecorator_Click(object sender, RoutedEventArgs e)
     {
-        /*var result = await DriveHelpers.EjectDeviceAsync(Path);
-        await UIHelpers.ShowDeviceEjectResultAsync(Type, result);*/
-    }
+        var result = await DriveHelpers.EjectDeviceAsync(Path);
+        await UIHelpers.ShowDeviceEjectResultAsync(Type, result);
+    }*/
 
     public static async Task<DriveItem> CreateFromPropertiesAsync(StorageFolder root, string deviceId, string label, DriveType type, IRandomAccessStream imageStream = null)
     {
@@ -319,7 +324,7 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
             }
             else
             {
-                //SpaceText = "Unknown".GetLocalizedResource();
+                SpaceText = "Unknown".GetLocalized();
                 MaxSpace = SpaceUsed = FreeSpace = ByteSize.FromBytes(0);
             }
 
@@ -327,7 +332,7 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
         }
         catch (Exception)
         {
-            //SpaceText = "Unknown".GetLocalizedResource();
+            SpaceText = "Unknown".GetLocalized();
             MaxSpace = SpaceUsed = FreeSpace = ByteSize.FromBytes(0);
 
             OnPropertyChanged(nameof(ShowDriveDetails));
@@ -344,8 +349,8 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
     {
         if (!isSidebar)
         {
-            /*using var thumbnail = await DriveHelpers.GetThumbnailAsync(Root);
-            IconData ??= await thumbnail.ToByteArrayAsync();*/
+            using var thumbnail = await DriveHelpers.GetThumbnailAsync(Root);
+            IconData ??= await thumbnail.ToByteArrayAsync();
         }
         else
         {
@@ -356,8 +361,8 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
 
             if (Root is not null)
             {
-                /*using var thumbnail = await DriveHelpers.GetThumbnailAsync(Root);
-                IconData ??= await thumbnail.ToByteArrayAsync();*/
+                using var thumbnail = await DriveHelpers.GetThumbnailAsync(Root);
+                IconData ??= await thumbnail.ToByteArrayAsync();
             }
 
             /*if (string.Equals(DeviceID, "network-folder"))
@@ -367,16 +372,16 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
         }
         Icon ??= (await IconData.ToBitmapAsync())!;
     }
+
     private string GetSizeString()
     {
-        return string.Empty;
-        /*return string.Format(
-            "DriveFreeSpaceAndCapacity".GetLocalizedResource(),
+        return string.Format(
+            "DriveFreeSpaceAndCapacity".GetLocalized(),
             FreeSpace.ToSizeString(),
-            MaxSpace.ToSizeString());*/
+            MaxSpace.ToSizeString());
     }
 
-    /*public Task<INestedFile> GetFileAsync(string fileName, CancellationToken cancellationToken = default)
+    public Task<INestedFile> GetFileAsync(string fileName, CancellationToken cancellationToken = default)
     {
         var folder = new WindowsStorageFolder(Root);
         return folder.GetFileAsync(fileName, cancellationToken);
@@ -398,7 +403,7 @@ public class DriveItem : ObservableObject//, INavigationControlItem, ILocatableF
     {
         var folder = new WindowsStorageFolder(Root);
         return folder.GetParentAsync(cancellationToken);
-    }*/
+    }
 }
 
 public enum DriveType

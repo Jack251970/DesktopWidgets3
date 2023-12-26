@@ -26,6 +26,8 @@ using Files.App.Services.DateTimeFormatter;
 using Files.Core.Services.DateTimeFormatter;
 using Files.App.Services;
 using Files.Core.Services;
+using Files.App.Data.Models;
+using Files.Core.Services.SizeProvider;
 
 namespace DesktopWidgets3;
 
@@ -62,6 +64,12 @@ public partial class App : Application
 #if DEBUG
     public static readonly StreamWriter logWriter = new("D:\\log.txt", false);
 #endif
+
+    #region models from Files
+
+    public static AppModel AppModel => GetService<AppModel>();
+
+    #endregion
 
     public App()
     {
@@ -165,6 +173,22 @@ public partial class App : Application
 
             // File Dialogs
             services.AddTransient<IDialogService, DialogService>();
+
+            // Drivers
+            services.AddSingleton<DrivesViewModel>();
+
+            // Network Drivers
+            services.AddSingleton<NetworkDrivesViewModel>();
+            services.AddSingleton<INetworkDrivesService, NetworkDrivesService>();
+
+            // Files App Model
+            services.AddSingleton<AppModel>();
+
+            // Removable Drives
+            services.AddSingleton<IRemovableDrivesService, RemovableDrivesService>();
+
+            // Size Provider
+            services.AddSingleton<ISizeProvider, UserSizeProvider>();
 
             #endregion
 

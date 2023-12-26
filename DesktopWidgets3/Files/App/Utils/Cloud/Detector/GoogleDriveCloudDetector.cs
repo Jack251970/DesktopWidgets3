@@ -59,8 +59,7 @@ public class GoogleDriveCloudDetector : AbstractCloudDetector
             var folder = await StorageFolder.GetFolderFromPathAsync(path);
             var title = reader["title"]?.ToString() ?? folder.Name;
 
-            // TODO: Store the path in AppModel
-            //App.AppModel.GoogleDrivePath = path;
+            DesktopWidgets3.App.AppModel.GoogleDrivePath = path;
 
             yield return new CloudProvider(CloudProviders.GoogleDrive)
             {
@@ -84,8 +83,7 @@ public class GoogleDriveCloudDetector : AbstractCloudDetector
             var title = reader["name"]?.ToString() ?? folder.Name;
             var iconPath = Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles")!, "Google", "Drive File Stream", "drive_fs.ico");
 
-            // TODO: Store the path in AppModel
-            //App.AppModel.GoogleDrivePath = path;
+            DesktopWidgets3.App.AppModel.GoogleDrivePath = path;
 
             StorageFile iconFile = await FilesystemTasks.Wrap(() => StorageFile.GetFileFromPathAsync(iconPath).AsTask());
 
