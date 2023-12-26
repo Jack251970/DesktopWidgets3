@@ -5,7 +5,6 @@ using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Dialogs;
 using Files.App.ViewModels.Dialogs;
 using Files.Core.Data.Enums;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.Helpers;
 
@@ -48,11 +47,8 @@ internal class DialogDisplayHelper
     {
         try
         {
-            if (viewModel.WidgetWindow.Content is Frame rootFrame)
-            {
-                await dialog.ShowAsync();
-                return dialog.DynamicResult;
-            }
+            await dialog.ShowAsync(viewModel);
+            return dialog.DynamicResult;
         }
         catch (Exception)
         {

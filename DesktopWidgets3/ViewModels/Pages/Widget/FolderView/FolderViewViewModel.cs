@@ -575,6 +575,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private async Task<ImageIconSource> GetToolbarIconInfoAsync(string currentPath)
     {
+        // TODO: Fix bug when quitting app
         var iconSource = new ImageIconSource();
 
         if (currentPath.Equals(Constants.UserEnvironmentPaths.DesktopPath, StringComparison.OrdinalIgnoreCase))
