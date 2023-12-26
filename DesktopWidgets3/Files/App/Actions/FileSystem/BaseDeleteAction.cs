@@ -11,37 +11,37 @@ namespace Files.App.Actions;
 
 internal abstract class BaseDeleteAction : BaseUIAction
 {
-    private readonly FolderViewViewModel _viewModel;
+    private readonly FolderViewViewModel context;
 
     public override bool IsExecutable =>
-        _viewModel.HasSelection &&
-        !_viewModel.IsRenamingItem; /*&&
-        UIHelpers.CanShowDialog;*/
+        context.HasSelection &&
+        !context.IsRenamingItem &&
+        context.CanShowDialog;
 
     public BaseDeleteAction(FolderViewViewModel viewModel)
     {
-        _viewModel = viewModel;
+        context = viewModel;
 
-        viewModel.PropertyChanged += ViewModel_PropertyChanged;
+        context.PropertyChanged += Context_PropertyChanged;
     }
 
     protected async Task DeleteItemsAsync(bool permanently)
     {
-        var items = _viewModel.SelectedItems.Select(item =>
+        var items = context.SelectedItems.Select(item =>
                 StorageHelpers.FromPathAndType(
                     item.ItemPath,
                     item.PrimaryItemAttribute is StorageItemTypes.File
                         ? FilesystemItemType.File
                         : FilesystemItemType.Directory));
 
-        await _viewModel.FileSystemHelpers.DeleteItemsAsync(_viewModel, items, _viewModel.GetSettings().DeleteConfirmationPolicy, permanently);
+        await context.FileSystemHelpers.DeleteItemsAsync(context, items, context.GetSettings().DeleteConfirmationPolicy, permanently);
 
-        await _viewModel.ItemViewModel.ApplyFilesAndFoldersChangesAsync();
+        await context.ItemViewModel.ApplyFilesAndFoldersChangesAsync();
     }
 
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(_viewModel.HasSelection))
+        if (e.PropertyName is nameof(context.HasSelection))
         {
             OnPropertyChanged(nameof(IsExecutable));
         }

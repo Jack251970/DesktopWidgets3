@@ -658,4 +658,10 @@
   <data name="ThisPC" xml:space="preserve">
     <value>此电脑</value>
   </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="RefreshItemsDescription" xml:space="preserve">
+    <value>刷新页面内容</value>
+  </data>
 </root>

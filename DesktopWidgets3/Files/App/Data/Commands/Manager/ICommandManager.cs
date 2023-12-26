@@ -116,10 +116,10 @@ public interface ICommandManager : IEnumerable<IRichCommand>
         get;
     }*/
     
-    /*IRichCommand RefreshItems
+    IRichCommand RefreshItems
     {
         get;
-    }*/
+    }
 
     /*IRichCommand Rename
     {

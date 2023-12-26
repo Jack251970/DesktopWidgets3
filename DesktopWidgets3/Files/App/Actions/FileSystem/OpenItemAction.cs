@@ -7,12 +7,13 @@ using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Commands;
 using Files.App.Helpers;
+using Windows.Storage;
 
 namespace Files.App.Actions;
 
 internal class OpenItemAction : ObservableObject, IAction
 {
-    private readonly FolderViewViewModel _viewModel;
+    private readonly FolderViewViewModel context;
 
     public string Label
         => "Open".GetLocalized();
@@ -29,26 +30,26 @@ internal class OpenItemAction : ObservableObject, IAction
     private const int MaxOpenCount = 10;
 
     public bool IsExecutable =>
-        _viewModel.HasSelection &&
-        _viewModel.SelectedItems.Count <= MaxOpenCount; /*&&
+        context.HasSelection &&
+        context.SelectedItems.Count <= MaxOpenCount /*&&
         !(context.ShellPage is ColumnShellPage &&
-        context.SelectedItem?.PrimaryItemAttribute == StorageItemTypes.Folder);*/
+        context.SelectedItem?.PrimaryItemAttribute == StorageItemTypes.Folder)*/;
 
     public OpenItemAction(FolderViewViewModel viewModel)
     {
-        _viewModel = viewModel;
+        context = viewModel;
 
-        viewModel.PropertyChanged += ViewModel_PropertyChanged;
+        viewModel.PropertyChanged += Context_PropertyChanged;
     }
 
     public Task ExecuteAsync()
     {
-        return NavigationHelpers.OpenSelectedItemsAsync(_viewModel);
+        return NavigationHelpers.OpenSelectedItemsAsync(context);
     }
 
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(_viewModel.HasSelection))
+        if (e.PropertyName is nameof(context.HasSelection))
         {
             OnPropertyChanged(nameof(IsExecutable));
         }
@@ -77,7 +78,8 @@ internal class OpenItemAction : ObservableObject, IAction
     public OpenItemWithApplicationPickerAction()
     {
         context = Ioc.Default.GetRequiredService<IContentPageContext>();
-        context.PropertyChanged += ViewModel_PropertyChanged;
+        
+        context.PropertyChanged += Context_PropertyChanged;
     }
 
     public Task ExecuteAsync()
@@ -88,7 +90,7 @@ internal class OpenItemAction : ObservableObject, IAction
         return NavigationHelpers.OpenSelectedItemsAsync(context.ShellPage, true);
     }
 
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(IContentPageContext.HasSelection))
             OnPropertyChanged(nameof(IsExecutable));
@@ -117,7 +119,7 @@ internal class OpenParentFolderAction : ObservableObject, IAction
     {
         context = Ioc.Default.GetRequiredService<IContentPageContext>();
 
-        context.PropertyChanged += ViewModel_PropertyChanged;
+        context.PropertyChanged += Context_PropertyChanged;
     }
 
     public async Task ExecuteAsync()
@@ -139,7 +141,7 @@ internal class OpenParentFolderAction : ObservableObject, IAction
         });
     }
 
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(IContentPageContext.HasSelection))
             OnPropertyChanged(nameof(IsExecutable));

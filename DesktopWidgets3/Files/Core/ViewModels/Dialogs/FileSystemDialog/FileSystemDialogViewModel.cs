@@ -16,7 +16,7 @@ namespace Files.Core.ViewModels.Dialogs.FileSystemDialog;
 
 public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<FileSystemDialogOptionChangedMessage>
 {
-    private readonly FolderViewViewModel _viewModel;
+    private readonly FolderViewViewModel FolderViewViewModel;
 
     private readonly CancellationTokenSource _dialogClosingCts;
 
@@ -68,7 +68,7 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 
     private FileSystemDialogViewModel(FolderViewViewModel viewModel, FileSystemDialogMode fileSystemDialogMode, IEnumerable<BaseFileSystemDialogItemViewModel> items)
     {
-        _viewModel = viewModel;
+        FolderViewViewModel = viewModel;
 
         FileSystemDialogMode = fileSystemDialogMode;
 
@@ -132,7 +132,7 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 
     public FileNameConflictResolveOptionType LoadConflictResolveOption()
     {
-        return _viewModel.GetSettings().ConflictsResolveOption;
+        return FolderViewViewModel.GetSettings().ConflictsResolveOption;
     }
 
     public void SaveConflictResolveOption()

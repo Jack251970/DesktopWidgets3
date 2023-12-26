@@ -11,7 +11,7 @@ namespace Files.App.Actions;
 
 internal class NavigateUpAction : ObservableObject, IAction
 {
-    private readonly FolderViewViewModel _viewModel;
+    private readonly FolderViewViewModel context;
 
     public string Label
         => "Up".GetLocalized();
@@ -26,26 +26,26 @@ internal class NavigateUpAction : ObservableObject, IAction
         => new(Keys.Up, KeyModifiers.Menu);*/
 
     public bool IsExecutable
-        => _viewModel.CanNavigateToParent && _viewModel.AllowNavigation;
+        => context.CanNavigateToParent && context.AllowNavigation;
 
     public NavigateUpAction(FolderViewViewModel viewModel)
     {
-        _viewModel = viewModel;
+        context = viewModel;
 
-        viewModel.PropertyChanged += ViewModel_PropertyChanged;
+        viewModel.PropertyChanged += Context_PropertyChanged;
     }
 
     public Task ExecuteAsync()
     {
-        _viewModel.Up_Click();
+        context.Up_Click();
 
         return Task.CompletedTask;
     }
 
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(_viewModel.CanNavigateToParent) ||
-            e.PropertyName is nameof(_viewModel.AllowNavigation))
+        if (e.PropertyName is nameof(context.CanNavigateToParent) ||
+            e.PropertyName is nameof(context.AllowNavigation))
         {
             OnPropertyChanged(nameof(IsExecutable));
         }

@@ -667,4 +667,10 @@
   <data name="ThisPC" xml:space="preserve">
     <value>This PC</value>
   </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="RefreshItemsDescription" xml:space="preserve">
+    <value>Refresh page contents</value>
+  </data>
 </root>

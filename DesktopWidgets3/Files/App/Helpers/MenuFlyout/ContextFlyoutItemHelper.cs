@@ -33,6 +33,7 @@ public static class ContextFlyoutItemHelper
         BaseLayoutViewModel commandsViewModel, 
         bool shiftPressed, 
         SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel,
+        ItemViewModel? itemViewModel,
         FolderViewViewModel viewModel,
         ICommandManager commands)
     {
@@ -41,6 +42,7 @@ public static class ContextFlyoutItemHelper
             selectedItems: selectedItems, 
             selectedItemsPropertiesViewModel: selectedItemsPropertiesViewModel, 
             currentInstanceViewModel: currentInstanceViewModel,
+            itemViewModel: itemViewModel,
             viewModel: viewModel,
             commands: commands);
         menuItemsList = Filter(
@@ -57,10 +59,11 @@ public static class ContextFlyoutItemHelper
             SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel,
             List<ListedItem> selectedItems,
             CurrentInstanceViewModel currentInstanceViewModel,
+            ItemViewModel? itemViewModel,
             FolderViewViewModel viewModel,
             ICommandManager commands)
     {
-        var itemsSelected = true;//itemViewModel is null;
+        var itemsSelected = itemViewModel is null;
         var canDecompress = selectedItems.Any() && selectedItems.All(x => x.IsArchive)
             || selectedItems.All(x => x.PrimaryItemAttribute == StorageItemTypes.File && FileExtensionHelpers.IsZipFile(x.FileExtension));
         var canCompress = !canDecompress || selectedItems.Count > 1;
@@ -72,502 +75,502 @@ public static class ContextFlyoutItemHelper
             Path.GetFileName(selectedItems.Count is 1 ? selectedItems[0].ItemPath : Path.GetDirectoryName(selectedItems[0].ItemPath))
             ?? string.Empty;
 
-        //var isDriveRoot = false; itemViewModel?.CurrentFolder is not null && (itemViewModel.CurrentFolder.ItemPath == Path.GetPathRoot(itemViewModel.CurrentFolder.ItemPath));
+        var isDriveRoot = itemViewModel?.CurrentFolder is not null && (itemViewModel.CurrentFolder.ItemPath == Path.GetPathRoot(itemViewModel.CurrentFolder.ItemPath));
 
         var list =  new List<ContextMenuFlyoutItemViewModel>()
+        {
+            /*new()
             {
-                /*new()
+                Text = "LayoutMode".GetLocalizedResource(),
+                Glyph = "\uE152",
+                ShowItem = !itemsSelected,
+                ShowInRecycleBin = true,
+                ShowInSearchPage = true,
+                ShowInFtpPage = true,
+                ShowInZipPage = true,
+                Items = new List<ContextMenuFlyoutItemViewModel>
                 {
-                    Text = "LayoutMode".GetLocalizedResource(),
-                    Glyph = "\uE152",
-                    ShowItem = !itemsSelected,
-                    ShowInRecycleBin = true,
-                    ShowInSearchPage = true,
-                    ShowInFtpPage = true,
-                    ShowInZipPage = true,
-                    Items = new List<ContextMenuFlyoutItemViewModel>
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutDetails)
                     {
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutDetails)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutTiles)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutGridSmall)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutGridMedium)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutGridLarge)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutColumns)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutAdaptive)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                    },
-                },*/
-                /*new()
-                {
-                    Text = "SortBy".GetLocalizedResource(),
-                    OpacityIcon = new OpacityIconModel()
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutTiles)
                     {
-                        OpacityIconStyle = "ColorIconSort",
-                    },
-                    ShowItem = !itemsSelected,
-                    ShowInRecycleBin = true,
-                    ShowInSearchPage = true,
-                    ShowInFtpPage = true,
-                    ShowInZipPage = true,
-                    Items = new List<ContextMenuFlyoutItemViewModel>
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutGridSmall)
                     {
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortByName)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortByDateModified)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortByDateCreated)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortByType)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortBySize)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortBySyncStatus)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortByTag)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortByPath)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortByOriginalFolder)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortByDateDeleted)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModel
-                        {
-                            ItemType = ContextMenuFlyoutItemType.Separator,
-                            ShowInRecycleBin = true,
-                            ShowInSearchPage = true,
-                            ShowInFtpPage = true,
-                            ShowInZipPage = true,
-                        },
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortAscending)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SortDescending)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                    },
-                },*/
-                /*new()
-                {
-                    Text = "NavToolbarGroupByRadioButtons/Text".GetLocalizedResource(),
-                    Glyph = "\uF168",
-                    ShowItem = !itemsSelected,
-                    ShowInRecycleBin = true,
-                    ShowInSearchPage = true,
-                    ShowInFtpPage = true,
-                    ShowInZipPage = true,
-                    Items = new List<ContextMenuFlyoutItemViewModel>
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutGridMedium)
                     {
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByNone)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByName)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModel()
-                        {
-                            Text = "DateModifiedLowerCase".GetLocalizedResource(),
-                            ShowInRecycleBin = true,
-                            ShowInSearchPage = true,
-                            ShowInFtpPage = true,
-                            ShowInZipPage = true,
-                            Items = new List<ContextMenuFlyoutItemViewModel>
-                            {
-                                new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateModifiedYear)
-                                {
-                                    IsToggle = true
-                                }.Build(),
-                                new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateModifiedMonth)
-                                {
-                                    IsToggle = true
-                                }.Build(),
-                            },
-                        },
-                        new ContextMenuFlyoutItemViewModel()
-                        {
-                            Text = "DateCreated".GetLocalizedResource(),
-                            ShowInRecycleBin = true,
-                            ShowInSearchPage = true,
-                            ShowInFtpPage = true,
-                            ShowInZipPage = true,
-                            Items = new List<ContextMenuFlyoutItemViewModel>
-                            {
-                                new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateCreatedYear)
-                                {
-                                    IsToggle = true
-                                }.Build(),
-                                new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateCreatedMonth)
-                                {
-                                    IsToggle = true
-                                }.Build(),
-                            },
-                        },
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByType)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupBySize)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupBySyncStatus)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByTag)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByOriginalFolder)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModel()
-                        {
-                            Text = "DateDeleted".GetLocalizedResource(),
-                            ShowInRecycleBin = true,
-                            IsHidden = !currentInstanceViewModel.IsPageTypeRecycleBin,
-                            Items = new List<ContextMenuFlyoutItemViewModel>
-                            {
-                                new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateDeletedYear)
-                                {
-                                    IsToggle = true
-                                }.Build(),
-                                new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateDeletedMonth)
-                                {
-                                    IsToggle = true
-                                }.Build(),
-                            },
-                        },
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByFolderPath)
-                        {
-                            IsToggle = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModel
-                        {
-                            ItemType = ContextMenuFlyoutItemType.Separator,
-                            ShowInRecycleBin = true,
-                            ShowInSearchPage = true,
-                            ShowInFtpPage = true,
-                            ShowInZipPage = true,
-                        },
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupAscending)
-                        {
-                            IsToggle = true,
-                            IsVisible = true
-                        }.Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.GroupDescending)
-                        {
-                            IsToggle = true,
-                            IsVisible = true
-                        }.Build(),
-                    },
-                },*/
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.RefreshItems)
-                {
-                    IsVisible = !itemsSelected,
-                }.Build(),*/
-                new()
-                {
-                    ItemType = ContextMenuFlyoutItemType.Separator,
-                    ShowInFtpPage = true,
-                    ShowInZipPage = true,
-                    ShowItem = !itemsSelected
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutGridLarge)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutColumns)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.LayoutAdaptive)
+                    {
+                        IsToggle = true
+                    }.Build(),
                 },
-                /*new()
+            },
+            new()
+            {
+                Text = "SortBy".GetLocalizedResource(),
+                OpacityIcon = new OpacityIconModel()
                 {
-                    OpacityIcon = new OpacityIconModel()
-                    {
-                        OpacityIconStyle = commands.AddItem.Glyph.OpacityStyle
-                    },
-                    Text = commands.AddItem.Label,
-                    Items = GetNewItemItems(commandsViewModel, currentInstanceViewModel.CanCreateFileInPage),
-                    ShowItem = !itemsSelected,
-                    ShowInFtpPage = true
-                },*/
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.FormatDrive).Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.EmptyRecycleBin)
-                {
-                    IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && !itemsSelected,
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.RestoreAllRecycleBin)
-                {
-                    IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && !itemsSelected,
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.RestoreRecycleBin)
-                {
-                    IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && itemsSelected,
-                }.Build(),*/
-                new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItem).Build(),
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItemWithApplicationPicker)
-                {
-                    Tag = "OpenWith",
-                }.Build(),*/
-                new()
-                {
-                    Text = "OpenWith".GetLocalized(),
-                    OpacityIcon = new OpacityIconModel()
-                    {
-                        OpacityIconStyle = "ColorIconOpenWith"
-                    },
-                    Tag = "OpenWithOverflow",
-                    IsHidden = true,
-                    CollapseLabel = true,
-                    Items = new List<ContextMenuFlyoutItemViewModel>() {
-                        new()
-                        {
-                            Text = "Placeholder",
-                            ShowInSearchPage = true,
-                        }
-                    },
-                    ShowInSearchPage = true,
-                    ShowItem = itemsSelected && showOpenItemWith
+                    OpacityIconStyle = "ColorIconSort",
                 },
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenFileLocation).Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.OpenInNewWindowItemAction).Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewPaneAction).Build(),*/
-                /*new()
+                ShowItem = !itemsSelected,
+                ShowInRecycleBin = true,
+                ShowInSearchPage = true,
+                ShowInFtpPage = true,
+                ShowInZipPage = true,
+                Items = new List<ContextMenuFlyoutItemViewModel>
                 {
-                    Text = "BaseLayoutItemContextFlyoutSetAs/Text".GetLocalizedResource(),
-                    ShowItem = itemsSelected && (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false),
-                    ShowInSearchPage = true,
-                    Items = new List<ContextMenuFlyoutItemViewModel>
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortByName)
                     {
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsWallpaperBackground).Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsLockscreenBackground).Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsSlideshowBackground).Build(),
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortByDateModified)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortByDateCreated)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortByType)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortBySize)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortBySyncStatus)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortByTag)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortByPath)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortByOriginalFolder)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortByDateDeleted)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModel
+                    {
+                        ItemType = ContextMenuFlyoutItemType.Separator,
+                        ShowInRecycleBin = true,
+                        ShowInSearchPage = true,
+                        ShowInFtpPage = true,
+                        ShowInZipPage = true,
+                    },
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortAscending)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SortDescending)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                },
+            },
+            new()
+            {
+                Text = "NavToolbarGroupByRadioButtons/Text".GetLocalizedResource(),
+                Glyph = "\uF168",
+                ShowItem = !itemsSelected,
+                ShowInRecycleBin = true,
+                ShowInSearchPage = true,
+                ShowInFtpPage = true,
+                ShowInZipPage = true,
+                Items = new List<ContextMenuFlyoutItemViewModel>
+                {
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByNone)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByName)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModel()
+                    {
+                        Text = "DateModifiedLowerCase".GetLocalizedResource(),
+                        ShowInRecycleBin = true,
+                        ShowInSearchPage = true,
+                        ShowInFtpPage = true,
+                        ShowInZipPage = true,
+                        Items = new List<ContextMenuFlyoutItemViewModel>
+                        {
+                            new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateModifiedYear)
+                            {
+                                IsToggle = true
+                            }.Build(),
+                            new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateModifiedMonth)
+                            {
+                                IsToggle = true
+                            }.Build(),
+                        },
+                    },
+                    new ContextMenuFlyoutItemViewModel()
+                    {
+                        Text = "DateCreated".GetLocalizedResource(),
+                        ShowInRecycleBin = true,
+                        ShowInSearchPage = true,
+                        ShowInFtpPage = true,
+                        ShowInZipPage = true,
+                        Items = new List<ContextMenuFlyoutItemViewModel>
+                        {
+                            new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateCreatedYear)
+                            {
+                                IsToggle = true
+                            }.Build(),
+                            new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateCreatedMonth)
+                            {
+                                IsToggle = true
+                            }.Build(),
+                        },
+                    },
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByType)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupBySize)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupBySyncStatus)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByTag)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByOriginalFolder)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModel()
+                    {
+                        Text = "DateDeleted".GetLocalizedResource(),
+                        ShowInRecycleBin = true,
+                        IsHidden = !currentInstanceViewModel.IsPageTypeRecycleBin,
+                        Items = new List<ContextMenuFlyoutItemViewModel>
+                        {
+                            new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateDeletedYear)
+                            {
+                                IsToggle = true
+                            }.Build(),
+                            new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByDateDeletedMonth)
+                            {
+                                IsToggle = true
+                            }.Build(),
+                        },
+                    },
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupByFolderPath)
+                    {
+                        IsToggle = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModel
+                    {
+                        ItemType = ContextMenuFlyoutItemType.Separator,
+                        ShowInRecycleBin = true,
+                        ShowInSearchPage = true,
+                        ShowInFtpPage = true,
+                        ShowInZipPage = true,
+                    },
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupAscending)
+                    {
+                        IsToggle = true,
+                        IsVisible = true
+                    }.Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.GroupDescending)
+                    {
+                        IsToggle = true,
+                        IsVisible = true
+                    }.Build(),
+                },
+            },*/
+            new ContextMenuFlyoutItemViewModelBuilder(commands.RefreshItems)
+            {
+                IsVisible = !itemsSelected,
+            }.Build(),
+            new()
+            {
+                ItemType = ContextMenuFlyoutItemType.Separator,
+                ShowInFtpPage = true,
+                ShowInZipPage = true,
+                ShowItem = !itemsSelected
+            },
+            /*new()
+            {
+                OpacityIcon = new OpacityIconModel()
+                {
+                    OpacityIconStyle = commands.AddItem.Glyph.OpacityStyle
+                },
+                Text = commands.AddItem.Label,
+                Items = GetNewItemItems(commandsViewModel, currentInstanceViewModel.CanCreateFileInPage),
+                ShowItem = !itemsSelected,
+                ShowInFtpPage = true
+            },*/
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.FormatDrive).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.EmptyRecycleBin)
+            {
+                IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && !itemsSelected,
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.RestoreAllRecycleBin)
+            {
+                IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && !itemsSelected,
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.RestoreRecycleBin)
+            {
+                IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && itemsSelected,
+            }.Build(),*/
+            new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItem).Build(),
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItemWithApplicationPicker)
+            {
+                Tag = "OpenWith",
+            }.Build(),*/
+            new()
+            {
+                Text = "OpenWith".GetLocalized(),
+                OpacityIcon = new OpacityIconModel()
+                {
+                    OpacityIconStyle = "ColorIconOpenWith"
+                },
+                Tag = "OpenWithOverflow",
+                IsHidden = true,
+                CollapseLabel = true,
+                Items = new List<ContextMenuFlyoutItemViewModel>() {
+                    new()
+                    {
+                        Text = "Placeholder",
+                        ShowInSearchPage = true,
                     }
-                },*/
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.RotateLeft)
-                {
-                    IsVisible = !currentInstanceViewModel.IsPageTypeRecycleBin
-                                && !currentInstanceViewModel.IsPageTypeZipFolder
-                                && (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false)
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.RotateRight)
-                {
-                    IsVisible = !currentInstanceViewModel.IsPageTypeRecycleBin
-                                && !currentInstanceViewModel.IsPageTypeZipFolder
-                                && (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false)
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAdmin).Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAnotherUser).Build(),*/
-                new()
-                {
-                    ItemType = ContextMenuFlyoutItemType.Separator,
-                    ShowInSearchPage = true,
-                    ShowInFtpPage = true,
-                    ShowInZipPage = true,
-                    ShowItem = itemsSelected
                 },
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.CutItem)
+                ShowInSearchPage = true,
+                ShowItem = itemsSelected && showOpenItemWith
+            },
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenFileLocation).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.OpenInNewWindowItemAction).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewPaneAction).Build(),*/
+            /*new()
+            {
+                Text = "BaseLayoutItemContextFlyoutSetAs/Text".GetLocalizedResource(),
+                ShowItem = itemsSelected && (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false),
+                ShowInSearchPage = true,
+                Items = new List<ContextMenuFlyoutItemViewModel>
                 {
-                    IsPrimary = true,
-                }.Build(),*/
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.CopyItem)
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsWallpaperBackground).Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsLockscreenBackground).Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsSlideshowBackground).Build(),
+                }
+            },*/
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.RotateLeft)
+            {
+                IsVisible = !currentInstanceViewModel.IsPageTypeRecycleBin
+                            && !currentInstanceViewModel.IsPageTypeZipFolder
+                            && (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false)
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.RotateRight)
+            {
+                IsVisible = !currentInstanceViewModel.IsPageTypeRecycleBin
+                            && !currentInstanceViewModel.IsPageTypeZipFolder
+                            && (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false)
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAdmin).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAnotherUser).Build(),*/
+            new()
+            {
+                ItemType = ContextMenuFlyoutItemType.Separator,
+                ShowInSearchPage = true,
+                ShowInFtpPage = true,
+                ShowInZipPage = true,
+                ShowItem = itemsSelected
+            },
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.CutItem)
+            {
+                IsPrimary = true,
+            }.Build(),*/
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.CopyItem)
+            {
+                IsPrimary = true,
+            }.Build(),*/
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.PasteItemToSelection)
+            {
+                IsPrimary = true,
+                IsVisible = true,
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.CopyPath)
+            {
+                IsVisible = itemsSelected && !currentInstanceViewModel.IsPageTypeRecycleBin,
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.CreateFolderWithSelection)
+            {
+                IsVisible = itemsSelected
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.CreateShortcut)
+            {
+                IsVisible = itemsSelected && (!selectedItems.FirstOrDefault()?.IsShortcut ?? false)
+                    && !currentInstanceViewModel.IsPageTypeRecycleBin,
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.Rename)
+            {
+                IsPrimary = true,
+                IsVisible = itemsSelected
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.ShareItem)
+            {
+                IsPrimary = true
+            }.Build(),*/
+            new ContextMenuFlyoutItemViewModelBuilder(commands.DeleteItem)
+            {
+                IsVisible = itemsSelected,
+                IsPrimary = true,
+            }.Build(),
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
+            {
+                IsPrimary = true,
+                IsVisible = commands.OpenProperties.IsExecutable
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.OpenParentFolder).Build(),*/
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.PinItemToFavorites)
+            {
+                IsVisible = commands.PinItemToFavorites.IsExecutable && userSettingsService.GeneralSettingsService.ShowFavoritesSection,
+            }.Build(),*/
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.UnpinItemFromFavorites)
+            {
+                IsVisible = commands.UnpinItemFromFavorites.IsExecutable && userSettingsService.GeneralSettingsService.ShowFavoritesSection,
+            }.Build(),*/
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.PinToStart)
+            {
+                IsVisible = selectedItems.All(x => !x.IsShortcut && (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable) && !x.IsArchive && !x.IsItemPinnedToStart),
+                ShowOnShift = true,
+            }.Build(),*/
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.UnpinFromStart)
+            {
+                IsVisible = selectedItems.All(x => !x.IsShortcut && (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable) && !x.IsArchive && x.IsItemPinnedToStart),
+                ShowOnShift = true,
+            }.Build(),*/
+            /*new ContextMenuFlyoutItemViewModel
+            {
+                Text = "Compress".GetLocalizedResource(),
+                ShowInSearchPage = true,
+                OpacityIcon = new OpacityIconModel()
                 {
-                    IsPrimary = true,
-                }.Build(),*/
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.PasteItemToSelection)
-                {
-                    IsPrimary = true,
-                    IsVisible = true,
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.CopyPath)
-                {
-                    IsVisible = itemsSelected && !currentInstanceViewModel.IsPageTypeRecycleBin,
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.CreateFolderWithSelection)
-                {
-                    IsVisible = itemsSelected
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.CreateShortcut)
-                {
-                    IsVisible = itemsSelected && (!selectedItems.FirstOrDefault()?.IsShortcut ?? false)
-                        && !currentInstanceViewModel.IsPageTypeRecycleBin,
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.Rename)
-                {
-                    IsPrimary = true,
-                    IsVisible = itemsSelected
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.ShareItem)
-                {
-                    IsPrimary = true
-                }.Build(),*/
-                new ContextMenuFlyoutItemViewModelBuilder(commands.DeleteItem)
-                {
-                    IsVisible = itemsSelected,
-                    IsPrimary = true,
-                }.Build(),
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
-                {
-                    IsPrimary = true,
-                    IsVisible = commands.OpenProperties.IsExecutable
-                }.Build(),
-                new ContextMenuFlyoutItemViewModelBuilder(commands.OpenParentFolder).Build(),*/
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.PinItemToFavorites)
-                {
-                    IsVisible = commands.PinItemToFavorites.IsExecutable && userSettingsService.GeneralSettingsService.ShowFavoritesSection,
-                }.Build(),*/
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.UnpinItemFromFavorites)
-                {
-                    IsVisible = commands.UnpinItemFromFavorites.IsExecutable && userSettingsService.GeneralSettingsService.ShowFavoritesSection,
-                }.Build(),*/
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.PinToStart)
-                {
-                    IsVisible = selectedItems.All(x => !x.IsShortcut && (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable) && !x.IsArchive && !x.IsItemPinnedToStart),
-                    ShowOnShift = true,
-                }.Build(),*/
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.UnpinFromStart)
-                {
-                    IsVisible = selectedItems.All(x => !x.IsShortcut && (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable) && !x.IsArchive && x.IsItemPinnedToStart),
-                    ShowOnShift = true,
-                }.Build(),*/
-                /*new ContextMenuFlyoutItemViewModel
-                {
-                    Text = "Compress".GetLocalizedResource(),
-                    ShowInSearchPage = true,
-                    OpacityIcon = new OpacityIconModel()
-                    {
-                        OpacityIconStyle = "ColorIconZip",
-                    },
-                    Items = new List<ContextMenuFlyoutItemViewModel>
-                    {
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.CompressIntoArchive).Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.CompressIntoZip).Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.CompressIntoSevenZip).Build(),
-                    },
-                    ShowItem = itemsSelected && CompressHelper.CanCompress(selectedItems)
-                },*/
-                /*new ContextMenuFlyoutItemViewModel
-                {
-                    Text = "Extract".GetLocalizedResource(),
-                    ShowInSearchPage = true,
-                    OpacityIcon = new OpacityIconModel()
-                    {
-                        OpacityIconStyle = "ColorIconZip",
-                    },
-                    Items = new List<ContextMenuFlyoutItemViewModel>
-                    {
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchive).Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchiveHereSmart).Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchiveHere).Build(),
-                        new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchiveToChildFolder).Build(),
-                    },
-                    ShowItem = CompressHelper.CanDecompress(selectedItems)
-                },*/
-                /*new()
-                {
-                    Text = "SendTo".GetLocalizedResource(),
-                    Tag = "SendTo",
-                    CollapseLabel = true,
-                    ShowInSearchPage = true,
-                    ShowItem = itemsSelected && userSettingsService.GeneralSettingsService.ShowSendToMenu
-                },*/
-                /*new()
-                {
-                    Text = "SendTo".GetLocalizedResource(),
-                    Tag = "SendToOverflow",
-                    IsHidden = true,
-                    CollapseLabel = true,
-                    Items = new List<ContextMenuFlyoutItemViewModel>() {
-                        new()
-                        {
-                            Text = "Placeholder",
-                            ShowInSearchPage = true,
-                        }
-                    },
-                    ShowInSearchPage = true,
-                    ShowItem = itemsSelected && userSettingsService.GeneralSettingsService.ShowSendToMenu
-                },*/
-                /*new()
-                {
-                    Text = "TurnOnBitLocker".GetLocalizedResource(),
-                    Tag = "TurnOnBitLockerPlaceholder",
-                    CollapseLabel = true,
-                    IsEnabled = false,
-                    ShowItem = isDriveRoot
-                },*/
-                /*new()
-                {
-                    Text = "ManageBitLocker".GetLocalizedResource(),
-                    Tag = "ManageBitLockerPlaceholder",
-                    CollapseLabel = true,
-                    ShowItem = isDriveRoot,
-                    IsEnabled = false
-                },*/
-				// Shell extensions are not available on the FTP server or in the archive,
-				// but following items are intentionally added because icons in the context menu will not appear
-				// unless there is at least one menu item with an icon that is not an OpacityIcon. (#12943)
-				new()
-                {
-                    ItemType = ContextMenuFlyoutItemType.Separator,
-                    Tag = "OverflowSeparator",
-                    ShowInFtpPage = true,
-                    ShowInZipPage = true,
-                    ShowInRecycleBin = true,
-                    ShowInSearchPage = true,
+                    OpacityIconStyle = "ColorIconZip",
                 },
-                new()
+                Items = new List<ContextMenuFlyoutItemViewModel>
                 {
-                    Text = "Loading".GetLocalized(),
-                    Glyph = "\xE712",
-                    Items = new List<ContextMenuFlyoutItemViewModel>(),
-                    ID = "ItemOverflow",
-                    Tag = "ItemOverflow",
-                    ShowInFtpPage = true,
-                    ShowInZipPage = true,
-                    ShowInRecycleBin = true,
-                    ShowInSearchPage = true,
-                    IsEnabled = false
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.CompressIntoArchive).Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.CompressIntoZip).Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.CompressIntoSevenZip).Build(),
                 },
-            }.Where(x => x.ShowItem).ToList();
+                ShowItem = itemsSelected && CompressHelper.CanCompress(selectedItems)
+            },*/
+            /*new ContextMenuFlyoutItemViewModel
+            {
+                Text = "Extract".GetLocalizedResource(),
+                ShowInSearchPage = true,
+                OpacityIcon = new OpacityIconModel()
+                {
+                    OpacityIconStyle = "ColorIconZip",
+                },
+                Items = new List<ContextMenuFlyoutItemViewModel>
+                {
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchive).Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchiveHereSmart).Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchiveHere).Build(),
+                    new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchiveToChildFolder).Build(),
+                },
+                ShowItem = CompressHelper.CanDecompress(selectedItems)
+            },*/
+            /*new()
+            {
+                Text = "SendTo".GetLocalizedResource(),
+                Tag = "SendTo",
+                CollapseLabel = true,
+                ShowInSearchPage = true,
+                ShowItem = itemsSelected && userSettingsService.GeneralSettingsService.ShowSendToMenu
+            },*/
+            /*new()
+            {
+                Text = "SendTo".GetLocalizedResource(),
+                Tag = "SendToOverflow",
+                IsHidden = true,
+                CollapseLabel = true,
+                Items = new List<ContextMenuFlyoutItemViewModel>() {
+                    new()
+                    {
+                        Text = "Placeholder",
+                        ShowInSearchPage = true,
+                    }
+                },
+                ShowInSearchPage = true,
+                ShowItem = itemsSelected && userSettingsService.GeneralSettingsService.ShowSendToMenu
+            },*/
+            /*new()
+            {
+                Text = "TurnOnBitLocker".GetLocalizedResource(),
+                Tag = "TurnOnBitLockerPlaceholder",
+                CollapseLabel = true,
+                IsEnabled = false,
+                ShowItem = isDriveRoot
+            },*/
+            /*new()
+            {
+                Text = "ManageBitLocker".GetLocalizedResource(),
+                Tag = "ManageBitLockerPlaceholder",
+                CollapseLabel = true,
+                ShowItem = isDriveRoot,
+                IsEnabled = false
+            },*/
+			// Shell extensions are not available on the FTP server or in the archive,
+			// but following items are intentionally added because icons in the context menu will not appear
+			// unless there is at least one menu item with an icon that is not an OpacityIcon. (#12943)
+			new()
+            {
+                ItemType = ContextMenuFlyoutItemType.Separator,
+                Tag = "OverflowSeparator",
+                ShowInFtpPage = true,
+                ShowInZipPage = true,
+                ShowInRecycleBin = true,
+                ShowInSearchPage = true,
+            },
+            new()
+            {
+                Text = "Loading".GetLocalized(),
+                Glyph = "\xE712",
+                Items = new List<ContextMenuFlyoutItemViewModel>(),
+                ID = "ItemOverflow",
+                Tag = "ItemOverflow",
+                ShowInFtpPage = true,
+                ShowInZipPage = true,
+                ShowInRecycleBin = true,
+                ShowInSearchPage = true,
+                IsEnabled = false
+            },
+        }.Where(x => x.ShowItem).ToList();
 
         return list;
     }

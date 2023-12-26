@@ -14,7 +14,7 @@ namespace Files.App.Dialogs;
 
 public sealed partial class FileSystemOperationDialog : ContentDialog, IDialog<FileSystemDialogViewModel>
 {
-    private readonly FolderViewViewModel _folderViewModel;
+    private readonly FolderViewViewModel FolderViewViewModel;
 
     public FileSystemDialogViewModel ViewModel
     {
@@ -34,8 +34,8 @@ public sealed partial class FileSystemOperationDialog : ContentDialog, IDialog<F
     {
         InitializeComponent();
 
-        _folderViewModel = folderViewModel;
-        _folderViewModel.WidgetWindow.SizeChanged += Current_SizeChanged;
+        FolderViewViewModel = folderViewModel;
+        FolderViewViewModel.WidgetWindow.SizeChanged += Current_SizeChanged;
     }
 
     public async new Task<DialogResult> ShowAsync()
@@ -48,7 +48,7 @@ public sealed partial class FileSystemOperationDialog : ContentDialog, IDialog<F
     {
         if (Windows.Foundation.Metadata.ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            contentDialog.XamlRoot = _folderViewModel.WidgetWindow.Content.XamlRoot;
+            contentDialog.XamlRoot = FolderViewViewModel.WidgetWindow.Content.XamlRoot;
         }
 
         return contentDialog;
@@ -63,7 +63,7 @@ public sealed partial class FileSystemOperationDialog : ContentDialog, IDialog<F
     {
         if (ViewModel.FileSystemDialogMode.ConflictsExist)
         {
-            ContainerGrid.Width = _folderViewModel.WidgetWindow.Bounds.Width <= 700 ? _folderViewModel.WidgetWindow.Bounds.Width - 50 : 650;
+            ContainerGrid.Width = FolderViewViewModel.WidgetWindow.Bounds.Width <= 700 ? FolderViewViewModel.WidgetWindow.Bounds.Width - 50 : 650;
         }
     }
 
@@ -100,7 +100,7 @@ public sealed partial class FileSystemOperationDialog : ContentDialog, IDialog<F
             ViewModel.SaveConflictResolveOption();
         }
 
-        _folderViewModel.WidgetWindow.SizeChanged -= Current_SizeChanged;
+        FolderViewViewModel.WidgetWindow.SizeChanged -= Current_SizeChanged;
         ViewModel.CancelCts();
     }
 

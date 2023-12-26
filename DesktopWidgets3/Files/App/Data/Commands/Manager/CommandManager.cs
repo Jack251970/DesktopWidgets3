@@ -14,7 +14,7 @@ namespace Files.App.Data.Commands;
 
 internal class CommandManager : ICommandManager
 {
-    private FolderViewViewModel _viewModel;
+    private FolderViewViewModel _viewModel = null!;
     public void Initialize(FolderViewViewModel viewModel)
     {
         _viewModel = viewModel;
@@ -27,7 +27,7 @@ internal class CommandManager : ICommandManager
         // UpdateHotKeys();
     }
 
-    private IImmutableDictionary<CommandCodes, IRichCommand> commands;
+    private IImmutableDictionary<CommandCodes, IRichCommand> commands = null!;
     // private IImmutableDictionary<HotKey, IRichCommand> hotKeys = new Dictionary<HotKey, IRichCommand>().ToImmutableDictionary();
 
     public IRichCommand this[CommandCodes code] => commands.TryGetValue(code, out var command) ? command : None;
@@ -82,7 +82,7 @@ internal class CommandManager : ICommandManager
     /*public IRichCommand EmptyRecycleBin => commands[CommandCodes.EmptyRecycleBin];
     public IRichCommand RestoreRecycleBin => commands[CommandCodes.RestoreRecycleBin];
     public IRichCommand RestoreAllRecycleBin => commands[CommandCodes.RestoreAllRecycleBin];*/
-    /*public IRichCommand RefreshItems => commands[CommandCodes.RefreshItems];*/
+    public IRichCommand RefreshItems => commands[CommandCodes.RefreshItems];
     //public IRichCommand Rename => commands[CommandCodes.Rename];
     /*public IRichCommand CreateShortcut => commands[CommandCodes.CreateShortcut];
     public IRichCommand CreateShortcutFromDialog => commands[CommandCodes.CreateShortcutFromDialog];
@@ -242,7 +242,7 @@ internal class CommandManager : ICommandManager
         /*[CommandCodes.EmptyRecycleBin] = new EmptyRecycleBinAction(),
         [CommandCodes.RestoreRecycleBin] = new RestoreRecycleBinAction(),
         [CommandCodes.RestoreAllRecycleBin] = new RestoreAllRecycleBinAction(),*/
-        /*[CommandCodes.RefreshItems] = new RefreshItemsAction(),*/
+        [CommandCodes.RefreshItems] = new RefreshItemsAction(viewModel),
         //[CommandCodes.Rename] = new RenameAction(),
         /*[CommandCodes.CreateShortcut] = new CreateShortcutAction(),
         [CommandCodes.CreateShortcutFromDialog] = new CreateShortcutFromDialogAction(),

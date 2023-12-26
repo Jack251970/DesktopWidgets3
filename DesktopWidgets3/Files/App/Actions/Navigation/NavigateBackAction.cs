@@ -11,7 +11,7 @@ namespace Files.App.Actions;
 
 internal class NavigateBackAction : ObservableObject, IAction
 {
-    private readonly FolderViewViewModel _viewModel;
+    private readonly FolderViewViewModel context;
 
     public string Label
         => "Back".GetLocalized();
@@ -35,26 +35,26 @@ internal class NavigateBackAction : ObservableObject, IAction
         => new("\uE72B");
 
     public bool IsExecutable
-        => _viewModel.CanGoBack && _viewModel.AllowNavigation;
+        => context.CanGoBack && context.AllowNavigation;
 
     public NavigateBackAction(FolderViewViewModel viewModel)
     {
-        _viewModel = viewModel;
+        context = viewModel;
 
-        viewModel.PropertyChanged += ViewModel_PropertyChanged;
+        viewModel.PropertyChanged += Context_PropertyChanged;
     }
 
     public Task ExecuteAsync()
     {
-        _viewModel.Back_Click();
+        context.Back_Click();
 
         return Task.CompletedTask;
     }
 
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(_viewModel.CanGoBack) ||
-            e.PropertyName is nameof(_viewModel.AllowNavigation))
+        if (e.PropertyName is nameof(context.CanGoBack) ||
+            e.PropertyName is nameof(context.AllowNavigation))
         {
             OnPropertyChanged(nameof(IsExecutable));
         }

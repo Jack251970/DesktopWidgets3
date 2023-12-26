@@ -176,6 +176,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                     selectedItemsPropertiesViewModel: SelectedItemsPropertiesViewModel,
                     commandsViewModel: CommandsViewModel,
                     shiftPressed: shiftPressed,
+                    itemViewModel: null,
                     viewModel: ViewModel,
                     commands: CommandsManager);
                 var (primaryElements, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(items);

@@ -90,7 +90,7 @@ public sealed partial class FolderViewPage : BaseLayoutPage
 
     private async void NavigateRefresh_Click(object sender, RoutedEventArgs e)
     {
-        await ViewModel.Refresh_Click();
+        await ViewModel.CommandManager.RefreshItems.ExecuteAsync();
     }
 
     #endregion
