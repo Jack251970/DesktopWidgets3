@@ -126,9 +126,10 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
             var assoc = await NativeWinApiHelper.GetFileAssociationAsync(filePath);
             if (assoc is not null)
             {
-                return assoc == Package.Current.Id.FamilyName
+                // TODO: Provide zip file association
+                return /*assoc == Package.Current.Id.FamilyName
                     || assoc.EndsWith("Files.App\\Files.exe", StringComparison.OrdinalIgnoreCase)
-                    || assoc.Equals(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"), StringComparison.OrdinalIgnoreCase);
+                    || */assoc.Equals(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"), StringComparison.OrdinalIgnoreCase);
             }
             return true;
         }
