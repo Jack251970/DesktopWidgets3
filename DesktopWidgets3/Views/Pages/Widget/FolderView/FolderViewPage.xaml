@@ -31,26 +31,25 @@
             DoubleTapped="Toolbar_DoubleTapped">
             <StackPanel Canvas.ZIndex="1" HorizontalAlignment="Center" Orientation="Horizontal">
                 <Grid
-                    Height="28"
-                    Width="28"
+                    Height="24"
+                    Width="24"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Stretch">
                     <Image
-                        Width="20" 
-                        Height="20"
-                        HorizontalAlignment="Center"
+                        Width="18" 
+                        Height="18"
+                        HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Source="{x:Bind ViewModel.ImageSource, Mode=OneWay}"/>
                     <ProgressRing
-                        Width="20" 
-                        Height="20"
-                        HorizontalAlignment="Center"
+                        Width="18" 
+                        Height="18"
+                        HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         IsActive="{x:Bind ViewModel.LoadingIndicatorStatus, Mode=OneWay}" />
                 </Grid>
                 
                 <TextBlock
-                    Height="28"
                     Text="{x:Bind ViewModel.Header, Mode=OneWay}"
                     VerticalAlignment="Center"
                     Style="{ThemeResource BodyTextStyle}"
