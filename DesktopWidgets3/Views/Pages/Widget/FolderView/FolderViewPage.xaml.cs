@@ -8,10 +8,12 @@ using Microsoft.UI.Xaml.Media;
 using CommunityToolkit.WinUI.UI;
 using Files.App.Views.Layouts;
 using Microsoft.UI.Input;
-using Windows.System;
 using Windows.UI.Core;
 using DesktopWidgets3.Helpers;
 using Files.App;
+using Microsoft.UI.Dispatching;
+using Windows.System;
+using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
 
 namespace DesktopWidgets3.Views.Pages.Widget;
 
@@ -26,6 +28,8 @@ public sealed partial class FolderViewPage : BaseLayoutPage
     {
         ViewModel = App.GetService<FolderViewViewModel>();
         InitializeComponent();
+
+        toolbarTapTimer = DispatcherQueue.CreateTimer();
 
         Initialize();
         ViewModel.NavigatedTo += (s, e) => RefreshIconSize();
@@ -83,6 +87,8 @@ public sealed partial class FolderViewPage : BaseLayoutPage
 
     #region widget tool bar
 
+    private readonly DispatcherQueueTimer toolbarTapTimer;
+
     private void Toolbar_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
         ViewModel.ShowRightTappedMenu(sender, e);
@@ -90,22 +96,44 @@ public sealed partial class FolderViewPage : BaseLayoutPage
 
     private void Toolbar_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
+        if (toolbarTapTimer.IsRunning)
+        {
+            return;
+        }
+
         FileSystemHelper.OpenInExplorer(ViewModel.CurFolderPath);
     }
 
     private async void NavigateBack_Click(object sender, RoutedEventArgs e)
     {
         await ViewModel.CommandManager.NavigateBack.ExecuteAsync();
+        StartToolbarTappedTimer();
     }
 
     private async void NavigateUp_Click(object sender, RoutedEventArgs e)
     {
         await ViewModel.CommandManager.NavigateUp.ExecuteAsync();
+        StartToolbarTappedTimer();
     }
 
     private async void NavigateRefresh_Click(object sender, RoutedEventArgs e)
     {
         await ViewModel.CommandManager.RefreshItems.ExecuteAsync();
+        StartToolbarTappedTimer();
+    }
+
+    private void StartToolbarTappedTimer()
+    {
+        if (toolbarTapTimer.IsRunning)
+        {
+            toolbarTapTimer.Stop();
+        }
+
+        toolbarTapTimer.Debounce(() =>
+        {
+            toolbarTapTimer.Stop();
+        },
+        TimeSpan.FromMilliseconds(300));
     }
 
     #endregion
