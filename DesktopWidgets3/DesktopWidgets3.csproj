@@ -100,6 +100,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
+    <ProjectReference Include="..\DesktopWidgets3.Forms\DesktopWidgets3.Forms\DesktopWidgets3.Forms.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

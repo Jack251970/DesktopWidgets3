@@ -9,7 +9,6 @@ using Files.Shared.Helpers;
 using SevenZip;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
@@ -44,7 +43,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 
     public StorageCredential Credentials { get; set; } = new();
 
-    public Func<IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback
+    public Func<IPasswordProtectedItem, Task<StorageCredential>>? PasswordRequestedCallback
     {
         get; set;
     }
@@ -126,8 +125,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
             var assoc = await NativeWinApiHelper.GetFileAssociationAsync(filePath);
             if (assoc is not null)
             {
-                // TODO: Provide zip file association
-                return /*assoc == Package.Current.Id.FamilyName
+                return /*assoc == InfoHelper.GetFamilyName()
                     || assoc.EndsWith("Files.App\\Files.exe", StringComparison.OrdinalIgnoreCase)
                     || */assoc.Equals(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"), StringComparison.OrdinalIgnoreCase);
             }

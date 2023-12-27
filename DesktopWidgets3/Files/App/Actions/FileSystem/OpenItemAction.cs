@@ -7,7 +7,6 @@ using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Commands;
 using Files.App.Helpers;
-using Windows.Storage;
 
 namespace Files.App.Actions;
 
@@ -44,7 +43,12 @@ internal class OpenItemAction : ObservableObject, IAction
 
     public Task ExecuteAsync()
     {
-        return NavigationHelpers.OpenSelectedItemsAsync(context);
+        if (context is not null)
+        {
+            return NavigationHelpers.OpenSelectedItemsAsync(context);
+        }
+
+        return Task.CompletedTask;
     }
 
     private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)

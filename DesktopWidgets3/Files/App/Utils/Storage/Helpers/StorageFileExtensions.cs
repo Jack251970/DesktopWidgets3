@@ -239,4 +239,31 @@ public static class StorageFileExtensions
             Path = path
         };
     }
+
+    public static async Task<List<IStorageItem>> ToStandardStorageItemsAsync(this IEnumerable<IStorageItem> items)
+    {
+        var newItems = new List<IStorageItem>();
+        foreach (var item in items)
+        {
+            try
+            {
+                if (item is null)
+                {
+                }
+                else if (item.IsOfType(StorageItemTypes.File))
+                {
+                    newItems.Add(await item.AsBaseStorageFile()!.ToStorageFileAsync());
+                }
+                else if (item.IsOfType(StorageItemTypes.Folder))
+                {
+                    newItems.Add(await item.AsBaseStorageFolder()!.ToStorageFolderAsync());
+                }
+            }
+            catch (NotSupportedException)
+            {
+                // Ignore items that can't be converted
+            }
+        }
+        return newItems;
+    }
 }

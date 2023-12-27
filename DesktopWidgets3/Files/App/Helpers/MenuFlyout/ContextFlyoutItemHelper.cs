@@ -408,20 +408,20 @@ public static class ContextFlyoutItemHelper
                 ShowInZipPage = true,
                 ShowItem = itemsSelected
             },
-            /*new ContextMenuFlyoutItemViewModelBuilder(commands.CutItem)
+            new ContextMenuFlyoutItemViewModelBuilder(commands.CutItem)
             {
                 IsPrimary = true,
-            }.Build(),*/
-            /*new ContextMenuFlyoutItemViewModelBuilder(commands.CopyItem)
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.CopyItem)
             {
                 IsPrimary = true,
-            }.Build(),*/
-            /*new ContextMenuFlyoutItemViewModelBuilder(commands.PasteItemToSelection)
+            }.Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.PasteItemToSelection)
             {
                 IsPrimary = true,
                 IsVisible = true,
             }.Build(),
-            new ContextMenuFlyoutItemViewModelBuilder(commands.CopyPath)
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.CopyPath)
             {
                 IsVisible = itemsSelected && !currentInstanceViewModel.IsPageTypeRecycleBin,
             }.Build(),
@@ -433,7 +433,7 @@ public static class ContextFlyoutItemHelper
             {
                 IsVisible = itemsSelected && (!selectedItems.FirstOrDefault()?.IsShortcut ?? false)
                     && !currentInstanceViewModel.IsPageTypeRecycleBin,
-            }.Build(),
+            }.Build(),*/
             new ContextMenuFlyoutItemViewModelBuilder(commands.Rename)
             {
                 IsPrimary = true,
@@ -442,7 +442,7 @@ public static class ContextFlyoutItemHelper
             new ContextMenuFlyoutItemViewModelBuilder(commands.ShareItem)
             {
                 IsPrimary = true
-            }.Build(),*/
+            }.Build(),
             new ContextMenuFlyoutItemViewModelBuilder(commands.DeleteItem)
             {
                 IsVisible = itemsSelected,

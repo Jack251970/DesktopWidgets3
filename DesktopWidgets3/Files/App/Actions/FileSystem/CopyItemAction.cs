@@ -1,60 +1,56 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Commands;
+using Files.App.Helpers;
+using System.ComponentModel;
 
 namespace Files.App.Actions;
 
-internal class RefreshItemsAction : ObservableObject, IAction
+internal class CopyItemAction : ObservableObject, IAction
 {
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Refresh".GetLocalized();
+        => "Copy".GetLocalized();
 
     public string Description
-        => "RefreshItemsDescription".GetLocalized();
+        => "CopyItemDescription".GetLocalized();
 
     public RichGlyph Glyph
-        => new("\uE72C");
+        => new(opacityStyle: "ColorIconCopy");
 
     /*public HotKey HotKey
-        => new(Keys.R, KeyModifiers.Ctrl);
-
-    public HotKey SecondHotKey
-        => new(Keys.F5);*/
+        => new(Keys.C, KeyModifiers.Ctrl);*/
 
     public bool IsExecutable
-        => context.CanRefresh;
+        => context.HasSelection;
 
-    public RefreshItemsAction(FolderViewViewModel viewModel)
+    public CopyItemAction(FolderViewViewModel viewModel)
     {
         context = viewModel;
 
         context.PropertyChanged += Context_PropertyChanged;
     }
 
-    public async Task ExecuteAsync()
+    public Task ExecuteAsync()
     {
-        if (context is null)
+        if (context is not null)
         {
-            return;
+            return UIFileSystemHelpers.CopyItemAsync(context);
         }
 
-        await context.Refresh_Click();
+        return Task.CompletedTask;
     }
 
     private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        switch (e.PropertyName)
+        if (e.PropertyName is nameof(context.HasSelection))
         {
-            case nameof(context.CanRefresh):
-                OnPropertyChanged(nameof(IsExecutable));
-                break;
+            OnPropertyChanged(nameof(IsExecutable));
         }
     }
 }

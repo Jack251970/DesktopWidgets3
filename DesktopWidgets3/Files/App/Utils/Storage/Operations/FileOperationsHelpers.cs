@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using DesktopWidgets3.Forms;
 using Files.App.Helpers;
 using Files.App.Utils.Shell;
 using Files.App.Utils.StatusCenter;
@@ -12,6 +13,7 @@ using Files.Shared.Extensions;
 using Files.Shared.Helpers;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace Files.App.Utils.Storage;
 
@@ -399,6 +401,20 @@ public class FileOperationsHelpers
             progressHandler.RemoveOperation(operationID);
 
             return (await renameTcs.Task, shellOperationResult);
+        });
+    }
+
+    #endregion
+
+    #region copy item
+
+    public static Task SetClipboard(string[] filesToCopy, DataPackageOperation operation)
+    {
+        return Win32API.StartSTATask(() =>
+        {
+            var dropEffect = new MemoryStream(operation == DataPackageOperation.Copy ?
+                new byte[] { 5, 0, 0, 0 } : new byte[] { 2, 0, 0, 0 });
+            FormsHelper.SetClipboard(filesToCopy, dropEffect);
         });
     }
 

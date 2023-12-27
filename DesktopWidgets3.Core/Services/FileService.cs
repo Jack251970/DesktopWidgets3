@@ -1,7 +1,5 @@
 ﻿using System.Text;
-
 using Newtonsoft.Json;
-
 using DesktopWidgets3.Core.Contracts.Services;
 
 namespace DesktopWidgets3.Core.Services;

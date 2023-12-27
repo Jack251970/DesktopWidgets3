@@ -98,10 +98,10 @@ public interface ICommandManager : IEnumerable<IRichCommand>
         get;
     }*/
 
-    /*IRichCommand ShareItem
+    IRichCommand ShareItem
     {
         get;
-    }*/
+    }
     
     /*IRichCommand EmptyRecycleBin
     {
@@ -121,10 +121,10 @@ public interface ICommandManager : IEnumerable<IRichCommand>
         get;
     }
 
-    /*IRichCommand Rename
+    IRichCommand Rename
     {
         get;
-    }*/
+    }
 
     /*IRichCommand CreateShortcut
     {
@@ -178,10 +178,10 @@ public interface ICommandManager : IEnumerable<IRichCommand>
         get;
     }*/
 
-    /*IRichCommand CopyItem
+    IRichCommand CopyItem
     {
         get;
-    }*/
+    }
     /*IRichCommand CopyPath
     {
         get;
@@ -191,19 +191,19 @@ public interface ICommandManager : IEnumerable<IRichCommand>
         get;
     }*/
 
-    /*IRichCommand CutItem
+    IRichCommand CutItem
     {
         get;
-    }*/
+    }
 
-    /*IRichCommand PasteItem
+    IRichCommand PasteItem
     {
         get;
-    }*/
-    /*IRichCommand PasteItemToSelection
+    }
+    IRichCommand PasteItemToSelection
     {
         get;
-    }*/
+    }
 
     IRichCommand DeleteItem
     {

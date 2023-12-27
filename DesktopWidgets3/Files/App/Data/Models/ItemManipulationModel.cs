@@ -25,11 +25,11 @@ public class ItemManipulationModel
 
     public event EventHandler<ListedItem>? ScrollIntoViewInvoked;
 
-    /*public event EventHandler? SetDragModeForItemsInvoked;
+    /*public event EventHandler? SetDragModeForItemsInvoked;*/
 
     public event EventHandler? RefreshItemsOpacityInvoked;
 
-    public event EventHandler? RefreshItemThumbnailInvoked;
+    /*public event EventHandler? RefreshItemThumbnailInvoked;
 
     public event EventHandler? RefreshItemsThumbnailInvoked;*/
 
@@ -109,14 +109,14 @@ public class ItemManipulationModel
     /*public void SetDragModeForItems()
     {
         SetDragModeForItemsInvoked?.Invoke(this, EventArgs.Empty);
-    }
+    }*/
 
     public void RefreshItemsOpacity()
     {
         RefreshItemsOpacityInvoked?.Invoke(this, EventArgs.Empty);
     }
 
-    public void RefreshItemThumbnail()
+    /*public void RefreshItemThumbnail()
     {
         RefreshItemThumbnailInvoked?.Invoke(this, EventArgs.Empty);
     }

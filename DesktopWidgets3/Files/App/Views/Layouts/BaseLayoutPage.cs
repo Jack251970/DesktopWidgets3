@@ -655,7 +655,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
     #endregion
 
-    #region Container Content
+    #region Container content
 
     protected void FileList_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
     {

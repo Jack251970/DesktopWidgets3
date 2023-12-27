@@ -11,17 +11,13 @@ namespace Files.App.Actions;
 
 internal abstract class BaseDeleteAction : BaseUIAction
 {
-    private readonly FolderViewViewModel context;
-
     public override bool IsExecutable =>
         context.HasSelection &&
         !context.IsRenamingItem &&
         context.CanShowDialog;
 
-    public BaseDeleteAction(FolderViewViewModel viewModel)
+    public BaseDeleteAction(FolderViewViewModel viewModel) : base(viewModel)
     {
-        context = viewModel;
-
         context.PropertyChanged += Context_PropertyChanged;
     }
 

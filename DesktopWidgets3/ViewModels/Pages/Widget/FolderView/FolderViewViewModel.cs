@@ -560,7 +560,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private async Task UpdateToolbarIconInfoAsync()
     {
-        ImageIconSource iconSource = null!;
+        ImageIconSource? iconSource = null;
 
         if (!string.IsNullOrEmpty(CurFolderPath))
         {
@@ -573,10 +573,18 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         }
     }
 
-    private async Task<ImageIconSource> GetToolbarIconInfoAsync(string currentPath)
+    private async Task<ImageIconSource?> GetToolbarIconInfoAsync(string currentPath)
     {
         // TODO: Fix bug when quitting app
-        var iconSource = new ImageIconSource();
+        ImageIconSource iconSource = null!;
+        try
+        {
+            iconSource = new ImageIconSource();
+        }
+        catch (Exception)
+        {
+            return null;
+        }
 
         if (currentPath.Equals(Constants.UserEnvironmentPaths.DesktopPath, StringComparison.OrdinalIgnoreCase))
         {
@@ -806,6 +814,19 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     public void NavigateWithArguments(NavigationArguments navArgs)
     {
         _widgetManagerService.WidgetNavigateTo(WidgetWindow.WidgetType, WidgetWindow.IndexTag, navArgs);
+    }
+
+    #endregion
+
+    #region item sources
+
+    public IEnumerable<ListedItem>? GetAllItems()
+    {
+        var items = CollectionViewSource.IsSourceGrouped
+            ? (CollectionViewSource.Source as BulkConcurrentObservableCollection<GroupedCollection<ListedItem>>)?.SelectMany(g => g) // add all items from each group to the new list
+            : CollectionViewSource.Source as IEnumerable<ListedItem>;
+
+        return items ?? new List<ListedItem>();
     }
 
     #endregion

@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 
 namespace Files.App.Actions;
 
@@ -10,16 +12,22 @@ namespace Files.App.Actions;
 /// </summary>
 internal abstract class BaseUIAction : ObservableObject
 {
-    public virtual bool IsExecutable => true; //=> UIHelpers.CanShowDialog;
+    protected readonly FolderViewViewModel context;
 
-    public BaseUIAction()
+    public virtual bool IsExecutable => context.CanShowDialog;
+
+    public BaseUIAction(FolderViewViewModel viewModel)
     {
-        //UIHelpers.PropertyChanged += UIHelpers_PropertyChanged;
+        context = viewModel;
+
+        context.PropertyChanged += UIHelpers_PropertyChanged;
     }
 
-    /*private void UIHelpers_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void UIHelpers_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(UIHelpers.CanShowDialog))
+        if (e.PropertyName is nameof(context.CanShowDialog))
+        {
             OnPropertyChanged(nameof(IsExecutable));
-    }*/
+        }
+    }
 }

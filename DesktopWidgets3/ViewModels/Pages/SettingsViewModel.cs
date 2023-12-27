@@ -19,7 +19,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     private bool _batterySaver;
     [ObservableProperty]
-    private string _version = $"v{AssemblyHelper.GetVersion()}";
+    private string _version = $"v{InfoHelper.GetVersion()}";
 
     #endregion
 

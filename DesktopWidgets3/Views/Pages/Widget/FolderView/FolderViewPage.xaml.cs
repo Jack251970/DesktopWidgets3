@@ -11,6 +11,7 @@ using Microsoft.UI.Input;
 using Windows.System;
 using Windows.UI.Core;
 using DesktopWidgets3.Helpers;
+using Files.App;
 
 namespace DesktopWidgets3.Views.Pages.Widget;
 
@@ -57,11 +58,25 @@ public sealed partial class FolderViewPage : BaseLayoutPage
                 FileList!.SelectedItems.Add(e);
             }
         };
+        ItemManipulationModel.RefreshItemsOpacityInvoked += (s, e) =>
+        {
+            var items = ViewModel.GetAllItems();
+            if (items is null)
+            {
+                return;
+            }
+
+            foreach (var listedItem in items)
+            {
+                listedItem.Opacity = listedItem.IsHiddenItem ? Constants.UI.DimItemOpacity : 1;
+            }
+        };
         ItemManipulationModel.ScrollIntoViewInvoked += (s, e) =>
         {
             FileList.ScrollIntoView(e);
             //ContentScroller?.ChangeView(null, FileList.Items.IndexOf(e) * Convert.ToInt32(Application.Current.Resources["ListItemHeight"]), null, true); // Scroll to index * item height
         };
+
     }
 
     #endregion

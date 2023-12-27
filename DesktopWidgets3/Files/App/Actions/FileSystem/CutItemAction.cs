@@ -9,52 +9,44 @@ using Files.App.Data.Commands;
 
 namespace Files.App.Actions;
 
-internal class RefreshItemsAction : ObservableObject, IAction
+internal class CutItemAction : ObservableObject, IAction
 {
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Refresh".GetLocalized();
+        => "Cut".GetLocalized();
 
     public string Description
-        => "RefreshItemsDescription".GetLocalized();
+        => "CutItemDescription".GetLocalized();
 
     public RichGlyph Glyph
-        => new("\uE72C");
+        => new(opacityStyle: "ColorIconCut");
 
     /*public HotKey HotKey
-        => new(Keys.R, KeyModifiers.Ctrl);
-
-    public HotKey SecondHotKey
-        => new(Keys.F5);*/
+        => new(Keys.X, KeyModifiers.Ctrl);*/
 
     public bool IsExecutable
-        => context.CanRefresh;
+        => context.HasSelection;
 
-    public RefreshItemsAction(FolderViewViewModel viewModel)
+    public CutItemAction(FolderViewViewModel viewModel)
     {
         context = viewModel;
 
         context.PropertyChanged += Context_PropertyChanged;
     }
 
-    public async Task ExecuteAsync()
+    public Task ExecuteAsync()
     {
-        if (context is null)
-        {
-            return;
-        }
-
-        await context.Refresh_Click();
+        return /*context is not null
+            ? UIFilesystemHelpers.CutItemAsync(context)
+            : */Task.CompletedTask;
     }
 
     private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        switch (e.PropertyName)
+        if (e.PropertyName is nameof(context.HasSelection))
         {
-            case nameof(context.CanRefresh):
-                OnPropertyChanged(nameof(IsExecutable));
-                break;
+            OnPropertyChanged(nameof(IsExecutable));
         }
     }
 }
