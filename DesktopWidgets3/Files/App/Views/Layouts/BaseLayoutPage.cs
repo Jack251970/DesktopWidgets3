@@ -30,7 +30,6 @@ using Vanara.PInvoke;
 using System.Runtime.InteropServices.ComTypes;
 using Files.App.Utils.RecycleBin;
 using Windows.Storage;
-using LibGit2Sharp;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.DragDrop;
 using Files.App.Utils.Storage.Helpers;
