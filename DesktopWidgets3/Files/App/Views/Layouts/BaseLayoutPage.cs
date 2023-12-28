@@ -28,6 +28,12 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Vanara.PInvoke;
 using System.Runtime.InteropServices.ComTypes;
+using Files.App.Utils.RecycleBin;
+using Windows.Storage;
+using LibGit2Sharp;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.DataTransfer.DragDrop;
+using Files.App.Utils.Storage.Helpers;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
 using VanaraWindowsShell = Vanara.Windows.Shell;
 
@@ -114,6 +120,9 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
     // For more information, visit https://github.com/microsoft/terminal/issues/12017#issuecomment-1004129669
     public bool AllowItemDrag
         => !ElevationHelpers.IsAppRunAsAdmin();
+    private readonly DragEventHandler? Item_DragOverEventHandler;
+    private ListedItem? dragOverItem = null;
+    private readonly DispatcherQueueTimer dragOverTimer;
 
     #endregion
 
@@ -138,6 +147,8 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
     public BaseLayoutPage()
     {
         tapDebounceTimer = DispatcherQueue.CreateTimer();
+        dragOverTimer = DispatcherQueue.CreateTimer();
+        Item_DragOverEventHandler = new DragEventHandler(Item_DragOver);
     }
 
     #region Item context menu
@@ -145,10 +156,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
     private void InitilizeItemContextFlyout()
     {
         ViewModel.NavigatedTo += (s, e) => {
-            ItemContextMenuFlyout.Opening -= ItemContextFlyout_Opening;
             ItemContextMenuFlyout.Opening += ItemContextFlyout_Opening;
-
-            BaseContextMenuFlyout.Opening -= BaseContextFlyout_Opening;
             BaseContextMenuFlyout.Opening += BaseContextFlyout_Opening;
         };
         ViewModel.NavigatedFrom += (s, e) => { 
@@ -772,7 +780,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
         if (inRecycleQueue)
         {
-            //UninitializeDrag(container);
+            UninitializeDrag(container);
         }
         else
         {
@@ -824,7 +832,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
         }
         else
         {
-            //InitializeDrag(container, listedItem);
+            InitializeDrag(container, listedItem);
 
             if (!listedItem.ItemPropertiesInitialized)
             {
@@ -832,9 +840,9 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                 args.RegisterUpdateCallback(callbackPhase, async (s, c) =>
                 {
                     await ViewModel.FileSystemViewModel.LoadExtendedItemPropertiesAsync(listedItem, IconSize);
-                    /*if (ViewModel.ItemViewModel.EnabledGitProperties is not GitProperties.None && listedItem is GitItem gitItem)
+                    /*if (ViewModel.FileSystemViewModel.EnabledGitProperties is not GitProperties.None && listedItem is GitItem gitItem)
                     {
-                        await ViewModel.ItemViewModel.LoadGitPropertiesAsync(gitItem);
+                        await ViewModel.FileSystemViewModel.LoadGitPropertiesAsync(gitItem);
                     }*/
                 });
             }
@@ -847,7 +855,8 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
     protected void FileList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
     {
-        try
+        // TODO: Fix bug.
+        /*try
         {
             var shellItemList = SafetyExtensions.IgnoreExceptions(() => e.Items.OfType<ListedItem>().Select(x => new VanaraWindowsShell.ShellItem(x.ItemPath)).ToArray());
             if (shellItemList?[0].FileSystemPath is not null && !InstanceViewModel.IsPageTypeSearchResults)
@@ -872,7 +881,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
         catch (Exception)
         {
             e.Cancel = true;
-        }
+        }*/
     }
 
     protected void ItemsLayout_DragOver(object sender, DragEventArgs e)
@@ -883,6 +892,162 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
     protected void ItemsLayout_Drop(object sender, DragEventArgs e)
     {
         CommandsViewModel?.DropCommand?.Execute(e);
+    }
+
+    protected void InitializeDrag(UIElement container, ListedItem item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        UninitializeDrag(container);
+        if ((item.PrimaryItemAttribute == StorageItemTypes.Folder && !RecycleBinHelpers.IsPathUnderRecycleBin(item.ItemPath))
+            || item.IsExecutable
+            || item.IsPythonFile)
+        {
+            container.AllowDrop = true;
+            container.AddHandler(DragOverEvent, Item_DragOverEventHandler, true);
+            container.DragLeave += Item_DragLeave;
+            container.Drop += Item_Drop;
+        }
+    }
+
+    protected void UninitializeDrag(UIElement element)
+    {
+        element.AllowDrop = false;
+        element.RemoveHandler(DragOverEvent, Item_DragOverEventHandler);
+        element.DragLeave -= Item_DragLeave;
+        element.Drop -= Item_Drop;
+    }
+
+    private void Item_DragLeave(object sender, DragEventArgs e)
+    {
+        var item = GetItemFromElement(sender);
+
+        // Reset dragged over item
+        if (item == dragOverItem)
+        {
+            dragOverItem = null;
+        }
+    }
+
+    private async void Item_DragOver(object sender, DragEventArgs e)
+    {
+        var item = GetItemFromElement(sender);
+        if (item is null)
+        {
+            return;
+        }
+
+        DragOperationDeferral? deferral = null;
+
+        try
+        {
+            deferral = e.GetDeferral();
+
+            if (FileSystemHelpers.HasDraggedStorageItems(e.DataView))
+            {
+                e.Handled = true;
+
+                var draggedItems = await FileSystemHelpers.GetDraggedStorageItems(e.DataView);
+
+                if (draggedItems.Any(draggedItem => draggedItem.Path == item.ItemPath))
+                {
+                    e.AcceptedOperation = DataPackageOperation.None;
+                }
+                else if (!draggedItems.Any())
+                {
+                    e.AcceptedOperation = DataPackageOperation.None;
+                }
+                else
+                {
+                    e.DragUIOverride.IsCaptionVisible = true;
+
+                    if (item.IsExecutable || item.IsPythonFile)
+                    {
+                        e.DragUIOverride.Caption = $"{"OpenWith".GetLocalized()} {item.Name}";
+                        e.AcceptedOperation = DataPackageOperation.Link;
+                    }
+                    // Items from the same drive as this folder are dragged into this folder, so we move the items instead of copy
+                    else if (e.Modifiers.HasFlag(DragDropModifiers.Alt) || e.Modifiers.HasFlag(DragDropModifiers.Control | DragDropModifiers.Shift))
+                    {
+                        e.DragUIOverride.Caption = string.Format("LinkToFolderCaptionText".GetLocalized(), item.Name);
+                        e.AcceptedOperation = DataPackageOperation.Link;
+                    }
+                    else if (e.Modifiers.HasFlag(DragDropModifiers.Control))
+                    {
+                        e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), item.Name);
+                        e.AcceptedOperation = DataPackageOperation.Copy;
+                    }
+                    else if (e.Modifiers.HasFlag(DragDropModifiers.Shift))
+                    {
+                        e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), item.Name);
+                        e.AcceptedOperation = DataPackageOperation.Move;
+                    }
+                    else if (draggedItems.Any(x => x.Item is ZipStorageFile || x.Item is ZipStorageFolder)
+                        || ZipStorageFolder.IsZipPath(item.ItemPath))
+                    {
+                        e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), item.Name);
+                        e.AcceptedOperation = DataPackageOperation.Copy;
+                    }
+                    else if (draggedItems.AreItemsInSameDrive(item.ItemPath))
+                    {
+                        e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), item.Name);
+                        e.AcceptedOperation = DataPackageOperation.Move;
+                    }
+                    else
+                    {
+                        e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), item.Name);
+                        e.AcceptedOperation = DataPackageOperation.Copy;
+                    }
+                }
+            }
+
+            if (dragOverItem != item)
+            {
+                dragOverItem = item;
+                dragOverTimer.Stop();
+
+                if (e.AcceptedOperation != DataPackageOperation.None)
+                {
+                    dragOverTimer.Debounce(() =>
+                    {
+                        if (dragOverItem is not null && !dragOverItem.IsExecutable)
+                        {
+                            dragOverTimer.Stop();
+                            ItemManipulationModel.SetSelectedItem(dragOverItem);
+                            dragOverItem = null;
+                            // TODO: Add command to open item
+                            //Commands.OpenItem.ExecuteAsync();
+                        }
+                    },
+                    TimeSpan.FromMilliseconds(1000), false);
+                }
+            }
+        }
+        finally
+        {
+            deferral?.Complete();
+        }
+    }
+
+    private async void Item_Drop(object sender, DragEventArgs e)
+    {
+        var deferral = e.GetDeferral();
+
+        e.Handled = true;
+
+        // Reset dragged over item
+        dragOverItem = null;
+
+        var item = GetItemFromElement(sender);
+        if (item is not null)
+        {
+            await ViewModel!.FileSystemHelpers.PerformOperationTypeAsync(ViewModel, e.AcceptedOperation, e.DataView, (item as ShortcutItem)?.TargetPath ?? item.ItemPath, false, item.IsExecutable, item.IsPythonFile);
+        }
+
+        deferral.Complete();
     }
 
     #endregion
