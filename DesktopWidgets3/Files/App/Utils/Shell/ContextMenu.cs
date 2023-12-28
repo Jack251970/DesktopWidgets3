@@ -357,7 +357,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
         {
             if (disposing)
             {
-                // TODO: Dispose managed state (managed objects)
+                // FILESTODO: Dispose managed state (managed objects)
                 if (Items is not null)
                 {
                     foreach (var si in Items)
@@ -369,7 +369,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
                 }
             }
 
-            // TODO: Free unmanaged resources (unmanaged objects) and override a finalizer below
+            // FILESTODO: Free unmanaged resources (unmanaged objects) and override a finalizer below
             if (_hMenu is not null)
             {
                 User32.DestroyMenu(_hMenu);

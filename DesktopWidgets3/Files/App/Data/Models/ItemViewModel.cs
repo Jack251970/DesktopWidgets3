@@ -148,7 +148,6 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             return;
         }
 
-        // TODO: Add more than just the folder icon
         DefaultIcons.Clear();
 
         using StorageItemThumbnail icon = await FilesystemTasks.Wrap(() => StorageItemIconHelpers.GetIconForItemType(size, IconPersistenceOptions.Persist));
