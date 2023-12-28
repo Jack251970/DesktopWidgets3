@@ -855,8 +855,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
     protected void FileList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
     {
-        // TODO: Fix bug.
-        /*try
+        try
         {
             var shellItemList = SafetyExtensions.IgnoreExceptions(() => e.Items.OfType<ListedItem>().Select(x => new VanaraWindowsShell.ShellItem(x.ItemPath)).ToArray());
             if (shellItemList?[0].FileSystemPath is not null && !InstanceViewModel.IsPageTypeSearchResults)
@@ -864,12 +863,13 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                 var iddo = shellItemList[0].Parent.GetChildrenUIObjects<IDataObject>(HWND.NULL, shellItemList);
                 shellItemList.ForEach(x => x.Dispose());
 
-                var format = System.Windows.Forms.DataFormats.GetFormat("Shell IDList Array");
+                // TODO: Fix bug of System.Windows.Forms.DataFormats.
+                /*var format = System.Windows.Forms.DataFormats.GetFormat("Shell IDList Array");
                 if (iddo.TryGetData<byte[]>((uint)format.Id, out var data))
                 {
                     var mem = new MemoryStream(data).AsRandomAccessStream();
                     e.Data.SetData(format.Name, mem);
-                }
+                }*/
             }
             else
             {
@@ -881,7 +881,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
         catch (Exception)
         {
             e.Cancel = true;
-        }*/
+        }
     }
 
     protected void ItemsLayout_DragOver(object sender, DragEventArgs e)
