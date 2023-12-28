@@ -118,7 +118,7 @@
             </Grid>
         </Grid>
 
-        <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
+        <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1" ContextFlyout="{x:Bind BaseContextMenuFlyout}">
             <ListView
 				x:Name="FileList"
 				Padding="0,0,0,12"

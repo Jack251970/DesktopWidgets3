@@ -24,7 +24,6 @@ using Files.App.ViewModels.Layouts;
 using CommunityToolkit.WinUI.UI;
 using Files.App.Utils.Storage;
 using Files.App.Extensions;
-using Microsoft.UI.Xaml.Data;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
@@ -89,6 +88,12 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
         AreOpenCloseAnimationsEnabled = false,
         Placement = FlyoutPlacementMode.Right,
     };
+    public CommandBarFlyout BaseContextMenuFlyout { get; set; } = new()
+    {
+        AlwaysExpanded = true,
+        AreOpenCloseAnimationsEnabled = false,
+        Placement = FlyoutPlacementMode.Right,
+    };
     private CancellationTokenSource? shellContextMenuItemCancellationToken;
     private bool shiftPressed;
 
@@ -128,11 +133,15 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
     private void InitilizeItemContextFlyout()
     {
         ViewModel.NavigatedTo += (s, e) => {
-            ItemContextMenuFlyout.Opened -= ItemContextFlyout_Opening;
-            ItemContextMenuFlyout.Opened += ItemContextFlyout_Opening;
+            ItemContextMenuFlyout.Opening -= ItemContextFlyout_Opening;
+            ItemContextMenuFlyout.Opening += ItemContextFlyout_Opening;
+
+            BaseContextMenuFlyout.Opening -= BaseContextFlyout_Opening;
+            BaseContextMenuFlyout.Opening += BaseContextFlyout_Opening;
         };
         ViewModel.NavigatedFrom += (s, e) => { 
-            ItemContextMenuFlyout.Opened -= ItemContextFlyout_Opening; 
+            ItemContextMenuFlyout.Opening -= ItemContextFlyout_Opening;
+            BaseContextMenuFlyout.Opening -= BaseContextFlyout_Opening;
         };
     }
 
@@ -142,6 +151,12 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
         try
         {
+            if (ViewModel is null)
+            {
+                // Wait a little longer to ensure the view model is loaded
+                await Task.Delay(10);
+            }
+
             // Workaround for item sometimes not getting selected
             if (!IsItemSelected && sender is CommandBarFlyout { Target: ListViewItem { Content: ListedItem li } })
             {
@@ -207,6 +222,81 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                 {
                     RemoveOverflow(ItemContextMenuFlyout);
                 }
+            }
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+
+    private async void BaseContextFlyout_Opening(object? sender, object e)
+    {
+        LastOpenedFlyout = sender as CommandBarFlyout;
+
+        try
+        {
+            if (ViewModel is null)
+            {
+                // Wait a little longer to ensure the view model is loaded
+                await Task.Delay(10);
+            }
+
+            ItemManipulationModel.ClearSelection();
+
+            // Reset menu max height
+            if (BaseContextMenuFlyout.GetValue(ContextMenuExtensions.ItemsControlProperty) is ItemsControl itc)
+            {
+                itc.MaxHeight = Constants.UI.ContextMenuMaxHeight;
+            }
+
+            shellContextMenuItemCancellationToken?.Cancel();
+            shellContextMenuItemCancellationToken = new CancellationTokenSource();
+
+            shiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
+            var items = ContextFlyoutItemHelper.GetItemContextCommandsWithoutShellItems(
+                currentInstanceViewModel: InstanceViewModel, 
+                selectedItems: new List<ListedItem> { ViewModel.ItemViewModel.CurrentFolder! },
+                selectedItemsPropertiesViewModel: null,
+                commandsViewModel: CommandsViewModel, 
+                shiftPressed: shiftPressed, 
+                itemViewModel: ViewModel.ItemViewModel,
+                viewModel: ViewModel,
+                commands: CommandsManager);
+
+            BaseContextMenuFlyout.PrimaryCommands.Clear();
+            BaseContextMenuFlyout.SecondaryCommands.Clear();
+
+            var (primaryElements, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(items);
+
+            AddCloseHandler(BaseContextMenuFlyout, primaryElements, secondaryElements);
+
+            primaryElements.ForEach(BaseContextMenuFlyout.PrimaryCommands.Add);
+
+            // Set menu min width
+            secondaryElements.OfType<FrameworkElement>().ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth);
+            secondaryElements.ForEach(BaseContextMenuFlyout.SecondaryCommands.Add);
+
+            if (!InstanceViewModel!.IsPageTypeSearchResults && !InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
+            {
+                var shellMenuItems = await ContextFlyoutItemHelper.GetItemContextShellCommandsAsync(
+                    workingDir: ViewModel.ItemViewModel.WorkingDirectory, 
+                    selectedItems: new List<ListedItem>(), 
+                    shiftPressed: shiftPressed, 
+                    showOpenMenu: false, 
+                    shellContextMenuItemCancellationToken.Token);
+                if (shellMenuItems.Any())
+                {
+                    await AddShellMenuItemsAsync(ViewModel, shellMenuItems, BaseContextMenuFlyout, shiftPressed);
+                }
+                else
+                {
+                    RemoveOverflow(BaseContextMenuFlyout);
+                }
+            }
+            else
+            {
+                RemoveOverflow(BaseContextMenuFlyout);
             }
         }
         catch (Exception)
