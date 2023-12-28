@@ -192,7 +192,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                     commandsViewModel: CommandsViewModel,
                     shiftPressed: shiftPressed,
                     itemViewModel: null,
-                    viewModel: ViewModel,
+                    viewModel: ViewModel!,
                     commands: CommandsManager);
                 var (primaryElements, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(items);
                 AddCloseHandler(ItemContextMenuFlyout, primaryElements, secondaryElements);
@@ -204,7 +204,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                 if (!InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
                 {
                     var shellMenuItems = await ContextFlyoutItemHelper.GetItemContextShellCommandsAsync(
-                        workingDir: ViewModel.ItemViewModel.WorkingDirectory,
+                        workingDir: ViewModel!.ItemViewModel.WorkingDirectory,
                         selectedItems: SelectedItems,
                         shiftPressed: shiftPressed,
                         showOpenMenu: false,
@@ -256,7 +256,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
             shiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
             var items = ContextFlyoutItemHelper.GetItemContextCommandsWithoutShellItems(
                 currentInstanceViewModel: InstanceViewModel, 
-                selectedItems: new List<ListedItem> { ViewModel.ItemViewModel.CurrentFolder! },
+                selectedItems: new List<ListedItem> { ViewModel!.ItemViewModel.CurrentFolder! },
                 selectedItemsPropertiesViewModel: null,
                 commandsViewModel: CommandsViewModel, 
                 shiftPressed: shiftPressed, 
