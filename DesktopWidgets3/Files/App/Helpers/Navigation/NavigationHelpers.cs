@@ -58,6 +58,19 @@ public static class NavigationHelpers
         }
     }
 
+    public static async Task OpenItemsWithExecutableAsync(FolderViewViewModel viewModel, IEnumerable<IStorageItemWithPath> items, string executablePath)
+    {
+        // Don't open files and folders inside recycle bin
+        if (viewModel.ItemViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
+            viewModel is null)
+        {
+            return;
+        }
+
+        var arguments = string.Join(" ", items.Select(item => $"\"{item.Path}\""));
+        await Win32Helpers.InvokeWin32ComponentAsync(executablePath, viewModel, arguments);
+    }
+
     public static async Task<bool> OpenPath(FolderViewViewModel viewModel, string path, FilesystemItemType? itemType = null, bool openSilent = false, bool openViaApplicationPicker = false, IEnumerable<string>? selectItems = null, string? args = default, bool forceOpenInExplore = false)
     {
         var previousDir = viewModel.ItemViewModel.WorkingDirectory;

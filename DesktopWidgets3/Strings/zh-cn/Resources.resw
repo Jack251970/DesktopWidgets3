@@ -691,4 +691,43 @@
   <data name="PasteItemToSelectionDescription" xml:space="preserve">
     <value>将剪贴板中的项目粘贴到所选文件夹</value>
   </data>
+  <data name="ShortcutCreateNewSuffix" xml:space="preserve">
+    <value>{0} - 快捷方式</value>
+  </data>
+  <data name="CannotCreateShortcutDialogTitle" xml:space="preserve">
+    <value>在此位置创建快捷方式需要管理员权限</value>
+  </data>
+  <data name="CannotCreateShortcutDialogMessage" xml:space="preserve">
+    <value>要改为在桌面上创建快捷方式吗？</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>创建</value>
+  </data>
+  <data name="ErrorDialogThisActionCannotBeDone" xml:space="preserve">
+    <value>操作无法完成</value>
+  </data>
+  <data name="ErrorDialogUnsupportedOperation" xml:space="preserve">
+    <value>不支持请求的操作</value>
+  </data>
+  <data name="ErrorDialogTheDestinationFolder" xml:space="preserve">
+    <value>目标文件夹</value>
+  </data>
+  <data name="ErrorDialogIsASubfolder" xml:space="preserve">
+    <value>是源文件夹的子文件夹</value>
+  </data>
+  <data name="FilePropertiesCannotBeCopied" xml:space="preserve">
+    <value>这些文件的某些属性不能复制到新位置</value>
+  </data>
+  <data name="CopyFileWithoutProperties" xml:space="preserve">
+    <value>确定要复制这些文件而不同时复制其属性吗？</value>
+  </data>
+  <data name="FilePropertiesCannotBeMoved" xml:space="preserve">
+    <value>这些文件的某些属性不能移动到新位置</value>
+  </data>
+  <data name="MoveFileWithoutProperties" xml:space="preserve">
+    <value>确定要移动这些文件而不同时移动其属性吗？</value>
+  </data>
+  <data name="ErrorDialogUnsupportedMoveOperation" xml:space="preserve">
+    <value>当前无法执行移动操作。要复制此项目吗？</value>
+  </data>
 </root>

@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
-using Files.App.Utils;
-using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.App.Storage.FtpStorage;
 using Files.App.Utils.Storage.Helpers;
@@ -16,6 +14,7 @@ using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using IO = System.IO;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 
 namespace Files.App.Utils.Storage;
 
@@ -63,7 +62,11 @@ public sealed class FtpStorageFile : BaseStorageFile, IPasswordProtectedItem
         get; set;
     }
 
-    public Func<IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback
+    public FolderViewViewModel ViewModel
+    {
+        get; set;
+    }
+    public Func<FolderViewViewModel, IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback
     {
         get; set;
     }

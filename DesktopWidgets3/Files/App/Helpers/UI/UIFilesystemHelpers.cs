@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.Concurrent;
+using System.Net;
+using System.Text;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Utils;
@@ -9,8 +11,11 @@ using Files.App.Utils.Storage;
 using Files.App.Utils.Storage.Helpers;
 using Files.Core.Data.Enums;
 using Files.Shared.Extensions;
+using Microsoft.UI.Dispatching;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
+using Files.App.Extensions;
+using Files.Core.ViewModels.Dialogs;
 
 namespace Files.App.Helpers;
 
@@ -235,6 +240,199 @@ public static class UIFileSystemHelpers
         {
             dataPackage = null;
         }
+    }
+
+    #endregion
+
+    #region Cut
+
+    public static async Task CutItemAsync(FolderViewViewModel viewModel)
+    {
+        var dataPackage = new DataPackage()
+        {
+            RequestedOperation = DataPackageOperation.Move
+        };
+        ConcurrentBag<IStorageItem> items = new();
+
+        if (viewModel.IsItemSelected)
+        {
+            // First, reset DataGrid Rows that may be in "cut" command mode
+            viewModel.ItemManipulationModel.RefreshItemsOpacity();
+
+            var itemsCount = viewModel.SelectedItems!.Count;
+
+            /*var banner = itemsCount > 50 ? StatusCenterHelper.AddCard_Prepare() : null;*/
+
+            try
+            {
+                /*if (banner is not null)
+                {
+                    banner.Progress.EnumerationCompleted = true;
+                    banner.Progress.ItemsCount = items.Count;
+                    banner.Progress.ReportStatus(FileSystemStatusCode.InProgress);
+                }*/
+
+                await viewModel.SelectedItems.ToList().ParallelForEachAsync(async listedItem =>
+                {
+                    /*if (banner is not null)
+                    {
+                        banner.Progress.AddProcessedItemsCount(1);
+                        banner.Progress.Report();
+                    }*/
+
+                    // FTP don't support cut, fallback to copy
+                    if (listedItem is not FtpItem)
+                    {
+                        _ = DesktopWidgets3.App.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+                        {
+                            // Dim opacities accordingly
+                            listedItem.Opacity = Constants.UI.DimItemOpacity;
+                        });
+                    }
+                    if (listedItem is FtpItem ftpItem)
+                    {
+                        if (ftpItem.PrimaryItemAttribute is StorageItemTypes.File or StorageItemTypes.Folder)
+                        {
+                            items.Add(await ftpItem.ToStorageItem());
+                        }
+                    }
+                    else if (listedItem.PrimaryItemAttribute == StorageItemTypes.File || listedItem is ZipItem)
+                    {
+                        var result = await viewModel.ItemViewModel.GetFileFromPathAsync(listedItem.ItemPath)
+                            .OnSuccess(t => items.Add(t));
+
+                        if (!result)
+                        {
+                            throw new IOException($"Failed to process {listedItem.ItemPath}.", (int)result.ErrorCode);
+                        }
+                    }
+                    else
+                    {
+                        var result = await viewModel.ItemViewModel.GetFolderFromPathAsync(listedItem.ItemPath)
+                            .OnSuccess(t => items.Add(t));
+
+                        if (!result)
+                        {
+                            throw new IOException($"Failed to process {listedItem.ItemPath}.", (int)result.ErrorCode);
+                        }
+                    }
+                }, 10, /*banner?.CancellationToken ?? */default);
+            }
+            catch (Exception ex)
+            {
+                if (ex.HResult == (int)FileSystemStatusCode.Unauthorized)
+                {
+                    var filePaths = viewModel.SelectedItems.Select(x => x.ItemPath).ToArray();
+
+                    await FileOperationsHelpers.SetClipboard(filePaths, DataPackageOperation.Move);
+
+                    /*_statusCenterViewModel.RemoveItem(banner);*/
+
+                    return;
+                }
+
+                viewModel.ItemManipulationModel.RefreshItemsOpacity();
+
+                /*_statusCenterViewModel.RemoveItem(banner);*/
+
+                return;
+            }
+
+            /*_statusCenterViewModel.RemoveItem(banner);*/
+        }
+
+        var onlyStandard = items.All(x => x is StorageFile || x is StorageFolder || x is SystemStorageFile || x is SystemStorageFolder);
+        if (onlyStandard)
+        {
+            items = new ConcurrentBag<IStorageItem>(await items.ToStandardStorageItemsAsync());
+        }
+
+        if (!items.Any())
+        {
+            return;
+        }
+
+        dataPackage.Properties.PackageFamilyName = InfoHelper.GetFamilyName();
+        dataPackage.SetStorageItems(items, false);
+        try
+        {
+            Clipboard.SetContent(dataPackage);
+        }
+        catch
+        {
+            dataPackage = null;
+        }
+    }
+
+    #endregion
+
+    #region Paste
+
+    public static async Task PasteItemAsync(string destinationPath, FolderViewViewModel viewModel)
+    {
+        var packageView = await FilesystemTasks.Wrap(() => Task.FromResult(Clipboard.GetContent()));
+        if (packageView && packageView.Result is not null)
+        {
+            await viewModel.FileSystemHelpers.PerformOperationTypeAsync(viewModel, packageView.Result.RequestedOperation, packageView, destinationPath, false);
+            viewModel.ItemManipulationModel.RefreshItemsOpacity();
+            await viewModel.RefreshIfNoWatcherExistsAsync();
+        }
+    }
+
+    #endregion
+
+    #region create shortcuts
+
+    public static async Task<bool> HandleShortcutCannotBeCreated(FolderViewViewModel viewModel, string shortcutName, string destinationPath)
+    {
+        var result = await DialogDisplayHelper.ShowDialogAsync
+        (
+            viewModel,
+            "CannotCreateShortcutDialogTitle".GetLocalized(),
+            "CannotCreateShortcutDialogMessage".GetLocalized(),
+            "Create".GetLocalized(),
+            "Cancel".GetLocalized()
+        );
+        if (!result)
+        {
+            return false;
+        }
+
+        var shortcutPath = Path.Combine(Constants.UserEnvironmentPaths.DesktopPath, shortcutName);
+
+        return await FileOperationsHelpers.CreateOrUpdateLinkAsync(shortcutPath, destinationPath);
+    }
+
+    #endregion
+
+    #region require password
+
+    public static async Task<StorageCredential> RequestPassword(FolderViewViewModel viewModel, IPasswordProtectedItem sender)
+    {
+        var path = ((IStorageItem)sender).Path;
+        var isFtp = FtpHelpers.IsFtpPath(path);
+
+        var credentialDialogViewModel = new CredentialDialogViewModel() { CanBeAnonymous = isFtp, PasswordOnly = !isFtp };
+        var dialogService = viewModel.DialogService;
+        var dialogResult = await DesktopWidgets3.App.DispatcherQueue.EnqueueOrInvokeAsync(() =>
+            dialogService.ShowDialogAsync(credentialDialogViewModel));
+
+        if (dialogResult != DialogResult.Primary || credentialDialogViewModel.IsAnonymous)
+        {
+            return new();
+        }
+
+        // Can't do more than that to mitigate immutability of strings. Perhaps convert DisposableArray to SecureString immediately?
+        var credentials = new StorageCredential(credentialDialogViewModel.UserName, Encoding.UTF8.GetString(credentialDialogViewModel.Password!));
+        credentialDialogViewModel.Password?.Dispose();
+
+        if (isFtp)
+        {
+            var host = FtpHelpers.GetFtpHost(path);
+            Storage.FtpStorage.FtpManager.Credentials[host] = new NetworkCredential(credentials.UserName, credentials.SecurePassword);
+        }
+
+        return credentials;
     }
 
     #endregion

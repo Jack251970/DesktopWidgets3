@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.Shared.Extensions;
@@ -43,7 +44,11 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 
     public StorageCredential Credentials { get; set; } = new();
 
-    public Func<IPasswordProtectedItem, Task<StorageCredential>>? PasswordRequestedCallback
+    public FolderViewViewModel ViewModel
+    {
+        get; set;
+    }
+    public Func<FolderViewViewModel, IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback
     {
         get; set;
     }

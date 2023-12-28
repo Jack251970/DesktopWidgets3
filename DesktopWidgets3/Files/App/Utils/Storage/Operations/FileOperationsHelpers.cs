@@ -355,7 +355,7 @@ public class FileOperationsHelpers
                 op.Options |= ShellFileOperations.OperationFlags.ShowElevationPrompt
                         | ShellFileOperations.OperationFlags.RequireElevation;
             }
-            op.OwnerWindow = (IntPtr)ownerHwnd;
+            op.OwnerWindow = new IntPtr(ownerHwnd);
             op.Options |= !overwriteOnRename ? ShellFileOperations.OperationFlags.RenameOnCollision : 0;
 
             if (!SafetyExtensions.IgnoreExceptions(() =>
@@ -408,14 +408,315 @@ public class FileOperationsHelpers
 
     #region copy item
 
+    public static Task<(bool, ShellOperationResult)> CopyItemAsync(string[] fileToCopyPath, string[] copyDestination, bool overwriteOnCopy, long ownerHwnd, bool asAdmin, IProgress<StatusCenterItemProgressModel> progress, string operationID = "")
+    {
+        operationID = string.IsNullOrEmpty(operationID) ? Guid.NewGuid().ToString() : operationID;
+
+        StatusCenterItemProgressModel fsProgress = new(
+            progress,
+            false,
+            FileSystemStatusCode.InProgress);
+
+        var cts = new CancellationTokenSource();
+        var sizeCalculator = new FileSizeCalculator(fileToCopyPath);
+        var sizeTask = sizeCalculator.ComputeSizeAsync(cts.Token);
+        sizeTask.ContinueWith(_ =>
+        {
+            fsProgress.TotalSize = sizeCalculator.Size;
+            fsProgress.ItemsCount = sizeCalculator.ItemsCount;
+            fsProgress.EnumerationCompleted = true;
+            fsProgress.Report();
+        });
+
+        fsProgress.Report();
+        progressHandler ??= new();
+
+        return Win32API.StartSTATask(async () =>
+        {
+            using var op = new ShellFileOperations2();
+
+            var shellOperationResult = new ShellOperationResult();
+
+            op.Options =
+                ShellFileOperations.OperationFlags.NoConfirmMkDir |
+                ShellFileOperations.OperationFlags.Silent |
+                ShellFileOperations.OperationFlags.NoErrorUI;
+
+            if (asAdmin)
+            {
+                op.Options |=
+                    ShellFileOperations.OperationFlags.ShowElevationPrompt |
+                    ShellFileOperations.OperationFlags.RequireElevation;
+            }
+
+            op.OwnerWindow = new IntPtr(ownerHwnd);
+
+            op.Options |=
+                !overwriteOnCopy
+                    ? ShellFileOperations.OperationFlags.PreserveFileExtensions | ShellFileOperations.OperationFlags.RenameOnCollision
+                    : ShellFileOperations.OperationFlags.NoConfirmation;
+
+            for (var i = 0; i < fileToCopyPath.Length; i++)
+            {
+                if (!SafetyExtensions.IgnoreExceptions(() =>
+                {
+                    using ShellItem shi = new(fileToCopyPath[i]);
+                    using ShellFolder shd = new(Path.GetDirectoryName(copyDestination[i]));
+
+                    // Performa copy operation
+                    op.QueueCopyOperation(shi, shd, Path.GetFileName(copyDestination[i]));
+                }))
+                {
+                    shellOperationResult.Items.Add(new ShellOperationItemResult()
+                    {
+                        Succeeded = false,
+                        Source = fileToCopyPath[i],
+                        Destination = copyDestination[i],
+                        HResult = -1
+                    });
+                }
+            }
+
+            progressHandler.OwnerWindow = op.OwnerWindow;
+            progressHandler.AddOperation(operationID);
+
+            var copyTcs = new TaskCompletionSource<bool>();
+
+            op.PreCopyItem += (s, e) =>
+            {
+                sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath);
+                fsProgress.FileName = e.SourceItem.Name;
+                fsProgress.Report();
+            };
+
+            op.PostCopyItem += (s, e) =>
+            {
+                if (!e.SourceItem.IsFolder)
+                {
+                    if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath, out _))
+                    {
+                        fsProgress.AddProcessedItemsCount(1);
+                    }
+                }
+
+                shellOperationResult.Items.Add(new ShellOperationItemResult()
+                {
+                    Succeeded = e.Result.Succeeded,
+                    Source = e.SourceItem.GetParsingPath(),
+                    Destination = e.DestFolder.GetParsingPath() is not null && !string.IsNullOrEmpty(e.Name) ? Path.Combine(e.DestFolder.GetParsingPath(), e.Name) : null!,
+                    HResult = (int)e.Result
+                });
+
+                /*UpdateFileTagsDb(e, "copy");*/
+            };
+
+            op.FinishOperations += (s, e)
+                => copyTcs.TrySetResult(e.Result.Succeeded);
+
+            op.UpdateProgress += (s, e) =>
+            {
+                // E_FAIL, stops operation
+                if (progressHandler.CheckCanceled(operationID))
+                {
+                    throw new Win32Exception(unchecked((int)0x80004005));
+                }
+
+                fsProgress.Report(e.ProgressPercentage);
+                progressHandler.UpdateOperation(operationID, e.ProgressPercentage);
+            };
+
+            try
+            {
+                op.PerformOperations();
+            }
+            catch
+            {
+                copyTcs.TrySetResult(false);
+            }
+
+            progressHandler.RemoveOperation(operationID);
+
+            cts.Cancel();
+
+            return (await copyTcs.Task, shellOperationResult);
+        });
+    }
+
     public static Task SetClipboard(string[] filesToCopy, DataPackageOperation operation)
     {
         return Win32API.StartSTATask(() =>
         {
             var dropEffect = new MemoryStream(operation == DataPackageOperation.Copy ?
                 new byte[] { 5, 0, 0, 0 } : new byte[] { 2, 0, 0, 0 });
-            FormsHelper.SetClipboard(filesToCopy, dropEffect);
+            FormsHelpers.SetClipboard(filesToCopy, dropEffect);
         });
+    }
+
+    #endregion
+
+    #region move item
+
+    public static Task<(bool, ShellOperationResult)> MoveItemAsync(string[] fileToMovePath, string[] moveDestination, bool overwriteOnMove, long ownerHwnd, bool asAdmin, IProgress<StatusCenterItemProgressModel> progress, string operationID = "")
+    {
+        operationID = string.IsNullOrEmpty(operationID) ? Guid.NewGuid().ToString() : operationID;
+
+        StatusCenterItemProgressModel fsProgress = new(
+            progress,
+            false,
+            FileSystemStatusCode.InProgress);
+
+        var cts = new CancellationTokenSource();
+        var sizeCalculator = new FileSizeCalculator(fileToMovePath);
+        var sizeTask = sizeCalculator.ComputeSizeAsync(cts.Token);
+        sizeTask.ContinueWith(_ =>
+        {
+            fsProgress.TotalSize = sizeCalculator.Size;
+            fsProgress.ItemsCount = sizeCalculator.ItemsCount;
+            fsProgress.EnumerationCompleted = true;
+            fsProgress.Report();
+        });
+
+        fsProgress.Report();
+        progressHandler ??= new();
+
+        return Win32API.StartSTATask(async () =>
+        {
+            using var op = new ShellFileOperations2();
+            var shellOperationResult = new ShellOperationResult();
+
+            op.Options =
+                ShellFileOperations.OperationFlags.NoConfirmMkDir |
+                ShellFileOperations.OperationFlags.Silent |
+                ShellFileOperations.OperationFlags.NoErrorUI;
+
+            if (asAdmin)
+            {
+                op.Options |=
+                    ShellFileOperations.OperationFlags.ShowElevationPrompt |
+                    ShellFileOperations.OperationFlags.RequireElevation;
+            }
+
+            op.OwnerWindow = new IntPtr(ownerHwnd);
+
+            op.Options |=
+                !overwriteOnMove
+                    ? ShellFileOperations.OperationFlags.PreserveFileExtensions | ShellFileOperations.OperationFlags.RenameOnCollision
+                    : ShellFileOperations.OperationFlags.NoConfirmation;
+
+            for (var i = 0; i < fileToMovePath.Length; i++)
+            {
+                if (!SafetyExtensions.IgnoreExceptions(() =>
+                {
+                    using ShellItem shi = new(fileToMovePath[i]);
+                    using ShellFolder shd = new(Path.GetDirectoryName(moveDestination[i]));
+
+                    op.QueueMoveOperation(shi, shd, Path.GetFileName(moveDestination[i]));
+                }))
+                {
+                    shellOperationResult.Items.Add(new ShellOperationItemResult()
+                    {
+                        Succeeded = false,
+                        Source = fileToMovePath[i],
+                        Destination = moveDestination[i],
+                        HResult = -1
+                    });
+                }
+            }
+
+            progressHandler.OwnerWindow = op.OwnerWindow;
+            progressHandler.AddOperation(operationID);
+
+            var moveTcs = new TaskCompletionSource<bool>();
+
+            op.PreMoveItem += (s, e) =>
+            {
+                sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath);
+                fsProgress.FileName = e.SourceItem.Name;
+                fsProgress.Report();
+            };
+
+            op.PostMoveItem += (s, e) =>
+            {
+                if (!e.SourceItem.IsFolder)
+                {
+                    if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath, out _))
+                    {
+                        fsProgress.AddProcessedItemsCount(1);
+                    }
+                }
+
+                shellOperationResult.Items.Add(new ShellOperationItemResult()
+                {
+                    Succeeded = e.Result.Succeeded,
+                    Source = e.SourceItem.GetParsingPath(),
+                    Destination = e.DestFolder.GetParsingPath() is not null && !string.IsNullOrEmpty(e.Name) ? Path.Combine(e.DestFolder.GetParsingPath(), e.Name) : null!,
+                    HResult = (int)e.Result
+                });
+            };
+
+            op.FinishOperations += (s, e)
+                => moveTcs.TrySetResult(e.Result.Succeeded);
+
+            op.UpdateProgress += (s, e) =>
+            {
+                // E_FAIL, stops operation
+                if (progressHandler.CheckCanceled(operationID))
+                {
+                    throw new Win32Exception(unchecked((int)0x80004005));
+                }
+
+                fsProgress.Report(e.ProgressPercentage);
+                progressHandler.UpdateOperation(operationID, e.ProgressPercentage);
+            };
+
+            try
+            {
+                op.PerformOperations();
+            }
+            catch
+            {
+                moveTcs.TrySetResult(false);
+            }
+
+            progressHandler.RemoveOperation(operationID);
+
+            cts.Cancel();
+
+            return (await moveTcs.Task, shellOperationResult);
+        });
+    }
+
+    #endregion
+
+    #region create shortcut
+
+    public static Task<bool> CreateOrUpdateLinkAsync(string linkSavePath, string targetPath, string arguments = "", string workingDirectory = "", bool runAsAdmin = false)
+    {
+        try
+        {
+            if (FileExtensionHelpers.IsShortcutFile(linkSavePath))
+            {
+                using var newLink = new ShellLink(targetPath, arguments, workingDirectory);
+                newLink.RunAsAdministrator = runAsAdmin;
+                newLink.SaveAs(linkSavePath); // Overwrite if exists
+                return Task.FromResult(true);
+            }
+            else if (FileExtensionHelpers.IsWebLinkFile(linkSavePath))
+            {
+                return Win32API.StartSTATask(() =>
+                {
+                    var ipf = new Url.IUniformResourceLocator();
+                    ipf.SetUrl(targetPath, Url.IURL_SETURL_FLAGS.IURL_SETURL_FL_GUESS_PROTOCOL);
+                    (ipf as System.Runtime.InteropServices.ComTypes.IPersistFile)!.Save(linkSavePath, false); // Overwrite if exists
+                    return true;
+                });
+            }
+        }
+        catch (Exception)
+        {
+        }
+
+        return Task.FromResult(false);
     }
 
     #endregion
@@ -560,7 +861,9 @@ public class FileOperationsHelpers
             {
                 operationsCompletedEvent?.Dispose();
                 if (taskbar is not null)
+                {
                     Marshal.ReleaseComObject(taskbar);
+                }
             }
         }
     }

@@ -19,9 +19,9 @@ public class ItemManipulationModel
 
     /*public event EventHandler<ListedItem>? RemoveSelectedItemInvoked;
 
-    public event EventHandler? FocusSelectedItemsInvoked;
+    public event EventHandler? FocusSelectedItemsInvoked;*/
 
-    public event EventHandler? StartRenameItemInvoked;*/
+    public event EventHandler? StartRenameItemInvoked;
 
     public event EventHandler<ListedItem>? ScrollIntoViewInvoked;
 
@@ -94,12 +94,12 @@ public class ItemManipulationModel
     /*public void FocusSelectedItems()
     {
         FocusSelectedItemsInvoked?.Invoke(this, EventArgs.Empty);
-    }
+    }*/
 
     public void StartRenameItem()
     {
         StartRenameItemInvoked?.Invoke(this, EventArgs.Empty);
-    }*/
+    }
 
     public void ScrollIntoView(ListedItem item)
     {

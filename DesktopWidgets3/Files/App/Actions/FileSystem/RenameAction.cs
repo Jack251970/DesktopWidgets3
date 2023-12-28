@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Commands;
+using Files.App.Data.Contexts;
 
 namespace Files.App.Actions;
 
@@ -39,7 +40,7 @@ internal class RenameAction : ObservableObject, IAction
 
     public Task ExecuteAsync()
     {
-        //context.ItemManipulationModel.StartRenameItem();
+        context.ItemManipulationModel.StartRenameItem();
 
         return Task.CompletedTask;
     }
@@ -51,19 +52,19 @@ internal class RenameAction : ObservableObject, IAction
 
     private bool IsPageTypeValid()
     {
-        return true;
-            /*context.PageType != ContentPageTypes.None &&
+        return
+            context.PageType != ContentPageTypes.None &&
             context.PageType != ContentPageTypes.Home &&
             context.PageType != ContentPageTypes.RecycleBin &&
-            context.PageType != ContentPageTypes.ZipFolder;*/
+            context.PageType != ContentPageTypes.ZipFolder;
     }
 
     private void Context_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
         {
-            /*case nameof(IContentPageContext.ShellPage):
-            case nameof(context.PageType):*/
+            /*case nameof(IContentPageContext.ShellPage):*/
+            case nameof(context.PageType):
             case nameof(context.HasSelection):
             case nameof(context.SelectedItems):
                 OnPropertyChanged(nameof(IsExecutable));

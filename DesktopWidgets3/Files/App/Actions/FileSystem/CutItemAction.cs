@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Commands;
+using Files.App.Helpers;
 
 namespace Files.App.Actions;
 
@@ -37,9 +38,9 @@ internal class CutItemAction : ObservableObject, IAction
 
     public Task ExecuteAsync()
     {
-        return /*context is not null
-            ? UIFilesystemHelpers.CutItemAsync(context)
-            : */Task.CompletedTask;
+        return context is not null
+            ? UIFileSystemHelpers.CutItemAsync(context)
+            : Task.CompletedTask;
     }
 
     private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)

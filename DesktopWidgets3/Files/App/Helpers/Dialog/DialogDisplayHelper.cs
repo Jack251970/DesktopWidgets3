@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Dialogs;
 using Files.App.ViewModels.Dialogs;
@@ -29,8 +30,13 @@ internal class DialogDisplayHelper
     /// The (optional) secondary button text.
     /// If not set, it won't be presented to the user at all.
     /// </param>
-    public static async Task<bool> ShowDialogAsync(FolderViewViewModel viewModel, string title, string message, string primaryText = "OK", string secondaryText = null!)
+    public static async Task<bool> ShowDialogAsync(FolderViewViewModel viewModel, string title, string message, string primaryText = null!, string secondaryText = null!)
     {
+        if (string.IsNullOrEmpty(primaryText))
+        {
+            primaryText = "OK".GetLocalized();
+        }
+
         var dialog = new DynamicDialog(new DynamicDialogViewModel()
         {
             TitleText = title,

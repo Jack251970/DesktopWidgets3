@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Exceptions;
 using Files.App.Extensions;
 using Files.App.Helpers;
@@ -48,7 +49,11 @@ public sealed class FtpStorageFolder : BaseStorageFolder, IPasswordProtectedItem
         get; set;
     }
 
-    public Func<IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback
+    public FolderViewViewModel ViewModel
+    {
+        get; set;
+    }
+    public Func<FolderViewViewModel, IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback
     {
         get; set;
     }

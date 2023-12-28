@@ -144,7 +144,7 @@ public class CurrentInstanceViewModel : ObservableObject
 
     public bool CanTagFilesInPage => !isPageTypeRecycleBin && !isPageTypeFtp && !isPageTypeZipFolder;
 
-    /*public bool IsGitRepository => !string.IsNullOrWhiteSpace(gitRepositoryPath);
+    public bool IsGitRepository => !string.IsNullOrWhiteSpace(gitRepositoryPath);
 
     private string? gitRepositoryPath;
     public string? GitRepositoryPath
@@ -153,7 +153,9 @@ public class CurrentInstanceViewModel : ObservableObject
         set
         {
             if (SetProperty(ref gitRepositoryPath, value))
+            {
                 OnPropertyChanged(nameof(IsGitRepository));
+            }
         }
     }
 
@@ -162,5 +164,5 @@ public class CurrentInstanceViewModel : ObservableObject
     {
         get => gitBranchName;
         set => SetProperty(ref gitBranchName, value);
-    }*/
+    }
 }

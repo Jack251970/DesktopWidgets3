@@ -564,8 +564,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         if (rootFolder is IPasswordProtectedItem ppis)
         {
-            // TODO: Request password
-            //ppis.PasswordRequestedCallback = UIFilesystemHelpers.RequestPassword;
+            ppis.ViewModel = ViewModel;
+            ppis.PasswordRequestedCallback = UIFileSystemHelpers.RequestPassword;
         }
 
         await Task.Run(async () =>
@@ -588,6 +588,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         if (rootFolder is IPasswordProtectedItem ppiu)
         {
+            ppiu.ViewModel = ViewModel;
             ppiu.PasswordRequestedCallback = null!;
         }
     }

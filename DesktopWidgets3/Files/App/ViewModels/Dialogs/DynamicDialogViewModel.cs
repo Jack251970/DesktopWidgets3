@@ -3,6 +3,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DesktopWidgets3.Helpers;
 using Files.App.Helpers;
 using Files.Core.Data.Enums;
 using Microsoft.UI.Xaml;
@@ -415,7 +416,7 @@ public class DynamicDialogViewModel : ObservableObject, IDisposable
     {
         // Create default implementation
         TitleText = "DynamicDialog";
-        PrimaryButtonText = "Ok";
+        PrimaryButtonText = "Ok".GetLocalized();
         PrimaryButtonAction = (vm, e) => HideDialog!();
         SecondaryButtonAction = (vm, e) => HideDialog!();
         CloseButtonAction = (vm, e) => HideDialog!();
@@ -428,7 +429,7 @@ public class DynamicDialogViewModel : ObservableObject, IDisposable
         };
         DisplayControlOnLoaded = (vm, e) =>
         {
-            Control control = (vm.DisplayControl as Control) ?? DependencyObjectHelpers.FindChild<Control>(vm.DisplayControl as DependencyObject);
+            var control = (vm.DisplayControl as Control) ?? DependencyObjectHelpers.FindChild<Control>((DependencyObject)vm.DisplayControl);
             control?.Focus(FocusState.Programmatic);
         };
 

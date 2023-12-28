@@ -94,7 +94,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
     // Item rename properties
     private readonly DispatcherQueueTimer tapDebounceTimer;
-    private ListedItem? preRenamingItem = null;
+    protected ListedItem? preRenamingItem = null;
     private const int KEY_DOWN_MASK = 0x8000;
     protected int NextRenameIndex = 0;
 

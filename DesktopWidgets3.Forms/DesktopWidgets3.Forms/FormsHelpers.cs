@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace DesktopWidgets3.Forms
 {
-    public static class FormsHelper
+    public static class FormsHelpers
     {
         public static void SetClipboard(string[] filesToCopy, object dropEffect)
         {

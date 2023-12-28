@@ -23,6 +23,8 @@ using Microsoft.UI.Xaml.Media;
 using Windows.Storage.FileProperties;
 using static Files.App.Data.Models.ItemViewModel;
 using static Files.App.Data.EventArguments.NavigationArguments;
+using Files.App.Data.Contexts;
+using System.ComponentModel;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -102,6 +104,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             if (value != isItemSelected)
             {
                 isItemSelected = value;
+
+                OnPropertyChanged(nameof(IsItemSelected));
             }
         }
     }
@@ -122,42 +126,19 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 {
                     IsItemSelected = false;
                     SelectedItem = null;
-                    /*SelectedItemsPropertiesViewModel.IsItemSelected = false;*/
-
-                    /*ResetRenameDoubleClick();
-                    UpdateSelectionSize();*/
+                    SelectedItemsPropertiesViewModel.IsItemSelected = false;
                 }
                 else if (selectedItems is not null)
                 {
                     IsItemSelected = true;
                     SelectedItem = selectedItems.First();
-                    /*SelectedItemsPropertiesViewModel.IsItemSelected = true;*/
-
-                    /*UpdateSelectionSize();
-
-                    SelectedItemsPropertiesViewModel.SelectedItemsCount = selectedItems.Count;
-
-                    if (selectedItems.Count == 1)
-                    {
-                        SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems.Count} {"ItemSelected/Text".GetLocalizedResource()}";
-                        DispatcherQueue.EnqueueOrInvokeAsync(async () =>
-                        {
-                            // Tapped event must be executed first
-                            await Task.Delay(50);
-                            preRenamingItem = SelectedItem;
-                        });
-                    }
-                    else
-                    {
-                        SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems!.Count} {"ItemsSelected/Text".GetLocalizedResource()}";
-                        ResetRenameDoubleClick();
-                    }*/
+                    SelectedItemsPropertiesViewModel.IsItemSelected = true;
                 }
 
                 HasSelection = SelectedItems.Count != 0;
-            }
 
-            // ParentShellPageInstance!.ToolbarViewModel.SelectedItems = value;
+                OnPropertyChanged(nameof(SelectedItems));
+            }
         }
     }
 
@@ -177,6 +158,19 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     [ObservableProperty]
     public static bool _canShowDialog = true;
+
+    #endregion
+
+    #region page type
+
+    private ContentPageTypes pageType = ContentPageTypes.None;
+    public ContentPageTypes PageType => pageType;
+
+    #endregion
+
+    #region create items
+
+    public bool CanCreateItem => GetCanCreateItem();
 
     #endregion
 
@@ -235,6 +229,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         ItemViewModel = new(this, FolderSettings);
 
         ItemViewModel.ItemLoadStatusChanged += ItemViewModel_ItemLoadStatusChanged;
+        InstanceViewModel.PropertyChanged += InstanceViewModel_PropertyChanged;
     }
 
     #region refresh items
@@ -466,6 +461,64 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 }
                 break;
         }
+    }
+
+    #endregion
+
+    #region instance view model events
+
+    private void InstanceViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(CurrentInstanceViewModel.IsPageTypeNotHome):
+            case nameof(CurrentInstanceViewModel.IsPageTypeRecycleBin):
+            case nameof(CurrentInstanceViewModel.IsPageTypeZipFolder):
+            case nameof(CurrentInstanceViewModel.IsPageTypeFtp):
+            case nameof(CurrentInstanceViewModel.IsPageTypeLibrary):
+            case nameof(CurrentInstanceViewModel.IsPageTypeCloudDrive):
+            case nameof(CurrentInstanceViewModel.IsPageTypeMtpDevice):
+            case nameof(CurrentInstanceViewModel.IsPageTypeSearchResults):
+                UpdatePageType();
+                break;
+            case nameof(CurrentInstanceViewModel.ShowSearchUnindexedItemsMessage):
+                //OnPropertyChanged(nameof(ShowSearchUnindexedItemsMessage));
+                break;
+            case nameof(CurrentInstanceViewModel.IsGitRepository):
+                //OnPropertyChanged(nameof(IsGitRepository));
+                //OnPropertyChanged(nameof(CanExecuteGitAction));
+                break;
+        }
+    }
+
+    private void UpdatePageType()
+    {
+        var type = InstanceViewModel switch
+        {
+            null => ContentPageTypes.None,
+            { IsPageTypeNotHome: false } => ContentPageTypes.Home,
+            { IsPageTypeRecycleBin: true } => ContentPageTypes.RecycleBin,
+            { IsPageTypeZipFolder: true } => ContentPageTypes.ZipFolder,
+            { IsPageTypeFtp: true } => ContentPageTypes.Ftp,
+            { IsPageTypeLibrary: true } => ContentPageTypes.Library,
+            { IsPageTypeCloudDrive: true } => ContentPageTypes.CloudDrive,
+            { IsPageTypeMtpDevice: true } => ContentPageTypes.MtpDevice,
+            { IsPageTypeSearchResults: true } => ContentPageTypes.SearchResults,
+            _ => ContentPageTypes.Folder,
+        };
+        SetProperty(ref pageType, type, nameof(PageType));
+        OnPropertyChanged(nameof(CanCreateItem));
+    }
+
+    private bool GetCanCreateItem()
+    {
+        return /*ShellPage is not null &&*/
+            pageType is not ContentPageTypes.None
+            and not ContentPageTypes.Home
+            and not ContentPageTypes.RecycleBin
+            and not ContentPageTypes.ZipFolder
+            and not ContentPageTypes.SearchResults
+            and not ContentPageTypes.MtpDevice;
     }
 
     #endregion

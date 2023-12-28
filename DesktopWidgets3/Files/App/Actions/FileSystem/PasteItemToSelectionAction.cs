@@ -3,9 +3,11 @@
 
 using Files.App.Data.Commands;
 using Files.App.Utils;
+using Files.App.Data.Contexts;
 using System.ComponentModel;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.Helpers;
+using Files.App.Helpers;
 
 namespace Files.App.Actions;
 
@@ -43,12 +45,12 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
             ? selectedItem.ItemPath
             : context.ItemViewModel.WorkingDirectory;
 
-        //await UIFileSystemHelpers.PasteItemAsync(path, context);
+        await UIFileSystemHelpers.PasteItemAsync(path, context);
     }
 
     public bool GetIsExecutable()
     {
-        /*if (!DesktopWidgets3.App.AppModel.IsPasteEnabled)
+        if (!DesktopWidgets3.App.AppModel.IsPasteEnabled)
         {
             return false;
         }
@@ -56,7 +58,7 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
         if (context.PageType is ContentPageTypes.Home or ContentPageTypes.RecycleBin or ContentPageTypes.SearchResults)
         {
             return false;
-        }*/
+        }
 
         if (!context.HasSelection)
         {
@@ -72,7 +74,7 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
     {
         switch (e.PropertyName)
         {
-            /*case nameof(context.PageType):*/
+            case nameof(context.PageType):
             case nameof(context.SelectedItem):
                 OnPropertyChanged(nameof(IsExecutable));
                 break;
@@ -80,9 +82,9 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
     }
     private void AppModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        /*if (e.PropertyName is nameof(DesktopWidgets3.App.AppModel.IsPasteEnabled))
+        if (e.PropertyName is nameof(DesktopWidgets3.App.AppModel.IsPasteEnabled))
         {
             OnPropertyChanged(nameof(IsExecutable));
-        }*/
+        }
     }
 }

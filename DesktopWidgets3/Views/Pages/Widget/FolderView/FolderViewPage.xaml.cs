@@ -13,6 +13,7 @@ using DesktopWidgets3.Helpers;
 using Files.App;
 using Microsoft.UI.Dispatching;
 using Windows.System;
+using Files.App.Extensions;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
 
 namespace DesktopWidgets3.Views.Pages.Widget;
@@ -80,7 +81,10 @@ public sealed partial class FolderViewPage : BaseLayoutPage
             FileList.ScrollIntoView(e);
             //ContentScroller?.ChangeView(null, FileList.Items.IndexOf(e) * Convert.ToInt32(Application.Current.Resources["ListItemHeight"]), null, true); // Scroll to index * item height
         };
-
+        ItemManipulationModel.StartRenameItemInvoked += (s, e) =>
+        {
+            StartRenameItem();
+        };
     }
 
     #endregion
@@ -182,6 +186,36 @@ public sealed partial class FolderViewPage : BaseLayoutPage
     {
         SelectedItems = FileList.SelectedItems.Cast<ListedItem>().Where(x => x is not null).ToList();
 
+        // Handle the case where SelectedItems is changed
+        if (SelectedItems?.Count == 0 || SelectedItems?[0] is null)
+        {
+            ResetRenameDoubleClick();
+            // TODO: Update selection size and set SelectedItemsPropertiesViewModel.SelectedItemsCountString
+            UpdateSelectionSize();
+        }
+        else if (SelectedItems is not null)
+        {
+            UpdateSelectionSize();
+
+            SelectedItemsPropertiesViewModel.SelectedItemsCount = SelectedItems.Count;
+
+            if (SelectedItems.Count == 1)
+            {
+                //SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems.Count} {"ItemSelected/Text".GetLocalizedResource()}";
+                App.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                {
+                    // Tapped event must be executed first
+                    await Task.Delay(50);
+                    preRenamingItem = SelectedItem;
+                });
+            }
+            else
+            {
+                //SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems!.Count} {"ItemsSelected/Text".GetLocalizedResource()}";
+                ResetRenameDoubleClick();
+            }
+        }
+
         if (e != null)
         {
             foreach (var item in e.AddedItems)
@@ -194,6 +228,30 @@ public sealed partial class FolderViewPage : BaseLayoutPage
                 SetCheckboxSelectionState(item);
             }
         }
+    }
+
+    private void UpdateSelectionSize()
+    {
+        var items = (SelectedItems?.Any() ?? false) ? SelectedItems : ViewModel.GetAllItems();
+        if (items is null)
+        {
+            return;
+        }
+
+        var isSizeKnown = !items.Any(item => string.IsNullOrEmpty(item.FileSize));
+        if (isSizeKnown)
+        {
+            var size = items.Sum(item => item.FileSizeBytes);
+            SelectedItemsPropertiesViewModel.ItemSizeBytes = size;
+            SelectedItemsPropertiesViewModel.ItemSize = size.ToSizeString();
+        }
+        else
+        {
+            SelectedItemsPropertiesViewModel.ItemSizeBytes = 0;
+            SelectedItemsPropertiesViewModel.ItemSize = string.Empty;
+        }
+
+        SelectedItemsPropertiesViewModel.ItemSizeVisibility = isSizeKnown;
     }
 
     private void SetCheckboxSelectionState(object item, ListViewItem? lviContainer = null)

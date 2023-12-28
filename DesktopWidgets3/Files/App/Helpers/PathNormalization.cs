@@ -64,6 +64,11 @@ public static class PathNormalization
         }
     }
 
+    public static string? TrimPath(this string path)
+    {
+        return path?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+    }
+
     public static string GetParentDir(string path)
     {
         if (string.IsNullOrEmpty(path))

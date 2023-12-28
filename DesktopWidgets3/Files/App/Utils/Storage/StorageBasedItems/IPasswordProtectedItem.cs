@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using FluentFTP.Exceptions;
 using SevenZip;
 
@@ -8,12 +9,17 @@ namespace Files.App.Utils.Storage;
 
 public interface IPasswordProtectedItem
 {
+    FolderViewViewModel ViewModel
+    {
+        get; set;
+    }
+
     StorageCredential Credentials
     {
         get; set;
     }
 
-    Func<IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback
+    Func<FolderViewViewModel, IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback
     {
         get; set;
     }
@@ -29,7 +35,7 @@ public interface IPasswordProtectedItem
             throw exception;
         }
 
-        Credentials = await PasswordRequestedCallback(this);
+        Credentials = await PasswordRequestedCallback(ViewModel, this);
 
         return await func();
     }
@@ -45,7 +51,7 @@ public interface IPasswordProtectedItem
             throw exception;
         }
 
-        Credentials = await PasswordRequestedCallback(this);
+        Credentials = await PasswordRequestedCallback(ViewModel, this);
 
         await func();
     }

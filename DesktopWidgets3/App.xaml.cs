@@ -28,6 +28,8 @@ using Files.App.Services;
 using Files.Core.Services;
 using Files.App.Data.Models;
 using Files.Core.Services.SizeProvider;
+using Files.Core.Storage;
+using Files.App.Storage.FtpStorage;
 
 namespace DesktopWidgets3;
 
@@ -189,6 +191,9 @@ public partial class App : Application
 
             // Size Provider
             services.AddSingleton<ISizeProvider, UserSizeProvider>();
+
+            // Ftp Storage
+            services.AddSingleton<IFtpStorageService, FtpStorageService>();
 
             #endregion
 
