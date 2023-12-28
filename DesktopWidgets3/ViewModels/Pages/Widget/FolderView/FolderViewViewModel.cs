@@ -21,10 +21,10 @@ using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml.Media;
 using Windows.Storage.FileProperties;
-using static Files.App.Data.Models.ItemViewModel;
-using static Files.App.Data.EventArguments.NavigationArguments;
 using Files.App.Data.Contexts;
 using System.ComponentModel;
+using static Files.App.Data.Models.ItemViewModel;
+using static Files.App.Data.EventArguments.NavigationArguments;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
