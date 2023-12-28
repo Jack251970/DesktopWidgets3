@@ -2,18 +2,25 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.Immutable;
+using System.Text;
 using DesktopWidgets3.Helpers;
 using Files.App.Data.Items;
 using Files.App.Data.Models;
 using Files.App.Extensions;
 using Files.App.Helpers;
+using Files.App.Utils.Shell;
 using Files.Shared.Extensions;
 using Windows.Storage;
+using Windows.Storage.Search;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 
 namespace Files.App.Utils.Storage.Helpers;
 
 public static class StorageFileExtensions
 {
+    private const int SINGLE_DOT_DIRECTORY_LENGTH = 2;
+    private const int DOUBLE_DOT_DIRECTORY_LENGTH = 3;
+
     public static readonly ImmutableHashSet<string> _ftpPaths = 
         new HashSet<string>() { "ftp:/", "ftps:/", "ftpes:/" }.ToImmutableHashSet();
 
@@ -27,6 +34,67 @@ public static class StorageFileExtensions
         return item is StorageFile file ? (BaseStorageFile)file : item as BaseStorageFile;
     }
 
+    public static async Task<List<IStorageItem>> ToStandardStorageItemsAsync(this IEnumerable<IStorageItem> items)
+    {
+        var newItems = new List<IStorageItem>();
+        foreach (var item in items)
+        {
+            try
+            {
+                if (item is null)
+                {
+                }
+                else if (item.IsOfType(StorageItemTypes.File))
+                {
+                    newItems.Add(await item.AsBaseStorageFile()!.ToStorageFileAsync());
+                }
+                else if (item.IsOfType(StorageItemTypes.Folder))
+                {
+                    newItems.Add(await item.AsBaseStorageFolder()!.ToStorageFolderAsync());
+                }
+            }
+            catch (NotSupportedException)
+            {
+                // Ignore items that can't be converted
+            }
+        }
+        return newItems;
+    }
+
+    public static bool AreItemsInSameDrive(this IEnumerable<string> itemsPath, string destinationPath)
+    {
+        try
+        {
+            var destinationRoot = Path.GetPathRoot(destinationPath);
+            return itemsPath.Any(itemPath => Path.GetPathRoot(itemPath)!.Equals(destinationRoot, StringComparison.OrdinalIgnoreCase));
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    public static bool AreItemsInSameDrive(this IEnumerable<IStorageItem> storageItems, string destinationPath)
+        => storageItems.Select(x => x.Path).AreItemsInSameDrive(destinationPath);
+    public static bool AreItemsInSameDrive(this IEnumerable<IStorageItemWithPath> storageItems, string destinationPath)
+        => storageItems.Select(x => x.Path).AreItemsInSameDrive(destinationPath);
+
+    public static bool AreItemsAlreadyInFolder(this IEnumerable<string> itemsPath, string destinationPath)
+    {
+        try
+        {
+            var trimmedPath = destinationPath.TrimPath();
+            return itemsPath.All(itemPath => Path.GetDirectoryName(itemPath)!.Equals(trimmedPath, StringComparison.OrdinalIgnoreCase));
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    public static bool AreItemsAlreadyInFolder(this IEnumerable<IStorageItem> storageItems, string destinationPath)
+        => storageItems.Select(x => x.Path).AreItemsAlreadyInFolder(destinationPath);
+    public static bool AreItemsAlreadyInFolder(this IEnumerable<IStorageItemWithPath> storageItems, string destinationPath)
+        => storageItems.Select(x => x.Path).AreItemsAlreadyInFolder(destinationPath);
+
     public static BaseStorageFolder? AsBaseStorageFolder(this IStorageItem item)
     {
         if (item is not null && item.IsOfType(StorageItemTypes.Folder))
@@ -35,6 +103,54 @@ public static class StorageFileExtensions
         }
 
         return null;
+    }
+
+    public static List<PathBoxItem> GetDirectoryPathComponents(string value)
+    {
+        List<PathBoxItem> pathBoxItems = new();
+
+        if (value.Contains('/', StringComparison.Ordinal))
+        {
+            if (!value.EndsWith('/'))
+            {
+                value += "/";
+            }
+        }
+        else if (!value.EndsWith('\\'))
+        {
+            value += "\\";
+        }
+
+        var lastIndex = 0;
+
+        for (var i = 0; i < value.Length; i++)
+        {
+            if (value[i] is '?' || value[i] == Path.DirectorySeparatorChar || value[i] == Path.AltDirectorySeparatorChar)
+            {
+                if (lastIndex == i)
+                {
+                    ++lastIndex;
+                    continue;
+                }
+
+                var component = value[lastIndex..i];
+                var path = value[..(i + 1)];
+                if (!_ftpPaths.Contains(path, StringComparer.OrdinalIgnoreCase))
+                {
+                    pathBoxItems.Add(GetPathItem(component, path));
+                }
+
+                lastIndex = i + 1;
+            }
+        }
+
+        return pathBoxItems;
+    }
+
+    public static string GetResolvedPath(FolderViewViewModel viewModel,string path, bool isFtp)
+    {
+        var withoutEnvirnment = GetPathWithoutEnvironmentVariable(path);
+        return ResolvePath(viewModel, withoutEnvirnment, isFtp);
     }
 
     public static async Task<BaseStorageFile> DangerousGetFileFromPathAsync(
@@ -92,6 +208,10 @@ public static class StorageFileExtensions
 
         return new StorageFileWithPath(item);
     }
+    public static async Task<IList<StorageFileWithPath>> GetFilesWithPathAsync
+            (this StorageFolderWithPath parentFolder, uint maxNumberOfItems = uint.MaxValue)
+                => (await parentFolder.Item.GetFilesAsync(CommonFileQuery.DefaultQuery, 0, maxNumberOfItems))
+                    .Select(x => new StorageFileWithPath(x, string.IsNullOrEmpty(x.Path) ? PathNormalization.Combine(parentFolder.Path, x.Name) : x.Path)).ToList();
 
     public static async Task<BaseStorageFolder> DangerousGetFolderFromPathAsync(
         string path, 
@@ -149,46 +269,26 @@ public static class StorageFileExtensions
         return new StorageFolderWithPath(item);
     }
 
-    public static List<PathBoxItem> GetDirectoryPathComponents(string value)
+    public static async Task<IList<StorageFolderWithPath>> GetFoldersWithPathAsync
+            (this StorageFolderWithPath parentFolder, uint maxNumberOfItems = uint.MaxValue)
+                => (await parentFolder.Item.GetFoldersAsync(CommonFolderQuery.DefaultQuery, 0, maxNumberOfItems))
+                    .Select(x => new StorageFolderWithPath(x, string.IsNullOrEmpty(x.Path) ? PathNormalization.Combine(parentFolder.Path, x.Name) : x.Path)).ToList();
+    public static async Task<IList<StorageFolderWithPath>> GetFoldersWithPathAsync
+        (this StorageFolderWithPath parentFolder, string nameFilter, uint maxNumberOfItems = uint.MaxValue)
     {
-        List<PathBoxItem> pathBoxItems = new();
-
-        if (value.Contains('/', StringComparison.Ordinal))
+        if (parentFolder is null)
         {
-            if (!value.EndsWith('/'))
-            {
-                value += "/";
-            }
-        }
-        else if (!value.EndsWith('\\'))
-        {
-            value += "\\";
+            return null!;
         }
 
-        var lastIndex = 0;
-
-        for (var i = 0; i < value.Length; i++)
+        var queryOptions = new QueryOptions
         {
-            if (value[i] is '?' || value[i] == Path.DirectorySeparatorChar || value[i] == Path.AltDirectorySeparatorChar)
-            {
-                if (lastIndex == i)
-                {
-                    ++lastIndex;
-                    continue;
-                }
+            ApplicationSearchFilter = $"System.FileName:{nameFilter}*"
+        };
+        var queryResult = parentFolder.Item.CreateFolderQueryWithOptions(queryOptions);
 
-                var component = value[lastIndex..i];
-                var path = value[..(i + 1)];
-                if (!_ftpPaths.Contains(path, StringComparer.OrdinalIgnoreCase))
-                {
-                    pathBoxItems.Add(GetPathItem(component, path));
-                }
-
-                lastIndex = i + 1;
-            }
-        }
-
-        return pathBoxItems;
+        return (await queryResult.GetFoldersAsync(0, maxNumberOfItems))
+            .Select(x => new StorageFolderWithPath(x, string.IsNullOrEmpty(x.Path) ? PathNormalization.Combine(parentFolder.Path, x.Name) : x.Path)).ToList();
     }
 
     private static PathBoxItem GetPathItem(string component, string path)
@@ -240,30 +340,112 @@ public static class StorageFileExtensions
         };
     }
 
-    public static async Task<List<IStorageItem>> ToStandardStorageItemsAsync(this IEnumerable<IStorageItem> items)
+    private static string GetPathWithoutEnvironmentVariable(string path)
     {
-        var newItems = new List<IStorageItem>();
-        foreach (var item in items)
+        if (path.StartsWith("~\\", StringComparison.Ordinal))
         {
-            try
-            {
-                if (item is null)
-                {
-                }
-                else if (item.IsOfType(StorageItemTypes.File))
-                {
-                    newItems.Add(await item.AsBaseStorageFile()!.ToStorageFileAsync());
-                }
-                else if (item.IsOfType(StorageItemTypes.Folder))
-                {
-                    newItems.Add(await item.AsBaseStorageFolder()!.ToStorageFolderAsync());
-                }
-            }
-            catch (NotSupportedException)
-            {
-                // Ignore items that can't be converted
-            }
+            path = $"{Constants.UserEnvironmentPaths.HomePath}{path.Remove(0, 1)}";
         }
-        return newItems;
+
+        path = path.Replace("%temp%", Constants.UserEnvironmentPaths.TempPath, StringComparison.OrdinalIgnoreCase);
+
+        path = path.Replace("%tmp%", Constants.UserEnvironmentPaths.TempPath, StringComparison.OrdinalIgnoreCase);
+
+        path = path.Replace("%localappdata%", Constants.UserEnvironmentPaths.LocalAppDataPath, StringComparison.OrdinalIgnoreCase);
+
+        path = path.Replace("%homepath%", Constants.UserEnvironmentPaths.HomePath, StringComparison.OrdinalIgnoreCase);
+
+        return Environment.ExpandEnvironmentVariables(path);
+    }
+
+    private static string ResolvePath(FolderViewViewModel viewModel, string path, bool isFtp)
+    {
+        /*if (path.StartsWith("Home"))
+        {
+            return "Home";
+        }*/
+
+        if (ShellStorageFolder.IsShellPath(path))
+        {
+            return ShellHelpers.ResolveShellPath(path);
+        }
+
+        var pathBuilder = new StringBuilder(path);
+        var lastPathIndex = path.Length - 1;
+        var separatorChar = isFtp || path.Contains('/', StringComparison.Ordinal) ? '/' : '\\';
+        var rootIndex = isFtp ? FtpHelpers.GetRootIndex(path) + 1 : path.IndexOf($":{separatorChar}", StringComparison.Ordinal) + 2;
+
+        for (int i = 0, lastIndex = 0; i < pathBuilder.Length; i++)
+        {
+            if (pathBuilder[i] is not '?' &&
+                pathBuilder[i] != Path.DirectorySeparatorChar &&
+                pathBuilder[i] != Path.AltDirectorySeparatorChar &&
+                i != lastPathIndex)
+            {
+                continue;
+            }
+
+            if (lastIndex == i)
+            {
+                ++lastIndex;
+                continue;
+            }
+
+            var component = pathBuilder.ToString()[lastIndex..i];
+            if (component is "..")
+            {
+                if (lastIndex is 0)
+                {
+                    SetCurrentWorkingDirectory(viewModel, pathBuilder, separatorChar, lastIndex, ref i);
+                }
+                else if (lastIndex == rootIndex)
+                {
+                    pathBuilder.Remove(lastIndex, DOUBLE_DOT_DIRECTORY_LENGTH);
+                    i = lastIndex - 1;
+                }
+                else
+                {
+                    var directoryIndex = pathBuilder.ToString().LastIndexOf(
+                        separatorChar,
+                        lastIndex - DOUBLE_DOT_DIRECTORY_LENGTH);
+
+                    if (directoryIndex is not -1)
+                    {
+                        pathBuilder.Remove(directoryIndex, i - directoryIndex);
+                        i = directoryIndex;
+                    }
+                }
+
+                lastPathIndex = pathBuilder.Length - 1;
+            }
+            else if (component is ".")
+            {
+                if (lastIndex is 0)
+                {
+                    SetCurrentWorkingDirectory(viewModel, pathBuilder, separatorChar, lastIndex, ref i);
+                }
+                else
+                {
+                    pathBuilder.Remove(lastIndex, SINGLE_DOT_DIRECTORY_LENGTH);
+                    i -= 3;
+                }
+                lastPathIndex = pathBuilder.Length - 1;
+            }
+
+            lastIndex = i + 1;
+        }
+
+        return pathBuilder.ToString();
+    }
+
+    private static void SetCurrentWorkingDirectory(FolderViewViewModel viewModel, StringBuilder path, char separator, int substringIndex, ref int i)
+    {
+        var subPath = path.ToString()[substringIndex..];
+
+        path.Clear();
+        path.Append(viewModel.FileSystemViewModel.WorkingDirectory);
+        path.Append(separator);
+        path.Append(subPath);
+        i = -1;
     }
 }

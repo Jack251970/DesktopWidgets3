@@ -32,7 +32,7 @@ internal abstract class BaseDeleteAction : BaseUIAction
 
         await context.FileSystemHelpers.DeleteItemsAsync(context, items, context.GetSettings().DeleteConfirmationPolicy, permanently);
 
-        await context.ItemViewModel.ApplyFilesAndFoldersChangesAsync();
+        await context.FileSystemViewModel.ApplyFilesAndFoldersChangesAsync();
     }
 
     private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)

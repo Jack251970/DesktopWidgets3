@@ -766,4 +766,13 @@
   <data name="NetworkAuthenticationDialogTitle" xml:space="preserve">
     <value>输入网络凭据</value>
   </data>
+  <data name="MoveToFolderCaptionText" xml:space="preserve">
+    <value>移动到 {0}</value>
+  </data>
+  <data name="LinkToFolderCaptionText" xml:space="preserve">
+    <value>在 {0} 处创建链接</value>
+  </data>
+  <data name="CopyToFolderCaptionText" xml:space="preserve">
+    <value>复制到 {0}</value>
+  </data>
 </root>

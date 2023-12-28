@@ -775,4 +775,13 @@
   <data name="NetworkAuthenticationDialogTitle" xml:space="preserve">
     <value>Enter network credentials</value>
   </data>
+  <data name="MoveToFolderCaptionText" xml:space="preserve">
+    <value>Move to {0}</value>
+  </data>
+  <data name="LinkToFolderCaptionText" xml:space="preserve">
+    <value>Create link in {0}</value>
+  </data>
+  <data name="CopyToFolderCaptionText" xml:space="preserve">
+    <value>Copy to {0}</value>
+  </data>
 </root>

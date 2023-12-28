@@ -118,22 +118,29 @@
             </Grid>
         </Grid>
 
-        <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1" ContextFlyout="{x:Bind BaseContextMenuFlyout}">
+        <ScrollViewer x:Name="ScrollViewer" Grid.Row="1" ContextFlyout="{x:Bind BaseContextMenuFlyout}">
             <ListView
 				x:Name="FileList"
 				Padding="0,0,0,12"
 				HorizontalAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                CanDragItems="{x:Bind AllowItemDrag, Mode=OneWay}"
                 ContainerContentChanging="FileList_ContainerContentChanging"
-				VerticalContentAlignment="Stretch"
+                DoubleTapped="FileList_DoubleTapped"
+                DragItemsStarting="FileList_DragItemsStarting"
+                DragOver="ItemsLayout_DragOver"
+                Drop="ItemsLayout_Drop"
+                FocusVisualPrimaryThickness="0"
+                FocusVisualSecondaryThickness="0"
+                IsDoubleTapEnabled="True"
+                IsTabStop="True"
+                ItemsSource="{x:Bind ViewModel.CollectionViewSource.View, Mode=OneWay}"
+                Loaded="FileList_Loaded"
 				ScrollViewer.HorizontalScrollBarVisibility="Auto"
 				ScrollViewer.HorizontalScrollMode="Auto"
-                ItemsSource="{x:Bind ViewModel.CollectionViewSource.View, Mode=OneWay}"
-                IsDoubleTapEnabled="True"
-                DoubleTapped="FileList_DoubleTapped"
-                IsTapEnabled="True"
-                Tapped="FileList_ItemTapped"
                 SelectionMode="Extended"
-                SelectionChanged="FileList_SelectionChanged">
+                SelectionChanged="FileList_SelectionChanged"
+                Tapped="FileList_ItemTapped">
 
                 <!--  Item Template  -->
                 <ListView.ItemTemplate>

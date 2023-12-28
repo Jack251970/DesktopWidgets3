@@ -67,4 +67,11 @@ public static class FtpHelpers
         var hostIndex = path.IndexOf("/", schemaIndex, StringComparison.Ordinal);
         return hostIndex == -1 ? "/" : path[hostIndex..];
     }
+
+    public static int GetRootIndex(string path)
+    {
+        path = path.Replace("\\", "/", StringComparison.Ordinal);
+        var schemaIndex = path.IndexOf("://", StringComparison.Ordinal) + 3;
+        return path.IndexOf("/", schemaIndex, StringComparison.Ordinal);
+    }
 }

@@ -30,6 +30,7 @@ using System.Diagnostics;
 using FileAttributes = System.IO.FileAttributes;
 using static Files.Core.Helpers.NativeFindStorageItemHelper;
 using static Files.App.Helpers.NativeDirectoryChangesHelper;
+using Files.Core.Data.Items;
 
 namespace Files.App.Data.Models;
 

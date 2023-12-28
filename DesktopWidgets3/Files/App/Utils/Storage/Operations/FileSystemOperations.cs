@@ -50,12 +50,12 @@ public class FileSystemOperations : IFileSystemOperations
         {
             if (source.ItemType == FilesystemItemType.File)
             {
-                fsResult = await viewModel.ItemViewModel.GetFileFromPathAsync(source.Path)
+                fsResult = await viewModel.FileSystemViewModel.GetFileFromPathAsync(source.Path)
                     .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
             }
             else if (source.ItemType == FilesystemItemType.Directory)
             {
-                fsResult = await viewModel.ItemViewModel.GetFolderFromPathAsync(source.Path)
+                fsResult = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(source.Path)
                     .OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
             }
         }
@@ -77,14 +77,14 @@ public class FileSystemOperations : IFileSystemOperations
             // Recycle bin also stores a file starting with $I for each item
             var iFilePath = Path.Combine(Path.GetDirectoryName(source.Path)!, Path.GetFileName(source.Path).Replace("$R", "$I", StringComparison.Ordinal));
 
-            await viewModel.ItemViewModel.GetFileFromPathAsync(iFilePath)
+            await viewModel.FileSystemViewModel.GetFileFromPathAsync(iFilePath)
                 .OnSuccess(iFile => iFile.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask());
         }
         fsProgress.ReportStatus(fsResult);
 
         if (fsResult)
         {
-            await viewModel.ItemViewModel.RemoveFileOrFolderAsync(source.Path);
+            await viewModel.FileSystemViewModel.RemoveFileOrFolderAsync(source.Path);
 
             /*if (!permanently)
             {
@@ -320,7 +320,7 @@ public class FileSystemOperations : IFileSystemOperations
             {
                 // CopyFileFromApp only works on file not directories
                 var fsSourceFolder = await source.ToStorageItemResult();
-                var fsDestinationFolder = await viewModel.ItemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+                var fsDestinationFolder = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
                 var fsResult = (FilesystemResult)(fsSourceFolder.ErrorCode | fsDestinationFolder.ErrorCode);
 
                 if (fsResult)
@@ -379,7 +379,7 @@ public class FileSystemOperations : IFileSystemOperations
 
             if (!fsResult)
             {
-                var destinationResult = await viewModel.ItemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+                var destinationResult = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
                 var sourceResult = await source.ToStorageItemResult();
                 fsResult = sourceResult.ErrorCode | destinationResult.ErrorCode;
 
@@ -580,7 +580,7 @@ public class FileSystemOperations : IFileSystemOperations
                     Debug.WriteLine(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
 
                     var fsSourceFolder = await source.ToStorageItemResult();
-                    var fsDestinationFolder = await viewModel.ItemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+                    var fsDestinationFolder = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
                     fsResult = fsSourceFolder.ErrorCode | fsDestinationFolder.ErrorCode;
 
                     if (fsResult)
@@ -645,7 +645,7 @@ public class FileSystemOperations : IFileSystemOperations
 
             if (!fsResult)
             {
-                var destinationResult = await viewModel.ItemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+                var destinationResult = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
                 var sourceResult = await source.ToStorageItemResult();
                 fsResult = sourceResult.ErrorCode | destinationResult.ErrorCode;
 
@@ -694,12 +694,12 @@ public class FileSystemOperations : IFileSystemOperations
             return;
         }
 
-        var sourceInCurrentFolder = PathNormalization.TrimPath(viewModel.ItemViewModel.CurrentFolder!.ItemPath) ==
+        var sourceInCurrentFolder = PathNormalization.TrimPath(viewModel.FileSystemViewModel.CurrentFolder!.ItemPath) ==
             PathNormalization.GetParentDir(source.Path);
         if (fsProgress.Status == FileSystemStatusCode.Success && sourceInCurrentFolder)
         {
-            await viewModel.ItemViewModel.RemoveFileOrFolderAsync(source.Path);
-            await viewModel.ItemViewModel.ApplyFilesAndFoldersChangesAsync();
+            await viewModel.FileSystemViewModel.RemoveFileOrFolderAsync(source.Path);
+            await viewModel.FileSystemViewModel.ApplyFilesAndFoldersChangesAsync();
         }
     }
 

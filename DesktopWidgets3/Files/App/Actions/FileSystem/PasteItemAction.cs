@@ -46,7 +46,7 @@ internal class PasteItemAction : ObservableObject, IAction
             return;
         }
 
-        var path = context.ItemViewModel.WorkingDirectory;
+        var path = context.FileSystemViewModel.WorkingDirectory;
         await UIFileSystemHelpers.PasteItemAsync(path, context);
     }
 

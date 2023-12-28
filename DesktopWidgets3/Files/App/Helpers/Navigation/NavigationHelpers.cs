@@ -24,7 +24,7 @@ public static class NavigationHelpers
     public static async Task OpenSelectedItemsAsync(FolderViewViewModel viewModel, bool openViaApplicationPicker = false)
     {
         // Don't open files and folders inside recycle bin
-        if (viewModel.ItemViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
+        if (viewModel.FileSystemViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
             viewModel.SelectedItems is null)
         {
             return;
@@ -61,7 +61,7 @@ public static class NavigationHelpers
     public static async Task OpenItemsWithExecutableAsync(FolderViewViewModel viewModel, IEnumerable<IStorageItemWithPath> items, string executablePath)
     {
         // Don't open files and folders inside recycle bin
-        if (viewModel.ItemViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
+        if (viewModel.FileSystemViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
             viewModel is null)
         {
             return;
@@ -73,7 +73,7 @@ public static class NavigationHelpers
 
     public static async Task<bool> OpenPath(FolderViewViewModel viewModel, string path, FilesystemItemType? itemType = null, bool openSilent = false, bool openViaApplicationPicker = false, IEnumerable<string>? selectItems = null, string? args = default, bool forceOpenInExplore = false)
     {
-        var previousDir = viewModel.ItemViewModel.WorkingDirectory;
+        var previousDir = viewModel.FileSystemViewModel.WorkingDirectory;
         var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, System.IO.FileAttributes.Hidden);
         var isDirectory = NativeFileOperationsHelper.HasFileAttribute(path, System.IO.FileAttributes.Directory);
         var isReparsePoint = NativeFileOperationsHelper.HasFileAttribute(path, System.IO.FileAttributes.ReparsePoint);
@@ -178,7 +178,7 @@ public static class NavigationHelpers
                 await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".GetLocalized(), "FileNotFoundDialog/Text".GetLocalized());
             }
             viewModel.ToolbarViewModel.CanRefresh = false;
-            await viewModel.ItemViewModel.RefreshItems(previousDir);
+            await viewModel.FileSystemViewModel.RefreshItems(previousDir);
         }
 
         return opened;
@@ -232,7 +232,7 @@ public static class NavigationHelpers
         }
         else
         {
-            opened = await viewModel.ItemViewModel.GetFolderWithPathFromPathAsync(path)
+            opened = await viewModel.FileSystemViewModel.GetFolderWithPathFromPathAsync(path)
                 .OnSuccess((childFolder) => {});
             if (!opened)
             {
@@ -267,7 +267,7 @@ public static class NavigationHelpers
             {
                 if (!FileExtensionHelpers.IsWebLinkFile(path))
                 {
-                    StorageFileWithPath childFile = await viewModel.ItemViewModel.GetFileWithPathFromPathAsync(shortcutInfo.TargetPath);
+                    StorageFileWithPath childFile = await viewModel.FileSystemViewModel.GetFileWithPathFromPathAsync(shortcutInfo.TargetPath);
                 }
                 await Win32Helpers.InvokeWin32ComponentAsync(shortcutInfo.TargetPath, viewModel, $"{args} {shortcutInfo.Arguments}", shortcutInfo.RunAsAdmin, shortcutInfo.WorkingDirectory!);
             }
@@ -279,7 +279,7 @@ public static class NavigationHelpers
         }
         else
         {
-            opened = await viewModel.ItemViewModel.GetFileWithPathFromPathAsync(path)
+            opened = await viewModel.FileSystemViewModel.GetFileWithPathFromPathAsync(path)
                 .OnSuccess(async childFile =>
                 {
                     if (openViaApplicationPicker)
@@ -301,7 +301,7 @@ public static class NavigationHelpers
                         BaseStorageFileQueryResult? fileQueryResult = null;
 
                         //Get folder to create a file query (to pass to apps like Photos, Movies & TV..., needed to scroll through the folder like what Windows Explorer does)
-                        BaseStorageFolder currentFolder = await viewModel.ItemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(path));
+                        BaseStorageFolder currentFolder = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(path));
 
                         if (currentFolder is not null)
                         {

@@ -1,83 +1,48 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Helpers;
+using Files.Core.Data.Items;
+
 namespace Files.App.Utils.Shell;
 
 public class ShellHelpers
 {
+    public static string ResolveShellPath(string shPath)
+    {
+        if (shPath.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
+        {
+            return Constants.UserEnvironmentPaths.RecycleBinPath;
+        }
+
+        if (shPath.StartsWith(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
+        {
+            return Constants.UserEnvironmentPaths.MyComputerPath;
+        }
+
+        if (shPath.StartsWith(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
+        {
+            return Constants.UserEnvironmentPaths.NetworkFolderPath;
+        }
+
+        return shPath;
+    }
+
+    public static string GetShellNameFromPath(string shPath)
+    {
+        return shPath switch
+        {
+            /*"Home" => "Home".GetLocalizedResource(),*/
+            Constants.UserEnvironmentPaths.RecycleBinPath => "RecycleBin".GetLocalized(),
+            Constants.UserEnvironmentPaths.NetworkFolderPath => "SidebarNetworkDrives".GetLocalized(),
+            Constants.UserEnvironmentPaths.MyComputerPath => "ThisPC".GetLocalized(),
+            _ => shPath
+        };
+    }
+
     public static string GetLibraryFullPathFromShell(string shPath)
     {
         var partialPath = shPath[(shPath.IndexOf('\\') + 1)..];
         return Path.Combine(ShellLibraryItem.LibrariesPath, partialPath);
-    }
-}
-
-public class ShellLibraryItem
-{
-    public const string EXTENSION = ".library-ms";
-
-    public static readonly string LibrariesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft", "Windows", "Libraries");
-
-    /// <summary>
-    /// Full path of library file.<br/>
-    /// <br/>
-    /// C:\Users\[username]\AppData\Roaming\Microsoft\Windows\Libraries\Documents.library-ms<br/>
-    /// C:\Users\[username]\AppData\Roaming\Microsoft\Windows\Libraries\Custom library.library-ms
-    /// </summary>
-    public string? FullPath
-    {
-        get; set;
-    }
-
-    /// <summary>
-    /// ShellItemDisplayString.DesktopAbsoluteParsing<br/>
-    /// <br/>
-    /// ::{031E4825-7B94-4DC3-B131-E946B44C8DD5}\Documents.library-ms<br/>
-    /// C:\Users\[username]\AppData\Roaming\Microsoft\Windows\Libraries\Custom library.library-ms
-    /// </summary>
-    public string? AbsolutePath
-    {
-        get; set;
-    }
-
-    /// <summary>
-    /// ShellItemDisplayString.ParentRelativeParsing<br/>
-    /// <br/>
-    /// {7B0DB17D-9CD2-4A93-9733-46CC89022E7C}<br/>
-    /// Custom library.library-ms
-    /// </summary>
-    public string? RelativePath
-    {
-        get; set;
-    }
-
-    /// <summary>
-    /// ShellItemDisplayString.NormalDisplay<br/>
-    /// <br/>
-    /// Documents (locale dependent based on desktop.ini file of the Libraries folder)<br/>
-    /// Custom library (locale independent)
-    /// </summary>
-    public string? DisplayName
-    {
-        get; set;
-    }
-
-    public bool IsPinned
-    {
-        get; set;
-    }
-
-    public string? DefaultSaveFolder
-    {
-        get; set;
-    }
-
-    public string[]? Folders
-    {
-        get; set;
-    }
-
-    public ShellLibraryItem()
-    {
     }
 }

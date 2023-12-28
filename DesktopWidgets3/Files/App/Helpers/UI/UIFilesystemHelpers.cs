@@ -177,7 +177,7 @@ public static class UIFileSystemHelpers
                     }
                     else if (listedItem.PrimaryItemAttribute == StorageItemTypes.File || listedItem is ZipItem)
                     {
-                        var result = await viewModel.ItemViewModel.GetFileFromPathAsync(listedItem.ItemPath)
+                        var result = await viewModel.FileSystemViewModel.GetFileFromPathAsync(listedItem.ItemPath)
                             .OnSuccess(t => items.Add(t));
 
                         if (!result)
@@ -187,7 +187,7 @@ public static class UIFileSystemHelpers
                     }
                     else
                     {
-                        var result = await viewModel.ItemViewModel.GetFolderFromPathAsync(listedItem.ItemPath)
+                        var result = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(listedItem.ItemPath)
                             .OnSuccess(t => items.Add(t));
 
                         if (!result)
@@ -298,7 +298,7 @@ public static class UIFileSystemHelpers
                     }
                     else if (listedItem.PrimaryItemAttribute == StorageItemTypes.File || listedItem is ZipItem)
                     {
-                        var result = await viewModel.ItemViewModel.GetFileFromPathAsync(listedItem.ItemPath)
+                        var result = await viewModel.FileSystemViewModel.GetFileFromPathAsync(listedItem.ItemPath)
                             .OnSuccess(t => items.Add(t));
 
                         if (!result)
@@ -308,7 +308,7 @@ public static class UIFileSystemHelpers
                     }
                     else
                     {
-                        var result = await viewModel.ItemViewModel.GetFolderFromPathAsync(listedItem.ItemPath)
+                        var result = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(listedItem.ItemPath)
                             .OnSuccess(t => items.Add(t));
 
                         if (!result)

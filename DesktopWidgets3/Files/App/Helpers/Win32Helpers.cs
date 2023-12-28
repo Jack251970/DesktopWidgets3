@@ -18,13 +18,13 @@ public static class Win32Helpers
     {
         if (string.IsNullOrEmpty(workingDirectory))
         {
-            workingDirectory = viewModel.ItemViewModel.WorkingDirectory;
+            workingDirectory = viewModel.FileSystemViewModel.WorkingDirectory;
         }
 
         var application = applicationPaths.FirstOrDefault()!;
         if (string.IsNullOrEmpty(workingDirectory))
         {
-            workingDirectory = viewModel.ItemViewModel.WorkingDirectory;
+            workingDirectory = viewModel.FileSystemViewModel.WorkingDirectory;
         }
 
         if (runAsAdmin)

@@ -43,7 +43,7 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
 
         var path = context.SelectedItem is ListedItem selectedItem
             ? selectedItem.ItemPath
-            : context.ItemViewModel.WorkingDirectory;
+            : context.FileSystemViewModel.WorkingDirectory;
 
         await UIFileSystemHelpers.PasteItemAsync(path, context);
     }

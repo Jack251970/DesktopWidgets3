@@ -2,12 +2,8 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Views.Windows;
 using Files.App.Extensions;
-using Files.App.UserControls;
-using Files.App.Utils.RecycleBin;
-using Files.App.Utils.Shell;
-using Microsoft.UI.Xaml;
+using Files.Core.Data.Items;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 

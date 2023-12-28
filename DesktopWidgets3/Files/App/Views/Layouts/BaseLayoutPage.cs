@@ -26,7 +26,10 @@ using Files.App.Utils.Storage;
 using Files.App.Extensions;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Vanara.PInvoke;
+using System.Runtime.InteropServices.ComTypes;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
+using VanaraWindowsShell = Vanara.Windows.Shell;
 
 namespace Files.App.Views.Layouts;
 
@@ -80,6 +83,9 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
         set => ViewModel.OldItemName = value;
     }
 
+    // UI properties
+    /*public ScrollViewer? ContentScroller { get; set; }*/
+
     // Context menu properties
     public static CommandBarFlyout? LastOpenedFlyout { get; private set; }
     public CommandBarFlyout ItemContextMenuFlyout { get; set; } = new()
@@ -102,6 +108,12 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
     protected ListedItem? preRenamingItem = null;
     private const int KEY_DOWN_MASK = 0x8000;
     protected int NextRenameIndex = 0;
+
+    // Item drag properties
+    // NOTE: Dragging makes the app crash when run as admin. (#12390)
+    // For more information, visit https://github.com/microsoft/terminal/issues/12017#issuecomment-1004129669
+    public bool AllowItemDrag
+        => !ElevationHelpers.IsAppRunAsAdmin();
 
     #endregion
 
@@ -204,7 +216,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                 if (!InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
                 {
                     var shellMenuItems = await ContextFlyoutItemHelper.GetItemContextShellCommandsAsync(
-                        workingDir: ViewModel!.ItemViewModel.WorkingDirectory,
+                        workingDir: ViewModel!.FileSystemViewModel.WorkingDirectory,
                         selectedItems: SelectedItems,
                         shiftPressed: shiftPressed,
                         showOpenMenu: false,
@@ -256,11 +268,11 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
             shiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
             var items = ContextFlyoutItemHelper.GetItemContextCommandsWithoutShellItems(
                 currentInstanceViewModel: InstanceViewModel, 
-                selectedItems: new List<ListedItem> { ViewModel!.ItemViewModel.CurrentFolder! },
+                selectedItems: new List<ListedItem> { ViewModel!.FileSystemViewModel.CurrentFolder! },
                 selectedItemsPropertiesViewModel: null,
                 commandsViewModel: CommandsViewModel, 
                 shiftPressed: shiftPressed, 
-                itemViewModel: ViewModel.ItemViewModel,
+                itemViewModel: ViewModel.FileSystemViewModel,
                 viewModel: ViewModel,
                 commands: CommandsManager);
 
@@ -280,7 +292,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
             if (!InstanceViewModel!.IsPageTypeSearchResults && !InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
             {
                 var shellMenuItems = await ContextFlyoutItemHelper.GetItemContextShellCommandsAsync(
-                    workingDir: ViewModel.ItemViewModel.WorkingDirectory, 
+                    workingDir: ViewModel.FileSystemViewModel.WorkingDirectory, 
                     selectedItems: new List<ListedItem>(), 
                     shiftPressed: shiftPressed, 
                     showOpenMenu: false, 
@@ -808,7 +820,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
         if (inRecycleQueue)
         {
-            ViewModel.ItemViewModel.CancelExtendedPropertiesLoadingForItem(listedItem);
+            ViewModel.FileSystemViewModel.CancelExtendedPropertiesLoadingForItem(listedItem);
         }
         else
         {
@@ -819,7 +831,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                 uint callbackPhase = 3;
                 args.RegisterUpdateCallback(callbackPhase, async (s, c) =>
                 {
-                    await ViewModel.ItemViewModel.LoadExtendedItemPropertiesAsync(listedItem, IconSize);
+                    await ViewModel.FileSystemViewModel.LoadExtendedItemPropertiesAsync(listedItem, IconSize);
                     /*if (ViewModel.ItemViewModel.EnabledGitProperties is not GitProperties.None && listedItem is GitItem gitItem)
                     {
                         await ViewModel.ItemViewModel.LoadGitPropertiesAsync(gitItem);
@@ -827,6 +839,50 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                 });
             }
         }
+    }
+
+    #endregion
+
+    #region Drag and drop
+
+    protected void FileList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+    {
+        try
+        {
+            var shellItemList = SafetyExtensions.IgnoreExceptions(() => e.Items.OfType<ListedItem>().Select(x => new VanaraWindowsShell.ShellItem(x.ItemPath)).ToArray());
+            if (shellItemList?[0].FileSystemPath is not null && !InstanceViewModel.IsPageTypeSearchResults)
+            {
+                var iddo = shellItemList[0].Parent.GetChildrenUIObjects<IDataObject>(HWND.NULL, shellItemList);
+                shellItemList.ForEach(x => x.Dispose());
+
+                var format = System.Windows.Forms.DataFormats.GetFormat("Shell IDList Array");
+                if (iddo.TryGetData<byte[]>((uint)format.Id, out var data))
+                {
+                    var mem = new MemoryStream(data).AsRandomAccessStream();
+                    e.Data.SetData(format.Name, mem);
+                }
+            }
+            else
+            {
+                // Only support IStorageItem capable paths
+                var storageItemList = e.Items.OfType<ListedItem>().Where(x => !(x.IsHiddenItem && x.IsLinkItem && x.IsRecycleBinItem && x.IsShortcut)).Select(x => VirtualStorageItem.FromListedItem(x));
+                e.Data.SetStorageItems(storageItemList, false);
+            }
+        }
+        catch (Exception)
+        {
+            e.Cancel = true;
+        }
+    }
+
+    protected void ItemsLayout_DragOver(object sender, DragEventArgs e)
+    {
+        CommandsViewModel?.DragOverCommand?.Execute(e);
+    }
+
+    protected void ItemsLayout_Drop(object sender, DragEventArgs e)
+    {
+        CommandsViewModel?.DropCommand?.Execute(e);
     }
 
     #endregion

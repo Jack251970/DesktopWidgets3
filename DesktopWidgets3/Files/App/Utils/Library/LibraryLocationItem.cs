@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Utils.Shell;
 using Files.App.Utils.Storage;
 using System.Collections.ObjectModel;
 using Files.App.Utils.Storage.Helpers;
 using Files.App.Data.Items;
 using Files.App.Helpers;
+using Files.Core.Data.Items;
 
 namespace Files.App.Utils.Library;
 

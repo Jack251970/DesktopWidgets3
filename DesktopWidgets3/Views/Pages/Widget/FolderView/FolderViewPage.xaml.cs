@@ -79,7 +79,7 @@ public sealed partial class FolderViewPage : BaseLayoutPage
         ItemManipulationModel.ScrollIntoViewInvoked += (s, e) =>
         {
             FileList.ScrollIntoView(e);
-            //ContentScroller?.ChangeView(null, FileList.Items.IndexOf(e) * Convert.ToInt32(Application.Current.Resources["ListItemHeight"]), null, true); // Scroll to index * item height
+            /*ContentScroller?.ChangeView(null, FileList.Items.IndexOf(e) * Convert.ToInt32(Application.Current.Resources["ListItemHeight"]), null, true); // Scroll to index * item height*/
         };
         ItemManipulationModel.StartRenameItemInvoked += (s, e) =>
         {
@@ -138,6 +138,15 @@ public sealed partial class FolderViewPage : BaseLayoutPage
             toolbarTapTimer.Stop();
         },
         TimeSpan.FromMilliseconds(300));
+    }
+
+    #endregion
+
+    #region loaded
+
+    private void FileList_Loaded(object sender, RoutedEventArgs e)
+    {
+        /*ContentScroller = FileList.FindDescendant<ScrollViewer>(x => x.Name == "ScrollViewer");*/
     }
 
     #endregion

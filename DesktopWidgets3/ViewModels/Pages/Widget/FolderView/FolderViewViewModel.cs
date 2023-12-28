@@ -86,7 +86,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region current path
 
-    public string CurFolderPath => ItemViewModel.WorkingDirectory;
+    public string CurFolderPath => FileSystemViewModel.WorkingDirectory;
 
     #endregion
 
@@ -176,7 +176,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region models from Files
 
-    public ItemViewModel ItemViewModel;
+    public ItemViewModel FileSystemViewModel;
 
     public CurrentInstanceViewModel InstanceViewModel;
 
@@ -223,12 +223,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         NavigatedTo += FolderViewViewModel_NavigatedTo;
 
         InstanceViewModel = new();
-        CommandsViewModel = new();
+        CommandsViewModel = new(this);
         ItemManipulationModel = new();
         SelectedItemsPropertiesViewModel = new();
-        ItemViewModel = new(this, FolderSettings);
+        FileSystemViewModel = new(this, FolderSettings);
 
-        ItemViewModel.ItemLoadStatusChanged += ItemViewModel_ItemLoadStatusChanged;
+        FileSystemViewModel.ItemLoadStatusChanged += ItemViewModel_ItemLoadStatusChanged;
         InstanceViewModel.PropertyChanged += InstanceViewModel_PropertyChanged;
     }
 
@@ -268,11 +268,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
                 if (!navigationArguments.IsSearchResultPage)
                 {
-                    var previousDir = ItemViewModel.WorkingDirectory;
-                    await ItemViewModel.SetWorkingDirectoryAsync(navigationArguments.NavPathParam);
+                    var previousDir = FileSystemViewModel.WorkingDirectory;
+                    await FileSystemViewModel.SetWorkingDirectoryAsync(navigationArguments.NavPathParam);
 
                     // pathRoot will be empty on recycle bin path
-                    var workingDir = ItemViewModel.WorkingDirectory ?? string.Empty;
+                    var workingDir = FileSystemViewModel.WorkingDirectory ?? string.Empty;
                     var pathRoot = PathNormalization.GetPathRoot(workingDir);
                     var isRoot = workingDir == pathRoot;
 
@@ -302,7 +302,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
                     if (!navigationArguments.IsLayoutSwitch || previousDir != workingDir)
                     {
-                        await ItemViewModel.RefreshItems(previousDir);//, SetSelectedItemsOnNavigation);
+                        await FileSystemViewModel.RefreshItems(previousDir);//, SetSelectedItemsOnNavigation);
                     }
                     /*else
                     {
@@ -311,12 +311,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 }
                 else
                 {
-                    await ItemViewModel.SetWorkingDirectoryAsync(navigationArguments.SearchPathParam);
+                    await FileSystemViewModel.SetWorkingDirectoryAsync(navigationArguments.SearchPathParam);
 
                     //ToolbarViewModel.CanGoForward = false;
                     ToolbarViewModel.CanNavigateToParent = false;
 
-                    var workingDir = ItemViewModel.WorkingDirectory ?? string.Empty;
+                    var workingDir = FileSystemViewModel.WorkingDirectory ?? string.Empty;
 
                     InstanceViewModel.IsPageTypeRecycleBin = workingDir.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
                     InstanceViewModel.IsPageTypeMtpDevice = workingDir.StartsWith("\\\\?\\", StringComparison.Ordinal);
@@ -360,14 +360,14 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             }
             else if (navigationArguments.RefreshBehaviour == RefreshBehaviours.RefreshItems)
             {
-                await ItemViewModel.RefreshItems(null);
+                await FileSystemViewModel.RefreshItems(null);
             }
         }
     }
 
     private void UpdateCollectionViewSource()
     {
-        var items = ItemViewModel.FilesAndFolders;
+        var items = FileSystemViewModel.FilesAndFolders;
         if (items.IsGrouped)
         {
             CollectionViewSource = new()
@@ -388,7 +388,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public async Task RefreshIfNoWatcherExistsAsync()
     {
-        if (ItemViewModel.HasNoWatcher)
+        if (FileSystemViewModel.HasNoWatcher)
         {
             await Refresh_Click();
         }
@@ -451,7 +451,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                         folderToSelect = folderToSelect.Remove(folderToSelect.Length - 1, 1);
                     }
 
-                    var itemToSelect = ItemViewModel.FilesAndFolders.Where((item) => item.ItemPath == folderToSelect).FirstOrDefault();
+                    var itemToSelect = FileSystemViewModel.FilesAndFolders.Where((item) => item.ItemPath == folderToSelect).FirstOrDefault();
 
                     if (itemToSelect is not null)
                     {
@@ -744,7 +744,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             {
                 CanGoBack = navigationFolderPaths.Count > 0;
 
-                var workingDir = ItemViewModel.WorkingDirectory ?? string.Empty;
+                var workingDir = FileSystemViewModel.WorkingDirectory ?? string.Empty;
                 var pathRoot = PathNormalization.GetPathRoot(workingDir);
                 var isRoot = workingDir == pathRoot;
                 var isRecycleBin = workingDir.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
@@ -820,7 +820,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public void Up_Click()
     {
-        var workingDirectory = ItemViewModel.WorkingDirectory;
+        var workingDirectory = FileSystemViewModel.WorkingDirectory;
         if (workingDirectory is null || string.Equals(workingDirectory, PathNormalization.GetPathRoot(workingDirectory), StringComparison.OrdinalIgnoreCase))
         {
             //ParentShellPageInstance?.NavigateHome();
@@ -856,7 +856,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         else
         {
             ToolbarViewModel.CanRefresh = false;
-            ItemViewModel?.RefreshItems(null);
+            FileSystemViewModel?.RefreshItems(null);
         }
     }
 
@@ -898,7 +898,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     public void WidgetWindow_Closing()
     {
         CommandsViewModel.Dispose();
-        ItemViewModel.Dispose();
+        FileSystemViewModel.Dispose();
     }
 
     #endregion

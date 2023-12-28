@@ -89,7 +89,7 @@ public class ShellFileSystemOperations : IFileSystemOperations
 
             foreach (var item in deleteResult.Items)
             {
-                await viewModel.ItemViewModel.RemoveFileOrFolderAsync(item.Source);
+                await viewModel.FileSystemViewModel.RemoveFileOrFolderAsync(item.Source);
             }
 
             /*var recycledSources = deleteResult.Items.Where(x => x.Succeeded && x.Destination is not null && x.Source != x.Destination);
