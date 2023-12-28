@@ -5,6 +5,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Commands;
+using Files.App.Data.Contexts;
+using Files.App.Helpers;
 using System.ComponentModel;
 using Windows.ApplicationModel.DataTransfer;
 
@@ -26,8 +28,8 @@ internal class ShareItemAction : ObservableObject, IAction
     public bool IsExecutable =>
         IsContextPageTypeAdaptedToCommand() &&
         DataTransferManager.IsSupported() &&
-        context.SelectedItems.Any() /*&&
-        context.SelectedItems.All(ShareItemHelpers.IsItemShareable)*/;
+        context.SelectedItems.Any() &&
+        context.SelectedItems.All(ShareItemHelpers.IsItemShareable);
 
     public ShareItemAction(FolderViewViewModel viewModel)
     {
@@ -38,19 +40,19 @@ internal class ShareItemAction : ObservableObject, IAction
 
     public Task ExecuteAsync()
     {
-        //ShareItemHelpers.ShareItems(context.SelectedItems);
+        ShareItemHelpers.ShareItems(context, context.SelectedItems);
 
         return Task.CompletedTask;
     }
 
     private bool IsContextPageTypeAdaptedToCommand()
     {
-        return true;
-            /*context.PageType != ContentPageTypes.RecycleBin &&
+        return
+            context.PageType != ContentPageTypes.RecycleBin &&
             context.PageType != ContentPageTypes.Home &&
             context.PageType != ContentPageTypes.Ftp &&
             context.PageType != ContentPageTypes.ZipFolder &&
-            context.PageType != ContentPageTypes.None;*/
+            context.PageType != ContentPageTypes.None;
     }
 
     private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -58,7 +60,7 @@ internal class ShareItemAction : ObservableObject, IAction
         switch (e.PropertyName)
         {
             case nameof(context.SelectedItems):
-            /*case nameof(context.PageType):*/
+            case nameof(context.PageType):
                 OnPropertyChanged(nameof(IsExecutable));
                 break;
         }

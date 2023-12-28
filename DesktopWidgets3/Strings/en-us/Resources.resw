@@ -739,4 +739,22 @@
    <data name="ErrorDialogUnsupportedMoveOperation" xml:space="preserve">
     <value>Move operation is not supported in this context. Do you want to copy the items instead?</value>
   </data>
+  <data name="ShareDialogFailMessage" xml:space="preserve">
+    <value>There's nothing to share right now...</value>
+  </data>
+  <data name="ShareDialogMultipleItemsDescription" xml:space="preserve">
+    <value>The items you've selected will be shared</value>
+  </data>
+  <data name="ShareDialogSingleItemDescription" xml:space="preserve">
+    <value>The selected item will be shared</value>
+  </data>
+  <data name="ShareDialogTitle" xml:space="preserve">
+    <value>Sharing {0}</value>
+  </data>
+  <data name="ShareDialogTitleMultipleItems" xml:space="preserve">
+    <value>Sharing {0} {1}</value>
+  </data>
+  <data name="ItemsCount.Text" xml:space="preserve">
+    <value>items</value>
+  </data>
 </root>

@@ -730,4 +730,22 @@
   <data name="ErrorDialogUnsupportedMoveOperation" xml:space="preserve">
     <value>当前无法执行移动操作。要复制此项目吗？</value>
   </data>
+  <data name="ShareDialogFailMessage" xml:space="preserve">
+    <value>目前没有可共享的内容。</value>
+  </data>
+  <data name="ShareDialogMultipleItemsDescription" xml:space="preserve">
+    <value>将共享你选择的项目</value>
+  </data>
+  <data name="ShareDialogSingleItemDescription" xml:space="preserve">
+    <value>将共享已选项目</value>
+  </data>
+  <data name="ShareDialogTitle" xml:space="preserve">
+    <value>正在共享 {0}</value>
+  </data>
+  <data name="ShareDialogTitleMultipleItems" xml:space="preserve">
+    <value>正在共享 {0} {1}</value>
+  </data>
+  <data name="ItemsCount.Text" xml:space="preserve">
+    <value>个项目</value>
+  </data>
 </root>
