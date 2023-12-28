@@ -11,6 +11,8 @@ using System.Diagnostics;
 using System.Text;
 using Windows.System;
 using Files.Shared.Extensions;
+using System.Windows.Forms;
+using Files.Core.Data.Items;
 
 namespace Files.App.Utils.Shell;
 
@@ -426,25 +428,6 @@ public class Win32API
         return false;
     }
 
-    public class IconFileInfo
-    {
-        public byte[] IconData
-        {
-            get;
-        }
-
-        public int Index
-        {
-            get;
-        }
-
-        public IconFileInfo(byte[] iconData, int index)
-        {
-            IconData = iconData;
-            Index = index;
-        }
-    }
-
     public static IEnumerable<HWND> GetDesktopWindows()
     {
         var prevHwnd = HWND.NULL;
@@ -468,6 +451,20 @@ public class Win32API
     {
         // Mounting requires elevation
         return RunPowershellCommandAsync($"-command \"Mount-DiskImage -ImagePath '{vhdPath}'\"", true);
+    }
+
+    public class Win32Window : IWin32Window
+    {
+        public IntPtr Handle
+        {
+            get; set;
+        }
+
+        public static Win32Window FromLong(long hwnd)
+            => new()
+            {
+                Handle = new IntPtr(hwnd)
+            };
     }
 
     public static Shell32.ITaskbarList4? CreateTaskbarObject()

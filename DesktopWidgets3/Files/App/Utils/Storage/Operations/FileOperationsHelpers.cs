@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using DesktopWidgets3.Forms;
 using Files.App.Helpers;
 using Files.App.Utils.Shell;
 using Files.App.Utils.StatusCenter;
@@ -546,9 +545,15 @@ public class FileOperationsHelpers
     {
         return Win32API.StartSTATask(() =>
         {
+            System.Windows.Forms.Clipboard.Clear();
+            var fileList = new System.Collections.Specialized.StringCollection();
+            fileList.AddRange(filesToCopy);
             var dropEffect = new MemoryStream(operation == DataPackageOperation.Copy ?
                 new byte[] { 5, 0, 0, 0 } : new byte[] { 2, 0, 0, 0 });
-            FormsHelpers.SetClipboard(filesToCopy, dropEffect);
+            var data = new System.Windows.Forms.DataObject();
+            data.SetFileDropList(fileList);
+            data.SetData("Preferred DropEffect", dropEffect);
+            System.Windows.Forms.Clipboard.SetDataObject(data, true);
         });
     }
 

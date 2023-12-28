@@ -7,6 +7,7 @@ using Files.App.ViewModels.Dialogs;
 using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
 using Files.Shared.Extensions;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.Helpers;
 
@@ -35,6 +36,84 @@ public static class DynamicDialogFactory
             SecondaryButtonText = "No".GetLocalized(),
             DynamicButtons = DynamicDialogButtons.Primary | DynamicDialogButtons.Secondary
         });
+        return dialog;
+    }
+
+    public static DynamicDialog GetFor_CredentialEntryDialog(string path)
+    {
+        var userAndPass = new string[3];
+        DynamicDialog? dialog = null;
+
+        TextBox inputUsername = new()
+        {
+            PlaceholderText = "CredentialDialogUserName/PlaceholderText".GetLocalized()
+        };
+
+        PasswordBox inputPassword = new()
+        {
+            PlaceholderText = "Password".GetLocalized()
+        };
+
+        CheckBox saveCreds = new()
+        {
+            Content = "NetworkAuthenticationSaveCheckbox".GetLocalized()
+        };
+
+        inputUsername.TextChanged += (textBox, args) =>
+        {
+            userAndPass[0] = inputUsername.Text;
+            dialog!.ViewModel.AdditionalData = userAndPass;
+        };
+
+        inputPassword.PasswordChanged += (textBox, args) =>
+        {
+            userAndPass[1] = inputPassword.Password;
+            dialog!.ViewModel.AdditionalData = userAndPass;
+        };
+
+        saveCreds.Checked += (textBox, args) =>
+        {
+            userAndPass[2] = "y";
+            dialog!.ViewModel.AdditionalData = userAndPass;
+        };
+
+        saveCreds.Unchecked += (textBox, args) =>
+        {
+            userAndPass[2] = "n";
+            dialog!.ViewModel.AdditionalData = userAndPass;
+        };
+
+        dialog = new DynamicDialog(new DynamicDialogViewModel()
+        {
+            TitleText = "NetworkAuthenticationDialogTitle".GetLocalized(),
+            PrimaryButtonText = "OK".GetLocalized(),
+            CloseButtonText = "Cancel".GetLocalized(),
+            SubtitleText = string.Format("NetworkAuthenticationDialogMessage".GetLocalized(), path.Substring(2)),
+            DisplayControl = new Grid()
+            {
+                MinWidth = 250d,
+                Children =
+                    {
+                        new StackPanel()
+                        {
+                            Spacing = 10d,
+                            Children =
+                            {
+                                inputUsername,
+                                inputPassword,
+                                saveCreds
+                            }
+                        }
+                    }
+            },
+            CloseButtonAction = (vm, e) =>
+            {
+                dialog!.ViewModel.AdditionalData = null!;
+                vm.HideDialog();
+            }
+
+        });
+
         return dialog;
     }
 }

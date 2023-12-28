@@ -17,15 +17,19 @@ using Windows.Storage;
 using Files.Shared.Extensions;
 using Files.App.Utils.Git;
 using Files.Core.Utils.Cloud;
-using System.Diagnostics;
 using Windows.Storage.FileProperties;
 using Files.App.Extensions;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using System.Collections.Concurrent;
 using Microsoft.UI.Xaml.Media;
 using Files.App.ViewModels.Previews;
+using Windows.Foundation;
+using System.Runtime.CompilerServices;
+using Windows.Storage.Search;
+using System.Diagnostics;
 using FileAttributes = System.IO.FileAttributes;
 using static Files.Core.Helpers.NativeFindStorageItemHelper;
+using static Files.App.Helpers.NativeDirectoryChangesHelper;
 
 namespace Files.App.Data.Models;
 
@@ -34,7 +38,11 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
     #region properties
 
     private readonly SemaphoreSlim enumFolderSemaphore;
+    private readonly ConcurrentQueue<(uint Action, string FileName)> operationQueue;
+    private readonly ConcurrentQueue<uint> gitChangesQueue;
     private readonly ConcurrentDictionary<string, bool> itemLoadQueue;
+    private readonly AsyncManualResetEvent operationEvent;
+    private readonly AsyncManualResetEvent gitChangedEvent;
     private readonly DispatcherQueue dispatcherQueue;
     private readonly IStorageCacheController fileListCache = StorageCacheController.GetInstance();
     private readonly string folderTypeTextLocalized = "Folder".GetLocalized();
@@ -81,6 +89,10 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
     public event EventHandler? DirectoryInfoUpdated;
 
+    public event EventHandler? GitDirectoryUpdated;
+
+    public event EventHandler<List<ListedItem>>? OnSelectionRequestedEvent;
+
     public bool HasNoWatcher { get; private set; }
 
     private bool isLoadingItems = false;
@@ -108,11 +120,15 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         folderSettings = folderSettingsViewModel;
         filesAndFolders = new ConcurrentCollection<ListedItem>();
         FilesAndFolders = new BulkConcurrentObservableCollection<ListedItem>();
+        operationQueue = new ConcurrentQueue<(uint Action, string FileName)>();
+        gitChangesQueue = new ConcurrentQueue<uint>();
         itemLoadQueue = new ConcurrentDictionary<string, bool>();
         addFilesCTS = new CancellationTokenSource();
         semaphoreCTS = new CancellationTokenSource();
         loadPropsCTS = new CancellationTokenSource();
         watcherCTS = new CancellationTokenSource();
+        operationEvent = new AsyncManualResetEvent();
+        gitChangedEvent = new AsyncManualResetEvent();
         enumFolderSemaphore = new SemaphoreSlim(1, 1);
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
@@ -297,7 +313,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         stopwatch.Stop();
     }
 
-    private async Task<CloudDriveSyncStatus> CheckCloudDriveSyncStatusAsync(IStorageItem item)
+    private static async Task<CloudDriveSyncStatus> CheckCloudDriveSyncStatusAsync(IStorageItem item)
     {
         int? syncStatus = null;
         if (item is BaseStorageFile file && file.Properties is not null)
@@ -344,11 +360,11 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         if (isNetwork)
         {
-            /*var auth = await NetworkDrivesAPI.AuthenticateNetworkShare(path);
+            var auth = await NetworkDrivesAPI.AuthenticateNetworkShare(ViewModel, path);
             if (!auth)
             {
                 return -1;
-            }*/
+            }
             return -1;
         }
 
@@ -441,7 +457,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             }
 
             CurrentFolder = currentFolder;
-            await EnumFromStorageFolderAsync(path, rootFolder, currentStorageFolder!, cancellationToken);
+            await EnumFromStorageFolderAsync(rootFolder, currentStorageFolder!, cancellationToken);
 
             // Workaround for #7428
             return isBoxFolder ? 2 : 1;
@@ -509,7 +525,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             }
             else if (hFile.ToInt64() == -1)
             {
-                await EnumFromStorageFolderAsync(path, rootFolder, currentStorageFolder!, cancellationToken);
+                await EnumFromStorageFolderAsync(rootFolder, currentStorageFolder!, cancellationToken);
 
                 // errorCode == ERROR_ACCESS_DENIED
                 if (filesAndFolders.Count == 0 && errorCode == 0x5)
@@ -554,7 +570,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         }
     }
 
-    private async Task EnumFromStorageFolderAsync(string path, BaseStorageFolder? rootFolder, StorageFolderWithPath currentStorageFolder, CancellationToken? cancellationToken)
+    private async Task EnumFromStorageFolderAsync(BaseStorageFolder? rootFolder, StorageFolderWithPath currentStorageFolder, CancellationToken? cancellationToken)
     {
         if (rootFolder is null)
         {
@@ -753,7 +769,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
     private void WatchForDirectoryChanges(string path, CloudDriveSyncStatus syncStatus)
     {
-        /*var hWatchDir = NativeFileOperationsHelper.CreateFileFromApp(path, 1, 1 | 2 | 4,
+        var hWatchDir = NativeFileOperationsHelper.CreateFileFromApp(path, 1, 1 | 2 | 4,
             IntPtr.Zero, 3, (uint)NativeFileOperationsHelper.File_Attributes.BackupSemantics | (uint)NativeFileOperationsHelper.File_Attributes.Overlapped, IntPtr.Zero);
         if (hWatchDir.ToInt64() == -1)
         {
@@ -762,7 +778,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         var hasSyncStatus = syncStatus != CloudDriveSyncStatus.NotSynced && syncStatus != CloudDriveSyncStatus.Unknown;
 
-        aProcessQueueAction ??= Task.Factory.StartNew(() => ProcessOperationQueueAsync(watcherCTS.Token, hasSyncStatus), default,
+        aProcessQueueAction ??= Task.Factory.StartNew(() => ProcessOperationQueueAsync(hasSyncStatus, watcherCTS.Token), default,
             TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
         var aWatcherAction = Windows.System.Threading.ThreadPool.RunAsync((x) =>
@@ -776,8 +792,10 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
                 notifyFilters |= FILE_NOTIFY_CHANGE_ATTRIBUTES;
             }
 
-            var overlapped = new OVERLAPPED();
-            overlapped.hEvent = CreateEvent(IntPtr.Zero, false, false, null);
+            var overlapped = new OVERLAPPED
+            {
+                hEvent = CreateEvent(IntPtr.Zero, false, false, null!)
+            };
             const uint INFINITE = 0xFFFFFFFF;
 
             while (x.Status != AsyncStatus.Canceled)
@@ -792,24 +810,26 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
                             ReadDirectoryChangesW(hWatchDir, pBuff,
                             4096, false,
                             notifyFilters, null,
-                            ref overlapped, null);
+                            ref overlapped, null!);
                         }
                         else
                         {
                             break;
                         }
 
-                        Debug.WriteLine("waiting: {0}", rand);
                         if (x.Status == AsyncStatus.Canceled)
+                        {
                             break;
+                        }
 
                         var rc = WaitForSingleObjectEx(overlapped.hEvent, INFINITE, true);
-                        Debug.WriteLine("wait done: {0}", rand);
 
                         uint offset = 0;
                         ref var notifyInfo = ref Unsafe.As<byte, FILE_NOTIFY_INFORMATION>(ref buff[offset]);
                         if (x.Status == AsyncStatus.Canceled)
+                        {
                             break;
+                        }
 
                         do
                         {
@@ -823,9 +843,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
                                 }
                             }
 
-                            uint action = notifyInfo.Action;
-
-                            Debug.WriteLine("action: {0}", action);
+                            var action = notifyInfo.Action;
 
                             operationQueue.Enqueue((action, FileName));
 
@@ -856,12 +874,155 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
             CancelIoEx(hWatchDir, IntPtr.Zero);
             CloseHandle(hWatchDir);
-        });*/
+        });
+    }
+
+    private async Task ProcessOperationQueueAsync(bool hasSyncStatus, CancellationToken cancellationToken)
+    {
+        const uint FILE_ACTION_ADDED = 0x00000001;
+        const uint FILE_ACTION_REMOVED = 0x00000002;
+        const uint FILE_ACTION_MODIFIED = 0x00000003;
+        const uint FILE_ACTION_RENAMED_OLD_NAME = 0x00000004;
+        const uint FILE_ACTION_RENAMED_NEW_NAME = 0x00000005;
+
+        const int UPDATE_BATCH_SIZE = 32;
+        var sampler = new IntervalSampler(200);
+        var updateQueue = new Queue<string>();
+
+        var anyEdits = false;
+        ListedItem? lastItemAdded = null;
+
+        // Call when any edits have occurred
+        async Task HandleChangesOccurredAsync()
+        {
+            await OrderFilesAndFoldersAsync();
+            await ApplyFilesAndFoldersChangesAsync();
+
+            if (lastItemAdded is not null && !lastItemAdded.IsArchive)
+            {
+                await RequestSelectionAsync(new List<ListedItem>() { lastItemAdded });
+                lastItemAdded = null;
+            }
+
+            anyEdits = false;
+        }
+
+        try
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                if (await operationEvent.WaitAsync(200, cancellationToken))
+                {
+                    operationEvent.Reset();
+
+                    while (operationQueue.TryDequeue(out var operation))
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
+                        try
+                        {
+                            switch (operation.Action)
+                            {
+                                case FILE_ACTION_ADDED:
+                                case FILE_ACTION_RENAMED_NEW_NAME:
+                                    lastItemAdded = await AddFileOrFolderAsync(operation.FileName);
+                                    if (lastItemAdded is not null)
+                                    {
+                                        anyEdits = true;
+                                    }
+
+                                    break;
+
+                                case FILE_ACTION_MODIFIED:
+                                    if (!updateQueue.Contains(operation.FileName))
+                                    {
+                                        updateQueue.Enqueue(operation.FileName);
+                                    }
+
+                                    break;
+
+                                case FILE_ACTION_REMOVED:
+                                    var itemRemoved = await RemoveFileOrFolderAsync(operation.FileName);
+                                    if (itemRemoved is not null)
+                                    {
+                                        anyEdits = true;
+                                    }
+
+                                    break;
+
+                                case FILE_ACTION_RENAMED_OLD_NAME:
+                                    var itemRenamedOld = await RemoveFileOrFolderAsync(operation.FileName);
+                                    if (itemRenamedOld is not null)
+                                    {
+                                        anyEdits = true;
+                                    }
+
+                                    break;
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+
+                        if (anyEdits && sampler.CheckNow())
+                        {
+                            await HandleChangesOccurredAsync();
+                        }
+                    }
+
+                    var itemsToUpdate = new List<string>();
+                    for (var i = 0; i < UPDATE_BATCH_SIZE && updateQueue.Count > 0; i++)
+                    {
+                        itemsToUpdate.Add(updateQueue.Dequeue());
+                    }
+
+                    await UpdateFilesOrFoldersAsync(itemsToUpdate, hasSyncStatus);
+                }
+
+                if (updateQueue.Count > 0)
+                {
+                    var itemsToUpdate = new List<string>();
+                    for (var i = 0; i < UPDATE_BATCH_SIZE && updateQueue.Count > 0; i++)
+                    {
+                        itemsToUpdate.Add(updateQueue.Dequeue());
+                    }
+
+                    await UpdateFilesOrFoldersAsync(itemsToUpdate, hasSyncStatus);
+                }
+
+                if (anyEdits && sampler.CheckNow())
+                {
+                    await HandleChangesOccurredAsync();
+                }
+            }
+        }
+        catch
+        {
+            // Prevent disposed cancellation token
+        }
+    }
+
+    private Task RequestSelectionAsync(List<ListedItem> itemsToSelect)
+    {
+        // Don't notify if there weren't listed items
+        if (itemsToSelect is null || itemsToSelect.IsEmpty())
+        {
+            return Task.CompletedTask;
+        }
+
+        return dispatcherQueue.EnqueueOrInvokeAsync(() =>
+        {
+            OnSelectionRequestedEvent?.Invoke(this, itemsToSelect);
+        });
     }
 
     private void WatchForGitChanges()
     {
-        /*var hWatchDir = NativeFileOperationsHelper.CreateFileFromApp(
+        var hWatchDir = NativeFileOperationsHelper.CreateFileFromApp(
             GitDirectory!,
             1,
             1 | 2 | 4,
@@ -884,8 +1045,10 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             var rand = Guid.NewGuid();
             var notifyFilters = FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_CREATION;
 
-            var overlapped = new OVERLAPPED();
-            overlapped.hEvent = CreateEvent(IntPtr.Zero, false, false, null);
+            var overlapped = new OVERLAPPED
+            {
+                hEvent = CreateEvent(IntPtr.Zero, false, false, null!)
+            };
             const uint INFINITE = 0xFFFFFFFF;
 
             while (x.Status != AsyncStatus.Canceled)
@@ -896,28 +1059,34 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
                     {
                         ref var notifyInformation = ref Unsafe.As<byte, FILE_NOTIFY_INFORMATION>(ref buff[0]);
                         if (x.Status == AsyncStatus.Canceled)
+                        {
                             break;
+                        }
 
                         ReadDirectoryChangesW(hWatchDir, pBuff,
                             4096, true,
                             notifyFilters, null,
-                            ref overlapped, null);
+                            ref overlapped, null!);
 
                         if (x.Status == AsyncStatus.Canceled)
+                        {
                             break;
+                        }
 
                         var rc = WaitForSingleObjectEx(overlapped.hEvent, INFINITE, true);
 
                         uint offset = 0;
                         ref var notifyInfo = ref Unsafe.As<byte, FILE_NOTIFY_INFORMATION>(ref buff[offset]);
                         if (x.Status == AsyncStatus.Canceled)
+                        {
                             break;
+                        }
 
                         do
                         {
                             notifyInfo = ref Unsafe.As<byte, FILE_NOTIFY_INFORMATION>(ref buff[offset]);
 
-                            uint action = notifyInfo.Action;
+                            var action = notifyInfo.Action;
 
                             gitChangesQueue.Enqueue(action);
 
@@ -946,12 +1115,41 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
             CancelIoEx(hWatchDir, IntPtr.Zero);
             CloseHandle(hWatchDir);
-        });*/
+        });
+    }
+
+    private async Task ProcessGitChangesQueueAsync(CancellationToken cancellationToken)
+    {
+        const int DELAY = 200;
+        var sampler = new IntervalSampler(100);
+        var changes = 0;
+
+        try
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                if (await gitChangedEvent.WaitAsync(DELAY, cancellationToken))
+                {
+                    gitChangedEvent.Reset();
+                    while (gitChangesQueue.TryDequeue(out var _))
+                    {
+                        ++changes;
+                    }
+
+                    if (changes != 0 && sampler.CheckNow())
+                    {
+                        await dispatcherQueue.EnqueueOrInvokeAsync(() => GitDirectoryUpdated?.Invoke(null, null!));
+                        changes = 0;
+                    }
+                }
+            }
+        }
+        catch { }
     }
 
     private async Task WatchForStorageFolderChangesAsync(BaseStorageFolder? rootFolder)
     {
-        /*if (rootFolder is null)
+        if (rootFolder is null)
         {
             return;
         }
@@ -984,7 +1182,27 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         },
         default,
         TaskCreationOptions.LongRunning,
-        TaskScheduler.Default);*/
+        TaskScheduler.Default);
+    }
+
+    private async void ItemQueryResult_ContentsChanged(IStorageQueryResultBase sender, object args)
+    {
+        // Query options have to be reapplied otherwise old results are returned
+        var options = new QueryOptions()
+        {
+            FolderDepth = FolderDepth.Shallow,
+            IndexerOption = IndexerOption.OnlyUseIndexerAndOptimizeForIndexedProperties
+        };
+
+        options.SetPropertyPrefetch(PropertyPrefetchOptions.None, null);
+        options.SetThumbnailPrefetch(ThumbnailMode.ListView, 0, ThumbnailOptions.ReturnOnlyIfCached);
+
+        sender.ApplyNewQueryOptions(options);
+
+        await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+        {
+            await RefreshItems(null);
+        });
     }
 
     // Win32FolderChanges
@@ -1442,7 +1660,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         }
     }
 
-    private async Task<BitmapImage> GetShieldIcon()
+    private static async Task<BitmapImage> GetShieldIcon()
     {
         shieldIcon ??= (await UIHelpers.GetShieldIconResource())!;
 
@@ -1511,6 +1729,169 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         return null;
     }
+
+    private async Task<ListedItem?> AddFileOrFolderAsync(string fileOrFolderPath)
+    {
+        var findInfoLevel = FINDEX_INFO_LEVELS.FindExInfoBasic;
+        var additionalFlags = FIND_FIRST_EX_CASE_SENSITIVE;
+
+        var hFile = FindFirstFileExFromApp(fileOrFolderPath, findInfoLevel, out var findData, FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, additionalFlags);
+        if (hFile.ToInt64() == -1)
+        {
+            // If we cannot find the file (probably since it doesn't exist anymore) simply exit without adding it
+            return null;
+        }
+
+        FindClose(hFile);
+
+        var isSystem = ((FileAttributes)findData.dwFileAttributes & FileAttributes.System) == FileAttributes.System;
+        var isHidden = ((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden;
+        var startWithDot = findData.cFileName.StartsWith('.');
+        if ((isHidden &&
+           (!ViewModel.GetSettings().ShowHiddenFile ||
+           (isSystem && !false))) || // TODO: UserSettingsService.FoldersSettingsService.ShowProtectedSystemFiles
+           (startWithDot && !true))  // TODO: UserSettingsService.FoldersSettingsService.ShowDotFiles
+        {
+            // Do not add to file list if hidden/system attribute is set and system/hidden file are not to be shown
+            return null;
+        }
+
+        ListedItem listedItem;
+
+        // FILE_ATTRIBUTE_DIRECTORY
+        if ((findData.dwFileAttributes & 0x10) > 0)
+        {
+            listedItem = await Win32StorageEnumerator.GetFolder(ViewModel, findData, Directory.GetParent(fileOrFolderPath)!.FullName, IsValidGitDirectory, addFilesCTS.Token);
+        }
+        else
+        {
+            listedItem = await Win32StorageEnumerator.GetFile(ViewModel, findData, Directory.GetParent(fileOrFolderPath)!.FullName, IsValidGitDirectory, addFilesCTS.Token);
+        }
+
+        await AddFileOrFolderAsync(listedItem);
+
+        return listedItem;
+    }
+
+    private async Task AddFileOrFolderAsync(ListedItem? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await enumFolderSemaphore.WaitAsync(semaphoreCTS.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        if (!filesAndFolders.ToList().Any(x => x.ItemPath.Equals(item.ItemPath, StringComparison.OrdinalIgnoreCase))) // Avoid adding duplicate items
+        {
+            filesAndFolders.Add(item);
+
+            // TODO: UserSettingsService.FoldersSettingsService.AreAlternateStreamsVisible
+            /*if (UserSettingsService.FoldersSettingsService.AreAlternateStreamsVisible)
+            {
+                // New file added, enumerate ADS
+                foreach (var ads in NativeFileOperationsHelper.GetAlternateStreams(item.ItemPath))
+                {
+                    var adsItem = Win32StorageEnumerator.GetAlternateStream(ViewModel, ads, item);
+                    filesAndFolders.Add(adsItem);
+                }
+            }*/
+        }
+
+        enumFolderSemaphore.Release();
+    }
+
+    private async Task UpdateFilesOrFoldersAsync(IEnumerable<string> paths, bool hasSyncStatus)
+    {
+        try
+        {
+            await enumFolderSemaphore.WaitAsync(semaphoreCTS.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        try
+        {
+            var matchingItems = filesAndFolders.ToList().Where(x => paths.Any(p => p.Equals(x.ItemPath, StringComparison.OrdinalIgnoreCase)));
+            var results = await Task.WhenAll(matchingItems.Select(x => GetFileOrFolderUpdateInfoAsync(x, hasSyncStatus)));
+
+            await dispatcherQueue.EnqueueOrInvokeAsync(() =>
+            {
+                foreach (var result in results)
+                {
+                    if (result is not null)
+                    {
+                        var item = result.Value.Item;
+                        item.ItemDateModifiedReal = result.Value.Modified;
+                        item.ItemDateCreatedReal = result.Value.Created;
+
+                        if (result.Value.SyncStatus is not null)
+                        {
+                            item.SyncStatusUI = CloudDriveSyncStatusUI.FromCloudDriveSyncStatus(result.Value.SyncStatus.Value);
+                        }
+
+                        if (result.Value.Size is not null)
+                        {
+                            item.FileSizeBytes = result.Value.Size.Value;
+                            item.FileSize = item.FileSizeBytes.ToSizeString();
+                        }
+                    }
+                }
+            }, DispatcherQueuePriority.Low);
+        }
+        finally
+        {
+            enumFolderSemaphore.Release();
+        }
+    }
+
+    private async Task<(ListedItem Item, CloudDriveSyncStatus? SyncStatus, long? Size, DateTimeOffset Created, DateTimeOffset Modified)?> GetFileOrFolderUpdateInfoAsync(ListedItem item, bool hasSyncStatus)
+    {
+        IStorageItem? storageItem = null;
+        if (item.PrimaryItemAttribute == StorageItemTypes.File)
+        {
+            storageItem = (await GetFileFromPathAsync(item.ItemPath)).Result;
+        }
+        else if (item.PrimaryItemAttribute == StorageItemTypes.Folder)
+        {
+            storageItem = (await GetFolderFromPathAsync(item.ItemPath)).Result;
+        }
+
+        if (storageItem is not null)
+        {
+            CloudDriveSyncStatus? syncStatus = hasSyncStatus ? await global::Files.App.Data.Models.ItemViewModel.CheckCloudDriveSyncStatusAsync(storageItem) : null;
+            long? size = null;
+            DateTimeOffset created = default, modified = default;
+
+            if (storageItem.IsOfType(StorageItemTypes.File))
+            {
+                var properties = await storageItem.AsBaseStorageFile()!.GetBasicPropertiesAsync();
+                size = (long)properties.Size;
+                modified = properties.DateModified;
+                created = properties.DateCreated;
+            }
+            else if (storageItem.IsOfType(StorageItemTypes.Folder))
+            {
+                var properties = await storageItem.AsBaseStorageFolder()!.GetBasicPropertiesAsync();
+                modified = properties.DateModified;
+                created = properties.DateCreated;
+            }
+
+            return (item, syncStatus, size, created, modified);
+        }
+
+        return null;
+    }
+
 
     #endregion
 

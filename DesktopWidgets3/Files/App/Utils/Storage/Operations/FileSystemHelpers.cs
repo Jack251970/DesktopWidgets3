@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
@@ -22,7 +23,6 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using static DesktopWidgets3.Forms.InteropServicesHelpers;
 using FileAttributes = System.IO.FileAttributes;
 
 namespace Files.App.Utils.Storage;
@@ -297,7 +297,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
                     {
                         itemsList.Add(new VirtualStorageFolder(descriptor.fgd[ii].cFileName).FromStorageItem());
                     }
-                    else if (NativeClipboard.CurrentDataObject.GetData("FileContents", DVASPECT_CONTENT, ii) is InteropIStream stream)
+                    else if (NativeClipboard.CurrentDataObject.GetData("FileContents", DVASPECT.DVASPECT_CONTENT, ii) is IStream stream)
                     {
                         var streamContent = new ComStreamWrapper(stream);
                         itemsList.Add(new VirtualStorageFile(streamContent, descriptor.fgd[ii].cFileName).FromStorageItem());

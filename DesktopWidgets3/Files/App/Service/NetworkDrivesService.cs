@@ -69,4 +69,10 @@ public class NetworkDrivesService : INetworkDrivesService
             yield return networkItem;
         }
     }
+
+    public Task OpenMapNetworkDriveDialogAsync(FolderViewViewModel viewModel)
+    {
+        var handle = viewModel.WidgetWindow.WindowHandle.ToInt64();
+        return NetworkDrivesAPI.OpenMapNetworkDriveDialog(handle);
+    }
 }

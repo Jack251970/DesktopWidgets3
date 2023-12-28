@@ -3,6 +3,7 @@
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.Core.Data.Enums;
+using Files.Core.Data.Items;
 using Files.Core.ViewModels.Dialogs;
 using Microsoft.UI.Xaml.Controls;
 using System.ComponentModel;

@@ -748,4 +748,22 @@
   <data name="ItemsCount.Text" xml:space="preserve">
     <value>个项目</value>
   </data>
+  <data name="NetworkFolderErrorDialogTitle" xml:space="preserve">
+    <value>网络文件夹错误</value>
+  </data>
+  <data name="CredentialDialogUserName.PlaceholderText" xml:space="preserve">
+    <value>用户名</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>密码</value>
+  </data>
+  <data name="NetworkAuthenticationSaveCheckbox" xml:space="preserve">
+    <value>记住我的凭据</value>
+  </data>
+  <data name="NetworkAuthenticationDialogMessage" xml:space="preserve">
+    <value>输入你的凭据以连接到 {0}</value>
+  </data>
+  <data name="NetworkAuthenticationDialogTitle" xml:space="preserve">
+    <value>输入网络凭据</value>
+  </data>
 </root>

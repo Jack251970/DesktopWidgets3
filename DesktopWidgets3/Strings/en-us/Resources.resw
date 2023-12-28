@@ -757,4 +757,22 @@
   <data name="ItemsCount.Text" xml:space="preserve">
     <value>items</value>
   </data>
+  <data name="NetworkFolderErrorDialogTitle" xml:space="preserve">
+    <value>Network folder error</value>
+  </data>
+  <data name="CredentialDialogUserName.PlaceholderText" xml:space="preserve">
+    <value>UserName</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="NetworkAuthenticationSaveCheckbox" xml:space="preserve">
+    <value>Remember my credentials</value>
+  </data>
+  <data name="NetworkAuthenticationDialogMessage" xml:space="preserve">
+    <value>Enter your credentials to connect to: {0}</value>
+  </data>
+  <data name="NetworkAuthenticationDialogTitle" xml:space="preserve">
+    <value>Enter network credentials</value>
+  </data>
 </root>

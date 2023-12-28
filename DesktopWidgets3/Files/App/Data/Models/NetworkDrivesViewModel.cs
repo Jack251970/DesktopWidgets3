@@ -4,6 +4,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
+using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Data.Items;
 using Files.Core.Services;
 using Files.Core.Storage.LocatableStorage;
@@ -74,4 +75,7 @@ public class NetworkDrivesViewModel : ObservableObject
 
     public void DisconnectNetworkDrive(ILocatableFolder drive)
         => networkDrivesService.DisconnectNetworkDrive(drive);
+
+    public Task OpenMapNetworkDriveDialogAsync(FolderViewViewModel viewModel)
+            => networkDrivesService.OpenMapNetworkDriveDialogAsync(viewModel);
 }
