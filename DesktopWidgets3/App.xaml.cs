@@ -63,10 +63,6 @@ public partial class App : Application
     public static bool CanCloseWindow { get; set; }
     private static bool IsExistWindow { get; set; }
 
-#if DEBUG
-    public static readonly StreamWriter logWriter = new("D:\\log.txt", false);
-#endif
-
     #region models from Files
 
     public static AppModel AppModel => GetService<AppModel>();
