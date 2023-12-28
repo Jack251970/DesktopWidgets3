@@ -1018,8 +1018,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
                             dragOverTimer.Stop();
                             ItemManipulationModel.SetSelectedItem(dragOverItem);
                             dragOverItem = null;
-                            // TODO: Add command to open item
-                            //Commands.OpenItem.ExecuteAsync();
+                            CommandsManager.OpenItem.ExecuteAsync();
                         }
                     },
                     TimeSpan.FromMilliseconds(1000), false);

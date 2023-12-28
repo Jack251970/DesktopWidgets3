@@ -378,7 +378,7 @@ public sealed partial class FolderViewPage : BaseLayoutPage
     {
         if (IsRenamingItem)
         {
-            // TODO: Add error message in xmal.
+            // TODO: Add error message in xaml.
             /*ValidateItemNameInputTextAsync(textBox, args, (showError) =>
             {
                 FileNameTeachingTip.Visibility = showError ? Visibility.Visible : Visibility.Collapsed;
