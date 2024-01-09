@@ -12,7 +12,7 @@ using Windows.Storage.FileProperties;
 
 namespace DesktopWidgets3.Files.App.Services;
 
-internal sealed class ImagingService : IImagingService
+internal sealed class ImageService : IImageService
 {
     public async Task<IImage?> GetIconAsync(IStorable storable, CancellationToken cancellationToken)
     {

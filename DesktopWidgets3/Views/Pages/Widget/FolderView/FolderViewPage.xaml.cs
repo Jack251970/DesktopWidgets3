@@ -33,7 +33,7 @@ public sealed partial class FolderViewPage : BaseLayoutPage
         toolbarTapTimer = DispatcherQueue.CreateTimer();
 
         Initialize();
-        ViewModel.NavigatedTo += (s, e) => RefreshIconSize();
+        ViewModel.NavigatedTo += (e, b) => RefreshIconSize();
     }
 
     #region abstract

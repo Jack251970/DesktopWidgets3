@@ -25,6 +25,7 @@ using DesktopWidgets3.Files.App.Data.Contexts;
 using System.ComponentModel;
 using static DesktopWidgets3.Files.App.Data.Models.ItemViewModel;
 using static DesktopWidgets3.Files.App.Data.EventArguments.NavigationArguments;
+using DesktopWidgets3.Files.App.Utils.Shell;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -234,7 +235,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region refresh items
 
-    private async void FolderViewViewModel_NavigatedTo(object? sender, object parameter)
+    private async void FolderViewViewModel_NavigatedTo(object? parameter, bool isInitialized)
     {
         if (parameter is FolderViewWidgetSettings settings)
         {
@@ -362,6 +363,16 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             {
                 await FileSystemViewModel.RefreshItems(null);
             }
+        }
+
+        if (!isInitialized)
+        {
+            var addItemService = App.GetService<IAddItemService>();
+
+            await Task.WhenAll(
+                addItemService.InitializeAsync(),
+                ContextMenu.WarmUpQueryContextMenuAsync()
+            );
         }
     }
 

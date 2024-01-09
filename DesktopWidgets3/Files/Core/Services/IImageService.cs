@@ -9,7 +9,7 @@ namespace DesktopWidgets3.Files.Core.Services;
 /// <summary>
 /// Represents a service used for data to image conversion.
 /// </summary>
-public interface IImagingService
+public interface IImageService
 {
     /// <summary>
     /// Gets associated item icon of provided <paramref name="storable"/>. May return null if the icon is inaccessible.

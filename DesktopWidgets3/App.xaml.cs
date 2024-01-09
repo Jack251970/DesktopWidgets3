@@ -167,7 +167,7 @@ public partial class App : Application
             services.AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>();
 
             // File Commands
-            services.AddSingleton<IImagingService, ImagingService>();
+            services.AddSingleton<IImageService, ImageService>();
 
             // File Dialogs
             services.AddTransient<IDialogService, DialogService>();
@@ -190,6 +190,9 @@ public partial class App : Application
 
             // Ftp Storage
             services.AddSingleton<IFtpStorageService, FtpStorageService>();
+
+            // Add Item
+            services.AddSingleton<IAddItemService, AddItemService>();
 
             #endregion
 

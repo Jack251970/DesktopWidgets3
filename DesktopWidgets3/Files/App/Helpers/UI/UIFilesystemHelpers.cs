@@ -17,6 +17,7 @@ using Windows.Storage;
 using DesktopWidgets3.Files.App.Extensions;
 using DesktopWidgets3.Files.Core.ViewModels.Dialogs;
 using DesktopWidgets3.Files.Core.Data.Items;
+using DesktopWidgets3.Files.App.ViewModels.Dialogs;
 
 namespace DesktopWidgets3.Files.App.Helpers;
 
@@ -430,6 +431,29 @@ public static class UIFileSystemHelpers
         return await FileOperationsHelpers.CreateOrUpdateLinkAsync(shortcutPath, destinationPath);
     }
 
+    public static async Task CreateShortcutFromDialogAsync(FolderViewViewModel folderViewModel)
+    {
+        var currentPath = folderViewModel.FileSystemViewModel.WorkingDirectory;
+        /*if (App.LibraryManager.TryGetLibrary(currentPath, out var library) &&
+            !library.IsEmpty)
+        {
+            currentPath = library.DefaultSaveFolder;
+        }*/
+
+        var viewModel = new CreateShortcutDialogViewModel(folderViewModel, currentPath);
+        var dialogService = folderViewModel.DialogService;
+        var result = await dialogService.ShowDialogAsync(viewModel);
+
+        if (result != DialogResult.Primary || viewModel.ShortcutCreatedSuccessfully)
+        {
+            return;
+        }
+
+        await HandleShortcutCannotBeCreated(folderViewModel, viewModel.ShortcutCompleteName, viewModel.DestinationItemPath);
+
+        await folderViewModel.RefreshIfNoWatcherExistsAsync();
+    }
+
     #endregion
 
     #region create folder
@@ -515,6 +539,16 @@ public static class UIFileSystemHelpers
         }
 
         return created.Item;
+    }
+
+    #endregion
+
+    #region Add
+
+    public static async Task CreateFileFromDialogResultTypeAsync(AddItemDialogItemType itemType, ShellNewEntry? itemInfo, FolderViewViewModel viewModel)
+    {
+        await CreateFileFromDialogResultTypeForResult(itemType, itemInfo, viewModel);
+        await viewModel.RefreshIfNoWatcherExistsAsync();
     }
 
     #endregion

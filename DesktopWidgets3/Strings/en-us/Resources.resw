@@ -820,4 +820,25 @@
   <data name="AccessDeniedCreateDialog.Text" xml:space="preserve">
     <value>We weren't able to create this item</value>
   </data>
+  <data name="AddDialogListFolderSubHeader" xml:space="preserve">
+    <value>Creates an empty folder</value>
+  </data>
+  <data name="AddDialogListFileSubHeader" xml:space="preserve">
+    <value>Creates an empty file</value>
+  </data>
+  <data name="AddDialogListShortcutSubHeader" xml:space="preserve">
+    <value>Creates a shortcut</value>
+  </data>
+  <data name="BaseLayoutContextFlyoutNew.Label" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="AddItemDescription" xml:space="preserve">
+    <value>Create new item</value>
+  </data>
+  <data name="CreateShortcutFromDialogDescription" xml:space="preserve">
+    <value>Create new shortcut to any item</value>
+  </data>
+  <data name="CreateFolderDescription" xml:space="preserve">
+    <value>Create new folder</value>
+  </data>
 </root>

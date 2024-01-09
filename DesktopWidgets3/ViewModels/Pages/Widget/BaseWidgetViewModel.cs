@@ -63,11 +63,13 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     #region navigation aware
 
-    public event EventHandler<object>? NavigatedTo;
-    public event EventHandler? NavigatedFrom;
+    public event Action<object?, bool>? NavigatedTo;
+    public event Action? NavigatedFrom;
 
     public void OnNavigatedTo(object parameter)
     {
+        var isInitialized = _isInitialized;
+
         // Load settings
         if (parameter is T settings)
         {
@@ -82,12 +84,12 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
             _isInitialized = true;
         }
 
-        NavigatedTo?.Invoke(this, parameter);
+        NavigatedTo?.Invoke(parameter, isInitialized);
     }
 
     public void OnNavigatedFrom()
     {
-        NavigatedFrom?.Invoke(this, EventArgs.Empty);
+        NavigatedFrom?.Invoke();
     }
 
     #endregion

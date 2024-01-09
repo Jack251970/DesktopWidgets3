@@ -4,43 +4,51 @@
 using System.ComponentModel;
 using DesktopWidgets3.Files.App.Data.Commands;
 using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 
 namespace DesktopWidgets3.Files.App.Actions;
 
-internal class CreateShortcutAction : BaseUIAction, IAction
+internal class CreateFolderAction : BaseUIAction, IAction
 {
-    public string Label
-		=> "CreateShortcut".GetLocalized();
+	public string Label
+		=> "Folder".GetLocalized();
 
 	public string Description
-		=> "CreateShortcutDescription".GetLocalized();
+		=> "CreateFolderDescription".GetLocalized();
+
+	/*public HotKey HotKey
+		=> new(Keys.N, KeyModifiers.CtrlShift);*/
 
 	public RichGlyph Glyph
-		=> new(opacityStyle: "ColorIconShortcut");
+		=> new(baseGlyph: "\uE8B7");
 
 	public override bool IsExecutable =>
-		context.HasSelection &&
 		context.CanCreateItem &&
 		context.CanShowDialog;
 
-	public CreateShortcutAction(FolderViewViewModel viewModel) : base(viewModel)
-    {
-        context.PropertyChanged += Context_PropertyChanged;
-    }
+	public CreateFolderAction(FolderViewViewModel viewModel) : base(viewModel)
+	{
+		context.PropertyChanged += Context_PropertyChanged;
+	}
 
 	public Task ExecuteAsync()
 	{
-		return UIFileSystemHelpers.CreateShortcutAsync(context, context.SelectedItems);
+		if (context is not null)
+        {
+            return UIFileSystemHelpers.CreateFileFromDialogResultTypeAsync(AddItemDialogItemType.Folder, null!, context);
+        }
+
+        return Task.CompletedTask;
 	}
 
 	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		switch (e.PropertyName)
 		{
-			case nameof(context.HasSelection):
 			case nameof(context.CanCreateItem):
+			case nameof(context.HasSelection):
 				OnPropertyChanged(nameof(IsExecutable));
 				break;
 		}

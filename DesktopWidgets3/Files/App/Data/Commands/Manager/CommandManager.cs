@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Input;
 using System.Collections;
 using System.Collections.Immutable;
 using System.ComponentModel;
+
 namespace DesktopWidgets3.Files.App.Data.Commands;
 
 internal class CommandManager : ICommandManager
@@ -85,10 +86,10 @@ internal class CommandManager : ICommandManager
     public IRichCommand RefreshItems => commands[CommandCodes.RefreshItems];
     public IRichCommand Rename => commands[CommandCodes.Rename];
     public IRichCommand CreateShortcut => commands[CommandCodes.CreateShortcut];
-    /*public IRichCommand CreateShortcutFromDialog => commands[CommandCodes.CreateShortcutFromDialog];
-    public IRichCommand CreateFolder => commands[CommandCodes.CreateFolder];*/
+    public IRichCommand CreateShortcutFromDialog => commands[CommandCodes.CreateShortcutFromDialog];
+    public IRichCommand CreateFolder => commands[CommandCodes.CreateFolder];
     public IRichCommand CreateFolderWithSelection => commands[CommandCodes.CreateFolderWithSelection];
-    /*public IRichCommand AddItem => commands[CommandCodes.AddItem];*/
+    public IRichCommand AddItem => commands[CommandCodes.AddItem];
     /*public IRichCommand PinToStart => commands[CommandCodes.PinToStart];
     public IRichCommand UnpinFromStart => commands[CommandCodes.UnpinFromStart];*/
     /*public IRichCommand PinItemToFavorites => commands[CommandCodes.PinItemToFavorites];
@@ -245,10 +246,10 @@ internal class CommandManager : ICommandManager
         [CommandCodes.RefreshItems] = new RefreshItemsAction(viewModel),
         [CommandCodes.Rename] = new RenameAction(viewModel),
         [CommandCodes.CreateShortcut] = new CreateShortcutAction(viewModel),
-        /*[CommandCodes.CreateShortcutFromDialog] = new CreateShortcutFromDialogAction(),
-        [CommandCodes.CreateFolder] = new CreateFolderAction(),*/
+        [CommandCodes.CreateShortcutFromDialog] = new CreateShortcutFromDialogAction(viewModel),
+        [CommandCodes.CreateFolder] = new CreateFolderAction(viewModel),
         [CommandCodes.CreateFolderWithSelection] = new CreateFolderWithSelectionAction(viewModel),
-        /*[CommandCodes.AddItem] = new AddItemAction(),*/
+        [CommandCodes.AddItem] = new AddItemAction(viewModel),
         /*[CommandCodes.PinToStart] = new PinToStartAction(),
         [CommandCodes.UnpinFromStart] = new UnpinFromStartAction(),*/
         /*[CommandCodes.PinItemToFavorites] = new PinItemAction(),

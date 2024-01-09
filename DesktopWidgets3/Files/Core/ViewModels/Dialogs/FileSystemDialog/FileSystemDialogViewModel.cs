@@ -282,7 +282,7 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 
     private static Task LoadItemsIcon(IEnumerable<BaseFileSystemDialogItemViewModel> items, CancellationToken token)
     {
-        var imagingService = DesktopWidgets3.App.GetService<IImagingService>();
+        var imagingService = DesktopWidgets3.App.GetService<IImageService>();
 
         var task = items.ParallelForEachAsync(async (item) =>
         {

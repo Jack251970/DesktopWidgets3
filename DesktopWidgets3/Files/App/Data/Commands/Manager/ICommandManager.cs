@@ -130,22 +130,22 @@ public interface ICommandManager : IEnumerable<IRichCommand>
     {
         get;
     }
-    /*IRichCommand CreateShortcutFromDialog
+    IRichCommand CreateShortcutFromDialog
     {
         get;
     }
     IRichCommand CreateFolder
     {
         get;
-    }*/
+    }
     IRichCommand CreateFolderWithSelection
     {
         get;
     }
-    /*IRichCommand AddItem
+    IRichCommand AddItem
     {
         get;
-    }*/
+    }
 
     /*IRichCommand PinToStart
     {

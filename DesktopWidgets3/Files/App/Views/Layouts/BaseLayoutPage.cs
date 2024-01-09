@@ -154,11 +154,11 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
     private void InitilizeItemContextFlyout()
     {
-        ViewModel.NavigatedTo += (s, e) => {
+        ViewModel.NavigatedTo += (e, b) => {
             ItemContextMenuFlyout.Opening += ItemContextFlyout_Opening;
             BaseContextMenuFlyout.Opening += BaseContextFlyout_Opening;
         };
-        ViewModel.NavigatedFrom += (s, e) => { 
+        ViewModel.NavigatedFrom += () => { 
             ItemContextMenuFlyout.Opening -= ItemContextFlyout_Opening;
             BaseContextMenuFlyout.Opening -= BaseContextFlyout_Opening;
         };

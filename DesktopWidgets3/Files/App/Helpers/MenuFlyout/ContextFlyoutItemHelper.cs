@@ -12,6 +12,8 @@ using DesktopWidgets3.Files.Core.Data.Enums;
 using DesktopWidgets3.Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
+using DesktopWidgets3.Files.Core.Services;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DesktopWidgets3.Files.App.Helpers;
 
@@ -23,7 +25,7 @@ namespace DesktopWidgets3.Files.App.Helpers;
 /// </summary>
 public static class ContextFlyoutItemHelper
 {
-    //private static readonly IAddItemService addItemService = Ioc.Default.GetRequiredService<IAddItemService>();
+    private static readonly IAddItemService addItemService = DesktopWidgets3.App.GetService<IAddItemService>();
 
     #region base menu items
 
@@ -321,17 +323,17 @@ public static class ContextFlyoutItemHelper
                 ShowInZipPage = true,
                 ShowItem = !itemsSelected
             },
-            /*new()
+            new()
             {
                 OpacityIcon = new OpacityIconModel()
                 {
                     OpacityIconStyle = commands.AddItem.Glyph.OpacityStyle
                 },
                 Text = commands.AddItem.Label,
-                Items = GetNewItemItems(commandsViewModel, currentInstanceViewModel.CanCreateFileInPage),
+                Items = GetNewItemItems(commandsViewModel, currentInstanceViewModel.CanCreateFileInPage, commands),
                 ShowItem = !itemsSelected,
                 ShowInFtpPage = true
-            },*/
+            },
             /*new ContextMenuFlyoutItemViewModelBuilder(commands.FormatDrive).Build(),
             new ContextMenuFlyoutItemViewModelBuilder(commands.EmptyRecycleBin)
             {
@@ -627,30 +629,31 @@ public static class ContextFlyoutItemHelper
 
     public static List<ContextMenuFlyoutItemViewModel> GetNewItemItems(
         BaseLayoutViewModel commandsViewModel, 
-        bool canCreateFileInPage)
+        bool canCreateFileInPage,
+        ICommandManager commands)
     {
         var list = new List<ContextMenuFlyoutItemViewModel>()
+        {
+            new ContextMenuFlyoutItemViewModelBuilder(commands.CreateFolder).Build(),
+            new()
             {
-                /*new ContextMenuFlyoutItemViewModelBuilder(commands.CreateFolder).Build(),
-                new()
-                {
-                    Text = "File".GetLocalized(),
-                    Glyph = "\uE7C3",
-                    Command = commandsViewModel.CreateNewFileCommand,
-                    ShowInFtpPage = true,
-                    ShowInZipPage = true,
-                    IsEnabled = canCreateFileInPage
-                },
-                new ContextMenuFlyoutItemViewModelBuilder(commands.CreateShortcutFromDialog).Build(),
-                new()
-                {
-                    ItemType = ContextMenuFlyoutItemType.Separator,
-                }*/
-            };
+                Text = "File".GetLocalized(),
+                Glyph = "\uE7C3",
+                Command = commandsViewModel.CreateNewFileCommand,
+                ShowInFtpPage = true,
+                ShowInZipPage = true,
+                IsEnabled = canCreateFileInPage
+            },
+            new ContextMenuFlyoutItemViewModelBuilder(commands.CreateShortcutFromDialog).Build(),
+            new()
+            {
+                ItemType = ContextMenuFlyoutItemType.Separator,
+            }
+        };
 
         if (canCreateFileInPage)
         {
-            /*var cachedNewContextMenuEntries = addItemService.GetEntries();
+            var cachedNewContextMenuEntries = addItemService.GetEntries();
             cachedNewContextMenuEntries?.ForEach(i =>
             {
                 if (!string.IsNullOrEmpty(i.IconBase64))
@@ -678,7 +681,7 @@ public static class ContextFlyoutItemHelper
                         CommandParameter = i,
                     });
                 }
-            });*/
+            });
         }
 
         return list;
