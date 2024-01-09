@@ -21,6 +21,91 @@ namespace DesktopWidgets3.Files.App.Utils.Storage;
 /// </summary>
 public class FileSystemOperations : IFileSystemOperations
 {
+    #region create items
+
+    public async Task<IStorageItem> CreateAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken, bool asAdmin = false)
+    {
+        IStorageItemWithPath item = null!;
+        var fsResult = (FilesystemResult)false;
+        StatusCenterItemProgressModel fsProgress = new(progress, true, FileSystemStatusCode.InProgress, 1);
+        fsProgress.Report();
+
+        try
+        {
+            switch (source.ItemType)
+            {
+                case FilesystemItemType.File:
+                    {
+                        var newEntryInfo = await ShellNewEntryExtensions.GetNewContextMenuEntryForType(Path.GetExtension(source.Path));
+                        if (newEntryInfo is null)
+                        {
+                            var fsFolderResult = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(source.Path));
+                            fsResult = fsFolderResult;
+                            if (fsResult)
+                            {
+                                var fsCreateResult = await FilesystemTasks.Wrap(() => fsFolderResult.Result.CreateFileAsync(Path.GetFileName(source.Path), CreationCollisionOption.GenerateUniqueName).AsTask());
+                                fsResult = fsCreateResult;
+                                item = fsCreateResult.Result.FromStorageItem();
+                            }
+                            if (fsResult == FileSystemStatusCode.Unauthorized)
+                            {
+                                // Can't do anything, already tried with admin FTP
+                            }
+                        }
+                        else
+                        {
+                            var fsCreateResult = await newEntryInfo.Create(source.Path, viewModel);
+                            fsResult = fsCreateResult;
+                            if (fsResult)
+                            {
+                                item = fsCreateResult.Result.FromStorageItem();
+                            }
+                            if (fsResult == FileSystemStatusCode.Unauthorized)
+                            {
+                                // Can't do anything, already tried with admin FTP
+                            }
+                        }
+
+                        break;
+                    }
+
+                case FilesystemItemType.Directory:
+                    {
+                        var fsFolderResult = await viewModel.FileSystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(source.Path));
+                        fsResult = fsFolderResult;
+                        if (fsResult)
+                        {
+                            var fsCreateResult = await FilesystemTasks.Wrap(() => fsFolderResult.Result.CreateFolderAsync(Path.GetFileName(source.Path), CreationCollisionOption.GenerateUniqueName).AsTask());
+                            fsResult = fsCreateResult;
+                            item = fsCreateResult.Result.FromStorageItem();
+                        }
+                        if (fsResult == FileSystemStatusCode.Unauthorized)
+                        {
+                            // Can't do anything, already tried with admin FTP
+                        }
+                        break;
+                    }
+
+                default:
+                    Debugger.Break();
+                    break;
+            }
+
+            fsProgress.AddProcessedItemsCount(1);
+            fsProgress.ReportStatus(fsResult);
+            return item is not null
+                ? item.Item
+                : null!;
+        }
+        catch (Exception e)
+        {
+            fsProgress.ReportStatus(FilesystemTasks.GetErrorCode(e));
+            return null!;
+        }
+    }
+
+    #endregion
+
     #region delete items
 
     public Task DeleteAsync(FolderViewViewModel viewModel, IStorageItem source, IProgress<StatusCenterItemProgressModel> progress, bool permanently, CancellationToken cancellationToken)

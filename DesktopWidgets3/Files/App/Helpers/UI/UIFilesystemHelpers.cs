@@ -16,6 +16,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using DesktopWidgets3.Files.App.Extensions;
 using DesktopWidgets3.Files.Core.ViewModels.Dialogs;
+using DesktopWidgets3.Files.Core.Data.Items;
 
 namespace DesktopWidgets3.Files.App.Helpers;
 
@@ -383,6 +384,32 @@ public static class UIFileSystemHelpers
 
     #region create shortcuts
 
+    public static async Task CreateShortcutAsync(FolderViewViewModel viewModel, IReadOnlyList<ListedItem> selectedItems)
+    {
+        var currentPath = viewModel.FileSystemViewModel.WorkingDirectory;
+
+        /*if (App.LibraryManager.TryGetLibrary(currentPath ?? string.Empty, out var library) && !library.IsEmpty)
+        {
+            currentPath = library.DefaultSaveFolder;
+        }*/
+
+        foreach (var selectedItem in selectedItems)
+        {
+            var fileName = string.Format("ShortcutCreateNewSuffix".GetLocalized(), selectedItem.Name) + ".lnk";
+            var filePath = Path.Combine(currentPath ?? string.Empty, fileName);
+
+            if (!await FileOperationsHelpers.CreateOrUpdateLinkAsync(filePath, selectedItem.ItemPath))
+            {
+                await HandleShortcutCannotBeCreated(viewModel, fileName, selectedItem.ItemPath);
+            }
+        }
+
+        if (viewModel is not null)
+        {
+            await viewModel.RefreshIfNoWatcherExistsAsync();
+        }
+    }
+
     public static async Task<bool> HandleShortcutCannotBeCreated(FolderViewViewModel viewModel, string shortcutName, string destinationPath)
     {
         var result = await DialogDisplayHelper.ShowDialogAsync
@@ -401,6 +428,93 @@ public static class UIFileSystemHelpers
         var shortcutPath = Path.Combine(Constants.UserEnvironmentPaths.DesktopPath, shortcutName);
 
         return await FileOperationsHelpers.CreateOrUpdateLinkAsync(shortcutPath, destinationPath);
+    }
+
+    #endregion
+
+    #region create folder
+
+    public static async Task CreateFolderWithSelectionAsync(FolderViewViewModel viewModel)
+    {
+        try
+        {
+            var items = viewModel.SelectedItems.ToList().Select((item) => StorageHelpers.FromPathAndType(
+                item.ItemPath,
+                item.PrimaryItemAttribute == StorageItemTypes.File ? FilesystemItemType.File : FilesystemItemType.Directory));
+            var folder = await CreateFileFromDialogResultTypeForResult(AddItemDialogItemType.Folder, null, viewModel);
+            if (folder is null)
+            {
+                return;
+            }
+
+            await viewModel.FileSystemHelpers.MoveItemsAsync(viewModel, items, items.Select(x => PathNormalization.Combine(folder.Path, x.Name)), false);
+            await viewModel.RefreshIfNoWatcherExistsAsync();
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    private static async Task<IStorageItem?> CreateFileFromDialogResultTypeForResult(AddItemDialogItemType itemType, ShellNewEntry? itemInfo, FolderViewViewModel viewModel)
+    {
+        string? currentPath = null;
+
+        if (viewModel is not null)
+        {
+            currentPath = viewModel.FileSystemViewModel.WorkingDirectory;
+            /*if (App.LibraryManager.TryGetLibrary(currentPath, out var library) &&
+                !library.IsEmpty &&
+                library.Folders.Count == 1) // TODO: handle libraries with multiple folders
+            {
+                currentPath = library.Folders.First();
+            }*/
+        }
+
+        // Skip rename dialog when ShellNewEntry has a Command (e.g. ".accdb", ".gdoc")
+        string? userInput = null;
+        if (itemType != AddItemDialogItemType.File || itemInfo?.Command is null)
+        {
+            var dialog = DynamicDialogFactory.GetFor_RenameDialog();
+            await dialog.TryShowAsync(viewModel!); // Show rename dialog
+
+            if (dialog.DynamicResult != DynamicDialogResult.Primary)
+            {
+                return null;
+            }
+
+            userInput = dialog.ViewModel.AdditionalData as string;
+        }
+
+        // Create file based on dialog result
+        (ReturnResult Status, IStorageItem? Item) created = (ReturnResult.Failed, null);
+        switch (itemType)
+        {
+            case AddItemDialogItemType.Folder:
+                userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : "NewFolder".GetLocalized();
+                created = await viewModel!.FileSystemHelpers.CreateAsync(
+                    viewModel,
+                    StorageHelpers.FromPathAndType(PathNormalization.Combine(currentPath!, userInput), FilesystemItemType.Directory));
+                break;
+
+            case AddItemDialogItemType.File:
+                userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : itemInfo?.Name ?? "NewFile".GetLocalized();
+                created = await viewModel!.FileSystemHelpers.CreateAsync(
+                    viewModel,
+                    StorageHelpers.FromPathAndType(PathNormalization.Combine(currentPath!, userInput + itemInfo?.Extension), FilesystemItemType.File));
+                break;
+        }
+
+        if (created.Status == ReturnResult.AccessUnauthorized)
+        {
+            await DialogDisplayHelper.ShowDialogAsync
+            (
+                viewModel!,
+                "AccessDenied".GetLocalized(),
+                "AccessDeniedCreateDialog/Text".GetLocalized()
+            );
+        }
+
+        return created.Item;
     }
 
     #endregion

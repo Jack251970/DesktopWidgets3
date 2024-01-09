@@ -13,6 +13,8 @@ using DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
 using DesktopWidgets3.Files.App.Helpers;
 using DesktopWidgets3.Files.Core.ViewModels.Dialogs;
 using DesktopWidgets3.Files.App.Extensions;
+using DesktopWidgets3.Files.App.Utils.Shell;
+using DesktopWidgets3.Files.Core.Utils.CommandLine;
 
 namespace DesktopWidgets3.Files.App.Utils.Storage;
 
@@ -27,6 +29,107 @@ public class ShellFileSystemOperations : IFileSystemOperations
     {
         _fileSystemOperations = new FileSystemOperations();
     }
+
+    #region create items
+
+    public async Task<IStorageItem> CreateAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken, bool asAdmin = false)
+    {
+        if (string.IsNullOrWhiteSpace(source.Path) || source.Path.StartsWith(@"\\?\", StringComparison.Ordinal) || FtpHelpers.IsFtpPath(source.Path) || ZipStorageFolder.IsZipPath(source.Path, false))
+        {
+            // Fallback to built-in file operations
+            return await _fileSystemOperations.CreateAsync(viewModel, source, progress, cancellationToken);
+        }
+
+        StatusCenterItemProgressModel fsProgress = new(progress, true, FileSystemStatusCode.InProgress, 1);
+        fsProgress.Report();
+
+        var createResult = new ShellOperationResult();
+        (var success, var response) = (false, new ShellOperationResult());
+
+        switch (source.ItemType)
+        {
+            case FilesystemItemType.File:
+                {
+                    var newEntryInfo = await ShellNewEntryExtensions.GetNewContextMenuEntryForType(Path.GetExtension(source.Path));
+                    if (newEntryInfo?.Command is not null)
+                    {
+                        var args = CommandLineParser.SplitArguments(newEntryInfo.Command);
+                        if (args.Any())
+                        {
+                            if (await LaunchHelper.LaunchAppAsync(
+                                    args[0].Replace("\"", "", StringComparison.Ordinal),
+                                    string.Join(' ', args.Skip(1)).Replace("%1", source.Path),
+                                    PathNormalization.GetParentDir(source.Path)))
+                            {
+                                success = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        (success, response) = await FileOperationsHelpers.CreateItemAsync(source.Path, "CreateFile", viewModel.WidgetWindow.WindowHandle.ToInt64(), asAdmin, newEntryInfo?.Template!, newEntryInfo?.Data);
+                    }
+
+                    break;
+                }
+            case FilesystemItemType.Directory:
+                {
+                    (success, response) = await FileOperationsHelpers.CreateItemAsync(source.Path, "CreateFolder", viewModel.WidgetWindow.WindowHandle.ToInt64(), asAdmin);
+                    break;
+                }
+        }
+
+        var result = (FilesystemResult)success;
+        var shellOpResult = response;
+        createResult.Items.AddRange(shellOpResult?.Final ?? Enumerable.Empty<ShellOperationItemResult>());
+
+        result &= (FilesystemResult)createResult.Items.All(x => x.Succeeded);
+
+        if (result)
+        {
+            fsProgress.ReportStatus(FileSystemStatusCode.Success);
+
+            var createdSources = createResult.Items.Where(x => x.Succeeded && x.Destination is not null && x.Source != x.Destination);
+            if (createdSources.Any())
+            {
+                var item = StorageHelpers.FromPathAndType(createdSources.Single().Destination, source.ItemType);
+                var storageItem = await item.ToStorageItem();
+
+                return storageItem;
+            }
+
+            return null!;
+        }
+        else
+        {
+            if (createResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.Unauthorized))
+            {
+                if (!asAdmin && await RequestAdminOperation(viewModel))
+                {
+                    return await CreateAsync(viewModel, source, progress, cancellationToken, true);
+                }
+            }
+            else if (createResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.NameTooLong))
+            {
+                // Retry with the StorageFile API
+                return await _fileSystemOperations.CreateAsync(viewModel, source, progress, cancellationToken);
+            }
+            else if (createResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.NotFound))
+            {
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".GetLocalized(), "FileNotFoundDialog/Text".GetLocalized());
+            }
+            else if (createResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.AlreadyExists))
+            {
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ItemAlreadyExistsDialogTitle".GetLocalized(), "ItemAlreadyExistsDialogContent".GetLocalized());
+            }
+
+            fsProgress.ReportStatus(CopyEngineResult.Convert(createResult.Items.FirstOrDefault(x => !x.Succeeded)?.HResult));
+
+            return null!;
+        }
+    }
+
+    #endregion
 
     #region delete items
 

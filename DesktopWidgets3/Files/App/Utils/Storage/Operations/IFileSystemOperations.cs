@@ -13,6 +13,23 @@ namespace DesktopWidgets3.Files.App.Utils.Storage;
 /// </summary>
 public interface IFileSystemOperations : IDisposable
 {
+    #region create items
+
+    /// <summary>
+    /// Creates an item from <paramref name="source"/>
+    /// </summary>
+    /// <param name="source">FullPath to the item</param>
+    /// <param name="process">Progress of the operation</param>
+    /// <param name="cancellationToken">Can be cancelled with <see cref="CancellationToken"/></param>
+    Task<IStorageItem> CreateAsync(
+        FolderViewViewModel viewModel,
+        IStorageItemWithPath source,
+        IProgress<StatusCenterItemProgressModel> process,
+        CancellationToken cancellationToken,
+        bool asAdmin = false);
+
+    #endregion
+
     #region delete items
 
     /// <summary>

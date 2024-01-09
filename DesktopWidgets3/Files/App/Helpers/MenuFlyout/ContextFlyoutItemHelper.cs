@@ -346,10 +346,10 @@ public static class ContextFlyoutItemHelper
                 IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && itemsSelected,
             }.Build(),*/
             new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItem).Build(),
-            /*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItemWithApplicationPicker)
+            new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItemWithApplicationPicker)
             {
                 Tag = "OpenWith",
-            }.Build(),*/
+            }.Build(),
             new()
             {
                 Text = "OpenWith".GetLocalized(),
@@ -421,7 +421,7 @@ public static class ContextFlyoutItemHelper
                 IsPrimary = true,
                 IsVisible = true,
             }.Build(),
-            /*new ContextMenuFlyoutItemViewModelBuilder(commands.CopyPath)
+            new ContextMenuFlyoutItemViewModelBuilder(commands.CopyPath)
             {
                 IsVisible = itemsSelected && !currentInstanceViewModel.IsPageTypeRecycleBin,
             }.Build(),
@@ -433,7 +433,7 @@ public static class ContextFlyoutItemHelper
             {
                 IsVisible = itemsSelected && (!selectedItems.FirstOrDefault()?.IsShortcut ?? false)
                     && !currentInstanceViewModel.IsPageTypeRecycleBin,
-            }.Build(),*/
+            }.Build(),
             new ContextMenuFlyoutItemViewModelBuilder(commands.Rename)
             {
                 IsPrimary = true,

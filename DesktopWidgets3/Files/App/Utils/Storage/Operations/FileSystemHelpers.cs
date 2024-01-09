@@ -38,6 +38,31 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         fileSystemOperations = new ShellFileSystemOperations();
     }
 
+    #region Create
+
+    public async Task<(ReturnResult, IStorageItem?)> CreateAsync(FolderViewViewModel viewModel, IStorageItemWithPath source)
+    {
+        var returnStatus = ReturnResult.InProgress;
+        var progress = new Progress<StatusCenterItemProgressModel>();
+        progress.ProgressChanged += (s, e) => returnStatus = returnStatus < ReturnResult.Failed ? e.Status!.Value.ToStatus() : returnStatus;
+
+        if (!IsValidForFilename(source.Name))
+        {
+            await DialogDisplayHelper.ShowDialogAsync(
+                viewModel,
+                "ErrorDialogThisActionCannotBeDone".GetLocalized(),
+                "ErrorDialogNameNotAllowed".GetLocalized());
+            return (ReturnResult.Failed, null);
+        }
+
+        var result = await fileSystemOperations.CreateAsync(viewModel, source, progress, cancellationToken);
+
+        await Task.Yield();
+        return (returnStatus, result);
+    }
+
+    #endregion
+
     #region Delete
 
     public async Task<ReturnResult> DeleteItemsAsync(FolderViewViewModel viewModel, IEnumerable<IStorageItemWithPath> source, DeleteConfirmationPolicies showDialog, bool permanently)
@@ -437,42 +462,6 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         return ReturnResult.BadArgumentException;
     }
 
-    public async Task<ReturnResult> MoveItemsFromClipboard(FolderViewViewModel viewModel, DataPackageView packageView, string destination, bool showDialog)
-    {
-        if (!HasDraggedStorageItems(packageView))
-        {
-            // Happens if you copy some text and then you Ctrl+V in Files
-            return ReturnResult.BadArgumentException;
-        }
-
-        var source = await GetDraggedStorageItems(packageView);
-
-        var returnStatus = ReturnResult.InProgress;
-
-        var destinations = new List<string>();
-        List<ShellFileItem>? binItems = null;
-        foreach (var item in source)
-        {
-            if (RecycleBinHelpers.IsPathUnderRecycleBin(item.Path))
-            {
-                binItems ??= await RecycleBinHelpers.EnumerateRecycleBin();
-                if (!binItems.IsEmpty()) // Might still be null because we're deserializing the list from Json
-                {
-                    var matchingItem = binItems.FirstOrDefault(x => x.RecyclePath == item.Path); // Get original file name
-                    destinations.Add(PathNormalization.Combine(destination, matchingItem?.FileName ?? item.Name));
-                }
-            }
-            else
-            {
-                destinations.Add(PathNormalization.Combine(destination, item.Name));
-            }
-        }
-
-        returnStatus = await MoveItemsAsync(viewModel, source, destinations, showDialog);
-
-        return returnStatus;
-    }
-
     #endregion
 
     #region Copy
@@ -547,6 +536,12 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
 
     #region Move
 
+    public Task<ReturnResult> MoveItemsAsync(FolderViewViewModel viewModel, IEnumerable<IStorageItem> source, IEnumerable<string> destination, bool showDialog)
+            => MoveItemsAsync(viewModel, source.Select((item) => item.FromStorageItem()), destination, showDialog);
+
+    public Task<ReturnResult> MoveItemAsync(FolderViewViewModel viewModel, IStorageItem source, string destination, bool showDialog)
+        => MoveItemAsync(viewModel, source.FromStorageItem(), destination, showDialog);
+
     public async Task<ReturnResult> MoveItemsAsync(FolderViewViewModel viewModel, IEnumerable<IStorageItemWithPath> source, IEnumerable<string> destination, bool showDialog)
     {
         source = await source.ToListAsync();
@@ -619,6 +614,45 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
             source,
             destination,
             itemsCount);*/
+
+        return returnStatus;
+    }
+
+    public Task<ReturnResult> MoveItemAsync(FolderViewViewModel viewModel, IStorageItemWithPath source, string destination, bool showDialog)
+            => MoveItemsAsync(viewModel,source.CreateEnumerable(), destination.CreateEnumerable(), showDialog);
+
+    public async Task<ReturnResult> MoveItemsFromClipboard(FolderViewViewModel viewModel, DataPackageView packageView, string destination, bool showDialog)
+    {
+        if (!HasDraggedStorageItems(packageView))
+        {
+            // Happens if you copy some text and then you Ctrl+V in Files
+            return ReturnResult.BadArgumentException;
+        }
+
+        var source = await GetDraggedStorageItems(packageView);
+
+        var returnStatus = ReturnResult.InProgress;
+
+        var destinations = new List<string>();
+        List<ShellFileItem>? binItems = null;
+        foreach (var item in source)
+        {
+            if (RecycleBinHelpers.IsPathUnderRecycleBin(item.Path))
+            {
+                binItems ??= await RecycleBinHelpers.EnumerateRecycleBin();
+                if (!binItems.IsEmpty()) // Might still be null because we're deserializing the list from Json
+                {
+                    var matchingItem = binItems.FirstOrDefault(x => x.RecyclePath == item.Path); // Get original file name
+                    destinations.Add(PathNormalization.Combine(destination, matchingItem?.FileName ?? item.Name));
+                }
+            }
+            else
+            {
+                destinations.Add(PathNormalization.Combine(destination, item.Name));
+            }
+        }
+
+        returnStatus = await MoveItemsAsync(viewModel, source, destinations, showDialog);
 
         return returnStatus;
     }

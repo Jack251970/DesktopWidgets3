@@ -77,6 +77,79 @@ public class FileOperationsHelpers
 
     #endregion
 
+    #region create item
+
+    public static Task<(bool, ShellOperationResult)> CreateItemAsync(string filePath, string fileOp, long ownerHwnd, bool asAdmin, string template = "", byte[]? dataBytes = null)
+    {
+        return Win32API.StartSTATask(async () =>
+        {
+            using var op = new ShellFileOperations2();
+
+            op.Options = ShellFileOperations.OperationFlags.Silent
+                        | ShellFileOperations.OperationFlags.NoConfirmMkDir
+                        | ShellFileOperations.OperationFlags.RenameOnCollision
+                        | ShellFileOperations.OperationFlags.NoErrorUI;
+            if (asAdmin)
+            {
+                op.Options |= ShellFileOperations.OperationFlags.ShowElevationPrompt
+                            | ShellFileOperations.OperationFlags.RequireElevation;
+            }
+            op.OwnerWindow = new IntPtr(ownerHwnd);
+
+            var shellOperationResult = new ShellOperationResult();
+
+            if (!SafetyExtensions.IgnoreExceptions(() =>
+            {
+                using var shd = new ShellFolder(Path.GetDirectoryName(filePath));
+                op.QueueNewItemOperation(shd, Path.GetFileName(filePath),
+                    fileOp == "CreateFolder" ? FileAttributes.Directory : FileAttributes.Normal, template);
+            }))
+            {
+                shellOperationResult.Items.Add(new ShellOperationItemResult()
+                {
+                    Succeeded = false,
+                    Destination = filePath,
+                    HResult = -1
+                });
+            }
+
+            var createTcs = new TaskCompletionSource<bool>();
+            op.PostNewItem += (s, e) =>
+            {
+                shellOperationResult.Items.Add(new ShellOperationItemResult()
+                {
+                    Succeeded = e.Result.Succeeded,
+                    Destination = e.DestItem.GetParsingPath(),
+                    HResult = (int)e.Result
+                });
+            };
+            op.FinishOperations += (s, e) => createTcs.TrySetResult(e.Result.Succeeded);
+
+            try
+            {
+                op.PerformOperations();
+            }
+            catch
+            {
+                createTcs.TrySetResult(false);
+            }
+
+            if (dataBytes is not null && (shellOperationResult.Items.SingleOrDefault()?.Succeeded ?? false))
+            {
+                SafetyExtensions.IgnoreExceptions(() =>
+                {
+                    using var fs = new FileStream(shellOperationResult.Items.Single().Destination, FileMode.Open);
+                    fs.Write(dataBytes, 0, dataBytes.Length);
+                    fs.Flush();
+                });
+            }
+
+            return (await createTcs.Task, shellOperationResult);
+        });
+    }
+
+    #endregion
+
     #region delete item
 
     public static Task<(bool, ShellOperationResult)> TestRecycleAsync(string[] fileToDeletePath)

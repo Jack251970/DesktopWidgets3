@@ -126,23 +126,23 @@ public interface ICommandManager : IEnumerable<IRichCommand>
         get;
     }
 
-    /*IRichCommand CreateShortcut
+    IRichCommand CreateShortcut
     {
         get;
     }
-    IRichCommand CreateShortcutFromDialog
+    /*IRichCommand CreateShortcutFromDialog
     {
         get;
     }
     IRichCommand CreateFolder
     {
         get;
-    }
+    }*/
     IRichCommand CreateFolderWithSelection
     {
         get;
     }
-    IRichCommand AddItem
+    /*IRichCommand AddItem
     {
         get;
     }*/
@@ -182,11 +182,11 @@ public interface ICommandManager : IEnumerable<IRichCommand>
     {
         get;
     }
-    /*IRichCommand CopyPath
+    IRichCommand CopyPath
     {
         get;
     }
-    IRichCommand CopyPathWithQuotes
+    /*IRichCommand CopyPathWithQuotes
     {
         get;
     }*/
@@ -288,11 +288,11 @@ public interface ICommandManager : IEnumerable<IRichCommand>
     {
         get;
     }
-    /*IRichCommand OpenItemWithApplicationPicker
+    IRichCommand OpenItemWithApplicationPicker
     {
         get;
     }
-    IRichCommand OpenParentFolder
+    /*IRichCommand OpenParentFolder
     {
         get;
     }

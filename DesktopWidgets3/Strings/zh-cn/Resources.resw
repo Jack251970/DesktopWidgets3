@@ -703,9 +703,6 @@
   <data name="Create" xml:space="preserve">
     <value>创建</value>
   </data>
-  <data name="ErrorDialogThisActionCannotBeDone" xml:space="preserve">
-    <value>操作无法完成</value>
-  </data>
   <data name="ErrorDialogUnsupportedOperation" xml:space="preserve">
     <value>不支持请求的操作</value>
   </data>
@@ -774,5 +771,44 @@
   </data>
   <data name="CopyToFolderCaptionText" xml:space="preserve">
     <value>复制到 {0}</value>
+  </data>
+  <data name="OpenItemWithApplicationPickerDescription" xml:space="preserve">
+    <value>用所选程序打开项目</value>
+  </data>
+  <data name="CopyPath" xml:space="preserve">
+    <value>复制路径</value>
+  </data>
+  <data name="CopyPathDescription" xml:space="preserve">
+    <value>复制项目路径到剪贴板</value>
+  </data>
+  <data name="CreateShortcut" xml:space="preserve">
+    <value>创建快捷方式</value>
+  </data>
+  <data name="CreateShortcutDescription" xml:space="preserve">
+    <value>创建所选项目的快捷方式</value>
+  </data>
+  <data name="CreateFolderWithSelection" xml:space="preserve">
+    <value>用选中项创建文件夹</value>
+  </data>
+  <data name="CreateFolderWithSelectionDescription" xml:space="preserve">
+    <value>用当前选中的项创建文件夹</value>
+  </data>
+  <data name="EnterAnItemName" xml:space="preserve">
+    <value>键入名称</value>
+  </data>
+  <data name="InvalidFilename.Text" xml:space="preserve">
+    <value>指定的项目名称无效</value>
+  </data>
+  <data name="RenameDialog.PrimaryButtonText" xml:space="preserve">
+    <value>命名</value>
+  </data>
+  <data name="NewFolder" xml:space="preserve">
+    <value>新建文件夹</value>
+  </data>
+  <data name="NewFile" xml:space="preserve">
+    <value>新建文件</value>
+  </data>
+  <data name="AccessDeniedCreateDialog.Text" xml:space="preserve">
+    <value>无法创建此项</value>
   </data>
 </root>
