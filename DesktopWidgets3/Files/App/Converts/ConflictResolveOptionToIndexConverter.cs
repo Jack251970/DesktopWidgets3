@@ -1,10 +1,10 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using Microsoft.UI.Xaml.Data;
 
-namespace Files.App.Converters;
+namespace DesktopWidgets3.Files.App.Converters;
 
 internal sealed class ConflictResolveOptionToIndexConverter : IValueConverter
 {

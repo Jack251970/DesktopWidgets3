@@ -5,7 +5,7 @@ using Windows.Foundation;
 using Windows.Storage.FileProperties;
 using Windows.Storage;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public interface IBaseStorageFile : IStorageItem2, IStorageFile, IStorageFile2, IStorageItemProperties2, IStorageItemPropertiesWithProvider, IStorageFilePropertiesWithAvailability
 {

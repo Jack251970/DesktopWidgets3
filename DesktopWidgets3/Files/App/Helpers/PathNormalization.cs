@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Utils.Storage;
+using DesktopWidgets3.Files.App.Utils.Storage;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 public static class PathNormalization
 {

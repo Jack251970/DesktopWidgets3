@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml;
 using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
-using Files.App.Helpers;
+using DesktopWidgets3.Files.App.Helpers;
 
 namespace DesktopWidgets3.Services;
 

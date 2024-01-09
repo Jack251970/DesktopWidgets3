@@ -4,7 +4,7 @@
 using Microsoft.UI.Xaml.Data;
 using System.Text;
 
-namespace Files.App.Converts;
+namespace DesktopWidgets3.Files.App.Converts;
 
 internal sealed class DoubleArrayToStringConverter : IValueConverter
 {

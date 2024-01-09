@@ -3,11 +3,11 @@
 
 using System.Runtime.InteropServices;
 using System.Text;
-using Files.App.Utils.Shell;
+using DesktopWidgets3.Files.App.Utils.Shell;
 using Windows.Foundation.Metadata;
 using Windows.System;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 public class NativeWinApiHelper
 {

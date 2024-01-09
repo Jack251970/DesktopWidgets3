@@ -1,10 +1,10 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.Shared.Extensions;
 using FluentFTP;
 
-namespace Files.App.Storage.FtpStorage;
+namespace DesktopWidgets3.Files.App.Storage.FtpStorage;
 
 internal static class FtpHelpers
 {

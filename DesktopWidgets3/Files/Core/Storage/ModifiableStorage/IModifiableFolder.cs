@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage.NestedStorage;
+using DesktopWidgets3.Files.Core.Storage.NestedStorage;
 
-namespace Files.Core.Storage.ModifiableStorage;
+namespace DesktopWidgets3.Files.Core.Storage.ModifiableStorage;
 
 /// <summary>
 /// Represents a folder that can be modified.

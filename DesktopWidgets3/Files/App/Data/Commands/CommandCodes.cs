@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace Files.App.Data.Commands;
+namespace DesktopWidgets3.Files.App.Data.Commands;
 
 public enum CommandCodes
 {

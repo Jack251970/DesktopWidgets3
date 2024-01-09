@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using static Files.Core.Helpers.NativeFindStorageItemHelper;
+using static DesktopWidgets3.Files.Core.Helpers.NativeFindStorageItemHelper;
 
-namespace Files.Core.Extensions;
+namespace DesktopWidgets3.Files.Core.Extensions;
 
 public static class Win32FindDataExtensions
 {

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Data.Models;
-using Files.Core.Storage.LocatableStorage;
+using DesktopWidgets3.Files.Core.Data.Models;
+using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
 
-namespace Files.Core.Services;
+namespace DesktopWidgets3.Files.Core.Services;
 
 /// <summary>
 /// Represents a service to enumerate drives and create a storage device watcher

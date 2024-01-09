@@ -1,14 +1,14 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using Files.Core.Storage.ExtendableStorage;
-using Files.Core.Storage.LocatableStorage;
-using Files.Core.Storage.ModifiableStorage;
-using Files.Core.Storage.NestedStorage;
+using DesktopWidgets3.Files.Core.Storage;
+using DesktopWidgets3.Files.Core.Storage.ExtendableStorage;
+using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
+using DesktopWidgets3.Files.Core.Storage.ModifiableStorage;
+using DesktopWidgets3.Files.Core.Storage.NestedStorage;
 using Windows.Storage;
 
-namespace Files.App.Storage.WindowsStorage;
+namespace DesktopWidgets3.Files.App.Storage.WindowsStorage;
 
 /// <inheritdoc cref="IFile"/>
 public sealed class WindowsStorageFile : WindowsStorable<StorageFile>, ILocatableFile, IModifiableFile, IFileExtended, INestedFile

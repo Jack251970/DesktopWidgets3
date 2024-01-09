@@ -1,9 +1,9 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Utils.Cloud;
+using DesktopWidgets3.Files.Core.Utils.Cloud;
 
-namespace Files.App.Utils.Cloud;
+namespace DesktopWidgets3.Files.App.Utils.Cloud;
 
 public abstract class AbstractCloudDetector : ICloudDetector
 {

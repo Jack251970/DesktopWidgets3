@@ -3,7 +3,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 internal static class SafeNativeMethods
 {
@@ -45,12 +45,12 @@ public class NaturalStringComparer
 
     private class StringComparerArm64 : IComparer<object>
     {
-        public int Compare(object a, object b) => StringComparer.CurrentCulture.Compare(a, b);
+        public int Compare(object? a, object? b) => StringComparer.CurrentCulture.Compare(a, b);
     }
 
     private class StringComparerDefault : IComparer<object>
     {
-        public int Compare(object a, object b)
+        public int Compare(object? a, object? b)
         {
             return SafeNativeMethods.CompareStringEx(
                 SafeNativeMethods.LOCALE_NAME_USER_DEFAULT,

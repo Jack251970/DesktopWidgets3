@@ -3,7 +3,7 @@
 
 using Microsoft.UI.Xaml.Data;
 
-namespace Files.App.Converts;
+namespace DesktopWidgets3.Files.App.Converts;
 
 internal sealed class UInt32ToStringConverter : IValueConverter
 {

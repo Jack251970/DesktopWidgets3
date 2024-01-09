@@ -4,35 +4,35 @@
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
-using Files.App.Helpers;
-using Files.App.Utils;
-using Files.App.Utils.Cloud;
-using Files.App.Utils.Shell;
-using Files.App.Utils.Storage;
-using Files.App.Utils.Storage.Helpers;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.App.Utils;
+using DesktopWidgets3.Files.App.Utils.Cloud;
+using DesktopWidgets3.Files.App.Utils.Shell;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;
-using Files.Shared.Extensions;
-using Files.App.Utils.Git;
-using Files.Core.Utils.Cloud;
+using DesktopWidgets3.Files.Shared.Extensions;
+using DesktopWidgets3.Files.App.Utils.Git;
+using DesktopWidgets3.Files.Core.Utils.Cloud;
 using Windows.Storage.FileProperties;
-using Files.App.Extensions;
+using DesktopWidgets3.Files.App.Extensions;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using System.Collections.Concurrent;
 using Microsoft.UI.Xaml.Media;
-using Files.App.ViewModels.Previews;
+using DesktopWidgets3.Files.App.ViewModels.Previews;
 using Windows.Foundation;
 using System.Runtime.CompilerServices;
 using Windows.Storage.Search;
 using System.Diagnostics;
 using FileAttributes = System.IO.FileAttributes;
-using static Files.Core.Helpers.NativeFindStorageItemHelper;
-using static Files.App.Helpers.NativeDirectoryChangesHelper;
-using Files.Core.Data.Items;
+using static DesktopWidgets3.Files.Core.Helpers.NativeFindStorageItemHelper;
+using static DesktopWidgets3.Files.App.Helpers.NativeDirectoryChangesHelper;
+using DesktopWidgets3.Files.Core.Data.Items;
 
-namespace Files.App.Data.Models;
+namespace DesktopWidgets3.Files.App.Data.Models;
 
 public sealed class ItemViewModel : ObservableObject, IDisposable
 {
@@ -1869,7 +1869,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         if (storageItem is not null)
         {
-            CloudDriveSyncStatus? syncStatus = hasSyncStatus ? await global::Files.App.Data.Models.ItemViewModel.CheckCloudDriveSyncStatusAsync(storageItem) : null;
+            CloudDriveSyncStatus? syncStatus = hasSyncStatus ? await global::DesktopWidgets3.Files.App.Data.Models.ItemViewModel.CheckCloudDriveSyncStatusAsync(storageItem) : null;
             long? size = null;
             DateTimeOffset created = default, modified = default;
 

@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.Messaging.Messages;
-using Files.Core.ViewModels.Dialogs.FileSystemDialog;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
 
-namespace Files.Core.Data.Messages;
+namespace DesktopWidgets3.Files.Core.Data.Messages;
 
 /// <summary>
 /// Represents a messenger for FileSystemDialog option changed.

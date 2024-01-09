@@ -4,7 +4,7 @@
 using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml;
 
-namespace Files.App.ViewModels.Properties;
+namespace DesktopWidgets3.Files.App.ViewModels.Properties;
 
 /// <summary>
 /// This class is used for grouping file properties into sections so that it can be used as a grouped ListView data source

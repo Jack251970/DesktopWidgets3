@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage.ExtendableStorage;
+using DesktopWidgets3.Files.Core.Storage.ExtendableStorage;
 
-namespace Files.Core.Storage.Extensions;
+namespace DesktopWidgets3.Files.Core.Storage.Extensions;
 
 public static partial class StorageExtensions
 {

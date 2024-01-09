@@ -5,13 +5,13 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Data.Items;
-using Files.Core.Services;
-using Files.Core.Storage.LocatableStorage;
-using Files.Shared.Extensions;
-using DriveType = Files.App.Data.Items.DriveType;
+using DesktopWidgets3.Files.App.Data.Items;
+using DesktopWidgets3.Files.Core.Services;
+using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
+using DesktopWidgets3.Files.Shared.Extensions;
+using DriveType = DesktopWidgets3.Files.App.Data.Items.DriveType;
 
-namespace Files.App.Data.Models;
+namespace DesktopWidgets3.Files.App.Data.Models;
 
 public class NetworkDrivesViewModel : ObservableObject
 {

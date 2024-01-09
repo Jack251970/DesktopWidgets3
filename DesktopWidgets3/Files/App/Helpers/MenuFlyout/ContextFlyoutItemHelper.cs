@@ -2,18 +2,18 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
-using Files.App.Utils;
+using DesktopWidgets3.Files.App.Utils;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Data.Commands;
-using Files.App.Data.Models;
-using Files.App.Helpers.ContextFlyouts;
-using Files.App.ViewModels.Layouts;
-using Files.Core.Data.Enums;
-using Files.Shared.Helpers;
+using DesktopWidgets3.Files.App.Data.Commands;
+using DesktopWidgets3.Files.App.Data.Models;
+using DesktopWidgets3.Files.App.Helpers.ContextFlyouts;
+using DesktopWidgets3.Files.App.ViewModels.Layouts;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 /// <summary>
 /// Used to create lists of ContextMenuFlyoutItemViewModels that can be used by ItemModelListToContextFlyoutHelper to create context

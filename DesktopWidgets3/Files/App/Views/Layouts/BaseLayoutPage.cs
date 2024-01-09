@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Utils;
+using DesktopWidgets3.Files.App.Utils;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Data.Models;
-using Files.App.Helpers.ContextFlyouts;
-using Files.App.Helpers;
-using Files.Core.Data.Enums;
-using Files.Core.Data.Items;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.App.Data.Models;
+using DesktopWidgets3.Files.App.Helpers.ContextFlyouts;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Items;
+using DesktopWidgets3.Files.Shared.Extensions;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -19,24 +19,24 @@ using Windows.System;
 using Windows.UI.Core;
 using DesktopWidgets3.Helpers;
 using Windows.Foundation;
-using Files.App.Data.Commands;
-using Files.App.ViewModels.Layouts;
+using DesktopWidgets3.Files.App.Data.Commands;
+using DesktopWidgets3.Files.App.ViewModels.Layouts;
 using CommunityToolkit.WinUI.UI;
-using Files.App.Utils.Storage;
-using Files.App.Extensions;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.App.Extensions;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Vanara.PInvoke;
 using System.Runtime.InteropServices.ComTypes;
-using Files.App.Utils.RecycleBin;
+using DesktopWidgets3.Files.App.Utils.RecycleBin;
 using Windows.Storage;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.DragDrop;
-using Files.App.Utils.Storage.Helpers;
+using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
 using VanaraWindowsShell = Vanara.Windows.Shell;
 
-namespace Files.App.Views.Layouts;
+namespace DesktopWidgets3.Files.App.Views.Layouts;
 
 /// <summary>
 /// Represents the base class which every layout page must derive from

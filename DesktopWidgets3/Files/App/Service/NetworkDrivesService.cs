@@ -2,17 +2,17 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Data.Items;
-using Files.App.Utils;
-using Files.App.Utils.Shell;
-using Files.Core.Data.Items;
-using Files.Core.Services;
-using Files.Core.Storage.LocatableStorage;
+using DesktopWidgets3.Files.App.Data.Items;
+using DesktopWidgets3.Files.App.Utils;
+using DesktopWidgets3.Files.App.Utils.Shell;
+using DesktopWidgets3.Files.Core.Data.Items;
+using DesktopWidgets3.Files.Core.Services;
+using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
-using DriveType = Files.App.Data.Items.DriveType;
+using DriveType = DesktopWidgets3.Files.App.Data.Items.DriveType;
 
-namespace Files.App.Services;
+namespace DesktopWidgets3.Files.App.Services;
 
 public class NetworkDrivesService : INetworkDrivesService
 {

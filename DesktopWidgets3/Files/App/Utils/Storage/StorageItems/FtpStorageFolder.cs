@@ -3,12 +3,12 @@
 
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Data.Exceptions;
-using Files.App.Extensions;
-using Files.App.Helpers;
-using Files.App.Storage.FtpStorage;
-using Files.App.Utils.Storage.Helpers;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.App.Data.Exceptions;
+using DesktopWidgets3.Files.App.Extensions;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.App.Storage.FtpStorage;
+using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
+using DesktopWidgets3.Files.Shared.Extensions;
 using FluentFTP;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -17,7 +17,7 @@ using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public sealed class FtpStorageFolder : BaseStorageFolder, IPasswordProtectedItem
 {

@@ -1,10 +1,10 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
+using DesktopWidgets3.Files.Core.Storage;
 using FluentFTP;
 
-namespace Files.App.Storage.FtpStorage;
+namespace DesktopWidgets3.Files.App.Storage.FtpStorage;
 
 /// <inheritdoc cref="IFtpStorageService"/>
 public sealed class FtpStorageService : IFtpStorageService

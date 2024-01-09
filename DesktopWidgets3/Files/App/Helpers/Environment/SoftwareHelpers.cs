@@ -4,7 +4,7 @@
 using Microsoft.Win32;
 using System.Diagnostics;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 internal static class SoftwareHelpers
 {

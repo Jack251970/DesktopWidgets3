@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace Files.Core.Storage.ExtendableStorage;
+namespace DesktopWidgets3.Files.Core.Storage.ExtendableStorage;
 
 /// <summary>
 /// Represents a file that provides additional options for its manipulation.

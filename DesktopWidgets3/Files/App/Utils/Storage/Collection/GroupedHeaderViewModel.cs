@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Media;
 using System.Runtime.CompilerServices;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public class GroupedHeaderViewModel : ObservableObject
 {

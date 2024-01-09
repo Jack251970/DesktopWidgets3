@@ -3,9 +3,9 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using Files.Shared.Utils;
+using DesktopWidgets3.Files.Shared.Utils;
 
-namespace Files.Core.ViewModels.Dialogs.FileSystemDialog;
+namespace DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
 
 public abstract class BaseFileSystemDialogItemViewModel : ObservableObject
 {

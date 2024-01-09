@@ -10,11 +10,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using Windows.System;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.Shared.Extensions;
 using System.Windows.Forms;
-using Files.Core.Data.Items;
+using DesktopWidgets3.Files.Core.Data.Items;
 
-namespace Files.App.Utils.Shell;
+namespace DesktopWidgets3.Files.App.Utils.Shell;
 
 /// <summary>
 /// Provides static helper for general Win32API.

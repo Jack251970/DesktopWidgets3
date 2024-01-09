@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using Files.Shared.Utils;
+using DesktopWidgets3.Files.Core.Storage;
+using DesktopWidgets3.Files.Shared.Utils;
 
-namespace Files.Core.Services;
+namespace DesktopWidgets3.Files.Core.Services;
 
 /// <summary>
 /// Represents a service used for data to image conversion.

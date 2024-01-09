@@ -4,13 +4,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Data.Commands;
-using Files.App.Data.Contexts;
-using Files.App.Helpers;
+using DesktopWidgets3.Files.App.Data.Commands;
+using DesktopWidgets3.Files.App.Data.Contexts;
+using DesktopWidgets3.Files.App.Helpers;
 using System.ComponentModel;
 using Windows.ApplicationModel.DataTransfer;
 
-namespace Files.App.Actions;
+namespace DesktopWidgets3.Files.App.Actions;
 
 internal class ShareItemAction : ObservableObject, IAction
 {

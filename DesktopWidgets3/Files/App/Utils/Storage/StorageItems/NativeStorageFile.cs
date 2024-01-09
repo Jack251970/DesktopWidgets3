@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
-using Files.App.Extensions;
-using Files.App.Helpers;
-using Files.Shared.Helpers;
+using DesktopWidgets3.Files.App.Extensions;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.Shared.Helpers;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -14,7 +14,7 @@ using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using IO = System.IO;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 /// <summary>
 /// Shortcuts and alternate data stream.

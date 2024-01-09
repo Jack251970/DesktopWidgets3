@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Data.Enums;
-using Files.Core.Services.DateTimeFormatter;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Services.DateTimeFormatter;
 
-namespace Files.App.Services.DateTimeFormatter;
+namespace DesktopWidgets3.Files.App.Services.DateTimeFormatter;
 
 internal class UserDateTimeFormatter : IDateTimeFormatter
 {

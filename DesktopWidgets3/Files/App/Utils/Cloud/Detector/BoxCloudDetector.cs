@@ -1,11 +1,11 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Utils.Storage;
-using Files.Core.Utils.Cloud;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.Core.Utils.Cloud;
 using Windows.Storage;
 
-namespace Files.App.Utils.Cloud;
+namespace DesktopWidgets3.Files.App.Utils.Cloud;
 
 /// <summary>
 /// Provides an utility for Box Cloud detection.

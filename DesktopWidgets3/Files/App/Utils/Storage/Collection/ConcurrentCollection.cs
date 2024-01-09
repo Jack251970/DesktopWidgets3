@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections;
-using Files.App.Utils.Storage;
+using DesktopWidgets3.Files.App.Utils.Storage;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 public class ConcurrentCollection<T> : ICollection<T>, IList<T>, ICollection, IList
 {

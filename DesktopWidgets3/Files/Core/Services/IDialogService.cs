@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.ViewModels.Dialogs;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using System.ComponentModel;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 
-namespace Files.Core.Services;
+namespace DesktopWidgets3.Files.Core.Services;
 
 /// <summary>
 /// A service to manage dialogs.

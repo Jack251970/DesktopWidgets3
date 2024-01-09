@@ -4,15 +4,15 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using System.Collections.ObjectModel;
-using Files.Shared.Extensions;
-using Files.Core.Data.Messages;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Shared.Extensions;
+using DesktopWidgets3.Files.Core.Data.Messages;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.Helpers;
-using Files.App.Extensions;
-using Files.Core.Services;
+using DesktopWidgets3.Files.App.Extensions;
+using DesktopWidgets3.Files.Core.Services;
 
-namespace Files.Core.ViewModels.Dialogs.FileSystemDialog;
+namespace DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
 
 public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<FileSystemDialogOptionChangedMessage>
 {

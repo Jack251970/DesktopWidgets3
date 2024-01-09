@@ -3,7 +3,7 @@
 
 using System.Collections.Concurrent;
 
-namespace Files.App.Utils.Shell;
+namespace DesktopWidgets3.Files.App.Utils.Shell;
 
 public class ThreadWithMessageQueue : Disposable
 {

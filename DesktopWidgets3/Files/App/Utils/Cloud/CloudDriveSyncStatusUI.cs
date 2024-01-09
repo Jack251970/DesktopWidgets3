@@ -3,10 +3,10 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
-using Files.Core.Utils.Cloud;
+using DesktopWidgets3.Files.Core.Utils.Cloud;
 using Microsoft.UI.Xaml;
 
-namespace Files.App.Utils.Cloud;
+namespace DesktopWidgets3.Files.App.Utils.Cloud;
 
 public class CloudDriveSyncStatusUI : ObservableObject
 {

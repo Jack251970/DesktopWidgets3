@@ -4,17 +4,17 @@
 using System.Diagnostics;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Extensions;
-using Files.App.Helpers;
-using Files.App.Utils.RecycleBin;
-using Files.App.Utils.StatusCenter;
-using Files.Core.Data.Enums;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.App.Extensions;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.App.Utils.RecycleBin;
+using DesktopWidgets3.Files.App.Utils.StatusCenter;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Shared.Extensions;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 /// <summary>
 /// Provides group of file system operation for given page instance.

@@ -4,7 +4,7 @@
 using System.ComponentModel;
 using DesktopWidgets3.Helpers;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public class GroupedCollection<T> : BulkConcurrentObservableCollection<T>, IGroupedCollectionHeader
 {

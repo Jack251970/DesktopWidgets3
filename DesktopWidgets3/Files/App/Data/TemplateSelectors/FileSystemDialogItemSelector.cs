@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.ViewModels.Dialogs.FileSystemDialog;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
 using Microsoft.UI.Xaml;
 
-namespace Files.App.Data.TemplateSelectors;
+namespace DesktopWidgets3.Files.App.Data.TemplateSelectors;
 
 internal sealed class FileSystemDialogItemSelector : BaseTemplateSelector<BaseFileSystemDialogItemViewModel>
 {

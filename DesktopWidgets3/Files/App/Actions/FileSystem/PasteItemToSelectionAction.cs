@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Data.Commands;
-using Files.App.Utils;
-using Files.App.Data.Contexts;
+using DesktopWidgets3.Files.App.Data.Commands;
+using DesktopWidgets3.Files.App.Utils;
+using DesktopWidgets3.Files.App.Data.Contexts;
 using System.ComponentModel;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.Helpers;
-using Files.App.Helpers;
+using DesktopWidgets3.Files.App.Helpers;
 
-namespace Files.App.Actions;
+namespace DesktopWidgets3.Files.App.Actions;
 
 internal class PasteItemToSelectionAction : BaseUIAction, IAction
 {

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Utils.Shell;
-using Files.Core.Utils.Cloud;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.App.Utils.Shell;
+using DesktopWidgets3.Files.Core.Utils.Cloud;
+using DesktopWidgets3.Files.Shared.Extensions;
 using Microsoft.Win32;
 using System.Runtime.Versioning;
 
-namespace Files.App.Utils.Cloud;
+namespace DesktopWidgets3.Files.App.Utils.Cloud;
 
 [SupportedOSPlatform("Windows10.0.10240")]
 public class CloudDrivesDetector

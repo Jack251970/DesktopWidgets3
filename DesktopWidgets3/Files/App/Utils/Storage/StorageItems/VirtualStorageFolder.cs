@@ -3,13 +3,13 @@
 
 using System.Runtime.InteropServices.WindowsRuntime;
 using DesktopWidgets3.Helpers;
-using Files.App.Extensions;
+using DesktopWidgets3.Files.App.Extensions;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public class VirtualStorageFolder : BaseStorageFolder
 {

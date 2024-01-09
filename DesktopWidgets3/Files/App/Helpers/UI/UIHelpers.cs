@@ -2,15 +2,15 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.Core.Data.Enums;
-using Files.Core.Data.Items;
-using Files.Core.ViewModels.Dialogs;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Items;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs;
 using Microsoft.UI.Xaml.Controls;
 using System.ComponentModel;
 using Microsoft.UI.Xaml.Media.Imaging;
-using static Files.App.Utils.Shell.Win32API;
+using static DesktopWidgets3.Files.App.Utils.Shell.Win32API;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 public static class UIHelpers
 {

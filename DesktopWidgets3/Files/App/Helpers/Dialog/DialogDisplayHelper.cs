@@ -3,11 +3,11 @@
 
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Dialogs;
-using Files.App.ViewModels.Dialogs;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.App.Dialogs;
+using DesktopWidgets3.Files.App.ViewModels.Dialogs;
+using DesktopWidgets3.Files.Core.Data.Enums;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 internal class DialogDisplayHelper
 {

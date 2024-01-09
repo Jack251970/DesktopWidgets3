@@ -1,12 +1,12 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using Files.Core.Storage.LocatableStorage;
-using Files.Core.Storage.NestedStorage;
+using DesktopWidgets3.Files.Core.Storage;
+using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
+using DesktopWidgets3.Files.Core.Storage.NestedStorage;
 using FluentFTP;
 
-namespace Files.App.Storage.FtpStorage;
+namespace DesktopWidgets3.Files.App.Storage.FtpStorage;
 
 public abstract class FtpStorable : ILocatableStorable, INestedStorable
 {

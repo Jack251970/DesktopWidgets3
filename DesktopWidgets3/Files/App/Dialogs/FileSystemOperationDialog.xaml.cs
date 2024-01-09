@@ -3,14 +3,14 @@
 
 using CommunityToolkit.WinUI.UI;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Utils.Storage;
-using Files.Core.Data.Enums;
-using Files.Core.ViewModels.Dialogs;
-using Files.Core.ViewModels.Dialogs.FileSystemDialog;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace Files.App.Dialogs;
+namespace DesktopWidgets3.Files.App.Dialogs;
 
 public sealed partial class FileSystemOperationDialog : ContentDialog, IDialog<FileSystemDialogViewModel>
 {

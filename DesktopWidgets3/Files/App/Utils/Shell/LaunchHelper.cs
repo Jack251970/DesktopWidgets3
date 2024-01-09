@@ -5,11 +5,11 @@ using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using Files.Shared.Helpers;
+using DesktopWidgets3.Files.Shared.Helpers;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 
-namespace Files.App.Utils.Shell;
+namespace DesktopWidgets3.Files.App.Utils.Shell;
 
 public static partial class LaunchHelper
 {

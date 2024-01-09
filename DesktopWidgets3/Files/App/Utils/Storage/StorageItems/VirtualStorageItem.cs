@@ -2,14 +2,14 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
-using Files.App.Utils;
-using Files.App.Helpers;
+using DesktopWidgets3.Files.App.Utils;
+using DesktopWidgets3.Files.App.Helpers;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
-using static Files.Core.Helpers.NativeFindStorageItemHelper;
+using static DesktopWidgets3.Files.Core.Helpers.NativeFindStorageItemHelper;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 /// <summary>
 /// Implements IStorageItem, allowing us to get an instance of IStorageItem for a ListedItem

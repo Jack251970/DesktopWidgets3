@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Text.RegularExpressions;
-using Files.App.Utils.Shell;
-using Files.App.Utils.Storage;
-using Files.Core.Data.Items;
+using DesktopWidgets3.Files.App.Utils.Shell;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.Core.Data.Items;
 
-namespace Files.App.Utils.RecycleBin;
+namespace DesktopWidgets3.Files.App.Utils.RecycleBin;
 
 public static partial class RecycleBinHelpers
 {

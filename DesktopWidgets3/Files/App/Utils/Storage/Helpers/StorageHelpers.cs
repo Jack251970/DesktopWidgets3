@@ -3,14 +3,14 @@
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Files.App.Utils;
-using Files.App.Utils.Storage;
-using Files.App.Utils.Storage.Helpers;
-using Files.Core.Data.Enums;
-using Files.Shared.Helpers;
+using DesktopWidgets3.Files.App.Utils;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Shared.Helpers;
 using Windows.Storage;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 /// <summary>
 /// <see cref="IStorageItem"/> related Helpers

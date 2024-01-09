@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.ComponentModel;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Enums;
 
-namespace Files.Core.ViewModels.Dialogs;
+namespace DesktopWidgets3.Files.Core.ViewModels.Dialogs;
 
 public interface IDialog<TViewModel>
     where TViewModel : class, INotifyPropertyChanged

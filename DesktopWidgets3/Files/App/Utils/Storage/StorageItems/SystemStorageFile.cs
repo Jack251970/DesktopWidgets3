@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
-using Files.App.Helpers;
-using Files.App.Utils.Storage.Helpers;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
 using Windows.Foundation;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
@@ -11,7 +11,7 @@ using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using IO = System.IO;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public sealed class SystemStorageFile : BaseStorageFile
 {

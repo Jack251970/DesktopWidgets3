@@ -3,14 +3,14 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Actions;
+using DesktopWidgets3.Files.App.Actions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System.Collections;
 using System.Collections.Immutable;
 using System.ComponentModel;
-namespace Files.App.Data.Commands;
+namespace DesktopWidgets3.Files.App.Data.Commands;
 
 internal class CommandManager : ICommandManager
 {

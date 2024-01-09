@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace Files.Core.Data.Enums;
+namespace DesktopWidgets3.Files.Core.Data.Enums;
 
 /// <summary>
 /// SortDirection is used instead of the CommunityToolkit equivalent because it is tied to the model

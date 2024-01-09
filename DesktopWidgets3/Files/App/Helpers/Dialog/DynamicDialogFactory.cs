@@ -2,14 +2,14 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
-using Files.App.Dialogs;
-using Files.App.ViewModels.Dialogs;
-using Files.Core.Data.Enums;
-using Files.Core.Data.Items;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.App.Dialogs;
+using DesktopWidgets3.Files.App.ViewModels.Dialogs;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Items;
+using DesktopWidgets3.Files.Shared.Extensions;
 using Microsoft.UI.Xaml.Controls;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 public static class DynamicDialogFactory
 {

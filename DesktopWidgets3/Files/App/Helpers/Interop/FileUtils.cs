@@ -4,7 +4,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 // https://stackoverflow.com/questions/317071/how-do-i-find-out-which-process-is-locking-a-file-using-net/317209#317209
 public static class FileUtils

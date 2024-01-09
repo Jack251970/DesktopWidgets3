@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Data.Items;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.Core.Data.Items;
+using DesktopWidgets3.Files.Shared.Extensions;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 
-namespace Files.App.Utils.Shell;
+namespace DesktopWidgets3.Files.App.Utils.Shell;
 
 /// <summary>
 /// Provides a utility to manage shell folders.

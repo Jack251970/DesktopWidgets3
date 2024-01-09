@@ -1,13 +1,13 @@
 ﻿// Copyright(c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Utils.Storage;
+using DesktopWidgets3.Files.App.Utils.Storage;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using Windows.Storage;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 internal static class BitmapHelper
 {

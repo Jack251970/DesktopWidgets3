@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public static class StorageItemIconHelpers
 {

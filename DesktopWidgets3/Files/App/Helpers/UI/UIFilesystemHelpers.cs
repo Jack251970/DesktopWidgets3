@@ -6,18 +6,18 @@ using System.Net;
 using System.Text;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Utils;
-using Files.App.Utils.Storage;
-using Files.App.Utils.Storage.Helpers;
-using Files.Core.Data.Enums;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.App.Utils;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Shared.Extensions;
 using Microsoft.UI.Dispatching;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
-using Files.App.Extensions;
-using Files.Core.ViewModels.Dialogs;
+using DesktopWidgets3.Files.App.Extensions;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 public static class UIFileSystemHelpers
 {

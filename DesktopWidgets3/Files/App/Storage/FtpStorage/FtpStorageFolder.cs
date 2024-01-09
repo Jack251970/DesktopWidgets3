@@ -1,19 +1,19 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using Files.Core.Storage.DirectStorage;
-using Files.Core.Storage.Enums;
-using Files.Core.Storage.Extensions;
-using Files.Core.Storage.ExtendableStorage;
-using Files.Core.Storage.LocatableStorage;
-using Files.Core.Storage.ModifiableStorage;
-using Files.Core.Storage.NestedStorage;
+using DesktopWidgets3.Files.Core.Storage;
+using DesktopWidgets3.Files.Core.Storage.DirectStorage;
+using DesktopWidgets3.Files.Core.Storage.Enums;
+using DesktopWidgets3.Files.Core.Storage.Extensions;
+using DesktopWidgets3.Files.Core.Storage.ExtendableStorage;
+using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
+using DesktopWidgets3.Files.Core.Storage.ModifiableStorage;
+using DesktopWidgets3.Files.Core.Storage.NestedStorage;
 using FluentFTP;
 using System.Runtime.CompilerServices;
-using Files.Shared.Helpers;
+using DesktopWidgets3.Files.Shared.Helpers;
 
-namespace Files.App.Storage.FtpStorage;
+namespace DesktopWidgets3.Files.App.Storage.FtpStorage;
 
 public sealed class FtpStorageFolder : FtpStorable, ILocatableFolder, IModifiableFolder, IFolderExtended, INestedFolder, IDirectCopy, IDirectMove
 {

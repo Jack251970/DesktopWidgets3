@@ -1,20 +1,20 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Data.Enums;
-using Files.Core.Data.Items;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Items;
 using Windows.Storage;
-using Files.App.Utils.StatusCenter;
+using DesktopWidgets3.Files.App.Utils.StatusCenter;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.Shared.Extensions;
 using DesktopWidgets3.Helpers;
-using Files.App.Utils.RecycleBin;
-using Files.Core.ViewModels.Dialogs.FileSystemDialog;
-using Files.App.Helpers;
-using Files.Core.ViewModels.Dialogs;
-using Files.App.Extensions;
+using DesktopWidgets3.Files.App.Utils.RecycleBin;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs;
+using DesktopWidgets3.Files.App.Extensions;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 /// <summary>
 /// Provides group of shell file system operation for given page instance.

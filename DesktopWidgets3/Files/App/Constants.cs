@@ -1,4 +1,4 @@
-﻿namespace Files.App;
+﻿namespace DesktopWidgets3.Files.App;
 
 public static class Constants
 {

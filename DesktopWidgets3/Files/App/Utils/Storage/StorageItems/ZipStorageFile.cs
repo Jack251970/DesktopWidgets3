@@ -3,10 +3,10 @@
 
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Helpers;
-using Files.App.Utils.Storage.Helpers;
-using Files.Shared.Extensions;
-using Files.Shared.Helpers;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
+using DesktopWidgets3.Files.Shared.Extensions;
+using DesktopWidgets3.Files.Shared.Helpers;
 using SevenZip;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
@@ -15,7 +15,7 @@ using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using IO = System.IO;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 {

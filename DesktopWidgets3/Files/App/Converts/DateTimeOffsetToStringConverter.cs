@@ -1,10 +1,10 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Services.DateTimeFormatter;
+using DesktopWidgets3.Files.Core.Services.DateTimeFormatter;
 using Microsoft.UI.Xaml.Data;
 
-namespace Files.App.Converts;
+namespace DesktopWidgets3.Files.App.Converts;
 
 internal sealed class DateTimeOffsetToStringConverter : IValueConverter
 {

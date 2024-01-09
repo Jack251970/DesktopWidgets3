@@ -4,10 +4,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Data.Commands;
+using DesktopWidgets3.Files.App.Data.Commands;
 using System.ComponentModel;
 
-namespace Files.App.Actions;
+namespace DesktopWidgets3.Files.App.Actions;
 
 internal class NavigateUpAction : ObservableObject, IAction
 {

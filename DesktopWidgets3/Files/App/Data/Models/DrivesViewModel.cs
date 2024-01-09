@@ -2,14 +2,14 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using Files.Core.Data.Models;
-using Files.Core.Services;
-using Files.Core.Services.SizeProvider;
-using Files.Core.Storage.LocatableStorage;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.Core.Data.Models;
+using DesktopWidgets3.Files.Core.Services;
+using DesktopWidgets3.Files.Core.Services.SizeProvider;
+using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
+using DesktopWidgets3.Files.Shared.Extensions;
 using System.Collections.ObjectModel;
 
-namespace Files.App.Data.Models;
+namespace DesktopWidgets3.Files.App.Data.Models;
 
 public class DrivesViewModel : ObservableObject, IDisposable
 {

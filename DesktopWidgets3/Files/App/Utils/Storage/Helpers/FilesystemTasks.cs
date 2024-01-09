@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Data.Exceptions;
+using DesktopWidgets3.Files.App.Data.Exceptions;
 using System.Runtime.InteropServices;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using Windows.Storage;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public static class FilesystemTasks
 {

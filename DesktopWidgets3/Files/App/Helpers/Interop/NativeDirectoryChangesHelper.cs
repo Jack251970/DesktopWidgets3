@@ -3,7 +3,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 public class NativeDirectoryChangesHelper
 {

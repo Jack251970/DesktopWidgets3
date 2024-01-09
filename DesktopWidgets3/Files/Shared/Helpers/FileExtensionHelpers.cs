@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace Files.Shared.Helpers;
+namespace DesktopWidgets3.Files.Shared.Helpers;
 
 /// <summary>
 /// Provides static extension for path extension.

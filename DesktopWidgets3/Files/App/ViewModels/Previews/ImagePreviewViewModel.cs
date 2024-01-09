@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Extensions;
-using Files.App.Utils;
-using Files.App.ViewModels.Properties;
+using DesktopWidgets3.Files.App.Extensions;
+using DesktopWidgets3.Files.App.Utils;
+using DesktopWidgets3.Files.App.ViewModels.Properties;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
-namespace Files.App.ViewModels.Previews;
+namespace DesktopWidgets3.Files.App.ViewModels.Previews;
 
 public class ImagePreviewViewModel : BasePreviewModel
 {

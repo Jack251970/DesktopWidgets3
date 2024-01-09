@@ -1,18 +1,18 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Data.Items;
-using Files.App.Extensions;
-using Files.App.Storage.WindowsStorage;
-using Files.App.Utils;
-using Files.App.Utils.Storage;
-using Files.Core.Data.Enums;
-using Files.Core.Data.Models;
-using Files.Core.Services;
-using Files.Core.Storage.LocatableStorage;
+using DesktopWidgets3.Files.App.Data.Items;
+using DesktopWidgets3.Files.App.Extensions;
+using DesktopWidgets3.Files.App.Storage.WindowsStorage;
+using DesktopWidgets3.Files.App.Utils;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Models;
+using DesktopWidgets3.Files.Core.Services;
+using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
 using Windows.Storage;
 
-namespace Files.App.Services;
+namespace DesktopWidgets3.Files.App.Services;
 
 public class RemovableDrivesService : IRemovableDrivesService
 {

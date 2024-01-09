@@ -4,7 +4,7 @@
 using System.Windows.Forms;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Helpers;
+using DesktopWidgets3.Files.App.Helpers;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,9 +13,9 @@ using Vanara.InteropServices;
 using Vanara.PInvoke;
 using static Vanara.PInvoke.Mpr;
 using static Vanara.PInvoke.AdvApi32;
-using Files.App.Utils.Shell;
+using DesktopWidgets3.Files.App.Utils.Shell;
 
-namespace Files.App.Utils;
+namespace DesktopWidgets3.Files.App.Utils;
 
 public class NetworkDrivesAPI
 {

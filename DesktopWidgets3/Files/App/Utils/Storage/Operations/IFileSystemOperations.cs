@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Utils.StatusCenter;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.App.Utils.StatusCenter;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using Windows.Storage;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 /// <summary>
 /// Represents an interface for file system operations.

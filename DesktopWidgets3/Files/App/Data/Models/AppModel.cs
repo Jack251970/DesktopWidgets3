@@ -4,7 +4,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Windows.ApplicationModel.DataTransfer;
 
-namespace Files.App.Data.Models;
+namespace DesktopWidgets3.Files.App.Data.Models;
 
 public class AppModel : ObservableObject
 {

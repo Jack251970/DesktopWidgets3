@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.UserControls;
+using DesktopWidgets3.Files.App.UserControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using static Microsoft.UI.Xaml.Application;
 
-namespace Files.App.Data.Commands;
+namespace DesktopWidgets3.Files.App.Data.Commands;
 
 public readonly struct RichGlyph
 {

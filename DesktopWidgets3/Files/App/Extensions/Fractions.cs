@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace Files.App.Extensions;
+namespace DesktopWidgets3.Files.App.Extensions;
 
 /// <summary>
 /// Some simple helper methods to convert doubles to fractions

@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Helpers;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using System.ComponentModel;
 using Windows.Storage;
 
-namespace Files.App.Actions;
+namespace DesktopWidgets3.Files.App.Actions;
 
 internal abstract class BaseDeleteAction : BaseUIAction
 {

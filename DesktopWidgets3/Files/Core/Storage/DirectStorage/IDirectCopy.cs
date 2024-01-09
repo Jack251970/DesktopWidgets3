@@ -1,7 +1,7 @@
-﻿using Files.Core.Storage.ModifiableStorage;
-using Files.Core.Storage.NestedStorage;
+﻿using DesktopWidgets3.Files.Core.Storage.ModifiableStorage;
+using DesktopWidgets3.Files.Core.Storage.NestedStorage;
 
-namespace Files.Core.Storage.DirectStorage;
+namespace DesktopWidgets3.Files.Core.Storage.DirectStorage;
 
 /// <summary>
 /// Provides direct copy operation of storage objects.

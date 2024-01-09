@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Helpers;
+using DesktopWidgets3.Files.App.Helpers;
 
-namespace Files.App.Data.EventArguments;
+namespace DesktopWidgets3.Files.App.Data.EventArguments;
 
 public class LayoutPreferenceEventArgs
 {

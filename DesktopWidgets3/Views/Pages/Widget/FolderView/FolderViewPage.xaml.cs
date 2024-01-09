@@ -3,17 +3,17 @@
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
-using Files.App.Utils;
+using DesktopWidgets3.Files.App.Utils;
 using Microsoft.UI.Xaml.Media;
 using CommunityToolkit.WinUI.UI;
-using Files.App.Views.Layouts;
+using DesktopWidgets3.Files.App.Views.Layouts;
 using Microsoft.UI.Input;
 using Windows.UI.Core;
 using DesktopWidgets3.Helpers;
-using Files.App;
+using DesktopWidgets3.Files.App;
 using Microsoft.UI.Dispatching;
 using Windows.System;
-using Files.App.Extensions;
+using DesktopWidgets3.Files.App.Extensions;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
 
 namespace DesktopWidgets3.Views.Pages.Widget;

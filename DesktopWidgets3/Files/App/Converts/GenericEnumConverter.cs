@@ -3,7 +3,7 @@
 
 using Microsoft.UI.Xaml.Data;
 
-namespace Files.App.Converters;
+namespace DesktopWidgets3.Files.App.Converters;
 
 internal sealed class GenericEnumConverter : IValueConverter
 {

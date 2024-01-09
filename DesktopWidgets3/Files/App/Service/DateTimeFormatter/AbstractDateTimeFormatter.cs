@@ -3,11 +3,11 @@
 
 using System.Globalization;
 using DesktopWidgets3.Helpers;
-using Files.Core.Data.Enums;
-using Files.Core.Services.DateTimeFormatter;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Services.DateTimeFormatter;
 using Windows.Globalization;
 
-namespace Files.App.Services.DateTimeFormatter;
+namespace DesktopWidgets3.Files.App.Services.DateTimeFormatter;
 
 internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
 {

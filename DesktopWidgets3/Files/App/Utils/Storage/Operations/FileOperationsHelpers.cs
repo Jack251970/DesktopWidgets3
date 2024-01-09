@@ -2,19 +2,19 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Files.App.Helpers;
-using Files.App.Utils.Shell;
-using Files.App.Utils.StatusCenter;
-using Files.App.Utils.Storage.Operations;
-using Files.Core.Data.Enums;
-using Files.Core.Data.Items;
-using Files.Shared.Extensions;
-using Files.Shared.Helpers;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.App.Utils.Shell;
+using DesktopWidgets3.Files.App.Utils.StatusCenter;
+using DesktopWidgets3.Files.App.Utils.Storage.Operations;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Items;
+using DesktopWidgets3.Files.Shared.Extensions;
+using DesktopWidgets3.Files.Shared.Helpers;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 using Windows.ApplicationModel.DataTransfer;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public class FileOperationsHelpers
 {

@@ -1,16 +1,16 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Data.EventArguments;
-using Files.App.Data.Items;
-using Files.App.Utils.Storage;
-using Files.Core.Data.Models;
-using Files.Core.Storage.LocatableStorage;
+using DesktopWidgets3.Files.App.Data.EventArguments;
+using DesktopWidgets3.Files.App.Data.Items;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.Core.Data.Models;
+using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Portable;
 using Windows.Storage;
 
-namespace Files.App.Utils;
+namespace DesktopWidgets3.Files.App.Utils;
 
 public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 {

@@ -3,21 +3,21 @@
 
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Utils.Shell;
-using Files.App.Utils;
-using Files.App.Utils.Storage;
-using Files.Core.Data.Enums;
-using Files.Core.Data.Items;
-using Files.Core.Helpers;
-using Files.Shared.Helpers;
+using DesktopWidgets3.Files.App.Utils.Shell;
+using DesktopWidgets3.Files.App.Utils;
+using DesktopWidgets3.Files.App.Utils.Storage;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Items;
+using DesktopWidgets3.Files.Core.Helpers;
+using DesktopWidgets3.Files.Shared.Helpers;
 using Windows.Storage;
 using Windows.Storage.Search;
 using Windows.System;
-using Files.App.Data.EventArguments;
+using DesktopWidgets3.Files.App.Data.EventArguments;
 using DesktopWidgets3.Helpers;
 using FileAttributes = System.IO.FileAttributes;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 public static class NavigationHelpers
 {

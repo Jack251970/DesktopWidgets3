@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Enums;
 
-namespace Files.App.Data.Models;
+namespace DesktopWidgets3.Files.App.Data.Models;
 
 public class CurrentInstanceViewModel : ObservableObject
 {

@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Data.EventArguments;
+using DesktopWidgets3.Files.App.Data.EventArguments;
 using Microsoft.Management.Infrastructure;
 using Microsoft.Management.Infrastructure.Generic;
 
-namespace Files.App.Helpers;
+namespace DesktopWidgets3.Files.App.Helpers;
 
 public delegate void EventArrivedEventHandler(object sender, EventArrivedEventArgs e);
 

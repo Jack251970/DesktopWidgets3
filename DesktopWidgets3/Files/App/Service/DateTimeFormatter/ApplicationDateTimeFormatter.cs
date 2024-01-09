@@ -3,7 +3,7 @@
 
 using DesktopWidgets3.Helpers;
 
-namespace Files.App.Services.DateTimeFormatter;
+namespace DesktopWidgets3.Files.App.Services.DateTimeFormatter;
 
 internal class ApplicationDateTimeFormatter : AbstractDateTimeFormatter
 {

@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Utils.Storage;
+using DesktopWidgets3.Files.App.Utils.Storage;
 using System.Collections.ObjectModel;
-using Files.App.Utils.Storage.Helpers;
-using Files.App.Data.Items;
-using Files.App.Helpers;
-using Files.Core.Data.Items;
+using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
+using DesktopWidgets3.Files.App.Data.Items;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.Core.Data.Items;
 
-namespace Files.App.Utils.Library;
+namespace DesktopWidgets3.Files.App.Utils.Library;
 
 public class LibraryLocationItem : LocationItem
 {

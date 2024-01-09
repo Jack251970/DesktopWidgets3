@@ -6,7 +6,7 @@ using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public interface IBaseStorageFolder : IStorageItem2, IStorageFolder, IStorageFolder2, IStorageItemProperties2, IStorageItemPropertiesWithProvider, IStorageFolderQueryOperations
 {

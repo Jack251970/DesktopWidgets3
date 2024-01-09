@@ -4,8 +4,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DesktopWidgets3.Helpers;
-using Files.App.Helpers;
-using Files.Core.Data.Enums;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.Core.Data.Enums;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -13,7 +13,7 @@ using System.Diagnostics;
 using System.Windows.Input;
 using Windows.System;
 
-namespace Files.App.ViewModels.Dialogs;
+namespace DesktopWidgets3.Files.App.ViewModels.Dialogs;
 
 public class DynamicDialogViewModel : ObservableObject, IDisposable
 {

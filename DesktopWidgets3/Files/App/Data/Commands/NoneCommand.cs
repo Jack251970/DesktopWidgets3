@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 
-namespace Files.App.Data.Commands;
+namespace DesktopWidgets3.Files.App.Data.Commands;
 
 [DebuggerDisplay("Command None")]
 internal class NoneCommand : IRichCommand

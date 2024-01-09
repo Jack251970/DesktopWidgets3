@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace Files.Core.Services.SizeProvider;
+namespace DesktopWidgets3.Files.Core.Services.SizeProvider;
 
 public class NoSizeProvider : ISizeProvider
 {

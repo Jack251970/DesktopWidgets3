@@ -6,17 +6,17 @@ using System.Runtime.InteropServices.ComTypes;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Helpers;
-using Files.App.Utils.RecycleBin;
-using Files.App.Utils.StatusCenter;
-using Files.App.Utils.Storage.Helpers;
-using Files.Core.Data.Enums;
-using Files.Core.Data.Items;
-using Files.Core.Services;
-using Files.Core.Storage;
-using Files.Core.Storage.Extensions;
-using Files.Core.ViewModels.Dialogs.FileSystemDialog;
-using Files.Shared.Extensions;
+using DesktopWidgets3.Files.App.Helpers;
+using DesktopWidgets3.Files.App.Utils.RecycleBin;
+using DesktopWidgets3.Files.App.Utils.StatusCenter;
+using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
+using DesktopWidgets3.Files.Core.Data.Enums;
+using DesktopWidgets3.Files.Core.Data.Items;
+using DesktopWidgets3.Files.Core.Services;
+using DesktopWidgets3.Files.Core.Storage;
+using DesktopWidgets3.Files.Core.Storage.Extensions;
+using DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
+using DesktopWidgets3.Files.Shared.Extensions;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 using Windows.ApplicationModel.DataTransfer;
@@ -25,7 +25,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using FileAttributes = System.IO.FileAttributes;
 
-namespace Files.App.Utils.Storage;
+namespace DesktopWidgets3.Files.App.Utils.Storage;
 
 public sealed class FileSystemHelpers : IFileSystemHelpers
 {

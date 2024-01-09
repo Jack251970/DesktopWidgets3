@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.UserControls;
+using DesktopWidgets3.Files.App.UserControls;
 using Microsoft.UI.Xaml;
 
-namespace Files.App.Data.Models;
+namespace DesktopWidgets3.Files.App.Data.Models;
 
 public struct OpacityIconModel
 {
