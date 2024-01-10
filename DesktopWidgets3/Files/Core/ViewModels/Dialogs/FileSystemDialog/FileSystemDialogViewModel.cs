@@ -304,6 +304,7 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
             }
         },
         10,
+        null,
         token);
 
         return task;

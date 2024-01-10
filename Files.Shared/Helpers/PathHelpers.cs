@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using System;
+using System.IO;
+
 namespace Files.Shared.Helpers;
 
 public static class PathHelpers
