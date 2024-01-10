@@ -78,7 +78,6 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="DiscUtils.Udf" Version="0.16.13" />
-    <PackageReference Include="FluentFTP" Version="49.0.1" />
     <PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.124" />
     <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.3" />
