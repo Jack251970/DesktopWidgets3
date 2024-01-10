@@ -3,6 +3,9 @@
 
 using Files.Core.Storage;
 using FluentFTP;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Files.App.Storage.FtpStorage;
 
@@ -17,7 +20,7 @@ public sealed class FtpStorageService : IFtpStorageService
 
 		var ftpPath = FtpHelpers.GetFtpPath(id);
 		var item = await ftpClient.GetObjectInfo(ftpPath, token: cancellationToken);
-        if (item is null || item.Type != FtpObjectType.Directory)
+		if (item is null || item.Type != FtpObjectType.Directory)
         {
             throw new DirectoryNotFoundException("Directory was not found from path.");
         }

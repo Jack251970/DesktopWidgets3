@@ -5,6 +5,8 @@ using Files.Core.Storage;
 using Files.Core.Storage.LocatableStorage;
 using Files.Core.Storage.NestedStorage;
 using FluentFTP;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Files.App.Storage.FtpStorage;
 
@@ -35,7 +37,7 @@ public abstract class FtpStorable : ILocatableStorable, INestedStorable
 	/// <inheritdoc/>
 	public Task<IFolder?> GetParentAsync(CancellationToken cancellationToken = default)
 	{
-		return Task.FromResult(Parent);
+		return Task.FromResult<IFolder?>(Parent);
 	}
 
 	protected AsyncFtpClient GetFtpClient()

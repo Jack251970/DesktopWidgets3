@@ -5,6 +5,8 @@ using Files.Core.Storage;
 using Files.Core.Storage.LocatableStorage;
 using Files.Core.Storage.NestedStorage;
 using Files.Shared.Helpers;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace Files.App.Storage.WindowsStorage;

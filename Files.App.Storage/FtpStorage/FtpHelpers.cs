@@ -3,6 +3,9 @@
 
 using Files.Shared.Extensions;
 using FluentFTP;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Files.App.Storage.FtpStorage;
 
@@ -28,7 +31,7 @@ internal static class FtpHelpers
 		var authority = GetFtpAuthority(path);
 		var index = authority.IndexOf(':', StringComparison.Ordinal);
 
-		return index == -1 ? authority : authority.Substring(0, index);
+		return index == -1 ? authority : authority[..index];
 	}
 
 	public static ushort GetFtpPort(string path)
@@ -36,9 +39,9 @@ internal static class FtpHelpers
 		var authority = GetFtpAuthority(path);
 		var index = authority.IndexOf(':', StringComparison.Ordinal);
 
-        if (index != -1)
+		if (index != -1)
         {
-            return ushort.Parse(authority.Substring(index + 1));
+            return ushort.Parse(authority[(index + 1)..]);
         }
 
         return path.StartsWith("ftps://", StringComparison.OrdinalIgnoreCase) ? (ushort)990 : (ushort)21;
@@ -55,7 +58,7 @@ internal static class FtpHelpers
             hostIndex = path.Length;
         }
 
-        return path.Substring(schemaIndex, hostIndex - schemaIndex);
+        return path[schemaIndex..hostIndex];
 	}
 
 	public static AsyncFtpClient GetFtpClient(string ftpPath)
