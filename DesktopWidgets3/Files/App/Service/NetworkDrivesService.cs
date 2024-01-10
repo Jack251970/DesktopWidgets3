@@ -8,6 +8,7 @@ using Files.App.Utils.Shell;
 using Files.Core.Data.Items;
 using Files.Core.Services;
 using Files.Core.Storage.LocatableStorage;
+using Files.Core.ViewModels.Widgets.FolderView;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 using DriveType = Files.App.Data.Items.DriveType;
@@ -70,9 +71,9 @@ public class NetworkDrivesService : INetworkDrivesService
         }
     }
 
-    public Task OpenMapNetworkDriveDialogAsync(FolderViewViewModel viewModel)
+    public Task OpenMapNetworkDriveDialogAsync(IFolderViewViewModel viewModel)
     {
-        var handle = viewModel.WidgetWindow.WindowHandle.ToInt64();
+        var handle = ((FolderViewViewModel)viewModel).WidgetWindow.WindowHandle.ToInt64();
         return NetworkDrivesAPI.OpenMapNetworkDriveDialog(handle);
     }
 }

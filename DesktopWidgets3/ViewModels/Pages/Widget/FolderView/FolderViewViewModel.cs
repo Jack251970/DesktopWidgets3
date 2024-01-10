@@ -26,10 +26,12 @@ using System.ComponentModel;
 using static Files.App.Data.Models.ItemViewModel;
 using static Files.App.Data.EventArguments.NavigationArguments;
 using Files.App.Utils.Shell;
+using Files.Core.ViewModels.Widgets.FolderView;
+using Files.Core.Extensions;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
-public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IWidgetUpdate, IWidgetClose
+public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IWidgetUpdate, IWidgetClose, IFolderViewViewModel
 {
     #region view properties
 
@@ -210,6 +212,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private readonly NetworkDrivesViewModel _networkDrivesViewModel;
     private readonly IWidgetManagerService _widgetManagerService;
 
+    public int IndexTag => WidgetWindow.IndexTag;
+
+    FileNameConflictResolveOptionType IFolderViewViewModel.ConflictsResolveOption => ConflictsResolveOption;
+
     public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, DrivesViewModel drivesViewModel, IFileSystemHelpers fileSystemHelpers, NetworkDrivesViewModel networkDrivesViewModel, IWidgetManagerService widgetManagerService)
     {
         _commandManager = commandManager;
@@ -367,8 +373,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
         if (!isInitialized)
         {
-            var addItemService = App.GetService<IAddItemService>();
+            var dependencyService = App.GetService<IDependencyService>();
+            DependencyExtensions.Initialize(dependencyService);
 
+            var addItemService = App.GetService<IAddItemService>();
             await Task.WhenAll(
                 addItemService.InitializeAsync(),
                 ContextMenu.WarmUpQueryContextMenuAsync()

@@ -12,6 +12,7 @@ using Windows.Devices.Portable;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using DiscUtils.Udf;
+using Files.Core.Extensions;
 
 namespace Files.App.Utils.Storage;
 
@@ -44,7 +45,7 @@ public static class DriveHelpers
             return false;
         }
 
-        var drivesViewModel = Ioc.Default.GetRequiredService<DrivesViewModel>();
+        var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
         var matchingDrive = drivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(x => drivePath.StartsWith(x.Path, StringComparison.Ordinal));
         if (matchingDrive is null || matchingDrive.Type != Data.Items.DriveType.CDRom || matchingDrive.MaxSpace != ByteSizeLib.ByteSize.FromBytes(0))
@@ -72,7 +73,7 @@ public static class DriveHelpers
             return null!;
         }
 
-        var drivesViewModel = Ioc.Default.GetRequiredService<DrivesViewModel>();
+        var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
         var rootPath = Path.GetPathRoot(devicePath);
         if (devicePath.StartsWith(@"\\?\", StringComparison.Ordinal)) // USB device

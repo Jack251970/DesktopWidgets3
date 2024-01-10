@@ -3,7 +3,6 @@
 
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Helpers;
@@ -12,7 +11,6 @@ using Files.App.Utils.StatusCenter;
 using Files.App.Utils.Storage.Helpers;
 using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
-using Files.Core.Services;
 using Files.Core.Storage;
 using Files.Core.Storage.Extensions;
 using Files.Core.ViewModels.Dialogs.FileSystemDialog;
@@ -109,7 +107,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
                 viewModel,
                 new() { IsInDeleteMode = true },
                 (!canBeSentToBin || permanently, canBeSentToBin),
-                FileSystemOperationType.Delete,
+                FilesystemOperationType.Delete,
                 incomingItems,
                 new());
 
@@ -487,7 +485,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         /*var token = banner.CancellationToken;*/
         CancellationToken token = default;
 
-        var (collisions, cancelOperation, itemsResult) = await GetCollision(viewModel, FileSystemOperationType.Copy, source, destination, showDialog);
+        var (collisions, cancelOperation, itemsResult) = await GetCollision(viewModel, FilesystemOperationType.Copy, source, destination, showDialog);
 
         if (cancelOperation)
         {
@@ -563,7 +561,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         /*var token = banner.CancellationToken;*/
         CancellationToken token = default;
 
-        var (collisions, cancelOperation, itemsResult) = await GetCollision(viewModel,FileSystemOperationType.Move, source, destination, showDialog);
+        var (collisions, cancelOperation, itemsResult) = await GetCollision(viewModel,FilesystemOperationType.Move, source, destination, showDialog);
 
         if (cancelOperation)
         {
@@ -737,7 +735,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         return false;
     }
 
-    private static async Task<(List<FileNameConflictResolveOptionType> collisions, bool cancelOperation, IEnumerable<IFileSystemDialogConflictItemViewModel>)> GetCollision(FolderViewViewModel viewModel, FileSystemOperationType operationType, IEnumerable<IStorageItemWithPath> source, IEnumerable<string> destination, bool forceDialog)
+    private static async Task<(List<FileNameConflictResolveOptionType> collisions, bool cancelOperation, IEnumerable<IFileSystemDialogConflictItemViewModel>)> GetCollision(FolderViewViewModel viewModel, FilesystemOperationType operationType, IEnumerable<IStorageItemWithPath> source, IEnumerable<string> destination, bool forceDialog)
     {
         var incomingItems = new List<BaseFileSystemDialogItemViewModel>();
         var conflictingItems = new List<BaseFileSystemDialogItemViewModel>();
@@ -773,7 +771,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         var mustResolveConflicts = !conflictingItems.IsEmpty();
         if (mustResolveConflicts || forceDialog)
         {
-            var dialogService = Ioc.Default.GetRequiredService<IDialogService>();
+            var dialogService = viewModel.DialogService;
 
             var dialogViewModel = FileSystemDialogViewModel.GetDialogViewModel(
                 viewModel,

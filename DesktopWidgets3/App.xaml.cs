@@ -167,7 +167,7 @@ public partial class App : Application
             services.AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>();
 
             // File Commands
-            services.AddSingleton<IImageService, ImageService>();
+            services.AddSingleton<IImageService, ImagingService>();
 
             // File Dialogs
             services.AddTransient<IDialogService, DialogService>();
@@ -193,6 +193,15 @@ public partial class App : Application
 
             // Add Item
             services.AddSingleton<IAddItemService, AddItemService>();
+
+            // Localization Resource
+            services.AddSingleton<ILocalizationService, LocalizationService>();
+
+            // Threading
+            services.AddSingleton<IThreadingService, ThreadingService>();
+
+            // Dependency Injection
+            services.AddSingleton<IDependencyService, DependencyService>();
 
             #endregion
 

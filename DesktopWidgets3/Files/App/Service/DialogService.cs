@@ -8,9 +8,10 @@ using Files.Core.ViewModels.Dialogs;
 using Files.Core.ViewModels.Dialogs.FileSystemDialog;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation.Metadata;
-using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Helpers;
 using Files.App.Dialogs;
+using DesktopWidgets3.ViewModels.Pages.Widget;
+using Files.Core.ViewModels.Widgets.FolderView;
 
 namespace Files.App.Services;
 
@@ -26,15 +27,15 @@ internal sealed class DialogService : IDialogService
         _dialogs = new Dictionary<Type, Func<ContentDialog>>() {};
     }
 
-    public void Initialize(FolderViewViewModel folderViewModel)
+    public void Initialize(IFolderViewViewModel folderViewModel)
     {
-        _folderViewModel = folderViewModel;
+        _folderViewModel = (FolderViewViewModel)folderViewModel;
         _dialogs = new Dictionary<Type, Func<ContentDialog>>()
         {
             /*{ typeof(AddItemDialogViewModel), () => new AddItemDialog() },
             { typeof(CredentialDialogViewModel), () => new CredentialDialog() },
             { typeof(ElevateConfirmDialogViewModel), () => new ElevateConfirmDialog() },*/
-            { typeof(FileSystemDialogViewModel), () => new FileSystemOperationDialog(folderViewModel) },
+            { typeof(FileSystemDialogViewModel), () => new FileSystemOperationDialog(_folderViewModel) },
             /*{ typeof(DecompressArchiveDialogViewModel), () => new DecompressArchiveDialog() },
             { typeof(SettingsDialogViewModel), () => new SettingsDialog() },
             { typeof(CreateShortcutDialogViewModel), () => new CreateShortcutDialog() },

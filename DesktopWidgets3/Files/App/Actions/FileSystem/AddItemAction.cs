@@ -19,7 +19,7 @@ internal class AddItemAction : ObservableObject, IAction
 
     private readonly IDialogService dialogService;
 
-	private readonly AddItemDialogViewModel viewModel = new();
+	private AddItemDialogViewModel? viewModel;
 
 	public string Label
 		=> "BaseLayoutContextFlyoutNew/Label".GetLocalized();
@@ -46,6 +46,8 @@ internal class AddItemAction : ObservableObject, IAction
 
 	public async Task ExecuteAsync()
 	{
+        viewModel ??= new();
+
 		await dialogService.ShowDialogAsync(viewModel);
 
 		if (viewModel.ResultType.ItemType == AddItemDialogItemType.Shortcut)

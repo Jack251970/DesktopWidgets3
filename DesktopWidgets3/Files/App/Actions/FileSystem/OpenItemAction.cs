@@ -126,7 +126,7 @@ internal class OpenItemWithApplicationPickerAction : ObservableObject, IAction
 
     public OpenParentFolderAction()
     {
-        context = Ioc.Default.GetRequiredService<IContentPageContext>();
+        
 
         context.PropertyChanged += Context_PropertyChanged;
     }
