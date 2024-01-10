@@ -1,5 +1,5 @@
-﻿using DesktopWidgets3.Files.Core.Storage.NestedStorage;
-namespace DesktopWidgets3.Files.Core.Storage.ExtendableStorage;
+﻿using Files.Core.Storage.NestedStorage;
+namespace Files.Core.Storage.ExtendableStorage;
 
 /// <summary>
 /// Extends existing <see cref="IFolder"/> interface with additional functionality.

@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Storage.FtpStorage;
-using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.App.Helpers;
+using Files.App.Storage.FtpStorage;
+using Files.App.Utils.Storage.Helpers;
+using Files.Shared.Extensions;
 using FluentFTP;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -16,7 +16,7 @@ using Windows.Storage.Streams;
 using IO = System.IO;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public sealed class FtpStorageFile : BaseStorageFile, IPasswordProtectedItem
 {

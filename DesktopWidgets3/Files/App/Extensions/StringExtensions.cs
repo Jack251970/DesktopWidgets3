@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.Shared.Extensions;
 using ByteSize = ByteSizeLib.ByteSize;
 
-namespace DesktopWidgets3.Files.App.Extensions;
+namespace Files.App.Extensions;
 
 public static class StringExtensions
 {

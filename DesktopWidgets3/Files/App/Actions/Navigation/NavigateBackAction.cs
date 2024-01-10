@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Files.App.Data.Commands;
+using Files.App.Data.Commands;
 using System.ComponentModel;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.Helpers;
 
-namespace DesktopWidgets3.Files.App.Actions;
+namespace Files.App.Actions;
 
 internal class NavigateBackAction : ObservableObject, IAction
 {

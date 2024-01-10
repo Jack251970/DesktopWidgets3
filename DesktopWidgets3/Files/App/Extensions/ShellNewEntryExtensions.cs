@@ -1,16 +1,16 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Shell;
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
-using DesktopWidgets3.Files.Core.Data.Items;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.App.Helpers;
+using Files.App.Utils.Shell;
+using Files.App.Utils.Storage;
+using Files.App.Utils.Storage.Helpers;
+using Files.Core.Data.Items;
+using Files.Shared.Extensions;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.Extensions;
+namespace Files.App.Extensions;
 
 public static class ShellNewEntryExtensions
 {

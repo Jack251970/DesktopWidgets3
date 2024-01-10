@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.Core.Data.Enums;
+using Files.Core.Data.Enums;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public interface IFileSystemHelpers : IDisposable
 {

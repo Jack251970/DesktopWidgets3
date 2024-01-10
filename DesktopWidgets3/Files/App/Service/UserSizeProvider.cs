@@ -1,9 +1,9 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.Core.Services.SizeProvider;
+using Files.Core.Services.SizeProvider;
 
-namespace DesktopWidgets3.Files.App.Services;
+namespace Files.App.Services;
 
 public class UserSizeProvider : ISizeProvider
 {

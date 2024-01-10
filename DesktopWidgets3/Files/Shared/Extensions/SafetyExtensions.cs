@@ -3,7 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace DesktopWidgets3.Files.Shared.Extensions;
+namespace Files.Shared.Extensions;
 
 public class SafetyExtensions
 {

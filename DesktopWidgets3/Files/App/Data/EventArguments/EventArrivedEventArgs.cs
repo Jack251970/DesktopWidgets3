@@ -3,7 +3,7 @@
 
 using Microsoft.Management.Infrastructure;
 
-namespace DesktopWidgets3.Files.App.Data.EventArguments;
+namespace Files.App.Data.EventArguments;
 
 /// <summary>
 /// CimWatcher event args, which contains CimSubscriptionResult

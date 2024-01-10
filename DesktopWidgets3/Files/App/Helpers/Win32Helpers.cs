@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Utils.Shell;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.App.Utils.Shell;
+using Files.Shared.Extensions;
 
-namespace DesktopWidgets3.Files.App.Helpers;
+namespace Files.App.Helpers;
 
 public static class Win32Helpers
 {

@@ -4,7 +4,7 @@
 using Windows.Foundation;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public interface ICreateFileWithStream
 {

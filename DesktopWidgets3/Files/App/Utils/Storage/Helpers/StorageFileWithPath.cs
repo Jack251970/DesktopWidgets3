@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.Core.Data.Enums;
+using Files.App.Utils.Storage;
+using Files.Core.Data.Enums;
 using Windows.Storage;
 using IO = System.IO;
 
-namespace DesktopWidgets3.Files.App.Utils;
+namespace Files.App.Utils;
 
 public class StorageFileWithPath : IStorageItemWithPath
 {

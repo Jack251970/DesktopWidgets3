@@ -7,7 +7,7 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Search;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public partial class BaseStorageItemQueryResult
 {

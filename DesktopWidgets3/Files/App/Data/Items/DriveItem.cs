@@ -3,16 +3,16 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Storage.WindowsStorage;
-using DesktopWidgets3.Files.App.UserControls;
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.Core.Storage;
-using DesktopWidgets3.Files.Core.Storage.Enums;
-using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
-using DesktopWidgets3.Files.Core.Storage.NestedStorage;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.App.Extensions;
+using Files.App.Helpers;
+using Files.App.Storage.WindowsStorage;
+using Files.App.UserControls;
+using Files.App.Utils.Storage;
+using Files.Core.Storage;
+using Files.Core.Storage.Enums;
+using Files.Core.Storage.LocatableStorage;
+using Files.Core.Storage.NestedStorage;
+using Files.Shared.Extensions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -20,7 +20,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using ByteSize = ByteSizeLib.ByteSize;
 
-namespace DesktopWidgets3.Files.App.Data.Items;
+namespace Files.App.Data.Items;
 
 public class DriveItem : ObservableObject, ILocatableFolder//, INavigationControlItem
 {

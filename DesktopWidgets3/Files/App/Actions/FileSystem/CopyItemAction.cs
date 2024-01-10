@@ -4,11 +4,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Data.Commands;
-using DesktopWidgets3.Files.App.Helpers;
+using Files.App.Data.Commands;
+using Files.App.Helpers;
 using System.ComponentModel;
 
-namespace DesktopWidgets3.Files.App.Actions;
+namespace Files.App.Actions;
 
 internal class CopyItemAction : ObservableObject, IAction
 {

@@ -3,16 +3,16 @@
 
 using System.Runtime.InteropServices.WindowsRuntime;
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
+using Files.App.Extensions;
+using Files.App.Helpers;
+using Files.App.Utils.Storage.Helpers;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using IO = System.IO;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public class VirtualStorageFile : BaseStorageFile
 {

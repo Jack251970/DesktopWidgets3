@@ -6,20 +6,20 @@ using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Cloud;
-using DesktopWidgets3.Files.App.Utils.Library;
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.App.ViewModels.Properties;
-using DesktopWidgets3.Files.Core.Services.DateTimeFormatter;
-using DesktopWidgets3.Files.Shared.Helpers;
+using Files.App.Extensions;
+using Files.App.Helpers;
+using Files.App.Utils.Cloud;
+using Files.App.Utils.Library;
+using Files.App.Utils.Storage;
+using Files.App.ViewModels.Properties;
+using Files.Core.Services.DateTimeFormatter;
+using Files.Shared.Helpers;
 using FluentFTP;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.Utils;
+namespace Files.App.Utils;
 
 public class ListedItem : ObservableObject, IGroupableItem
 {

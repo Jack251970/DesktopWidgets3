@@ -4,7 +4,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 
-namespace DesktopWidgets3.Files.App.Converters;
+namespace Files.App.Converters;
 
 internal sealed class VisibilityInvertConverter : IValueConverter
 {

@@ -3,7 +3,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace DesktopWidgets3.Files.App.ViewModels.Dialogs;
+namespace Files.App.ViewModels.Dialogs;
 
 class RenameDialogViewModel : ObservableObject
 {

@@ -4,7 +4,7 @@
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
-namespace DesktopWidgets3.Files.App.Helpers;
+namespace Files.App.Helpers;
 
 public static class ElevationHelpers
 {

@@ -1,14 +1,14 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.Core.Data.Items;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.Core.Data.Items;
+using Files.Shared.Extensions;
 using Microsoft.Win32;
 using System.Security;
 using System.Text;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.Utils.Shell;
+namespace Files.App.Utils.Shell;
 
 /// <summary>
 /// Provides static helper to get extension-specific shell context menu from Windows Registry.

@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 
 // The User Control element template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace DesktopWidgets3.Files.App.UserControls;
+namespace Files.App.UserControls;
 
 public sealed partial class MenuFlyoutItemWithImage : MenuFlyoutItem
 {

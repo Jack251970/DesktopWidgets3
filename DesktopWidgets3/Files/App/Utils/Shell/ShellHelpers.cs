@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Files.Core.Data.Items;
+using Files.Core.Data.Items;
 
-namespace DesktopWidgets3.Files.App.Utils.Shell;
+namespace Files.App.Utils.Shell;
 
 public class ShellHelpers
 {

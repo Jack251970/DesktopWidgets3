@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Utils;
+using Files.App.Utils;
 
-namespace DesktopWidgets3.Files.App.Data.Models;
+namespace Files.App.Data.Models;
 
 public class ItemManipulationModel
 {

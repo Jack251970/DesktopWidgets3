@@ -8,7 +8,7 @@ using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
 using FileAttributes = Windows.Storage.FileAttributes;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public abstract class BaseStorageFolder : IBaseStorageFolder
 {

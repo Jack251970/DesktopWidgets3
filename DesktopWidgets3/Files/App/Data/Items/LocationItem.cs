@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.Core.Data.Items;
+using Files.App.Extensions;
+using Files.Core.Data.Items;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace DesktopWidgets3.Files.App.Data.Items;
+namespace Files.App.Data.Items;
 
 public class LocationItem : ObservableObject//, INavigationControlItem
 {

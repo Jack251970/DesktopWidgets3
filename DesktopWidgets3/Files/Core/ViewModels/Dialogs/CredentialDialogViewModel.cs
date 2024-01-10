@@ -3,9 +3,9 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DesktopWidgets3.Files.Core.Data.Models;
+using Files.Core.Data.Models;
 
-namespace DesktopWidgets3.Files.Core.ViewModels.Dialogs;
+namespace Files.Core.ViewModels.Dialogs;
 
 public sealed class CredentialDialogViewModel : ObservableObject
 {

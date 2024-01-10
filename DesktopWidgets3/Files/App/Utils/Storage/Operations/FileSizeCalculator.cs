@@ -1,9 +1,9 @@
 ﻿using System.Collections.Concurrent;
-using DesktopWidgets3.Files.App.Helpers;
+using Files.App.Helpers;
 using Vanara.PInvoke;
 using static Vanara.PInvoke.Kernel32;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage.Operations;
+namespace Files.App.Utils.Storage.Operations;
 
 internal class FileSizeCalculator
 {

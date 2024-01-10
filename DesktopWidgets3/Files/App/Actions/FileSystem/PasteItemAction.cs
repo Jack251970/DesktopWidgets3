@@ -4,13 +4,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Data.Commands;
-using DesktopWidgets3.Files.App.Data.Contexts;
-using DesktopWidgets3.Files.App.Data.Models;
-using DesktopWidgets3.Files.App.Helpers;
+using Files.App.Data.Commands;
+using Files.App.Data.Contexts;
+using Files.App.Data.Models;
+using Files.App.Helpers;
 using System.ComponentModel;
 
-namespace DesktopWidgets3.Files.App.Actions;
+namespace Files.App.Actions;
 
 internal class PasteItemAction : ObservableObject, IAction
 {

@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.WinUI;
 using Microsoft.UI.Dispatching;
 
-namespace DesktopWidgets3.Files.App.Extensions;
+namespace Files.App.Extensions;
 
 // Window.DispatcherQueue seems to be null sometimes.
 // We don't know why, but as a workaround, we invoke the function directly if DispatcherQueue is null.

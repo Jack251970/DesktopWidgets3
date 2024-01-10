@@ -4,7 +4,7 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace DesktopWidgets3.Files.Core.ViewModels.Dialogs;
+namespace Files.Core.ViewModels.Dialogs;
 
 /// <summary>
 /// Serves as the base dialog view model containing reusable,

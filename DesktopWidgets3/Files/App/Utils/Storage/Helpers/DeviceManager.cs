@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Data.EventArguments;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.Core.Data.Items;
+using Files.App.Data.EventArguments;
+using Files.App.Helpers;
+using Files.Core.Data.Items;
 using Microsoft.Management.Infrastructure;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public sealed class DeviceManager
 {

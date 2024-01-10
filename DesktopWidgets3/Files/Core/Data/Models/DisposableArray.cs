@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.Shared.Extensions;
 
-namespace DesktopWidgets3.Files.Core.Data.Models;
+namespace Files.Core.Data.Models;
 
 public sealed class DisposableArray : FreeableStore<DisposableArray>
 {

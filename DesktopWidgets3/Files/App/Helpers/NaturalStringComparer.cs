@@ -3,7 +3,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace DesktopWidgets3.Files.App.Helpers;
+namespace Files.App.Helpers;
 
 internal static class SafeNativeMethods
 {

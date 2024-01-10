@@ -3,17 +3,17 @@
 
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Git;
-using DesktopWidgets3.Files.Core.Extensions;
-using DesktopWidgets3.Files.Shared.Helpers;
+using Files.App.Extensions;
+using Files.App.Helpers;
+using Files.App.Utils.Git;
+using Files.Core.Extensions;
+using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;
-using static DesktopWidgets3.Files.Core.Helpers.NativeFindStorageItemHelper;
+using static Files.Core.Helpers.NativeFindStorageItemHelper;
 using FileAttributes = System.IO.FileAttributes;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public static class Win32StorageEnumerator
 {

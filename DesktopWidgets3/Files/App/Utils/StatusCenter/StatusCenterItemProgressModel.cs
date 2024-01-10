@@ -4,10 +4,10 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.Core.Data.Enums;
+using Files.App.Helpers;
+using Files.Core.Data.Enums;
 
-namespace DesktopWidgets3.Files.App.Utils.StatusCenter;
+namespace Files.App.Utils.StatusCenter;
 
 /// <summary>
 /// Represents a model for file system operation progress.

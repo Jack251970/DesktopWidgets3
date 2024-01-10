@@ -3,7 +3,7 @@
 
 using FluentFTP;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public static class FtpHelpers
 {

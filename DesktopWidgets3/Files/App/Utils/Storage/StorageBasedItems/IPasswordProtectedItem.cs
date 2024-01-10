@@ -5,7 +5,7 @@ using DesktopWidgets3.ViewModels.Pages.Widget;
 using FluentFTP.Exceptions;
 using SevenZip;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public interface IPasswordProtectedItem
 {

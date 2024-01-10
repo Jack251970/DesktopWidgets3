@@ -3,14 +3,14 @@
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Files.Core.Data.Enums;
-using DesktopWidgets3.Files.Core.Data.Items;
-using DesktopWidgets3.Files.Core.Data.Models;
-using DesktopWidgets3.Files.Core.Services;
-using DesktopWidgets3.Files.Shared.Utils;
+using Files.Core.Data.Enums;
+using Files.Core.Data.Items;
+using Files.Core.Data.Models;
+using Files.Core.Services;
+using Files.Shared.Utils;
 using DesktopWidgets3.Helpers;
 
-namespace DesktopWidgets3.Files.Core.ViewModels.Dialogs.AddItemDialog;
+namespace Files.Core.ViewModels.Dialogs.AddItemDialog;
 
 public sealed class AddItemDialogViewModel : ObservableObject
 {

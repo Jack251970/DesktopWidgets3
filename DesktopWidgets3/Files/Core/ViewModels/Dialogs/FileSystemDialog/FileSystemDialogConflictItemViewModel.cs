@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.Messaging;
-using DesktopWidgets3.Files.Core.Data.Enums;
-using DesktopWidgets3.Files.Core.Data.Messages;
+using Files.Core.Data.Enums;
+using Files.Core.Data.Messages;
 
-namespace DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
+namespace Files.Core.ViewModels.Dialogs.FileSystemDialog;
 
 public sealed class FileSystemDialogConflictItemViewModel : BaseFileSystemDialogItemViewModel, IFileSystemDialogConflictItemViewModel
 {

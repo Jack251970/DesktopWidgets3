@@ -5,15 +5,15 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
-using DesktopWidgets3.Files.Core.Data.Items;
+using Files.App.Helpers;
+using Files.App.Utils.Storage;
+using Files.App.Utils.Storage.Helpers;
+using Files.Core.Data.Items;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.DragDrop;
 
-namespace DesktopWidgets3.Files.App.ViewModels.Layouts;
+namespace Files.App.ViewModels.Layouts;
 
 /// <summary>
 /// Represents ViewModel for <see cref="BaseLayoutPage"/>.

@@ -5,14 +5,14 @@ using System.Diagnostics;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Files.App.Converts;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.App.Utils.Storage;
+using Files.App.Converts;
+using Files.App.Extensions;
+using Files.App.Utils.Storage;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.ViewModels.Properties;
+namespace Files.App.ViewModels.Properties;
 
 /// <summary>
 /// This class is represents a system file property from the Windows.Storage API

@@ -8,7 +8,7 @@ using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public abstract class BaseStorageFile : IBaseStorageFile
 {

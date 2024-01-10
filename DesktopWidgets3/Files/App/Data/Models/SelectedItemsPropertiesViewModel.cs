@@ -5,12 +5,12 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.App.ViewModels.Properties;
-using DesktopWidgets3.Files.Core.Services.DateTimeFormatter;
-using DesktopWidgets3.Files.Shared.Helpers;
+using Files.App.Extensions;
+using Files.App.ViewModels.Properties;
+using Files.Core.Services.DateTimeFormatter;
+using Files.Shared.Helpers;
 
-namespace DesktopWidgets3.Files.App.Data.Models;
+namespace Files.App.Data.Models;
 
 public class SelectedItemsPropertiesViewModel : ObservableObject
 {

@@ -4,10 +4,10 @@
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 using System.Runtime.InteropServices.ComTypes;
-using DesktopWidgets3.Files.Core.Data.Items;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.Core.Data.Items;
+using Files.Shared.Extensions;
 
-namespace DesktopWidgets3.Files.App.Utils.Shell;
+namespace Files.App.Utils.Shell;
 
 public static class ShellFolderExtensions
 {

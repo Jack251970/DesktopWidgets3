@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.DependencyInjection;
-using DesktopWidgets3.Files.App.Data.Items;
-using DesktopWidgets3.Files.App.Data.Models;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.App.Data.Items;
+using Files.App.Data.Models;
+using Files.App.Helpers;
+using Files.Shared.Extensions;
 using Microsoft.Management.Infrastructure;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Portable;
@@ -13,7 +13,7 @@ using Windows.Storage;
 using Windows.Storage.FileProperties;
 using DiscUtils.Udf;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public static class DriveHelpers
 {

@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using Vanara.PInvoke;
 using static Vanara.PInvoke.User32;
 
-namespace DesktopWidgets3.Files.App.Helpers;
+namespace Files.App.Helpers;
 
 public static class InteropHelpers
 {

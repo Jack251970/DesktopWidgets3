@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Data.Commands;
+using Files.App.Data.Commands;
 
-namespace DesktopWidgets3.Files.App.Actions;
+namespace Files.App.Actions;
 
 public interface IAction
 {

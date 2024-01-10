@@ -4,7 +4,7 @@
 using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml.Markup;
 
-namespace DesktopWidgets3.Files.App.Helpers;
+namespace Files.App.Helpers;
 
 [MarkupExtensionReturnType(ReturnType = typeof(string))]
 public sealed class ResourceString : MarkupExtension

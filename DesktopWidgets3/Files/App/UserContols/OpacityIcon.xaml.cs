@@ -5,7 +5,7 @@ using CommunityToolkit.WinUI.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DesktopWidgets3.Files.App.UserControls;
+namespace Files.App.UserControls;
 
 public sealed partial class OpacityIcon : Control
 {

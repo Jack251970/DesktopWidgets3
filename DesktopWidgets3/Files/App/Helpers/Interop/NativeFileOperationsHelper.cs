@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.Win32.SafeHandles;
 using Vanara.PInvoke;
 
-namespace DesktopWidgets3.Files.App.Helpers;
+namespace Files.App.Helpers;
 
 public class NativeFileOperationsHelper
 {

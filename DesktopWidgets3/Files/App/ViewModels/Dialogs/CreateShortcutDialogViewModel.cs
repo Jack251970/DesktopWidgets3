@@ -3,13 +3,13 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DesktopWidgets3.Files.App.Utils.Storage;
+using Files.App.Utils.Storage;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using System.Windows.Input;
 using Windows.Storage.Pickers;
 
-namespace DesktopWidgets3.Files.App.ViewModels.Dialogs;
+namespace Files.App.ViewModels.Dialogs;
 
 public class CreateShortcutDialogViewModel : ObservableObject
 {

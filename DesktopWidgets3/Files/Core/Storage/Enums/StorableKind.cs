@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace DesktopWidgets3.Files.Core.Storage.Enums;
+namespace Files.Core.Storage.Enums;
 
 [Flags]
 public enum StorableKind : byte

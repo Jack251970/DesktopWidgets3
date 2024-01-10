@@ -1,12 +1,12 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.Core.Storage;
-using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
-using DesktopWidgets3.Files.Core.Storage.ModifiableStorage;
-using DesktopWidgets3.Files.Core.Storage.NestedStorage;
+using Files.Core.Storage;
+using Files.Core.Storage.LocatableStorage;
+using Files.Core.Storage.ModifiableStorage;
+using Files.Core.Storage.NestedStorage;
 
-namespace DesktopWidgets3.Files.App.Storage.FtpStorage;
+namespace Files.App.Storage.FtpStorage;
 
 public sealed class FtpStorageFile : FtpStorable, IModifiableFile, ILocatableFile, INestedFile
 {

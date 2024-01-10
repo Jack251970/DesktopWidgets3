@@ -3,19 +3,19 @@
 
 using CommunityToolkit.Mvvm.Input;
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Files.App.Utils;
-using DesktopWidgets3.Files.App.Data.Models;
-using DesktopWidgets3.Files.App.Helpers.ContextFlyouts;
-using DesktopWidgets3.Files.App.Utils.Shell;
-using DesktopWidgets3.Files.Core.Data.Enums;
-using DesktopWidgets3.Files.Core.Data.Items;
-using DesktopWidgets3.Files.Shared.Helpers;
+using Files.App.Utils;
+using Files.App.Data.Models;
+using Files.App.Helpers.ContextFlyouts;
+using Files.App.Utils.Shell;
+using Files.Core.Data.Enums;
+using Files.Core.Data.Items;
+using Files.Shared.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Vanara.PInvoke;
 
-namespace DesktopWidgets3.Files.App.Helpers;
+namespace Files.App.Helpers;
 
 public static class ShellContextmenuHelper
 {

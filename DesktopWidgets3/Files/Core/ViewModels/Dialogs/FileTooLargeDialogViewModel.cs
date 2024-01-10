@@ -3,7 +3,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace DesktopWidgets3.Files.Core.ViewModels.Dialogs;
+namespace Files.Core.ViewModels.Dialogs;
 
 public sealed class FileTooLargeDialogViewModel: ObservableObject
 {

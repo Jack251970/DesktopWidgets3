@@ -5,9 +5,9 @@ using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Data.Commands;
+using Files.App.Data.Commands;
 
-namespace DesktopWidgets3.Files.App.Actions;
+namespace Files.App.Actions;
 
 internal class RefreshItemsAction : ObservableObject, IAction
 {

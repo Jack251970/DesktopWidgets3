@@ -3,13 +3,13 @@
 
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Utils;
-using DesktopWidgets3.Files.App.Utils.Storage;
+using Files.App.Utils;
+using Files.App.Utils.Storage;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.Helpers;
+namespace Files.App.Helpers;
 
 public static class ShareItemHelpers
 {

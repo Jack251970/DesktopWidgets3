@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Files.Core.Data.Models;
-using DesktopWidgets3.Files.Shared.Utils;
+using Files.Core.Data.Models;
+using Files.Shared.Utils;
 
-namespace DesktopWidgets3.Files.Core.ViewModels.Dialogs.AddItemDialog;
+namespace Files.Core.ViewModels.Dialogs.AddItemDialog;
 
 public sealed class AddItemDialogListItemViewModel : ObservableObject
 {

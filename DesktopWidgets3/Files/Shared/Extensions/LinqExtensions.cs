@@ -3,7 +3,7 @@
 
 using System.Collections.Concurrent;
 
-namespace DesktopWidgets3.Files.Shared.Extensions;
+namespace Files.Shared.Extensions;
 
 public static class LinqExtensions
 {

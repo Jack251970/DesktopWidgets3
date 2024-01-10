@@ -5,7 +5,7 @@ using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 
-namespace DesktopWidgets3.Files.App.Actions;
+namespace Files.App.Actions;
 
 /// <summary>
 /// Represents base class for the UI Actions.

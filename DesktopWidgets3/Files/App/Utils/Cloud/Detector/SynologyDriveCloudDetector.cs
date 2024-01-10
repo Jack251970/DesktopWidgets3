@@ -1,11 +1,11 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.Core.Utils.Cloud;
+using Files.Core.Utils.Cloud;
 using Microsoft.Data.Sqlite;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.Utils.Cloud;
+namespace Files.App.Utils.Cloud;
 
 /// <summary>
 /// Provides an utility for Synology Drive Cloud detection.

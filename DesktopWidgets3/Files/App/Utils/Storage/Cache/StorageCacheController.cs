@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Utils.Storage;
+using Files.App.Utils.Storage;
 using System.Collections.Concurrent;
 
 internal class StorageCacheController : IStorageCacheController

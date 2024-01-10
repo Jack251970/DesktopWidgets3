@@ -5,7 +5,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
-namespace DesktopWidgets3.Files.App.Extensions;
+namespace Files.App.Extensions;
 
 internal static class ImageSourceExtensions
 {

@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace DesktopWidgets3.Files.Core.Utils.CommandLine;
+namespace Files.Core.Utils.CommandLine;
 
 /// <summary>
 /// Represents a collection of parsed command.

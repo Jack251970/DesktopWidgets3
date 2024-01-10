@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
+using Files.Core.Storage.LocatableStorage;
 
-namespace DesktopWidgets3.Files.Core.Services;
+namespace Files.Core.Services;
 
 public interface INetworkDrivesService
 {

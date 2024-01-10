@@ -1,16 +1,16 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Data.Items;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.Core.Utils.Cloud;
+using Files.App.Data.Items;
+using Files.App.Extensions;
+using Files.App.Helpers;
+using Files.App.Utils.Storage;
+using Files.Core.Utils.Cloud;
 using System.Collections.Specialized;
 using Windows.Storage;
-using DriveType = DesktopWidgets3.Files.App.Data.Items.DriveType;
+using DriveType = Files.App.Data.Items.DriveType;
 
-namespace DesktopWidgets3.Files.App.Utils.Cloud;
+namespace Files.App.Utils.Cloud;
 
 public static class CloudDrivesManager
 {

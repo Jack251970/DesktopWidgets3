@@ -5,7 +5,7 @@ using System.IO.Hashing;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace DesktopWidgets3.Files.Shared.Helpers;
+namespace Files.Shared.Helpers;
 
 public static class ChecksumHelpers
 {

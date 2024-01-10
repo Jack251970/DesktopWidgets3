@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.Specialized;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.Shared.Extensions;
 using System.ComponentModel;
 using System.Collections;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, INotifyPropertyChanged, ICollection<T>, IList<T>, ICollection, IList
 {

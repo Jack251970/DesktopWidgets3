@@ -1,13 +1,13 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.Core.Storage;
-using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
-using DesktopWidgets3.Files.Core.Storage.NestedStorage;
-using DesktopWidgets3.Files.Shared.Helpers;
+using Files.Core.Storage;
+using Files.Core.Storage.LocatableStorage;
+using Files.Core.Storage.NestedStorage;
+using Files.Shared.Helpers;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Files.App.Storage.WindowsStorage;
+namespace Files.App.Storage.WindowsStorage;
 
 /// <inheritdoc cref="IStorable"/>
 public abstract class WindowsStorable<TStorage> : ILocatableStorable, INestedStorable

@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.Shared.Extensions;
 using Windows.Foundation;
 using Windows.Foundation.Metadata;
 using Windows.Storage.FileProperties;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public class BaseStorageItemExtraProperties : IStorageItemExtraProperties
 {

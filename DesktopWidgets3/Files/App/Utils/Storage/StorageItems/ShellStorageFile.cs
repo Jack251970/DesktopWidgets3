@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
-using DesktopWidgets3.Files.App.Utils.Shell;
-using DesktopWidgets3.Files.Core.Data.Items;
+using Files.App.Utils.Shell;
+using Files.Core.Data.Items;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
@@ -11,7 +11,7 @@ using Windows.Storage.Streams;
 using FileAttributes = Windows.Storage.FileAttributes;
 using IO = System.IO;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public class ShortcutStorageFile : ShellStorageFile, IShortcutStorageItem
 {

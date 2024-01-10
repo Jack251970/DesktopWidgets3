@@ -3,12 +3,12 @@
 
 using System.Drawing;
 using System.Runtime.InteropServices;
-using DesktopWidgets3.Files.Core.Data.Items;
+using Files.Core.Data.Items;
 using Vanara.InteropServices;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 
-namespace DesktopWidgets3.Files.App.Utils.Shell;
+namespace Files.App.Utils.Shell;
 
 /// <summary>
 /// Provides a helper for Win32 context menu.

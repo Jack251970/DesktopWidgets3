@@ -2,13 +2,13 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.ViewModels.Dialogs;
-using DesktopWidgets3.Files.Core.Data.Enums;
+using Files.App.Helpers;
+using Files.App.ViewModels.Dialogs;
+using Files.Core.Data.Enums;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 
-namespace DesktopWidgets3.Files.App.Dialogs;
+namespace Files.App.Dialogs;
 
 public sealed partial class DynamicDialog : ContentDialog, IDisposable
 {

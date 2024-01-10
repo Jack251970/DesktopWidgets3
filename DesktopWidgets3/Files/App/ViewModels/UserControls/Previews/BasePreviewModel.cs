@@ -3,18 +3,18 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Views.Windows;
-using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.App.Utils;
-using DesktopWidgets3.Files.App.ViewModels.Properties;
+using Files.App.Utils.Storage.Helpers;
+using Files.App.Utils.Storage;
+using Files.App.Utils;
+using Files.App.ViewModels.Properties;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.FileProperties;
 using System.Collections.ObjectModel;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.App.Helpers;
+using Files.App.Extensions;
+using Files.App.Helpers;
 
-namespace DesktopWidgets3.Files.App.ViewModels.Previews;
+namespace Files.App.ViewModels.Previews;
 
 public abstract class BasePreviewModel : ObservableObject
 {

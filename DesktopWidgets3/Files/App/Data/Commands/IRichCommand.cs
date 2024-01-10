@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Input;
 using System.Windows.Input;
 using Microsoft.UI.Xaml;
 
-namespace DesktopWidgets3.Files.App.Data.Commands;
+namespace Files.App.Data.Commands;
 
 public interface IRichCommand : ICommand, INotifyPropertyChanging, INotifyPropertyChanged
 {

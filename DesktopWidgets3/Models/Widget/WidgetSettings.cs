@@ -1,4 +1,4 @@
-﻿using DesktopWidgets3.Files.Core.Data.Enums;
+﻿using Files.Core.Data.Enums;
 
 namespace DesktopWidgets3.Models.Widget;
 

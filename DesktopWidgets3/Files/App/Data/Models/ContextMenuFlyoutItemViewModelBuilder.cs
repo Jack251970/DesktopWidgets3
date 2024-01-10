@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Data.Commands;
-using DesktopWidgets3.Files.Core.Data.Enums;
+using Files.App.Data.Commands;
+using Files.Core.Data.Enums;
 
-namespace DesktopWidgets3.Files.App.Data.Models;
+namespace Files.App.Data.Models;
 
 public class ContextMenuFlyoutItemViewModelBuilder
 {

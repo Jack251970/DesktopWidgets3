@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.Core.Data.Items;
-using DesktopWidgets3.Files.Core.Services;
+using Files.App.Extensions;
+using Files.Core.Data.Items;
+using Files.Core.Services;
 
-namespace DesktopWidgets3.Files.App.Services;
+namespace Files.App.Services;
 
 /// <inheritdoc cref="IAddItemService"/>
 internal sealed class AddItemService : IAddItemService

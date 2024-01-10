@@ -1,16 +1,16 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Data.Models;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.Core.Services;
-using DesktopWidgets3.Files.Core.Storage;
-using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
-using DesktopWidgets3.Files.Shared.Utils;
+using Files.App.Data.Models;
+using Files.App.Helpers;
+using Files.App.Utils.Storage;
+using Files.Core.Services;
+using Files.Core.Storage;
+using Files.Core.Storage.LocatableStorage;
+using Files.Shared.Utils;
 using Windows.Storage.FileProperties;
 
-namespace DesktopWidgets3.Files.App.Services;
+namespace Files.App.Services;
 
 internal sealed class ImageService : IImageService
 {

@@ -3,7 +3,7 @@
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
 
-namespace DesktopWidgets3.Files.App.Data.Commands;
+namespace Files.App.Data.Commands;
 
 public interface ICommandManager : IEnumerable<IRichCommand>
 {

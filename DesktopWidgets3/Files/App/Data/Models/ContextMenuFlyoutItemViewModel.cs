@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.Core.Data.Enums;
+using Files.Core.Data.Enums;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.Windows.Input;
 
-namespace DesktopWidgets3.Files.App.Data.Models;
+namespace Files.App.Data.Models;
 
 public class ContextMenuFlyoutItemViewModel
 {

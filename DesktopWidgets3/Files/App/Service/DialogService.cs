@@ -2,17 +2,17 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.ComponentModel;
-using DesktopWidgets3.Files.Core.Data.Enums;
-using DesktopWidgets3.Files.Core.Services;
-using DesktopWidgets3.Files.Core.ViewModels.Dialogs;
-using DesktopWidgets3.Files.Core.ViewModels.Dialogs.FileSystemDialog;
+using Files.Core.Data.Enums;
+using Files.Core.Services;
+using Files.Core.ViewModels.Dialogs;
+using Files.Core.ViewModels.Dialogs.FileSystemDialog;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation.Metadata;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Dialogs;
+using Files.App.Helpers;
+using Files.App.Dialogs;
 
-namespace DesktopWidgets3.Files.App.Services;
+namespace Files.App.Services;
 
 /// <inheritdoc cref="IDialogService"/>
 internal sealed class DialogService : IDialogService

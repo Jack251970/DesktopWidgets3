@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Shell;
-using DesktopWidgets3.Files.Shared.Helpers;
+using Files.App.Helpers;
+using Files.App.Utils.Shell;
+using Files.Shared.Helpers;
 using Windows.Storage.FileProperties;
 using Windows.Storage;
-using DesktopWidgets3.Files.App.Utils.Storage.Helpers;
-using DesktopWidgets3.Files.App.Extensions;
+using Files.App.Utils.Storage.Helpers;
+using Files.App.Extensions;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public class FileThumbnailHelper
 {

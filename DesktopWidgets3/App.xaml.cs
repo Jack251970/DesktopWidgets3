@@ -20,16 +20,16 @@ using DesktopWidgets3.Views.Windows;
 using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
-using DesktopWidgets3.Files.App.Data.Commands;
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.App.Services.DateTimeFormatter;
-using DesktopWidgets3.Files.Core.Services.DateTimeFormatter;
-using DesktopWidgets3.Files.App.Services;
-using DesktopWidgets3.Files.Core.Services;
-using DesktopWidgets3.Files.App.Data.Models;
-using DesktopWidgets3.Files.Core.Services.SizeProvider;
-using DesktopWidgets3.Files.Core.Storage;
-using DesktopWidgets3.Files.App.Storage.FtpStorage;
+using Files.App.Data.Commands;
+using Files.App.Utils.Storage;
+using Files.App.Services.DateTimeFormatter;
+using Files.Core.Services.DateTimeFormatter;
+using Files.App.Services;
+using Files.Core.Services;
+using Files.App.Data.Models;
+using Files.Core.Services.SizeProvider;
+using Files.Core.Storage;
+using Files.App.Storage.FtpStorage;
 
 namespace DesktopWidgets3;
 

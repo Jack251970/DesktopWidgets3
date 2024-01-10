@@ -1,9 +1,9 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.Core.Data.Enums;
+using Files.Core.Data.Enums;
 
-namespace DesktopWidgets3.Files.Core.Utils.CommandLine;
+namespace Files.Core.Utils.CommandLine;
 
 /// <summary>
 /// Represents a parsed command node on Windows.

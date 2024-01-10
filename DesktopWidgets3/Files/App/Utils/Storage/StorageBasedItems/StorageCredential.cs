@@ -4,7 +4,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 // Code from System.Net.NetworkCredential
 public class StorageCredential

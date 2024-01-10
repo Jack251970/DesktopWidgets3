@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.App.Data.Items;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Shell;
-using DesktopWidgets3.Files.App.Utils.Storage;
-using DesktopWidgets3.Files.Core.Data.Enums;
+using Files.App.Data.Items;
+using Files.App.Helpers;
+using Files.App.Utils.Shell;
+using Files.App.Utils.Storage;
+using Files.Core.Data.Enums;
 using LibGit2Sharp;
 
-namespace DesktopWidgets3.Files.App.Utils.Git;
+namespace Files.App.Utils.Git;
 
 internal static class GitHelpers
 {

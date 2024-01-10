@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Files.App.Data.EventArguments;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.Core.Data.Enums;
+using Files.App.Data.EventArguments;
+using Files.App.Helpers;
+using Files.Core.Data.Enums;
 
-namespace DesktopWidgets3.Files.App.Data.Models;
+namespace Files.App.Data.Models;
 
 /// <summary>
 /// Represents manager for layout preferences settings.

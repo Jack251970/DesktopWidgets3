@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Files.Core.Storage.LocatableStorage;
+using Files.Core.Storage.LocatableStorage;
 
-namespace DesktopWidgets3.Files.Core.Data.Models;
+namespace Files.Core.Data.Models;
 
 /// <summary>
 /// Represents a storage device watcher

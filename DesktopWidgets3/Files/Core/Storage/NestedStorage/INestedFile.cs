@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Files.Core.Storage.NestedStorage;
+﻿namespace Files.Core.Storage.NestedStorage;
 
 /// <summary>
 /// Represents a file that resides within a traversable folder structure.

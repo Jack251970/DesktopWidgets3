@@ -3,15 +3,15 @@
 
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Files.App.Data.Commands;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.Core.Data.Enums;
-using DesktopWidgets3.Files.Core.Services;
-using DesktopWidgets3.Files.Core.ViewModels.Dialogs.AddItemDialog;
+using Files.App.Data.Commands;
+using Files.App.Helpers;
+using Files.Core.Data.Enums;
+using Files.Core.Services;
+using Files.Core.ViewModels.Dialogs.AddItemDialog;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 
-namespace DesktopWidgets3.Files.App.Actions;
+namespace Files.App.Actions;
 
 internal class AddItemAction : ObservableObject, IAction
 {

@@ -2,14 +2,14 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Diagnostics;
-using DesktopWidgets3.Files.App.Data.Models;
-using DesktopWidgets3.Files.App.UserControls;
-using DesktopWidgets3.Files.Core.Data.Enums;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.App.Data.Models;
+using Files.App.UserControls;
+using Files.Core.Data.Enums;
+using Files.Shared.Extensions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DesktopWidgets3.Files.App.Helpers.ContextFlyouts;
+namespace Files.App.Helpers.ContextFlyouts;
 
 /// <summary>
 /// This helper class is used to convert ContextMenuFlyoutItemViewModels into a control that can be displayed to the user.

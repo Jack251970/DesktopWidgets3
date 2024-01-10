@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Files.App.Data.Exceptions;
+﻿namespace Files.App.Data.Exceptions;
 
 public sealed class FileAlreadyExistsException : IOException
 {

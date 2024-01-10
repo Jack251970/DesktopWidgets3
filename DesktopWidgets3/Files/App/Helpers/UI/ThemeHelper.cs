@@ -4,7 +4,7 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.Views.Windows;
-using DesktopWidgets3.Files.App.Extensions;
+using Files.App.Extensions;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -13,7 +13,7 @@ using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 
-namespace DesktopWidgets3.Files.App.Helpers;
+namespace Files.App.Helpers;
 
 public static class ThemeHelper
 {

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace DesktopWidgets3.Files.App.Data.EventArguments;
+namespace Files.App.Data.EventArguments;
 
 public class NavigationArguments
 {

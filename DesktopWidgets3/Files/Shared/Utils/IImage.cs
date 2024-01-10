@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Files.Shared.Utils;
+﻿namespace Files.Shared.Utils;
 
 /// <summary>
 /// Represents an image which can be displayed in the UI.

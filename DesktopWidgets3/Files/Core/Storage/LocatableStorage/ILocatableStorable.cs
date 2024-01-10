@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace DesktopWidgets3.Files.Core.Storage.LocatableStorage;
+namespace Files.Core.Storage.LocatableStorage;
 
 /// <summary>
 /// Represents a file or folder that resides within a folder structure.

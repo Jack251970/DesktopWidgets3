@@ -4,17 +4,17 @@
 using System.Collections.Immutable;
 using System.Text;
 using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Files.App.Data.Items;
-using DesktopWidgets3.Files.App.Data.Models;
-using DesktopWidgets3.Files.App.Extensions;
-using DesktopWidgets3.Files.App.Helpers;
-using DesktopWidgets3.Files.App.Utils.Shell;
-using DesktopWidgets3.Files.Shared.Extensions;
+using Files.App.Data.Items;
+using Files.App.Data.Models;
+using Files.App.Extensions;
+using Files.App.Helpers;
+using Files.App.Utils.Shell;
+using Files.Shared.Extensions;
 using Windows.Storage;
 using Windows.Storage.Search;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 
-namespace DesktopWidgets3.Files.App.Utils.Storage.Helpers;
+namespace Files.App.Utils.Storage.Helpers;
 
 public static class StorageFileExtensions
 {

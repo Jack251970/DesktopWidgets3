@@ -4,10 +4,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Files.App.Data.Commands;
-using DesktopWidgets3.Files.App.Data.Contexts;
+using Files.App.Data.Commands;
+using Files.App.Data.Contexts;
 
-namespace DesktopWidgets3.Files.App.Actions;
+namespace Files.App.Actions;
 
 internal class RenameAction : ObservableObject, IAction
 {
