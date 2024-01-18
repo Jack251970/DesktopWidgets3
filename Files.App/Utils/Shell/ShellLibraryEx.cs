@@ -1,7 +1,6 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using System.Windows.Forms;
 using Vanara.Extensions;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
@@ -240,4 +239,13 @@ public class ShellLibraryEx : ShellFolder
 		base.Dispose();
 		GC.SuppressFinalize(this);
 	}
+
+
+    /// <summary>
+    /// IWind32Window interface from System.Windows.Forms
+    /// </summary>
+    public interface IWin32Window
+    {
+        IntPtr Handle { get; }
+    }
 }
