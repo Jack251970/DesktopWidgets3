@@ -91,7 +91,6 @@
     <PackageReference Include="Vanara.PInvoke.Mpr" Version="3.4.17" />
     <PackageReference Include="Vanara.PInvoke.Ole" Version="3.4.17" />
     <PackageReference Include="Vanara.PInvoke.Shell32" Version="3.4.17" />
-    <PackageReference Include="Vanara.Windows.Extensions" Version="3.4.17" />
     <PackageReference Include="WinUIEx" Version="2.3.3" />
   </ItemGroup>
 
