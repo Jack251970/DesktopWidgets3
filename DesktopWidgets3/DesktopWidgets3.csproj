@@ -92,13 +92,13 @@
     <PackageReference Include="Vanara.PInvoke.Ole" Version="3.4.17" />
     <PackageReference Include="Vanara.PInvoke.Shell32" Version="3.4.17" />
     <PackageReference Include="Vanara.Windows.Extensions" Version="3.4.17" />
-    <PackageReference Include="Vanara.Windows.Shell" Version="3.4.17" />
     <PackageReference Include="WinUIEx" Version="2.3.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
     <ProjectReference Include="..\Files.App.Storage\Files.App.Storage.csproj" />
+    <ProjectReference Include="..\Files.App\Files.App.csproj" />
     <ProjectReference Include="..\Files.Core.Storage\Files.Core.Storage.csproj" />
     <ProjectReference Include="..\Files.Core\Files.Core.csproj" />
     <ProjectReference Include="..\Files.Shared\Files.Shared.csproj" />

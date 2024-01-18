@@ -1,0 +1,34 @@
+<!--  Copyright (c) 2023 Files Community. Licensed under the MIT License. See the LICENSE.  -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0-windows10.0.22621.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <IsTrimmable>true</IsTrimmable>
+        <Configurations>Debug;Release;Stable;Preview;Store</Configurations>
+        <Platforms>x86;x64;arm64</Platforms>
+        <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Utils\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Vanara.Windows.Shell" Version="3.4.17" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Files.App.Storage\Files.App.Storage.csproj" />
+      <ProjectReference Include="..\Files.Core.Storage\Files.Core.Storage.csproj" />
+      <ProjectReference Include="..\Files.Core\Files.Core.csproj" />
+      <ProjectReference Include="..\Files.Shared\Files.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System.Windows.Forms">
+        <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Windows.Forms.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>
