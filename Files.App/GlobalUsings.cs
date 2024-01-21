@@ -14,14 +14,14 @@ global using global::System.Diagnostics;
 global using SystemIO = global::System.IO;
 
 // CommunityToolkit.Mvvm
-/*global using global::CommunityToolkit.Mvvm.ComponentModel;
+global using global::CommunityToolkit.Mvvm.ComponentModel;
 global using global::CommunityToolkit.Mvvm.DependencyInjection;
 global using global::CommunityToolkit.Mvvm.Input;
-global using global::CommunityToolkit.Mvvm.Messaging;*/
+global using global::CommunityToolkit.Mvvm.Messaging;
 
 // Files.App
-/*global using global::Files.App.Helpers;
-global using global::Files.App.Extensions;*/
+global using global::Files.App.Helpers;
+/*global using global::Files.App.Extensions;*/
 global using global::Files.App.Utils;
 /*global using global::Files.App.Utils.Archives;
 global using global::Files.App.Utils.Cloud;
@@ -35,19 +35,19 @@ global using global::Files.App.Utils.Shell;
 /*global using global::Files.App.Utils.StatusCenter;
 global using global::Files.App.Utils.Storage;
 global using global::Files.App.Data.Attributes;
-global using global::Files.App.Data.Behaviors;
+global using global::Files.App.Data.Behaviors;*/
 global using global::Files.App.Data.Commands;
 global using global::Files.App.Data.Contexts;
 global using global::Files.App.Data.EventArguments;
 global using global::Files.App.Data.Exceptions;
-global using global::Files.App.Data.Factories;
+/*global using global::Files.App.Data.Factories;*/
 global using global::Files.App.Data.Items;
 global using global::Files.App.Data.Models;
-global using global::Files.App.Data.Parameters;
+/*global using global::Files.App.Data.Parameters;*/
 global using global::Files.App.Data.TemplateSelectors;
 global using global::Files.App.Services;
 global using global::Files.App.UserControls;
-global using global::Files.App.UserControls.TabBar;
+/*global using global::Files.App.UserControls.TabBar;
 global using global::Files.App.ViewModels;
 global using global::Files.App.ViewModels.UserControls;
 global using global::Files.App.Views;

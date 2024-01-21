@@ -48,7 +48,7 @@ public class ManagementEventWatcher : IDisposable, IObserver<CimSubscriptionResu
     /// <param name="queryExpression"></param>
     public ManagementEventWatcher(WqlEventQuery query)
     {
-        string queryExpression = query.QueryExpression;
+        var queryExpression = query.QueryExpression;
 
         if (string.IsNullOrWhiteSpace(queryExpression))
         {
