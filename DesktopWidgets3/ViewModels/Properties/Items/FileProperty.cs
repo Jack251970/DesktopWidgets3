@@ -6,7 +6,7 @@ using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Helpers;
 using Files.App.Converters;
-using Files.App.Extensions;
+using Files.App.Helpers;
 using Files.App.Utils.Storage;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;

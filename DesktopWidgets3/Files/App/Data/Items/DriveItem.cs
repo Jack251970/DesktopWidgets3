@@ -6,7 +6,6 @@ using DesktopWidgets3.Helpers;
 using Files.App.Extensions;
 using Files.App.Helpers;
 using Files.App.Storage.WindowsStorage;
-using Files.App.UserControls;
 using Files.App.Utils.Storage;
 using Files.Core.Storage;
 using Files.Core.Storage.Enums;
