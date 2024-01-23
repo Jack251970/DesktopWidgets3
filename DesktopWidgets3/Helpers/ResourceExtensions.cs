@@ -16,8 +16,16 @@ public static class ResourceExtensions
             return value;
         }
 
-        value = resourcesTree?.TryGetValue(resourceKey)?.ValueAsString;
+        value = resourcesTree.TryGetValue(resourceKey)?.ValueAsString;
 
+#if DEBUG
+        if (value is null)
+        {
+            throw new Exception($"Resource key '{resourceKey}' not found.");
+        }
+        return cachedResources[resourceKey] = value;
+#else
         return cachedResources[resourceKey] = value ?? string.Empty;
+#endif
     }
 }

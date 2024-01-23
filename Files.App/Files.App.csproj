@@ -25,6 +25,7 @@
       <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
       <PackageReference Include="CommunityToolkit.WinUI.UI.Behaviors" Version="7.1.2" />
       <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+      <PackageReference Include="DiscUtils.Udf" Version="0.16.13" />
       <PackageReference Include="FluentFTP" Version="49.0.1" />
       <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
       <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />

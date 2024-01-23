@@ -1,15 +1,16 @@
-﻿// Copyright(c) 2023 Files Community
+// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Utils.Storage;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System.IO;
 using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
 using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace Files.App.Helpers;
 
-internal static class BitmapHelper
+// TODO: change to internal.
+public static class BitmapHelper
 {
     public static async Task<BitmapImage?> ToBitmapAsync(this byte[]? data, int decodeSize = -1)
     {
@@ -45,7 +46,8 @@ internal static class BitmapHelper
     /// https://learn.microsoft.com/uwp/api/windows.graphics.imaging.bitmapdecoder?view=winrt-22000
     /// https://learn.microsoft.com/uwp/api/windows.graphics.imaging.bitmapencoder?view=winrt-22000
     /// </remarks>
-    public static async Task RotateAsync(string filePath, BitmapRotation rotation)
+    // TODO: add support.
+    /*public static async Task RotateAsync(string filePath, BitmapRotation rotation)
     {
         if (string.IsNullOrEmpty(filePath))
         {
@@ -84,7 +86,7 @@ internal static class BitmapHelper
         fileStream.Size = 0;
 
         await RandomAccessStream.CopyAsync(memStream, fileStream);
-    }
+    }*/
 
     /// <summary>
     /// This function encodes a software bitmap with the specified encoder and saves it to a file
