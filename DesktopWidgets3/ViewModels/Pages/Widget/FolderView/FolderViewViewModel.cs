@@ -27,6 +27,7 @@ using static Files.App.Data.EventArguments.NavigationArguments;
 using Files.App.Utils.Shell;
 using Files.Core.ViewModels.Widgets.FolderView;
 using Files.Core.Extensions;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -216,6 +217,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     FileNameConflictResolveOptionType IFolderViewViewModel.ConflictsResolveOption => ConflictsResolveOption;
 
     public string WorkingDirectory => FileSystemViewModel.WorkingDirectory;
+
+    public Window MainWindow => WidgetWindow;
 
     public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, DrivesViewModel drivesViewModel, IFileSystemHelpers fileSystemHelpers, NetworkDrivesViewModel networkDrivesViewModel, IWidgetManagerService widgetManagerService)
     {

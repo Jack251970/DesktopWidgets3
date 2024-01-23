@@ -404,17 +404,3 @@ public class DriveItem : ObservableObject, ILocatableFolder//, INavigationContro
         return folder.GetParentAsync(cancellationToken);
     }
 }
-
-public enum DriveType
-{
-    Fixed,
-    Removable,
-    Network,
-    Ram,
-    CDRom,
-    FloppyDisk,
-    Unknown,
-    NoRootDirectory,
-    VirtualDrive,
-    CloudDrive,
-}

@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.Storage.WindowsStorage;
+using Files.App.Storage.WindowsStorage;
 using Files.Core.Storage;
 using Files.Core.Storage.Enums;
 using Files.Core.Storage.LocatableStorage;
@@ -15,7 +15,7 @@ using ByteSize = ByteSizeLib.ByteSize;
 
 namespace Files.App.Data.Items;
 
-public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFolder
+/*public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFolder
 {
 	private BitmapImage icon;
 	public BitmapImage Icon
@@ -379,7 +379,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		var folder = new WindowsStorageFolder(Root);
 		return folder.GetParentAsync(cancellationToken);
 	}
-}
+}*/
 
 public enum DriveType
 {
@@ -393,4 +393,4 @@ public enum DriveType
 	NoRootDirectory,
 	VirtualDrive,
 	CloudDrive,
-}*/
+}

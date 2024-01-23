@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Data.EventArguments;
 using Microsoft.Management.Infrastructure;
 using Microsoft.Management.Infrastructure.Generic;
 

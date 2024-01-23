@@ -1,6 +1,8 @@
-﻿namespace Files.Core.ViewModels.Widgets.FolderView;
+﻿using Microsoft.UI.Xaml;
 
-public interface IFolderViewViewModel
+namespace Files.Core.ViewModels.Widgets.FolderView;
+
+public partial interface IFolderViewViewModel
 {
     int IndexTag { get; }
 
@@ -9,4 +11,8 @@ public interface IFolderViewViewModel
     string WorkingDirectory { get; }
 
     IDialogService DialogService { get; }
+
+    Window MainWindow { get; }
+
+    bool CanShowDialog { get; set; }
 }
