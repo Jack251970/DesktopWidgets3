@@ -8,7 +8,6 @@ using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Utils;
 using Files.App.Utils.Storage;
-using Files.App.Utils.Storage.Helpers;
 using Files.Core.Data.Enums;
 using Files.Shared.Extensions;
 using Microsoft.UI.Dispatching;
@@ -18,6 +17,7 @@ using Files.App.Extensions;
 using Files.Core.ViewModels.Dialogs;
 using Files.Core.Data.Items;
 using Files.App.ViewModels.Dialogs;
+using Files.Core.ViewModels.Widgets.FolderView;
 
 namespace Files.App.Helpers;
 
@@ -555,7 +555,7 @@ public static class UIFileSystemHelpers
 
     #region require password
 
-    public static async Task<StorageCredential> RequestPassword(FolderViewViewModel viewModel, IPasswordProtectedItem sender)
+    public static async Task<StorageCredential> RequestPassword(IFolderViewViewModel viewModel, IPasswordProtectedItem sender)
     {
         var path = ((IStorageItem)sender).Path;
         var isFtp = FtpHelpers.IsFtpPath(path);

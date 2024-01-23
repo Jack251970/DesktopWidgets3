@@ -4,7 +4,6 @@
 using Files.App.Helpers;
 using Files.App.Utils.Shell;
 using Files.App.Utils.Storage;
-using Files.App.Utils.Storage.Helpers;
 using Files.Core.Data.Items;
 using Files.Shared.Extensions;
 using DesktopWidgets3.ViewModels.Pages.Widget;

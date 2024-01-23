@@ -7,7 +7,6 @@ using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Helpers;
 using Files.App.Utils.Storage;
-using Files.App.Utils.Storage.Helpers;
 using Files.Core.Data.Items;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel.DataTransfer;

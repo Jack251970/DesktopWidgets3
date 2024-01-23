@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Views.Windows;
-using Files.App.Utils.Storage.Helpers;
 using Files.App.Utils.Storage;
 using Files.App.Utils;
 using Files.App.ViewModels.Properties;

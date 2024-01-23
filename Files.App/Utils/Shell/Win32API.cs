@@ -33,7 +33,7 @@ public class Win32API
 		    catch (Exception ex)
 		    {
 			    taskCompletionSource.SetResult();
-			    DependencyExtensions.GetService<ILogger>().LogWarning(ex, ex.Message);
+			    DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
 		    }
 		    finally
 		    {
@@ -67,7 +67,7 @@ public class Win32API
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult();
-				DependencyExtensions.GetService<ILogger>().LogWarning(ex, ex.Message);
+				DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
 			}
 			finally
 			{
@@ -101,7 +101,7 @@ public class Win32API
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult(default);
-				DependencyExtensions.GetService<ILogger>().LogWarning(ex, ex.Message);
+				DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
 				//tcs.SetException(e);
 			}
 			finally
@@ -135,7 +135,7 @@ public class Win32API
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult(default);
-				DependencyExtensions.GetService<ILogger>().LogInformation(ex, ex.Message);
+				DependencyExtensions.GetService<ILogger>()?.LogInformation(ex, ex.Message);
 				//tcs.SetException(e);
 			}
 			finally

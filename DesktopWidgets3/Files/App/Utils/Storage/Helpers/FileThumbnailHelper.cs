@@ -6,7 +6,6 @@ using Files.App.Utils.Shell;
 using Files.Shared.Helpers;
 using Windows.Storage.FileProperties;
 using Windows.Storage;
-using Files.App.Utils.Storage.Helpers;
 using Files.App.Extensions;
 
 namespace Files.App.Utils.Storage;

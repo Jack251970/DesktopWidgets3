@@ -16,7 +16,6 @@ using Files.Core.Data.Enums;
 using Files.Core.Services;
 using Files.App.Data.Items;
 using Files.App.Utils.Cloud;
-using Files.App.Utils.Storage.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml.Media;
@@ -215,6 +214,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     public int IndexTag => WidgetWindow.IndexTag;
 
     FileNameConflictResolveOptionType IFolderViewViewModel.ConflictsResolveOption => ConflictsResolveOption;
+
+    public string WorkingDirectory => FileSystemViewModel.WorkingDirectory;
 
     public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, DrivesViewModel drivesViewModel, IFileSystemHelpers fileSystemHelpers, NetworkDrivesViewModel networkDrivesViewModel, IWidgetManagerService widgetManagerService)
     {

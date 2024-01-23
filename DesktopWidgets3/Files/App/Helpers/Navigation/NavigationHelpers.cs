@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Utils.Shell;
 using Files.App.Utils;

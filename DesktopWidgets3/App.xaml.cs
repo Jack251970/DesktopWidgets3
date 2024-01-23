@@ -30,6 +30,9 @@ using Files.App.Data.Models;
 using Files.Core.Services.SizeProvider;
 using Files.Core.Storage;
 using Files.App.Storage.FtpStorage;
+using Microsoft.Extensions.Logging;
+using Files.Shared;
+using Windows.Storage;
 
 namespace DesktopWidgets3;
 
@@ -89,8 +92,8 @@ public partial class App : Application
 
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
-        UseContentRoot(AppContext.BaseDirectory).
-        ConfigureServices((context, services) =>
+        UseContentRoot(AppContext.BaseDirectory)
+        .ConfigureServices((context, services) =>
         {
             #region Core Service
 

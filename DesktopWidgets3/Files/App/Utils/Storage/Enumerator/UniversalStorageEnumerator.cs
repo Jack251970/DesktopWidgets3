@@ -4,7 +4,6 @@
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Extensions;
 using Files.App.Helpers;
-using Files.App.Utils.Storage.Helpers;
 using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;

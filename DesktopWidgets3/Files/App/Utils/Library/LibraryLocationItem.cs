@@ -3,7 +3,6 @@
 
 using Files.App.Utils.Storage;
 using System.Collections.ObjectModel;
-using Files.App.Utils.Storage.Helpers;
 using Files.App.Data.Items;
 using Files.App.Helpers;
 using Files.Core.Data.Items;

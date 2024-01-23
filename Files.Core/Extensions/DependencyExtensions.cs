@@ -1,4 +1,5 @@
 ﻿using Files.Shared.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace Files.Core.Extensions;
 
@@ -28,6 +29,11 @@ public static class DependencyExtensions
 
     public static T GetService<T>() where T : class
     {
+        if (typeof(T) == typeof(ILogger))
+        {
+            return null!;
+        }
+
         if (FallbackDependencyService is null)
         {
             throw new InvalidOperationException("Dependency service is not initialized.");

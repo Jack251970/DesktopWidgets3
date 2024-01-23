@@ -9,7 +9,6 @@ using Files.App.Utils;
 using Files.App.Utils.Cloud;
 using Files.App.Utils.Shell;
 using Files.App.Utils.Storage;
-using Files.App.Utils.Storage.Helpers;
 using Files.Core.Data.Enums;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;

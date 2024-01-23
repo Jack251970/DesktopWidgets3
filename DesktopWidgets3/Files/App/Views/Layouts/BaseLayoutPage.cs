@@ -32,7 +32,6 @@ using Files.App.Utils.RecycleBin;
 using Windows.Storage;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.DragDrop;
-using Files.App.Utils.Storage.Helpers;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
 using VanaraWindowsShell = Vanara.Windows.Shell;
 
@@ -873,8 +872,8 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
             else
             {
                 // Only support IStorageItem capable paths
-                var storageItemList = e.Items.OfType<ListedItem>().Where(x => !(x.IsHiddenItem && x.IsLinkItem && x.IsRecycleBinItem && x.IsShortcut)).Select(x => VirtualStorageItem.FromListedItem(x));
-                e.Data.SetStorageItems(storageItemList, false);
+                /*var storageItemList = e.Items.OfType<ListedItem>().Where(x => !(x.IsHiddenItem && x.IsLinkItem && x.IsRecycleBinItem && x.IsShortcut)).Select(x => VirtualStorageItem.FromListedItem(x));
+                e.Data.SetStorageItems(storageItemList, false);*/
             }
         }
         catch (Exception)

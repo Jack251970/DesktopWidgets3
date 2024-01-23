@@ -1,11 +1,8 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Files.App.Utils;
 using Files.App.Utils.Storage;
-using Files.App.Utils.Storage.Helpers;
 using Files.Core.Data.Enums;
 using Files.Shared.Helpers;
 using Windows.Storage;

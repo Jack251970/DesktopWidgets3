@@ -8,7 +8,6 @@ using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Helpers;
 using Files.App.Utils.RecycleBin;
 using Files.App.Utils.StatusCenter;
-using Files.App.Utils.Storage.Helpers;
 using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
 using Files.Core.Storage;
