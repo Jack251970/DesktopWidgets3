@@ -14,14 +14,16 @@ public static class ElevationHelpers
 	public static bool IsElevationRequired(string filePath)
 	{
 		if (string.IsNullOrEmpty(filePath))
-			return false;
+        {
+            return false;
+        }
 
-		return _IsElevationRequired(filePath);
+        return _IsElevationRequired(filePath);
 	}
 
 	public static bool IsAppRunAsAdmin()
 	{
-		using WindowsIdentity identity = WindowsIdentity.GetCurrent();
+		using var identity = WindowsIdentity.GetCurrent();
 		return new WindowsPrincipal(identity).IsInRole(new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null));
 	}
 }
