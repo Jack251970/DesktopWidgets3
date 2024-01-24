@@ -4,8 +4,6 @@ namespace Files.Core.ViewModels.Widgets.FolderView;
 
 public partial interface IFolderViewViewModel
 {
-    int IndexTag { get; }
-
     FileNameConflictResolveOptionType ConflictsResolveOption { get; }
 
     bool ShowFileExtensions { get; }
@@ -15,6 +13,8 @@ public partial interface IFolderViewViewModel
     IDialogService DialogService { get; }
 
     Window MainWindow { get; }
+
+    IntPtr WindowHandle { get; }
 
     bool CanShowDialog { get; set; }
 }

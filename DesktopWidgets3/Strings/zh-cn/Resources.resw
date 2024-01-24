@@ -835,4 +835,10 @@
   <data name="CreateFolderDescription" xml:space="preserve">
     <value>创建新文件夹</value>
   </data>
+  <data name="ReorderSidebarItemsDialogText" xml:space="preserve">
+    <value>重新排列侧边栏项目</value>
+  </data>
+  <data name="DetailsArchiveItemCount" xml:space="preserve">
+    <value>{0} 个项（{1} 个文件，{2} 个文件夹）</value>
+  </data>
 </root>

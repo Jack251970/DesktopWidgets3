@@ -1,11 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Files.App.Utils.Storage;
-using DesktopWidgets3.Helpers;
-using DesktopWidgets3.ViewModels.Pages.Widget;
+using System.IO;
 using System.Windows.Input;
 using Windows.Storage.Pickers;
 
@@ -13,8 +9,8 @@ namespace Files.App.ViewModels.Dialogs;
 
 public class CreateShortcutDialogViewModel : ObservableObject
 {
-    // Folder view view model
-    private readonly FolderViewViewModel FolderViewModel;
+    // Interface to the folder view view model
+    public readonly IFolderViewViewModel FolderViewViewModel;
 
 	// User's working directory
 	public readonly string WorkingDirectory;
@@ -35,7 +31,7 @@ public class CreateShortcutDialogViewModel : ObservableObject
 		get => _destinationItemPath;
 		set
 		{
-            if (!SetProperty(ref _destinationItemPath, value))
+			if (!SetProperty(ref _destinationItemPath, value))
             {
                 return;
             }
@@ -89,9 +85,9 @@ public class CreateShortcutDialogViewModel : ObservableObject
 	// Command invoked when the user clicks primary button
 	public ICommand PrimaryButtonCommand { get; private set; }
 
-	public CreateShortcutDialogViewModel(FolderViewViewModel folderViewModel, string workingDirectory)
+	public CreateShortcutDialogViewModel(IFolderViewViewModel viewModel, string workingDirectory)
 	{
-        FolderViewModel = folderViewModel;
+        FolderViewViewModel = viewModel;
 		WorkingDirectory = workingDirectory;
 		_destinationItemPath = string.Empty;
 
@@ -113,7 +109,7 @@ public class CreateShortcutDialogViewModel : ObservableObject
 
 	private FolderPicker InitializeWithWindow(FolderPicker obj)
 	{
-		WinRT.Interop.InitializeWithWindow.Initialize(obj, FolderViewModel.WidgetWindow.WindowHandle);
+		WinRT.Interop.InitializeWithWindow.Initialize(obj, FolderViewViewModel.WindowHandle);
 		return obj;
 	}
 
@@ -129,12 +125,12 @@ public class CreateShortcutDialogViewModel : ObservableObject
 			{
 				var destinationPath = DestinationItemPath.Replace('/', '\\');
 
-                if (destinationPath.EndsWith('\\'))
+				if (destinationPath.EndsWith('\\'))
                 {
-                    destinationPath = destinationPath[..^1];
+                    destinationPath = destinationPath.Substring(0, destinationPath.Length - 1);
                 }
 
-                destinationName = destinationPath[(destinationPath.LastIndexOf('\\') + 1)..];
+                destinationName = destinationPath.Substring(destinationPath.LastIndexOf('\\') + 1);
 			}
 		}
 		else
@@ -143,7 +139,7 @@ public class CreateShortcutDialogViewModel : ObservableObject
 			destinationName = uri.Host;
 		}
 
-		var shortcutName = string.Format("ShortcutCreateNewSuffix".GetLocalized(), destinationName);
+		var shortcutName = string.Format("ShortcutCreateNewSuffix".ToLocalized(), destinationName);
 		ShortcutCompleteName = shortcutName + extension;
 		var filePath = Path.Combine(WorkingDirectory, ShortcutCompleteName);
 

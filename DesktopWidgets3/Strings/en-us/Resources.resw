@@ -844,4 +844,10 @@
   <data name="CreateFolderDescription" xml:space="preserve">
     <value>Create new folder</value>
   </data>
+  <data name="ReorderSidebarItemsDialogText" xml:space="preserve">
+    <value>Reorder sidebar items</value>
+  </data>
+  <data name="DetailsArchiveItemCount" xml:space="preserve">
+    <value>{0} items ({1} files, {2} folders)</value>
+  </data>
 </root>

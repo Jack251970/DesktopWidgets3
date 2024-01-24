@@ -1,11 +1,10 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace Files.App.ViewModels.Dialogs;
 
-class RenameDialogViewModel : ObservableObject
+// TODO: change to internal.
+public class RenameDialogViewModel : ObservableObject
 {
 	private bool isNameInvalid;
 	public bool IsNameInvalid
@@ -14,3 +13,4 @@ class RenameDialogViewModel : ObservableObject
 		set => SetProperty(ref isNameInvalid, value);
 	}
 }
+
