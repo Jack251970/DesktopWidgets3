@@ -13,7 +13,7 @@ public static class ShellNewEntryExtensions
 	{
 		var shellEntryList = new List<ShellNewEntry>();
 
-		var entries = await SafetyExtensions.IgnoreExceptions(() => ShellNewMenuHelper.GetNewContextMenuEntries(), DependencyExtensions.GetService<ILogger>());
+		var entries = await SafetyExtensions.IgnoreExceptions(ShellNewMenuHelper.GetNewContextMenuEntries, DependencyExtensions.GetService<ILogger>());
 		if (entries is not null)
 		{
 			shellEntryList.AddRange(entries);

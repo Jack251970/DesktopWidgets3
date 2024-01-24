@@ -17,7 +17,7 @@ using Files.App.Extensions;
 using Files.Core.ViewModels.Dialogs;
 using Files.Core.Data.Items;
 using Files.App.ViewModels.Dialogs;
-using Files.Core.ViewModels.Widgets.FolderView;
+using Files.Core.ViewModels.FolderView;
 using Files.Core.Services;
 
 namespace Files.App.Helpers;

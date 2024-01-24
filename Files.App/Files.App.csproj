@@ -31,6 +31,8 @@
       <PackageReference Include="SevenZipSharp" Version="1.0.2" />
       <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.7" />
       <PackageReference Include="Tulpep.ActiveDirectoryObjectPicker" Version="3.0.11" />
+      <PackageReference Include="Vanara.PInvoke.Mpr" Version="3.4.17" />
+      <PackageReference Include="Vanara.PInvoke.Ole" Version="3.4.17" />
       <PackageReference Include="Vanara.Windows.Extensions" Version="3.4.17" />
       <PackageReference Include="Vanara.Windows.Shell" Version="3.4.17" />
     </ItemGroup>

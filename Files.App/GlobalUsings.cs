@@ -71,7 +71,7 @@ global using global::Files.Core.ViewModels.Dialogs.AddItemDialog;
 global using global::Files.Core.ViewModels.Dialogs.FileSystemDialog;
 global using global::Files.Core.ViewModels.FileTags;
 global using global::Files.Core.ViewModels.Widgets;
-global using global::Files.Core.ViewModels.Widgets.FolderView;
+global using global::Files.Core.ViewModels.FolderView;
 global using global::Files.Core.Utils;
 global using global::Files.Core.Utils.Cloud;
 global using global::Files.Core.Utils.CommandLine;

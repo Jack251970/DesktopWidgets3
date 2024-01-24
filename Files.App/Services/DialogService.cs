@@ -1,41 +1,35 @@
-﻿// Copyright (c) 2023 Files Community
+// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using System.ComponentModel;
-using Files.Core.Data.Enums;
-using Files.Core.Services;
-using Files.Core.ViewModels.Dialogs;
-using Files.Core.ViewModels.Dialogs.FileSystemDialog;
+using Files.App.Dialogs;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation.Metadata;
-using Files.App.Helpers;
-using Files.App.Dialogs;
-using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.Core.ViewModels.Widgets.FolderView;
 
 namespace Files.App.Services;
 
 /// <inheritdoc cref="IDialogService"/>
-internal sealed class DialogService : IDialogService
+// TODO: change to internal.
+public sealed class DialogService : IDialogService
 {
+    private IFolderViewViewModel _folderViewViewModel = null!;
+
     private IReadOnlyDictionary<Type, Func<ContentDialog>> _dialogs;
 
-    private FolderViewViewModel _folderViewModel = null!;
+	public DialogService()
+	{
+        _dialogs = new Dictionary<Type, Func<ContentDialog>>() { };
+	}
 
-    public DialogService()
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        _dialogs = new Dictionary<Type, Func<ContentDialog>>() {};
-    }
-
-    public void Initialize(IFolderViewViewModel folderViewModel)
-    {
-        _folderViewModel = (FolderViewViewModel)folderViewModel;
+        _folderViewViewModel = folderViewViewModel;
         _dialogs = new Dictionary<Type, Func<ContentDialog>>()
         {
             /*{ typeof(AddItemDialogViewModel), () => new AddItemDialog() },
             { typeof(CredentialDialogViewModel), () => new CredentialDialog() },
             { typeof(ElevateConfirmDialogViewModel), () => new ElevateConfirmDialog() },*/
-            { typeof(FileSystemDialogViewModel), () => new FilesystemOperationDialog(_folderViewModel) },
+            { typeof(FileSystemDialogViewModel), () => new FilesystemOperationDialog(folderViewViewModel) },
             /*{ typeof(DecompressArchiveDialogViewModel), () => new DecompressArchiveDialog() },
             { typeof(SettingsDialogViewModel), () => new SettingsDialog() },
             { typeof(CreateShortcutDialogViewModel), () => new CreateShortcutDialog() },
@@ -49,42 +43,44 @@ internal sealed class DialogService : IDialogService
 
     /// <inheritdoc/>
     public IDialog<TViewModel> GetDialog<TViewModel>(TViewModel viewModel)
-        where TViewModel : class, INotifyPropertyChanged
-    {
-        if (!_dialogs.TryGetValue(typeof(TViewModel), out var initializer))
+		where TViewModel : class, INotifyPropertyChanged
+	{
+		if (!_dialogs.TryGetValue(typeof(TViewModel), out var initializer))
         {
             throw new ArgumentException($"{typeof(TViewModel)} does not have an appropriate dialog associated with it.");
         }
 
         var contentDialog = initializer();
-        if (contentDialog is not IDialog<TViewModel> dialog)
+		if (contentDialog is not IDialog<TViewModel> dialog)
         {
             throw new NotSupportedException($"The dialog does not implement {typeof(IDialog<TViewModel>)}.");
         }
 
         dialog.ViewModel = viewModel;
 
-        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            contentDialog.XamlRoot = _folderViewModel.WidgetWindow.Content.XamlRoot;
+            contentDialog.XamlRoot = _folderViewViewModel.MainWindow.Content.XamlRoot;
         }
 
         return dialog;
-    }
+	}
 
-    /// <inheritdoc/>
-    public Task<DialogResult> ShowDialogAsync<TViewModel>(TViewModel viewModel)
-        where TViewModel : class, INotifyPropertyChanged
-    {
-        try
-        {
-            return GetDialog(viewModel).TryShowAsync(_folderViewModel);
-        }
-        catch (Exception)
-        {
+	/// <inheritdoc/>
+	public Task<DialogResult> ShowDialogAsync<TViewModel>(TViewModel viewModel)
+		where TViewModel : class, INotifyPropertyChanged
+	{
+		try
+		{
+			return GetDialog(viewModel).TryShowAsync(_folderViewViewModel);
+		}
+		catch (Exception ex)
+		{
+			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, "Failed to show dialog");
 
-        }
+			Debugger.Break();
+		}
 
-        return Task.FromResult(DialogResult.None);
-    }
+		return Task.FromResult(DialogResult.None);
+	}
 }

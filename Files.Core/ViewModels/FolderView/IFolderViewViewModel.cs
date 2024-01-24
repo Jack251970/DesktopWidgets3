@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 
-namespace Files.Core.ViewModels.Widgets.FolderView;
+namespace Files.Core.ViewModels.FolderView;
 
 public partial interface IFolderViewViewModel
 {

@@ -4,7 +4,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Actions;
-using Files.Core.ViewModels.Widgets.FolderView;
+using Files.Core.ViewModels.FolderView;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;

@@ -31,5 +31,6 @@ global using global::Files.Core.Services;
 global using global::Files.Core.Services.Settings;
 global using global::Files.Core.Services.SizeProvider;
 global using global::Files.Core.ViewModels;
+global using global::Files.Core.ViewModels.FolderView;
 global using global::Files.Core.Utils;
 global using global::Files.Core.Utils.CommandLine;

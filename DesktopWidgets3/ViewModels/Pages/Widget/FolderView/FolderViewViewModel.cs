@@ -25,7 +25,7 @@ using System.ComponentModel;
 using static Files.App.Data.Models.ItemViewModel;
 using static Files.App.Data.EventArguments.NavigationArguments;
 using Files.App.Utils.Shell;
-using Files.Core.ViewModels.Widgets.FolderView;
+using Files.Core.ViewModels.FolderView;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;

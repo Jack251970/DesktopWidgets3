@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.ViewModels.Widgets.FolderView;
+using Files.Core.ViewModels.FolderView;
 using Files.Shared.Extensions;
 
 namespace Files.Core.ViewModels.Dialogs.FileSystemDialog;
