@@ -4,6 +4,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Actions;
+using Files.Core.ViewModels.Widgets.FolderView;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -15,11 +16,11 @@ namespace Files.App.Data.Commands;
 
 internal class CommandManager : ICommandManager
 {
-    private FolderViewViewModel _viewModel = null!;
-    public void Initialize(FolderViewViewModel viewModel)
+    private IFolderViewViewModel _viewModel = null!;
+    public void Initialize(IFolderViewViewModel viewModel)
     {
         _viewModel = viewModel;
-        commands = CreateActions(_viewModel)
+        commands = CreateActions((FolderViewViewModel)_viewModel)
             .Select(action => new ActionCommand(this, action.Key, action.Value))
             .Cast<IRichCommand>()
             .Append(new NoneCommand())

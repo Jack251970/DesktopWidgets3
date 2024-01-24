@@ -922,5 +922,15 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         FileSystemViewModel.Dispose();
     }
 
+    T IFolderViewViewModel.GetRequiredService<T>()
+    {
+        return typeof(T) switch
+        {
+            Type t when t == typeof(ICommandManager) => (T)CommandManager,
+            Type t when t == typeof(IDialogService) => (T)DialogService,
+            _ => null!,
+        };
+    }
+
     #endregion
 }

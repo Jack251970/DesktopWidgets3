@@ -17,4 +17,6 @@ public partial interface IFolderViewViewModel
     IntPtr WindowHandle { get; }
 
     bool CanShowDialog { get; set; }
+
+    T GetRequiredService<T>() where T : class;
 }
