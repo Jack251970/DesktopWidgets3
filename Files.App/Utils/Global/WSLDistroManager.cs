@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using System.Collections.Specialized;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using Windows.Storage;
 using static Files.App.Constants;
@@ -10,7 +10,7 @@ namespace Files.App.Utils;
 
 public static class WSLDistroManager
 {
-	public static EventHandler<NotifyCollectionChangedEventArgs> DataChanged;
+	public static EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 
 	private static readonly List<WslDistroItem> distros = new();
 	public static IReadOnlyList<WslDistroItem> Distros
@@ -29,9 +29,9 @@ public static class WSLDistroManager
 		try
 		{
 			var distroFolder = await StorageFolder.GetFolderFromPathAsync(@"\\wsl$\");
-			foreach (StorageFolder folder in await distroFolder.GetFoldersAsync())
+			foreach (var folder in await distroFolder.GetFoldersAsync())
 			{
-				Uri logoURI = GetLogoUri(folder.DisplayName);
+				var logoURI = GetLogoUri(folder.DisplayName);
 
 				var distro = new WslDistroItem
 				{
@@ -89,4 +89,4 @@ public static class WSLDistroManager
 		static bool Contains(string displayName, string distroName)
 			=> displayName.Contains(distroName, StringComparison.OrdinalIgnoreCase);
 	}
-}*/
+}

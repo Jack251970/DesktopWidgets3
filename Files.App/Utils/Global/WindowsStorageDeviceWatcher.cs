@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.Data.Items;
-using Files.App.Helpers;
 using Files.Core.Storage.LocatableStorage;
 using Microsoft.Extensions.Logging;
 using System.IO;
@@ -19,7 +17,7 @@ public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 	public event EventHandler EnumerationCompleted;
 	public event EventHandler<string> DeviceModified;
 
-	private DeviceWatcher watcher;
+	private readonly DeviceWatcher watcher;
 
 	public bool CanBeStarted => watcher.Status is DeviceWatcherStatus.Created or DeviceWatcherStatus.Stopped or DeviceWatcherStatus.Aborted;
 
@@ -57,14 +55,14 @@ public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 		var rootAdded = await FilesystemTasks.Wrap(() => StorageFolder.GetFolderFromPathAsync(e.DeviceId).AsTask());
 		if (!rootAdded)
 		{
-			App.Logger.LogWarning($"{rootAdded.ErrorCode}: Attempting to add the device, {e.DeviceId},"
+			DependencyExtensions.GetService<ILogger>()?.LogWarning($"{rootAdded.ErrorCode}: Attempting to add the device, {e.DeviceId},"
 				+ " failed at the StorageFolder initialization step. This device will be ignored.");
 			return;
 		}
 			
 		var type = DriveHelpers.GetDriveType(driveAdded);
 		var label = DriveHelpers.GetExtendedDriveLabel(driveAdded);
-		DriveItem driveItem = await DriveItem.CreateFromPropertiesAsync(rootAdded, e.DeviceId, label, type);
+		var driveItem = await DriveItem.CreateFromPropertiesAsync(rootAdded, e.DeviceId, label, type);
 
 		DeviceAdded?.Invoke(this, driveItem);
 	}
@@ -81,7 +79,7 @@ public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 
 	private async void Watcher_Added(DeviceWatcher sender, DeviceInformation args)
 	{
-		string deviceId = args.Id;
+		var deviceId = args.Id;
 		StorageFolder root;
 		try
 		{
@@ -89,12 +87,12 @@ public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 		}
 		catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException)
 		{
-			App.Logger.LogWarning($"{ex.GetType()}: Attempting to add the device, {args.Name},"
+            DependencyExtensions.GetService<ILogger>()?.LogWarning($"{ex.GetType()}: Attempting to add the device, {args.Name},"
 				+ $" failed at the StorageFolder initialization step. This device will be ignored. Device ID: {deviceId}");
 			return;
 		}
 
-    Data.Items.DriveType type;
+        Data.Items.DriveType type;
 		string label;
 		try
 		{
@@ -135,4 +133,4 @@ public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 		DeviceManager.Default.DeviceInserted -= Win32_OnDeviceEjectedOrInserted;
 		DeviceManager.Default.DeviceEjected -= Win32_OnDeviceEjectedOrInserted;
 	}
-}*/
+}
