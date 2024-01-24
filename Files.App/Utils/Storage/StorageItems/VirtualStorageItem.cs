@@ -27,10 +27,11 @@ public class VirtualStorageItem : IStorageItem
 
 	public string Path { get; init; }
 
-	private VirtualStorageItem() { }
+	private VirtualStorageItem() 
+    {
+    }
 
-    // TODO: add support.
-	/*public static VirtualStorageItem FromListedItem(ListedItem item)
+	public static VirtualStorageItem FromListedItem(ListedItem item)
 	{
 		return new VirtualStorageItem()
 		{
@@ -39,7 +40,7 @@ public class VirtualStorageItem : IStorageItem
 			DateCreated = item.ItemDateCreatedReal,
 			Attributes = item.IsArchive || item.PrimaryItemAttribute == StorageItemTypes.File ? Windows.Storage.FileAttributes.Normal : Windows.Storage.FileAttributes.Directory
 		};
-	}*/
+	}
 
 	public static VirtualStorageItem FromPath(string path)
 	{

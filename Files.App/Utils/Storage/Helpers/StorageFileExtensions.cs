@@ -4,7 +4,6 @@
 using System.Collections.Immutable;
 using System.IO;
 using System.Text;
-using Files.Core.ViewModels.Widgets.FolderView;
 using Windows.Storage;
 using Windows.Storage.Search;
 
@@ -148,10 +147,10 @@ public static class StorageFileExtensions
 	}
 
     public static async Task<BaseStorageFile> DangerousGetFileFromPathAsync
-		(string value, StorageFolderWithPath rootFolder = null!, StorageFolderWithPath parentFolder = null)
+		(string value, StorageFolderWithPath rootFolder = null!, StorageFolderWithPath parentFolder = null!)
 			=> (await DangerousGetFileWithPathFromPathAsync(value, rootFolder, parentFolder)).Item;
 	public static async Task<StorageFileWithPath> DangerousGetFileWithPathFromPathAsync
-		(string value, StorageFolderWithPath rootFolder = null!, StorageFolderWithPath parentFolder = null)
+		(string value, StorageFolderWithPath rootFolder = null!, StorageFolderWithPath parentFolder = null!)
 	{
 		if (rootFolder is not null)
 		{
@@ -204,10 +203,10 @@ public static class StorageFileExtensions
 				.Select(x => new StorageFileWithPath(x, string.IsNullOrEmpty(x.Path) ? PathNormalization.Combine(parentFolder.Path, x.Name) : x.Path)).ToList();
 
 	public static async Task<BaseStorageFolder> DangerousGetFolderFromPathAsync
-		(string value, StorageFolderWithPath rootFolder = null!, StorageFolderWithPath parentFolder = null)
+		(string value, StorageFolderWithPath rootFolder = null!, StorageFolderWithPath parentFolder = null!)
 			=> (await DangerousGetFolderWithPathFromPathAsync(value, rootFolder, parentFolder)).Item;
 	public static async Task<StorageFolderWithPath> DangerousGetFolderWithPathFromPathAsync
-		(string value, StorageFolderWithPath rootFolder = null!, StorageFolderWithPath parentFolder = null)
+		(string value, StorageFolderWithPath rootFolder = null!, StorageFolderWithPath parentFolder = null!)
 	{
 		if (rootFolder is not null)
 		{
@@ -292,15 +291,14 @@ public static class StorageFileExtensions
 		{
 			title = "SidebarNetworkDrives".ToLocalized();
 		}
-        // TODO: add support.
-		/*else if (component.Contains(':', StringComparison.Ordinal))
+		else if (component.Contains(':', StringComparison.Ordinal))
 		{
-			var drivesViewModel = Ioc.Default.GetRequiredService<DrivesViewModel>();
+			var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
 			var drives = drivesViewModel.Drives.Cast<DriveItem>();
 			var drive = drives.FirstOrDefault(y => y.ItemType is NavigationControlItemType.Drive && y.Path.Contains(component, StringComparison.OrdinalIgnoreCase));
 			title = drive is not null ? drive.Text : string.Format("DriveWithLetter".ToLocalized(), component);
-		}*/
+		}
 		else
 		{
 			if (path.EndsWith('\\') || path.EndsWith('/'))

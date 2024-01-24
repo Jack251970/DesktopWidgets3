@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace Files.App.Converters;
 
-public sealed class DateTimeOffsetToStringConverter : IValueConverter
+internal sealed class DateTimeOffsetToStringConverter : IValueConverter
 {
 	private static readonly IDateTimeFormatter formatter = DependencyExtensions.GetService<IDateTimeFormatter>();
 

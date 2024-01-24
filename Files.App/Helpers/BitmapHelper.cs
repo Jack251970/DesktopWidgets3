@@ -46,8 +46,7 @@ public static class BitmapHelper
     /// https://learn.microsoft.com/uwp/api/windows.graphics.imaging.bitmapdecoder?view=winrt-22000
     /// https://learn.microsoft.com/uwp/api/windows.graphics.imaging.bitmapencoder?view=winrt-22000
     /// </remarks>
-    // TODO: add support.
-    /*public static async Task RotateAsync(string filePath, BitmapRotation rotation)
+    public static async Task RotateAsync(string filePath, BitmapRotation rotation)
     {
         if (string.IsNullOrEmpty(filePath))
         {
@@ -86,7 +85,7 @@ public static class BitmapHelper
         fileStream.Size = 0;
 
         await RandomAccessStream.CopyAsync(memStream, fileStream);
-    }*/
+    }
 
     /// <summary>
     /// This function encodes a software bitmap with the specified encoder and saves it to a file

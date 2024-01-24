@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace Files.App.Converters;
 
+// TODO: change to internal.
 public sealed class ConflictResolveOptionToIndexConverter : IValueConverter
 {
 	public object Convert(object value, Type targetType, object parameter, string language)

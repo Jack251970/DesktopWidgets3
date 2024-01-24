@@ -133,7 +133,7 @@ public class NativeFolder : NativeStorable<DirectoryInfo>, ILocatableFolder, IMo
 		}
 		else if (itemToCopy is IFolder sourceFolder)
 		{
-			// TODO: Implement folder copy
+			// FILESTODO: Implement folder copy
 			_ = sourceFolder;
 			throw new NotSupportedException();
 		}

@@ -93,7 +93,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 	}
 
 	// Note: Never attempt to call this from a secondary window or another thread, create a new instance from CustomIconSource instead
-	// TODO: eventually we should remove this b/c it's not thread safe
+	// FILESTODO: eventually we should remove this b/c it's not thread safe
 	private BitmapImage customIcon;
 	public BitmapImage CustomIcon
 	{
@@ -107,7 +107,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 
 	public ulong? FileFRN { get; set; }
 
-	/*private string[] fileTags; // TODO: initialize to empty array after UI is done
+	/*private string[] fileTags; // FILESTODO: initialize to empty array after UI is done
 	public string[] FileTags
 	{
 		get => fileTags;

@@ -72,7 +72,7 @@ public static class DecompressHelper
 
 		try
 		{
-			// TODO: Get this method return result
+			// FILESTODO: Get this method return result
 			await zipFile.ExtractArchiveAsync(destinationFolder.Path);
 		}
 		catch (Exception ex)

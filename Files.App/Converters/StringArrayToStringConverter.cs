@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Files.App.Converters;
 
-public sealed class StringArrayToStringConverter : IValueConverter
+internal sealed class StringArrayToStringConverter : IValueConverter
 {
 	public object Convert(object value, Type targetType, object parameter, string language)
 	{

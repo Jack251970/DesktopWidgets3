@@ -319,7 +319,7 @@ public sealed class FtpStorageFolder : BaseStorageFolder, IPasswordProtectedItem
 			var isSuccessful = await ftpClient.MoveDirectory(FtpPath, destination, ftpOption, cancellationToken);
 			if (!isSuccessful && option is NameCollisionOption.GenerateUniqueName)
 			{
-				// TODO: handle name generation
+				// FILESTODO: handle name generation
 			}
 		}, ((IPasswordProtectedItem)this).RetryWithCredentialsAsync));
 	}

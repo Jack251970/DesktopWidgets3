@@ -77,7 +77,7 @@ public sealed class StatusCenterItem : ObservableObject
 		set => SetProperty(ref _CurrentProcessingItemName, value);
 	}
 
-	// TODO: Remove and replace with Message
+	// FILESTODO: Remove and replace with Message
 	private string? _CurrentProcessedSizeText;
 	public string? CurrentProcessedSizeHumanized
 	{

@@ -67,7 +67,7 @@ namespace Files.App.Utils.Library
 
 		public static bool IsDefaultLibrary(string libraryFilePath)
 		{
-			// TODO: try to find a better way for this
+			// FILESTODO: try to find a better way for this
 			switch (Path.GetFileNameWithoutExtension(libraryFilePath))
 			{
 				case "CameraRoll":

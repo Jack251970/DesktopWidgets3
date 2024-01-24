@@ -19,7 +19,7 @@ public static partial class StorageExtensions
             return await fileExtended.OpenStreamAsync(access, share, cancellationToken);
         }
 
-        // TODO: Check if the file inherits from ILockableStorable and ensure a disposable handle to it via Stream bridge
+        // FILESTODO: Check if the file inherits from ILockableStorable and ensure a disposable handle to it via Stream bridge
         return await file.OpenStreamAsync(access, cancellationToken);
 	}
 

@@ -7,7 +7,7 @@ namespace Files.Core.Services;
 /// </summary>
 public interface IStartMenuService
 {
-	// TODO(s)
+	// FILESTODO(s)
 	[Obsolete("Use IsPinnedAsync instead. This method is used for a workaround in ListedItem class to avoid major refactoring.")]
 	bool IsPinned(string folderPath);
 

@@ -286,7 +286,7 @@ public static class UIFilesystemHelpers
 			currentPath = associatedInstance.FilesystemViewModel.WorkingDirectory;
 			if (App.LibraryManager.TryGetLibrary(currentPath, out var library) &&
 				!library.IsEmpty &&
-				library.Folders.Count == 1) // TODO: handle libraries with multiple folders
+				library.Folders.Count == 1) // FILESTODO: handle libraries with multiple folders
 			{
 				currentPath = library.Folders.First();
 			}

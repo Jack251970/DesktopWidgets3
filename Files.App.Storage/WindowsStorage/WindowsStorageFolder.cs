@@ -20,7 +20,7 @@ namespace Files.App.Storage.WindowsStorage;
 /// <inheritdoc cref="IFolder"/>
 public sealed class WindowsStorageFolder : WindowsStorable<StorageFolder>, ILocatableFolder, IFolderExtended, INestedFolder, IDirectCopy, IDirectMove
 {
-	// TODO: Implement IMutableFolder
+	// FILESTODO: Implement IMutableFolder
 
 	public WindowsStorageFolder(StorageFolder storage)
 		: base(storage)

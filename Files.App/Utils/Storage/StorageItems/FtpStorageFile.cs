@@ -53,6 +53,7 @@ public sealed class FtpStorageFile : BaseStorageFile, IPasswordProtectedItem
 		FtpPath = FtpHelpers.GetFtpPath(path);
 		DateCreated = dateCreated;
 	}
+
 	public FtpStorageFile(string folder, FtpListItem ftpItem)
 	{
 		Path = PathNormalization.Combine(folder, ftpItem.Name);
@@ -60,6 +61,7 @@ public sealed class FtpStorageFile : BaseStorageFile, IPasswordProtectedItem
 		FtpPath = FtpHelpers.GetFtpPath(Path);
 		DateCreated = ftpItem.RawCreated < DateTime.FromFileTimeUtc(0) ? DateTimeOffset.MinValue : ftpItem.RawCreated;
 	}
+
 	public FtpStorageFile(IStorageItemWithPath item)
 	{
 		Path = item.Path;
@@ -239,7 +241,7 @@ public sealed class FtpStorageFile : BaseStorageFile, IPasswordProtectedItem
 			var isSuccessful = await ftpClient.MoveFile(FtpPath, destination, remoteExists, cancellationToken);
 			if (!isSuccessful && option is NameCollisionOption.GenerateUniqueName)
 			{
-				// TODO: handle name generation
+				// FILESTODO: handle name generation
 			}
 		}, ((IPasswordProtectedItem)this).RetryWithCredentialsAsync));
 	}
@@ -306,13 +308,12 @@ public sealed class FtpStorageFile : BaseStorageFile, IPasswordProtectedItem
 		public override DateTimeOffset DateCreated { get; }
 		public override DateTimeOffset DateModified { get; }
 
-        // TODO: add support.
-		/*public FtpFileBasicProperties(FtpItem item)
+		public FtpFileBasicProperties(FtpItem item)
 		{
 			Size = (ulong)item.FileSizeBytes;
 			DateCreated = item.ItemDateCreatedReal;
 			DateModified = item.ItemDateModifiedReal;
-		}*/
+		}
 
 		public FtpFileBasicProperties(FtpListItem item)
 		{
