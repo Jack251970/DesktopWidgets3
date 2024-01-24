@@ -34,8 +34,8 @@ global using global::Files.App.Utils.RecycleBin;
 global using global::Files.App.Utils.Shell;
 global using global::Files.App.Utils.StatusCenter;
 global using global::Files.App.Utils.Storage;
-/*global using global::Files.App.Data.Attributes;
-global using global::Files.App.Data.Behaviors;*/
+global using global::Files.App.Data.Attributes;
+global using global::Files.App.Data.Behaviors;
 global using global::Files.App.Data.Commands;
 global using global::Files.App.Data.Contexts;
 global using global::Files.App.Data.EventArguments;
@@ -71,10 +71,10 @@ global using global::Files.Core.ViewModels.Dialogs.AddItemDialog;
 global using global::Files.Core.ViewModels.Dialogs.FileSystemDialog;
 global using global::Files.Core.ViewModels.FileTags;
 global using global::Files.Core.ViewModels.Widgets;
+global using global::Files.Core.ViewModels.Widgets.FolderView;
 global using global::Files.Core.Utils;
 global using global::Files.Core.Utils.Cloud;
 global using global::Files.Core.Utils.CommandLine;
-global using global::Files.Core.ViewModels.Widgets.FolderView;
 
 // Files.Shared
 global using global::Files.Shared;
