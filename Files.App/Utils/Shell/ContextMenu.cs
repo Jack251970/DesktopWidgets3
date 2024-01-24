@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2023 Files Community
+// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Drawing;
 using System.Runtime.InteropServices;
-using Files.Core.Data.Items;
 using Vanara.InteropServices;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
@@ -235,7 +234,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
             if (menuItem.Type == MenuItemType.MFT_STRING)
             {
                 menuItem.Label = menuItemInfo.dwTypeData;
-                menuItem.CommandString = GetCommandString(_cMenu, menuItemInfo.wID - 1);
+                menuItem.CommandString = GetCommandString(_cMenu, menuItemInfo.wID - 1)!;
 
                 if (_itemFilter is not null && (_itemFilter(menuItem.CommandString!) || _itemFilter(menuItem.Label)))
                 {
@@ -365,7 +364,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
                         (si as IDisposable)?.Dispose();
                     }
 
-                    Items = null;
+                    Items = null!;
                 }
             }
 

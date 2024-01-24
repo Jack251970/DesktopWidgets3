@@ -1,12 +1,10 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.Notifications;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
-using Windows.UI.Notifications;
 
 namespace Files.App.Helpers;
 
@@ -30,7 +28,7 @@ public static class UIHelpers
 		}
 	}*/
 
-	/// <summary>
+	/*/// <summary>
 	/// Displays a toast or dialog to indicate the result of
 	/// a device ejection operation.
 	/// </summary>
@@ -79,13 +77,12 @@ public static class UIHelpers
 		{
 			Debug.WriteLine("Can't eject device");
 
-            // TODO: add support.
-            /*await DialogDisplayHelper.ShowDialogAsync(
+            await DialogDisplayHelper.ShowDialogAsync(
                 viewModel,
                 "EjectNotificationErrorDialogHeader".ToLocalized(),
-                "EjectNotificationErrorDialogBody".ToLocalized());*/
+                "EjectNotificationErrorDialogBody".ToLocalized());
         }
-	}
+	}*/
 
 	public static async Task<ContentDialogResult> TryShowAsync(this ContentDialog dialog, IFolderViewViewModel viewModel)
 	{

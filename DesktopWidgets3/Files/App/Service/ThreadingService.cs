@@ -23,6 +23,11 @@ internal sealed class ThreadingService : IThreadingService
 
 	public Task<TResult?> ExecuteOnUiThreadAsync<TResult>(Func<TResult?> func)
 	{
-		return _dispatcherQueue.EnqueueOrInvokeAsync<TResult?>(func);
+		return _dispatcherQueue.EnqueueOrInvokeAsync(func);
 	}
+
+    public Task<TResult?> ExecuteOnUiThreadAsync<TResult>(Task<TResult?> task)
+    {
+        return _dispatcherQueue.EnqueueOrInvokeAsync(() => task);
+    }
 }

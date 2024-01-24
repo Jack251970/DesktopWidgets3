@@ -15,7 +15,7 @@ using ByteSize = ByteSizeLib.ByteSize;
 
 namespace Files.App.Data.Items;
 
-/*public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFolder
+public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFolder
 {
 	private BitmapImage icon;
 	public BitmapImage Icon
@@ -52,7 +52,7 @@ namespace Files.App.Data.Items;
 		=> Type == DriveType.Network;
 
     public bool IsPinned
-        => false; // TODO: add support. //App.QuickAccessManager.Model.FavoriteItems.Contains(path);
+        => DependencyExtensions.GetService<QuickAccessManager>().Model.FavoriteItems.Contains(path);
 
 	public string MaxSpaceText
 		=> MaxSpace.ToSizeString();
@@ -124,7 +124,7 @@ namespace Files.App.Data.Items;
 			type = value;
 			if (value == DriveType.Network)
 			{
-				ToolTip = "Network".ToLocalized();
+                ToolTip = "Network".ToLocalized();
 			}
 			else if (value == DriveType.CloudDrive)
 			{
@@ -196,7 +196,7 @@ namespace Files.App.Data.Items;
         ImageSource = Icon
     };
 
-    public FrameworkElement? ItemDecorator
+    /*public FrameworkElement? ItemDecorator
 	{
 		get
 		{
@@ -228,9 +228,9 @@ namespace Files.App.Data.Items;
 	{
 		var result = await DriveHelpers.EjectDeviceAsync(Path);
 		await UIHelpers.ShowDeviceEjectResultAsync(Type, result);
-	}
+	}*/
 
-	public static async Task<DriveItem> CreateFromPropertiesAsync(StorageFolder root, string deviceId, string label, DriveType type, IRandomAccessStream imageStream = null)
+    public static async Task<DriveItem> CreateFromPropertiesAsync(StorageFolder root, string deviceId, string label, DriveType type, IRandomAccessStream imageStream = null)
 	{
 		var item = new DriveItem();
 
@@ -257,7 +257,7 @@ namespace Files.App.Data.Items;
 		item.DeviceID = deviceId;
 		item.Root = root;
 
-		_ = MainWindow.Instance.DispatcherQueue.EnqueueOrInvokeAsync(item.UpdatePropertiesAsync);
+        _ = DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(item.UpdatePropertiesAsync);
 
 		return item;
 	}
@@ -345,7 +345,7 @@ namespace Files.App.Data.Items;
 
             IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.Folder).IconData;
 		}
-		Icon ??= await IconData.ToBitmapAsync();
+		Icon ??= (await IconData.ToBitmapAsync())!;
 	}
 
 	private string GetSizeString()
@@ -379,7 +379,7 @@ namespace Files.App.Data.Items;
 		var folder = new WindowsStorageFolder(Root);
 		return folder.GetParentAsync(cancellationToken);
 	}
-}*/
+}
 
 public enum DriveType
 {

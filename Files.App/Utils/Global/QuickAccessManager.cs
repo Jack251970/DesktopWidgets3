@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.Services;
-using Files.App.UserControls.Widgets;
 using System.IO;
 
 namespace Files.App.Utils;
@@ -13,7 +11,7 @@ public sealed class QuickAccessManager
 
 	public event FileSystemEventHandler? PinnedItemsModified;
 		
-	public EventHandler<ModifyQuickAccessEventArgs>? UpdateQuickAccessWidget;
+	/*public EventHandler<ModifyQuickAccessEventArgs>? UpdateQuickAccessWidget;*/
 
 	public IQuickAccessService QuickAccessService;
 
@@ -21,12 +19,12 @@ public sealed class QuickAccessManager
 
 	public QuickAccessManager()
 	{
-		QuickAccessService = Ioc.Default.GetRequiredService<IQuickAccessService>();
+		QuickAccessService = DependencyExtensions.GetService<IQuickAccessService>();
 		Model = new();
 		Initialize();
 	}
 		
-	public void Initialize()
+	private void Initialize()
 	{
 		PinnedItemsWatcher = new()
 		{
@@ -42,13 +40,14 @@ public sealed class QuickAccessManager
 	private void PinnedItemsWatcher_Changed(object sender, FileSystemEventArgs e)
 		=> PinnedItemsModified?.Invoke(this, e);
 
-	public async Task InitializeAsync()
-	{
-		PinnedItemsModified += Model.LoadAsync;
+    // TODO: Remember to add initialize events in AppLifecycleHelper.cs.
+    public async Task InitializeAsync()
+    {
+        PinnedItemsModified += Model.LoadAsync;
 
-		//if (!Model.FavoriteItems.Contains(Constants.UserEnvironmentPaths.RecycleBinPath) && SystemInformation.Instance.IsFirstRun)
-		//	await QuickAccessService.PinToSidebar(Constants.UserEnvironmentPaths.RecycleBinPath);
+        //if (!Model.FavoriteItems.Contains(Constants.UserEnvironmentPaths.RecycleBinPath) && SystemInformation.Instance.IsFirstRun)
+        //	await QuickAccessService.PinToSidebar(Constants.UserEnvironmentPaths.RecycleBinPath);
 
-		await Model.LoadAsync();
-	}
-}*/
+        await Model.LoadAsync();
+    }
+}

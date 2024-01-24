@@ -377,9 +377,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
         if (!isInitialized)
         {
-            var dependencyService = App.GetService<IDependencyService>();
-            DependencyExtensions.Initialize(dependencyService);
-
             var addItemService = App.GetService<IAddItemService>();
             await Task.WhenAll(
                 addItemService.InitializeAsync(),

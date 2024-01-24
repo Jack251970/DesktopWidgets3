@@ -832,16 +832,4 @@
   <data name="CreateFolderDescription" xml:space="preserve">
     <value>创建新文件夹</value>
   </data>
-  <data name="EjectNotificationHeader" xml:space="preserve">
-    <value>安全地移除硬件</value>
-  </data>
-  <data name="EjectNotificationBody" xml:space="preserve">
-    <value>该设备现在可安全地从计算机移除。</value>
-  </data>
-  <data name="EjectNotificationErrorDialogHeader" xml:space="preserve">
-    <value>弹出设备时出现问题</value>
-  </data>
-  <data name="EjectNotificationErrorDialogBody" xml:space="preserve">
-    <value>该设备正在使用中。请关闭所有正在使用该设备的程序、窗口和标签页，然后重试。</value>
-  </data>
 </root>

@@ -33,6 +33,8 @@ using Files.App.Storage.FtpStorage;
 using Microsoft.Extensions.Logging;
 using Files.Shared;
 using Windows.Storage;
+using Files.App.Utils;
+using Files.Core.Extensions;
 
 namespace DesktopWidgets3;
 
@@ -206,6 +208,10 @@ public partial class App : Application
             // Dependency Injection
             services.AddSingleton<IDependencyService, DependencyService>();
 
+            // Quick Access
+            services.AddSingleton<QuickAccessManager>();
+            services.AddSingleton<IQuickAccessService, QuickAccessService>();
+
             #endregion
 
             #region Views & ViewModels
@@ -259,6 +265,8 @@ public partial class App : Application
         Build();
 
         GetService<IAppNotificationService>().Initialize();
+
+        DependencyExtensions.Initialize(GetService<IDependencyService>());
 
         UnhandledException += App_UnhandledException;
     }

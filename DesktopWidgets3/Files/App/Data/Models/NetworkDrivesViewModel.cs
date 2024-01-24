@@ -35,15 +35,15 @@ public class NetworkDrivesViewModel : ObservableObject
             Text = "Network".GetLocalized(),
             Path = Constants.UserEnvironmentPaths.NetworkFolderPath,
             Type = DriveType.Network,
-            /*ItemType = NavigationControlItemType.Drive,*/
+            ItemType = NavigationControlItemType.Drive,
         };
-        /*networkItem.MenuOptions = new ContextMenuOptions
+        networkItem.MenuOptions = new ContextMenuOptions
         {
             IsLocationItem = true,
             ShowShellItems = true,
             ShowEjectDevice = networkItem.IsRemovable,
             ShowProperties = true
-        };*/
+        };
 
         lock (drives)
         {
@@ -57,7 +57,7 @@ public class NetworkDrivesViewModel : ObservableObject
         {
             drives.Single(x => x is DriveItem o && o.DeviceID == "network-folder")
         };
-        await foreach (ILocatableFolder item in networkDrivesService.GetDrivesAsync())
+        await foreach (var item in networkDrivesService.GetDrivesAsync())
         {
             unsortedDrives.Add(item);
         }

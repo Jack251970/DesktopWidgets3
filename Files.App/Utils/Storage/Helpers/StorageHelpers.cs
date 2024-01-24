@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using System.IO;
+using System.IO;
 using Files.Shared.Helpers;
 using Windows.Storage;
 
@@ -187,4 +187,4 @@ public static class StorageHelpers
     {
         return new FilesystemResult<T>((result.Result as T)!, result.ErrorCode);
     }
-}*/
+}
