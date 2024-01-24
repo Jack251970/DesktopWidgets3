@@ -345,6 +345,9 @@
   <data name="SizeLabel" xml:space="preserve">
     <value>Size:</value>
   </data>
+  <data name="syncStatusColumn.Header" xml:space="preserve">
+    <value>Status</value>
+  </data>
   <data name="ItemSizeNotCalculated" xml:space="preserve">
     <value>Not calculated</value>
   </data>

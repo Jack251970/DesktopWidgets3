@@ -336,6 +336,9 @@
   <data name="SizeLabel" xml:space="preserve">
     <value>大小:</value>
   </data>
+  <data name="syncStatusColumn.Header" xml:space="preserve">
+    <value>状态</value>
+  </data>
   <data name="ItemSizeNotCalculated" xml:space="preserve">
     <value>未计算</value>
   </data>

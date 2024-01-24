@@ -44,7 +44,7 @@ public static partial class RecycleBinHelpers
 		return !string.IsNullOrWhiteSpace(path) && recycleBinPathRegex.IsMatch(path);
 	}
 
-	/*public static async Task EmptyRecycleBinAsync(IFolderViewViewModel viewModel)
+    /*public static async Task EmptyRecycleBinAsync(IFolderViewViewModel viewModel)
 	{
 		// Display confirmation dialog
 		var ConfirmEmptyBinDialog = new ContentDialog()
@@ -145,17 +145,19 @@ public static partial class RecycleBinHelpers
 
 		if (result == ContentDialogResult.Primary)
 			await RestoreItemAsync(associatedInstance);
-	}
+	}*/
 
-	public static async Task<bool> HasRecycleBin(string? path)
+    public static async Task<bool> HasRecycleBin(string? path)
 	{
 		if (string.IsNullOrEmpty(path) || path.StartsWith(@"\\?\", StringComparison.Ordinal))
-			return false;
+        {
+            return false;
+        }
 
-		var result = await FileOperationsHelpers.TestRecycleAsync(path.Split('|'));
+        var result = await FileOperationsHelpers.TestRecycleAsync(path.Split('|'));
 
 		return result.Item1 &= result.Item2 is not null && result.Item2.Items.All(x => x.Succeeded);
-	}*/
+	}
 
 	public static bool RecycleBinHasItems()
 	{

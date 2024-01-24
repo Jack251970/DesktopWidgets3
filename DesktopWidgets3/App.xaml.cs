@@ -30,11 +30,10 @@ using Files.App.Data.Models;
 using Files.Core.Services.SizeProvider;
 using Files.Core.Storage;
 using Files.App.Storage.FtpStorage;
-using Microsoft.Extensions.Logging;
-using Files.Shared;
-using Windows.Storage;
 using Files.App.Utils;
 using Files.Core.Extensions;
+using Files.Core.Utils.Cloud;
+using Files.App.Utils.Cloud;
 
 namespace DesktopWidgets3;
 
@@ -161,6 +160,10 @@ public partial class App : Application
             // System Info
             services.AddSingleton<ISystemInfoService, SystemInfoService>();
 
+            #endregion
+
+            #region Files
+
             // File Commands
             services.AddTransient<ICommandManager, CommandManager>();
 
@@ -211,6 +214,12 @@ public partial class App : Application
             // Quick Access
             services.AddSingleton<QuickAccessManager>();
             services.AddSingleton<IQuickAccessService, QuickAccessService>();
+
+            // Cloud Drives
+            services.AddSingleton<ICloudDetector, CloudDetector>();
+
+            // Start Menu
+            services.AddSingleton<IStartMenuService, StartMenuService>();
 
             #endregion
 

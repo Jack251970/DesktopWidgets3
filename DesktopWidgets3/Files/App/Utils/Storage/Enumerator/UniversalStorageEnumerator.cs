@@ -211,7 +211,7 @@ public static class UniversalStorageEnumerator
         }
         else if (folder is BinStorageFolder binFolder)
         {
-            return new RecycleBinItem(viewModel)//(folder.FolderRelativeId)
+            return new RecycleBinItem(viewModel, folder.FolderRelativeId)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemNameRaw = folder.DisplayName,
@@ -240,7 +240,7 @@ public static class UniversalStorageEnumerator
                 ItemType = folder.DisplayType,
                 IsHiddenItem = false,
                 Opacity = 1,
-                FileImage = null,
+                FileImage = null!,
                 LoadFileIcon = false,
                 ItemPath = string.IsNullOrEmpty(folder.Path) ? PathNormalization.Combine(currentStorageFolder.Path, folder.Name) : folder.Path,
                 FileSize = null!,
@@ -281,7 +281,7 @@ public static class UniversalStorageEnumerator
                 FileExtension = itemFileExtension,
                 IsHiddenItem = false,
                 Opacity = 1,
-                FileImage = null,
+                FileImage = null!,
                 LoadFileIcon = itemThumbnailImgVis,
                 LoadWebShortcutGlyph = isUrl,
                 ItemNameRaw = itemName,
@@ -309,7 +309,7 @@ public static class UniversalStorageEnumerator
         }*/
         else if (file is BinStorageFile binFile)
         {
-            return new RecycleBinItem(viewModel)//(file.FolderRelativeId)
+            return new RecycleBinItem(viewModel, file.FolderRelativeId)
             {
                 PrimaryItemAttribute = StorageItemTypes.File,
                 FileExtension = itemFileExtension,

@@ -8,6 +8,8 @@ public partial interface IFolderViewViewModel
 
     FileNameConflictResolveOptionType ConflictsResolveOption { get; }
 
+    bool ShowFileExtensions { get; }
+
     string WorkingDirectory { get; }
 
     IDialogService DialogService { get; }

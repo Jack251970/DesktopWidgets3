@@ -1,8 +1,6 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Utils.Cloud;
-
 namespace Files.App.Utils.Cloud;
 
 public abstract class AbstractCloudDetector : ICloudDetector
@@ -13,12 +11,10 @@ public abstract class AbstractCloudDetector : ICloudDetector
 
 		try
 		{
-            await foreach (var provider in GetProviders())
-            {
-                providers.Add(provider);
-            }
+			await foreach (var provider in GetProviders())
+				providers.Add(provider);
 
-            return providers;
+			return providers;
 		}
 		catch
 		{

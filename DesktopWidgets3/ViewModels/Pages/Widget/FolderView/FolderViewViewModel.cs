@@ -216,6 +216,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     FileNameConflictResolveOptionType IFolderViewViewModel.ConflictsResolveOption => ConflictsResolveOption;
 
+    bool IFolderViewViewModel.ShowFileExtensions => ShowExtension;
+
     public string WorkingDirectory => FileSystemViewModel.WorkingDirectory;
 
     public Window MainWindow => WidgetWindow;

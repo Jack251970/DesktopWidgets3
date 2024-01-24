@@ -104,11 +104,11 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
 
             var dialogViewModel = FileSystemDialogViewModel.GetDialogViewModel(
                 viewModel,
-                new() { IsInDeleteMode = true },
+                new FileSystemDialogMode() { IsInDeleteMode = true },
                 (!canBeSentToBin || permanently, canBeSentToBin),
                 FilesystemOperationType.Delete,
                 incomingItems,
-                new());
+                new List<BaseFileSystemDialogItemViewModel>());
 
             var dialogService = viewModel.DialogService;
 

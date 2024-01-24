@@ -8,6 +8,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 using Vanara.PInvoke;
 using Windows.System;
 
@@ -921,15 +922,4 @@ public class Win32API
 
 		return process;
 	}
-
-    /// <summary>
-    /// IWind32Window interface from System.Windows.Forms
-    /// </summary>
-    public interface IWin32Window
-    {
-        IntPtr Handle
-        {
-            get;
-        }
-    }
 }
