@@ -35,7 +35,7 @@ internal sealed class DialogService : IDialogService
             /*{ typeof(AddItemDialogViewModel), () => new AddItemDialog() },
             { typeof(CredentialDialogViewModel), () => new CredentialDialog() },
             { typeof(ElevateConfirmDialogViewModel), () => new ElevateConfirmDialog() },*/
-            { typeof(FileSystemDialogViewModel), () => new FileSystemOperationDialog(_folderViewModel) },
+            { typeof(FileSystemDialogViewModel), () => new FilesystemOperationDialog(_folderViewModel) },
             /*{ typeof(DecompressArchiveDialogViewModel), () => new DecompressArchiveDialog() },
             { typeof(SettingsDialogViewModel), () => new SettingsDialog() },
             { typeof(CreateShortcutDialogViewModel), () => new CreateShortcutDialog() },

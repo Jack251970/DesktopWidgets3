@@ -16,10 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Utils\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="ByteSize" Version="2.1.2" />
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
       <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />

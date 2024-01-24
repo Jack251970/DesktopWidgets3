@@ -1,12 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.UI;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Windows.Storage;
-using Windows.UI;
-using Windows.UI.ViewManagement;
 
 namespace Files.App.Helpers;
 
@@ -15,7 +10,15 @@ namespace Files.App.Helpers;
 /// </summary>
 public static class ThemeHelper
 {
-	private const string selectedAppThemeKey = "theme";
+    /// <summary>
+	/// Gets or sets the RequestedTheme of the root element.
+	/// </summary>
+    public static ElementTheme RootTheme
+    {
+        get; set;
+    } = ElementTheme.Default;
+
+    /*private const string selectedAppThemeKey = "theme";
 	private static Window? currentApplicationWindow;
 	private static AppWindowTitleBar? titleBar;
 	private static bool isInitialized = false;
@@ -136,5 +139,5 @@ public static class ThemeHelper
 			}
 		}
 		Ioc.Default.GetRequiredService<SettingsViewModel>().UpdateThemeElements.Execute(null);
-	}
-}*/
+	}*/
+}

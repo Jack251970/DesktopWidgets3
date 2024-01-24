@@ -40,8 +40,6 @@
     <Content Remove="Assets\PackageIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Files\App\Dialogs\DynamicDialog.xaml" />
-    <None Remove="Files\App\Dialogs\FileSystemOperationDialog.xaml" />
     <None Remove="Files\App\TrayMenuControl.xaml" />
     <None Remove="Files\App\UserContols\Menus\MenuFlyoutItemWithImage.xaml" />
     <None Remove="Views\Controls\TrayIconView.xaml" />
@@ -129,12 +127,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Files\App\Dialogs\FileSystemOperationDialog.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Files\App\Dialogs\DynamicDialog.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
     <Page Update="Files\App\TrayMenuControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
