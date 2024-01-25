@@ -25,6 +25,14 @@
         <DefineConstants>TRACE;RELEASE;NETFX_CORE;DISABLE_XAML_GENERATED_MAIN</DefineConstants>
         <Optimize>true</Optimize>
     </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="UserContols\Pane\**" />
+      <Content Remove="UserContols\Pane\**" />
+      <EmbeddedResource Remove="UserContols\Pane\**" />
+      <None Remove="UserContols\Pane\**" />
+      <Page Remove="UserContols\Pane\**" />
+      <PRIResource Remove="UserContols\Pane\**" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="ByteSize" Version="2.1.2" />

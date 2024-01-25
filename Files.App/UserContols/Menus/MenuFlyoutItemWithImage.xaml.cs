@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -11,22 +11,22 @@ namespace Files.App.UserControls;
 
 public sealed partial class MenuFlyoutItemWithImage : MenuFlyoutItem
 {
-    public BitmapImage BitmapIcon
+	public BitmapImage BitmapIcon
     {
         get => (BitmapImage)GetValue(BitmapIconProperty);
         set => SetValue(BitmapIconProperty, value);
     }
 
     public static readonly DependencyProperty BitmapIconProperty =
-        DependencyProperty.Register("BitmapIcon", typeof(BitmapImage), typeof(MenuFlyoutItemWithImage), new PropertyMetadata(null, OnBitmapIconChanged));
+		DependencyProperty.Register("BitmapIcon", typeof(BitmapImage), typeof(MenuFlyoutItemWithImage), new PropertyMetadata(null, OnBitmapIconChanged));
 
-    private static void OnBitmapIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        (d as MenuFlyoutItem)!.Icon = e.NewValue is not null ? new IconSourceElement() : null;
-    }
+	private static void OnBitmapIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+	{
+		((MenuFlyoutItem)d).Icon = e.NewValue is not null ? new IconSourceElement() : null;
+	}
 
-    public MenuFlyoutItemWithImage()
-    {
-        InitializeComponent();
-    }
+	public MenuFlyoutItemWithImage()
+	{
+		InitializeComponent();
+	}
 }
