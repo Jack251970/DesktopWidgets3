@@ -1,13 +1,13 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.Dialogs;
+using Files.App.Dialogs;
 using Files.App.ViewModels.Dialogs;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.Helpers;
 
-internal class DialogDisplayHelper
+// TODO: change to internal.
+public class DialogDisplayHelper
 {
 	/// <summary>
 	/// Standard dialog, to ensure consistency.
@@ -60,4 +60,4 @@ internal class DialogDisplayHelper
 
 		return DynamicDialogResult.Cancel;
 	}
-}*/
+}

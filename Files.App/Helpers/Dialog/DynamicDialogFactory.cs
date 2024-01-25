@@ -4,19 +4,17 @@
 /*using Files.App.Dialogs;
 using Files.App.ViewModels.Dialogs;
 using Microsoft.UI;
-using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 
 namespace Files.App.Helpers;
 
 public static class DynamicDialogFactory
 {
-	public static readonly SolidColorBrush _transparentBrush = new SolidColorBrush(Colors.Transparent);
+	public static readonly SolidColorBrush _transparentBrush = new(Colors.Transparent);
 
 	public static DynamicDialog GetFor_PropertySaveErrorDialog()
 	{
@@ -93,8 +91,10 @@ public static class DynamicDialogFactory
 													? DynamicDialogButtons.Primary | DynamicDialogButtons.Cancel
 													: DynamicDialogButtons.Cancel;
 			if (isInputValid)
-				dialog.ViewModel.AdditionalData = inputText.Text;
-		};
+            {
+                dialog.ViewModel.AdditionalData = inputText.Text;
+            }
+        };
 
 		inputText.Loaded += (s, e) =>
 		{
@@ -105,7 +105,7 @@ public static class DynamicDialogFactory
 		dialog = new DynamicDialog(new DynamicDialogViewModel()
 		{
 			TitleText = "EnterAnItemName".GetLocalizedResource(),
-			SubtitleText = null,
+			SubtitleText = null!,
 			DisplayControl = new Grid()
 			{
 				MinWidth = 300d,
@@ -147,7 +147,7 @@ public static class DynamicDialogFactory
 
 	public static DynamicDialog GetFor_CredentialEntryDialog(string path)
 	{
-		string[] userAndPass = new string[3];
+		var userAndPass = new string[3];
 		DynamicDialog? dialog = null;
 
 		TextBox inputUsername = new()

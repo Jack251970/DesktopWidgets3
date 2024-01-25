@@ -389,7 +389,7 @@ public class DynamicDialogViewModel : ObservableObject, IDisposable
 	{
 		// Create default implementation
 		TitleText = "DynamicDialog";
-		PrimaryButtonText = "Ok";
+		PrimaryButtonText = "Ok".ToLocalized();
 		PrimaryButtonAction = (vm, e) => HideDialog!();
 		SecondaryButtonAction = (vm, e) => HideDialog!();
 		CloseButtonAction = (vm, e) => HideDialog!();
