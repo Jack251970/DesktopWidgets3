@@ -1,19 +1,19 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.UserControls.FilePreviews;
+using Files.App.UserControls.FilePreviews;
 using Files.App.ViewModels.Properties;
 
 namespace Files.App.ViewModels.Previews;
 
 public class TextPreviewViewModel : BasePreviewModel
 {
-	private string textValue;
-	public string TextValue
-	{
-		get => textValue;
-		private set => SetProperty(ref textValue, value);
-	}
+	private string textValue = null!;
+    public string TextValue
+    {
+        get => textValue;
+        private set => SetProperty(ref textValue, value);
+    }
 
 	public TextPreviewViewModel(ListedItem item)
 		: base(item)
@@ -49,7 +49,7 @@ public class TextPreviewViewModel : BasePreviewModel
 		var extension = item.FileExtension?.ToLowerInvariant();
 		if (ExcludedExtensions(extension!) || item.FileSizeBytes is 0 or > Constants.PreviewPane.TryLoadAsTextSizeLimit)
         {
-            return null;
+            return null!;
         }
 
         try
@@ -61,7 +61,7 @@ public class TextPreviewViewModel : BasePreviewModel
 
 			if (isBinaryFile)
             {
-                return null;
+                return null!;
             }
 
             var model = new TextPreviewViewModel(item) { TextValue = text };
@@ -71,10 +71,10 @@ public class TextPreviewViewModel : BasePreviewModel
 		}
 		catch
 		{
-			return null;
+			return null!;
 		}
 	}
 
 	private static bool ExcludedExtensions(string extension)
 		=> extension is ".iso";
-}*/
+}

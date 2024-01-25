@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.ViewModels.Properties;
+using Files.App.ViewModels.Properties;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
 using Windows.Storage.FileProperties;
@@ -10,13 +10,13 @@ namespace Files.App.ViewModels.Previews;
 
 public class FolderPreviewViewModel
 {
-	private static readonly IDateTimeFormatter dateTimeFormatter = Ioc.Default.GetRequiredService<IDateTimeFormatter>();
+	/*private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();*/
 
 	public ListedItem Item { get; }
 
 	public BitmapImage Thumbnail { get; set; } = new();
 
-	private BaseStorageFolder Folder { get; set; }
+	private BaseStorageFolder Folder { get; set; } = null!;
 
     public FolderPreviewViewModel(ListedItem item)
     {
@@ -53,7 +53,7 @@ public class FolderPreviewViewModel
 		if (GitHelpers.IsRepositoryEx(Item.ItemPath, out var repoPath) &&
 			!string.IsNullOrEmpty(repoPath))
 		{
-			var gitDirectory = GitHelpers.GetGitRepositoryPath(Folder.Path, Path.GetPathRoot(Folder.Path));
+			var gitDirectory = GitHelpers.GetGitRepositoryPath(Folder.Path, Path.GetPathRoot(Folder.Path)!);
 			var headName = (await GitHelpers.GetRepositoryHead(gitDirectory))?.Name ?? string.Empty;
 			var repositoryName = GitHelpers.GetOriginRepositoryName(gitDirectory);
 
@@ -71,4 +71,4 @@ public class FolderPreviewViewModel
 
 	private static FileProperty GetFileProperty(string nameResource, object value)
 		=> new() { NameResource = nameResource, Value = value };
-}*/
+}

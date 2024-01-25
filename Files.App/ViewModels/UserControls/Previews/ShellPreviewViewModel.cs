@@ -1,4 +1,4 @@
-﻿/*using DirectN;
+﻿using DirectN;
 using Files.App.ViewModels.Properties;
 using Microsoft.UI.Content.Private;
 using Microsoft.UI.Xaml;
@@ -12,6 +12,8 @@ using static Vanara.PInvoke.User32;
 
 namespace Files.App.ViewModels.Previews;
 
+#pragma warning disable CS8305 // Feature is for evaluation purposes only and is subject to change or removal in future updates.
+
 public class ShellPreviewViewModel : BasePreviewModel
 {
 	public ShellPreviewViewModel(ListedItem item)
@@ -19,31 +21,44 @@ public class ShellPreviewViewModel : BasePreviewModel
 	{
 	}
 
-	public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
-		=> new List<FileProperty>();
+    public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
+    {
+        await Task.CompletedTask;
+        return new List<FileProperty>();
+    }
 
 	private const string IPreviewHandlerIid = "{8895b1c6-b41f-4c1c-a562-0d564250836f}";
-	private static readonly Guid QueryAssociationsClsid = new Guid(0xa07034fd, 0x6caa, 0x4954, 0xac, 0x3f, 0x97, 0xa2, 0x72, 0x16, 0xf9, 0x8a);
+	private static readonly Guid QueryAssociationsClsid = new(0xa07034fd, 0x6caa, 0x4954, 0xac, 0x3f, 0x97, 0xa2, 0x72, 0x16, 0xf9, 0x8a);
 	private static readonly Guid IQueryAssociationsIid = Guid.ParseExact("c46ca590-3c3f-11d2-bee6-0000f805ca57", "d");
 
-	PreviewHandler? currentHandler;
-	ContentExternalOutputLink? outputLink;
-	WindowClass? wCls;
-	HWND hwnd = HWND.NULL;
-	bool isOfficePreview = false;
+	private PreviewHandler? currentHandler;
+
+    private ContentExternalOutputLink? outputLink;
+    private WindowClass? wCls;
+    private HWND hwnd = HWND.NULL;
+    private bool isOfficePreview = false;
 
 	public static Guid? FindPreviewHandlerFor(string extension, IntPtr hwnd)
 	{
 		if (string.IsNullOrEmpty(extension))
-			return null;
-		var hr = AssocCreate(QueryAssociationsClsid, IQueryAssociationsIid, out var queryAssoc);
+        {
+            return null;
+        }
+
+        var hr = AssocCreate(QueryAssociationsClsid, IQueryAssociationsIid, out var queryAssoc);
 		if (!hr.Succeeded)
-			return null;
-		try
+        {
+            return null;
+        }
+
+        try
 		{
 			if (queryAssoc == null)
-				return null;
-			queryAssoc.Init(ASSOCF.ASSOCF_INIT_DEFAULTTOSTAR, extension, IntPtr.Zero, hwnd);
+            {
+                return null;
+            }
+
+            queryAssoc.Init(ASSOCF.ASSOCF_INIT_DEFAULTTOSTAR, extension, IntPtr.Zero, hwnd);
 			var sb = new StringBuilder(128);
 			uint cch = 64;
 			queryAssoc.GetString(ASSOCF.ASSOCF_NOTRUNCATE, ASSOCSTR.ASSOCSTR_SHELLEXTENSION, IPreviewHandlerIid, sb, ref cch);
@@ -63,12 +78,17 @@ public class ShellPreviewViewModel : BasePreviewModel
 	public void SizeChanged(RECT size)
 	{
 		if (hwnd != HWND.NULL)
-			SetWindowPos(hwnd, HWND.HWND_TOP, size.Left, size.Top, size.Width, size.Height, SetWindowPosFlags.SWP_NOACTIVATE);
-		if (currentHandler != null)
-			currentHandler.ResetBounds(new(0, 0, size.Width, size.Height));
-		if (outputLink is not null)
-			outputLink.PlacementVisual.Size = new(size.Width, size.Height);
-	}
+        {
+            SetWindowPos(hwnd, HWND.HWND_TOP, size.Left, size.Top, size.Width, size.Height, SetWindowPosFlags.SWP_NOACTIVATE);
+        }
+
+        currentHandler?.ResetBounds(new(0, 0, size.Width, size.Height));
+
+        if (outputLink is not null)
+        {
+            outputLink.PlacementVisual.Size = new(size.Width, size.Height);
+        }
+    }
 
 	private IntPtr WndProc(HWND hwnd, uint msg, IntPtr wParam, IntPtr lParam)
 	{
@@ -81,11 +101,11 @@ public class ShellPreviewViewModel : BasePreviewModel
 				Guid.Parse("00020827-0000-0000-C000-000000000046") }.Contains(clsid);
 			try
 			{
-				currentHandler = new PreviewHandler(clsid.Value, hwnd.DangerousGetHandle());
+				currentHandler = new PreviewHandler(clsid!.Value, hwnd.DangerousGetHandle());
 				currentHandler.InitWithFileWithEveryWay(Item.ItemPath);
 				currentHandler.DoPreview();
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				UnloadPreview();
 			}
@@ -101,9 +121,9 @@ public class ShellPreviewViewModel : BasePreviewModel
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 
-	public void LoadPreview(UIElement presenter)
+	public void LoadPreview(IFolderViewViewModel viewModel, UIElement presenter)
 	{
-		var parent = MainWindow.Instance.WindowHandle;
+		var parent = viewModel.WindowHandle;
 
 		HINSTANCE hInst = Kernel32.GetModuleHandle();
 		wCls = new WindowClass($"{GetType().Name}{Guid.NewGuid()}", hInst, WndProc);
@@ -139,24 +159,34 @@ public class ShellPreviewViewModel : BasePreviewModel
 				out d3d11DeviceContext);
 
 			if (hr.IsSuccess)
-				break;
-		}
+            {
+                break;
+            }
+        }
 
 		if (d3d11Device is null)
-			return false;
-		IDXGIDevice dxgiDevice = (IDXGIDevice)d3d11Device;
+        {
+            return false;
+        }
+
+        var dxgiDevice = (IDXGIDevice)d3d11Device;
 		if (Functions.DCompositionCreateDevice(dxgiDevice, typeof(IDCompositionDevice).GUID, out var compDevicePtr).IsError)
-			return false;
-		IDCompositionDevice compDevice = (IDCompositionDevice)Marshal.GetObjectForIUnknown(compDevicePtr);
+        {
+            return false;
+        }
+
+        var compDevice = (IDCompositionDevice)Marshal.GetObjectForIUnknown(compDevicePtr);
 
 		if (compDevice.CreateVisual(out var childVisual).IsError ||
 			compDevice.CreateSurfaceFromHwnd(hwnd.DangerousGetHandle(), out var controlSurface).IsError ||
 			childVisual.SetContent(controlSurface).IsError)
-			return false;
+        {
+            return false;
+        }
 
-		var compositor = ElementCompositionPreview.GetElementVisual(presenter).Compositor;
+        var compositor = ElementCompositionPreview.GetElementVisual(presenter).Compositor;
 		outputLink = ContentExternalOutputLink.Create(compositor);
-		IDCompositionTarget target = outputLink.As<IDCompositionTarget>();
+		var target = outputLink.As<IDCompositionTarget>();
 		target.SetRoot(childVisual);
 
 		outputLink.PlacementVisual.Size = new(0, 0);
@@ -172,7 +202,7 @@ public class ShellPreviewViewModel : BasePreviewModel
 		Marshal.Release(compDevicePtr);
 		Marshal.ReleaseComObject(dxgiDevice);
 		Marshal.ReleaseComObject(d3d11Device);
-		Marshal.ReleaseComObject(d3d11DeviceContext);
+		Marshal.ReleaseComObject(d3d11DeviceContext!);
 
 		return DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, true).Succeeded;
 	}
@@ -180,12 +210,17 @@ public class ShellPreviewViewModel : BasePreviewModel
 	public void UnloadPreview()
 	{
 		if (hwnd != HWND.NULL)
-			DestroyWindow(hwnd);
-		if (outputLink is not null)
-			outputLink.Dispose();
+        {
+            DestroyWindow(hwnd);
+        }
+
+        outputLink?.Dispose();
+
 		if (wCls is not null)
-			UnregisterClass(wCls.ClassName, Kernel32.GetModuleHandle());
-	}
+        {
+            UnregisterClass(wCls.ClassName, Kernel32.GetModuleHandle());
+        }
+    }
 
 	public void PointerEntered(bool onPreview)
 	{
@@ -193,8 +228,10 @@ public class ShellPreviewViewModel : BasePreviewModel
 		{
 			DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, false);
 			if (isOfficePreview)
-				InteropHelpers.SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE, 0);
-		}
+            {
+                InteropHelpers.SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE, 0);
+            }
+        }
 		else
 		{
 			InteropHelpers.SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE,
@@ -202,4 +239,6 @@ public class ShellPreviewViewModel : BasePreviewModel
 			DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, true);
 		}
 	}
-}*/
+}
+
+#pragma warning restore CS8305 // Feature is for evaluation purposes only and is subject to change or removal in future updates.
