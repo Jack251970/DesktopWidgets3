@@ -25,7 +25,7 @@ public static class UniversalStorageEnumerator
 		uint count = 0;
 		var firstRound = true;
 
-		/*var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();*/
+		var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		while (true)
 		{
@@ -74,8 +74,8 @@ public static class UniversalStorageEnumerator
 			foreach (var item in items)
 			{
 				var startWithDot = item.Name.StartsWith('.');
-				if (!startWithDot || folderViewViewModel.ShowDotFiles)
-				{
+				if (!startWithDot || userSettingsService.FoldersSettingsService.ShowDotFiles)
+                {
 					if (item.IsOfType(StorageItemTypes.Folder))
 					{
 						var folder = await AddFolderAsync(folderViewViewModel, item.AsBaseStorageFolder()!, currentStorageFolder, cancellationToken);

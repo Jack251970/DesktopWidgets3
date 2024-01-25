@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
-using Files.Core.Services.Settings;
 using Files.Shared.Helpers;
 using FluentFTP;
 using Microsoft.UI.Xaml;
@@ -19,7 +18,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 {
     protected readonly IFolderViewViewModel ViewModel;
 
-    /*protected static IUserSettingsService UserSettingsService { get; private set; };*/
+    protected readonly IUserSettingsService UserSettingsService;
 
     protected static IStartMenuService StartMenuService { get; } = DependencyExtensions.GetService<IStartMenuService>();
 
@@ -239,7 +238,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 			if (PrimaryItemAttribute == StorageItemTypes.File)
 			{
 				var nameWithoutExtension = Path.GetFileNameWithoutExtension(itemNameRaw);
-				if (!string.IsNullOrEmpty(nameWithoutExtension) && !ViewModel.ShowFileExtensions)//UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+				if (!string.IsNullOrEmpty(nameWithoutExtension) && !UserSettingsService.FoldersSettingsService.ShowFileExtensions)
 
                 {
 					return nameWithoutExtension;
@@ -336,12 +335,14 @@ public class ListedItem : ObservableObject, IGroupableItem
     {
         FolderRelativeId = folderRelativeId;
         ViewModel = viewModel;
+        UserSettingsService = ViewModel.GetRequiredService<IUserSettingsService>();
     }
 
     // Parameterless constructor for JsonConvert
     public ListedItem(IFolderViewViewModel viewModel) 
     {
         ViewModel = viewModel;
+        UserSettingsService = ViewModel.GetRequiredService<IUserSettingsService>();
     }
 
 	private ObservableCollection<FileProperty> fileDetails;
@@ -532,7 +533,7 @@ public class ZipItem : ListedItem
 		get
 		{
 			var nameWithoutExtension = Path.GetFileNameWithoutExtension(ItemNameRaw);
-			if (!string.IsNullOrEmpty(nameWithoutExtension) && !ViewModel.ShowFileExtensions)//UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+			if (!string.IsNullOrEmpty(nameWithoutExtension) && !UserSettingsService.FoldersSettingsService.ShowFileExtensions)
 			{
 				return nameWithoutExtension;
 			}
@@ -583,7 +584,7 @@ public class AlternateStreamItem : ListedItem
 		{
 			var nameWithoutExtension = Path.GetFileNameWithoutExtension(ItemNameRaw);
 			var mainStreamNameWithoutExtension = Path.GetFileNameWithoutExtension(MainStreamName);
-			if (!ViewModel.ShowFileExtensions)//UserSettingsService.FoldersSettingsService.ShowFileExtensions)
+			if (!UserSettingsService.FoldersSettingsService.ShowFileExtensions)
 			{
 				return $"{(string.IsNullOrEmpty(mainStreamNameWithoutExtension) ? MainStreamName : mainStreamNameWithoutExtension)}:{(string.IsNullOrEmpty(nameWithoutExtension) ? ItemNameRaw : nameWithoutExtension)}";
 			}

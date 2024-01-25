@@ -10,7 +10,7 @@ public partial class HomeViewModel : ObservableRecipient
 
     public HomeViewModel()
     {
-        AppDisplayName = "AppDisplayName".GetLocalized();
+        AppDisplayName = "AppDisplayName".ToLocalized();
 #if DEBUG
         AppDisplayName += " (Debug)";
 #endif

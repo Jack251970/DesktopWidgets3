@@ -10,7 +10,6 @@ using Files.App.Utils.Storage;
 using Files.App.ViewModels.Layouts;
 using Files.App.Data.EventArguments;
 using Microsoft.UI.Xaml.Data;
-using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.Windows;
 using Files.Core.Data.Enums;
 using Files.Core.Services;
@@ -27,6 +26,7 @@ using static Files.App.Data.EventArguments.NavigationArguments;
 using Files.App.Utils.Shell;
 using Files.Core.ViewModels.FolderView;
 using Microsoft.UI.Xaml;
+using Files.Core.Services.Settings;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -202,6 +202,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public NetworkDrivesViewModel NetworkDrivesViewModel => _networkDrivesViewModel;
 
+    public IUserSettingsService UserSettingsService => _userSettingsService;
+
     #endregion
 
     private readonly ICommandManager _commandManager;
@@ -210,12 +212,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private readonly IFileSystemHelpers _fileSystemHelpers;
     private readonly NetworkDrivesViewModel _networkDrivesViewModel;
     private readonly IWidgetManagerService _widgetManagerService;
-
-    FileNameConflictResolveOptionType IFolderViewViewModel.ConflictsResolveOption => ConflictsResolveOption;
-
-    bool IFolderViewViewModel.ShowFileExtensions => ShowExtension;
-
-    bool IFolderViewViewModel.ShowDotFiles => true;
+    private readonly IUserSettingsService _userSettingsService;
 
     public string WorkingDirectory => FileSystemViewModel.WorkingDirectory;
 
@@ -223,7 +220,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public IntPtr WindowHandle => WidgetWindow.WindowHandle;
 
-    public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, DrivesViewModel drivesViewModel, IFileSystemHelpers fileSystemHelpers, NetworkDrivesViewModel networkDrivesViewModel, IWidgetManagerService widgetManagerService)
+    public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, DrivesViewModel drivesViewModel, IFileSystemHelpers fileSystemHelpers, NetworkDrivesViewModel networkDrivesViewModel, IUserSettingsService userSettingsService, IWidgetManagerService widgetManagerService)
     {
         _commandManager = commandManager;
         _commandManager.Initialize(this);
@@ -232,6 +229,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         _drivesViewModel = drivesViewModel;
         _fileSystemHelpers = fileSystemHelpers;
         _networkDrivesViewModel = networkDrivesViewModel;
+        _userSettingsService = userSettingsService;
         _widgetManagerService = widgetManagerService;
 
         NavigatedTo += FolderViewViewModel_NavigatedTo;
@@ -573,23 +571,23 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
         if (currentPath.Equals(Constants.UserEnvironmentPaths.DesktopPath, StringComparison.OrdinalIgnoreCase))
         {
-            tabLocationHeader = "Desktop".GetLocalized();
+            tabLocationHeader = "Desktop".ToLocalized();
         }
         else if (currentPath.Equals(Constants.UserEnvironmentPaths.DownloadsPath, StringComparison.OrdinalIgnoreCase))
         {
-            tabLocationHeader = "Downloads".GetLocalized();
+            tabLocationHeader = "Downloads".ToLocalized();
         }
         else if (currentPath.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
         {
-            tabLocationHeader = "RecycleBin".GetLocalized();
+            tabLocationHeader = "RecycleBin".ToLocalized();
         }
         else if (currentPath.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
         {
-            tabLocationHeader = "ThisPC".GetLocalized();
+            tabLocationHeader = "ThisPC".ToLocalized();
         }
         else if (currentPath.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
         {
-            tabLocationHeader = "SidebarNetworkDrives".GetLocalized();
+            tabLocationHeader = "SidebarNetworkDrives".ToLocalized();
         }
         /*else if (App.LibraryManager.TryGetLibrary(currentPath, out LibraryLocationItem library))
         {
@@ -752,6 +750,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (ShowHiddenFile != settings.ShowHiddenFile)
         {
             ShowHiddenFile = settings.ShowHiddenFile;
+            UserSettingsService.FoldersSettingsService.ShowHiddenItems = ShowHiddenFile;
             behaviour = RefreshBehaviours.RefreshItems;
         }
 
@@ -778,23 +777,27 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (ShowExtension != settings.ShowExtension)
         {
             ShowExtension = settings.ShowExtension;
+            UserSettingsService.FoldersSettingsService.ShowFileExtensions = ShowExtension;
             behaviour = RefreshBehaviours.RefreshItems;
         }
 
         if (DeleteConfirmationPolicy != settings.DeleteConfirmationPolicy)
         {
             DeleteConfirmationPolicy = settings.DeleteConfirmationPolicy;
+            UserSettingsService.FoldersSettingsService.DeleteConfirmationPolicy = DeleteConfirmationPolicy;
         }
 
         if (ShowThumbnail != settings.ShowThumbnail)
         {
             ShowThumbnail = settings.ShowThumbnail;
+            UserSettingsService.FoldersSettingsService.ShowThumbnails = ShowThumbnail;
             behaviour = RefreshBehaviours.RefreshItems;
         }
 
         if (ConflictsResolveOption != settings.ConflictsResolveOption)
         {
             ConflictsResolveOption = settings.ConflictsResolveOption;
+            UserSettingsService.GeneralSettingsService.ConflictsResolveOption = ConflictsResolveOption;
         }
 
         // Put this last so that it will navigate to the new path even if it needs to refresh items
@@ -930,6 +933,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             Type t when t == typeof(ICommandManager) => (T)CommandManager,
             Type t when t == typeof(IDialogService) => (T)DialogService,
+            Type t when t == typeof(IUserSettingsService) => (T)UserSettingsService,
             _ => null!,
         };
     }

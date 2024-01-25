@@ -17,10 +17,10 @@ internal class ShareItemAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Share".GetLocalized();
+        => "Share".ToLocalized();
 
     public string Description
-        => "ShareItemDescription".GetLocalized();
+        => "ShareItemDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new(opacityStyle: "ColorIconShare");

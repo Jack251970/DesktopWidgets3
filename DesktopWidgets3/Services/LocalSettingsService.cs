@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 
-using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.Core.Contracts.Services;
-using DesktopWidgets3.Core.Helpers;
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
 using DesktopWidgets3.Models.Widget;
 
@@ -85,7 +81,7 @@ public class LocalSettingsService : ILocalSettingsService
         {
             if (ApplicationData.Current.LocalSettings.Values.TryGetValue(key, out var obj))
             {
-                return await Json.ToObjectAsync<T>((string)obj);
+                return await JsonHelper.ToObjectAsync<T>((string)obj);
             }
         }
         else
@@ -94,7 +90,7 @@ public class LocalSettingsService : ILocalSettingsService
 
             if (_settings != null && _settings.TryGetValue(key, out var obj))
             {
-                return await Json.ToObjectAsync<T>((string)obj);
+                return await JsonHelper.ToObjectAsync<T>((string)obj);
             }
         }
 
@@ -103,7 +99,7 @@ public class LocalSettingsService : ILocalSettingsService
 
     public async Task SaveSettingAsync<T>(string key, T value)
     {
-        var stringValue = await Json.StringifyAsync(value);
+        var stringValue = await JsonHelper.StringifyAsync(value);
 
         if (RuntimeHelper.IsMSIX)
         {

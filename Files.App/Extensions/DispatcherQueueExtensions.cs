@@ -55,5 +55,4 @@ public static class DispatcherQueueExtensions
             return Task.FromResult(function());
         }
     }
-
 }

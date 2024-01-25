@@ -10,10 +10,10 @@ namespace Files.App.Actions;
 internal class DeleteItemAction : BaseDeleteAction, IAction
 {
     public string Label
-        => "Delete".GetLocalized();
+        => "Delete".ToLocalized();
 
     public string Description
-        => "DeleteItemDescription".GetLocalized();
+        => "DeleteItemDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new(opacityStyle: "ColorIconDelete");

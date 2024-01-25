@@ -396,7 +396,7 @@ public static partial class GitHelpers
 				};
 		}
 
-        await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(() =>
+        DispatcherExtensions.DispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = true;
 		});
@@ -426,7 +426,7 @@ public static partial class GitHelpers
 			return result;
 		});
 
-        await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(() =>
+        DispatcherExtensions.DispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = false;
 			GitFetchCompleted?.Invoke(null, EventArgs.Empty);
@@ -459,7 +459,7 @@ public static partial class GitHelpers
 				};
 		}
 
-        await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(() =>
+        DispatcherExtensions.DispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = true;
 		});
@@ -500,7 +500,7 @@ public static partial class GitHelpers
 			await dialog.TryShowAsync(folderViewViewModel);
 		}
 
-        await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(() =>
+        DispatcherExtensions.DispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = false;
 		});
@@ -537,7 +537,7 @@ public static partial class GitHelpers
 				}
 		};
 
-        await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(() =>
+        DispatcherExtensions.DispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = true;
 		});
@@ -580,7 +580,7 @@ public static partial class GitHelpers
 			_logger?.LogWarning(ex.Message);
 		}
 
-        await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(() =>
+        DispatcherExtensions.DispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = false;
 		});

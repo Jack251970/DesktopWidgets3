@@ -77,22 +77,22 @@ public class BaseLayoutViewModel : IDisposable
                 e.DragUIOverride.IsCaptionVisible = true;
                 if (pwd!.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal))
                 {
-                    e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), folderName);
+                    e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".ToLocalized(), folderName);
                     e.AcceptedOperation = DataPackageOperation.Move;
                 }
                 else if (e.Modifiers.HasFlag(DragDropModifiers.Alt) || e.Modifiers.HasFlag(DragDropModifiers.Control | DragDropModifiers.Shift))
                 {
-                    e.DragUIOverride.Caption = string.Format("LinkToFolderCaptionText".GetLocalized(), folderName);
+                    e.DragUIOverride.Caption = string.Format("LinkToFolderCaptionText".ToLocalized(), folderName);
                     e.AcceptedOperation = DataPackageOperation.Link;
                 }
                 else if (e.Modifiers.HasFlag(DragDropModifiers.Control))
                 {
-                    e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), folderName);
+                    e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".ToLocalized(), folderName);
                     e.AcceptedOperation = DataPackageOperation.Copy;
                 }
                 else if (e.Modifiers.HasFlag(DragDropModifiers.Shift))
                 {
-                    e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), folderName);
+                    e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".ToLocalized(), folderName);
                     e.AcceptedOperation = DataPackageOperation.Move;
                 }
                 else if (draggedItems.Any(x =>
@@ -100,17 +100,17 @@ public class BaseLayoutViewModel : IDisposable
                     x.Item is ZipStorageFolder) ||
                     ZipStorageFolder.IsZipPath(pwd))
                 {
-                    e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), folderName);
+                    e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".ToLocalized(), folderName);
                     e.AcceptedOperation = DataPackageOperation.Copy;
                 }
                 else if (draggedItems.AreItemsInSameDrive(viewModel.FileSystemViewModel.WorkingDirectory))
                 {
-                    e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalized(), folderName);
+                    e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".ToLocalized(), folderName);
                     e.AcceptedOperation = DataPackageOperation.Move;
                 }
                 else
                 {
-                    e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalized(), folderName);
+                    e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".ToLocalized(), folderName);
                     e.AcceptedOperation = DataPackageOperation.Copy;
                 }
             }

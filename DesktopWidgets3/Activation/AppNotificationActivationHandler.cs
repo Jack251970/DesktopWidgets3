@@ -2,8 +2,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 
-using DesktopWidgets3.Contracts.Services;
-
 namespace DesktopWidgets3.Activation;
 
 public class AppNotificationActivationHandler : ActivationHandler<LaunchActivatedEventArgs>

@@ -12,10 +12,10 @@ namespace Files.App.Actions;
 internal class CreateShortcutAction : BaseUIAction, IAction
 {
     public string Label
-		=> "CreateShortcut".GetLocalized();
+		=> "CreateShortcut".ToLocalized();
 
 	public string Description
-		=> "CreateShortcutDescription".GetLocalized();
+		=> "CreateShortcutDescription".ToLocalized();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconShortcut");

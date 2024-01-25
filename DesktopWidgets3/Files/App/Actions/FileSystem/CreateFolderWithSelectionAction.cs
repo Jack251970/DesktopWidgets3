@@ -15,10 +15,10 @@ internal class CreateFolderWithSelectionAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-		=> "CreateFolderWithSelection".GetLocalized();
+		=> "CreateFolderWithSelection".ToLocalized();
 
 	public string Description
-		=> "CreateFolderWithSelectionDescription".GetLocalized();
+		=> "CreateFolderWithSelectionDescription".ToLocalized();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconNewFolder");

@@ -15,10 +15,10 @@ internal class CopyPathAction : IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-		=> "CopyPath".GetLocalized();
+		=> "CopyPath".ToLocalized();
 
 	public string Description
-		=> "CopyPathDescription".GetLocalized();
+		=> "CopyPathDescription".ToLocalized();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconCopyPath");

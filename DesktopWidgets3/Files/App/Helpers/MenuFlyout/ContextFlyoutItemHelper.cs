@@ -354,7 +354,7 @@ public static class ContextFlyoutItemHelper
             }.Build(),
             new()
             {
-                Text = "OpenWith".GetLocalized(),
+                Text = "OpenWith".ToLocalized(),
                 OpacityIcon = new OpacityIconModel()
                 {
                     OpacityIconStyle = "ColorIconOpenWith"
@@ -561,7 +561,7 @@ public static class ContextFlyoutItemHelper
             },
             new()
             {
-                Text = "Loading".GetLocalized(),
+                Text = "Loading".ToLocalized(),
                 Glyph = "\xE712",
                 Items = new List<ContextMenuFlyoutItemViewModel>(),
                 ID = "ItemOverflow",
@@ -637,7 +637,7 @@ public static class ContextFlyoutItemHelper
             new ContextMenuFlyoutItemViewModelBuilder(commands.CreateFolder).Build(),
             new()
             {
-                Text = "File".GetLocalized(),
+                Text = "File".ToLocalized(),
                 Glyph = "\uE7C3",
                 Command = commandsViewModel.CreateNewFileCommand,
                 ShowInFtpPage = true,

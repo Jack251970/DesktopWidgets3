@@ -22,10 +22,10 @@ internal class AddItemAction : ObservableObject, IAction
 	private AddItemDialogViewModel? viewModel;
 
 	public string Label
-		=> "BaseLayoutContextFlyoutNew/Label".GetLocalized();
+		=> "BaseLayoutContextFlyoutNew/Label".ToLocalized();
 
 	public string Description
-		=> "AddItemDescription".GetLocalized();
+		=> "AddItemDescription".ToLocalized();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconNew");

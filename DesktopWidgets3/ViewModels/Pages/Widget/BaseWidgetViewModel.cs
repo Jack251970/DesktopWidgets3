@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
@@ -117,14 +116,14 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
         var menuFlyout = new MenuFlyout();
         var disableMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_DisableWidget_Text".GetLocalized()
+            Text = "MenuFlyoutItem_DisableWidget_Text".ToLocalized()
         };
         disableMenuItem.Click += (s, e) => DisableWidget();
         menuFlyout.Items.Add(disableMenuItem);
 
         var deleteMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_DeleteWidget_Text".GetLocalized()
+            Text = "MenuFlyoutItem_DeleteWidget_Text".ToLocalized()
         };
         deleteMenuItem.Click += (s, e) => DeleteWidget();
         menuFlyout.Items.Add(deleteMenuItem);
@@ -133,7 +132,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
         var enterMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_EnterEditMode_Text".GetLocalized()
+            Text = "MenuFlyoutItem_EnterEditMode_Text".ToLocalized()
         };
         enterMenuItem.Click += (s, e) => EnterEidtMode();
         menuFlyout.Items.Add(enterMenuItem);

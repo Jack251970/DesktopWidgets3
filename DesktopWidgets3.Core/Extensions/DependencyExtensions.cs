@@ -1,7 +1,7 @@
-﻿using Files.Shared.Extensions;
+﻿using Files.Core.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Files.Core.Extensions;
+namespace DesktopWidgets3.Core.Extensions;
 
 /// <summary>
 /// Provides static extension for dependency injection.
@@ -24,14 +24,21 @@ public static class DependencyExtensions
 
     public static T GetRequiredService<T>() where T : class
     {
-        return SafetyExtensions.IgnoreExceptions(() => FallbackDependencyService?.GetService<T>()) ?? null!;
+        try
+        {
+            return FallbackDependencyService?.GetService<T>()!;
+        }
+        catch (Exception)
+        {
+            return null!;
+        }
     }
 
     public static T GetService<T>() where T : class
     {
         if (typeof(T) == typeof(ILogger))
         {
-            return null!;
+            return GetRequiredService<T>();
         }
 
         if (FallbackDependencyService is null)

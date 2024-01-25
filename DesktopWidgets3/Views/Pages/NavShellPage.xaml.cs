@@ -2,7 +2,6 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 
-using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages;
 
@@ -29,7 +28,7 @@ public sealed partial class NavShellPage : Page
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
         App.AppTitleBar = AppTitleBar;
-        AppTitleBarText.Text = "AppDisplayName".GetLocalized();
+        AppTitleBarText.Text = "AppDisplayName".ToLocalized();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

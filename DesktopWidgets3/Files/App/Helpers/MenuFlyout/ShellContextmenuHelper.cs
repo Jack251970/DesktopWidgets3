@@ -97,7 +97,7 @@ public static class ShellContextmenuHelper
             {
                 var menuLayoutSubItem = new ContextMenuFlyoutItemViewModel()
                 {
-                    Text = "ShowMoreOptions".GetLocalized(),
+                    Text = "ShowMoreOptions".ToLocalized(),
                     Glyph = "\xE712",
                 };
                 LoadMenuFlyoutItem(menuLayoutSubItem.Items, contextMenu, overflowItems, cancellationToken, showIcons);

@@ -12,10 +12,10 @@ namespace Files.App.Actions;
 internal class CreateShortcutFromDialogAction : BaseUIAction, IAction
 {
 	public string Label
-		=> "Shortcut".GetLocalized();
+		=> "Shortcut".ToLocalized();
 
 	public string Description
-		=> "CreateShortcutFromDialogDescription".GetLocalized();
+		=> "CreateShortcutFromDialogDescription".ToLocalized();
 
 	public RichGlyph Glyph
 		=> new("\uE71B");

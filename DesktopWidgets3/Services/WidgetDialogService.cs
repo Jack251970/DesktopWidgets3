@@ -1,5 +1,4 @@
-﻿using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.Helpers;
+﻿using DesktopWidgets3.Helpers;
 using Windows.UI.Popups;
 
 namespace DesktopWidgets3.Services;
@@ -12,13 +11,13 @@ public class WidgetDialogService : IWidgetDialogService
         Right
     }
 
-    private readonly string Ok = "Ok".GetLocalized();
-    private readonly string Cancel = "Cancel".GetLocalized();
+    private readonly string Ok = "Ok".ToLocalized();
+    private readonly string Cancel = "Cancel".ToLocalized();
 
     public async Task<WidgetDialogResult> ShowDeleteWidgetDialog(WindowEx window)
     {
-        var title = "Dialog_DeleteWidget_Title".GetLocalized();
-        var content = "Dialog_DeleteWidget_Content".GetLocalized();
+        var title = "Dialog_DeleteWidget_Title".ToLocalized();
+        var content = "Dialog_DeleteWidget_Content".ToLocalized();
         return await ShowTwoButtonDialog(window, title, content);
     }
 

@@ -115,7 +115,7 @@ public class SidebarPinnedModel
 
                 if (locationItem.IconData is not null)
                 {
-                    locationItem.Icon = (await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync<BitmapImage?>(locationItem.IconData.ToBitmapAsync()))!;
+                    locationItem.Icon = (await DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() => locationItem.IconData.ToBitmapAsync()))!;
                 }
             }
 
@@ -125,13 +125,13 @@ public class SidebarPinnedModel
 
                 if (locationItem.IconData is not null)
                 {
-                    locationItem.Icon = (await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync<BitmapImage?>(locationItem.IconData.ToBitmapAsync()))!;
+                    locationItem.Icon = (await DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() => locationItem.IconData.ToBitmapAsync()))!;
                 }
             }
         }
         else
         {
-            locationItem.Icon = (await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync<BitmapImage?>(UIHelpers.GetSidebarIconResource(Constants.ImageRes.Folder)))!;
+            locationItem.Icon = (await DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() => UIHelpers.GetSidebarIconResource(Constants.ImageRes.Folder)))!;
 			locationItem.IsInvalid = true;
 			Debug.WriteLine($"Pinned item was invalid {res.ErrorCode}, item: {path}");
 		}

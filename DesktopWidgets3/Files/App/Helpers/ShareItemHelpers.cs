@@ -40,8 +40,8 @@ public static class ShareItemHelpers
 				{
 					if (shItem.IsLinkItem && !string.IsNullOrEmpty(shItem.TargetPath))
 					{
-						dataRequest.Data.Properties.Title = string.Format("ShareDialogTitle".GetLocalized(), item.Name);
-						dataRequest.Data.Properties.Description = "ShareDialogSingleItemDescription".GetLocalized();
+						dataRequest.Data.Properties.Title = string.Format("ShareDialogTitle".ToLocalized(), item.Name);
+						dataRequest.Data.Properties.Description = "ShareDialogSingleItemDescription".ToLocalized();
 						dataRequest.Data.SetWebLink(new Uri(shItem.TargetPath));
 						dataRequestDeferral.Complete();
 
@@ -66,12 +66,12 @@ public static class ShareItemHelpers
 
 			if (items.Count == 1)
 			{
-				dataRequest.Data.Properties.Title = string.Format("ShareDialogTitle".GetLocalized(), items.First().Name);
-				dataRequest.Data.Properties.Description = "ShareDialogSingleItemDescription".GetLocalized();
+				dataRequest.Data.Properties.Title = string.Format("ShareDialogTitle".ToLocalized(), items.First().Name);
+				dataRequest.Data.Properties.Description = "ShareDialogSingleItemDescription".ToLocalized();
 			}
 			else if (items.Count == 0)
 			{
-				dataRequest.FailWithDisplayText("ShareDialogFailMessage".GetLocalized());
+				dataRequest.FailWithDisplayText("ShareDialogFailMessage".ToLocalized());
 				dataRequestDeferral.Complete();
 
 				return;
@@ -79,10 +79,10 @@ public static class ShareItemHelpers
 			else
 			{
 				dataRequest.Data.Properties.Title = string.Format(
-					"ShareDialogTitleMultipleItems".GetLocalized(),
+					"ShareDialogTitleMultipleItems".ToLocalized(),
 					items.Count,
-					"ItemsCount.Text".GetLocalized());
-				dataRequest.Data.Properties.Description = "ShareDialogMultipleItemsDescription".GetLocalized();
+					"ItemsCount.Text".ToLocalized());
+				dataRequest.Data.Properties.Description = "ShareDialogMultipleItemsDescription".ToLocalized();
 			}
 
 			dataRequest.Data.SetStorageItems(items, false);

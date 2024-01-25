@@ -34,3 +34,6 @@ global using global::Files.Core.ViewModels;
 global using global::Files.Core.ViewModels.FolderView;
 global using global::Files.Core.Utils;
 global using global::Files.Core.Utils.CommandLine;
+
+// Core Extensions
+global using global::DesktopWidgets3.Core.Extensions;

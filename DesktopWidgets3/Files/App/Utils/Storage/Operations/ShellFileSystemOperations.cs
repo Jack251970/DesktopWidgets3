@@ -116,11 +116,11 @@ public class ShellFileSystemOperations : IFileSystemOperations
             }
             else if (createResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.NotFound))
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".GetLocalized(), "FileNotFoundDialog/Text".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".ToLocalized(), "FileNotFoundDialog/Text".ToLocalized());
             }
             else if (createResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.AlreadyExists))
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ItemAlreadyExistsDialogTitle".GetLocalized(), "ItemAlreadyExistsDialogContent".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ItemAlreadyExistsDialogTitle".ToLocalized(), "ItemAlreadyExistsDialogContent".ToLocalized());
             }
 
             fsProgress.ReportStatus(CopyEngineResult.Convert(createResult.Items.FirstOrDefault(x => !x.Succeeded)?.HResult));
@@ -229,7 +229,7 @@ public class ShellFileSystemOperations : IFileSystemOperations
             }
             else if (deleteResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.NotFound))
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".GetLocalized(), "FileNotFoundDialog/Text".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".ToLocalized(), "FileNotFoundDialog/Text".ToLocalized());
             }
             else if (deleteResult.Items.All(x => x.HResult == -1) && permanently) // ADS
             {
@@ -308,11 +308,11 @@ public class ShellFileSystemOperations : IFileSystemOperations
             }
             else if (renameResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.NotFound))
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "RenameError/ItemDeleted/Title".GetLocalized(), "RenameError/ItemDeleted/Text".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "RenameError/ItemDeleted/Title".ToLocalized(), "RenameError/ItemDeleted/Text".ToLocalized());
             }
             else if (renameResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.AlreadyExists))
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ItemAlreadyExistsDialogTitle".GetLocalized(), "ItemAlreadyExistsDialogContent".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ItemAlreadyExistsDialogTitle".ToLocalized(), "ItemAlreadyExistsDialogContent".ToLocalized());
             }
             // ADS
             else if (renameResult.Items.All(x => x.HResult == -1))
@@ -491,18 +491,18 @@ public class ShellFileSystemOperations : IFileSystemOperations
             }
             else if (copyResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.NotFound))
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".GetLocalized(), "FileNotFoundDialog/Text".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".ToLocalized(), "FileNotFoundDialog/Text".ToLocalized());
             }
             else if (copyResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.AlreadyExists))
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ItemAlreadyExistsDialogTitle".GetLocalized(), "ItemAlreadyExistsDialogContent".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ItemAlreadyExistsDialogTitle".ToLocalized(), "ItemAlreadyExistsDialogContent".ToLocalized());
             }
             else if (copyResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.PropertyLoss))
             {
                 var failedSources = copyResult.Items.Where(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.PropertyLoss);
                 var filePath = failedSources.Select(x => x.Source);
 
-                switch (await GetFileListDialog(viewModel, filePath, "FilePropertiesCannotBeCopied".GetLocalized(), "CopyFileWithoutProperties".GetLocalized(), "OK".GetLocalized(), "Cancel".GetLocalized()))
+                switch (await GetFileListDialog(viewModel, filePath, "FilePropertiesCannotBeCopied".ToLocalized(), "CopyFileWithoutProperties".ToLocalized(), "OK".ToLocalized(), "Cancel".ToLocalized()))
                 {
                     case DialogResult.Primary:
                         var copyZip = sourceNoSkip.Zip(destinationNoSkip, (src, dest) => new { src, dest }).Zip(collisionsNoSkip, (z1, coll) => new { z1.src, z1.dest, coll });
@@ -650,7 +650,7 @@ public class ShellFileSystemOperations : IFileSystemOperations
                 var destName = subtree.dest.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries).Last();
                 var srcName = subtree.src.Path.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries).Last();
 
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ErrorDialogThisActionCannotBeDone".GetLocalized(), $"{"ErrorDialogTheDestinationFolder".GetLocalized()} ({destName}) {"ErrorDialogIsASubfolder".GetLocalized()} ({srcName})");
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ErrorDialogThisActionCannotBeDone".ToLocalized(), $"{"ErrorDialogTheDestinationFolder".ToLocalized()} ({destName}) {"ErrorDialogIsASubfolder".ToLocalized()} ({srcName})");
             }
             else if (moveResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.InUse))
             {
@@ -684,17 +684,17 @@ public class ShellFileSystemOperations : IFileSystemOperations
             }
             else if (moveResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.NotFound))
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".GetLocalized(), "FileNotFoundDialog/Text".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".ToLocalized(), "FileNotFoundDialog/Text".ToLocalized());
             }
             else if (moveResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.AlreadyExists))
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ItemAlreadyExistsDialogTitle".GetLocalized(), "ItemAlreadyExistsDialogContent".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "ItemAlreadyExistsDialogTitle".ToLocalized(), "ItemAlreadyExistsDialogContent".ToLocalized());
             }
             else if (moveResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.PropertyLoss))
             {
                 var failedSources = moveResult.Items.Where(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.PropertyLoss);
                 var filePath = failedSources.Select(x => x.Source);
-                switch (await GetFileListDialog(viewModel, filePath, "FilePropertiesCannotBeMoved".GetLocalized(), "MoveFileWithoutProperties".GetLocalized(), "OK".GetLocalized(), "Cancel".GetLocalized()))
+                switch (await GetFileListDialog(viewModel, filePath, "FilePropertiesCannotBeMoved".ToLocalized(), "MoveFileWithoutProperties".ToLocalized(), "OK".ToLocalized(), "Cancel".ToLocalized()))
                 {
                     case DialogResult.Primary:
                         var copyZip = sourceNoSkip.Zip(destinationNoSkip, (src, dest) => new { src, dest }).Zip(collisionsNoSkip, (z1, coll) => new { z1.src, z1.dest, coll });
@@ -742,12 +742,12 @@ public class ShellFileSystemOperations : IFileSystemOperations
 
     private static Task<DialogResult> GetFileInUseDialog(FolderViewViewModel viewModel, IEnumerable<string> source, IEnumerable<Win32Process> lockingProcess = null!)
     {
-        var titleText = "FileInUseDialog/Title".GetLocalized();
+        var titleText = "FileInUseDialog/Title".ToLocalized();
         var subtitleText = lockingProcess.IsEmpty()
-            ? "FileInUseDialog/Text".GetLocalized()
-            : string.Format("FileInUseByDialog/Text".GetLocalized(), string.Join(", ", lockingProcess.Select(x => $"{x.AppName ?? x.Name} (PID: {x.Pid})")));
+            ? "FileInUseDialog/Text".ToLocalized()
+            : string.Format("FileInUseByDialog/Text".ToLocalized(), string.Join(", ", lockingProcess.Select(x => $"{x.AppName ?? x.Name} (PID: {x.Pid})")));
 
-        return GetFileListDialog(viewModel, source, titleText, subtitleText, "Retry".GetLocalized(), "Cancel".GetLocalized());
+        return GetFileListDialog(viewModel, source, titleText, subtitleText, "Retry".ToLocalized(), "Cancel".ToLocalized());
     }
 
     private static async Task<DialogResult> GetFileListDialog(FolderViewViewModel viewModel, IEnumerable<string> source, string titleText, string descriptionText, string primaryButtonText, string secondaryButtonText)

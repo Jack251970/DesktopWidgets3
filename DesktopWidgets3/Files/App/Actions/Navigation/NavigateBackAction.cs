@@ -14,10 +14,10 @@ internal class NavigateBackAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Back".GetLocalized();
+        => "Back".ToLocalized();
 
     public string Description
-        => "NavigateBackDescription".GetLocalized();
+        => "NavigateBackDescription".ToLocalized();
 
     /*public HotKey HotKey
         => new(Keys.Left, KeyModifiers.Menu);

@@ -9,7 +9,7 @@ namespace Files.App.Data.Items;
 
 public class LocationItem : ObservableObject, INavigationControlItem
 {
-	public BitmapImage icon;
+	public BitmapImage icon = null!;
 	public BitmapImage Icon
 	{
 		get => icon;
@@ -20,7 +20,7 @@ public class LocationItem : ObservableObject, INavigationControlItem
 		}
 	}
 
-	public byte[] IconData { get; set; }
+    public byte[] IconData { get; set; } = null!;
 
 	private string text = "";
 	public string Text
@@ -37,7 +37,7 @@ public class LocationItem : ObservableObject, INavigationControlItem
         }
 	}
 
-	private string path;
+	private string path = null!;
 	public string Path
 	{
 		get => path;
@@ -81,7 +81,7 @@ public class LocationItem : ObservableObject, INavigationControlItem
 
 	public SectionType Section { get; set; }
 
-	public ContextMenuOptions MenuOptions { get; set; }
+    public ContextMenuOptions MenuOptions { get; set; } = null!;
 
 	public bool IsHeader { get; set; }
 
@@ -120,7 +120,7 @@ public class RecycleBinLocationItem : LocationItem
 {
 	public void RefreshSpaceUsed(object sender, FileSystemEventArgs e)
 	{
-        DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(() =>
+        DispatcherExtensions.DispatcherQueue!.TryEnqueue(() =>
 		{
 			SpaceUsed = RecycleBinHelpers.GetSize();
 		});

@@ -174,7 +174,7 @@ public static class NavigationHelpers
         {
             if (!openSilent)
             {
-                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".GetLocalized(), "FileNotFoundDialog/Text".GetLocalized());
+                await DialogDisplayHelper.ShowDialogAsync(viewModel, "FileNotFoundDialog/Title".ToLocalized(), "FileNotFoundDialog/Text".ToLocalized());
             }
             viewModel.ToolbarViewModel.CanRefresh = false;
             await viewModel.FileSystemViewModel.RefreshItems(previousDir);

@@ -32,7 +32,7 @@ public class NetworkDrivesViewModel : ObservableObject
         var networkItem = new DriveItem
         {
             DeviceID = "network-folder",
-            Text = "Network".GetLocalized(),
+            Text = "Network".ToLocalized(),
             Path = Constants.UserEnvironmentPaths.NetworkFolderPath,
             Type = DriveType.Network,
             ItemType = NavigationControlItemType.Drive,

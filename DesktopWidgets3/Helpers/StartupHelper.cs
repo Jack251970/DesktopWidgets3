@@ -15,7 +15,7 @@ public class StartupHelper
     private static readonly byte[] ApprovalValue1 = new byte[] { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
     private static readonly byte[] ApprovalValue2 = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-    private static readonly string RegistryKey = "AppDisplayName".GetLocalized();
+    private static readonly string RegistryKey = "AppDisplayName".ToLocalized();
     private static readonly string StartupTaskId = "StartAppOnLoginTask";
 
     /// <summary>

@@ -1,5 +1,4 @@
-﻿using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.Contracts.ViewModels;
+﻿using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;

@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml;
 using DesktopWidgets3.Models.Widget;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using DesktopWidgets3.Contracts.Services;
 using static DesktopWidgets3.Services.WidgetDialogService;
 using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
 

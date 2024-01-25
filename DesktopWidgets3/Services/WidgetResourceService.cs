@@ -1,5 +1,4 @@
-﻿using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.Helpers;
+﻿using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Services;
@@ -10,7 +9,7 @@ public class WidgetResourceService : IWidgetResourceService
     {
         return widgetType switch
         {
-            _ => $"Widget_{widgetType}_Label".GetLocalized(),
+            _ => $"Widget_{widgetType}_Label".ToLocalized(),
         };
     }
 

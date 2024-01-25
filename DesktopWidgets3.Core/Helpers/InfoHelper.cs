@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Windows.ApplicationModel;
 
-namespace DesktopWidgets3.Helpers;
+namespace DesktopWidgets3.Core.Helpers;
 
 /// <summary>
 /// Helper for getting assembly/package information, supports packaged mode(MSIX)/unpackaged mode.

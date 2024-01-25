@@ -14,10 +14,10 @@ internal class RenameAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Rename".GetLocalized();
+        => "Rename".ToLocalized();
 
     public string Description
-        => "RenameDescription".GetLocalized();
+        => "RenameDescription".ToLocalized();
 
     /*public HotKey HotKey
         => new(Keys.F2);*/

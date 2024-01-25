@@ -2,8 +2,6 @@
 using System.Web;
 using Microsoft.Windows.AppNotifications;
 
-using DesktopWidgets3.Contracts.Services;
-
 namespace DesktopWidgets3.Notifications;
 
 public class AppNotificationService : IAppNotificationService

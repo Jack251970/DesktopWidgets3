@@ -15,10 +15,10 @@ internal class CopyItemAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Copy".GetLocalized();
+        => "Copy".ToLocalized();
 
     public string Description
-        => "CopyItemDescription".GetLocalized();
+        => "CopyItemDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new(opacityStyle: "ColorIconCopy");

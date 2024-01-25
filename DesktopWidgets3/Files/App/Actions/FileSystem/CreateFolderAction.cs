@@ -13,10 +13,10 @@ namespace Files.App.Actions;
 internal class CreateFolderAction : BaseUIAction, IAction
 {
 	public string Label
-		=> "Folder".GetLocalized();
+		=> "Folder".ToLocalized();
 
 	public string Description
-		=> "CreateFolderDescription".GetLocalized();
+		=> "CreateFolderDescription".ToLocalized();
 
 	/*public HotKey HotKey
 		=> new(Keys.N, KeyModifiers.CtrlShift);*/

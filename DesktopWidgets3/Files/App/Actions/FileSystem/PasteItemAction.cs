@@ -17,10 +17,10 @@ internal class PasteItemAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Paste".GetLocalized();
+        => "Paste".ToLocalized();
 
     public string Description
-        => "PasteItemDescription".GetLocalized();
+        => "PasteItemDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new(opacityStyle: "ColorIconPaste");

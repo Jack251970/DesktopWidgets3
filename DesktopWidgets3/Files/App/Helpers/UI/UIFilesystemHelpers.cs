@@ -397,7 +397,7 @@ public static class UIFileSystemHelpers
 
         foreach (var selectedItem in selectedItems)
         {
-            var fileName = string.Format("ShortcutCreateNewSuffix".GetLocalized(), selectedItem.Name) + ".lnk";
+            var fileName = string.Format("ShortcutCreateNewSuffix".ToLocalized(), selectedItem.Name) + ".lnk";
             var filePath = Path.Combine(currentPath ?? string.Empty, fileName);
 
             if (!await FileOperationsHelpers.CreateOrUpdateLinkAsync(filePath, selectedItem.ItemPath))
@@ -417,10 +417,10 @@ public static class UIFileSystemHelpers
         var result = await DialogDisplayHelper.ShowDialogAsync
         (
             viewModel,
-            "CannotCreateShortcutDialogTitle".GetLocalized(),
-            "CannotCreateShortcutDialogMessage".GetLocalized(),
-            "Create".GetLocalized(),
-            "Cancel".GetLocalized()
+            "CannotCreateShortcutDialogTitle".ToLocalized(),
+            "CannotCreateShortcutDialogMessage".ToLocalized(),
+            "Create".ToLocalized(),
+            "Cancel".ToLocalized()
         );
         if (!result)
         {
@@ -515,14 +515,14 @@ public static class UIFileSystemHelpers
         switch (itemType)
         {
             case AddItemDialogItemType.Folder:
-                userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : "NewFolder".GetLocalized();
+                userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : "NewFolder".ToLocalized();
                 created = await viewModel!.FileSystemHelpers.CreateAsync(
                     viewModel,
                     StorageHelpers.FromPathAndType(PathNormalization.Combine(currentPath!, userInput), FilesystemItemType.Directory));
                 break;
 
             case AddItemDialogItemType.File:
-                userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : itemInfo?.Name ?? "NewFile".GetLocalized();
+                userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : itemInfo?.Name ?? "NewFile".ToLocalized();
                 created = await viewModel!.FileSystemHelpers.CreateAsync(
                     viewModel,
                     StorageHelpers.FromPathAndType(PathNormalization.Combine(currentPath!, userInput + itemInfo?.Extension), FilesystemItemType.File));
@@ -534,8 +534,8 @@ public static class UIFileSystemHelpers
             await DialogDisplayHelper.ShowDialogAsync
             (
                 viewModel!,
-                "AccessDenied".GetLocalized(),
-                "AccessDeniedCreateDialog/Text".GetLocalized()
+                "AccessDenied".ToLocalized(),
+                "AccessDeniedCreateDialog/Text".ToLocalized()
             );
         }
 

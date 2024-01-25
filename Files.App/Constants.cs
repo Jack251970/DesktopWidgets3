@@ -5,7 +5,7 @@ namespace Files.App;
 
 public static class Constants
 {
-	public static class AdaptiveLayout
+    public static class AdaptiveLayout
 	{
 		public const float ExtraLargeThreshold = 85.0f;
 

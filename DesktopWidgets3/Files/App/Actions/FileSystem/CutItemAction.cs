@@ -15,10 +15,10 @@ internal class CutItemAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Cut".GetLocalized();
+        => "Cut".ToLocalized();
 
     public string Description
-        => "CutItemDescription".GetLocalized();
+        => "CutItemDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new(opacityStyle: "ColorIconCut");

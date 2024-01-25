@@ -4,12 +4,6 @@ namespace Files.Core.ViewModels.FolderView;
 
 public partial interface IFolderViewViewModel
 {
-    FileNameConflictResolveOptionType ConflictsResolveOption { get; }
-
-    bool ShowFileExtensions { get; }
-
-    bool ShowDotFiles { get; }
-
     string WorkingDirectory { get; }
 
     IDialogService DialogService { get; }

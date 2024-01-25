@@ -13,9 +13,9 @@ namespace Files.App.Utils.Archives;
 /// </summary>
 public class CompressArchiveModel : ICompressArchiveModel
 {
-	private StatusCenterItemProgressModel _fileSystemProgress;
+	private StatusCenterItemProgressModel _fileSystemProgress = null!;
 
-	private FileSizeCalculator _sizeCalculator;
+	private FileSizeCalculator _sizeCalculator = null!;
 
 	private readonly IThreadingService _threadingService = DependencyExtensions.GetService<IThreadingService>();
 

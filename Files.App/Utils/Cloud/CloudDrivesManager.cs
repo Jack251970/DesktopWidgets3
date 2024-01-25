@@ -50,7 +50,7 @@ public static class CloudDrivesManager
 			{
 				cloudProviderItem.Root = await StorageFolder.GetFolderFromPathAsync(cloudProviderItem.Path);
 
-				_ = DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(cloudProviderItem.UpdatePropertiesAsync);
+				_ = DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(cloudProviderItem.UpdatePropertiesAsync);
 			}
 			catch (Exception ex)
 			{
@@ -70,7 +70,7 @@ public static class CloudDrivesManager
 			{
 				cloudProviderItem.IconData = iconData;
 
-				await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(async ()
+				await DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async ()
 					=> cloudProviderItem.Icon = (await iconData.ToBitmapAsync())!);
 			}
 

@@ -14,10 +14,10 @@ internal class RefreshItemsAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Refresh".GetLocalized();
+        => "Refresh".ToLocalized();
 
     public string Description
-        => "RefreshItemsDescription".GetLocalized();
+        => "RefreshItemsDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new("\uE72C");

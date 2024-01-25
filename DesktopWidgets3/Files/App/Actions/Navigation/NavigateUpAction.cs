@@ -14,10 +14,10 @@ internal class NavigateUpAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Up".GetLocalized();
+        => "Up".ToLocalized();
 
     public string Description
-        => "NavigateUpDescription".GetLocalized();
+        => "NavigateUpDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new("\uE74A");

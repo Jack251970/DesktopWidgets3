@@ -14,10 +14,10 @@ namespace Files.App.Actions;
 internal class PasteItemToSelectionAction : BaseUIAction, IAction
 {
     public string Label
-        => "Paste".GetLocalized();
+        => "Paste".ToLocalized();
 
     public string Description
-        => "PasteItemToSelectionDescription".GetLocalized();
+        => "PasteItemToSelectionDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new(opacityStyle: "ColorIconPaste");

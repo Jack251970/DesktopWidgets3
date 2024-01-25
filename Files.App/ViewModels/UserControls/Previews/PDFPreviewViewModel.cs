@@ -89,7 +89,7 @@ public class PDFPreviewViewModel : BasePreviewModel
 			var decoder = await BitmapDecoder.CreateAsync(stream);
 			using var sw = await decoder.GetSoftwareBitmapAsync();
 
-			await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(async () =>
+			await DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{
 				BitmapImage src = new();
 				PageViewModel pageData = new()

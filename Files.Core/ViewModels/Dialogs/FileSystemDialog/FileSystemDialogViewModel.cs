@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.ViewModels.FolderView;
 using Files.Shared.Extensions;
 
 namespace Files.Core.ViewModels.Dialogs.FileSystemDialog;
@@ -10,7 +9,9 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
-	private readonly CancellationTokenSource _dialogClosingCts;
+    private readonly IUserSettingsService _userSettingsService;
+
+    private readonly CancellationTokenSource _dialogClosingCts;
 
 	private readonly IMessenger _messenger;
 
@@ -55,6 +56,8 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 	private FileSystemDialogViewModel(IFolderViewViewModel folderViewViewModel, FileSystemDialogMode fileSystemDialogMode, IEnumerable<BaseFileSystemDialogItemViewModel> items)
 	{
         FolderViewViewModel = folderViewViewModel;
+        _userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+
 		FileSystemDialogMode = fileSystemDialogMode;
 
 		_dialogClosingCts = new();
@@ -117,17 +120,17 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 
 	public FileNameConflictResolveOptionType LoadConflictResolveOption()
 	{
-		return FolderViewViewModel.ConflictsResolveOption;
-	}
+		return _userSettingsService.GeneralSettingsService.ConflictsResolveOption;
+    }
 
 	public void SaveConflictResolveOption()
 	{
         // TODO: Save the option to the settings
-        /*if (AggregatedResolveOption != FileNameConflictResolveOptionType.None &&
-            AggregatedResolveOption != _viewModel.GetSettings().ConflictsResolveOption)
+        if (AggregatedResolveOption != FileNameConflictResolveOptionType.None && 
+            AggregatedResolveOption != _userSettingsService.GeneralSettingsService.ConflictsResolveOption)
         {
-            _viewModel.GetSettings().ConflictsResolveOption = AggregatedResolveOption;
-        }*/
+            _userSettingsService.GeneralSettingsService.ConflictsResolveOption = AggregatedResolveOption;
+        }
     }
 
     public void CancelCts()

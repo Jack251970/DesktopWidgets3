@@ -1,19 +1,18 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Extensions;
-using Files.Core.Services;
 using Microsoft.UI.Dispatching;
 
 namespace Files.App.Services;
 
-internal sealed class ThreadingService : IThreadingService
+// TODO: change to internal.
+public sealed class ThreadingService : IThreadingService
 {
 	private readonly DispatcherQueue _dispatcherQueue;
 
 	public ThreadingService()
 	{
-        _dispatcherQueue = DesktopWidgets3.App.DispatcherQueue;
+		_dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 	}
 
 	public Task ExecuteOnUiThreadAsync(Action action)
@@ -25,9 +24,4 @@ internal sealed class ThreadingService : IThreadingService
 	{
 		return _dispatcherQueue.EnqueueOrInvokeAsync(func);
 	}
-
-    public Task<TResult?> ExecuteOnUiThreadAsync<TResult>(Task<TResult?> task)
-    {
-        return _dispatcherQueue.EnqueueOrInvokeAsync(() => task);
-    }
 }

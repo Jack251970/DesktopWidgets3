@@ -30,7 +30,7 @@ global using global::Files.App.Utils.Git;
 global using global::Files.App.Utils.Library;
 /*global using global::Files.App.Utils.RecentItem;*/
 global using global::Files.App.Utils.RecycleBin;
-/*global using global::Files.App.Utils.Serialization;*/
+global using global::Files.App.Utils.Serialization;
 global using global::Files.App.Utils.Shell;
 global using global::Files.App.Utils.StatusCenter;
 global using global::Files.App.Utils.Storage;
@@ -79,3 +79,6 @@ global using global::Files.Core.Utils.CommandLine;
 // Files.Shared
 global using global::Files.Shared;
 global using global::Files.Shared.Extensions;
+
+// Core Extensions
+global using global::DesktopWidgets3.Core.Extensions;

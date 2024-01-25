@@ -47,8 +47,8 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         {
             await DialogDisplayHelper.ShowDialogAsync(
                 viewModel,
-                "ErrorDialogThisActionCannotBeDone".GetLocalized(),
-                "ErrorDialogNameNotAllowed".GetLocalized());
+                "ErrorDialogThisActionCannotBeDone".ToLocalized(),
+                "ErrorDialogNameNotAllowed".ToLocalized());
             return (ReturnResult.Failed, null);
         }
 
@@ -156,8 +156,8 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         {
             await DialogDisplayHelper.ShowDialogAsync(
                 viewModel,
-                "ErrorDialogThisActionCannotBeDone".GetLocalized(),
-                "ErrorDialogNameNotAllowed".GetLocalized());
+                "ErrorDialogThisActionCannotBeDone".ToLocalized(),
+                "ErrorDialogNameNotAllowed".ToLocalized());
             return ReturnResult.Failed;
         }
 
@@ -171,7 +171,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
             case FilesystemItemType.File:
                 if(showExtensionDialog && Path.GetExtension(source.Path) != Path.GetExtension(newName))
                 {
-                    var yesSelected = await DialogDisplayHelper.ShowDialogAsync(viewModel, "Rename".GetLocalized(), "RenameFileDialog/Text".GetLocalized(), "Yes".GetLocalized(), "No".GetLocalized());
+                    var yesSelected = await DialogDisplayHelper.ShowDialogAsync(viewModel, "Rename".ToLocalized(), "RenameFileDialog/Text".ToLocalized(), "Yes".ToLocalized(), "No".ToLocalized());
                     if (yesSelected)
                     {
                         await fileSystemOperations.RenameAsync(viewModel, source, newName, collision, progress, cancellationToken);
@@ -674,7 +674,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
 
         source = source.Where(x => !string.IsNullOrEmpty(x.Path));
         var dest = source.Select(x => Path.Combine(destination,
-            string.Format("ShortcutCreateNewSuffix".GetLocalized(), x.Name) + ".lnk"));
+            string.Format("ShortcutCreateNewSuffix".ToLocalized(), x.Name) + ".lnk"));
 
         source = await source.ToListAsync();
         dest = await dest.ToListAsync();

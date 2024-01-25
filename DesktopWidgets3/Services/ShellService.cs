@@ -2,7 +2,6 @@
 
 using Microsoft.UI.Xaml.Controls;
 
-using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages;
 

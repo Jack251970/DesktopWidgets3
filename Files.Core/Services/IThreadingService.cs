@@ -8,6 +8,4 @@ public interface IThreadingService
 	Task ExecuteOnUiThreadAsync(Action action);
 
 	Task<TResult?> ExecuteOnUiThreadAsync<TResult>(Func<TResult?> func);
-
-    Task<TResult?> ExecuteOnUiThreadAsync<TResult>(Task<TResult?> task);
 }

@@ -16,10 +16,10 @@ internal class OpenItemAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "Open".GetLocalized();
+        => "Open".ToLocalized();
 
     public string Description
-        => "OpenItemDescription".GetLocalized();
+        => "OpenItemDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new(opacityStyle: "ColorIconOpenFile");
@@ -66,10 +66,10 @@ internal class OpenItemWithApplicationPickerAction : ObservableObject, IAction
     private readonly FolderViewViewModel context;
 
     public string Label
-        => "OpenWith".GetLocalized();
+        => "OpenWith".ToLocalized();
 
     public string Description
-        => "OpenItemWithApplicationPickerDescription".GetLocalized();
+        => "OpenItemWithApplicationPickerDescription".ToLocalized();
 
     public RichGlyph Glyph
         => new(opacityStyle: "ColorIconOpenWith");

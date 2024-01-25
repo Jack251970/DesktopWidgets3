@@ -17,7 +17,7 @@ namespace Files.App.Utils.Storage;
 
 public static class Win32StorageEnumerator
 {
-    private static readonly string folderTypeTextLocalized = "Folder".GetLocalized();
+    private static readonly string folderTypeTextLocalized = "Folder".ToLocalized();
 
     private static readonly IStorageCacheController fileListCache = StorageCacheController.GetInstance();
 
@@ -134,7 +134,7 @@ public static class Win32StorageEnumerator
         (string Name, long Size) ads, 
         ListedItem main)
     {
-        var itemType = "File".GetLocalized();
+        var itemType = "File".ToLocalized();
         string itemFileExtension = null!;
 
         if (ads.Name.Contains('.'))
@@ -280,7 +280,7 @@ public static class Win32StorageEnumerator
 
         var itemSizeBytes = findData.GetSize();
         var itemSize = itemSizeBytes.ToSizeString();
-        var itemType = "File".GetLocalized();
+        var itemType = "File".ToLocalized();
         string itemFileExtension = null!;
 
         if (findData.cFileName.Contains('.'))
@@ -321,7 +321,7 @@ public static class Win32StorageEnumerator
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,
                 ItemDateCreatedReal = itemCreatedDate,
-                ItemType = "Shortcut".GetLocalized(),
+                ItemType = "Shortcut".ToLocalized(),
                 ItemPath = itemPath,
                 FileSize = itemSize,
                 FileSizeBytes = itemSizeBytes,
@@ -352,7 +352,7 @@ public static class Win32StorageEnumerator
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,
                 ItemDateCreatedReal = itemCreatedDate,
-                ItemType = isUrl ? "ShortcutWebLinkFileType".GetLocalized() : "Shortcut".GetLocalized(),
+                ItemType = isUrl ? "ShortcutWebLinkFileType".ToLocalized() : "Shortcut".ToLocalized(),
                 ItemPath = itemPath,
                 FileSize = itemSize,
                 FileSizeBytes = itemSizeBytes,

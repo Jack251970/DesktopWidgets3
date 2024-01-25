@@ -3,8 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Xaml.Interactivity;
 
-using DesktopWidgets3.Contracts.Services;
-
 namespace DesktopWidgets3.Behaviors;
 
 public class NavigationViewHeaderBehavior : Behavior<NavigationView>

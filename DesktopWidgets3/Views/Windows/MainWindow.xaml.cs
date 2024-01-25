@@ -1,7 +1,6 @@
 ﻿using H.NotifyIcon;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
 
@@ -19,7 +18,7 @@ public sealed partial class MainWindow : WindowEx
 
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
-        Title = "AppDisplayName".GetLocalized();
+        Title = "AppDisplayName".ToLocalized();
 
         // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();

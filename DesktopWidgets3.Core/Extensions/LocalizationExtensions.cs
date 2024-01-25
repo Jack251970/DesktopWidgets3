@@ -1,15 +1,18 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Windows.ApplicationModel.Resources;
 
-namespace DesktopWidgets3.Helpers;
+namespace DesktopWidgets3.Core.Extensions;
 
-public static class ResourceExtensions
+/// <summary>
+/// Provides static extension for string localization.
+/// </summary>
+public static class LocalizationExtensions
 {
     private static readonly ResourceMap resourcesTree = new ResourceManager().MainResourceMap.TryGetSubtree("Resources");
 
     private static readonly ConcurrentDictionary<string, string> cachedResources = new();
 
-    public static string GetLocalized(this string resourceKey)
+    public static string ToLocalized(this string resourceKey)
     {
         if (cachedResources.TryGetValue(resourceKey, out var value))
         {

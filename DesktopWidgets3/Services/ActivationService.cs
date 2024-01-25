@@ -2,7 +2,6 @@
 using Microsoft.UI.Xaml.Controls;
 
 using DesktopWidgets3.Activation;
-using DesktopWidgets3.Contracts.Services;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;

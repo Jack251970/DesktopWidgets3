@@ -14,14 +14,14 @@ public abstract class BasePreviewModel : ObservableObject
 
 	public ListedItem Item { get; }
 
-	private BitmapImage fileImage;
+	private BitmapImage fileImage = null!;
 	public BitmapImage FileImage
 	{
 		get => fileImage;
 		protected set => SetProperty(ref fileImage, value);
 	}
 
-	public List<FileProperty> DetailsFromPreview { get; set; }
+    public List<FileProperty> DetailsFromPreview { get; set; } = null!;
 
 	/// <summary>
 	/// This is cancelled when the user has selected another file or closed the pane.
@@ -92,11 +92,11 @@ public abstract class BasePreviewModel : ObservableObject
 		iconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, 256);
 		if (iconData is not null)
 		{
-			await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(async () => FileImage = (await iconData.ToBitmapAsync())!);
+			await DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () => FileImage = (await iconData.ToBitmapAsync())!);
 		}
 		else
 		{
-			FileImage ??= (await DependencyExtensions.GetService<IThreadingService>().ExecuteOnUiThreadAsync(() => new BitmapImage()))!;
+			FileImage ??= (await DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() => new BitmapImage()))!;
 		}
 
 		return new List<FileProperty>();

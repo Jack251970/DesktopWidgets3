@@ -6,9 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 
 using DesktopWidgets3.Activation;
-using DesktopWidgets3.Contracts.Services;
-using DesktopWidgets3.Core.Contracts.Services;
-using DesktopWidgets3.Core.Services;
 using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
 using DesktopWidgets3.Notifications;
@@ -31,10 +28,11 @@ using Files.Core.Services.SizeProvider;
 using Files.Core.Storage;
 using Files.App.Storage.FtpStorage;
 using Files.App.Utils;
-using Files.Core.Extensions;
 using Files.Core.Utils.Cloud;
 using Files.App.Utils.Cloud;
 using Files.App.Utils.Library;
+using Files.Core.Services.Settings;
+using Files.App.Services.Settings;
 
 namespace DesktopWidgets3;
 
@@ -78,7 +76,7 @@ public partial class App : Application
     {
         // Check if app is already running
 #if DEBUG
-        if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), false))
+        if (SystemHelper.IsWindowExist(null, "AppDisplayName".ToLocalized(), false))
         {
             // Do nothing here to let the debug app run
         }
@@ -140,7 +138,7 @@ public partial class App : Application
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
 
             // Settings Management
-            services.AddSingleton<IAppSettingsService, AppSettingsService>();
+            services.AddSingleton<DesktopWidgets3.Contracts.Services.IAppSettingsService, DesktopWidgets3.Services.AppSettingsService>();
 
             #endregion
 
@@ -228,6 +226,16 @@ public partial class App : Application
             // Libarary
             services.AddSingleton<LibraryManager>();
 
+            // Settings
+            services.AddTransient<IUserSettingsService, UserSettingsService>();
+            services.AddTransient<IAppearanceSettingsService, AppearanceSettingsService>(sp => new AppearanceSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
+            services.AddTransient<IGeneralSettingsService, GeneralSettingsService>(sp => new GeneralSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
+            services.AddTransient<IFoldersSettingsService, FoldersSettingsService>(sp => new FoldersSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
+            services.AddTransient<IApplicationSettingsService, ApplicationSettingsService>(sp => new ApplicationSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
+            services.AddTransient<IInfoPaneSettingsService, InfoPaneSettingsService>(sp => new InfoPaneSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
+            services.AddTransient<ILayoutSettingsService, LayoutSettingsService>(sp => new LayoutSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
+            services.AddTransient<Files.Core.Services.Settings.IAppSettingsService, Files.App.Services.Settings.AppSettingsService>(sp => new Files.App.Services.Settings.AppSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
+
             #endregion
 
             #region Views & ViewModels
@@ -282,7 +290,9 @@ public partial class App : Application
 
         GetService<IAppNotificationService>().Initialize();
 
+        // Initialize core extensions
         DependencyExtensions.Initialize(GetService<IDependencyService>());
+        LocalSettingsExtensions.ApplicationDataFolder = GetService<ILocalSettingsService>().GetApplicationDataFolder();
 
         UnhandledException += App_UnhandledException;
     }
@@ -297,6 +307,9 @@ public partial class App : Application
         {
             MainWindow = new MainWindow();
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
+
+            // Initialize core extensions
+            DispatcherExtensions.Initialize(MainWindow.DispatcherQueue);
         }
     }
 
