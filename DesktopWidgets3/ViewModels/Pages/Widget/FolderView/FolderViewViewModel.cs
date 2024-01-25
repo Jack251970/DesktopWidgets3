@@ -215,6 +215,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     bool IFolderViewViewModel.ShowFileExtensions => ShowExtension;
 
+    bool IFolderViewViewModel.ShowDotFiles => true;
+
     public string WorkingDirectory => FileSystemViewModel.WorkingDirectory;
 
     public Window MainWindow => WidgetWindow;

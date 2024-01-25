@@ -243,7 +243,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         stopwatch.Start();
 
         var isRecycleBin = path.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
-        var enumerated = await EnumerateItemsFromStandardFolderAsync(path, null, library);
+        var enumerated = await EnumerateItemsFromStandardFolderAsync(path, CancellationToken.None, library);
 
         // Hide progressbar after enumeration
         IsLoadingItems = false;
@@ -341,7 +341,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             : (CloudDriveSyncStatus)syncStatus;
     }
 
-    private async Task<int> EnumerateItemsFromStandardFolderAsync(string path, CancellationToken? cancellationToken = null, LibraryItem? library = null)
+    private async Task<int> EnumerateItemsFromStandardFolderAsync(string path, CancellationToken cancellationToken, LibraryItem? library = null)
     {
         // Flag to use FindFirstFileExFromApp or StorageFolder enumeration - Use storage folder for Box Drive (#4629)
         var isBoxFolder = CloudDrivesManager.Drives.FirstOrDefault(x => x.Text == "Box")?.Path?.TrimEnd('\\') is string boxFolder && path.StartsWith(boxFolder);
@@ -570,7 +570,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         }
     }
 
-    private async Task EnumFromStorageFolderAsync(BaseStorageFolder? rootFolder, StorageFolderWithPath currentStorageFolder, CancellationToken? cancellationToken)
+    private async Task EnumFromStorageFolderAsync(BaseStorageFolder? rootFolder, StorageFolderWithPath currentStorageFolder, CancellationToken cancellationToken)
     {
         if (rootFolder is null)
         {

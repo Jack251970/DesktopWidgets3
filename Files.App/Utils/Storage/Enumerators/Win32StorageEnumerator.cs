@@ -1,14 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Helpers;
-using DesktopWidgets3.ViewModels.Pages.Widget;
-using Files.App.Extensions;
-using Files.App.Helpers;
-using Files.App.Utils.Git;
-using Files.Core.Extensions;
+/*using Files.Core.Services.SizeProvider;
 using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System.IO;
+using Vanara.PInvoke;
 using Windows.Storage;
 using static Files.Core.Helpers.NativeFindStorageItemHelper;
 using FileAttributes = System.IO.FileAttributes;
@@ -17,27 +14,29 @@ namespace Files.App.Utils.Storage;
 
 public static class Win32StorageEnumerator
 {
-    private static readonly string folderTypeTextLocalized = "Folder".GetLocalized();
+    private static readonly ISizeProvider folderSizeProvider = DependencyExtensions.GetService<ISizeProvider>();
+
+    private static readonly string folderTypeTextLocalized = "Folder".ToLocalized();
 
     private static readonly IStorageCacheController fileListCache = StorageCacheController.GetInstance();
 
     public static async Task<List<ListedItem>> ListEntries(
-        FolderViewViewModel viewModel,
+        IFolderViewViewModel folderViewViewModel,
         string path,
         IntPtr hFile,
-        WIN32_FIND_DATA findData,
+        NativeFindStorageItemHelper.WIN32_FIND_DATA findData,
         CancellationToken cancellationToken,
         int countLimit,
         Func<List<ListedItem>, Task> intermediateAction,
-        Dictionary<string, BitmapImage> defaultIconPairs = null!,
-        bool showHiddenFile = false,
-        bool showProtectedSystemFiles = false, // TODO: userSettingsService.FoldersSettingsService.ShowProtectedSystemFiles
-        bool showDotFiles = true,  // TODO: userSettingsService.FoldersSettingsService.ShowDotFiles
-        bool areAlternateStreamsVisible = false)  // TODO: userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible
+        Dictionary<string, BitmapImage> defaultIconPairs = null!
+    )
     {
         var sampler = new IntervalSampler(500);
         var tempList = new List<ListedItem>();
         var count = 0;
+
+        var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        var CalculateFolderSizes = userSettingsService.FoldersSettingsService.CalculateFolderSizes;
 
         var isGitRepo = GitHelpers.IsRepositoryEx(path, out var repoPath) && !string.IsNullOrEmpty((await GitHelpers.GetRepositoryHead(repoPath))?.Name);
 
@@ -46,11 +45,14 @@ public static class Win32StorageEnumerator
             var isSystem = ((FileAttributes)findData.dwFileAttributes & FileAttributes.System) == FileAttributes.System;
             var isHidden = ((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden;
             var startWithDot = findData.cFileName.StartsWith('.');
-            if ((!isHidden || (showHiddenFile && (!isSystem || showProtectedSystemFiles))) && (!startWithDot || showDotFiles))
+            if ((!isHidden ||
+                (userSettingsService.FoldersSettingsService.ShowHiddenItems &&
+                (!isSystem || userSettingsService.FoldersSettingsService.ShowProtectedSystemFiles))) &&
+                (!startWithDot || userSettingsService.FoldersSettingsService.ShowDotFiles))
             {
                 if (((FileAttributes)findData.dwFileAttributes & FileAttributes.Directory) != FileAttributes.Directory)
                 {
-                    var file = await GetFile(viewModel, findData, path, isGitRepo, cancellationToken);
+                    var file = await GetFile(findData, path, isGitRepo, cancellationToken);
                     if (file is not null)
                     {
                         if (defaultIconPairs is not null)
@@ -58,9 +60,9 @@ public static class Win32StorageEnumerator
                             if (!string.IsNullOrEmpty(file.FileExtension))
                             {
                                 var lowercaseExtension = file.FileExtension.ToLowerInvariant();
-                                if (defaultIconPairs.TryGetValue(lowercaseExtension, out var value))
+                                if (defaultIconPairs.ContainsKey(lowercaseExtension))
                                 {
-                                    file.FileImage = value;
+                                    file.FileImage = defaultIconPairs[lowercaseExtension];
                                 }
                             }
                         }
@@ -68,9 +70,9 @@ public static class Win32StorageEnumerator
                         tempList.Add(file);
                         ++count;
 
-                        if (areAlternateStreamsVisible)
+                        if (userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible)
                         {
-                            tempList.AddRange(EnumAdsForPath(viewModel, file.ItemPath, file));
+                            tempList.AddRange(EnumAdsForPath(file.ItemPath, file));
                         }
                     }
                 }
@@ -78,7 +80,7 @@ public static class Win32StorageEnumerator
                 {
                     if (findData.cFileName != "." && findData.cFileName != "..")
                     {
-                        var folder = await GetFolder(viewModel, findData, path, isGitRepo, cancellationToken);
+                        var folder = await GetFolder(findData, path, isGitRepo, cancellationToken);
                         if (folder is not null)
                         {
                             if (defaultIconPairs?.ContainsKey(string.Empty) ?? false)
@@ -90,18 +92,29 @@ public static class Win32StorageEnumerator
                             tempList.Add(folder);
                             ++count;
 
-                            if (areAlternateStreamsVisible)
+                            if (userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible)
                             {
-                                tempList.AddRange(EnumAdsForPath(viewModel,folder.ItemPath, folder));
+                                tempList.AddRange(EnumAdsForPath(folder.ItemPath, folder));
+                            }
+
+                            if (CalculateFolderSizes)
+                            {
+                                if (folderSizeProvider.TryGetSize(folder.ItemPath, out var size))
+                                {
+                                    folder.FileSizeBytes = (long)size;
+                                    folder.FileSize = size.ToSizeString();
+                                }
+
+                                _ = folderSizeProvider.UpdateAsync(folder.ItemPath, cancellationToken);
                             }
                         }
                     }
                 }
             }
 
-            if ((cancellationToken != null && ((CancellationToken)cancellationToken).IsCancellationRequested) || count == countLimit)
+            if (cancellationToken.IsCancellationRequested || count == countLimit)
             {
-                return null!;
+                break;
             }
 
             if (intermediateAction is not null && (count == 32 || sampler.CheckNow()))
@@ -118,24 +131,16 @@ public static class Win32StorageEnumerator
         return tempList;
     }
 
-    private static IEnumerable<ListedItem> EnumAdsForPath(
-        FolderViewViewModel viewModel, 
-        string itemPath, 
-        ListedItem main)
+    private static IEnumerable<ListedItem> EnumAdsForPath(string itemPath, ListedItem main)
     {
         foreach (var ads in NativeFileOperationsHelper.GetAlternateStreams(itemPath))
-        {
-            yield return GetAlternateStream(viewModel, ads, main);
-        }
+            yield return GetAlternateStream(ads, main);
     }
 
-    public static ListedItem GetAlternateStream(
-        FolderViewViewModel viewModel, 
-        (string Name, long Size) ads, 
-        ListedItem main)
+    public static ListedItem GetAlternateStream((string Name, long Size) ads, ListedItem main)
     {
-        var itemType = "File".GetLocalized();
-        string itemFileExtension = null!;
+        string itemType = "File".GetLocalizedResource();
+        string itemFileExtension = null;
 
         if (ads.Name.Contains('.'))
         {
@@ -143,9 +148,9 @@ public static class Win32StorageEnumerator
             itemType = itemFileExtension.Trim('.') + " " + itemType;
         }
 
-        var adsName = ads.Name[1..^6]; // Remove ":" and ":$DATA"
+        string adsName = ads.Name.Substring(1, ads.Name.Length - 7); // Remove ":" and ":$DATA"
 
-        return new AlternateStreamItem(viewModel)
+        return new AlternateStreamItem()
         {
             PrimaryItemAttribute = StorageItemTypes.File,
             FileExtension = itemFileExtension,
@@ -165,54 +170,47 @@ public static class Win32StorageEnumerator
     }
 
     public static async Task<ListedItem> GetFolder(
-        FolderViewViewModel viewModel,
-        WIN32_FIND_DATA findData,
+        NativeFindStorageItemHelper.WIN32_FIND_DATA findData,
         string pathRoot,
         bool isGitRepo,
         CancellationToken cancellationToken
     )
     {
-        if (cancellationToken != null && ((CancellationToken)cancellationToken).IsCancellationRequested)
-        {
-            return null!;
-        }
+        if (cancellationToken.IsCancellationRequested)
+            return null;
 
         DateTime itemModifiedDate;
         DateTime itemCreatedDate;
 
         try
         {
-            FileTimeToSystemTime(ref findData.ftLastWriteTime, out var systemModifiedTimeOutput);
+            FileTimeToSystemTime(ref findData.ftLastWriteTime, out NativeFindStorageItemHelper.SYSTEMTIME systemModifiedTimeOutput);
             itemModifiedDate = systemModifiedTimeOutput.ToDateTime();
 
-            FileTimeToSystemTime(ref findData.ftCreationTime, out var systemCreatedTimeOutput);
+            FileTimeToSystemTime(ref findData.ftCreationTime, out NativeFindStorageItemHelper.SYSTEMTIME systemCreatedTimeOutput);
             itemCreatedDate = systemCreatedTimeOutput.ToDateTime();
         }
         catch (ArgumentException)
         {
             // Invalid date means invalid findData, do not add to list
-            return null!;
+            return null;
         }
 
         var itemPath = Path.Combine(pathRoot, findData.cFileName);
 
-        var itemName = await fileListCache.ReadFileDisplayNameFromCache(itemPath, cancellationToken);
+        string itemName = await fileListCache.ReadFileDisplayNameFromCache(itemPath, cancellationToken);
         if (string.IsNullOrEmpty(itemName))
-        {
             itemName = findData.cFileName;
-        }
 
-        var isHidden = ((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden;
+        bool isHidden = (((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden);
         double opacity = 1;
 
         if (isHidden)
-        {
             opacity = Constants.UI.DimItemOpacity;
-        }
 
         if (isGitRepo)
         {
-            return new GitItem(viewModel)
+            return new GitItem()
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemNameRaw = itemName,
@@ -224,13 +222,13 @@ public static class Win32StorageEnumerator
                 Opacity = opacity,
                 LoadFileIcon = false,
                 ItemPath = itemPath,
-                FileSize = null!,
+                FileSize = null,
                 FileSizeBytes = 0,
             };
         }
         else
         {
-            return new ListedItem(viewModel)
+            return new ListedItem(null)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemNameRaw = itemName,
@@ -242,18 +240,17 @@ public static class Win32StorageEnumerator
                 Opacity = opacity,
                 LoadFileIcon = false,
                 ItemPath = itemPath,
-                FileSize = null!,
+                FileSize = null,
                 FileSizeBytes = 0,
             };
         }
     }
 
     public static async Task<ListedItem> GetFile(
-        FolderViewViewModel viewModel,
-        WIN32_FIND_DATA findData,
+        NativeFindStorageItemHelper.WIN32_FIND_DATA findData,
         string pathRoot,
         bool isGitRepo,
-        CancellationToken? cancellationToken
+        CancellationToken cancellationToken
     )
     {
         var itemPath = Path.Combine(pathRoot, findData.cFileName);
@@ -263,25 +260,25 @@ public static class Win32StorageEnumerator
 
         try
         {
-            FileTimeToSystemTime(ref findData.ftLastWriteTime, out var systemModifiedDateOutput);
+            FileTimeToSystemTime(ref findData.ftLastWriteTime, out NativeFindStorageItemHelper.SYSTEMTIME systemModifiedDateOutput);
             itemModifiedDate = systemModifiedDateOutput.ToDateTime();
 
-            FileTimeToSystemTime(ref findData.ftCreationTime, out var systemCreatedDateOutput);
+            FileTimeToSystemTime(ref findData.ftCreationTime, out NativeFindStorageItemHelper.SYSTEMTIME systemCreatedDateOutput);
             itemCreatedDate = systemCreatedDateOutput.ToDateTime();
 
-            FileTimeToSystemTime(ref findData.ftLastAccessTime, out var systemLastAccessOutput);
+            FileTimeToSystemTime(ref findData.ftLastAccessTime, out NativeFindStorageItemHelper.SYSTEMTIME systemLastAccessOutput);
             itemLastAccessDate = systemLastAccessOutput.ToDateTime();
         }
         catch (ArgumentException)
         {
             // Invalid date means invalid findData, do not add to list
-            return null!;
+            return null;
         }
 
-        var itemSizeBytes = findData.GetSize();
+        long itemSizeBytes = findData.GetSize();
         var itemSize = itemSizeBytes.ToSizeString();
-        var itemType = "File".GetLocalized();
-        string itemFileExtension = null!;
+        string itemType = "File".GetLocalizedResource();
+        string itemFileExtension = null;
 
         if (findData.cFileName.Contains('.'))
         {
@@ -289,29 +286,27 @@ public static class Win32StorageEnumerator
             itemType = itemFileExtension.Trim('.') + " " + itemType;
         }
 
-        var itemThumbnailImgVis = false;
-        var itemEmptyImgVis = true;
+        bool itemThumbnailImgVis = false;
+        bool itemEmptyImgVis = true;
 
-        if (cancellationToken != null && ((CancellationToken)cancellationToken).IsCancellationRequested)
-        {
-            return null!;
-        }
+        if (cancellationToken.IsCancellationRequested)
+            return null;
 
-        var isHidden = ((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden;
-        var opacity = isHidden ? Constants.UI.DimItemOpacity : 1.0;
+        bool isHidden = ((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden;
+        double opacity = isHidden ? Constants.UI.DimItemOpacity : 1;
 
         // https://learn.microsoft.com/openspecs/windows_protocols/ms-fscc/c8e77b37-3909-4fe6-a4ea-2b9d423b1ee4
-        var isReparsePoint = ((FileAttributes)findData.dwFileAttributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint;
-        var isSymlink = isReparsePoint && findData.dwReserved0 == NativeFileOperationsHelper.IO_REPARSE_TAG_SYMLINK;
+        bool isReparsePoint = ((FileAttributes)findData.dwFileAttributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint;
+        bool isSymlink = isReparsePoint && findData.dwReserved0 == NativeFileOperationsHelper.IO_REPARSE_TAG_SYMLINK;
 
         if (isSymlink)
         {
             var targetPath = NativeFileOperationsHelper.ParseSymLink(itemPath);
 
-            return new ShortcutItem(viewModel)
+            return new ShortcutItem(null)
             {
                 PrimaryItemAttribute = StorageItemTypes.File,
-                FileExtension = itemFileExtension!,
+                FileExtension = itemFileExtension,
                 IsHiddenItem = isHidden,
                 Opacity = opacity,
                 FileImage = null,
@@ -321,11 +316,11 @@ public static class Win32StorageEnumerator
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,
                 ItemDateCreatedReal = itemCreatedDate,
-                ItemType = "Shortcut".GetLocalized(),
+                ItemType = "Shortcut".GetLocalizedResource(),
                 ItemPath = itemPath,
                 FileSize = itemSize,
                 FileSizeBytes = itemSizeBytes,
-                TargetPath = targetPath!,
+                TargetPath = targetPath,
                 IsSymLink = true
             };
         }
@@ -335,14 +330,12 @@ public static class Win32StorageEnumerator
 
             var shInfo = await FileOperationsHelpers.ParseLinkAsync(itemPath);
             if (shInfo is null)
-            {
-                return null!;
-            }
+                return null;
 
-            return new ShortcutItem(viewModel)
+            return new ShortcutItem(null)
             {
                 PrimaryItemAttribute = shInfo.IsFolder ? StorageItemTypes.Folder : StorageItemTypes.File,
-                FileExtension = itemFileExtension!,
+                FileExtension = itemFileExtension,
                 IsHiddenItem = isHidden,
                 Opacity = opacity,
                 FileImage = null,
@@ -352,31 +345,31 @@ public static class Win32StorageEnumerator
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,
                 ItemDateCreatedReal = itemCreatedDate,
-                ItemType = isUrl ? "ShortcutWebLinkFileType".GetLocalized() : "Shortcut".GetLocalized(),
+                ItemType = isUrl ? "ShortcutWebLinkFileType".GetLocalizedResource() : "Shortcut".GetLocalizedResource(),
                 ItemPath = itemPath,
                 FileSize = itemSize,
                 FileSizeBytes = itemSizeBytes,
-                TargetPath = shInfo.TargetPath!,
-                Arguments = shInfo.Arguments!,
-                WorkingDirectory = shInfo.WorkingDirectory!,
+                TargetPath = shInfo.TargetPath,
+                Arguments = shInfo.Arguments,
+                WorkingDirectory = shInfo.WorkingDirectory,
                 RunAsAdmin = shInfo.RunAsAdmin,
                 IsUrl = isUrl,
             };
         }
-        /*else if (App.LibraryManager.TryGetLibrary(itemPath, out LibraryLocationItem library))
+        else if (App.LibraryManager.TryGetLibrary(itemPath, out LibraryLocationItem library))
         {
-            return new LibraryItem(viewModel, library)
+            return new LibraryItem(library)
             {
                 Opacity = opacity,
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateCreatedReal = itemCreatedDate,
             };
-        }*/
+        }
         else
         {
             if (ZipStorageFolder.IsZipPath(itemPath) && await ZipStorageFolder.CheckDefaultZipApp(itemPath))
             {
-                return new ZipItem(viewModel)
+                return new ZipItem(null)
                 {
                     PrimaryItemAttribute = StorageItemTypes.Folder, // Treat zip files as folders
                     FileExtension = itemFileExtension,
@@ -396,10 +389,10 @@ public static class Win32StorageEnumerator
             }
             else if (isGitRepo)
             {
-                return new GitItem(viewModel)
+                return new GitItem()
                 {
                     PrimaryItemAttribute = StorageItemTypes.File,
-                    FileExtension = itemFileExtension!,
+                    FileExtension = itemFileExtension,
                     FileImage = null,
                     LoadFileIcon = itemThumbnailImgVis,
                     ItemNameRaw = itemName,
@@ -416,7 +409,7 @@ public static class Win32StorageEnumerator
             }
             else
             {
-                return new ListedItem(viewModel)
+                return new ListedItem(null)
                 {
                     PrimaryItemAttribute = StorageItemTypes.File,
                     FileExtension = itemFileExtension,
@@ -435,5 +428,7 @@ public static class Win32StorageEnumerator
                 };
             }
         }
+
+        return null;
     }
-}
+}*/

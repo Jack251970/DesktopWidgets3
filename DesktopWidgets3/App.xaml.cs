@@ -34,6 +34,7 @@ using Files.App.Utils;
 using Files.Core.Extensions;
 using Files.Core.Utils.Cloud;
 using Files.App.Utils.Cloud;
+using Files.App.Utils.Library;
 
 namespace DesktopWidgets3;
 
@@ -223,6 +224,9 @@ public partial class App : Application
 
             // Application
             services.AddSingleton<IApplicationService, ApplicationService>();
+
+            // Libarary
+            services.AddSingleton<LibraryManager>();
 
             #endregion
 

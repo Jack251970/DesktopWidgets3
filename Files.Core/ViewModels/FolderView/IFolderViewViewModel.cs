@@ -8,6 +8,8 @@ public partial interface IFolderViewViewModel
 
     bool ShowFileExtensions { get; }
 
+    bool ShowDotFiles { get; }
+
     string WorkingDirectory { get; }
 
     IDialogService DialogService { get; }
