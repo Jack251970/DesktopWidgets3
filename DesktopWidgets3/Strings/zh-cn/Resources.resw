@@ -1025,4 +1025,61 @@
     <value>音量增大</value>
     <comment>Key name for hotkeys in menus. Use abbreviation if possible.</comment>
   </data>
+  <data name="PropertySaveErrorMessage.Text" xml:space="preserve">
+    <value>保存某些属性时出现错误。</value>
+  </data>
+  <data name="PropertySaveErrorDialog.Title" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="PropertySaveErrorDialog.SecondaryButtonText" xml:space="preserve">
+    <value>仍要关闭</value>
+  </data>
+  <data name="WelcomeDialog.Title" xml:space="preserve">
+    <value>欢迎使用 Files!</value>
+  </data>
+  <data name="WelcomeDialog.PrimaryButtonText" xml:space="preserve">
+    <value>授予权限</value>
+  </data>
+  <data name="WelcomeDialogTextBlock.Text" xml:space="preserve">
+    <value>要开始使用，请授予我们访问文件系统的权限。你可以在稍后打开的设置窗口中授权。完成设置后，需要重新打开应用程序。 </value>
+  </data>
+  <data name="StashChanges" xml:space="preserve">
+    <value>保留我对“{0}”所做的更改</value>
+  </data>
+  <data name="DiscardChanges" xml:space="preserve">
+    <value>放弃我的更改</value>
+  </data>
+  <data name="BringChanges" xml:space="preserve">
+    <value>应用我对“{0}”所做的更改</value>
+  </data>
+  <data name="UncommittedChanges" xml:space="preserve">
+    <value>你在此分支上有未提交的更改。如何处理这些更改？</value>
+  </data>
+  <data name="SwitchBranch" xml:space="preserve">
+    <value>切换分支</value>
+  </data>
+  <data name="Branches" xml:space="preserve">
+    <value>分支</value>
+  </data>
+  <data name="Switch" xml:space="preserve">
+    <value>切换</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="CannotReachGitHubError" xml:space="preserve">
+    <value>Files 目前无法访问 GitHub。</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="CannotInitializeGitRepo" xml:space="preserve">
+    <value>Files 无法将此目录初始化为 Git 仓库.</value>
+  </data>
+  <data name="GitDeleteBranch" xml:space="preserve">
+    <value>删除 Git 分支</value>
+  </data>
+  <data name="GitDeleteBranchSubtitle" xml:space="preserve">
+    <value>确定要永久删除分支 "{0}" 吗?</value>
+  </data>
 </root>

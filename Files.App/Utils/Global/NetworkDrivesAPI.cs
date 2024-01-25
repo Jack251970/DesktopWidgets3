@@ -141,7 +141,7 @@ public class NetworkDrivesAPI
 
 		if (connectionError == Win32Error.ERROR_LOGON_FAILURE)
 		{
-			/*var dialog = DynamicDialogFactory.GetFor_CredentialEntryDialog(path);
+			var dialog = DynamicDialogFactory.GetFor_CredentialEntryDialog(path);
 			await dialog.ShowAsync();
 			var credentialsReturned = dialog.ViewModel.AdditionalData as string[];
 
@@ -167,7 +167,7 @@ public class NetworkDrivesAPI
 			else
             {
                 return false;
-            }*/
+            }
         }
 
 		if (connectionError == Win32Error.NO_ERROR)

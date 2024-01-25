@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.Dialogs;
+using Files.App.Dialogs;
 using Files.App.ViewModels.Dialogs;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -18,13 +18,13 @@ public static class DynamicDialogFactory
 
 	public static DynamicDialog GetFor_PropertySaveErrorDialog()
 	{
-		DynamicDialog dialog = new DynamicDialog(new DynamicDialogViewModel()
+		var dialog = new DynamicDialog(new DynamicDialogViewModel()
 		{
-			TitleText = "PropertySaveErrorDialog/Title".GetLocalizedResource(),
-			SubtitleText = "PropertySaveErrorMessage/Text".GetLocalizedResource(), // We can use subtitle here as our content
-			PrimaryButtonText = "Retry".GetLocalizedResource(),
-			SecondaryButtonText = "PropertySaveErrorDialog/SecondaryButtonText".GetLocalizedResource(),
-			CloseButtonText = "Cancel".GetLocalizedResource(),
+			TitleText = "PropertySaveErrorDialog/Title".ToLocalized(),
+			SubtitleText = "PropertySaveErrorMessage/Text".ToLocalized(), // We can use subtitle here as our content
+			PrimaryButtonText = "Retry".ToLocalized(),
+			SecondaryButtonText = "PropertySaveErrorDialog/SecondaryButtonText".ToLocalized(),
+			CloseButtonText = "Cancel".ToLocalized(),
 			DynamicButtons = DynamicDialogButtons.Primary | DynamicDialogButtons.Secondary | DynamicDialogButtons.Cancel
 		});
 		return dialog;
@@ -32,11 +32,11 @@ public static class DynamicDialogFactory
 
 	public static DynamicDialog GetFor_ConsentDialog()
 	{
-		DynamicDialog dialog = new DynamicDialog(new DynamicDialogViewModel()
+		var dialog = new DynamicDialog(new DynamicDialogViewModel()
 		{
-			TitleText = "WelcomeDialog/Title".GetLocalizedResource(),
-			SubtitleText = "WelcomeDialogTextBlock/Text".GetLocalizedResource(), // We can use subtitle here as our content
-			PrimaryButtonText = "WelcomeDialog/PrimaryButtonText".GetLocalizedResource(),
+			TitleText = "WelcomeDialog/Title".ToLocalized(),
+			SubtitleText = "WelcomeDialogTextBlock/Text".ToLocalized(), // We can use subtitle here as our content
+			PrimaryButtonText = "WelcomeDialog/PrimaryButtonText".ToLocalized(),
 			PrimaryButtonAction = async (vm, e) => await Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-broadfilesystemaccess")),
 			DynamicButtons = DynamicDialogButtons.Primary
 		});
@@ -47,10 +47,10 @@ public static class DynamicDialogFactory
 	{
 		DynamicDialog dialog = new(new DynamicDialogViewModel
 		{
-			TitleText = "ShortcutCannotBeOpened".GetLocalizedResource(),
-			SubtitleText = string.Format("DeleteShortcutDescription".GetLocalizedResource(), targetPath),
-			PrimaryButtonText = "Delete".GetLocalizedResource(),
-			SecondaryButtonText = "No".GetLocalizedResource(),
+			TitleText = "ShortcutCannotBeOpened".ToLocalized(),
+			SubtitleText = string.Format("DeleteShortcutDescription".ToLocalized(), targetPath),
+			PrimaryButtonText = "Delete".ToLocalized(),
+			SecondaryButtonText = "No".ToLocalized(),
 			DynamicButtons = DynamicDialogButtons.Primary | DynamicDialogButtons.Secondary
 		});
 		return dialog;
@@ -61,12 +61,12 @@ public static class DynamicDialogFactory
 		DynamicDialog? dialog = null;
 		TextBox inputText = new()
 		{
-			PlaceholderText = "EnterAnItemName".GetLocalizedResource()
+			PlaceholderText = "EnterAnItemName".ToLocalized()
 		};
 
 		TeachingTip warning = new()
 		{
-			Title = "InvalidFilename/Text".GetLocalizedResource(),
+			Title = "InvalidFilename/Text".ToLocalized(),
 			PreferredPlacement = TeachingTipPlacementMode.Bottom,
 			DataContext = new RenameDialogViewModel(),
 		};
@@ -85,7 +85,7 @@ public static class DynamicDialogFactory
 
 		inputText.TextChanged += (textBox, args) =>
 		{
-			var isInputValid = FilesystemHelpers.IsValidForFilename(inputText.Text);
+            var isInputValid = false;/*FilesystemHelpers.IsValidForFilename(inputText.Text);*/ // TODO: Add support.
 			((RenameDialogViewModel)warning.DataContext).IsNameInvalid = !string.IsNullOrEmpty(inputText.Text) && !isInputValid;
 			dialog!.ViewModel.DynamicButtonsEnabled = isInputValid
 													? DynamicDialogButtons.Primary | DynamicDialogButtons.Cancel
@@ -104,7 +104,7 @@ public static class DynamicDialogFactory
 
 		dialog = new DynamicDialog(new DynamicDialogViewModel()
 		{
-			TitleText = "EnterAnItemName".GetLocalizedResource(),
+			TitleText = "EnterAnItemName".ToLocalized(),
 			SubtitleText = null!,
 			DisplayControl = new Grid()
 			{
@@ -118,8 +118,8 @@ public static class DynamicDialogFactory
 			{
 				vm.HideDialog(); // Rename successful
 			},
-			PrimaryButtonText = "RenameDialog/PrimaryButtonText".GetLocalizedResource(),
-			CloseButtonText = "Cancel".GetLocalizedResource(),
+			PrimaryButtonText = "RenameDialog/PrimaryButtonText".ToLocalized(),
+			CloseButtonText = "Cancel".ToLocalized(),
 			DynamicButtonsEnabled = DynamicDialogButtons.Cancel,
 			DynamicButtons = DynamicDialogButtons.Primary | DynamicDialogButtons.Cancel
 		});
@@ -132,14 +132,14 @@ public static class DynamicDialogFactory
 		return dialog;
 	}
 
-	public static DynamicDialog GetFor_FileInUseDialog(List<Win32Process> lockingProcess = null)
+	public static DynamicDialog GetFor_FileInUseDialog(List<Win32Process> lockingProcess = null!)
 	{
-		DynamicDialog dialog = new DynamicDialog(new DynamicDialogViewModel()
+		var dialog = new DynamicDialog(new DynamicDialogViewModel()
 		{
-			TitleText = "FileInUseDialog/Title".GetLocalizedResource(),
-			SubtitleText = lockingProcess.IsEmpty() ? "FileInUseDialog/Text".GetLocalizedResource() :
-				string.Format("FileInUseByDialog/Text".GetLocalizedResource(), string.Join(", ", lockingProcess.Select(x => $"{x.AppName ?? x.Name} (PID: {x.Pid})"))),
-			PrimaryButtonText = "OK",
+			TitleText = "FileInUseDialog/Title".ToLocalized(),
+			SubtitleText = lockingProcess.IsEmpty() ? "FileInUseDialog/Text".ToLocalized() :
+				string.Format("FileInUseByDialog/Text".ToLocalized(), string.Join(", ", lockingProcess.Select(x => $"{x.AppName ?? x.Name} (PID: {x.Pid})"))),
+			PrimaryButtonText = "OK".ToLocalized(),
 			DynamicButtons = DynamicDialogButtons.Primary
 		});
 		return dialog;
@@ -152,49 +152,49 @@ public static class DynamicDialogFactory
 
 		TextBox inputUsername = new()
 		{
-			PlaceholderText = "CredentialDialogUserName/PlaceholderText".GetLocalizedResource()
+			PlaceholderText = "CredentialDialogUserName/PlaceholderText".ToLocalized()
 		};
 
 		PasswordBox inputPassword = new()
 		{
-			PlaceholderText = "Password".GetLocalizedResource()
+			PlaceholderText = "Password".ToLocalized()
 		};
 
 		CheckBox saveCreds = new()
 		{
-			Content = "NetworkAuthenticationSaveCheckbox".GetLocalizedResource()
+			Content = "NetworkAuthenticationSaveCheckbox".ToLocalized()
 		};
 
 		inputUsername.TextChanged += (textBox, args) =>
 		{
 			userAndPass[0] = inputUsername.Text;
-			dialog.ViewModel.AdditionalData = userAndPass;
+			dialog!.ViewModel.AdditionalData = userAndPass;
 		};
 
 		inputPassword.PasswordChanged += (textBox, args) =>
 		{
 			userAndPass[1] = inputPassword.Password;
-			dialog.ViewModel.AdditionalData = userAndPass;
+			dialog!.ViewModel.AdditionalData = userAndPass;
 		};
 
 		saveCreds.Checked += (textBox, args) =>
 		{
 			userAndPass[2] = "y";
-			dialog.ViewModel.AdditionalData = userAndPass;
+			dialog!.ViewModel.AdditionalData = userAndPass;
 		};
 
 		saveCreds.Unchecked += (textBox, args) =>
 		{
 			userAndPass[2] = "n";
-			dialog.ViewModel.AdditionalData = userAndPass;
+			dialog!.ViewModel.AdditionalData = userAndPass;
 		};
 
 		dialog = new DynamicDialog(new DynamicDialogViewModel()
 		{
-			TitleText = "NetworkAuthenticationDialogTitle".GetLocalizedResource(),
-			PrimaryButtonText = "OK".GetLocalizedResource(),
-			CloseButtonText = "Cancel".GetLocalizedResource(),
-			SubtitleText = string.Format("NetworkAuthenticationDialogMessage".GetLocalizedResource(), path.Substring(2)),
+			TitleText = "NetworkAuthenticationDialogTitle".ToLocalized(),
+			PrimaryButtonText = "OK".ToLocalized(),
+			CloseButtonText = "Cancel".ToLocalized(),
+			SubtitleText = string.Format("NetworkAuthenticationDialogMessage".ToLocalized(), path[2..]),
 			DisplayControl = new Grid()
 			{
 				MinWidth = 250d,
@@ -214,7 +214,7 @@ public static class DynamicDialogFactory
 			},
 			CloseButtonAction = (vm, e) =>
 			{
-				dialog.ViewModel.AdditionalData = null;
+				dialog!.ViewModel.AdditionalData = null!;
 				vm.HideDialog();
 			}
 
@@ -227,29 +227,29 @@ public static class DynamicDialogFactory
 	{
 		DynamicDialog dialog = null!;
 
-		var optionsListView = new ListView()
-		{
-			ItemsSource = new string[]
-			{
-				string.Format("BringChanges".GetLocalizedResource(), checkoutBranchName),
-				string.Format("StashChanges".GetLocalizedResource(), headBranchName),
-				"DiscardChanges".GetLocalizedResource()
-			},
-			SelectionMode = ListViewSelectionMode.Single
-		};
-		optionsListView.SelectedIndex = 0;
+        var optionsListView = new ListView
+        {
+            ItemsSource = new string[]
+            {
+                string.Format("BringChanges".ToLocalized(), checkoutBranchName),
+                string.Format("StashChanges".ToLocalized(), headBranchName),
+                "DiscardChanges".ToLocalized()
+            },
+            SelectionMode = ListViewSelectionMode.Single,
+            SelectedIndex = 0
+        };
 
-		optionsListView.SelectionChanged += (listView, args) =>
+        optionsListView.SelectionChanged += (listView, args) =>
 		{
 			dialog.ViewModel.AdditionalData = (GitCheckoutOptions)optionsListView.SelectedIndex;
 		};
 
 		dialog = new DynamicDialog(new DynamicDialogViewModel()
 		{
-			TitleText = "SwitchBranch".GetLocalizedResource(),
-			PrimaryButtonText = "Switch".GetLocalizedResource(),
-			CloseButtonText = "Cancel".GetLocalizedResource(),
-			SubtitleText = "UncommittedChanges".GetLocalizedResource(),
+			TitleText = "SwitchBranch".ToLocalized(),
+			PrimaryButtonText = "Switch".ToLocalized(),
+			CloseButtonText = "Cancel".ToLocalized(),
+			SubtitleText = "UncommittedChanges".ToLocalized(),
 			DisplayControl = new Grid()
 			{
 				MinWidth = 250d,
@@ -271,11 +271,11 @@ public static class DynamicDialogFactory
 
 	public static DynamicDialog GetFor_GitHubConnectionError()
 	{
-		DynamicDialog dialog = new DynamicDialog(new DynamicDialogViewModel()
+		var dialog = new DynamicDialog(new DynamicDialogViewModel()
 		{
-			TitleText = "Error".GetLocalizedResource(),
-			SubtitleText = "CannotReachGitHubError".GetLocalizedResource(),
-			PrimaryButtonText = "Close".GetLocalizedResource(),
+			TitleText = "Error".ToLocalized(),
+			SubtitleText = "CannotReachGitHubError".ToLocalized(),
+			PrimaryButtonText = "Close".ToLocalized(),
 			DynamicButtons = DynamicDialogButtons.Primary
 		});
 		return dialog;
@@ -285,9 +285,9 @@ public static class DynamicDialogFactory
 	{
 		return new DynamicDialog(new DynamicDialogViewModel()
 		{
-			TitleText = "Error".GetLocalizedResource(),
-			SubtitleText = "CannotInitializeGitRepo".GetLocalizedResource(),
-			PrimaryButtonText = "Close".GetLocalizedResource(),
+			TitleText = "Error".ToLocalized(),
+			SubtitleText = "CannotInitializeGitRepo".ToLocalized(),
+			PrimaryButtonText = "Close".ToLocalized(),
 			DynamicButtons = DynamicDialogButtons.Primary
 		});
 	}
@@ -297,10 +297,10 @@ public static class DynamicDialogFactory
 		DynamicDialog dialog = null!;
 		dialog = new DynamicDialog(new DynamicDialogViewModel()
 		{
-			TitleText = "GitDeleteBranch".GetLocalizedResource(),
-			SubtitleText = string.Format("GitDeleteBranchSubtitle".GetLocalizedResource(), branchName),
-			PrimaryButtonText = "OK".GetLocalizedResource(),
-			CloseButtonText = "Cancel".GetLocalizedResource(),
+			TitleText = "GitDeleteBranch".ToLocalized(),
+			SubtitleText = string.Format("GitDeleteBranchSubtitle".ToLocalized(), branchName),
+			PrimaryButtonText = "OK".ToLocalized(),
+			CloseButtonText = "Cancel".ToLocalized(),
 			AdditionalData = true,
 			CloseButtonAction = (vm, e) =>
 			{
@@ -311,4 +311,4 @@ public static class DynamicDialogFactory
 
 		return dialog;
 	}
-}*/
+}
