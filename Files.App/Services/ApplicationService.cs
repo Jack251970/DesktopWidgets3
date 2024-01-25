@@ -1,9 +1,8 @@
-﻿/*using Windows.ApplicationModel;
-
-namespace Files.App.Services;
+﻿namespace Files.App.Services;
 
 /// <inheritdoc/>
-internal sealed class ApplicationService : IApplicationService
+// TODO: change to internal.
+public sealed class ApplicationService : IApplicationService
 {
 	// Workaround to help improve code clarity
 	internal static readonly AppEnvironment AppEnvironment =
@@ -20,7 +19,7 @@ internal sealed class ApplicationService : IApplicationService
 	/// <inheritdoc/>
 	public AppEnvironment Environment { get; } = AppEnvironment;
 
-	/// <inheritdoc/>
+	/*/// <inheritdoc/>
 	public Version AppVersion { get; } = new(
 		Package.Current.Id.Version.Major,
 		Package.Current.Id.Version.Minor,
@@ -33,5 +32,5 @@ internal sealed class ApplicationService : IApplicationService
 		AppEnvironment.Dev => Constants.AssetPaths.DevLogo,
 		AppEnvironment.Preview => Constants.AssetPaths.PreviewLogo,
 		_ => Constants.AssetPaths.StableLogo
-	};
-}*/
+	};*/
+}

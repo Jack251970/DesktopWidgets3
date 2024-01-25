@@ -1,4 +1,4 @@
-﻿/*namespace Files.App.ViewModels.Dialogs;
+﻿namespace Files.App.ViewModels.Dialogs;
 
 public class AddBranchDialogViewModel : ObservableObject
 {
@@ -64,4 +64,4 @@ public class AddBranchDialogViewModel : ObservableObject
 		Branches = (await GitHelpers.GetBranchesNames(_repositoryPath)).Select(b => b.Name).ToArray();
 		OnPropertyChanged(nameof(Branches));
 	}
-}*/
+}

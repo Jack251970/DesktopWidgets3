@@ -221,6 +221,9 @@ public partial class App : Application
             // Start Menu
             services.AddSingleton<IStartMenuService, StartMenuService>();
 
+            // Application
+            services.AddSingleton<IApplicationService, ApplicationService>();
+
             #endregion
 
             #region Views & ViewModels

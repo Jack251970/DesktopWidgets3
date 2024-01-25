@@ -1082,4 +1082,28 @@
   <data name="GitDeleteBranchSubtitle" xml:space="preserve">
     <value>确定要永久删除分支 "{0}" 吗?</value>
   </data>
+  <data name="GitError" xml:space="preserve">
+    <value>Git 错误</value>
+  </data>
+  <data name="PullTimeoutError" xml:space="preserve">
+    <value>由于超时错误，git pull 失败</value>
+  </data>
+  <data name="ConnectGitHubDescription" xml:space="preserve">
+    <value>若要开始使用 GitHub 存储库，请在下方的链接中输入以下验证码。</value>
+  </data>
+  <data name="AuthorizationSucceded" xml:space="preserve">
+    <value>很好！你现在已获得授权。</value>
+  </data>
+  <data name="Added" xml:space="preserve">
+    <value>已添加</value>
+  </data>
+  <data name="Deleted" xml:space="preserve">
+    <value>已删除</value>
+  </data>
+  <data name="Modified" xml:space="preserve">
+    <value>已修改</value>
+  </data>
+  <data name="Untracked" xml:space="preserve">
+    <value>未跟踪</value>
+  </data>
 </root>

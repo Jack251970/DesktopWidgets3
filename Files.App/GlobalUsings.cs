@@ -25,8 +25,8 @@ global using global::Files.App.Extensions;
 global using global::Files.App.Utils;
 global using global::Files.App.Utils.Archives;
 global using global::Files.App.Utils.Cloud;
-/*global using global::Files.App.Utils.FileTags;
-global using global::Files.App.Utils.Git;*/
+/*global using global::Files.App.Utils.FileTags;*/
+global using global::Files.App.Utils.Git;
 global using global::Files.App.Utils.Library;
 /*global using global::Files.App.Utils.RecentItem;*/
 global using global::Files.App.Utils.RecycleBin;

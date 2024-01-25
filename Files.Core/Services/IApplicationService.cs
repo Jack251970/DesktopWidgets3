@@ -10,7 +10,7 @@ public interface IApplicationService
 	/// </summary>
 	AppEnvironment Environment { get; }
 
-	/// <summary>
+	/*/// <summary>
 	/// Gets the version of the app.
 	/// </summary>
 	Version AppVersion { get; }
@@ -19,5 +19,5 @@ public interface IApplicationService
 	/// Gets the path at which the App Logo is located.
 	/// </summary>
 	[Obsolete("This is a bad way of accessing the logo. Use something more abstract instead, and ideally move it out of this interface.")]
-	string AppIcoPath { get; }
+	string AppIcoPath { get; }*/
 }

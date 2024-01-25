@@ -24,6 +24,8 @@
       <PackageReference Include="DiscUtils.Udf" Version="0.16.13" />
       <PackageReference Include="FluentFTP" Version="49.0.1" />
       <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
+      <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.3" />
+      <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.3" />
       <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.1" />
       <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
       <PackageReference Include="Microsoft.Management.Infrastructure.Runtime.Win" Version="3.0.0" />
