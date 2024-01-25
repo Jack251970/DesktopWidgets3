@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
+using Files.App.ViewModels.Dialogs;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation.Metadata;
@@ -26,18 +27,18 @@ public sealed class DialogService : IDialogService
         _folderViewViewModel = folderViewViewModel;
         _dialogs = new Dictionary<Type, Func<ContentDialog>>()
         {
-            /*{ typeof(AddItemDialogViewModel), () => new AddItemDialog() },
+            { typeof(AddItemDialogViewModel), () => new AddItemDialog() },
             { typeof(CredentialDialogViewModel), () => new CredentialDialog() },
-            { typeof(ElevateConfirmDialogViewModel), () => new ElevateConfirmDialog() },*/
+            { typeof(ElevateConfirmDialogViewModel), () => new ElevateConfirmDialog() },
             { typeof(FileSystemDialogViewModel), () => new FilesystemOperationDialog(folderViewViewModel) },
-            /*{ typeof(DecompressArchiveDialogViewModel), () => new DecompressArchiveDialog() },
-            { typeof(SettingsDialogViewModel), () => new SettingsDialog() },
+            { typeof(DecompressArchiveDialogViewModel), () => new DecompressArchiveDialog() },
+            /*{ typeof(SettingsDialogViewModel), () => new SettingsDialog(folderViewViewModel) },*/
             { typeof(CreateShortcutDialogViewModel), () => new CreateShortcutDialog() },
             { typeof(ReorderSidebarItemsDialogViewModel), () => new ReorderSidebarItemsDialog() },
             { typeof(AddBranchDialogViewModel), () => new AddBranchDialog() },
             { typeof(GitHubLoginDialogViewModel), () => new GitHubLoginDialog() },
-            { typeof(FileTooLargeDialogViewModel), () => new FileTooLargeDialog() },
-            { typeof(ReleaseNotesDialogViewModel), () => new ReleaseNotesDialog() },*/
+            { typeof(FileTooLargeDialogViewModel), () => new FileTooLargeDialog(folderViewViewModel) },
+            { typeof(ReleaseNotesDialogViewModel), () => new ReleaseNotesDialog(folderViewViewModel) },
         };
     }
 

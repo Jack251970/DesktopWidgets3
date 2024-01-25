@@ -14,7 +14,7 @@ public class DecompressArchiveDialogViewModel : ObservableObject
 
 	private readonly IStorageFile archive;
 
-	public StorageFolder DestinationFolder { get; private set; }
+    public StorageFolder DestinationFolder { get; private set; } = null!;
 
 	private string destinationFolderPath;
 	public string DestinationFolderPath
