@@ -74,20 +74,10 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Labs.WinUI.SettingsControls" Version="0.0.18" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
-    <PackageReference Include="DiscUtils.Udf" Version="0.16.13" />
     <PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.124" />
-    <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.3" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231219000" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
-    <PackageReference Include="SevenZipSharp" Version="1.0.2" />
-    <PackageReference Include="System.IO.Hashing" Version="8.0.0" />
-    <PackageReference Include="Vanara.PInvoke.Mpr" Version="3.4.17" />
-    <PackageReference Include="Vanara.PInvoke.Ole" Version="3.4.17" />
     <PackageReference Include="WinUIEx" Version="2.3.3" />
   </ItemGroup>
 
