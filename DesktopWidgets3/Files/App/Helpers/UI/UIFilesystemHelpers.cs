@@ -4,7 +4,6 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Text;
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Utils;
 using Files.App.Utils.Storage;
