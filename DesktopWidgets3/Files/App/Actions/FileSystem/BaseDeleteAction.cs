@@ -3,6 +3,7 @@
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Helpers;
+using Files.App.Utils.Storage;
 using Files.Core.Data.Enums;
 using System.ComponentModel;
 using Windows.Storage;
@@ -30,7 +31,7 @@ internal abstract class BaseDeleteAction : BaseUIAction
                         ? FilesystemItemType.File
                         : FilesystemItemType.Directory));
 
-        await context.FileSystemHelpers.DeleteItemsAsync(context, items, context.GetSettings().DeleteConfirmationPolicy, permanently);
+        await DependencyExtensions.GetService<IFileSystemHelpers>().DeleteItemsAsync(context, items, context.GetSettings().DeleteConfirmationPolicy, permanently);
 
         await context.FileSystemViewModel.ApplyFilesAndFoldersChangesAsync();
     }

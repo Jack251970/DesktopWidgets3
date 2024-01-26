@@ -742,7 +742,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
 
     protected async Task ValidateItemNameInputTextAsync(TextBox textBox, TextBoxBeforeTextChangingEventArgs args, Action<bool> showError)
     {
-        if (FileSystemHelpers.ContainsRestrictedCharacters(args.NewText))
+        if (FileSystemHelpers.ContainsRestrictedCharacters(ViewModel, args.NewText))
         {
             args.Cancel = true;
 
@@ -750,7 +750,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
             {
                 var oldSelection = textBox.SelectionStart + textBox.SelectionLength;
                 var oldText = textBox.Text;
-                textBox.Text = FileSystemHelpers.FilterRestrictedCharacters(args.NewText);
+                textBox.Text = FileSystemHelpers.FilterRestrictedCharacters(ViewModel, args.NewText);
                 textBox.SelectionStart = oldSelection + textBox.Text.Length - oldText.Length;
                 showError?.Invoke(true);
             });
@@ -1041,7 +1041,7 @@ public abstract class BaseLayoutPage : Page, INotifyPropertyChanged
         var item = GetItemFromElement(sender);
         if (item is not null)
         {
-            await ViewModel!.FileSystemHelpers.PerformOperationTypeAsync(ViewModel, e.AcceptedOperation, e.DataView, (item as ShortcutItem)?.TargetPath ?? item.ItemPath, false, item.IsExecutable, item.IsPythonFile);
+            await DependencyExtensions.GetService<IFileSystemHelpers>().PerformOperationTypeAsync(ViewModel, e.AcceptedOperation, e.DataView, (item as ShortcutItem)?.TargetPath ?? item.ItemPath, false, item.IsExecutable, item.IsPythonFile);
         }
 
         deferral.Complete();

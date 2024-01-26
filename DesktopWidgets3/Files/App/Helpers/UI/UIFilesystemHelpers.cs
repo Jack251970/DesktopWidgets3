@@ -118,7 +118,7 @@ public static class UIFileSystemHelpers
 
         var itemType = (item.PrimaryItemAttribute == StorageItemTypes.Folder) ? FilesystemItemType.Directory : FilesystemItemType.File;
 
-        var renamed = await viewModel.FileSystemHelpers.RenameAsync(viewModel, StorageHelpers.FromPathAndType(item.ItemPath, itemType), newName, NameCollisionOption.FailIfExists, showExtensionDialog);
+        var renamed = await DependencyExtensions.GetService<IFileSystemHelpers>().RenameAsync(viewModel, StorageHelpers.FromPathAndType(item.ItemPath, itemType), newName, NameCollisionOption.FailIfExists, showExtensionDialog);
 
         if (renamed == ReturnResult.Success)
         {
@@ -285,7 +285,7 @@ public static class UIFileSystemHelpers
                     // FTP don't support cut, fallback to copy
                     if (listedItem is not FtpItem)
                     {
-                        _ = DesktopWidgets3.App.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+                        _ = UIThreadExtensions.DispatcherQueue!.TryEnqueue(DispatcherQueuePriority.Low, () =>
                         {
                             // Dim opacities accordingly
                             listedItem.Opacity = Constants.UI.DimItemOpacity;
@@ -375,7 +375,7 @@ public static class UIFileSystemHelpers
         var packageView = await FilesystemTasks.Wrap(() => Task.FromResult(Clipboard.GetContent()));
         if (packageView && packageView.Result is not null)
         {
-            await viewModel.FileSystemHelpers.PerformOperationTypeAsync(viewModel, packageView.Result.RequestedOperation, packageView, destinationPath, false);
+            await DependencyExtensions.GetService<IFileSystemHelpers>().PerformOperationTypeAsync(viewModel, packageView.Result.RequestedOperation, packageView, destinationPath, false);
             viewModel.ItemManipulationModel.RefreshItemsOpacity();
             await viewModel.RefreshIfNoWatcherExistsAsync();
         }
@@ -471,7 +471,7 @@ public static class UIFileSystemHelpers
                 return;
             }
 
-            await viewModel.FileSystemHelpers.MoveItemsAsync(viewModel, items, items.Select(x => PathNormalization.Combine(folder.Path, x.Name)), false);
+            await DependencyExtensions.GetService<IFileSystemHelpers>().MoveItemsAsync(viewModel, items, items.Select(x => PathNormalization.Combine(folder.Path, x.Name)), false);
             await viewModel.RefreshIfNoWatcherExistsAsync();
         }
         catch (Exception)
@@ -515,15 +515,15 @@ public static class UIFileSystemHelpers
         {
             case AddItemDialogItemType.Folder:
                 userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : "NewFolder".ToLocalized();
-                created = await viewModel!.FileSystemHelpers.CreateAsync(
-                    viewModel,
+                created = await DependencyExtensions.GetService<IFileSystemHelpers>().CreateAsync(
+                    viewModel!,
                     StorageHelpers.FromPathAndType(PathNormalization.Combine(currentPath!, userInput), FilesystemItemType.Directory));
                 break;
 
             case AddItemDialogItemType.File:
                 userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : itemInfo?.Name ?? "NewFile".ToLocalized();
-                created = await viewModel!.FileSystemHelpers.CreateAsync(
-                    viewModel,
+                created = await DependencyExtensions.GetService<IFileSystemHelpers>().CreateAsync(
+                    viewModel!,
                     StorageHelpers.FromPathAndType(PathNormalization.Combine(currentPath!, userInput + itemInfo?.Extension), FilesystemItemType.File));
                 break;
         }
@@ -562,7 +562,7 @@ public static class UIFileSystemHelpers
 
         var credentialDialogViewModel = new CredentialDialogViewModel() { CanBeAnonymous = isFtp, PasswordOnly = !isFtp };
         var dialogService = viewModel.DialogService;
-        var dialogResult = await DesktopWidgets3.App.DispatcherQueue.EnqueueOrInvokeAsync(() =>
+        var dialogResult = await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() =>
             dialogService.ShowDialogAsync(credentialDialogViewModel));
 
         if (dialogResult != DialogResult.Primary || credentialDialogViewModel.IsAnonymous)

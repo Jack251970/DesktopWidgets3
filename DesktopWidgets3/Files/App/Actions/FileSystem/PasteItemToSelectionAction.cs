@@ -8,6 +8,7 @@ using System.ComponentModel;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.Helpers;
 using Files.App.Helpers;
+using Files.App.Data.Models;
 
 namespace Files.App.Actions;
 
@@ -31,7 +32,7 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
     public PasteItemToSelectionAction(FolderViewViewModel viewModel) : base(viewModel)
     {
         context.PropertyChanged += Context_PropertyChanged;
-        DesktopWidgets3.App.AppModel.PropertyChanged += AppModel_PropertyChanged;
+        DependencyExtensions.GetService<AppModel>().PropertyChanged += AppModel_PropertyChanged;
     }
 
     public async Task ExecuteAsync()
@@ -50,7 +51,7 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
 
     public bool GetIsExecutable()
     {
-        if (!DesktopWidgets3.App.AppModel.IsPasteEnabled)
+        if (!DependencyExtensions.GetService<AppModel>().IsPasteEnabled)
         {
             return false;
         }
@@ -82,7 +83,8 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
     }
     private void AppModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(DesktopWidgets3.App.AppModel.IsPasteEnabled))
+        var appModel = DependencyExtensions.GetService<AppModel>();
+        if (e.PropertyName is nameof(appModel.IsPasteEnabled))
         {
             OnPropertyChanged(nameof(IsExecutable));
         }

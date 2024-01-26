@@ -246,7 +246,7 @@ public class FileSystemOperations : IFileSystemOperations
         }
 
         if (!string.IsNullOrWhiteSpace(newName) &&
-            !FileSystemHelpers.ContainsRestrictedCharacters(newName) &&
+            !FileSystemHelpers.ContainsRestrictedCharacters(viewModel, newName) &&
             !FileSystemHelpers.ContainsRestrictedFileName(newName))
         {
             var renamed = await source.ToStorageItemResult()

@@ -127,7 +127,7 @@ public static class NavigationHelpers
 
                     // Delete shortcut
                     var shortcutItem = StorageHelpers.FromPathAndType(path, FilesystemItemType.File);
-                    await viewModel.FileSystemHelpers.DeleteItemAsync(viewModel, shortcutItem, DeleteConfirmationPolicies.Never, false);
+                    await DependencyExtensions.GetService<IFileSystemHelpers>().DeleteItemAsync(viewModel, shortcutItem, DeleteConfirmationPolicies.Never, false);
                 }
             }
             else if (isReparsePoint)

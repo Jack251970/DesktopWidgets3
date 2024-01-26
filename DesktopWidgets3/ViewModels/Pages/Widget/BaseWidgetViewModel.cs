@@ -28,7 +28,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    protected readonly DispatcherQueue _dispatcherQueue = App.DispatcherQueue;
+    protected readonly DispatcherQueue _dispatcherQueue = UIThreadExtensions.DispatcherQueue!;
 
     private bool _isInitialized;
 

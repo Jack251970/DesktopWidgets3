@@ -16,8 +16,8 @@ public static class Win32Helpers
 
 		if (string.IsNullOrEmpty(workingDirectory))
 		{
-			workingDirectory = viewModel.WorkingDirectory;
-		}
+			workingDirectory = viewModel.WorkingDirectory; // TODO: change to associatedInstance.FilesystemViewModel.WorkingDirectory;
+        }
 
 		var application = applicationPaths.FirstOrDefault();
 		if (string.IsNullOrEmpty(workingDirectory))

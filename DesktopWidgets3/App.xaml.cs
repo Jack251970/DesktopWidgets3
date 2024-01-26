@@ -1,6 +1,5 @@
 ﻿using H.NotifyIcon;
 
-using Microsoft.UI.Dispatching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -58,19 +57,12 @@ public partial class App : Application
     }
 
     public static MainWindow MainWindow { get; set; } = null!;
-    public static DispatcherQueue DispatcherQueue => MainWindow.DispatcherQueue;
 
     public static UIElement? AppTitleBar { get; set; }
     public static UIElement? AppTitleBarText { get; set; }
 
     public static bool CanCloseWindow { get; set; }
     private static bool IsExistWindow { get; set; }
-
-    #region models from Files
-
-    public static AppModel AppModel => GetService<AppModel>();
-
-    #endregion
 
     public App()
     {

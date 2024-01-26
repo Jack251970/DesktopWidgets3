@@ -36,7 +36,7 @@ internal class PasteItemAction : ObservableObject, IAction
         context = viewModel;
 
         context.PropertyChanged += Context_PropertyChanged;
-        DesktopWidgets3.App.AppModel.PropertyChanged += AppModel_PropertyChanged;
+        DependencyExtensions.GetService<AppModel>().PropertyChanged += AppModel_PropertyChanged;
     }
 
     public async Task ExecuteAsync()
@@ -53,7 +53,7 @@ internal class PasteItemAction : ObservableObject, IAction
     public bool GetIsExecutable()
     {
         return
-            DesktopWidgets3.App.AppModel.IsPasteEnabled &&
+            DependencyExtensions.GetService<AppModel>().IsPasteEnabled &&
             context.PageType != ContentPageTypes.Home &&
             context.PageType != ContentPageTypes.RecycleBin &&
             context.PageType != ContentPageTypes.SearchResults;

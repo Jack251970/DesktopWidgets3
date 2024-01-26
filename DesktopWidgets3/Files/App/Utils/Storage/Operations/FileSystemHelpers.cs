@@ -3,16 +3,17 @@
 
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using Files.App.Helpers;
 using Files.App.Utils.RecycleBin;
 using Files.App.Utils.StatusCenter;
 using Files.Core.Data.Enums;
 using Files.Core.Data.Items;
+using Files.Core.Services.Settings;
 using Files.Core.Storage;
 using Files.Core.Storage.Extensions;
 using Files.Core.ViewModels.Dialogs.FileSystemDialog;
+using Files.Core.ViewModels.FolderView;
 using Files.Shared.Extensions;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
@@ -43,7 +44,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         var progress = new Progress<StatusCenterItemProgressModel>();
         progress.ProgressChanged += (s, e) => returnStatus = returnStatus < ReturnResult.Failed ? e.Status!.Value.ToStatus() : returnStatus;
 
-        if (!IsValidForFilename(source.Name))
+        if (!IsValidForFilename(viewModel, source.Name))
         {
             await DialogDisplayHelper.ShowDialogAsync(
                 viewModel,
@@ -152,7 +153,7 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
         var progress = new Progress<StatusCenterItemProgressModel>();
         progress.ProgressChanged += (s, e) => returnStatus = returnStatus < ReturnResult.Failed ? e.Status!.Value.ToStatus() : returnStatus;
 
-        if (!IsValidForFilename(newName))
+        if (!IsValidForFilename(viewModel, newName))
         {
             await DialogDisplayHelper.ShowDialogAsync(
                 viewModel,
@@ -690,8 +691,13 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
 
     #region Static Methods
 
-    // TODO: Here UserSettingsService.FoldersSettingsService.AreAlternateStreamsVisible = false.
-    private static char[] RestrictedCharacters => new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+    private static char[] GetRestrictedCharacters(IFolderViewViewModel viewModel)
+    {
+        var userSettingsService = viewModel.GetRequiredService<IUserSettingsService>();
+        return userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible
+            ? new[] { '\\', '/', '*', '?', '"', '<', '>', '|' } // Allow ":" char
+            : new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+    }
 
     private static readonly string[] RestrictedFileNames = new string[]
     {
@@ -704,22 +710,22 @@ public sealed class FileSystemHelpers : IFileSystemHelpers
             "LPT6", "LPT7", "LPT8", "LPT9"
     };
 
-    public static string FilterRestrictedCharacters(string input)
+    public static string FilterRestrictedCharacters(IFolderViewViewModel viewModel, string input)
     {
         int invalidCharIndex;
-        while ((invalidCharIndex = input.IndexOfAny(RestrictedCharacters)) >= 0)
+        while ((invalidCharIndex = input.IndexOfAny(GetRestrictedCharacters(viewModel))) >= 0)
         {
             input = input.Remove(invalidCharIndex, 1);
         }
         return input;
     }
 
-    public static bool ContainsRestrictedCharacters(string input)
+    public static bool ContainsRestrictedCharacters(IFolderViewViewModel viewModel, string input)
     {
-        return input.IndexOfAny(RestrictedCharacters) >= 0;
+        return input.IndexOfAny(GetRestrictedCharacters(viewModel)) >= 0;
     }
 
-    public static bool IsValidForFilename(string name) => !string.IsNullOrWhiteSpace(name) && !ContainsRestrictedCharacters(name) && !ContainsRestrictedFileName(name);
+    public static bool IsValidForFilename(IFolderViewViewModel viewModel,string name) => !string.IsNullOrWhiteSpace(name) && !ContainsRestrictedCharacters(viewModel, name) && !ContainsRestrictedFileName(name);
 
     public static bool ContainsRestrictedFileName(string input)
     {

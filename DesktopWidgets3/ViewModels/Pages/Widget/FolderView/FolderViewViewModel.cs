@@ -11,12 +11,10 @@ using Files.App.ViewModels.Layouts;
 using Files.App.Data.EventArguments;
 using Microsoft.UI.Xaml.Data;
 using DesktopWidgets3.Views.Windows;
-using Files.Core.Data.Enums;
 using Files.Core.Services;
 using Files.App.Data.Items;
 using Files.App.Utils.Cloud;
 using Microsoft.UI.Xaml.Controls;
-using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml.Media;
 using Windows.Storage.FileProperties;
 using Files.App.Data.Contexts;
@@ -73,17 +71,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private string FolderPath = string.Empty;
 
     private bool ShowIconOverlay = true;
-
-    private bool ShowHiddenFile = false;
-
-    private bool ShowExtension = false;
-
-    private DeleteConfirmationPolicies DeleteConfirmationPolicy = DeleteConfirmationPolicies.Always;
-
-    private bool ShowThumbnail = true;
-
-    private FileNameConflictResolveOptionType ConflictsResolveOption = FileNameConflictResolveOptionType.GenerateNewName;
-
+    
     #endregion
 
     #region current path
@@ -188,29 +176,18 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public SelectedItemsPropertiesViewModel SelectedItemsPropertiesViewModel;
 
-    public ICommandManager CommandManager => _commandManager;
-
-    public IFileSystemHelpers FileSystemHelpers => _fileSystemHelpers;
-
     public LayoutPreferencesManager FolderSettings => InstanceViewModel.FolderSettings;
 
     public FolderViewViewModel ToolbarViewModel => this;
 
+    public ICommandManager CommandManager => _commandManager;
+
     public IDialogService DialogService => _dialogService;
-
-    public DrivesViewModel DrivesViewModel => _drivesViewModel;
-
-    public NetworkDrivesViewModel NetworkDrivesViewModel => _networkDrivesViewModel;
-
-    public IUserSettingsService UserSettingsService => _userSettingsService;
 
     #endregion
 
     private readonly ICommandManager _commandManager;
     private readonly IDialogService _dialogService;
-    private readonly DrivesViewModel _drivesViewModel;
-    private readonly IFileSystemHelpers _fileSystemHelpers;
-    private readonly NetworkDrivesViewModel _networkDrivesViewModel;
     private readonly IWidgetManagerService _widgetManagerService;
     private readonly IUserSettingsService _userSettingsService;
 
@@ -220,15 +197,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public IntPtr WindowHandle => WidgetWindow.WindowHandle;
 
-    public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, DrivesViewModel drivesViewModel, IFileSystemHelpers fileSystemHelpers, NetworkDrivesViewModel networkDrivesViewModel, IUserSettingsService userSettingsService, IWidgetManagerService widgetManagerService)
+    public FolderViewViewModel(ICommandManager commandManager, IDialogService dialogService, IUserSettingsService userSettingsService, IWidgetManagerService widgetManagerService)
     {
         _commandManager = commandManager;
         _commandManager.Initialize(this);
         _dialogService = dialogService;
         _dialogService.Initialize(this);
-        _drivesViewModel = drivesViewModel;
-        _fileSystemHelpers = fileSystemHelpers;
-        _networkDrivesViewModel = networkDrivesViewModel;
         _userSettingsService = userSettingsService;
         _widgetManagerService = widgetManagerService;
 
@@ -609,8 +583,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             }
             else if (PathNormalization.NormalizePath(PathNormalization.GetPathRoot(currentPath)) == normalizedCurrentPath) // If path is a drive's root
             {
-                var matchingDrive = NetworkDrivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(netDrive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(netDrive.Path), StringComparison.OrdinalIgnoreCase));
-                matchingDrive ??= DrivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(drive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(drive.Path), StringComparison.OrdinalIgnoreCase));
+                var matchingDrive = DependencyExtensions.GetService<NetworkDrivesViewModel>().Drives.Cast<DriveItem>().FirstOrDefault(netDrive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(netDrive.Path), StringComparison.OrdinalIgnoreCase));
+                matchingDrive ??= DependencyExtensions.GetService<DrivesViewModel>().Drives.Cast<DriveItem>().FirstOrDefault(drive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(drive.Path), StringComparison.OrdinalIgnoreCase));
                 tabLocationHeader = matchingDrive is not null ? matchingDrive.Text : normalizedCurrentPath;
             }
             else
@@ -747,10 +721,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             behaviour = RefreshBehaviours.RefreshItems;
         }
 
-        if (ShowHiddenFile != settings.ShowHiddenFile)
+        if (_userSettingsService.FoldersSettingsService.ShowHiddenItems != settings.ShowHiddenFile)
         {
-            ShowHiddenFile = settings.ShowHiddenFile;
-            UserSettingsService.FoldersSettingsService.ShowHiddenItems = ShowHiddenFile;
+            _userSettingsService.FoldersSettingsService.ShowHiddenItems = settings.ShowHiddenFile;
             behaviour = RefreshBehaviours.RefreshItems;
         }
 
@@ -774,30 +747,26 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             }
         }
 
-        if (ShowExtension != settings.ShowExtension)
+        if (_userSettingsService.FoldersSettingsService.ShowFileExtensions != settings.ShowExtension)
         {
-            ShowExtension = settings.ShowExtension;
-            UserSettingsService.FoldersSettingsService.ShowFileExtensions = ShowExtension;
+            _userSettingsService.FoldersSettingsService.ShowFileExtensions = settings.ShowExtension;
             behaviour = RefreshBehaviours.RefreshItems;
         }
 
-        if (DeleteConfirmationPolicy != settings.DeleteConfirmationPolicy)
+        if (_userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy != settings.DeleteConfirmationPolicy)
         {
-            DeleteConfirmationPolicy = settings.DeleteConfirmationPolicy;
-            UserSettingsService.FoldersSettingsService.DeleteConfirmationPolicy = DeleteConfirmationPolicy;
+            _userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy = settings.DeleteConfirmationPolicy;
         }
 
-        if (ShowThumbnail != settings.ShowThumbnail)
+        if (_userSettingsService.FoldersSettingsService.ShowThumbnails != settings.ShowThumbnail)
         {
-            ShowThumbnail = settings.ShowThumbnail;
-            UserSettingsService.FoldersSettingsService.ShowThumbnails = ShowThumbnail;
+            _userSettingsService.FoldersSettingsService.ShowThumbnails = settings.ShowThumbnail;
             behaviour = RefreshBehaviours.RefreshItems;
         }
 
-        if (ConflictsResolveOption != settings.ConflictsResolveOption)
+        if (_userSettingsService.GeneralSettingsService.ConflictsResolveOption != settings.ConflictsResolveOption)
         {
-            ConflictsResolveOption = settings.ConflictsResolveOption;
-            UserSettingsService.GeneralSettingsService.ConflictsResolveOption = ConflictsResolveOption;
+            _userSettingsService.GeneralSettingsService.ConflictsResolveOption = settings.ConflictsResolveOption;
         }
 
         // Put this last so that it will navigate to the new path even if it needs to refresh items
@@ -817,12 +786,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             FolderPath = CurFolderPath,
             ShowIconOverlay = ShowIconOverlay,
-            ShowHiddenFile = ShowHiddenFile,
+            ShowHiddenFile = _userSettingsService.FoldersSettingsService.ShowHiddenItems,
             AllowNavigation = AllowNavigation,
-            ShowExtension = ShowExtension,
-            DeleteConfirmationPolicy = DeleteConfirmationPolicy,
-            ShowThumbnail = ShowThumbnail,
-            ConflictsResolveOption = ConflictsResolveOption,
+            ShowExtension = _userSettingsService.FoldersSettingsService.ShowFileExtensions,
+            DeleteConfirmationPolicy = _userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy,
+            ShowThumbnail = _userSettingsService.FoldersSettingsService.ShowThumbnails,
+            ConflictsResolveOption = _userSettingsService.GeneralSettingsService.ConflictsResolveOption,
         };
     }
 
@@ -931,9 +900,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         return typeof(T) switch
         {
-            Type t when t == typeof(ICommandManager) => (T)CommandManager,
-            Type t when t == typeof(IDialogService) => (T)DialogService,
-            Type t when t == typeof(IUserSettingsService) => (T)UserSettingsService,
+            Type t when t == typeof(ICommandManager) => (T)_commandManager,
+            Type t when t == typeof(IDialogService) => (T)_dialogService,
+            Type t when t == typeof(IUserSettingsService) => (T)_userSettingsService,
             _ => null!,
         };
     }

@@ -125,7 +125,7 @@ public class BaseLayoutViewModel : IDisposable
 
         if (FileSystemHelpers.HasDraggedStorageItems(e.DataView))
         {
-            await viewModel.FileSystemHelpers.PerformOperationTypeAsync(viewModel, e.AcceptedOperation, e.DataView, viewModel.FileSystemViewModel.WorkingDirectory, false, true);
+            await DependencyExtensions.GetService<IFileSystemHelpers>().PerformOperationTypeAsync(viewModel, e.AcceptedOperation, e.DataView, viewModel.FileSystemViewModel.WorkingDirectory, false, true);
             await viewModel.RefreshIfNoWatcherExistsAsync();
         }
     }

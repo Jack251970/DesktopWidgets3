@@ -211,7 +211,7 @@ public sealed partial class FolderViewPage : BaseLayoutPage
             if (SelectedItems.Count == 1)
             {
                 //SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems.Count} {"ItemSelected/Text".GetLocalizedResource()}";
-                App.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
                 {
                     // Tapped event must be executed first
                     await Task.Delay(50);
