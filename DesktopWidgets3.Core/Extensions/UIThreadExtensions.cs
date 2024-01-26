@@ -5,7 +5,7 @@ namespace DesktopWidgets3.Core.Extensions;
 /// <summary>
 /// Provides static extension for dispatcher queue.
 /// </summary>
-public static class DispatcherExtensions
+public static class UIThreadExtensions
 {
     private static DispatcherQueue? FallbackDispatcherQueue;
 

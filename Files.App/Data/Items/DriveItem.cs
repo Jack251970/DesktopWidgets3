@@ -257,7 +257,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		item.DeviceID = deviceId;
 		item.Root = root;
 
-        _ = DispatcherExtensions.DispatcherQueue!.EnqueueOrInvokeAsync(item.UpdatePropertiesAsync);
+        _ = UIThreadExtensions.DispatcherQueue!.EnqueueOrInvokeAsync(item.UpdatePropertiesAsync);
 
 		return item;
 	}

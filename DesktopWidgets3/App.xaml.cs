@@ -309,7 +309,7 @@ public partial class App : Application
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
 
             // Initialize core extensions
-            DispatcherExtensions.Initialize(MainWindow.DispatcherQueue);
+            UIThreadExtensions.Initialize(MainWindow.DispatcherQueue);
         }
     }
 

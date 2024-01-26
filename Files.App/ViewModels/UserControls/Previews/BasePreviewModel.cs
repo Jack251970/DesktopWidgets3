@@ -92,11 +92,11 @@ public abstract class BasePreviewModel : ObservableObject
 		iconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, 256);
 		if (iconData is not null)
 		{
-			await DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () => FileImage = (await iconData.ToBitmapAsync())!);
+			await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () => FileImage = (await iconData.ToBitmapAsync())!);
 		}
 		else
 		{
-			FileImage ??= (await DispatcherExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() => new BitmapImage()))!;
+			FileImage ??= (await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() => new BitmapImage()))!;
 		}
 
 		return new List<FileProperty>();

@@ -544,12 +544,12 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
             {
                 await Task.Run(async () =>
                 {
-                    var fileList = await Win32StorageEnumerator.ListEntries(ViewModel, path, hFile, findData, cancellationToken, -1, intermediateAction: async (intermediateList) =>
+                    var fileList = await Win32StorageEnumerator.ListEntries(ViewModel, path, hFile, findData, -1, intermediateAction: async (intermediateList) =>
                     {
                         filesAndFolders.AddRange(intermediateList);
                         await OrderFilesAndFoldersAsync();
                         await ApplyFilesAndFoldersChangesAsync();
-                    }, defaultIconPairs: DefaultIcons, showHiddenFile: ViewModel.GetSettings().ShowHiddenFile);
+                    }, defaultIconPairs: DefaultIcons, cancellationToken: cancellationToken);
 
                     filesAndFolders.AddRange(fileList);
 

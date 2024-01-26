@@ -66,7 +66,7 @@ public class RemovableDrivesService : IRemovableDrivesService
 		var rootModified = await FilesystemTasks.Wrap(() => StorageFolder.GetFolderFromPathAsync(drive.Path).AsTask());
 		if (rootModified && drive is DriveItem matchingDriveEjected)
 		{
-			_ = DispatcherExtensions.DispatcherQueue!.EnqueueOrInvokeAsync(() =>
+			_ = UIThreadExtensions.DispatcherQueue!.EnqueueOrInvokeAsync(() =>
 			{
 				matchingDriveEjected.Root = rootModified.Result;
 				matchingDriveEjected.Text = rootModified.Result.DisplayName;

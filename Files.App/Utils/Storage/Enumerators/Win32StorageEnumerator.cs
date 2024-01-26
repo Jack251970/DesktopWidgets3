@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.Core.Services.SizeProvider;
+using Files.Core.Services.SizeProvider;
 using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
@@ -25,10 +25,10 @@ public static class Win32StorageEnumerator
         string path,
         IntPtr hFile,
         NativeFindStorageItemHelper.WIN32_FIND_DATA findData,
-        CancellationToken cancellationToken,
         int countLimit,
         Func<List<ListedItem>, Task> intermediateAction,
-        Dictionary<string, BitmapImage> defaultIconPairs = null!
+        Dictionary<string, BitmapImage> defaultIconPairs,
+        CancellationToken cancellationToken
     )
     {
         var sampler = new IntervalSampler(500);
@@ -52,7 +52,7 @@ public static class Win32StorageEnumerator
             {
                 if (((FileAttributes)findData.dwFileAttributes & FileAttributes.Directory) != FileAttributes.Directory)
                 {
-                    var file = await GetFile(findData, path, isGitRepo, cancellationToken);
+                    var file = await GetFile(folderViewViewModel, findData, path, isGitRepo, cancellationToken);
                     if (file is not null)
                     {
                         if (defaultIconPairs is not null)
@@ -60,9 +60,9 @@ public static class Win32StorageEnumerator
                             if (!string.IsNullOrEmpty(file.FileExtension))
                             {
                                 var lowercaseExtension = file.FileExtension.ToLowerInvariant();
-                                if (defaultIconPairs.ContainsKey(lowercaseExtension))
+                                if (defaultIconPairs.TryGetValue(lowercaseExtension, out var value))
                                 {
-                                    file.FileImage = defaultIconPairs[lowercaseExtension];
+                                    file.FileImage = value;
                                 }
                             }
                         }
@@ -72,7 +72,7 @@ public static class Win32StorageEnumerator
 
                         if (userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible)
                         {
-                            tempList.AddRange(EnumAdsForPath(file.ItemPath, file));
+                            tempList.AddRange(EnumAdsForPath(folderViewViewModel, file.ItemPath, file));
                         }
                     }
                 }
@@ -80,7 +80,7 @@ public static class Win32StorageEnumerator
                 {
                     if (findData.cFileName != "." && findData.cFileName != "..")
                     {
-                        var folder = await GetFolder(findData, path, isGitRepo, cancellationToken);
+                        var folder = await GetFolder(folderViewViewModel, findData, path, isGitRepo, cancellationToken);
                         if (folder is not null)
                         {
                             if (defaultIconPairs?.ContainsKey(string.Empty) ?? false)
@@ -94,7 +94,7 @@ public static class Win32StorageEnumerator
 
                             if (userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible)
                             {
-                                tempList.AddRange(EnumAdsForPath(folder.ItemPath, folder));
+                                tempList.AddRange(EnumAdsForPath(folderViewViewModel, folder.ItemPath, folder));
                             }
 
                             if (CalculateFolderSizes)
@@ -131,16 +131,18 @@ public static class Win32StorageEnumerator
         return tempList;
     }
 
-    private static IEnumerable<ListedItem> EnumAdsForPath(string itemPath, ListedItem main)
+    private static IEnumerable<ListedItem> EnumAdsForPath(IFolderViewViewModel folderViewViewModel, string itemPath, ListedItem main)
     {
         foreach (var ads in NativeFileOperationsHelper.GetAlternateStreams(itemPath))
-            yield return GetAlternateStream(ads, main);
+        {
+            yield return GetAlternateStream(folderViewViewModel, ads, main);
+        }
     }
 
-    public static ListedItem GetAlternateStream((string Name, long Size) ads, ListedItem main)
+    public static ListedItem GetAlternateStream(IFolderViewViewModel folderViewViewModel, (string Name, long Size) ads, ListedItem main)
     {
-        string itemType = "File".GetLocalizedResource();
-        string itemFileExtension = null;
+        var itemType = "File".ToLocalized();
+        string itemFileExtension = null!;
 
         if (ads.Name.Contains('.'))
         {
@@ -148,13 +150,13 @@ public static class Win32StorageEnumerator
             itemType = itemFileExtension.Trim('.') + " " + itemType;
         }
 
-        string adsName = ads.Name.Substring(1, ads.Name.Length - 7); // Remove ":" and ":$DATA"
+        var adsName = ads.Name[1..^6]; // Remove ":" and ":$DATA"
 
-        return new AlternateStreamItem()
+        return new AlternateStreamItem(folderViewViewModel)
         {
             PrimaryItemAttribute = StorageItemTypes.File,
             FileExtension = itemFileExtension,
-            FileImage = null,
+            FileImage = null!,
             LoadFileIcon = false,
             ItemNameRaw = adsName,
             IsHiddenItem = false,
@@ -170,6 +172,7 @@ public static class Win32StorageEnumerator
     }
 
     public static async Task<ListedItem> GetFolder(
+        IFolderViewViewModel folderViewViewModel,
         NativeFindStorageItemHelper.WIN32_FIND_DATA findData,
         string pathRoot,
         bool isGitRepo,
@@ -177,76 +180,83 @@ public static class Win32StorageEnumerator
     )
     {
         if (cancellationToken.IsCancellationRequested)
-            return null;
+        {
+            return null!;
+        }
 
         DateTime itemModifiedDate;
         DateTime itemCreatedDate;
 
         try
         {
-            FileTimeToSystemTime(ref findData.ftLastWriteTime, out NativeFindStorageItemHelper.SYSTEMTIME systemModifiedTimeOutput);
+            FileTimeToSystemTime(ref findData.ftLastWriteTime, out var systemModifiedTimeOutput);
             itemModifiedDate = systemModifiedTimeOutput.ToDateTime();
 
-            FileTimeToSystemTime(ref findData.ftCreationTime, out NativeFindStorageItemHelper.SYSTEMTIME systemCreatedTimeOutput);
+            FileTimeToSystemTime(ref findData.ftCreationTime, out var systemCreatedTimeOutput);
             itemCreatedDate = systemCreatedTimeOutput.ToDateTime();
         }
         catch (ArgumentException)
         {
             // Invalid date means invalid findData, do not add to list
-            return null;
+            return null!;
         }
 
         var itemPath = Path.Combine(pathRoot, findData.cFileName);
 
-        string itemName = await fileListCache.ReadFileDisplayNameFromCache(itemPath, cancellationToken);
+        var itemName = await fileListCache.ReadFileDisplayNameFromCache(itemPath, cancellationToken);
         if (string.IsNullOrEmpty(itemName))
+        {
             itemName = findData.cFileName;
+        }
 
-        bool isHidden = (((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden);
+        var isHidden = (((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden);
         double opacity = 1;
 
         if (isHidden)
+        {
             opacity = Constants.UI.DimItemOpacity;
+        }
 
         if (isGitRepo)
         {
-            return new GitItem()
+            return new GitItem(folderViewViewModel)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemNameRaw = itemName,
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateCreatedReal = itemCreatedDate,
                 ItemType = folderTypeTextLocalized,
-                FileImage = null,
+                FileImage = null!,
                 IsHiddenItem = isHidden,
                 Opacity = opacity,
                 LoadFileIcon = false,
                 ItemPath = itemPath,
-                FileSize = null,
+                FileSize = null!,
                 FileSizeBytes = 0,
             };
         }
         else
         {
-            return new ListedItem(null)
+            return new ListedItem(folderViewViewModel, null!)
             {
                 PrimaryItemAttribute = StorageItemTypes.Folder,
                 ItemNameRaw = itemName,
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateCreatedReal = itemCreatedDate,
                 ItemType = folderTypeTextLocalized,
-                FileImage = null,
+                FileImage = null!,
                 IsHiddenItem = isHidden,
                 Opacity = opacity,
                 LoadFileIcon = false,
                 ItemPath = itemPath,
-                FileSize = null,
+                FileSize = null!,
                 FileSizeBytes = 0,
             };
         }
     }
 
     public static async Task<ListedItem> GetFile(
+        IFolderViewViewModel folderViewViewModel,
         NativeFindStorageItemHelper.WIN32_FIND_DATA findData,
         string pathRoot,
         bool isGitRepo,
@@ -260,25 +270,25 @@ public static class Win32StorageEnumerator
 
         try
         {
-            FileTimeToSystemTime(ref findData.ftLastWriteTime, out NativeFindStorageItemHelper.SYSTEMTIME systemModifiedDateOutput);
+            FileTimeToSystemTime(ref findData.ftLastWriteTime, out var systemModifiedDateOutput);
             itemModifiedDate = systemModifiedDateOutput.ToDateTime();
 
-            FileTimeToSystemTime(ref findData.ftCreationTime, out NativeFindStorageItemHelper.SYSTEMTIME systemCreatedDateOutput);
+            FileTimeToSystemTime(ref findData.ftCreationTime, out var systemCreatedDateOutput);
             itemCreatedDate = systemCreatedDateOutput.ToDateTime();
 
-            FileTimeToSystemTime(ref findData.ftLastAccessTime, out NativeFindStorageItemHelper.SYSTEMTIME systemLastAccessOutput);
+            FileTimeToSystemTime(ref findData.ftLastAccessTime, out var systemLastAccessOutput);
             itemLastAccessDate = systemLastAccessOutput.ToDateTime();
         }
         catch (ArgumentException)
         {
             // Invalid date means invalid findData, do not add to list
-            return null;
+            return null!;
         }
 
-        long itemSizeBytes = findData.GetSize();
+        var itemSizeBytes = findData.GetSize();
         var itemSize = itemSizeBytes.ToSizeString();
-        string itemType = "File".GetLocalizedResource();
-        string itemFileExtension = null;
+        var itemType = "File".ToLocalized();
+        string itemFileExtension = null!;
 
         if (findData.cFileName.Contains('.'))
         {
@@ -286,37 +296,39 @@ public static class Win32StorageEnumerator
             itemType = itemFileExtension.Trim('.') + " " + itemType;
         }
 
-        bool itemThumbnailImgVis = false;
-        bool itemEmptyImgVis = true;
+        var itemThumbnailImgVis = false;
+        var itemEmptyImgVis = true;
 
         if (cancellationToken.IsCancellationRequested)
-            return null;
+        {
+            return null!;
+        }
 
-        bool isHidden = ((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden;
+        var isHidden = ((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden;
         double opacity = isHidden ? Constants.UI.DimItemOpacity : 1;
 
         // https://learn.microsoft.com/openspecs/windows_protocols/ms-fscc/c8e77b37-3909-4fe6-a4ea-2b9d423b1ee4
-        bool isReparsePoint = ((FileAttributes)findData.dwFileAttributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint;
-        bool isSymlink = isReparsePoint && findData.dwReserved0 == NativeFileOperationsHelper.IO_REPARSE_TAG_SYMLINK;
+        var isReparsePoint = ((FileAttributes)findData.dwFileAttributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint;
+        var isSymlink = isReparsePoint && findData.dwReserved0 == NativeFileOperationsHelper.IO_REPARSE_TAG_SYMLINK;
 
         if (isSymlink)
         {
             var targetPath = NativeFileOperationsHelper.ParseSymLink(itemPath);
 
-            return new ShortcutItem(null)
+            return new ShortcutItem(folderViewViewModel, null!)
             {
                 PrimaryItemAttribute = StorageItemTypes.File,
                 FileExtension = itemFileExtension,
                 IsHiddenItem = isHidden,
                 Opacity = opacity,
-                FileImage = null,
+                FileImage = null!,
                 LoadFileIcon = itemThumbnailImgVis,
                 LoadWebShortcutGlyph = false,
                 ItemNameRaw = itemName,
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,
                 ItemDateCreatedReal = itemCreatedDate,
-                ItemType = "Shortcut".GetLocalizedResource(),
+                ItemType = "Shortcut".ToLocalized(),
                 ItemPath = itemPath,
                 FileSize = itemSize,
                 FileSizeBytes = itemSizeBytes,
@@ -330,22 +342,24 @@ public static class Win32StorageEnumerator
 
             var shInfo = await FileOperationsHelpers.ParseLinkAsync(itemPath);
             if (shInfo is null)
-                return null;
+            {
+                return null!;
+            }
 
-            return new ShortcutItem(null)
+            return new ShortcutItem(folderViewViewModel, null!)
             {
                 PrimaryItemAttribute = shInfo.IsFolder ? StorageItemTypes.Folder : StorageItemTypes.File,
                 FileExtension = itemFileExtension,
                 IsHiddenItem = isHidden,
                 Opacity = opacity,
-                FileImage = null,
+                FileImage = null!,
                 LoadFileIcon = !shInfo.IsFolder && itemThumbnailImgVis,
                 LoadWebShortcutGlyph = !shInfo.IsFolder && isUrl && itemEmptyImgVis,
                 ItemNameRaw = itemName,
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,
                 ItemDateCreatedReal = itemCreatedDate,
-                ItemType = isUrl ? "ShortcutWebLinkFileType".GetLocalizedResource() : "Shortcut".GetLocalizedResource(),
+                ItemType = isUrl ? "ShortcutWebLinkFileType".ToLocalized() : "Shortcut".ToLocalized(),
                 ItemPath = itemPath,
                 FileSize = itemSize,
                 FileSizeBytes = itemSizeBytes,
@@ -356,9 +370,9 @@ public static class Win32StorageEnumerator
                 IsUrl = isUrl,
             };
         }
-        else if (App.LibraryManager.TryGetLibrary(itemPath, out LibraryLocationItem library))
+        else if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(itemPath, out var library))
         {
-            return new LibraryItem(library)
+            return new LibraryItem(folderViewViewModel, library)
             {
                 Opacity = opacity,
                 ItemDateModifiedReal = itemModifiedDate,
@@ -369,11 +383,11 @@ public static class Win32StorageEnumerator
         {
             if (ZipStorageFolder.IsZipPath(itemPath) && await ZipStorageFolder.CheckDefaultZipApp(itemPath))
             {
-                return new ZipItem(null)
+                return new ZipItem(folderViewViewModel, null!)
                 {
                     PrimaryItemAttribute = StorageItemTypes.Folder, // Treat zip files as folders
                     FileExtension = itemFileExtension,
-                    FileImage = null,
+                    FileImage = null!,
                     LoadFileIcon = itemThumbnailImgVis,
                     ItemNameRaw = itemName,
                     IsHiddenItem = isHidden,
@@ -389,11 +403,11 @@ public static class Win32StorageEnumerator
             }
             else if (isGitRepo)
             {
-                return new GitItem()
+                return new GitItem(folderViewViewModel)
                 {
                     PrimaryItemAttribute = StorageItemTypes.File,
                     FileExtension = itemFileExtension,
-                    FileImage = null,
+                    FileImage = null!,
                     LoadFileIcon = itemThumbnailImgVis,
                     ItemNameRaw = itemName,
                     IsHiddenItem = isHidden,
@@ -409,11 +423,11 @@ public static class Win32StorageEnumerator
             }
             else
             {
-                return new ListedItem(null)
+                return new ListedItem(folderViewViewModel, null!)
                 {
                     PrimaryItemAttribute = StorageItemTypes.File,
                     FileExtension = itemFileExtension,
-                    FileImage = null,
+                    FileImage = null!,
                     LoadFileIcon = itemThumbnailImgVis,
                     ItemNameRaw = itemName,
                     IsHiddenItem = isHidden,
@@ -428,7 +442,5 @@ public static class Win32StorageEnumerator
                 };
             }
         }
-
-        return null;
     }
-}*/
+}
