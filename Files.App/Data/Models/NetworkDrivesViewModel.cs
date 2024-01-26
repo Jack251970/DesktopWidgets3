@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.Core.Storage.LocatableStorage;
+using Files.Core.Storage.LocatableStorage;
 
 namespace Files.App.Data.Models;
 
@@ -70,4 +70,4 @@ public class NetworkDrivesViewModel : ObservableObject
 
 	public Task OpenMapNetworkDriveDialogAsync(IFolderViewViewModel viewModel)
 		=> networkDrivesService.OpenMapNetworkDriveDialogAsync(viewModel);
-}*/
+}

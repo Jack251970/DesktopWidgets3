@@ -1,10 +1,11 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.UserControls.Menus;
+using Files.App.UserControls.Menus;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using static Microsoft.UI.Xaml.Application;
 
 namespace Files.App.Helpers.ContextFlyouts;
 
@@ -50,9 +51,11 @@ public static class ItemModelListToContextFlyoutHelper
 		var secondaryModels = items.Except(primaryModels).ToList();
 
 		if (!secondaryModels.IsEmpty() && secondaryModels.Last().ItemType is ContextMenuFlyoutItemType.Separator)
-			secondaryModels.RemoveAt(secondaryModels.Count - 1);
+        {
+            secondaryModels.RemoveAt(secondaryModels.Count - 1);
+        }
 
-		var primary = new List<ICommandBarElement>();
+        var primary = new List<ICommandBarElement>();
 		primaryModels.ForEach(i => primary.Add(GetCommandBarItem(i)));
 		var secondary = new List<ICommandBarElement>();
 		secondaryModels.ForEach(i => secondary.Add(GetCommandBarItem(i)));
@@ -93,7 +96,7 @@ public static class ItemModelListToContextFlyoutHelper
 
 			if (item.BitmapIcon is not null)
 			{
-				flyoutSubItem.Style = App.Current.Resources["MenuFlyoutSubItemWithImageStyle"] as Style;
+				flyoutSubItem.Style = Current.Resources["MenuFlyoutSubItemWithImageStyle"] as Style;
 				try
 				{
 					MenuFlyoutSubItemCustomProperties.SetBitmapIcon(flyoutSubItem, item.BitmapIcon);
@@ -164,7 +167,7 @@ public static class ItemModelListToContextFlyoutHelper
 
 			if (icon is not null && !string.IsNullOrEmpty(i.GlyphFontFamilyName))
 			{
-				var fontFamily = App.Current.Resources[i.GlyphFontFamilyName] as FontFamily;
+				var fontFamily = Current.Resources[i.GlyphFontFamilyName] as FontFamily;
 				icon.FontFamily = fontFamily;
 			}
 
@@ -220,7 +223,7 @@ public static class ItemModelListToContextFlyoutHelper
 
 			if (!string.IsNullOrEmpty(item.GlyphFontFamilyName))
 			{
-				var fontFamily = App.Current.Resources[item.GlyphFontFamilyName] as FontFamily;
+				var fontFamily = Current.Resources[item.GlyphFontFamilyName] as FontFamily;
 				icon.FontFamily = fontFamily;
 			}
 		}
@@ -234,20 +237,26 @@ public static class ItemModelListToContextFlyoutHelper
 
 		UIElement? content = null;
 		if (item.BitmapIcon is not null)
-			content = new Image()
+        {
+            content = new Image()
 			{
 				Source = item.BitmapIcon,
 			};
-		else if (item.OpacityIcon.IsValid)
-			content = item.OpacityIcon.ToOpacityIcon();
-		else if (item.ShowLoadingIndicator)
-			content = new ProgressRing()
+        }
+        else if (item.OpacityIcon.IsValid)
+        {
+            content = item.OpacityIcon.ToOpacityIcon();
+        }
+        else if (item.ShowLoadingIndicator)
+        {
+            content = new ProgressRing()
 			{
 				IsIndeterminate = true,
 				IsActive = true,
 			};
+        }
 
-		if (item.ItemType is ContextMenuFlyoutItemType.Toggle)
+        if (item.ItemType is ContextMenuFlyoutItemType.Toggle)
 		{
 			element = new AppBarToggleButton()
 			{
@@ -265,12 +274,16 @@ public static class ItemModelListToContextFlyoutHelper
 			if (element is AppBarToggleButton toggleButton)
 			{
 				if (icon is not null)
-					toggleButton.Icon = icon;
+                {
+                    toggleButton.Icon = icon;
+                }
 
-				if (item.IsPrimary || item.CollapseLabel)
-					toggleButton.SetValue(ToolTipService.ToolTipProperty, item.Text);
+                if (item.IsPrimary || item.CollapseLabel)
+                {
+                    toggleButton.SetValue(ToolTipService.ToolTipProperty, item.Text);
+                }
 
-				if (item.KeyboardAccelerator is not null && item.KeyboardAcceleratorTextOverride is not null)
+                if (item.KeyboardAccelerator is not null && item.KeyboardAcceleratorTextOverride is not null)
 				{
 					toggleButton.KeyboardAccelerators.Add(item.KeyboardAccelerator);
 					toggleButton.KeyboardAcceleratorTextOverride = item.KeyboardAcceleratorTextOverride;
@@ -314,4 +327,4 @@ public static class ItemModelListToContextFlyoutHelper
 
 		return element;
 	}
-}*/
+}

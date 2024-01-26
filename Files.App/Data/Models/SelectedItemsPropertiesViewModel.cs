@@ -1,15 +1,17 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.ViewModels.Properties;
+using Files.App.ViewModels.Properties;
 using Files.Shared.Helpers;
 using System.Windows.Input;
 
 namespace Files.App.Data.Models;
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+
 public class SelectedItemsPropertiesViewModel : ObservableObject
 {
-	private static readonly IDateTimeFormatter dateTimeFormatter = Ioc.Default.GetRequiredService<IDateTimeFormatter>();
+	private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();
 
 	private bool loadFolderGlyph;
 	public bool LoadFolderGlyph
@@ -670,4 +672,3 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 		set => SetProperty(ref isUnblockFileSelected, value);
 	}
 }
-*/

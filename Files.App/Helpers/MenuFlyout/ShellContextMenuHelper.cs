@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.Helpers.ContextFlyouts;
+using Files.App.Helpers.ContextFlyouts;
 using Files.Shared.Helpers;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -16,8 +16,9 @@ namespace Files.App.Helpers;
 
 public static class ShellContextmenuHelper
 {
-	public static IUserSettingsService UserSettingsService { get; } = Ioc.Default.GetRequiredService<IUserSettingsService>();
-	public static async Task<List<ContextMenuFlyoutItemViewModel>> GetShellContextmenuAsync(bool showOpenMenu, bool shiftPressed, string workingDirectory, List<ListedItem>? selectedItems, CancellationToken cancellationToken)
+	/*public static IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
+	
+    public static async Task<List<ContextMenuFlyoutItemViewModel>> GetShellContextmenuAsync(bool showOpenMenu, bool shiftPressed, string workingDirectory, List<ListedItem>? selectedItems, CancellationToken cancellationToken)
 	{
 		var IsItemSelected = selectedItems?.Count > 0;
 
@@ -107,13 +108,17 @@ public static class ShellContextmenuHelper
 			.SkipWhile(x => x.Type == MenuItemType.MFT_SEPARATOR)) // Remove trailing separators
 		{
 			if (cancellationToken.IsCancellationRequested)
-				break;
+            {
+                break;
+            }
 
-			// Avoid duplicate separators
-			if ((menuFlyoutItem.Type == MenuItemType.MFT_SEPARATOR) && (menuItemsListLocal.FirstOrDefault()?.ItemType == ContextMenuFlyoutItemType.Separator))
-				continue;
+            // Avoid duplicate separators
+            if ((menuFlyoutItem.Type == MenuItemType.MFT_SEPARATOR) && (menuItemsListLocal.FirstOrDefault()?.ItemType == ContextMenuFlyoutItemType.Separator))
+            {
+                continue;
+            }
 
-			BitmapImage? image = null;
+            BitmapImage? image = null;
 			if (showIcons && menuFlyoutItem.Icon is { Length: > 0 })
 			{
 				image = new BitmapImage();
@@ -141,7 +146,7 @@ public static class ShellContextmenuHelper
 				{
 					Text = menuFlyoutItem.Label.Replace("&", "", StringComparison.Ordinal),
 					Tag = menuFlyoutItem,
-					BitmapIcon = image,
+					BitmapIcon = image!,
 					Items = new List<ContextMenuFlyoutItemViewModel>(),
 				};
 
@@ -154,8 +159,10 @@ public static class ShellContextmenuHelper
 					menuLayoutSubItem.LoadSubMenuAction = async () =>
 					{
 						if (await contextMenu.LoadSubMenu(menuFlyoutItem.SubItems))
-							LoadMenuFlyoutItem(menuLayoutSubItem.Items, contextMenu, menuFlyoutItem.SubItems, cancellationToken, showIcons);
-					};
+                        {
+                            LoadMenuFlyoutItem(menuLayoutSubItem.Items, contextMenu, menuFlyoutItem.SubItems, cancellationToken, showIcons);
+                        }
+                    };
 				}
 
 				menuItemsListLocal.Insert(0, menuLayoutSubItem);
@@ -166,7 +173,7 @@ public static class ShellContextmenuHelper
 				{
 					Text = menuFlyoutItem.Label.Replace("&", "", StringComparison.Ordinal),
 					Tag = menuFlyoutItem,
-					BitmapIcon = image,
+					BitmapIcon = image!,
 					Command = new AsyncRelayCommand<object>(x => InvokeShellMenuItemAsync(contextMenu, x)),
 					CommandParameter = menuFlyoutItem
 				};
@@ -174,28 +181,34 @@ public static class ShellContextmenuHelper
 			}
 		}
 
-		async Task InvokeShellMenuItemAsync(ContextMenu contextMenu, object? tag)
+        static async Task InvokeShellMenuItemAsync(ContextMenu contextMenu, object? tag)
 		{
 			if (tag is not Win32ContextMenuItem menuItem)
-				return;
+            {
+                return;
+            }
 
-			var menuId = menuItem.ID;
+            var menuId = menuItem.ID;
 			var isFont = FileExtensionHelpers.IsFontFile(contextMenu.ItemsPath[0]);
 			var verb = menuItem.CommandString;
 			switch (verb)
 			{
 				case "install" when isFont:
 					{
-						foreach (string path in contextMenu.ItemsPath)
-							await Win32API.InstallFont(path, false);
-					}
+						foreach (var path in contextMenu.ItemsPath)
+                        {
+                            await Win32API.InstallFont(path, false);
+                        }
+                    }
 					break;
 
 				case "installAllUsers" when isFont:
 					{
-						foreach (string path in contextMenu.ItemsPath)
-							await Win32API.InstallFont(path, true);
-					}
+						foreach (var path in contextMenu.ItemsPath)
+                        {
+                            await Win32API.InstallFont(path, true);
+                        }
+                    }
 					break;
 
 				case "mount":
@@ -239,7 +252,9 @@ public static class ShellContextmenuHelper
         return item?.Items;
 	}
 
-	public static async Task LoadShellMenuItemsAsync(
+    // TODO: Add support.
+    /*public static async Task LoadShellMenuItemsAsync(
+        IFolderViewViewModel folderViewViewModel,
 		string path,
 		CommandBarFlyout itemContextMenuFlyout,
 		ContextMenuOptions? options = null,
@@ -256,17 +271,18 @@ public static class ShellContextmenuHelper
             var shiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
 			var shellMenuItems = await ContextFlyoutItemHelper.GetItemContextShellCommandsAsync(
 				workingDir: null,
-				new List<ListedItem>() { new ListedItem(null) { ItemPath = path } },
+				new List<ListedItem>() { new(folderViewViewModel, null!) { ItemPath = path } },
 				shiftPressed: shiftPressed,
 				showOpenMenu: false,
 				default);
 
-			var openWithItem = showOpenWithMenu ? shellMenuItems.Where(x => (x.Tag as Win32ContextMenuItem)?.CommandString == "openas").ToList().FirstOrDefault() : null;
+			var openWithItem = showOpenWithMenu ? shellMenuItems.Where(x => x.Tag is Win32ContextMenuItem { CommandString: "openas" }).ToList().FirstOrDefault() : null;
 			if (openWithItem is not null)
             {
                 shellMenuItems.Remove(openWithItem);
             }
 
+            var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
             var sendToItem = shellMenuItems.Where(x => x.Tag is Win32ContextMenuItem { CommandString: "sendto" }).ToList().FirstOrDefault();
 			if (sendToItem is not null &&
 				(showSendToMenu || !UserSettingsService.GeneralSettingsService.ShowSendToMenu))
@@ -292,9 +308,11 @@ public static class ShellContextmenuHelper
 
 			var manageBitLocker = shellMenuItems.FirstOrDefault(x => x.Tag is Win32ContextMenuItem { CommandString: "manage-bde" });
 			if (manageBitLocker is not null)
-				shellMenuItems.Remove(manageBitLocker);
+            {
+                shellMenuItems.Remove(manageBitLocker);
+            }
 
-			ContextFlyoutItemHelper.SwapPlaceholderWithShellOption(
+            ContextFlyoutItemHelper.SwapPlaceholderWithShellOption(
 				itemContextMenuFlyout,
 				"ManageBitLockerPlaceholder",
 				manageBitLocker,
@@ -308,7 +326,7 @@ public static class ShellContextmenuHelper
 				var (_, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(shellMenuItems);
 				if (secondaryElements.Any())
 				{
-					var openedPopups = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetOpenPopups(MainWindow.Instance);
+					var openedPopups = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetOpenPopups(folderViewViewModel.MainWindow);
 					var secondaryMenu = openedPopups.FirstOrDefault(popup => popup.Name == "OverflowPopup");
 
 					var itemsControl = secondaryMenu?.Child.FindDescendant<ItemsControl>();
@@ -327,19 +345,23 @@ public static class ShellContextmenuHelper
 				}
 
 				if (itemContextMenuFlyout.SecondaryCommands.FirstOrDefault(x => x is AppBarButton appBarButton && (appBarButton.Tag as string) == "ItemOverflow") is AppBarButton overflowItem)
-					overflowItem.Visibility = Visibility.Collapsed;
-			}
+                {
+                    overflowItem.Visibility = Visibility.Collapsed;
+                }
+            }
 			else
 			{
 				var overflowItems = ItemModelListToContextFlyoutHelper.GetMenuFlyoutItemsFromModel(shellMenuItems);
 				if (itemContextMenuFlyout.SecondaryCommands.FirstOrDefault(x => x is AppBarButton appBarButton && (appBarButton.Tag as string) == "ItemOverflow") is not AppBarButton overflowItem
 					|| itemContextMenuFlyout.SecondaryCommands.FirstOrDefault(x => x is AppBarSeparator appBarSeparator && (appBarSeparator.Tag as string) == "OverflowSeparator") is not AppBarSeparator overflowSeparator)
-					return;
+                {
+                    return;
+                }
 
-				var flyoutItems = (overflowItem.Flyout as MenuFlyout)?.Items;
+                var flyoutItems = (overflowItem.Flyout as MenuFlyout)?.Items;
 				if (flyoutItems is not null)
                 {
-                    overflowItems?.ForEach(i => flyoutItems.Add(i));
+                    overflowItems?.ForEach(flyoutItems.Add);
                 }
 
                 overflowItem.Visibility = overflowItems?.Any() ?? false ? Visibility.Visible : Visibility.Collapsed;
@@ -376,8 +398,11 @@ public static class ShellContextmenuHelper
 				var (_, sendToItems) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(new List<ContextMenuFlyoutItemViewModel>() { sendToItem });
 				var placeholder = itemContextMenuFlyout.SecondaryCommands.Where(x => Equals((x as AppBarButton)?.Tag, "SendToPlaceholder")).FirstOrDefault() as AppBarButton;
 				if (placeholder is not null)
-					placeholder.Visibility = Visibility.Collapsed;
-				itemContextMenuFlyout.SecondaryCommands.Insert(1, sendToItems.FirstOrDefault());
+                {
+                    placeholder.Visibility = Visibility.Collapsed;
+                }
+
+                itemContextMenuFlyout.SecondaryCommands.Insert(1, sendToItems.FirstOrDefault());
 			}
 
 			// Add items to shell submenu
@@ -396,9 +421,9 @@ public static class ShellContextmenuHelper
 			});
 		}
 		catch { }
-	}
+	}*/
 
-	public static void AddItemsToMainMenu(IEnumerable<ICommandBarElement> mainMenu, ContextMenuFlyoutItemViewModel viewModel)
+    public static void AddItemsToMainMenu(IEnumerable<ICommandBarElement> mainMenu, ContextMenuFlyoutItemViewModel viewModel)
 	{
 		var appBarButton = mainMenu.FirstOrDefault(x => (x as AppBarButton)?.Tag == viewModel.Tag) as AppBarButton;
 
@@ -425,4 +450,4 @@ public static class ShellContextmenuHelper
 			}
 		}
 	}
-}*/
+}

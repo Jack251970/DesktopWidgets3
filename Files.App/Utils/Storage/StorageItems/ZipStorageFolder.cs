@@ -1,12 +1,12 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Core.Helpers;
 using Files.Shared.Helpers;
 using SevenZip;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
@@ -15,10 +15,12 @@ using IO = System.IO;
 
 namespace Files.App.Utils.Storage;
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+
 public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream, IPasswordProtectedItem
 {
 	private readonly string containerPath;
-	private BaseStorageFile backingFile;
+	private readonly BaseStorageFile backingFile;
 
 	public override string Path { get; }
 	public override string Name { get; }
@@ -80,7 +82,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 		{
 			return false;
 		}
-		marker += ext.Length;
+		marker += ext!.Length;
 		// If IO.Path.Exists returns true, it is not a zip path but a normal directory path that contains ".zip".
 		return (marker == path.Length && includeRoot && !IO.Path.Exists(path + "\\"))
 			|| (marker < path.Length && path[marker] is '\\' && !IO.Path.Exists(path));
@@ -114,8 +116,8 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
             var assoc = await NativeWinApiHelper.GetFileAssociationAsync(filePath);
             if (assoc is not null)
             {
-                return /*assoc == Package.Current.Id.FamilyName // TODO: Fix Package.Current.Id.FamilyName here!
-                    || */assoc.EndsWith("Files.App\\Files.exe", StringComparison.OrdinalIgnoreCase)
+                return assoc == InfoHelper.GetFamilyName()
+                    || assoc.EndsWith("Files.App\\Files.exe", StringComparison.OrdinalIgnoreCase)
                     || assoc.Equals(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"), StringComparison.OrdinalIgnoreCase);
             }
             return true;
@@ -327,7 +329,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 					var compressor = new SevenZipCompressor() { CompressionMode = CompressionMode.Append };
 					compressor.SetFormatFromExistingArchive(archiveStream);
 					var fileName = IO.Path.GetRelativePath(containerPath, zipDesiredName);
-					await compressor.CompressStreamDictionaryAsync(archiveStream, new Dictionary<string, Stream>() { { fileName, null } }, Credentials.Password, ms);
+					await compressor.CompressStreamDictionaryAsync(archiveStream, new Dictionary<string, Stream>() { { fileName, null! } }, Credentials.Password, ms);
 				}
 				using (var archiveStream = await OpenZipFileAsync(FileAccessMode.ReadWrite))
 				{
@@ -425,7 +427,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
                 {
                     var compressor = new SevenZipCompressor() { CompressionMode = CompressionMode.Append };
                     compressor.SetFormatFromExistingArchive(archiveStream);
-                    var entriesMap = new Dictionary<int, string>(index.Select(x => new KeyValuePair<int, string>(x.Index, null)));
+                    var entriesMap = new Dictionary<int, string>(index.Select(x => new KeyValuePair<int, string>(x.Index, null!)));
                     await compressor.ModifyArchiveAsync(archiveStream, entriesMap, Credentials.Password, ms);
                 }
                 using (var archiveStream = await OpenZipFileAsync(FileAccessMode.ReadWrite))
