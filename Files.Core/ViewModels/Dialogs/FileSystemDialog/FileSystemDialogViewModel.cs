@@ -56,7 +56,7 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 	private FileSystemDialogViewModel(IFolderViewViewModel folderViewViewModel, FileSystemDialogMode fileSystemDialogMode, IEnumerable<BaseFileSystemDialogItemViewModel> items)
 	{
         FolderViewViewModel = folderViewViewModel;
-        _userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        _userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
 
 		FileSystemDialogMode = fileSystemDialogMode;
 

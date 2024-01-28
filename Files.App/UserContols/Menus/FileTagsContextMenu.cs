@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using static Files.App.Helpers.MenuFlyoutHelper;
 using Microsoft.UI.Xaml;
@@ -74,7 +74,7 @@ public class FileTagsContextMenu : MenuFlyout
 			if (existingTags.Contains(removed.Uid))
 			{
 				var tagList = existingTags.Except(new[] { removed.Uid }).ToArray();
-				selectedItem.FileTags = tagList.Any() ? tagList : null;
+				selectedItem.FileTags = tagList.Any() ? tagList : null!;
 			}
 		}
 	}
@@ -90,4 +90,4 @@ public class FileTagsContextMenu : MenuFlyout
 			}
 		}
 	}
-}*/
+}

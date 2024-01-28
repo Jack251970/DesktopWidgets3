@@ -413,21 +413,13 @@ public static class StorageFileExtensions
         return pathBuilder.ToString();
     }
 
-	private static void SetCurrentWorkingDirectory(IFolderViewViewModel viewModel, StringBuilder path, char separator, int substringIndex, ref int i)
+	private static void SetCurrentWorkingDirectory(IFolderViewViewModel folderViewViewModel, StringBuilder path, char separator, int substringIndex, ref int i)
 	{
-        // TODO: change here!
-        /*var context = Ioc.Default.GetRequiredService<IContentPageContext>();
-		var subPath = path.ToString()[substringIndex..];
-
-		path.Clear();
-		path.Append(context.ShellPage?.FilesystemViewModel.WorkingDirectory);
-		path.Append(separator);
-		path.Append(subPath);
-		i = -1;*/
+        var context = folderViewViewModel.GetService<IContentPageContext>();
         var subPath = path.ToString()[substringIndex..];
 
         path.Clear();
-        path.Append(viewModel.WorkingDirectory);
+        path.Append(context.ShellPage?.FilesystemViewModel.WorkingDirectory);
         path.Append(separator);
         path.Append(subPath);
         i = -1;

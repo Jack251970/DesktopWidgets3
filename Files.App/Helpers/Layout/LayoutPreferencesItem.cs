@@ -10,11 +10,11 @@ public class LayoutPreferencesItem
 {
 	// Dependency injections
 
-	/*private IUserSettingsService UserSettingsService { get; } = Ioc.Default.GetRequiredService<IUserSettingsService>();*/
+	private readonly IUserSettingsService UserSettingsService;
 
 	// Fields
 
-	/*public ColumnsViewModel ColumnsViewModel;*/
+	public ColumnsViewModel ColumnsViewModel;
 
 	public bool SortDirectoriesAlongsideFiles;
 	public bool IsAdaptiveLayoutOverridden;
@@ -31,21 +31,22 @@ public class LayoutPreferencesItem
 
 	// Constructor
 
-	public LayoutPreferencesItem()
+	public LayoutPreferencesItem(IFolderViewViewModel folderViewViewModel)
 	{
-    var defaultLayout = FolderLayoutModes.DetailsView; // UserSettingsService.FoldersSettingsService.DefaultLayoutMode;
+        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+		var defaultLayout = UserSettingsService.FoldersSettingsService.DefaultLayoutMode;
 
 		LayoutMode = defaultLayout is FolderLayoutModes.Adaptive ? FolderLayoutModes.DetailsView : defaultLayout;
-		/*GridViewSize = UserSettingsService.LayoutSettingsService.DefaultGridViewSize;
+		GridViewSize = UserSettingsService.LayoutSettingsService.DefaultGridViewSize;
 		DirectorySortOption = UserSettingsService.FoldersSettingsService.DefaultSortOption;
 		DirectoryGroupOption = UserSettingsService.FoldersSettingsService.DefaultGroupOption;
 		DirectorySortDirection = UserSettingsService.FoldersSettingsService.DefaultDirectorySortDirection;
 		DirectoryGroupDirection = UserSettingsService.FoldersSettingsService.DefaultDirectoryGroupDirection;
 		DirectoryGroupByDateUnit = UserSettingsService.FoldersSettingsService.DefaultGroupByDateUnit;
-		SortDirectoriesAlongsideFiles = UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles;*/
+		SortDirectoriesAlongsideFiles = UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles;
 		IsAdaptiveLayoutOverridden = defaultLayout is not FolderLayoutModes.Adaptive;
 
-		/*ColumnsViewModel = new ColumnsViewModel();
+		ColumnsViewModel = new ColumnsViewModel();
 		ColumnsViewModel.DateCreatedColumn.UserCollapsed = !UserSettingsService.FoldersSettingsService.ShowDateCreatedColumn;
 		ColumnsViewModel.DateModifiedColumn.UserCollapsed = !UserSettingsService.FoldersSettingsService.ShowDateColumn;
 		ColumnsViewModel.ItemTypeColumn.UserCollapsed = !UserSettingsService.FoldersSettingsService.ShowTypeColumn;
@@ -75,7 +76,7 @@ public class LayoutPreferencesItem
 		ColumnsViewModel.DateDeletedColumn.UserLengthPixels = UserSettingsService.FoldersSettingsService.DateDeletedColumnWidth;
 		ColumnsViewModel.PathColumn.UserLengthPixels = UserSettingsService.FoldersSettingsService.PathColumnWidth;
 		ColumnsViewModel.OriginalPathColumn.UserLengthPixels = UserSettingsService.FoldersSettingsService.OriginalPathColumnWidth;
-		ColumnsViewModel.StatusColumn.UserLengthPixels = UserSettingsService.FoldersSettingsService.SyncStatusColumnWidth;*/
+		ColumnsViewModel.StatusColumn.UserLengthPixels = UserSettingsService.FoldersSettingsService.SyncStatusColumnWidth;
 	}
 
 	// Overridden methods
@@ -83,18 +84,18 @@ public class LayoutPreferencesItem
 	public override bool Equals(object? obj)
 	{
 		if (obj is null)
-    {
-        return false;
-    }
+        {
+            return false;
+        }
 
-    if (obj == this)
-    {
-        return true;
-    }
+        if (obj == this)
+        {
+            return true;
+        }
 
-    if (obj is LayoutPreferencesItem item)
+        if (obj is LayoutPreferencesItem item)
 		{
-			return (
+			return item.UserSettingsService == UserSettingsService &&
 				item.LayoutMode == LayoutMode &&
 				item.GridViewSize == GridViewSize &&
 				item.DirectoryGroupOption == DirectoryGroupOption &&
@@ -103,8 +104,8 @@ public class LayoutPreferencesItem
 				item.DirectoryGroupDirection == DirectoryGroupDirection &&
 				item.DirectoryGroupByDateUnit == DirectoryGroupByDateUnit &&
 				item.SortDirectoriesAlongsideFiles == SortDirectoriesAlongsideFiles &&
-				item.IsAdaptiveLayoutOverridden == IsAdaptiveLayoutOverridden /*&&
-				item.ColumnsViewModel.Equals(ColumnsViewModel)*/);
+				item.IsAdaptiveLayoutOverridden == IsAdaptiveLayoutOverridden &&
+				item.ColumnsViewModel.Equals(ColumnsViewModel);
 		}
 		return base.Equals(obj);
 	}
@@ -113,6 +114,7 @@ public class LayoutPreferencesItem
 	{
 		HashCode hash = new();
 
+        hash.Add(UserSettingsService);
 		hash.Add(LayoutMode);
 		hash.Add(GridViewSize);
 		hash.Add(DirectoryGroupOption);
@@ -122,7 +124,7 @@ public class LayoutPreferencesItem
 		hash.Add(DirectoryGroupByDateUnit);
 		hash.Add(SortDirectoriesAlongsideFiles);
 		hash.Add(IsAdaptiveLayoutOverridden);
-		/*hash.Add(ColumnsViewModel);*/
+		hash.Add(ColumnsViewModel);
 
 		return hash.ToHashCode();
 	}

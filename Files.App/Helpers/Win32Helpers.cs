@@ -5,25 +5,25 @@ namespace Files.App.Helpers;
 
 public static class Win32Helpers
 {
-	public static async Task<bool> InvokeWin32ComponentAsync(string applicationPath, IFolderViewViewModel viewModel, string arguments = null!, bool runAsAdmin = false, string workingDirectory = null!)
+	public static async Task<bool> InvokeWin32ComponentAsync(string applicationPath, IShellPage associatedInstance, string arguments = null!, bool runAsAdmin = false, string workingDirectory = null!)
 	{
-		return await InvokeWin32ComponentsAsync(applicationPath.CreateEnumerable(), viewModel, arguments, runAsAdmin, workingDirectory);
+		return await InvokeWin32ComponentsAsync(applicationPath.CreateEnumerable(), associatedInstance, arguments, runAsAdmin, workingDirectory);
 	}
 
-	public static async Task<bool> InvokeWin32ComponentsAsync(IEnumerable<string> applicationPaths, IFolderViewViewModel viewModel, string arguments = null!, bool runAsAdmin = false, string workingDirectory = null!)
+	public static async Task<bool> InvokeWin32ComponentsAsync(IEnumerable<string> applicationPaths, IShellPage associatedInstance, string arguments = null!, bool runAsAdmin = false, string workingDirectory = null!)
 	{
 		Debug.WriteLine("Launching EXE in FullTrustProcess");
 
 		if (string.IsNullOrEmpty(workingDirectory))
 		{
-			workingDirectory = viewModel.WorkingDirectory; // TODO: change to associatedInstance.FilesystemViewModel.WorkingDirectory;
+			workingDirectory = associatedInstance.FilesystemViewModel.WorkingDirectory;
         }
 
 		var application = applicationPaths.FirstOrDefault();
 		if (string.IsNullOrEmpty(workingDirectory))
 		{
-			workingDirectory = viewModel.WorkingDirectory;
-		}
+			workingDirectory = associatedInstance.FilesystemViewModel.WorkingDirectory;
+        }
 
 		if (runAsAdmin)
 		{

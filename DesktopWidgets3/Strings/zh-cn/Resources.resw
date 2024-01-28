@@ -309,11 +309,23 @@
   <data name="Loading" xml:space="preserve">
     <value>加载中</value>
   </data>
+  <data name="BaseLayoutItemContextFlyoutOpenParentFolder.Text" xml:space="preserve">
+    <value>打开上级目录</value>
+  </data>
+  <data name="OpenParentFolderDescription" xml:space="preserve">
+    <value>打开搜索项所在的文件夹</value>
+  </data>
   <data name="OpenWith" xml:space="preserve">
     <value>打开方式</value>
   </data>
+  <data name="OpenItemWithApplicationPickerDescription" xml:space="preserve">
+    <value>用所选程序打开项目</value>
+  </data>
   <data name="Open" xml:space="preserve">
     <value>打开</value>
+  </data>
+  <data name="OpenItemDescription" xml:space="preserve">
+    <value>打开项目</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>删除</value>
@@ -321,8 +333,50 @@
   <data name="DeleteItemDescription" xml:space="preserve">
     <value>删除项</value>
   </data>
-  <data name="OpenItemDescription" xml:space="preserve">
-    <value>打开项目</value>
+  <data name="DeletePermanently" xml:space="preserve">
+    <value>永久删除</value>
+  </data>
+  <data name="DeleteItemPermanentlyDescription" xml:space="preserve">
+    <value>永久删除项目</value>
+  </data>
+  <data name="EmptyRecycleBin" xml:space="preserve">
+    <value>清空回收站</value>
+  </data>
+  <data name="EmptyRecycleBinDescription" xml:space="preserve">
+    <value>清空回收站</value>
+  </data>
+  <data name="RestoreAllItems" xml:space="preserve">
+    <value>还原所有项目</value>
+  </data>
+  <data name="RestoreAllRecycleBinDescription" xml:space="preserve">
+    <value>从回收站中还原所有项目</value>
+  </data>
+  <data name="RestoreRecycleBinDescription" xml:space="preserve">
+    <value>从回收站中还原所选项目</value>
+  </data>
+  <data name="FormatDriveText" xml:space="preserve">
+    <value>格式化...</value>
+  </data>
+  <data name="FormatDriveDescription" xml:space="preserve">
+    <value>打开所选项目的“格式化驱动器”菜单</value>
+  </data>
+  <data name="OpenFileLocation" xml:space="preserve">
+    <value>打开文件位置</value>
+  </data>
+  <data name="OpenFileLocationDescription" xml:space="preserve">
+    <value>打开项目的位置</value>
+  </data>
+  <data name="PasteItemDescription" xml:space="preserve">
+    <value>将剪贴板中的项目粘贴到当前文件夹</value>
+  </data>
+  <data name="PasteItemToSelectionDescription" xml:space="preserve">
+    <value>将剪贴板中的项目粘贴到所选文件夹</value>
+  </data>
+  <data name="SearchUnindexedItemsLabel.Text" xml:space="preserve">
+    <value>没有找到你想要的内容?</value>
+  </data>
+  <data name="SearchUnindexedItemsButton.Content" xml:space="preserve">
+    <value>搜索未编入索引的项</value>
   </data>
   <data name="NameWithColon" xml:space="preserve">
     <value>名称:</value>
@@ -456,17 +510,23 @@
   <data name="GroupItemsCount_Plural" xml:space="preserve">
     <value>{0} 个项目</value>
   </data>
-  <data name="Up" xml:space="preserve">
-    <value>上移</value>
-  </data>
-  <data name="NavigateUpDescription" xml:space="preserve">
-    <value>导航至上一级目录</value>
-  </data>
   <data name="Back" xml:space="preserve">
-    <value>后退</value>
+    <value>后退 (Alt+左方向键)</value>
+  </data>
+  <data name="Forward" xml:space="preserve">
+    <value>前进 (Alt+右方向键)</value>
+  </data>
+  <data name="Up" xml:space="preserve">
+    <value>上移 (Alt+上方向键)</value>
   </data>
   <data name="NavigateBackDescription" xml:space="preserve">
-    <value>在导航历史中向后导航</value>
+    <value>Navigate backward in navigation history</value>
+  </data>
+  <data name="NavigateForwardDescription" xml:space="preserve">
+    <value>Navigate forward in navigation history</value>
+  </data>
+  <data name="NavigateUpDescription" xml:space="preserve">
+    <value>Navigate up one directory</value>
   </data>
   <data name="WidgetSettings_ShowExtension_Card.Description" xml:space="preserve">
     <value>显示已知文件类型的扩展名</value>
@@ -609,6 +669,12 @@
   <data name="FileNotFoundDialog.Title" xml:space="preserve">
     <value>无法找到该文件</value>
   </data>
+  <data name="InvalidItemDialogContent" xml:space="preserve">
+    <value>引用的项目无效或无法访问。{0}代码:{0}{1}</value>
+  </data>
+  <data name="InvalidItemDialogTitle" xml:space="preserve">
+    <value>无效项</value>
+  </data>
   <data name="AccessDenied" xml:space="preserve">
     <value>拒绝访问</value>
   </data>
@@ -632,6 +698,9 @@
   </data>
   <data name="DeleteShortcutDescription" xml:space="preserve">
     <value>在目标位置找不到 {0}。要删除此快捷方式吗？</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>主页</value>
   </data>
   <data name="Desktop" xml:space="preserve">
     <value>桌面</value>
@@ -775,14 +844,17 @@
   <data name="CopyToFolderCaptionText" xml:space="preserve">
     <value>复制到 {0}</value>
   </data>
-  <data name="OpenItemWithApplicationPickerDescription" xml:space="preserve">
-    <value>用所选程序打开项目</value>
-  </data>
   <data name="CopyPath" xml:space="preserve">
     <value>复制路径</value>
   </data>
   <data name="CopyPathDescription" xml:space="preserve">
     <value>复制项目路径到剪贴板</value>
+  </data>
+  <data name="CopyPathWithQuotes" xml:space="preserve">
+    <value>复制带引号的路径</value>
+  </data>
+  <data name="CopyPathWithQuotesDescription" xml:space="preserve">
+    <value>复制项目带引号的路径到剪贴板</value>
   </data>
   <data name="CreateShortcut" xml:space="preserve">
     <value>创建快捷方式</value>
@@ -1153,5 +1225,277 @@
   </data>
   <data name="SideBarCreateNewLibrary.Text" xml:space="preserve">
     <value>新建库</value>
+  </data>
+  <data name="StatusCenter_CompressCanceled_Header" xml:space="preserve">
+    <value>已取消将 {0} 个项目压缩到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CompressCanceled_SubHeader" xml:space="preserve">
+    <value>已取消将 {0} 个项目从“{1}”压缩到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CompressComplete_Header" xml:space="preserve">
+    <value>已将 {0} 个项目压缩到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CompressComplete_SubHeader" xml:space="preserve">
+    <value>已将 {0} 个项目从“{1}”压缩到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CompressFailed_Header" xml:space="preserve">
+    <value>将 {0} 个项目压缩到“{1}”时出错</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CompressFailed_SubHeader" xml:space="preserve">
+    <value>无法将 {0} 个项目从“{1}”压缩到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CompressInProgress_Header" xml:space="preserve">
+    <value>正在将 {0} 个项目压缩到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CompressInProgress_SubHeader" xml:space="preserve">
+    <value>正在将 {0} 个项目从“{1}”压缩到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CopyCanceled_Header" xml:space="preserve">
+    <value>已取消将 {0} 个项目复制到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CopyCanceled_SubHeader" xml:space="preserve">
+    <value>已取消将 {0} 个项目从“{1}”复制到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CopyComplete_Header" xml:space="preserve">
+    <value>已将 {0} 个项目复制到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CopyComplete_SubHeader" xml:space="preserve">
+    <value>已将 {0} 个项目从“{1}”复制到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CopyFailed_Header" xml:space="preserve">
+    <value>将 {0} 个项目复制到“{1}”时出错</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CopyFailed_SubHeader" xml:space="preserve">
+    <value>无法将 {0} 个项目从“{1}”复制到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CopyInProgress_Header" xml:space="preserve">
+    <value>正在将 {0} 个项目复制到 {1}"</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_CopyInProgress_SubHeader" xml:space="preserve">
+    <value>正在将 {0} 个项目从“{1}”复制到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DecompressCanceled_Header" xml:space="preserve">
+    <value>已取消将 {0} 提取到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DecompressCanceled_SubHeader" xml:space="preserve">
+    <value>已取消将 {0} 从“{1}”提取到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DecompressComplete_Header" xml:space="preserve">
+    <value>已将“{0}”提取到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DecompressComplete_SubHeader" xml:space="preserve">
+    <value>已将“{0}”从“{1}”提取到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DecompressFailed_Header" xml:space="preserve">
+    <value>将“{0}”提取到“{1}”时出错</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DecompressFailed_SubHeader" xml:space="preserve">
+    <value>无法将“{0}”从“{1}”提取到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DecompressInProgress_Header" xml:space="preserve">
+    <value>正在将“{0}”提取到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DecompressInProgress_SubHeader" xml:space="preserve">
+    <value>正在将“{0}”从“{1}”提取到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DeleteCanceled_Header" xml:space="preserve">
+    <value>已取消从“{1}”中永久删除 {0} 个项目</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DeleteComplete_Header" xml:space="preserve">
+    <value>已从“{1}”中永久删除了 {0} 个项目</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DeleteFailed_Header" xml:space="preserve">
+    <value>从“{1}”中永久删除 {0} 个项目时出错</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DeleteFailed_SubHeader" xml:space="preserve">
+    <value>无法从“{1}”中永久删除 {0} 个项目</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_DeleteInProgress_Header" xml:space="preserve">
+    <value>正在从“{1}”中永久删除 {0} 个项目</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_RecycleCanceled_Header" xml:space="preserve">
+    <value>已取消从“{1}”中删除 {0} 个项目</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_RecycleComplete_Header" xml:space="preserve">
+    <value>已从“{1}”中删除 {0} 个项目</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_RecycleFailed_Header" xml:space="preserve">
+    <value>从“{1}”中删除 {0} 个项目时出错</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_RecycleInProgress_Header" xml:space="preserve">
+    <value>正在从 "{1}" 中删除 {0} 个项目</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_MoveCanceled_Header" xml:space="preserve">
+    <value>已取消将 {0} 个项目移动到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_MoveCanceled_SubHeader" xml:space="preserve">
+    <value>已取消将 {0} 个项目从“{1}”移动到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_MoveComplete_Header" xml:space="preserve">
+    <value>已将 {0} 个项目移动到“{1}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_MoveComplete_SubHeader" xml:space="preserve">
+    <value>已将 {0} 个项目从“{1}”移动到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_MoveInProgress_Header" xml:space="preserve">
+    <value>正在将 {0} 个项目移动到 {1}"</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_MoveInProgress_SubHeader" xml:space="preserve">
+    <value>正在将 {0} 个项目从“{1}”移动到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_MoveFailed_Header" xml:space="preserve">
+    <value>将 {0} 个项目移动到“{1}”时出错</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_MoveFailed_SubHeader" xml:space="preserve">
+    <value>无法将 {0} 个项目从“{1}”移动到“{2}”</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_EmptyRecycleBinCancel_Header" xml:space="preserve">
+    <value>已取消清空回收站</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_EmptyRecycleBinComplete_Header" xml:space="preserve">
+    <value>回收站已清空</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_EmptyRecycleBinInProgress_Header" xml:space="preserve">
+    <value>正在清空回收站</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_EmptyRecycleBinFailed_Header" xml:space="preserve">
+    <value>清空回收站出错</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_EmptyRecycleBinFailed_SubHeader" xml:space="preserve">
+    <value>无法清空回收站</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_Prepare_Header" xml:space="preserve">
+    <value>正在准备操作...</value>
+    <comment>Shown in a StatusCenter card.</comment>
+  </data>
+  <data name="StatusCenter_ProcessedItems_Header" xml:space="preserve">
+    <value>已处理 {0}/{1} 个项目</value>
+    <comment>Shown in a StatusCenter card. Used as "8/20 items processed"</comment>
+  </data>
+  <data name="ProcessingItems" xml:space="preserve">
+    <value>正在处理项目...</value>
+  </data>
+  <data name="StatusCenter_ProcessedSize_Header" xml:space="preserve">
+    <value>已处理 {0}，共 {1}</value>
+    <comment>Shown in a StatusCenter card. Used as "64 MB of 1 GB processed"</comment>
+  </data>
+  <data name="Canceling" xml:space="preserve">
+    <value>正在取消</value>
+  </data>
+  <data name="ReviewFiles" xml:space="preserve">
+    <value>评价 Files</value>
+  </data>
+  <data name="ReviewFilesContent" xml:space="preserve">
+    <value>您想要评价 Files 吗？</value>
+  </data>
+  <data name="FilesRunningAsAdmin" xml:space="preserve">
+    <value>Files 正在以管理员身份运行</value>
+  </data>
+  <data name="FilesRunningAsAdminContent" xml:space="preserve">
+    <value>由于平台限制，在以管理员身份运行 Files 时，拖放将无法使用。</value>
+  </data>
+  <data name="DontShowAgain" xml:space="preserve">
+    <value>不再显示</value>
+  </data>
+  <data name="Properties" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="EmptyFolder.Text" xml:space="preserve">
+    <value>该文件夹为空。</value>
+  </data>
+  <data name="BaseLayoutItemContextFlyoutExtractToChildFolder" xml:space="preserve">
+    <value>解压缩到 {0}\</value>
+  </data>
+  <data name="ItemCount.Text" xml:space="preserve">
+    <value>个项目</value>
+  </data>
+  <data name="ItemsCount.Text" xml:space="preserve">
+    <value>个项目</value>
+  </data>
+  <data name="CommitsNumber" xml:space="preserve">
+    <value>{0} 个提交</value>
+    <comment>CHANGE</comment>
+  </data>
+  <data name="GitSyncStatusExtendedInfo" xml:space="preserve">
+    <value>{0} 个传出提交 / {1} 个传入提交</value>
+  </data>
+   <data name="ItemSelected.Text" xml:space="preserve">
+    <value>个项目已选择</value>
+  </data>
+  <data name="ItemsSelected.Text" xml:space="preserve">
+    <value>个项目已选择</value>
+  </data>
+  <data name="SearchPagePathBoxOverrideText" xml:space="preserve">
+    <value>在“{1}”中搜索“{0}”的结果</value>
+  </data>
+  <data name="EditTags" xml:space="preserve">
+    <value>编辑文件标签</value>
+  </data>
+  <data name="ConfirmEmptyBinDialogContent" xml:space="preserve">
+    <value>确定要永久删除所有项目吗？</value>
+  </data>
+  <data name="ConfirmEmptyBinDialogTitle" xml:space="preserve">
+    <value>清空回收站</value>
+  </data>
+  <data name="ConfirmRestoreBinDialogContent" xml:space="preserve">
+    <value>是否确实要还原回收站中的所有项目？</value>
+  </data>
+  <data name="ConfirmRestoreBinDialogTitle" xml:space="preserve">
+    <value>还原所有项目</value>
+  </data>
+  <data name="FailedToRestore" xml:space="preserve">
+    <value>从回收站还原项目失败</value>
+  </data>
+  <data name="ConfirmRestoreSelectionBinDialogContent" xml:space="preserve">
+    <value>是否还原选中的 {0} 个项目？</value>
+  </data>
+  <data name="ConfirmRestoreSelectionBinDialogTitle" xml:space="preserve">
+    <value>还原选定的项目</value>
   </data>
 </root>

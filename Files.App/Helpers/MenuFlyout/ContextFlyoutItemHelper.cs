@@ -1,14 +1,15 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.ViewModels.Layouts;
+using Files.App.ViewModels.Layouts;
 using Files.Shared.Helpers;
 using Files.App.Helpers.ContextFlyouts;
-using Files.App.ViewModels.Layouts;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
 using Windows.Storage;
+using Files.App.Services.Settings;
+using Files.Core.ViewModels.FolderView;
 
 namespace Files.App.Helpers;
 
@@ -16,49 +17,54 @@ namespace Files.App.Helpers;
 /// Used to create lists of ContextMenuFlyoutItemViewModels that can be used by ItemModelListToContextFlyoutHelper to create context
 /// menus and toolbars for the user.
 /// <see cref="ContextMenuFlyoutItemViewModel"/>
-/// <see cref="Files.App.Helpers.ContextFlyouts.ItemModelListToContextFlyoutHelper"/>
+/// <see cref="ItemModelListToContextFlyoutHelper"/>
 /// </summary>
 public static class ContextFlyoutItemHelper
 {
-	private static readonly IUserSettingsService userSettingsService = Ioc.Default.GetRequiredService<IUserSettingsService>();
-	private static readonly ICommandManager commands = Ioc.Default.GetRequiredService<ICommandManager>();
-	private static readonly IModifiableCommandManager modifiableCommands = Ioc.Default.GetRequiredService<IModifiableCommandManager>();
-	private static readonly IAddItemService addItemService = Ioc.Default.GetRequiredService<IAddItemService>();
+    /*private static readonly IUserSettingsService userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();
+	private static readonly ICommandManager commands = DependencyExtensions.GetService<ICommandManager>();
+	private static readonly IModifiableCommandManager modifiableCommands = DependencyExtensions.GetService<IModifiableCommandManager>();*/
+    private static readonly IAddItemService addItemService = DependencyExtensions.GetService<IAddItemService>();
 
-	public static List<ContextMenuFlyoutItemViewModel> GetItemContextCommandsWithoutShellItems(CurrentInstanceViewModel currentInstanceViewModel, List<ListedItem> selectedItems, BaseLayoutViewModel commandsViewModel, bool shiftPressed, SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel, ItemViewModel? itemViewModel = null)
+	public static List<ContextMenuFlyoutItemViewModel> GetItemContextCommandsWithoutShellItems(IFolderViewViewModel folderViewViewModel, CurrentInstanceViewModel currentInstanceViewModel, List<ListedItem> selectedItems, BaseLayoutViewModel commandsViewModel, bool shiftPressed, SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel, ItemViewModel? itemViewModel = null)
 	{
-		var menuItemsList = GetBaseItemMenuItems(commandsViewModel: commandsViewModel, selectedItems: selectedItems, selectedItemsPropertiesViewModel: selectedItemsPropertiesViewModel, currentInstanceViewModel: currentInstanceViewModel, itemViewModel: itemViewModel);
-		menuItemsList = Filter(items: menuItemsList, shiftPressed: shiftPressed, currentInstanceViewModel: currentInstanceViewModel, selectedItems: selectedItems, removeOverflowMenu: false);
+		var menuItemsList = GetBaseItemMenuItems(folderViewViewModel: folderViewViewModel, commandsViewModel: commandsViewModel, selectedItems: selectedItems, selectedItemsPropertiesViewModel: selectedItemsPropertiesViewModel, currentInstanceViewModel: currentInstanceViewModel, itemViewModel: itemViewModel);
+		menuItemsList = Filter(folderViewViewModel: folderViewViewModel, items: menuItemsList, shiftPressed: shiftPressed, currentInstanceViewModel: currentInstanceViewModel, selectedItems: selectedItems, removeOverflowMenu: false);
 		return menuItemsList;
 	}
 
 	public static Task<List<ContextMenuFlyoutItemViewModel>> GetItemContextShellCommandsAsync(string workingDir, List<ListedItem> selectedItems, bool shiftPressed, bool showOpenMenu, CancellationToken cancellationToken)
 		=> ShellContextmenuHelper.GetShellContextmenuAsync(shiftPressed: shiftPressed, showOpenMenu: showOpenMenu, workingDirectory: workingDir, selectedItems: selectedItems, cancellationToken: cancellationToken);
 
-	public static List<ContextMenuFlyoutItemViewModel> Filter(List<ContextMenuFlyoutItemViewModel> items, List<ListedItem> selectedItems, bool shiftPressed, CurrentInstanceViewModel currentInstanceViewModel, bool removeOverflowMenu = true)
+	public static List<ContextMenuFlyoutItemViewModel> Filter(IFolderViewViewModel folderViewViewModel, List<ContextMenuFlyoutItemViewModel> items, List<ListedItem> selectedItems, bool shiftPressed, CurrentInstanceViewModel currentInstanceViewModel, bool removeOverflowMenu = true)
 	{
 		items = items.Where(x => Check(item: x, currentInstanceViewModel: currentInstanceViewModel, selectedItems: selectedItems)).ToList();
-		items.ForEach(x => x.Items = x.Items?.Where(y => Check(item: y, currentInstanceViewModel: currentInstanceViewModel, selectedItems: selectedItems)).ToList());
+		items.ForEach(x => x.Items = x.Items?.Where(y => Check(item: y, currentInstanceViewModel: currentInstanceViewModel, selectedItems: selectedItems)).ToList()!);
 
 		var overflow = items.Where(x => x.ID == "ItemOverflow").FirstOrDefault();
 		if (overflow is not null)
 		{
+            var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
 			if (!shiftPressed && userSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu) // items with ShowOnShift to overflow menu
 			{
 				var overflowItems = items.Where(x => x.ShowOnShift).ToList();
 
 				// Adds a separator between items already there and the new ones
 				if (overflow.Items.Count != 0 && overflowItems.Count > 0 && overflow.Items.Last().ItemType != ContextMenuFlyoutItemType.Separator)
-					overflow.Items.Add(new ContextMenuFlyoutItemViewModel { ItemType = ContextMenuFlyoutItemType.Separator });
+                {
+                    overflow.Items.Add(new ContextMenuFlyoutItemViewModel { ItemType = ContextMenuFlyoutItemType.Separator });
+                }
 
-				items = items.Except(overflowItems).ToList();
+                items = items.Except(overflowItems).ToList();
 				overflow.Items.AddRange(overflowItems);
 			}
 
 			// remove the overflow if it has no child items
 			if (overflow.Items.Count == 0 && removeOverflowMenu)
-				items.Remove(overflow);
-		}
+            {
+                items.Remove(overflow);
+            }
+        }
 
 		return items;
 	}
@@ -74,29 +80,34 @@ public static class ContextFlyoutItemHelper
 	}
 
 	public static List<ContextMenuFlyoutItemViewModel> GetBaseItemMenuItems(
+        IFolderViewViewModel folderViewViewModel,
 		BaseLayoutViewModel commandsViewModel,
 		SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel,
 		List<ListedItem> selectedItems,
 		CurrentInstanceViewModel currentInstanceViewModel,
 		ItemViewModel? itemViewModel = null)
 	{
-		bool itemsSelected = itemViewModel is null;
-		bool canDecompress = selectedItems.Any() && selectedItems.All(x => x.IsArchive)
+		var itemsSelected = itemViewModel is null;
+		var canDecompress = selectedItems.Any() && selectedItems.All(x => x.IsArchive)
 			|| selectedItems.All(x => x.PrimaryItemAttribute == StorageItemTypes.File && FileExtensionHelpers.IsZipFile(x.FileExtension));
-		bool canCompress = !canDecompress || selectedItems.Count > 1;
-		bool showOpenItemWith = selectedItems.All(
+		var canCompress = !canDecompress || selectedItems.Count > 1;
+		var showOpenItemWith = selectedItems.All(
 			i => (i.PrimaryItemAttribute == StorageItemTypes.File && !i.IsShortcut && !i.IsExecutable) || (i.PrimaryItemAttribute == StorageItemTypes.Folder && i.IsArchive));
-		bool areAllItemsFolders = selectedItems.All(i => i.PrimaryItemAttribute == StorageItemTypes.Folder);
-		bool isFirstFileExecutable = FileExtensionHelpers.IsExecutableFile(selectedItems.FirstOrDefault()?.FileExtension);
-		string newArchiveName =
+		var areAllItemsFolders = selectedItems.All(i => i.PrimaryItemAttribute == StorageItemTypes.Folder);
+		var isFirstFileExecutable = FileExtensionHelpers.IsExecutableFile(selectedItems.FirstOrDefault()?.FileExtension);
+		var newArchiveName =
 			Path.GetFileName(selectedItems.Count is 1 ? selectedItems[0].ItemPath : Path.GetDirectoryName(selectedItems[0].ItemPath))
 			?? string.Empty;
 
-		bool isDriveRoot = itemViewModel?.CurrentFolder is not null && (itemViewModel.CurrentFolder.ItemPath == Path.GetPathRoot(itemViewModel.CurrentFolder.ItemPath));
+		var isDriveRoot = itemViewModel?.CurrentFolder is not null && (itemViewModel.CurrentFolder.ItemPath == Path.GetPathRoot(itemViewModel.CurrentFolder.ItemPath));
 
-		return new List<ContextMenuFlyoutItemViewModel>()
+        var commands = folderViewViewModel.GetService<ICommandManager>();
+        var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var modifiableCommands = folderViewViewModel.GetService<IModifiableCommandManager>();
+        return new List<ContextMenuFlyoutItemViewModel>()
 		{
-			new ContextMenuFlyoutItemViewModel()
+            // TODO: Add support.
+			/*new ContextMenuFlyoutItemViewModel()
 			{
 				Text = "LayoutMode".GetLocalizedResource(),
 				Glyph = "\uE152",
@@ -326,30 +337,30 @@ public static class ContextFlyoutItemHelper
 						IsVisible = true
 					}.Build(),
 				},
-			},
+			},*/
 			new ContextMenuFlyoutItemViewModelBuilder(commands.RefreshItems)
 			{
 				IsVisible = !itemsSelected,
 			}.Build(),
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
 				ItemType = ContextMenuFlyoutItemType.Separator,
 				ShowInFtpPage = true,
 				ShowInZipPage = true,
 				ShowItem = !itemsSelected
 			},
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
 				OpacityIcon = new OpacityIconModel()
 				{
 					OpacityIconStyle = commands.AddItem.Glyph.OpacityStyle
 				},
 				Text = commands.AddItem.Label,
-				Items = GetNewItemItems(commandsViewModel, currentInstanceViewModel.CanCreateFileInPage),
+				Items = GetNewItemItems(folderViewViewModel, commandsViewModel, currentInstanceViewModel.CanCreateFileInPage),
 				ShowItem = !itemsSelected,
 				ShowInFtpPage = true
 			},
-			new ContextMenuFlyoutItemViewModelBuilder(commands.FormatDrive).Build(),
+			/*new ContextMenuFlyoutItemViewModelBuilder(commands.FormatDrive).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.EmptyRecycleBin)
 			{
 				IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && !itemsSelected,
@@ -361,15 +372,15 @@ public static class ContextFlyoutItemHelper
 			new ContextMenuFlyoutItemViewModelBuilder(commands.RestoreRecycleBin)
 			{
 				IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && itemsSelected,
-			}.Build(),
+			}.Build(),*/
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItem).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItemWithApplicationPicker)
 			{
 				Tag = "OpenWith",
 			}.Build(),
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
-				Text = "OpenWith".GetLocalizedResource(),
+				Text = "OpenWith".ToLocalized(),
 				OpacityIcon = new OpacityIconModel()
 				{
 					OpacityIconStyle = "ColorIconOpenWith"
@@ -387,7 +398,7 @@ public static class ContextFlyoutItemHelper
 				ShowInSearchPage = true,
 				ShowItem = itemsSelected && showOpenItemWith
 			},
-			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenFileLocation).Build(),
+			/*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenFileLocation).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenInNewWindowItemAction).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewPaneAction).Build(),
@@ -416,8 +427,8 @@ public static class ContextFlyoutItemHelper
 							&& (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false)
 			}.Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAdmin).Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAnotherUser).Build(),
-			new ContextMenuFlyoutItemViewModel()
+			new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAnotherUser).Build(),*/
+			new()
 			{
 				ItemType = ContextMenuFlyoutItemType.Separator,
 				ShowInSearchPage = true,
@@ -465,7 +476,7 @@ public static class ContextFlyoutItemHelper
 				IsVisible = itemsSelected,
 				IsPrimary = true,
 			}.Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
+			/*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
 			{
 				IsPrimary = true,
 				IsVisible = commands.OpenProperties.IsExecutable
@@ -489,8 +500,8 @@ public static class ContextFlyoutItemHelper
 				IsVisible = selectedItems.All(x => !x.IsShortcut && (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable) && !x.IsArchive && x.IsItemPinnedToStart),
 				ShowOnShift = true,
 			}.Build(),
-			new ContextMenuFlyoutItemViewModel
-			{
+			new()
+            {
 				Text = "Compress".GetLocalizedResource(),
 				ShowInSearchPage = true,
 				OpacityIcon = new OpacityIconModel()
@@ -505,8 +516,8 @@ public static class ContextFlyoutItemHelper
 				},
 				ShowItem = itemsSelected && CompressHelper.CanCompress(selectedItems)
 			},
-			new ContextMenuFlyoutItemViewModel
-			{
+			new()
+            {
 				Text = "Extract".GetLocalizedResource(),
 				ShowInSearchPage = true,
 				OpacityIcon = new OpacityIconModel()
@@ -521,18 +532,18 @@ public static class ContextFlyoutItemHelper
 					new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchiveToChildFolder).Build(),
 				},
 				ShowItem = CompressHelper.CanDecompress(selectedItems)
-			},
-			new ContextMenuFlyoutItemViewModel()
+			},*/
+			new()
 			{
-				Text = "SendTo".GetLocalizedResource(),
+				Text = "SendTo".ToLocalized(),
 				Tag = "SendTo",
 				CollapseLabel = true,
 				ShowInSearchPage = true,
 				ShowItem = itemsSelected && userSettingsService.GeneralSettingsService.ShowSendToMenu
 			},
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
-				Text = "SendTo".GetLocalizedResource(),
+				Text = "SendTo".ToLocalized(),
 				Tag = "SendToOverflow",
 				IsHidden = true,
 				CollapseLabel = true,
@@ -546,7 +557,7 @@ public static class ContextFlyoutItemHelper
 				ShowInSearchPage = true,
 				ShowItem = itemsSelected && userSettingsService.GeneralSettingsService.ShowSendToMenu
 			},
-			new ContextMenuFlyoutItemViewModel()
+			/*new()
 			{
 				Text = "TurnOnBitLocker".GetLocalizedResource(),
 				Tag = "TurnOnBitLockerPlaceholder",
@@ -554,18 +565,18 @@ public static class ContextFlyoutItemHelper
 				IsEnabled = false,
 				ShowItem = isDriveRoot
 			},
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
 				Text = "ManageBitLocker".GetLocalizedResource(),
 				Tag = "ManageBitLockerPlaceholder",
 				CollapseLabel = true,
 				ShowItem = isDriveRoot,
 				IsEnabled = false
-			},
+			},*/
 			// Shell extensions are not available on the FTP server or in the archive,
 			// but following items are intentionally added because icons in the context menu will not appear
 			// unless there is at least one menu item with an icon that is not an OpacityIcon. (#12943)
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
 				ItemType = ContextMenuFlyoutItemType.Separator,
 				Tag = "OverflowSeparator",
@@ -574,9 +585,9 @@ public static class ContextFlyoutItemHelper
 				ShowInRecycleBin = true,
 				ShowInSearchPage = true,
 			},
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
-				Text = "Loading".GetLocalizedResource(),
+				Text = "Loading".ToLocalized(),
 				Glyph = "\xE712",
 				Items = new List<ContextMenuFlyoutItemViewModel>(),
 				ID = "ItemOverflow",
@@ -590,14 +601,15 @@ public static class ContextFlyoutItemHelper
 		}.Where(x => x.ShowItem).ToList();
 	}
 
-	public static List<ContextMenuFlyoutItemViewModel> GetNewItemItems(BaseLayoutViewModel commandsViewModel, bool canCreateFileInPage)
+	public static List<ContextMenuFlyoutItemViewModel> GetNewItemItems(IFolderViewViewModel folderViewViewModel, BaseLayoutViewModel commandsViewModel, bool canCreateFileInPage)
 	{
-		var list = new List<ContextMenuFlyoutItemViewModel>()
+        var commands = folderViewViewModel.GetService<ICommandManager>();
+        var list = new List<ContextMenuFlyoutItemViewModel>()
 		{
 			new ContextMenuFlyoutItemViewModelBuilder(commands.CreateFolder).Build(),
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
-				Text = "File".GetLocalizedResource(),
+				Text = "File".ToLocalized(),
 				Glyph = "\uE7C3",
 				Command = commandsViewModel.CreateNewFileCommand,
 				ShowInFtpPage = true,
@@ -605,7 +617,7 @@ public static class ContextFlyoutItemHelper
 				IsEnabled = canCreateFileInPage
 			},
 			new ContextMenuFlyoutItemViewModelBuilder(commands.CreateShortcutFromDialog).Build(),
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
 				ItemType = ContextMenuFlyoutItemType.Separator,
 			}
@@ -619,7 +631,7 @@ public static class ContextFlyoutItemHelper
 				if (!string.IsNullOrEmpty(i.IconBase64))
 				{
 					// loading the bitmaps takes a while, so this caches them
-					byte[] bitmapData = Convert.FromBase64String(i.IconBase64);
+					var bitmapData = Convert.FromBase64String(i.IconBase64);
 					using var ms = new MemoryStream(bitmapData);
 					var bitmap = new BitmapImage();
 					_ = bitmap.SetSourceAsync(ms.AsRandomAccessStream());
@@ -653,9 +665,11 @@ public static class ContextFlyoutItemHelper
 														.Where(x => Equals((x as AppBarButton)?.Tag, placeholderName))
 														.FirstOrDefault() as AppBarButton;
 		if (placeholder is not null)
-			placeholder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+        {
+            placeholder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+        }
 
-		if (replacingItem is not null)
+        if (replacingItem is not null)
 		{
 			var (_, bitLockerCommands) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(new List<ContextMenuFlyoutItemViewModel>() { replacingItem });
 			contextMenu.SecondaryCommands.Insert(
@@ -664,4 +678,4 @@ public static class ContextFlyoutItemHelper
 			);
 		}
 	}
-}*/
+}

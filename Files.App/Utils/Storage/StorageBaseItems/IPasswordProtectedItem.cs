@@ -8,7 +8,7 @@ namespace Files.App.Utils.Storage;
 
 public interface IPasswordProtectedItem
 {
-    IFolderViewViewModel ViewModel { get; set; }
+    IFolderViewViewModel FolderViewViewModel { get; set; }
 
 	StorageCredential Credentials { get; set; }
 
@@ -25,7 +25,7 @@ public interface IPasswordProtectedItem
             throw exception;
         }
 
-        Credentials = await PasswordRequestedCallback(ViewModel, this);
+        Credentials = await PasswordRequestedCallback(FolderViewViewModel, this);
 
 		return await func();
 	}
@@ -41,7 +41,7 @@ public interface IPasswordProtectedItem
             throw exception;
         }
 
-        Credentials = await PasswordRequestedCallback(ViewModel,this);
+        Credentials = await PasswordRequestedCallback(FolderViewViewModel,this);
 
 		await func();
 	}

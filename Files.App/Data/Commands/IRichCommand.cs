@@ -13,7 +13,7 @@ public interface IRichCommand : ICommand, INotifyPropertyChanging, INotifyProper
 	CommandCodes Code { get; }
 
 	string Label { get; }
-	/*string LabelWithHotKey { get; }*/
+	string LabelWithHotKey { get; }
 	string AutomationName { get; }
 
 	string Description { get; }
@@ -23,9 +23,9 @@ public interface IRichCommand : ICommand, INotifyPropertyChanging, INotifyProper
 	FontIcon? FontIcon { get; }
 	Style? OpacityStyle { get; }
 
-    /*bool IsCustomHotKeys { get; }
+    bool IsCustomHotKeys { get; }
 	string? HotKeyText { get; }
-	HotKeyCollection HotKeys { get; set; }*/
+	HotKeyCollection HotKeys { get; set; }
 
     bool IsToggle { get; }
 	bool IsOn { get; set; }
@@ -34,5 +34,5 @@ public interface IRichCommand : ICommand, INotifyPropertyChanging, INotifyProper
 	Task ExecuteAsync();
 	void ExecuteTapped(object sender, TappedRoutedEventArgs e);
 
-	/*void ResetHotKeys();*/
+	void ResetHotKeys();
 }

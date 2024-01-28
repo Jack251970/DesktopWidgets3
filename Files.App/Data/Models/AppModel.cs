@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Microsoft.UI.Xaml.Controls;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace Files.App.Data.Models;
@@ -42,6 +43,14 @@ public class AppModel : ObservableObject
             }
         }
     }*/
+
+    public static void SetTabStripSelectedIndex(IFolderViewViewModel folderViewViewModel, TabBarItem item)
+    {
+        var rootFrame = folderViewViewModel.RootFrame;
+        var mainView = (MainPage)rootFrame.Content;
+        mainView.ViewModel.SelectedTabItem = item;
+    }
+
 
     private bool isAppElevated = false;
 	public bool IsAppElevated

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.Actions;
+using Files.App.Actions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -15,8 +15,8 @@ internal class ModifiableCommand : ObservableObject, IRichCommand
 {
 	public event EventHandler? CanExecuteChanged;
 
-	private IRichCommand BaseCommand;
-	private ImmutableDictionary<KeyModifiers, IRichCommand> ModifiedCommands;
+	private readonly IRichCommand BaseCommand;
+	private readonly ImmutableDictionary<KeyModifiers, IRichCommand> ModifiedCommands;
 
 	public CommandCodes Code => BaseCommand.Code;
 
@@ -58,10 +58,15 @@ internal class ModifiableCommand : ObservableObject, IRichCommand
 		if (baseCommand is ActionCommand actionCommand)
 		{
 			if (actionCommand.Action is INotifyPropertyChanging notifyPropertyChanging)
-				notifyPropertyChanging.PropertyChanging += Action_PropertyChanging;
-			if (actionCommand.Action is INotifyPropertyChanged notifyPropertyChanged)
-				notifyPropertyChanged.PropertyChanged += Action_PropertyChanged;
-		}
+            {
+                notifyPropertyChanging.PropertyChanging += Action_PropertyChanging;
+            }
+
+            if (actionCommand.Action is INotifyPropertyChanged notifyPropertyChanged)
+            {
+                notifyPropertyChanged.PropertyChanged += Action_PropertyChanged;
+            }
+        }
 	}
 
 	public bool CanExecute(object? parameter) => BaseCommand.CanExecute(parameter);
@@ -71,10 +76,14 @@ internal class ModifiableCommand : ObservableObject, IRichCommand
 	{
 		if (ModifiedCommands.TryGetValue(HotKeyHelpers.GetCurrentKeyModifiers(), out var modifiedCommand) &&
 			modifiedCommand.IsExecutable)
-			return modifiedCommand.ExecuteAsync();
-		else
-			return BaseCommand.ExecuteAsync();
-	}
+        {
+            return modifiedCommand.ExecuteAsync();
+        }
+        else
+        {
+            return BaseCommand.ExecuteAsync();
+        }
+    }
 
 	public async void ExecuteTapped(object sender, TappedRoutedEventArgs e) => await ExecuteAsync();
 
@@ -115,4 +124,5 @@ internal class ModifiableCommand : ObservableObject, IRichCommand
 				break;
 		}
 	}
-}*/
+}
+

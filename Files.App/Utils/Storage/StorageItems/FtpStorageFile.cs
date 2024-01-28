@@ -43,7 +43,7 @@ public sealed class FtpStorageFile : BaseStorageFile, IPasswordProtectedItem
 
 	public StorageCredential Credentials { get; set; }
 
-    public IFolderViewViewModel ViewModel { get; set; }
+    public IFolderViewViewModel FolderViewViewModel { get; set; }
 	public Func<IFolderViewViewModel, IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback { get; set; }
 
     public FtpStorageFile(string path, string name, DateTimeOffset dateCreated)

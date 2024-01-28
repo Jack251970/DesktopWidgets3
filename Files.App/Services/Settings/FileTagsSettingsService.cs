@@ -1,24 +1,18 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.App.Extensions;
-using Files.App.Utils;
-using Files.App.Helpers;
-using Files.App.Utils.Serialization;
 using Files.App.Utils.Serialization.Implementation;
-using Files.Core.Services.Settings;
-using Files.Core.ViewModels.FileTags;
 using Microsoft.Extensions.Logging;
 using System.IO;
-using Windows.Storage;
 
 namespace Files.App.Services.Settings;
 
-internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSettingsService
+// TODO: Change to internal.
+public sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSettingsService
 {
-	public event EventHandler OnSettingImportedEvent;
+	public event EventHandler? OnSettingImportedEvent;
 
-	public event EventHandler OnTagsUpdated;
+	public event EventHandler? OnTagsUpdated;
 
 	private static readonly List<TagViewModel> DefaultFileTags = new()
 	{
@@ -34,7 +28,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 		JsonSettingsSerializer = new DefaultJsonSettingsSerializer();
 		JsonSettingsDatabase = new CachingJsonSettingsDatabase(SettingsSerializer, JsonSettingsSerializer);
 
-		Initialize(Path.Combine(ApplicationData.Current.LocalFolder.Path,
+		Initialize(Path.Combine(LocalSettingsExtensions.ApplicationDataFolder,
 			Constants.LocalSettings.SettingsFolderName, Constants.LocalSettings.FileTagSettingsFileName));
 	}
 
@@ -42,7 +36,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 	{
 		get
 		{
-			var tags = Get<List<TagViewModel>>(DefaultFileTags);
+			var tags = Get(DefaultFileTags);
 
 			foreach (var tag in tags!)
             {
@@ -54,7 +48,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 		set
 		{
 			Set(value);
-			OnTagsUpdated.Invoke(this, EventArgs.Empty);
+			OnTagsUpdated?.Invoke(this, EventArgs.Empty);
 		}
 	}
 
@@ -81,7 +75,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 	{
 		return uids is null || uids.Length == 0
 			? null
-			: uids.Select(x => GetTagById(x)).Where(x => x is not null).ToList();
+			: uids.Select(GetTagById).Where(x => x is not null).ToList();
 	}
 
 	public IEnumerable<TagViewModel> GetTagsByName(string tagName)
@@ -129,14 +123,14 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
         var oldTags = FileTagList.ToList();
 		oldTags.RemoveAt(index);
 		FileTagList = oldTags;
-		UntagAllFiles(uid);
+        UntagAllFiles(uid);
 	}
 
 	public override bool ImportSettings(object import)
 	{
 		if (import is string importString)
 		{
-			FileTagList = JsonSettingsSerializer.DeserializeFromJson<List<TagViewModel>>(importString);
+			FileTagList = JsonSettingsSerializer!.DeserializeFromJson<List<TagViewModel>>(importString)!;
 		}
 		else if (import is List<TagViewModel> importList)
 		{
@@ -158,7 +152,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 	public override object ExportSettings()
 	{
 		// Return string in Json format
-		return JsonSettingsSerializer.SerializeToJson(FileTagList);
+		return JsonSettingsSerializer!.SerializeToJson(FileTagList)!;
 	}
 
 	private (TagViewModel?, int) GetTagAndIndex(string uid)
@@ -179,7 +173,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 		return (tag, index);
 	}
 
-	private void UntagAllFiles(string uid)
+	private static void UntagAllFiles(string uid)
 	{
 		var tagDoDelete = new string[] { uid };
 
@@ -193,4 +187,5 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 			}
 		}
 	}
-}*/
+}
+

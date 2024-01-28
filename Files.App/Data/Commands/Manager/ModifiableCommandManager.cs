@@ -1,22 +1,16 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using System.Collections.Immutable;
+using System.Collections.Immutable;
 
 namespace Files.App.Data.Commands;
 
-internal class ModifiableCommandManager : IModifiableCommandManager
+// TODO: Change to internal.
+public class ModifiableCommandManager : IModifiableCommandManager
 {
-    private IFolderViewViewModel ViewModel = null!;
-    public void Initialize(IFolderViewViewModel viewModel)
-    {
-        ViewModel = viewModel;
-        Commands = ViewModel.GetRequiredService<ICommandManager>();
-    }
+    /*private readonly ICommandManager Commands = DependencyExtensions.GetService<ICommandManager>();*/
 
-    private static ICommandManager Commands { get; set; } = null!;
-
-	private readonly IImmutableDictionary<CommandCodes, IRichCommand> ModifiableCommands;
+    private IImmutableDictionary<CommandCodes, IRichCommand> ModifiableCommands = null!;
 
 	public IRichCommand this[CommandCodes code] => ModifiableCommands.TryGetValue(code, out var command) ? command : None;
 
@@ -26,20 +20,26 @@ internal class ModifiableCommandManager : IModifiableCommandManager
 
 	public ModifiableCommandManager()
 	{
-		ModifiableCommands = CreateModifiableCommands().ToImmutableDictionary();
+		/*ModifiableCommands = CreateModifiableCommands().ToImmutableDictionary();*/
 	}
 
-	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public void Initialize(ICommandManager commands)
+    {
+        ModifiableCommands = CreateModifiableCommands(commands).ToImmutableDictionary();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	public IEnumerator<IRichCommand> GetEnumerator() => ModifiableCommands.Values.GetEnumerator();
 
-	private static IDictionary<CommandCodes, IRichCommand> CreateModifiableCommands() => new Dictionary<CommandCodes, IRichCommand>
+	private static IDictionary<CommandCodes, IRichCommand> CreateModifiableCommands(ICommandManager commands) => new Dictionary<CommandCodes, IRichCommand>
 	{
 		[CommandCodes.None] = new NoneCommand(),
-		[CommandCodes.PasteItem] = new ModifiableCommand(Commands.PasteItem, new() {
-			{ KeyModifiers.Shift,  Commands.PasteItemToSelection }
+		[CommandCodes.PasteItem] = new ModifiableCommand(commands.PasteItem, new() {
+			{ KeyModifiers.Shift,  commands.PasteItemToSelection }
 		}),
-		[CommandCodes.DeleteItem] = new ModifiableCommand(Commands.DeleteItem, new() {
-			{ KeyModifiers.Shift,  Commands.DeleteItemPermanently }
+		[CommandCodes.DeleteItem] = new ModifiableCommand(commands.DeleteItem, new() {
+			{ KeyModifiers.Shift,  commands.DeleteItemPermanently }
 		}),
 	};
-}*/
+}
+

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.Shared.Helpers;
+using Files.Shared.Helpers;
 using System.IO;
 using Windows.Storage;
 
@@ -12,7 +12,7 @@ namespace Files.App.Utils.Archives;
 /// </summary>
 public static class CompressHelper
 {
-	private static readonly StatusCenterViewModel _statusCenterViewModel = Ioc.Default.GetRequiredService<StatusCenterViewModel>();
+	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
 
 	public static bool CanDecompress(IReadOnlyList<ListedItem> selectedItems)
 	{
@@ -42,7 +42,7 @@ public static class CompressHelper
 
 	public static (string[] Sources, string directory, string fileName) GetCompressDestination(IShellPage associatedInstance)
 	{
-		string[] sources = associatedInstance.SlimContentPage.SelectedItems
+		var sources = associatedInstance.SlimContentPage.SelectedItems!
 			.Select(item => item.ItemPath)
 			.ToArray();
 
@@ -54,7 +54,7 @@ public static class CompressHelper
         var directory = associatedInstance.FilesystemViewModel.WorkingDirectory.Normalize();
 
 
-		if (App.LibraryManager.TryGetLibrary(directory, out var library) && !library.IsEmpty)
+		if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(directory, out var library) && !library.IsEmpty)
         {
             directory = library.DefaultSaveFolder;
         }
@@ -64,7 +64,7 @@ public static class CompressHelper
 		return (sources, directory, fileName);
 	}
 
-	public static async Task CompressArchiveAsync(ICompressArchiveModel creator)
+	public static async Task CompressArchiveAsync(IFolderViewViewModel folderViewViewModel, ICompressArchiveModel creator)
 	{
 		var archivePath = creator.GetArchivePath();
 
@@ -78,6 +78,7 @@ public static class CompressHelper
         creator.ArchivePath = archivePath;
 
 		var banner = StatusCenterHelper.AddCard_Compress(
+            folderViewViewModel,
 			creator.Sources,
 			archivePath.CreateEnumerable(),
 			ReturnResult.InProgress,
@@ -88,11 +89,13 @@ public static class CompressHelper
 
 		var isSuccess = await creator.RunCreationAsync();
 
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
 		_statusCenterViewModel.RemoveItem(banner);
 
 		if (isSuccess)
 		{
 			StatusCenterHelper.AddCard_Compress(
+                folderViewViewModel,
 				creator.Sources,
 				archivePath.CreateEnumerable(),
 				ReturnResult.Success,
@@ -103,6 +106,7 @@ public static class CompressHelper
 			NativeFileOperationsHelper.DeleteFileFromApp(archivePath);
 
 			StatusCenterHelper.AddCard_Compress(
+                folderViewViewModel,
 				creator.Sources,
 				archivePath.CreateEnumerable(),
 				creator.CancellationToken.IsCancellationRequested
@@ -111,4 +115,5 @@ public static class CompressHelper
 				creator.Sources.Count());
 		}
 	}
-}*/
+}
+

@@ -9,7 +9,7 @@ public class UserSizeProvider : ISizeProvider
 {
     // TODO: Add folderPreferences.CalculateFolderSizes
     /*private readonly IFoldersSettingsService folderPreferences
-		= Ioc.Default.GetRequiredService<IFoldersSettingsService>();*/
+		= DependencyExtensions.GetService<IFoldersSettingsService>();*/
 
     private ISizeProvider provider;
 

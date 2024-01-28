@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using System.Text.Json;
-
 namespace Files.App.Data.Parameters;
 
 public sealed class CustomTabViewItemParameter
 {
-	private static readonly KnownTypesConverter _typesConverter = new();
+	/*private static readonly KnownTypesConverter _typesConverter = new();*/
+
+    public IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     public Type InitialPageType { get; set; } = null!;
 

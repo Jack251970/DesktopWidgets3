@@ -212,7 +212,7 @@ public sealed partial class FilesystemOperationDialog : ContentDialog, IDialog<F
             ViewModel.PrimaryButtonEnabled = false;
         }
 
-        if (conflictItem.CustomName.Equals(conflictItem.DisplayName))
+        if (conflictItem.CustomName!.Equals(conflictItem.DisplayName))
 		{
 			var savedName = conflictItem.DestinationDisplayName;
 			conflictItem.DestinationDisplayName = savedName;

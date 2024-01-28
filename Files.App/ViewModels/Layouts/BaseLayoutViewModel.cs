@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using System.IO;
 using System.Windows.Input;
@@ -17,6 +17,8 @@ namespace Files.App.ViewModels.Layouts;
 /// </summary>
 public class BaseLayoutViewModel : IDisposable
 {
+    private readonly IFolderViewViewModel _folderViewViewModel;
+
 	private readonly IShellPage _associatedInstance;
 
 	private readonly ItemManipulationModel _itemManipulationModel;
@@ -31,8 +33,9 @@ public class BaseLayoutViewModel : IDisposable
 
 	public ICommand DropCommand { get; private set; }
 
-	public BaseLayoutViewModel(IShellPage associatedInstance, ItemManipulationModel itemManipulationModel)
+	public BaseLayoutViewModel(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, ItemManipulationModel itemManipulationModel)
 	{
+        _folderViewViewModel = folderViewViewModel;
 		_associatedInstance = associatedInstance;
 		_itemManipulationModel = itemManipulationModel;
 
@@ -43,15 +46,15 @@ public class BaseLayoutViewModel : IDisposable
 		DropCommand = new AsyncRelayCommand<DragEventArgs>(DropAsync);
 	}
 
-	private void CreateNewFile(ShellNewEntry f)
+	private void CreateNewFile(ShellNewEntry? f)
 	{
-		UIFilesystemHelpers.CreateFileFromDialogResultTypeAsync(AddItemDialogItemType.File, f, _associatedInstance);
+		_ = UIFilesystemHelpers.CreateFileFromDialogResultTypeAsync(_folderViewViewModel, AddItemDialogItemType.File, f, _associatedInstance);
 	}
 
-	private async Task ItemPointerPressedAsync(PointerRoutedEventArgs e)
+	private async Task ItemPointerPressedAsync(PointerRoutedEventArgs? e)
 	{
 		// If a folder item was clicked, disable middle mouse click to scroll to cancel the mouse scrolling state and re-enable it
-		if (e.GetCurrentPoint(null).Properties.IsMiddleButtonPressed &&
+		if (e!.GetCurrentPoint(null).Properties.IsMiddleButtonPressed &&
 			e.OriginalSource is FrameworkElement { DataContext: ListedItem Item } &&
 			Item.PrimaryItemAttribute == StorageItemTypes.Folder)
 		{
@@ -59,33 +62,41 @@ public class BaseLayoutViewModel : IDisposable
 			_associatedInstance.SlimContentPage.IsMiddleClickToScrollEnabled = true;
 
 			if (Item.IsShortcut)
-				await NavigationHelpers.OpenPathInNewTab(((e.OriginalSource as FrameworkElement)?.DataContext as ShortcutItem)?.TargetPath ?? Item.ItemPath);
-			else
-				await NavigationHelpers.OpenPathInNewTab(Item.ItemPath);
-		}
+            {
+                await NavigationHelpers.OpenPathInNewTab(_folderViewViewModel, ((e.OriginalSource as FrameworkElement)?.DataContext as ShortcutItem)?.TargetPath ?? Item.ItemPath);
+            }
+            else
+            {
+                await NavigationHelpers.OpenPathInNewTab(_folderViewViewModel, Item.ItemPath);
+            }
+        }
 	}
 
-	private void PointerWheelChanged(PointerRoutedEventArgs e)
+	private void PointerWheelChanged(PointerRoutedEventArgs? e)
 	{
-		if (e.KeyModifiers is VirtualKeyModifiers.Control &&
+		if (e!.KeyModifiers is VirtualKeyModifiers.Control &&
 			_associatedInstance.IsCurrentInstance)
 		{
-			int delta = e.GetCurrentPoint(null).Properties.MouseWheelDelta;
+			var delta = e.GetCurrentPoint(null).Properties.MouseWheelDelta;
 
 			// Mouse wheel down
 			if (delta < 0)
-				_associatedInstance.InstanceViewModel.FolderSettings.GridViewSize -= Constants.Browser.GridViewBrowser.GridViewIncrement;
-			// Mouse wheel up
-			else if (delta > 0)
-				_associatedInstance.InstanceViewModel.FolderSettings.GridViewSize += Constants.Browser.GridViewBrowser.GridViewIncrement;
+            {
+                _associatedInstance.InstanceViewModel.FolderSettings.GridViewSize -= Constants.Browser.GridViewBrowser.GridViewIncrement;
+            }
+            // Mouse wheel up
+            else if (delta > 0)
+            {
+                _associatedInstance.InstanceViewModel.FolderSettings.GridViewSize += Constants.Browser.GridViewBrowser.GridViewIncrement;
+            }
 
-			e.Handled = true;
+            e.Handled = true;
 		}
 	}
 
-	public async Task DragOverAsync(DragEventArgs e)
+	public async Task DragOverAsync(DragEventArgs? e)
 	{
-		var deferral = e.GetDeferral();
+		var deferral = e!.GetDeferral();
 
 		if (_associatedInstance.InstanceViewModel.IsPageTypeSearchResults)
 		{
@@ -118,24 +129,24 @@ public class BaseLayoutViewModel : IDisposable
 			else
 			{
 				e.DragUIOverride.IsCaptionVisible = true;
-				if (pwd.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal))
+				if (pwd!.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal))
 				{
-					e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalizedResource(), folderName);
+					e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".ToLocalized(), folderName);
 					e.AcceptedOperation = DataPackageOperation.Move;
 				}
 				else if (e.Modifiers.HasFlag(DragDropModifiers.Alt) || e.Modifiers.HasFlag(DragDropModifiers.Control | DragDropModifiers.Shift))
 				{
-					e.DragUIOverride.Caption = string.Format("LinkToFolderCaptionText".GetLocalizedResource(), folderName);
+					e.DragUIOverride.Caption = string.Format("LinkToFolderCaptionText".ToLocalized(), folderName);
 					e.AcceptedOperation = DataPackageOperation.Link;
 				}
 				else if (e.Modifiers.HasFlag(DragDropModifiers.Control))
 				{
-					e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalizedResource(), folderName);
+					e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".ToLocalized(), folderName);
 					e.AcceptedOperation = DataPackageOperation.Copy;
 				}
 				else if (e.Modifiers.HasFlag(DragDropModifiers.Shift))
 				{
-					e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalizedResource(), folderName);
+					e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".ToLocalized(), folderName);
 					e.AcceptedOperation = DataPackageOperation.Move;
 				}
 				else if (draggedItems.Any(x =>
@@ -143,17 +154,17 @@ public class BaseLayoutViewModel : IDisposable
 					x.Item is ZipStorageFolder) ||
 					ZipStorageFolder.IsZipPath(pwd))
 				{
-					e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalizedResource(), folderName);
+					e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".ToLocalized(), folderName);
 					e.AcceptedOperation = DataPackageOperation.Copy;
 				}
 				else if (draggedItems.AreItemsInSameDrive(_associatedInstance.FilesystemViewModel.WorkingDirectory))
 				{
-					e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalizedResource(), folderName);
+					e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".ToLocalized(), folderName);
 					e.AcceptedOperation = DataPackageOperation.Move;
 				}
 				else
 				{
-					e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalizedResource(), folderName);
+					e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".ToLocalized(), folderName);
 					e.AcceptedOperation = DataPackageOperation.Copy;
 				}
 			}
@@ -162,9 +173,9 @@ public class BaseLayoutViewModel : IDisposable
 		deferral.Complete();
 	}
 
-	public async Task DropAsync(DragEventArgs e)
+	public async Task DropAsync(DragEventArgs? e)
 	{
-		e.Handled = true;
+		e!.Handled = true;
 
 		if (FilesystemHelpers.HasDraggedStorageItems(e.DataView))
 		{
@@ -175,5 +186,7 @@ public class BaseLayoutViewModel : IDisposable
 
 	public void Dispose()
 	{
+        GC.SuppressFinalize(this);
 	}
-}*/
+}
+

@@ -9,9 +9,9 @@ namespace Files.App.ViewModels.Previews;
 
 public class MediaPreviewViewModel : BasePreviewModel
 {
-	public event EventHandler TogglePlaybackRequested;
+	public event EventHandler? TogglePlaybackRequested;
 
-	private MediaSource source;
+	private MediaSource source = null!;
 	public MediaSource Source
 	{
 		get => source;

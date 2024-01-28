@@ -35,7 +35,7 @@ public static class Win32StorageEnumerator
         var tempList = new List<ListedItem>();
         var count = 0;
 
-        var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
         var CalculateFolderSizes = userSettingsService.FoldersSettingsService.CalculateFolderSizes;
 
         var isGitRepo = GitHelpers.IsRepositoryEx(path, out var repoPath) && !string.IsNullOrEmpty((await GitHelpers.GetRepositoryHead(repoPath))?.Name);

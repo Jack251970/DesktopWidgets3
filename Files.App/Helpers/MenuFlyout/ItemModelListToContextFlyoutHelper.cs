@@ -5,7 +5,6 @@ using Files.App.UserControls.Menus;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using static Microsoft.UI.Xaml.Application;
 
 namespace Files.App.Helpers.ContextFlyouts;
 
@@ -96,7 +95,7 @@ public static class ItemModelListToContextFlyoutHelper
 
 			if (item.BitmapIcon is not null)
 			{
-				flyoutSubItem.Style = Current.Resources["MenuFlyoutSubItemWithImageStyle"] as Style;
+				flyoutSubItem.Style = Application.Current.Resources["MenuFlyoutSubItemWithImageStyle"] as Style;
 				try
 				{
 					MenuFlyoutSubItemCustomProperties.SetBitmapIcon(flyoutSubItem, item.BitmapIcon);
@@ -167,7 +166,7 @@ public static class ItemModelListToContextFlyoutHelper
 
 			if (icon is not null && !string.IsNullOrEmpty(i.GlyphFontFamilyName))
 			{
-				var fontFamily = Current.Resources[i.GlyphFontFamilyName] as FontFamily;
+				var fontFamily = Application.Current.Resources[i.GlyphFontFamilyName] as FontFamily;
 				icon.FontFamily = fontFamily;
 			}
 
@@ -223,7 +222,7 @@ public static class ItemModelListToContextFlyoutHelper
 
 			if (!string.IsNullOrEmpty(item.GlyphFontFamilyName))
 			{
-				var fontFamily = Current.Resources[item.GlyphFontFamilyName] as FontFamily;
+				var fontFamily = Application.Current.Resources[item.GlyphFontFamilyName] as FontFamily;
 				icon.FontFamily = fontFamily;
 			}
 		}

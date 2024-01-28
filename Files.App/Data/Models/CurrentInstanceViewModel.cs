@@ -5,21 +5,21 @@ namespace Files.App.Data.Models;
 
 public class CurrentInstanceViewModel : ObservableObject
 {
-	// FILESTODO:
-	//  In the future, we should consolidate these public variables into
-	//  a single enum property providing simplified customization of the
-	//  values being manipulated inside the setter blocks
+    // FILESTODO:
+    //  In the future, we should consolidate these public variables into
+    //  a single enum property providing simplified customization of the
+    //  values being manipulated inside the setter blocks
 
 	public LayoutPreferencesManager FolderSettings { get; }
 
-	public CurrentInstanceViewModel()
+	public CurrentInstanceViewModel(IFolderViewViewModel folderViewViewModel)
 	{
-		FolderSettings = new LayoutPreferencesManager();
+		FolderSettings = new LayoutPreferencesManager(folderViewViewModel);
 	}
 
-	public CurrentInstanceViewModel(FolderLayoutModes rootLayoutMode)
+	public CurrentInstanceViewModel(IFolderViewViewModel folderViewViewModel, FolderLayoutModes rootLayoutMode)
 	{
-		FolderSettings = new LayoutPreferencesManager(rootLayoutMode);
+		FolderSettings = new LayoutPreferencesManager(folderViewViewModel, rootLayoutMode);
 	}
 
 	private bool isPageTypeSearchResults = false;
@@ -35,7 +35,7 @@ public class CurrentInstanceViewModel : ObservableObject
 		}
 	}
 
-	private string currentSearchQuery;
+	private string currentSearchQuery = null!;
 	public string CurrentSearchQuery
 	{
 		get => currentSearchQuery;

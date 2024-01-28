@@ -21,6 +21,9 @@ public static class LocalizationExtensions
 
         value = resourcesTree.TryGetValue(resourceKey)?.ValueAsString;
 
+        // TODO: Check string here.
+        return cachedResources[resourceKey] = value ?? string.Empty;
+
 #if DEBUG
         if (value is null)
         {

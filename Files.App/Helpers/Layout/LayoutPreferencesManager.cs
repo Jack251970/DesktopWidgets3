@@ -6,26 +6,30 @@ using Windows.Storage;
 
 namespace Files.App.Data.Models;
 
+#pragma warning disable IL2026 // Unrecognized escape sequence in XML doc comment
+
 /// <summary>
 /// Represents manager for layout preferences settings.
 /// </summary>
 public class LayoutPreferencesManager : ObservableObject
 {
-	// Dependency injections
+    private readonly IFolderViewViewModel FolderViewViewModel;
 
-	/*private static IUserSettingsService UserSettingsService { get; } = Ioc.Default.GetRequiredService<IUserSettingsService>();*/
+    // Dependency injections
+
+    private readonly IUserSettingsService UserSettingsService;
 
 	// Fields
 
-	/*private static readonly Lazy<LayoutPreferencesDatabaseManager> _databaseInstance =
-		new(() => new LayoutPreferencesDatabaseManager(LayoutSettingsDbPath, true));*/
+	private /*static*/ readonly Lazy<LayoutPreferencesDatabaseManager> _databaseInstance =
+		new(() => new LayoutPreferencesDatabaseManager(LayoutSettingsDbPath, true));
 
 	private readonly FolderLayoutModes? _rootLayoutMode;
 
 	// Properties
 
 	public static string LayoutSettingsDbPath
-		=> SystemIO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "user_settings.db");
+		=> SystemIO.Path.Combine(LocalSettingsExtensions.ApplicationDataFolder, "user_settings.db");
 
 	public bool IsLayoutModeFixed
 		=> _rootLayoutMode is not null;
@@ -42,7 +46,7 @@ public class LayoutPreferencesManager : ObservableObject
         }
 	}
 
-	/*public int GridViewSize
+	public int GridViewSize
 	{
 		get => LayoutPreferencesItem.GridViewSize;
 		set
@@ -116,11 +120,13 @@ public class LayoutPreferencesManager : ObservableObject
 
 					// Don't request a grid resize if it is already at the max size
 					if (value < Constants.Browser.GridViewBrowser.GridViewSizeMax)
-						GridViewSizeChangeRequested?.Invoke(this, EventArgs.Empty);
-				}
+                    {
+                        GridViewSizeChangeRequested?.Invoke(this, EventArgs.Empty);
+                    }
+                }
 			}
 		}
-	}*/
+	}
 
 	public FolderLayoutModes LayoutMode
 	{
@@ -134,18 +140,24 @@ public class LayoutPreferencesManager : ObservableObject
         }
 	}
 
-	/*public GridViewSizeKind GridViewSizeKind
+	public GridViewSizeKind GridViewSizeKind
 	{
 		get
 		{
 			if (GridViewSize < Constants.Browser.GridViewBrowser.GridViewSizeMedium)
-				return GridViewSizeKind.Small;
-			else if (GridViewSize >= Constants.Browser.GridViewBrowser.GridViewSizeMedium && GridViewSize < Constants.Browser.GridViewBrowser.GridViewSizeLarge)
-				return GridViewSizeKind.Medium;
-			else
-				return GridViewSizeKind.Large;
-		}
-	}*/
+            {
+                return GridViewSizeKind.Small;
+            }
+            else if (GridViewSize >= Constants.Browser.GridViewBrowser.GridViewSizeMedium && GridViewSize < Constants.Browser.GridViewBrowser.GridViewSizeLarge)
+            {
+                return GridViewSizeKind.Medium;
+            }
+            else
+            {
+                return GridViewSizeKind.Large;
+            }
+        }
+	}
 
 	public SortOption DirectorySortOption
 	{
@@ -225,7 +237,7 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
-	/*public ColumnsViewModel ColumnsViewModel
+	public ColumnsViewModel ColumnsViewModel
 	{
 		get => LayoutPreferencesItem.ColumnsViewModel;
 		set
@@ -233,7 +245,7 @@ public class LayoutPreferencesManager : ObservableObject
 			SetProperty(ref LayoutPreferencesItem.ColumnsViewModel, value, nameof(ColumnsViewModel));
 			LayoutPreferencesUpdateRequired?.Invoke(this, new LayoutPreferenceEventArgs(LayoutPreferencesItem));
 		}
-	}*/
+	}
 
 	private bool _IsLayoutModeChanging;
 	public bool IsLayoutModeChanging
@@ -251,16 +263,16 @@ public class LayoutPreferencesManager : ObservableObject
 			if (SetProperty(ref _LayoutPreferencesItem, value))
 			{
 				OnPropertyChanged(nameof(LayoutMode));
-                /*OnPropertyChanged(nameof(GridViewSize));
-				OnPropertyChanged(nameof(GridViewSizeKind));*/
-                OnPropertyChanged(nameof(IsAdaptiveLayoutEnabled));
+				OnPropertyChanged(nameof(GridViewSize));
+				OnPropertyChanged(nameof(GridViewSizeKind));
+				OnPropertyChanged(nameof(IsAdaptiveLayoutEnabled));
 				OnPropertyChanged(nameof(DirectoryGroupOption));
 				OnPropertyChanged(nameof(DirectorySortOption));
 				OnPropertyChanged(nameof(DirectorySortDirection));
 				OnPropertyChanged(nameof(DirectoryGroupDirection));
 				OnPropertyChanged(nameof(DirectoryGroupByDateUnit));
 				OnPropertyChanged(nameof(SortDirectoriesAlongsideFiles));
-				/*OnPropertyChanged(nameof(ColumnsViewModel));*/
+				OnPropertyChanged(nameof(ColumnsViewModel));
 			}
 		}
 	}
@@ -274,17 +286,19 @@ public class LayoutPreferencesManager : ObservableObject
 	public event EventHandler<SortDirection>? GroupDirectionPreferenceUpdated;
 	public event EventHandler<GroupByDateUnit>? GroupByDateUnitPreferenceUpdated;
 	public event EventHandler<bool>? SortDirectoriesAlongsideFilesPreferenceUpdated;
-	/*public event EventHandler<LayoutModeEventArgs>? LayoutModeChangeRequested;*/
+	public event EventHandler<LayoutModeEventArgs>? LayoutModeChangeRequested;
 	public event EventHandler? GridViewSizeChangeRequested;
 
 	// Constructors
 
-	public LayoutPreferencesManager()
+	public LayoutPreferencesManager(IFolderViewViewModel folderViewViewModel)
 	{
-		LayoutPreferencesItem = new LayoutPreferencesItem();
+        FolderViewViewModel = folderViewViewModel;
+        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        LayoutPreferencesItem = new LayoutPreferencesItem(folderViewViewModel);
 	}
 
-	public LayoutPreferencesManager(FolderLayoutModes modeOverride) : this()
+	public LayoutPreferencesManager(IFolderViewViewModel folderViewViewModel, FolderLayoutModes modeOverride) : this(folderViewViewModel)
 	{
 		_rootLayoutMode = modeOverride;
 		LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
@@ -302,23 +316,25 @@ public class LayoutPreferencesManager : ObservableObject
 				=> Constants.Browser.ColumnViewBrowser.ColumnViewSize,
 			FolderLayoutModes.TilesView
 				=> Constants.Browser.GridViewBrowser.GridViewSizeSmall,
-			/*_ when GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeSmall
+			_ when GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeSmall
 				=> Constants.Browser.GridViewBrowser.GridViewSizeSmall,
 			_ when GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeMedium
 				=> Constants.Browser.GridViewBrowser.GridViewSizeMedium,
 			_ when GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeLarge
-				=> Constants.Browser.GridViewBrowser.GridViewSizeLarge,*/
+				=> Constants.Browser.GridViewBrowser.GridViewSizeLarge,
 			_ => Constants.Browser.GridViewBrowser.GridViewSizeMax,
 		};
 	}
 
-	/*public Type GetLayoutType(string path, bool changeLayoutMode = true)
+	public Type GetLayoutType(string path, bool changeLayoutMode = true)
 	{
 		var preferencesItem = GetLayoutPreferencesForPath(path);
 		if (preferencesItem is null)
-			return typeof(DetailsLayoutPage);
+        {
+            return typeof(DetailsLayoutPage);
+        }
 
-		if (changeLayoutMode)
+        if (changeLayoutMode)
 		{
 			IsLayoutModeChanging = LayoutPreferencesItem.LayoutMode != preferencesItem.LayoutMode;
 			LayoutPreferencesItem = preferencesItem;
@@ -426,28 +442,30 @@ public class LayoutPreferencesManager : ObservableObject
 	{
 		var preferencesItem = GetLayoutPreferencesForPath(path);
 		if (preferencesItem is null)
-			return;
+        {
+            return;
+        }
 
-		switch (settingsName)
+        switch (settingsName)
 		{
 			case nameof(UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles):
 				SortDirectoriesAlongsideFiles = preferencesItem.SortDirectoriesAlongsideFiles;
 				break;
 			case nameof(UserSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories):
 				LayoutPreferencesItem = preferencesItem;
-				// TODO: Update layout
+				// FILESTODO: Update layout
 				break;
 		}
 	}
 
 	// Static methods
 
-	public static LayoutPreferencesDatabaseManager GetDatabaseManagerInstance()
+	public /*static*/ LayoutPreferencesDatabaseManager GetDatabaseManagerInstance()
 	{
 		return _databaseInstance.Value;
 	}
 
-	public static void SetDefaultLayoutPreferences(ColumnsViewModel columns)
+	public /*static*/ void SetDefaultLayoutPreferences(ColumnsViewModel columns)
 	{
 		UserSettingsService.FoldersSettingsService.ShowDateColumn = !columns.DateModifiedColumn.UserCollapsed;
 		UserSettingsService.FoldersSettingsService.ShowDateCreatedColumn = !columns.DateCreatedColumn.UserCollapsed;
@@ -481,15 +499,17 @@ public class LayoutPreferencesManager : ObservableObject
 		UserSettingsService.FoldersSettingsService.SyncStatusColumnWidth = columns.StatusColumn.UserLengthPixels;
 	}
 
-	public static void SetLayoutPreferencesForPath(string path, LayoutPreferencesItem preferencesItem)
+	public /*static*/ void SetLayoutPreferencesForPath(string path, LayoutPreferencesItem preferencesItem)
 	{
 		if (!UserSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories)
 		{
 			var folderFRN = NativeFileOperationsHelper.GetFolderFRN(path);
 			var trimmedFolderPath = path.TrimPath();
 			if (trimmedFolderPath is not null)
-				SetLayoutPreferencesToDatabase(trimmedFolderPath, folderFRN, preferencesItem);
-		}
+            {
+                SetLayoutPreferencesToDatabase(trimmedFolderPath, folderFRN, preferencesItem);
+            }
+        }
 		else
 		{
 			UserSettingsService.FoldersSettingsService.DefaultLayoutMode = preferencesItem.LayoutMode;
@@ -592,7 +612,7 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
-	private static LayoutPreferencesItem? GetLayoutPreferencesForPath(string path)
+	private /*static*/ LayoutPreferencesItem? GetLayoutPreferencesForPath(string path)
 	{
 		if (!UserSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories)
 		{
@@ -605,10 +625,10 @@ public class LayoutPreferencesManager : ObservableObject
 				?? GetDefaultLayoutPreferences(path);
 		}
 
-		return new LayoutPreferencesItem();
+		return new LayoutPreferencesItem(FolderViewViewModel);
 	}
 
-	private static LayoutPreferencesItem? GetLayoutPreferencesFromAds(string path, ulong? frn)
+	private /*static*/ LayoutPreferencesItem? GetLayoutPreferencesFromAds(string path, ulong? frn)
 	{
 		var str = NativeFileOperationsHelper.ReadStringFromFile($"{path}:files_layoutmode");
 
@@ -616,35 +636,41 @@ public class LayoutPreferencesManager : ObservableObject
 			string.IsNullOrEmpty(str) ? null : JsonSerializer.Deserialize<LayoutPreferencesItem>(str));
 
 		if (layoutPreferences is null)
-			return null;
+        {
+            return null;
+        }
 
-		// Port settings to the database, delete the ADS
-		SetLayoutPreferencesToDatabase(path, frn, layoutPreferences);
+        // Port settings to the database, delete the ADS
+        SetLayoutPreferencesToDatabase(path, frn, layoutPreferences);
 		NativeFileOperationsHelper.DeleteFileFromApp($"{path}:files_layoutmode");
 
 		return layoutPreferences;
 	}
 
-	private static LayoutPreferencesItem? GetLayoutPreferencesFromDatabase(string path, ulong? frn)
+	private /*static*/ LayoutPreferencesItem? GetLayoutPreferencesFromDatabase(string path, ulong? frn)
 	{
 		if (string.IsNullOrEmpty(path))
-			return null;
+        {
+            return null;
+        }
 
-		var databaseManager = GetDatabaseManagerInstance();
+        var databaseManager = GetDatabaseManagerInstance();
 
 		return databaseManager.GetPreferences(path, frn);
 	}
 
-	private static LayoutPreferencesItem? GetDefaultLayoutPreferences(string path)
+	private /*static*/ LayoutPreferencesItem? GetDefaultLayoutPreferences(string path)
 	{
 		if (string.IsNullOrEmpty(path))
-			return new();
+        {
+            return new(FolderViewViewModel);
+        }
 
-		if (path == Constants.UserEnvironmentPaths.DownloadsPath)
+        if (path == Constants.UserEnvironmentPaths.DownloadsPath)
 		{
 			// Default for downloads folder is to group by date created
-			return new()
-			{
+			return new(FolderViewViewModel)
+            {
 				DirectoryGroupOption = GroupOption.DateCreated,
 				DirectoryGroupDirection = SortDirection.Descending,
 				DirectoryGroupByDateUnit = GroupByDateUnit.Year
@@ -653,31 +679,33 @@ public class LayoutPreferencesManager : ObservableObject
 		else if (LibraryManager.IsLibraryPath(path))
 		{
 			// Default for libraries is to group by folder path
-			return new()
-			{
+			return new(FolderViewViewModel)
+            {
 				DirectoryGroupOption = GroupOption.FolderPath
 			};
 		}
 		else
 		{
 			// Either global setting or smart guess
-			return new();
+			return new(FolderViewViewModel);
 		}
 	}
 
-	private static void SetLayoutPreferencesToDatabase(string path, ulong? frn, LayoutPreferencesItem preferencesItem)
+	private /*static*/ void SetLayoutPreferencesToDatabase(string path, ulong? frn, LayoutPreferencesItem preferencesItem)
 	{
 		if (string.IsNullOrEmpty(path))
-			return;
+        {
+            return;
+        }
 
-		var dbInstance = GetDatabaseManagerInstance();
+        var dbInstance = GetDatabaseManagerInstance();
 		if (dbInstance.GetPreferences(path, frn) is null &&
-			new LayoutPreferencesItem().Equals(preferencesItem))
+			new LayoutPreferencesItem(FolderViewViewModel).Equals(preferencesItem))
 		{
 			// Do not create setting if it's default
 			return;
 		}
 
 		dbInstance.SetPreferences(path, frn, preferencesItem);
-	}*/
+	}
 }

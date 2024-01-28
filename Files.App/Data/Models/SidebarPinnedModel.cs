@@ -4,14 +4,13 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Text.Json.Serialization;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.FileProperties;
 
 namespace Files.App.Data.Models;
 
 public class SidebarPinnedModel
 {
-	private IUserSettingsService userSettingsService { get; } = Ioc.Default.GetRequiredService<IUserSettingsService>();
+	/*private IUserSettingsService userSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
 	private IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetService<IQuickAccessService>();
 
 	public EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
@@ -178,7 +177,8 @@ public class SidebarPinnedModel
 	/// </summary>
 	public async Task AddAllItemsToSidebarAsync()
 	{
-		if (userSettingsService.GeneralSettingsService.ShowFavoritesSection)
+        // TODO: Add userSettingsService.GeneralSettingsService.ShowFavoritesSection
+        if (true)
         {
             foreach (var path in FavoriteItems)
             {

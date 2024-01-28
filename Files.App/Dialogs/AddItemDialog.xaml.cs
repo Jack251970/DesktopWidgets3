@@ -8,7 +8,7 @@ namespace Files.App.Dialogs;
 
 public sealed partial class AddItemDialog : ContentDialog, IDialog<AddItemDialogViewModel>
 {
-	private readonly IAddItemService addItemService = Ioc.Default.GetRequiredService<IAddItemService>();
+	private readonly IAddItemService addItemService = DependencyExtensions.GetService<IAddItemService>();
 
 	public AddItemDialogViewModel ViewModel
 	{

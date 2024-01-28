@@ -22,7 +22,7 @@ public static class DependencyExtensions
         }
     }
 
-    public static T GetRequiredService<T>() where T : class
+    private static T GetRequiredService<T>() where T : class
     {
         try
         {

@@ -1,6 +1,8 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Windows.System;
+
 namespace Files.App.Data.Models;
 
 public class ContextMenuFlyoutItemViewModelBuilder
@@ -23,7 +25,7 @@ public class ContextMenuFlyoutItemViewModelBuilder
 	public bool IsPrimary { get; init; } = false;
 	public bool IsToggle { get; init; } = false;
 
-	public object Tag { get; init; }
+    public object Tag { get; init; } = null!;
 
 	public bool ShowOnShift { get; init; } = false;
 
@@ -82,7 +84,7 @@ public class ContextMenuFlyoutItemViewModelBuilder
 			viewModel.GlyphFontFamilyName = glyph.FontFamily;
 		}
 
-		/*if (command.HotKeys.Length > 0 &&
+		if (command.HotKeys.Length > 0 &&
 			!(command.HotKeys[0].Key is Keys.Enter &&
 			command.HotKeys[0].Modifier is KeyModifiers.None))
 		{
@@ -92,7 +94,7 @@ public class ContextMenuFlyoutItemViewModelBuilder
 				Modifiers = (VirtualKeyModifiers)command.HotKeys[0].Modifier
 			};
 			viewModel.KeyboardAcceleratorTextOverride = command.HotKeys[0].Label;
-		}*/
+		}
 
 		return viewModel;
 	}

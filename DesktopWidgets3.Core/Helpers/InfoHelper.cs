@@ -8,7 +8,7 @@ namespace DesktopWidgets3.Core.Helpers;
 /// </summary>
 public class InfoHelper
 {
-    public static string GetTitle()
+    public static string GetDisplayName()
     {
         if (RuntimeHelper.IsMSIX)
         {
@@ -34,6 +34,18 @@ public class InfoHelper
         if (RuntimeHelper.IsMSIX)
         {
             return Package.Current.Id.FamilyName;
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    public static string GetName()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return Package.Current.Id.Name;
         }
         else
         {

@@ -142,9 +142,9 @@ public class LibraryManager : IDisposable
 	/// </summary>
 	/// <param name="name">The name of the new library (must be unique)</param>
 	/// <returns>The new library if successfully created</returns>
-	public async Task<bool> CreateNewLibrary(string name)
+	public async Task<bool> CreateNewLibrary(IFolderViewViewModel folderViewViewModel, string name)
 	{
-		if (string.IsNullOrWhiteSpace(name) || !CanCreateLibrary(name).result)
+		if (string.IsNullOrWhiteSpace(name) || !CanCreateLibrary(folderViewViewModel, name).result)
         {
             return false;
         }
@@ -267,21 +267,20 @@ public class LibraryManager : IDisposable
 		return null!;
 	}
 
-	public (bool result, string reason) CanCreateLibrary(string name)
+	public (bool result, string reason) CanCreateLibrary(IFolderViewViewModel folderViewViewModel, string name)
 	{
 		if (string.IsNullOrWhiteSpace(name))
 		{
 			return (false, "ErrorInputEmpty".ToLocalized());
 		}
-        // TODO: Add support.
-		/*if (FilesystemHelpers.ContainsRestrictedCharacters(name))
+		if (FilesystemHelpers.ContainsRestrictedCharacters(folderViewViewModel, name))
 		{
 			return (false, "ErrorNameInputRestrictedCharacters".ToLocalized());
 		}
 		if (FilesystemHelpers.ContainsRestrictedFileName(name))
 		{
 			return (false, "ErrorNameInputRestricted".ToLocalized());
-		}*/
+		}
 		if (Libraries.Any((item) => string.Equals(name, item.Text, StringComparison.OrdinalIgnoreCase) ||
 			string.Equals(name, Path.GetFileNameWithoutExtension(item.Path), StringComparison.OrdinalIgnoreCase)))
 		{
@@ -316,7 +315,7 @@ public class LibraryManager : IDisposable
 		await dialog.ShowAsync();
 	}
 
-	public static async Task ShowCreateNewLibraryDialogAsync()
+	public static async Task ShowCreateNewLibraryDialogAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		var inputText = new TextBox
 		{
@@ -351,7 +350,7 @@ public class LibraryManager : IDisposable
 			CloseButtonText = "Cancel".ToLocalized(),
 			PrimaryButtonAction = async (vm, e) =>
 			{
-				var (result, reason) = DependencyExtensions.GetService<LibraryManager>().CanCreateLibrary(inputText.Text);
+				var (result, reason) = DependencyExtensions.GetService<LibraryManager>().CanCreateLibrary(folderViewViewModel, inputText.Text);
 				tipText.Text = reason;
 				tipText.Visibility = result ? Visibility.Collapsed : Visibility.Visible;
 				if (!result)
@@ -359,7 +358,7 @@ public class LibraryManager : IDisposable
 					e.Cancel = true;
 					return;
 				}
-				await DependencyExtensions.GetService<LibraryManager>().CreateNewLibrary(inputText.Text);
+				await DependencyExtensions.GetService<LibraryManager>().CreateNewLibrary(folderViewViewModel, inputText.Text);
 			},
 			CloseButtonAction = (vm, e) =>
 			{
@@ -369,7 +368,7 @@ public class LibraryManager : IDisposable
 			{
 				if (e.Key == VirtualKey.Enter)
 				{
-					await DependencyExtensions.GetService<LibraryManager>().CreateNewLibrary(inputText.Text);
+					await DependencyExtensions.GetService<LibraryManager>().CreateNewLibrary(folderViewViewModel, inputText.Text);
 				}
 				else if (e.Key == VirtualKey.Escape)
 				{

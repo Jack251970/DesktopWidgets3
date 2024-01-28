@@ -11,13 +11,13 @@ namespace Files.App.Utils.RecycleBin;
 
 public static partial class RecycleBinHelpers
 {
-    /*private static readonly StatusCenterViewModel _statusCenterViewModel = Ioc.Default.GetRequiredService<StatusCenterViewModel>();*/
+    /*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
 
     private static readonly Regex recycleBinPathRegex = MyRegex();
 
-	/*private static readonly IUserSettingsService userSettingsService = Ioc.Default.GetRequiredService<IUserSettingsService>();*/
+    /*private static readonly IUserSettingsService userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
 
-	public static async Task<List<ShellFileItem>> EnumerateRecycleBin()
+    public static async Task<List<ShellFileItem>> EnumerateRecycleBin()
 	{
 		return (await Win32Shell.GetShellFolderAsync(Constants.UserEnvironmentPaths.RecycleBinPath, "Enumerate", 0, int.MaxValue)).Enumerate;
 	}
@@ -44,29 +44,31 @@ public static partial class RecycleBinHelpers
 		return !string.IsNullOrWhiteSpace(path) && recycleBinPathRegex.IsMatch(path);
 	}
 
-    /*public static async Task EmptyRecycleBinAsync(IFolderViewViewModel viewModel)
+    public static async Task EmptyRecycleBinAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		// Display confirmation dialog
 		var ConfirmEmptyBinDialog = new ContentDialog()
 		{
-			Title = "ConfirmEmptyBinDialogTitle".GetLocalizedResource(),
-			Content = "ConfirmEmptyBinDialogContent".GetLocalizedResource(),
-			PrimaryButtonText = "Yes".GetLocalizedResource(),
-			SecondaryButtonText = "Cancel".GetLocalizedResource(),
+			Title = "ConfirmEmptyBinDialogTitle".ToLocalized(),
+			Content = "ConfirmEmptyBinDialogContent".ToLocalized(),
+			PrimaryButtonText = "Yes".ToLocalized(),
+			SecondaryButtonText = "Cancel".ToLocalized(),
 			DefaultButton = ContentDialogButton.Primary
 		};
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            ConfirmEmptyBinDialog.XamlRoot = MainWindow.Instance.Content.XamlRoot;
+            ConfirmEmptyBinDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
         }
 
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
         // If the operation is approved by the user
         if (userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy is DeleteConfirmationPolicies.Never ||
-			await ConfirmEmptyBinDialog.TryShowAsync() == ContentDialogResult.Primary)
+			await ConfirmEmptyBinDialog.TryShowAsync(folderViewViewModel) == ContentDialogResult.Primary)
 		{
 
-			var banner = StatusCenterHelper.AddCard_EmptyRecycleBin(ReturnResult.InProgress);
+			var banner = StatusCenterHelper.AddCard_EmptyRecycleBin(folderViewViewModel, ReturnResult.InProgress);
 
 			var bResult = await Task.Run(() => Shell32.SHEmptyRecycleBin(nint.Zero, null, Shell32.SHERB.SHERB_NOCONFIRMATION | Shell32.SHERB.SHERB_NOPROGRESSUI).Succeeded);
 
@@ -74,32 +76,32 @@ public static partial class RecycleBinHelpers
 
 			if (bResult)
             {
-                StatusCenterHelper.AddCard_EmptyRecycleBin(ReturnResult.Success);
+                StatusCenterHelper.AddCard_EmptyRecycleBin(folderViewViewModel, ReturnResult.Success);
             }
             else
             {
-                StatusCenterHelper.AddCard_EmptyRecycleBin(ReturnResult.Failed);
+                StatusCenterHelper.AddCard_EmptyRecycleBin(folderViewViewModel, ReturnResult.Failed);
             }
         }
 	}
 
-	public static async Task RestoreRecycleBinAsync()
+    public static async Task RestoreRecycleBinAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		var confirmEmptyBinDialog = new ContentDialog()
 		{
-			Title = "ConfirmRestoreBinDialogTitle".GetLocalizedResource(),
-			Content = "ConfirmRestoreBinDialogContent".GetLocalizedResource(),
-			PrimaryButtonText = "Yes".GetLocalizedResource(),
-			SecondaryButtonText = "Cancel".GetLocalizedResource(),
+			Title = "ConfirmRestoreBinDialogTitle".ToLocalized(),
+			Content = "ConfirmRestoreBinDialogContent".ToLocalized(),
+			PrimaryButtonText = "Yes".ToLocalized(),
+			SecondaryButtonText = "Cancel".ToLocalized(),
 			DefaultButton = ContentDialogButton.Primary
 		};
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            confirmEmptyBinDialog.XamlRoot = MainWindow.Instance.Content.XamlRoot;
+            confirmEmptyBinDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
         }
 
-        ContentDialogResult result = await confirmEmptyBinDialog.TryShowAsync();
+        var result = await confirmEmptyBinDialog.TryShowAsync(folderViewViewModel);
 
 		if (result == ContentDialogResult.Primary)
 		{
@@ -111,41 +113,49 @@ public static partial class RecycleBinHelpers
 			{
 				var errorDialog = new ContentDialog()
 				{
-					Title = "FailedToRestore".GetLocalizedResource(),
-					PrimaryButtonText = "OK".GetLocalizedResource(),
+					Title = "FailedToRestore".ToLocalized(),
+					PrimaryButtonText = "OK".ToLocalized(),
 				};
 
 				if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-					errorDialog.XamlRoot = MainWindow.Instance.Content.XamlRoot;
+                {
+                    errorDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+                }
 
-				await errorDialog.TryShowAsync();
+                await errorDialog.TryShowAsync(folderViewViewModel);
 			}
 		}
 	}
 
-	public static async Task RestoreSelectionRecycleBinAsync(IShellPage associatedInstance)
+	public static async Task RestoreSelectionRecycleBinAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
 	{
 		var items = associatedInstance.SlimContentPage.SelectedItems;
-		if (items == null) 
-			return;
-		var ConfirmEmptyBinDialog = new ContentDialog()
+		if (items == null)
+        {
+            return;
+        }
+
+        var ConfirmEmptyBinDialog = new ContentDialog()
 		{
-			Title = "ConfirmRestoreSelectionBinDialogTitle".GetLocalizedResource(),
-				
-			Content = string.Format("ConfirmRestoreSelectionBinDialogContent".GetLocalizedResource(), items.Count),
-			PrimaryButtonText = "Yes".GetLocalizedResource(),
-			SecondaryButtonText = "Cancel".GetLocalizedResource(),
+			Title = "ConfirmRestoreSelectionBinDialogTitle".ToLocalized(),
+			Content = string.Format("ConfirmRestoreSelectionBinDialogContent".ToLocalized(), items.Count),
+			PrimaryButtonText = "Yes".ToLocalized(),
+			SecondaryButtonText = "Cancel".ToLocalized(),
 			DefaultButton = ContentDialogButton.Primary
 		};
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-			ConfirmEmptyBinDialog.XamlRoot = MainWindow.Instance.Content.XamlRoot;
+        {
+            ConfirmEmptyBinDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+        }
 
-		ContentDialogResult result = await ConfirmEmptyBinDialog.TryShowAsync();
+        var result = await ConfirmEmptyBinDialog.TryShowAsync(folderViewViewModel);
 
 		if (result == ContentDialogResult.Primary)
-			await RestoreItemAsync(associatedInstance);
-	}*/
+        {
+            await RestoreItemAsync(associatedInstance);
+        }
+    }
 
     public static async Task<bool> HasRecycleBin(string? path)
 	{
@@ -164,12 +174,15 @@ public static partial class RecycleBinHelpers
 		return Win32Shell.QueryRecycleBin().NumItems > 0;
 	}
 
-	/*public static async Task RestoreItemAsync(IShellPage associatedInstance)
+	public static async Task RestoreItemAsync(IShellPage associatedInstance)
 	{
 		var selected = associatedInstance.SlimContentPage.SelectedItems;
-		if (selected == null) 
-			return;
-		var items = selected.ToList().Where(x => x is RecycleBinItem).Select((item) => new
+		if (selected == null)
+        {
+            return;
+        }
+
+        var items = selected.ToList().Where(x => x is RecycleBinItem).Select((item) => new
 		{
 			Source = StorageHelpers.FromPathAndType(
 				item.ItemPath,
@@ -179,7 +192,7 @@ public static partial class RecycleBinHelpers
 		await associatedInstance.FilesystemHelpers.RestoreItemsFromTrashAsync(items.Select(x => x.Source), items.Select(x => x.Dest), true);
 	}
 
-	public static async Task DeleteItemAsync(IShellPage associatedInstance)
+	public static async Task DeleteItemAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
 	{
 		var selected = associatedInstance.SlimContentPage.SelectedItems;
 		if (selected == null)
@@ -187,11 +200,12 @@ public static partial class RecycleBinHelpers
             return;
         }
 
+        var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
         var items = selected.ToList().Select((item) => StorageHelpers.FromPathAndType(
 			item.ItemPath,
 			item.PrimaryItemAttribute == StorageItemTypes.File ? FilesystemItemType.File : FilesystemItemType.Directory));
 		await associatedInstance.FilesystemHelpers.DeleteItemsAsync(items, userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy, false, true);
-	}*/
+	}
 
     [GeneratedRegex("^[A-Z]:\\\\\\$Recycle\\.Bin\\\\", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex MyRegex();

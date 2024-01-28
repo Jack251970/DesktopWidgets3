@@ -15,6 +15,8 @@ using ByteSize = ByteSizeLib.ByteSize;
 
 namespace Files.App.Data.Items;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFolder
 {
 	private BitmapImage icon;
@@ -230,7 +232,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		await UIHelpers.ShowDeviceEjectResultAsync(Type, result);
 	}*/
 
-    public static async Task<DriveItem> CreateFromPropertiesAsync(StorageFolder root, string deviceId, string label, DriveType type, IRandomAccessStream imageStream = null)
+    public static async Task<DriveItem> CreateFromPropertiesAsync(StorageFolder root, string deviceId, string label, DriveType type, IRandomAccessStream imageStream = null!)
 	{
 		var item = new DriveItem();
 

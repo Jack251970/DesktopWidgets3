@@ -5,11 +5,11 @@ namespace Files.App.Data.Commands;
 
 public interface ICommandManager : IEnumerable<IRichCommand>
 {
-    void Initialize(IFolderViewViewModel viewModel);
+    void Initialize(IFolderViewViewModel folderViewViewModel);
 
     IRichCommand this[CommandCodes code] { get; }
 	IRichCommand this[string code] { get; }
-	/*IRichCommand this[HotKey customHotKey] { get; }*/
+	IRichCommand this[HotKey customHotKey] { get; }
 
 	IRichCommand None { get; }
 
@@ -18,9 +18,9 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand EnterCompactOverlay { get; }
 	IRichCommand ExitCompactOverlay { get; }
 	IRichCommand ToggleCompactOverlay { get; }
-	IRichCommand Search { get; }
+	IRichCommand Search { get; }*/
 	IRichCommand SearchUnindexedItems { get; }
-	IRichCommand EditPath { get; }*/
+	/*IRichCommand EditPath { get; }*/
 
     /*IRichCommand Redo { get; }
 	IRichCommand Undo { get; }*/
@@ -38,9 +38,9 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 
     IRichCommand ShareItem { get; }
 
-    /*IRichCommand EmptyRecycleBin { get; }
+    IRichCommand EmptyRecycleBin { get; }
     IRichCommand RestoreRecycleBin { get; }
-    IRichCommand RestoreAllRecycleBin { get; }*/
+    IRichCommand RestoreAllRecycleBin { get; }
 
     IRichCommand RefreshItems { get; }
 
@@ -63,14 +63,14 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 
     IRichCommand CopyItem { get; }
 	IRichCommand CopyPath { get; }
-	/*IRichCommand CopyPathWithQuotes { get; }*/
+	IRichCommand CopyPathWithQuotes { get; }
 
 	IRichCommand CutItem { get; }
 
 	IRichCommand PasteItem { get; }
 	IRichCommand PasteItemToSelection { get; }
 	IRichCommand DeleteItem { get; }
-    /*IRichCommand DeleteItemPermanently { get; }*/
+    IRichCommand DeleteItemPermanently { get; }
 
     /*IRichCommand InstallFont { get; }
 	IRichCommand InstallInfDriver { get; }
@@ -95,7 +95,7 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 
     IRichCommand OpenItem { get; }
     IRichCommand OpenItemWithApplicationPicker { get; }
-    /*IRichCommand OpenParentFolder { get; }*/
+    IRichCommand OpenParentFolder { get; }
 
     /*IRichCommand OpenInVSCode { get; }
 	IRichCommand OpenRepoInVSCode { get; }
@@ -156,10 +156,10 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 
 	/*IRichCommand NewTab { get; }*/
 
-    /*IRichCommand FormatDrive { get; }*/
+    IRichCommand FormatDrive { get; }
 
     IRichCommand NavigateBack { get; }
-	/*IRichCommand NavigateForward { get; }*/
+	IRichCommand NavigateForward { get; }
 	IRichCommand NavigateUp { get; }
 
 	/*IRichCommand DuplicateCurrentTab { get; }
@@ -180,7 +180,7 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand OpenNewPane { get; }
 	IRichCommand ClosePane { get; }*/
 
-    /*IRichCommand OpenFileLocation { get; }*/
+    IRichCommand OpenFileLocation { get; }
 
     /*IRichCommand PlayAll { get; }*/
 

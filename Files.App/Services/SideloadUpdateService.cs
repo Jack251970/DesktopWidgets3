@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.Helpers;
+/*using CommunityToolkit.WinUI.Helpers;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Http;
@@ -198,7 +198,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 	{
 		try
 		{
-			var tempDownloadPath = ApplicationData.Current.LocalFolder.Path + "\\" + TEMPORARY_UPDATE_PACKAGE_NAME;
+			var tempDownloadPath = LocalSettingsExtensions.ApplicationDataFolder + "\\" + TEMPORARY_UPDATE_PACKAGE_NAME;
 
 			var timer = Stopwatch.StartNew();
 
@@ -242,7 +242,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 
 			await Task.Run(async () =>
 			{
-				var bundlePath = new Uri(ApplicationData.Current.LocalFolder.Path + "\\" + TEMPORARY_UPDATE_PACKAGE_NAME);
+				var bundlePath = new Uri(LocalSettingsExtensions.ApplicationDataFolder + "\\" + TEMPORARY_UPDATE_PACKAGE_NAME);
 
 				var deployment = pm.RequestAddPackageAsync(
 					bundlePath,
@@ -305,4 +305,4 @@ public sealed class MainBundle
 
 	[XmlAttribute("Uri")]
 	public string Uri { get; set; }
-}
+}*/

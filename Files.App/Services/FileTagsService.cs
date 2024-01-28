@@ -11,9 +11,9 @@ namespace Files.App.Services;
 /// <inheritdoc cref="IFileTagsService"/>
 internal sealed class FileTagsService : IFileTagsService
 {
-	private IStorageService StorageService { get; } = Ioc.Default.GetRequiredService<IStorageService>();
+	private IStorageService StorageService { get; } = DependencyExtensions.GetService<IStorageService>();
 
-	private IFileTagsSettingsService FileTagsSettingsService { get; } = Ioc.Default.GetRequiredService<IFileTagsSettingsService>();
+	private IFileTagsSettingsService FileTagsSettingsService { get; } = DependencyExtensions.GetService<IFileTagsSettingsService>();
 
 	/// <inheritdoc/>
 	public Task<bool> IsSupportedAsync()

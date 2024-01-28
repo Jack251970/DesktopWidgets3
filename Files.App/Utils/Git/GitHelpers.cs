@@ -287,7 +287,7 @@ public static partial class GitHelpers
 
 		var viewModel = new AddBranchDialogViewModel(repositoryPath, activeBranch);
 		var loadBranchesTask = viewModel.LoadBranches();
-        var dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
+        var dialogService = folderViewViewModel.GetService<IDialogService>();
         var dialog = dialogService.GetDialog(viewModel);
 
 		await loadBranchesTask;
@@ -618,7 +618,7 @@ public static partial class GitHelpers
 		var loginCTS = new CancellationTokenSource();
 		var viewModel = new GitHubLoginDialogViewModel(userCode, "ConnectGitHubDescription".ToLocalized(), loginCTS);
 
-        var dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
+        var dialogService = folderViewViewModel.GetService<IDialogService>();
         var dialog = dialogService.GetDialog(viewModel);
 		var loginDialogTask = dialog.TryShowAsync(folderViewViewModel);
 

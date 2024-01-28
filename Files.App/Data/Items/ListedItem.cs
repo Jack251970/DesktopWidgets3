@@ -11,6 +11,7 @@ using System.Text;
 using Windows.Storage;
 
 #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
 namespace Files.App.Utils;
 
@@ -22,7 +23,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 
     protected static IStartMenuService StartMenuService { get; } = DependencyExtensions.GetService<IStartMenuService>();
 
-    /*protected static readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();*/
+    protected static readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
 
     protected static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();
 
@@ -106,7 +107,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 
 	public ulong? FileFRN { get; set; }
 
-	/*private string[] fileTags; // FILESTODO: initialize to empty array after UI is done
+	private string[] fileTags; // FILESTODO: initialize to empty array after UI is done
 	public string[] FileTags
 	{
 		get => fileTags;
@@ -123,7 +124,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 		}
 	}
 
-    public IList<TagViewModel>? FileTagsUI => fileTagsSettingsService.GetTagsByIds(FileTags);*/
+    public IList<TagViewModel>? FileTagsUI => fileTagsSettingsService.GetTagsByIds(FileTags);
 
     private Uri customIconSource;
 	public Uri CustomIconSource
@@ -335,14 +336,14 @@ public class ListedItem : ObservableObject, IGroupableItem
     {
         FolderRelativeId = folderRelativeId;
         ViewModel = viewModel;
-        UserSettingsService = ViewModel.GetRequiredService<IUserSettingsService>();
+        UserSettingsService = ViewModel.GetService<IUserSettingsService>();
     }
 
     // Parameterless constructor for JsonConvert
     public ListedItem(IFolderViewViewModel viewModel) 
     {
         ViewModel = viewModel;
-        UserSettingsService = ViewModel.GetRequiredService<IUserSettingsService>();
+        UserSettingsService = ViewModel.GetService<IUserSettingsService>();
     }
 
 	private ObservableCollection<FileProperty> fileDetails;

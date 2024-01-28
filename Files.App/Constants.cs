@@ -74,16 +74,16 @@ public static class Constants
 		public const string Alpine = "ms-appx:///Assets/WSL/alpinepng.png";
 		public const string DebianIcon = "ms-appx:///Assets/WSL/debianpng.png";
 		public const string GenericIcon = "ms-appx:///Assets/WSL/genericpng.png";
-		public const string KaliIcon = "ms-appx:///Assets/WSL/kalipng.png";
+		public const string KaliIcon = "ms-appx://./Assets/WSL/kalipng.png";
 		public const string OpenSuse = "ms-appx:///Assets/WSL/opensusepng.png";
 		public const string UbuntuIcon = "ms-appx:///Assets/WSL/ubuntupng.png";
 	}
 
 	public static class AssetPaths
 	{
-		public const string DevLogo = "Assets/AppTiles/Dev/Logo.ico";
-		public const string PreviewLogo = "Assets/AppTiles/Preview/Logo.ico";
-		public const string StableLogo = "Assets/AppTiles/Release/Logo.ico";
+		public const string DevLogo = "/Assets/AppTiles/Dev/Logo.ico";
+		public const string PreviewLogo = "/Assets/AppTiles/Preview/Logo.ico";
+		public const string StableLogo = "/Assets/AppTiles/Release/Logo.ico";
 	}
 
 	public static class UI

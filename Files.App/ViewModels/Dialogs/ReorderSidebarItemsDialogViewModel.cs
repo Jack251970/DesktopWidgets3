@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Windows.Input;
+using Microsoft.Extensions.Logging;
 
 namespace Files.App.ViewModels.Dialogs;
 
@@ -18,7 +19,7 @@ public class ReorderSidebarItemsDialogViewModel : ObservableObject
 
 	public ReorderSidebarItemsDialogViewModel() 
 	{
-		//App.Logger.LogWarning(string.Join(", ", SidebarFavoriteItems.Select(x => x.Path)));
+		DependencyExtensions.GetService<ILogger>()?.LogWarning(string.Join(", ", SidebarFavoriteItems.Select(x => x.Path)));
 		PrimaryButtonCommand = new RelayCommand(SaveChanges);
 	}
 

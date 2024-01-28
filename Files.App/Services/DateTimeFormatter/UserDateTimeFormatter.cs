@@ -6,9 +6,9 @@ namespace Files.App.Services.DateTimeFormatter;
 // TODO: Add AppLifeCycleHelper.cs and change to internal.
 public class UserDateTimeFormatter : IDateTimeFormatter
 {
-	/*public IUserSettingsService UserSettingsService { get; } = Ioc.Default.GetRequiredService<IUserSettingsService>();*/
+    /*public IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
 
-	private IDateTimeFormatter formatter = null!;
+    private IDateTimeFormatter formatter = null!;
 
 	public string Name
 		=> formatter.Name;

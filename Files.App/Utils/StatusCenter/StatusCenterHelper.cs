@@ -1,16 +1,17 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*namespace Files.App.Utils.StatusCenter;
+namespace Files.App.Utils.StatusCenter;
 
 /// <summary>
 /// Provide static helper for the StatusCenter.
 /// </summary>
 public static class StatusCenterHelper
 {
-	private static readonly StatusCenterViewModel _statusCenterViewModel = Ioc.Default.GetRequiredService<StatusCenterViewModel>();
+	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
 
 	public static StatusCenterItem AddCard_Copy(
+        IFolderViewViewModel folderViewViewModel,
 		ReturnResult returnStatus,
 		IEnumerable<IStorageItemWithPath> source,
 		IEnumerable<string> destination,
@@ -30,9 +31,11 @@ public static class StatusCenterHelper
             destinationDir = PathNormalization.GetParentDir(destination.First());
         }
 
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
+                folderViewViewModel,
 				"StatusCenter_CopyCanceled_Header",
 				"StatusCenter_CopyCanceled_SubHeader",
 				ReturnResult.Cancelled,
@@ -46,7 +49,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.InProgress)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_CopyInProgress_Header",
+                folderViewViewModel,
+                "StatusCenter_CopyInProgress_Header",
 				"StatusCenter_CopyInProgress_SubHeader",
 				ReturnResult.InProgress,
 				FileOperationType.Copy,
@@ -60,7 +64,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.Success)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_CopyComplete_Header",
+                folderViewViewModel,
+                "StatusCenter_CopyComplete_Header",
 				"StatusCenter_CopyComplete_SubHeader",
 				ReturnResult.Success,
 				FileOperationType.Copy,
@@ -73,7 +78,8 @@ public static class StatusCenterHelper
 		else
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_CopyFailed_Header",
+                folderViewViewModel,
+                "StatusCenter_CopyFailed_Header",
 				"StatusCenter_CopyFailed_SubHeader",
 				ReturnResult.Failed,
 				FileOperationType.Copy,
@@ -86,7 +92,8 @@ public static class StatusCenterHelper
 	}
 
 	public static StatusCenterItem AddCard_Move(
-		ReturnResult returnStatus,
+        IFolderViewViewModel folderViewViewModel,
+        ReturnResult returnStatus,
 		IEnumerable<IStorageItemWithPath> source,
 		IEnumerable<string> destination,
 		long itemsCount = 0,
@@ -95,10 +102,12 @@ public static class StatusCenterHelper
 		var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()?.Path!);
 		var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
 
-		if (returnStatus == ReturnResult.Cancelled)
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_MoveCanceled_Header",
+                folderViewViewModel,
+                "StatusCenter_MoveCanceled_Header",
 				"StatusCenter_MoveCanceled_SubHeader",
 				ReturnResult.Cancelled,
 				FileOperationType.Move,
@@ -111,7 +120,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.InProgress)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_MoveInProgress_Header",
+                folderViewViewModel,
+                "StatusCenter_MoveInProgress_Header",
 				"StatusCenter_MoveInProgress_SubHeader",
 				ReturnResult.InProgress,
 				FileOperationType.Move,
@@ -125,7 +135,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.Success)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_MoveComplete_Header",
+                folderViewViewModel,
+                "StatusCenter_MoveComplete_Header",
 				"StatusCenter_MoveComplete_SubHeader",
 				ReturnResult.Success,
 				FileOperationType.Move,
@@ -138,7 +149,8 @@ public static class StatusCenterHelper
 		else
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_MoveFailed_Header",
+                folderViewViewModel,
+                "StatusCenter_MoveFailed_Header",
 				"StatusCenter_MoveFailed_SubHeader",
 				ReturnResult.Failed,
 				FileOperationType.Move,
@@ -151,7 +163,8 @@ public static class StatusCenterHelper
 	}
 
 	public static StatusCenterItem AddCard_Recycle(
-		ReturnResult returnStatus,
+        IFolderViewViewModel folderViewViewModel,
+        ReturnResult returnStatus,
 		IEnumerable<IStorageItemWithPath>? source,
 		long itemsCount = 0,
 		long totalSize = 0)
@@ -163,10 +176,12 @@ public static class StatusCenterHelper
             sourceDir = PathNormalization.GetParentDir(source.First().Path);
         }
 
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_RecycleCanceled_Header",
+                folderViewViewModel,
+                "StatusCenter_RecycleCanceled_Header",
 				string.Empty,
 				ReturnResult.Cancelled,
 				FileOperationType.Recycle,
@@ -179,7 +194,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.InProgress)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_RecycleInProgress_Header",
+                folderViewViewModel,
+                "StatusCenter_RecycleInProgress_Header",
 				string.Empty,
 				ReturnResult.InProgress,
 				FileOperationType.Recycle,
@@ -193,7 +209,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.Success)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_RecycleComplete_Header",
+                folderViewViewModel,
+                "StatusCenter_RecycleComplete_Header",
 				string.Empty,
 				ReturnResult.Success,
 				FileOperationType.Recycle,
@@ -206,7 +223,8 @@ public static class StatusCenterHelper
 		else
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_RecycleFailed_Header",
+                folderViewViewModel,
+                "StatusCenter_RecycleFailed_Header",
 				string.Empty,
 				ReturnResult.Failed,
 				FileOperationType.Recycle,
@@ -219,7 +237,8 @@ public static class StatusCenterHelper
 	}
 
 	public static StatusCenterItem AddCard_Delete(
-		ReturnResult returnStatus,
+        IFolderViewViewModel folderViewViewModel,
+        ReturnResult returnStatus,
 		IEnumerable<IStorageItemWithPath>? source,
 		long itemsCount = 0,
 		long totalSize = 0)
@@ -231,10 +250,12 @@ public static class StatusCenterHelper
             sourceDir = PathNormalization.GetParentDir(source.First().Path);
         }
 
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_DeleteCanceled_Header",
+                folderViewViewModel,
+                "StatusCenter_DeleteCanceled_Header",
 				string.Empty,
 				ReturnResult.Cancelled,
 				FileOperationType.Delete,
@@ -247,7 +268,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.InProgress)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_DeleteInProgress_Header",
+                folderViewViewModel,
+                "StatusCenter_DeleteInProgress_Header",
 				string.Empty,
 				ReturnResult.InProgress,
 				FileOperationType.Delete,
@@ -261,7 +283,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.Success)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_DeleteComplete_Header",
+                folderViewViewModel,
+                "StatusCenter_DeleteComplete_Header",
 				string.Empty,
 				ReturnResult.Success,
 				FileOperationType.Delete,
@@ -274,7 +297,8 @@ public static class StatusCenterHelper
 		else
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_DeleteFailed_Header",
+                folderViewViewModel,
+                "StatusCenter_DeleteFailed_Header",
 				"StatusCenter_DeleteFailed_SubHeader",
 				ReturnResult.Failed,
 				FileOperationType.Delete,
@@ -287,7 +311,8 @@ public static class StatusCenterHelper
 	}
 
 	public static StatusCenterItem AddCard_Compress(
-		IEnumerable<string> source,
+        IFolderViewViewModel folderViewViewModel,
+        IEnumerable<string> source,
 		IEnumerable<string> destination,
 		ReturnResult returnStatus,
 		long itemsCount = 0,
@@ -298,10 +323,12 @@ public static class StatusCenterHelper
 		var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()!);
 		var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
 
-		if (returnStatus == ReturnResult.Cancelled)
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_CompressCanceled_Header",
+                folderViewViewModel,
+                "StatusCenter_CompressCanceled_Header",
 				"StatusCenter_CompressCanceled_SubHeader",
 				ReturnResult.Cancelled,
 				FileOperationType.Compressed,
@@ -314,7 +341,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.InProgress)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_CompressInProgress_Header",
+                folderViewViewModel,
+                "StatusCenter_CompressInProgress_Header",
 				"StatusCenter_CompressInProgress_SubHeader",
 				ReturnResult.InProgress,
 				FileOperationType.Compressed,
@@ -328,7 +356,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.Success)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_CompressComplete_Header",
+                folderViewViewModel,
+                "StatusCenter_CompressComplete_Header",
 				"StatusCenter_CompressComplete_SubHeader",
 				ReturnResult.Success,
 				FileOperationType.Compressed,
@@ -341,7 +370,8 @@ public static class StatusCenterHelper
 		else
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_CompressFailed_Header",
+                folderViewViewModel,
+                "StatusCenter_CompressFailed_Header",
 				"StatusCenter_CompressFailed_SubHeader",
 				ReturnResult.Failed,
 				FileOperationType.Compressed,
@@ -354,7 +384,8 @@ public static class StatusCenterHelper
 	}
 
 	public static StatusCenterItem AddCard_Decompress(
-		IEnumerable<string> source,
+        IFolderViewViewModel folderViewViewModel,
+        IEnumerable<string> source,
 		IEnumerable<string> destination,
 		ReturnResult returnStatus,
 		long itemsCount = 0,
@@ -365,10 +396,12 @@ public static class StatusCenterHelper
 		var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()!);
 		var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
 
-		if (returnStatus == ReturnResult.Cancelled)
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_DecompressCanceled_Header",
+                folderViewViewModel,
+                "StatusCenter_DecompressCanceled_Header",
 				"StatusCenter_DecompressCanceled_SubHeader",
 				ReturnResult.Cancelled,
 				FileOperationType.Extract,
@@ -381,7 +414,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.InProgress)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_DecompressInProgress_Header",
+                folderViewViewModel,
+                "StatusCenter_DecompressInProgress_Header",
 				"StatusCenter_DecompressInProgress_SubHeader",
 				ReturnResult.InProgress,
 				FileOperationType.Extract,
@@ -395,7 +429,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.Success)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_DecompressComplete_Header",
+                folderViewViewModel,
+                "StatusCenter_DecompressComplete_Header",
 				"StatusCenter_DecompressComplete_SubHeader",
 				ReturnResult.Success,
 				FileOperationType.Extract,
@@ -408,7 +443,8 @@ public static class StatusCenterHelper
 		else
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_DecompressFailed_Header",
+                folderViewViewModel,
+                "StatusCenter_DecompressFailed_Header",
 				"StatusCenter_DecompressFailed_SubHeader",
 				ReturnResult.Failed,
 				FileOperationType.Extract,
@@ -421,16 +457,19 @@ public static class StatusCenterHelper
 	}
 
 	public static StatusCenterItem AddCard_EmptyRecycleBin(
-		ReturnResult returnStatus,
+        IFolderViewViewModel folderViewViewModel,
+        ReturnResult returnStatus,
 		long itemsCount = 0,
 		long totalSize = 0)
 	{
-		// Currently not supported accurate progress report for emptying the recycle bin
+        // Currently not supported accurate progress report for emptying the recycle bin
 
-		if (returnStatus == ReturnResult.Cancelled)
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_EmptyRecycleBinCancel_Header",
+                folderViewViewModel,
+                "StatusCenter_EmptyRecycleBinCancel_Header",
 				string.Empty,
 				ReturnResult.Cancelled,
 				FileOperationType.Delete,
@@ -443,7 +482,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.InProgress)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_EmptyRecycleBinInProgress_Header",
+                folderViewViewModel,
+                "StatusCenter_EmptyRecycleBinInProgress_Header",
 				string.Empty,
 				ReturnResult.InProgress,
 				FileOperationType.Delete,
@@ -457,7 +497,8 @@ public static class StatusCenterHelper
 		else if (returnStatus == ReturnResult.Success)
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_EmptyRecycleBinComplete_Header",
+                folderViewViewModel,
+                "StatusCenter_EmptyRecycleBinComplete_Header",
 				string.Empty,
 				ReturnResult.Success,
 				FileOperationType.Delete,
@@ -470,7 +511,8 @@ public static class StatusCenterHelper
 		else
 		{
 			return _statusCenterViewModel.AddItem(
-				"StatusCenter_EmptyRecycleBinFailed_Header",
+                folderViewViewModel,
+                "StatusCenter_EmptyRecycleBinFailed_Header",
 				"StatusCenter_EmptyRecycleBinFailed_SubHeader",
 				ReturnResult.Failed,
 				FileOperationType.Delete,
@@ -482,10 +524,12 @@ public static class StatusCenterHelper
 		}
 	}
 
-	public static StatusCenterItem AddCard_Prepare()
+	public static StatusCenterItem AddCard_Prepare(IFolderViewViewModel folderViewViewModel)
 	{
-		return _statusCenterViewModel.AddItem(
-			"StatusCenter_Prepare_Header",
+        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        return _statusCenterViewModel.AddItem(
+            folderViewViewModel,
+            "StatusCenter_Prepare_Header",
 			string.Empty,
 			ReturnResult.InProgress,
 			FileOperationType.Prepare,
@@ -523,8 +567,8 @@ public static class StatusCenterHelper
 			destinationDirName = destinationPath.Split('\\').Last();
 		}
 
-		string headerString = string.IsNullOrWhiteSpace(card.HeaderStringResource) ? string.Empty : card.HeaderStringResource.GetLocalizedResource();
-		string subHeaderString = string.IsNullOrWhiteSpace(card.SubHeaderStringResource) ? string.Empty : card.SubHeaderStringResource.GetLocalizedResource();
+		var headerString = string.IsNullOrWhiteSpace(card.HeaderStringResource) ? string.Empty : card.HeaderStringResource.ToLocalized();
+		var subHeaderString = string.IsNullOrWhiteSpace(card.SubHeaderStringResource) ? string.Empty : card.SubHeaderStringResource.ToLocalized();
 
 		// Update string resources
 		switch (card.Operation)
@@ -687,4 +731,4 @@ public static class StatusCenterHelper
 				}
 		}
 	}
-}*/
+}

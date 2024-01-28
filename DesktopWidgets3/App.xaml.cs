@@ -32,6 +32,9 @@ using Files.App.Utils.Cloud;
 using Files.App.Utils.Library;
 using Files.Core.Services.Settings;
 using Files.App.Services.Settings;
+using Files.App.ViewModels.UserControls;
+using Files.App.ViewModels;
+using Files.App.Data.Contexts;
 
 namespace DesktopWidgets3;
 
@@ -157,9 +160,7 @@ public partial class App : Application
 
             // File Commands
             services.AddTransient<ICommandManager, CommandManager>();
-
-            // Filesystem Helpers
-            services.AddSingleton<IFileSystemHelpers, FileSystemHelpers>();
+            services.AddTransient<IModifiableCommandManager, ModifiableCommandManager>();
 
             // DateTime Format
             services.AddSingleton<IDateTimeFormatter, UserDateTimeFormatter>();
@@ -227,6 +228,28 @@ public partial class App : Application
             services.AddTransient<IInfoPaneSettingsService, InfoPaneSettingsService>(sp => new InfoPaneSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
             services.AddTransient<ILayoutSettingsService, LayoutSettingsService>(sp => new LayoutSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
             services.AddTransient<Files.Core.Services.Settings.IAppSettingsService, Files.App.Services.Settings.AppSettingsService>(sp => new Files.App.Services.Settings.AppSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
+
+            // Starus Center
+            services.AddTransient<StatusCenterViewModel>();
+
+            // Main Page
+            services.AddTransient<MainPageViewModel>();
+
+            // Storage History
+            services.AddSingleton<StorageHistoryWrapper>();
+
+            // Jump List
+            services.AddSingleton<IJumpListService, JumpListService>();
+
+            // File Tag
+            services.AddSingleton<IFileTagsSettingsService, FileTagsSettingsService>();
+
+            // Context
+            services.AddTransient<IContentPageContext, ContentPageContext>();
+            services.AddTransient<IPageContext, PageContext>();
+
+            // Info Pane
+            services.AddTransient<InfoPaneViewModel>();
 
             #endregion
 

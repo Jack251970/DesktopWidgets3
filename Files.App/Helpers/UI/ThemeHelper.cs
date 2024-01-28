@@ -10,6 +10,8 @@ namespace Files.App.Helpers;
 /// </summary>
 public static class ThemeHelper
 {
+    private static bool isInitialized = false;
+
     /// <summary>
 	/// Gets or sets the RequestedTheme of the root element.
 	/// </summary>
@@ -17,6 +19,18 @@ public static class ThemeHelper
     {
         get; set;
     } = ElementTheme.Default;
+
+    public static bool Initialize()
+    {
+        if (isInitialized)
+        {
+            return false;
+        }
+
+        isInitialized = true;
+
+        return true;
+    }
 
     /*private const string selectedAppThemeKey = "theme";
 	private static Window? currentApplicationWindow;
@@ -138,6 +152,6 @@ public static class ThemeHelper
 					break;
 			}
 		}
-		Ioc.Default.GetRequiredService<SettingsViewModel>().UpdateThemeElements.Execute(null);
+		DependencyExtensions.GetService<SettingsViewModel>().UpdateThemeElements.Execute(null);
 	}*/
 }

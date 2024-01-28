@@ -1,0 +1,30 @@
+﻿// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
+
+
+namespace Files.App.Actions;
+
+internal class RestoreAllRecycleBinAction : BaseUIAction, IAction
+{
+    public string Label
+		=> "RestoreAllItems".ToLocalized();
+
+	public string Description
+		=> "RestoreAllRecycleBinDescription".ToLocalized();
+
+	public RichGlyph Glyph
+		=> new(opacityStyle: "ColorIconRestoreItem");
+
+	public override bool IsExecutable =>
+		FolderViewViewModel.CanShowDialog &&
+		RecycleBinHelpers.RecycleBinHasItems();
+
+    public RestoreAllRecycleBinAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
+    {
+    }
+
+    public async Task ExecuteAsync()
+	{
+		await RecycleBinHelpers.RestoreRecycleBinAsync(FolderViewViewModel);
+	}
+}

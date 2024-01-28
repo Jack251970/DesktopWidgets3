@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using CommunityToolkit.WinUI.UI;
 using Files.App.Helpers.ContextFlyouts;
 using Files.Shared.Helpers;
 using Microsoft.UI.Input;
@@ -252,8 +253,7 @@ public static class ShellContextmenuHelper
         return item?.Items;
 	}
 
-    // TODO: Add support.
-    /*public static async Task LoadShellMenuItemsAsync(
+    public static async Task LoadShellMenuItemsAsync(
         IFolderViewViewModel folderViewViewModel,
 		string path,
 		CommandBarFlyout itemContextMenuFlyout,
@@ -270,7 +270,7 @@ public static class ShellContextmenuHelper
 
             var shiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
 			var shellMenuItems = await ContextFlyoutItemHelper.GetItemContextShellCommandsAsync(
-				workingDir: null,
+				workingDir: null!,
 				new List<ListedItem>() { new(folderViewViewModel, null!) { ItemPath = path } },
 				shiftPressed: shiftPressed,
 				showOpenMenu: false,
@@ -282,7 +282,7 @@ public static class ShellContextmenuHelper
                 shellMenuItems.Remove(openWithItem);
             }
 
-            var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+            var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
             var sendToItem = shellMenuItems.Where(x => x.Tag is Win32ContextMenuItem { CommandString: "sendto" }).ToList().FirstOrDefault();
 			if (sendToItem is not null &&
 				(showSendToMenu || !UserSettingsService.GeneralSettingsService.ShowSendToMenu))
@@ -421,7 +421,7 @@ public static class ShellContextmenuHelper
 			});
 		}
 		catch { }
-	}*/
+	}
 
     public static void AddItemsToMainMenu(IEnumerable<ICommandBarElement> mainMenu, ContextMenuFlyoutItemViewModel viewModel)
 	{

@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.UI;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -32,18 +32,20 @@ public static class FilePropertiesHelpers
 		=> WinRT.Interop.WindowNative.GetWindowHandle(w);
 
 	private static TaskCompletionSource? PropertiesWindowsClosingTCS;
-	private static BlockingCollection<WinUIEx.WindowEx> WindowCache = new();
+	private static readonly BlockingCollection<WinUIEx.WindowEx> WindowCache = new();
 
 	/// <summary>
 	/// Open properties window
 	/// </summary>
 	/// <param name="associatedInstance">Associated main window instance</param>
-	public static void OpenPropertiesWindow(IShellPage associatedInstance)
+	public static void OpenPropertiesWindow(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
 	{
 		if (associatedInstance is null)
-			return;
+        {
+            return;
+        }
 
-		object item;
+        object item;
 
 		var page = associatedInstance.SlimContentPage;
 
@@ -61,11 +63,13 @@ public static class FilePropertiesHelpers
 			// Instance's current folder
 			var folder = associatedInstance.FilesystemViewModel?.CurrentFolder;
 			if (folder is null)
-				return;
+            {
+                return;
+            }
 
-			item = folder;
+            item = folder;
 
-			var drivesViewModel = Ioc.Default.GetRequiredService<DrivesViewModel>();
+			var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 			var drives = drivesViewModel.Drives;
 			foreach (var drive in drives)
 			{
@@ -78,7 +82,7 @@ public static class FilePropertiesHelpers
 			}
 		}
 
-		OpenPropertiesWindow(item, associatedInstance);
+		OpenPropertiesWindow(folderViewViewModel, item, associatedInstance);
 	}
 
 	/// <summary>
@@ -86,14 +90,16 @@ public static class FilePropertiesHelpers
 	/// </summary>
 	/// <param name="item">An item to view properties</param>
 	/// <param name="associatedInstance">Associated main window instance</param>
-	public static void OpenPropertiesWindow(object item, IShellPage associatedInstance)
+	public static void OpenPropertiesWindow(IFolderViewViewModel folderViewViewModel, object item, IShellPage associatedInstance)
 	{
-		var applicationService = Ioc.Default.GetRequiredService<IApplicationService>();
+		var applicationService = DependencyExtensions.GetService<IApplicationService>();
 
 		if (item is null)
-			return;
+        {
+            return;
+        }
 
-		var frame = new Frame
+        var frame = new Frame
 		{
 			RequestedTheme = ThemeHelper.RootTheme
 		};
@@ -112,17 +118,18 @@ public static class FilePropertiesHelpers
 		propertiesWindow.Width = 800;
 		propertiesWindow.Height = 550;
 		propertiesWindow.Content = frame;
-		propertiesWindow.SystemBackdrop = new AppSystemBackdrop(true);
+		propertiesWindow.SystemBackdrop = new AppSystemBackdrop(folderViewViewModel, true);
 
 		var appWindow = propertiesWindow.AppWindow;
-		appWindow.Title = "Properties".GetLocalizedResource();
+		appWindow.Title = "Properties".ToLocalized();
 		appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 		appWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
 		appWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 
 		appWindow.SetIcon(applicationService.AppIcoPath);
 
-		frame.Navigate(
+        // TODO: Add support.
+		/*frame.Navigate(
 			typeof(Views.Properties.MainPropertiesPage),
 			new PropertiesPageNavigationParameter
 			{
@@ -131,7 +138,7 @@ public static class FilePropertiesHelpers
 				AppWindow = appWindow,
 				Window = propertiesWindow
 			},
-			new SuppressNavigationTransitionInfo());
+			new SuppressNavigationTransitionInfo());*/
 
 		// WINUI3: Move window to cursor position
 		InteropHelpers.GetCursorPos(out var pointerPosition);
@@ -144,10 +151,12 @@ public static class FilePropertiesHelpers
 				+ Math.Max(0, Math.Min(displayArea.WorkArea.Height - appWindow.Size.Height, pointerPosition.Y - displayArea.WorkArea.Y)),
 		};
 
-		if (App.AppModel.IncrementPropertiesWindowCount() == 1)
-			PropertiesWindowsClosingTCS = new();
+		if (DependencyExtensions.GetService<AppModel>().IncrementPropertiesWindowCount() == 1)
+        {
+            PropertiesWindowsClosingTCS = new();
+        }
 
-		appWindow.Move(appWindowPos);
+        appWindow.Move(appWindowPos);
 		appWindow.Show();
 	}
 
@@ -155,7 +164,7 @@ public static class FilePropertiesHelpers
 	// So instead of destroying the Window object, cache it and reuse it as a workaround.
 	private static void PropertiesWindow_Closed(object sender, WindowEventArgs args)
 	{
-		if (!App.AppModel.IsMainWindowClosed && sender is WinUIEx.WindowEx window)
+		if (!DependencyExtensions.GetService<AppModel>().IsMainWindowClosed && sender is WinUIEx.WindowEx window)
 		{
 			args.Handled = true;
 
@@ -163,15 +172,17 @@ public static class FilePropertiesHelpers
 			window.Content = null;
 			WindowCache.Add(window);
 
-			if (App.AppModel.DecrementPropertiesWindowCount() == 0)
+			if (DependencyExtensions.GetService<AppModel>().DecrementPropertiesWindowCount() == 0)
 			{
 				PropertiesWindowsClosingTCS!.TrySetResult();
 				PropertiesWindowsClosingTCS = null;
 			}
 		}
 		else
-			App.AppModel.DecrementPropertiesWindowCount();
-	}
+        {
+            DependencyExtensions.GetService<AppModel>().DecrementPropertiesWindowCount();
+        }
+    }
 
 	/// <summary>
 	/// Destroy all cached properties windows
@@ -191,4 +202,4 @@ public static class FilePropertiesHelpers
 	/// </summary>
 	/// <returns>Task to wait</returns>
 	public static Task WaitClosingAll() => PropertiesWindowsClosingTCS?.Task ?? Task.CompletedTask;
-}*/
+}

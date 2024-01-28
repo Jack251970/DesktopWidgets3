@@ -46,7 +46,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 
 	public StorageCredential Credentials { get; set; } = new();
 
-    public IFolderViewViewModel ViewModel { get; set; }
+    public IFolderViewViewModel FolderViewViewModel { get; set; }
 	public Func<IFolderViewViewModel, IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback { get; set; }
 
 	public ZipStorageFile(string path, string containerPath)

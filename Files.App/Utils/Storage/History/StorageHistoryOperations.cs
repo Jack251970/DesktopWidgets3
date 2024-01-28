@@ -1,28 +1,30 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using System.IO;
+using System.IO;
 using Windows.Storage;
 
 namespace Files.App.Utils.Storage;
 
 public class StorageHistoryOperations : IStorageHistoryOperations
 {
+    private readonly StorageHistoryWrapper HistoryWrapper = DependencyExtensions.GetService<StorageHistoryWrapper>();
+
 	private IFilesystemHelpers helpers;
 	private IFilesystemOperations operations;
 
 	private readonly CancellationToken cancellationToken;
 
-	public StorageHistoryOperations(IShellPage associatedInstance, CancellationToken cancellationToken)
+	public StorageHistoryOperations(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, CancellationToken cancellationToken)
 	{
 		this.cancellationToken = cancellationToken;
 		helpers = associatedInstance.FilesystemHelpers;
-		operations = new ShellFilesystemOperations(associatedInstance);
+		operations = new ShellFilesystemOperations(folderViewViewModel, associatedInstance);
 	}
 
 	public async Task<ReturnResult> Undo(IStorageHistory history)
 	{
-		ReturnResult returnStatus = ReturnResult.InProgress;
+		var returnStatus = ReturnResult.InProgress;
 		Progress<StatusCenterItemProgressModel> progress = new();
 
 		progress.ProgressChanged += (s, e) => returnStatus = e.Status!.Value.ToStatus();
@@ -46,10 +48,10 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 			case FileOperationType.Rename: // Opposite: Restore original item names
 				if (!IsHistoryNull(history))
 				{
-					NameCollisionOption collision = NameCollisionOption.GenerateUniqueName;
-					for (int i = 0; i < history.Destination.Count(); i++)
+					var collision = NameCollisionOption.GenerateUniqueName;
+					for (var i = 0; i < history.Destination.Count; i++)
 					{
-						string name = Path.GetFileName(history.Source[i].Path);
+						var name = Path.GetFileName(history.Source[i].Path);
 						await operations.RenameAsync(history.Destination[i], name, collision, progress, cancellationToken);
 					}
 				}
@@ -77,7 +79,7 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 					returnStatus = await helpers.RestoreItemsFromTrashAsync(history.Destination, history.Source.Select(item => item.Path), false);
 					if (returnStatus is ReturnResult.IntegrityCheckFailed) // Not found, corrupted
 					{
-						App.HistoryWrapper.RemoveHistory(history, false);
+						HistoryWrapper.RemoveHistory(history, false);
 					}
 				}
 				break;
@@ -87,12 +89,12 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 					var newHistory = await operations.DeleteItemsAsync(history.Destination, progress, false, cancellationToken);
 					if (newHistory is null)
 					{
-						App.HistoryWrapper.RemoveHistory(history, false);
+						HistoryWrapper.RemoveHistory(history, false);
 					}
 					else
 					{
 						// We need to change the recycled item paths (since IDs are different) - for Redo() to work
-						App.HistoryWrapper.ModifyCurrentHistory(newHistory);
+						HistoryWrapper.ModifyCurrentHistory(newHistory);
 					}
 				}
 				break;
@@ -106,7 +108,7 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 
 	public async Task<ReturnResult> Redo(IStorageHistory history)
 	{
-		ReturnResult returnStatus = ReturnResult.InProgress;
+		var returnStatus = ReturnResult.InProgress;
 		Progress<StatusCenterItemProgressModel> progress = new();
 
 		progress.ProgressChanged += (s, e) => { returnStatus = e.Status!.Value.ToStatus(); };
@@ -132,10 +134,10 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 			case FileOperationType.Rename:
 				if (!IsHistoryNull(history))
 				{
-					NameCollisionOption collision = NameCollisionOption.GenerateUniqueName;
-					for (int i = 0; i < history.Source.Count; i++)
+					var collision = NameCollisionOption.GenerateUniqueName;
+					for (var i = 0; i < history.Source.Count; i++)
 					{
-						string name = Path.GetFileName(history.Destination[i].Path);
+						var name = Path.GetFileName(history.Destination[i].Path);
 						await operations.RenameAsync(history.Source[i], name, collision, progress, cancellationToken);
 					}
 				}
@@ -162,12 +164,12 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 					var newHistory = await operations.DeleteItemsAsync(history.Source, progress, false, cancellationToken);
 					if (newHistory is null)
 					{
-						App.HistoryWrapper.RemoveHistory(history, true);
+						HistoryWrapper.RemoveHistory(history, true);
 					}
 					else
 					{
 						// We need to change the recycled item paths (since IDs are different) - for Undo() to work
-						App.HistoryWrapper.ModifyCurrentHistory(newHistory);
+						HistoryWrapper.ModifyCurrentHistory(newHistory);
 					}
 				}
 				break;
@@ -188,15 +190,17 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 	public void Dispose()
 	{
 		helpers?.Dispose();
-		helpers = null;
+		helpers = null!;
 
 		operations?.Dispose();
-		operations = null;
+		operations = null!;
+
+        GC.SuppressFinalize(this);
 	}
 
-	private bool IsHistoryNull(IStorageHistory history) // history.Destination is null with CreateNew
+	private static bool IsHistoryNull(IStorageHistory history) // history.Destination is null with CreateNew
 		=> IsHistoryNull(history.Source) || (history.Destination is not null && IsHistoryNull(history.Destination));
-	private bool IsHistoryNull(IEnumerable<IStorageItemWithPath> source) => !source.All(HasPath);
+	private static bool IsHistoryNull(IEnumerable<IStorageItemWithPath> source) => !source.All(HasPath);
 
 	private static bool HasPath(IStorageItemWithPath item) => item is not null && !string.IsNullOrWhiteSpace(item.Path);
-}*/
+}

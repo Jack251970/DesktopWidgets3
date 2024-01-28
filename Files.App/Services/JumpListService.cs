@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using System.IO;
+using System.IO;
 using Windows.Storage;
 using Windows.UI.StartScreen;
 
@@ -68,11 +68,13 @@ public class JumpListService : IJumpListService
 				instance.SystemGroupKind = JumpListSystemGroupKind.None;
 
 				if (instance is null)
-					return;
+                {
+                    return;
+                }
 
-				var itemsToRemove = instance.Items.Where(x => string.Equals(x.GroupName, JumpListPinnedGroupHeader, StringComparison.OrdinalIgnoreCase)).ToList();
+                var itemsToRemove = instance.Items.Where(x => string.Equals(x.GroupName, JumpListPinnedGroupHeader, StringComparison.OrdinalIgnoreCase)).ToList();
 				itemsToRemove.ForEach(x => instance.Items.Remove(x));
-				App.QuickAccessManager.Model.FavoriteItems.ForEach(x => AddFolder(x, JumpListPinnedGroupHeader, instance));
+				DependencyExtensions.GetService<QuickAccessManager>().Model.FavoriteItems.ForEach(x => AddFolder(x, JumpListPinnedGroupHeader, instance));
 				await instance.SaveAsync();
 			}
 		}
@@ -106,18 +108,22 @@ public class JumpListService : IJumpListService
 			string? displayName = null;
 
 			if (path.StartsWith("\\\\SHELL", StringComparison.OrdinalIgnoreCase))
-				displayName = "ThisPC".GetLocalizedResource();
-				
-			if (path.EndsWith('\\'))
+            {
+                displayName = "ThisPC".ToLocalized();
+            }
+
+            if (path.EndsWith('\\'))
 			{
-				var drivesViewModel = Ioc.Default.GetRequiredService<DrivesViewModel>();
+				var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
 				// Jumplist item argument can't end with a slash so append a character that can't exist in a directory name to support listing drives.
 				var drive = drivesViewModel.Drives.Where(drive => drive.Path == path).FirstOrDefault();
 				if (drive is null)
-					return;
+                {
+                    return;
+                }
 
-				displayName = (drive as DriveItem)?.Text;
+                displayName = (drive as DriveItem)?.Text;
 				path += '?';
 			}
 
@@ -125,18 +131,30 @@ public class JumpListService : IJumpListService
 			{
 				var localSettings = ApplicationData.Current.LocalSettings;
 				if (path.Equals(Constants.UserEnvironmentPaths.DesktopPath, StringComparison.OrdinalIgnoreCase))
-					displayName = "ms-resource:///Resources/Desktop";
-				else if (path.Equals(Constants.UserEnvironmentPaths.DownloadsPath, StringComparison.OrdinalIgnoreCase))
-					displayName = "ms-resource:///Resources/Downloads";
-				else if (path.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
-					displayName = "Network".GetLocalizedResource();
-				else if (path.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
-					displayName = "RecycleBin".GetLocalizedResource();
-				else if (path.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
-					displayName = "ThisPC".GetLocalizedResource();
-				else if (path.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
-					displayName = "SidebarNetworkDrives".GetLocalizedResource();
-				else if (App.LibraryManager.TryGetLibrary(path, out LibraryLocationItem library))
+                {
+                    displayName = "ms-resource:///Resources/Desktop";
+                }
+                else if (path.Equals(Constants.UserEnvironmentPaths.DownloadsPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    displayName = "ms-resource:///Resources/Downloads";
+                }
+                else if (path.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    displayName = "Network".ToLocalized();
+                }
+                else if (path.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    displayName = "RecycleBin".ToLocalized();
+                }
+                else if (path.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    displayName = "ThisPC".ToLocalized();
+                }
+                else if (path.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    displayName = "SidebarNetworkDrives".ToLocalized();
+                }
+                else if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(path, out LibraryLocationItem library))
 				{
 					var libName = Path.GetFileNameWithoutExtension(library.Path);
 					displayName = libName switch
@@ -146,8 +164,10 @@ public class JumpListService : IJumpListService
 					};
 				}
 				else
-					displayName = Path.GetFileName(path);
-			}
+                {
+                    displayName = Path.GetFileName(path);
+                }
+            }
 
 			var jumplistItem = JumpListItem.CreateWithArguments(path, displayName);
 			jumplistItem.Description = jumplistItem.Arguments ?? string.Empty;
@@ -167,4 +187,4 @@ public class JumpListService : IJumpListService
 			}
 		}
 	}
-}*/
+}

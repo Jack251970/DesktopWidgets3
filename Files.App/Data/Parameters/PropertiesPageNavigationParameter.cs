@@ -1,20 +1,20 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.UI.Windowing;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 
 namespace Files.App.Data.Parameters;
 
 public class PropertiesPageNavigationParameter
 {
-	public CancellationTokenSource CancellationTokenSource;
+	public CancellationTokenSource CancellationTokenSource = null!;
 
-	public object Parameter;
+	public object Parameter = null!;
 
-	public IShellPage AppInstance;
+    public IShellPage AppInstance = null!;
 
-	public Window Window;
+    public Window Window = null!;
 
-	public AppWindow AppWindow;
-}*/
+    public AppWindow AppWindow = null!;
+}

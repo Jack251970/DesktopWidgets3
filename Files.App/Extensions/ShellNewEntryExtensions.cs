@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using System.IO;
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Windows.Storage;
 
@@ -63,4 +63,4 @@ public static class ShellNewEntryExtensions
 
 		return createdFile;
 	}
-}*/
+}

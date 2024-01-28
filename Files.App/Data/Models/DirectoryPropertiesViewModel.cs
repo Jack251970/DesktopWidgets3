@@ -1,13 +1,15 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using System.Windows.Input;
+using System.Windows.Input;
 
 namespace Files.App.Data.Models;
 
 public class DirectoryPropertiesViewModel : ObservableObject
 {
-	private IContentPageContext ContentPageContext { get; } = Ioc.Default.GetRequiredService<IContentPageContext>();
+    private readonly IFolderViewViewModel FolderViewViewModel;
+
+	private readonly IContentPageContext ContentPageContext;
 
 	// The first branch will always be the active one.
 	public const int ACTIVE_BRANCH_INDEX = 0;
@@ -61,8 +63,10 @@ public class DirectoryPropertiesViewModel : ObservableObject
 				OnPropertyChanged(nameof(Branches));
 
 				if (value)
-					SelectedBranchIndex = ACTIVE_BRANCH_INDEX;
-			}
+                {
+                    SelectedBranchIndex = ACTIVE_BRANCH_INDEX;
+                }
+            }
 		}
 	}
 
@@ -73,7 +77,7 @@ public class DirectoryPropertiesViewModel : ObservableObject
 		set => SetProperty(ref _StatusInfo, value);
 	}
 
-	private string _ExtendedStatusInfo = string.Format("CommitsNumber".GetLocalizedResource(), 0);
+	private string _ExtendedStatusInfo = string.Format("CommitsNumber".ToLocalized(), 0);
 	public string ExtendedStatusInfo
 	{
 		get => _ExtendedStatusInfo;
@@ -88,10 +92,12 @@ public class DirectoryPropertiesViewModel : ObservableObject
 
 	public ICommand NewBranchCommand { get; }
 
-	public DirectoryPropertiesViewModel()
+	public DirectoryPropertiesViewModel(IFolderViewViewModel folderViewViewModel)
 	{
-		NewBranchCommand = new AsyncRelayCommand(()
-			=> GitHelpers.CreateNewBranchAsync(_gitRepositoryPath!, _localBranches[ACTIVE_BRANCH_INDEX].Name));
+        FolderViewViewModel = folderViewViewModel;
+        ContentPageContext = folderViewViewModel.GetService<IContentPageContext>();
+        NewBranchCommand = new AsyncRelayCommand(()
+			=> GitHelpers.CreateNewBranchAsync(folderViewViewModel, _gitRepositoryPath!, _localBranches[ACTIVE_BRANCH_INDEX].Name));
 	}
 
 	public void UpdateGitInfo(bool isGitRepository, string? repositoryPath, BranchItem? head)
@@ -106,21 +112,25 @@ public class DirectoryPropertiesViewModel : ObservableObject
 			
 		// Change ShowLocals value only if branches flyout is closed
 		if (!IsBranchesFlyoutExpaned)
-			ShowLocals = true;
+        {
+            ShowLocals = true;
+        }
 
-		var behind = head is not null ? head.BehindBy ?? 0 : 0;
+        var behind = head is not null ? head.BehindBy ?? 0 : 0;
 		var ahead = head is not null ? head.AheadBy ?? 0 : 0;
 
-		ExtendedStatusInfo = string.Format("GitSyncStatusExtendedInfo".GetLocalizedResource(), ahead, behind);
+		ExtendedStatusInfo = string.Format("GitSyncStatusExtendedInfo".ToLocalized(), ahead, behind);
 		StatusInfo = $"{ahead} / {behind}";
 	}
 
 	public async Task LoadBranches()
 	{
 		if (string.IsNullOrEmpty(_gitRepositoryPath))
-			return;
+        {
+            return;
+        }
 
-		var branches = await GitHelpers.GetBranchesNames(_gitRepositoryPath);
+        var branches = await GitHelpers.GetBranchesNames(_gitRepositoryPath);
 
 		_localBranches.Clear();
 		_remoteBranches.Clear();
@@ -128,16 +138,20 @@ public class DirectoryPropertiesViewModel : ObservableObject
 		foreach (var branch in branches)
 		{
 			if (branch.IsRemote)
-				_remoteBranches.Add(branch);
-			else
-				_localBranches.Add(branch);
-		}
+            {
+                _remoteBranches.Add(branch);
+            }
+            else
+            {
+                _localBranches.Add(branch);
+            }
+        }
 
 		SelectedBranchIndex = ShowLocals ? ACTIVE_BRANCH_INDEX : -1;
 	}
 
 	public Task ExecuteDeleteBranch(string? branchName)
 	{
-		return GitHelpers.DeleteBranchAsync(_gitRepositoryPath, GitBranchDisplayName, branchName);
+		return GitHelpers.DeleteBranchAsync(FolderViewViewModel, _gitRepositoryPath, GitBranchDisplayName, branchName);
 	}
-}*/
+}

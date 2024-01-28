@@ -7,8 +7,8 @@ namespace Files.App.Utils.Serialization.Implementation;
 
 internal sealed class DefaultJsonSettingsSerializer : IJsonSettingsSerializer
 {
-	public static readonly JsonSerializerOptions Options = new JsonSerializerOptions
-	{
+	public static readonly JsonSerializerOptions Options = new()
+    {
 		WriteIndented = true
 	};
 

@@ -9,17 +9,17 @@ namespace Files.App.Helpers;
 
 internal sealed class AppSystemBackdrop : SystemBackdrop
 {
-	private bool isSecondaryWindow;
-	private IUserSettingsService userSettingsService;
+	private readonly bool isSecondaryWindow;
+	private readonly IUserSettingsService userSettingsService;
 	private ISystemBackdropControllerWithTargets? controller;
-	private ICompositionSupportsSystemBackdrop target;
-	private XamlRoot root;
+	private ICompositionSupportsSystemBackdrop target = null!;
+	private XamlRoot root = null!;
 	private SystemBackdropTheme? prevTheme = null;
 
-	public AppSystemBackdrop(bool isSecondaryWindow = false)
+	public AppSystemBackdrop(IFolderViewViewModel folderViewViewModel, bool isSecondaryWindow = false)
 	{
 		this.isSecondaryWindow = isSecondaryWindow;
-		userSettingsService = Ioc.Default.GetRequiredService<IUserSettingsService>();
+		userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
 		userSettingsService.OnSettingChangedEvent += OnSettingChanged;
 	}
 
@@ -45,9 +45,11 @@ internal sealed class AppSystemBackdrop : SystemBackdrop
 		base.OnDefaultSystemBackdropConfigurationChanged(target, xamlRoot);
 		var configuration = GetDefaultSystemBackdropConfiguration(target, xamlRoot);
 		if (controller is not DesktopAcrylicController acrylicController || configuration.Theme == prevTheme)
-			return;
+        {
+            return;
+        }
 
-		prevTheme = configuration.Theme;
+        prevTheme = configuration.Theme;
         SetAcrylicBackdropProperties(acrylicController, configuration.Theme);
 	}
 

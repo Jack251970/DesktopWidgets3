@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using System.Windows.Input;
+using System.Windows.Input;
 using SkiaSharp;
 using LiveChartsCore;
 using LiveChartsCore.Drawing;
@@ -10,6 +10,7 @@ using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.Defaults;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml;
 
 namespace Files.App.Utils.StatusCenter;
 
@@ -20,7 +21,7 @@ namespace Files.App.Utils.StatusCenter;
 /// </summary>
 public sealed class StatusCenterItem : ObservableObject
 {
-	private readonly StatusCenterViewModel _viewModel = Ioc.Default.GetRequiredService<StatusCenterViewModel>();
+	private readonly StatusCenterViewModel _viewModel;
 
 	private int _ProgressPercentage;
 	public int ProgressPercentage
@@ -192,6 +193,7 @@ public sealed class StatusCenterItem : ObservableObject
 	public ICommand CancelCommand { get; }
 
 	public StatusCenterItem(
+        IFolderViewViewModel folderViewViewModel,
 		string headerResource,
 		string subHeaderResource,
 		ReturnResult status,
@@ -203,10 +205,11 @@ public sealed class StatusCenterItem : ObservableObject
 		long totalSize = 0,
 		CancellationTokenSource? operationCancellationToken = default)
 	{
+        _viewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
 		_operationCancellationToken = operationCancellationToken;
-		Header = headerResource == string.Empty ? headerResource : headerResource.GetLocalizedResource();
+		Header = headerResource == string.Empty ? headerResource : headerResource.ToLocalized();
 		HeaderStringResource = headerResource;
-		SubHeader = subHeaderResource == string.Empty ? subHeaderResource : subHeaderResource.GetLocalizedResource();
+		SubHeader = subHeaderResource == string.Empty ? subHeaderResource : subHeaderResource.ToLocalized();
 		SubHeaderStringResource = subHeaderResource;
 		FileSystemOperationReturnResult = status;
 		Operation = operation;
@@ -220,16 +223,18 @@ public sealed class StatusCenterItem : ObservableObject
 		SpeedGraphValues = new();
 		SpeedGraphBackgroundValues = new();
 		CancelCommand = new RelayCommand(ExecuteCancelCommand);
-		Message = "ProcessingItems".GetLocalizedResource();
+		Message = "ProcessingItems".ToLocalized();
 		Source = source;
 		Destination = destination;
 
 		// Get the graph color
-		if (App.Current.Resources["App.Theme.FillColorAttentionBrush"] is not SolidColorBrush accentBrush)
-			return;
+		if (Application.Current.Resources["App.Theme.FillColorAttentionBrush"] is not SolidColorBrush accentBrush)
+        {
+            return;
+        }
 
-		// Initialize graph background fill series
-		SpeedGraphBackgroundSeries = new()
+        // Initialize graph background fill series
+        SpeedGraphBackgroundSeries = new()
 		{
 			new LineSeries<ObservablePoint>
 			{
@@ -341,9 +346,11 @@ public sealed class StatusCenterItem : ObservableObject
 					IconBackgroundCircleBorderOpacity = 0.1d;
 
 					if (Operation is FileOperationType.Prepare)
-						Header = "StatusCenter_PrepareInProgress".GetLocalizedResource();
+                    {
+                        Header = "StatusCenter_PrepareInProgress".ToLocalized();
+                    }
 
-					ItemKind = StatusCenterItemKind.InProgress;
+                    ItemKind = StatusCenterItemKind.InProgress;
 					ItemIconKind = Operation switch
 					{
 						FileOperationType.Extract => StatusCenterItemIconKind.Extract,
@@ -391,7 +398,8 @@ public sealed class StatusCenterItem : ObservableObject
 				}
 		}
 
-		StatusCenterHelper.UpdateCardStrings(this);
+        // CHANGE: Remove ui changes.
+		/*StatusCenterHelper.UpdateCardStrings(this);*/
 		OnPropertyChanged(nameof(HeaderTooltip));
 	}
 
@@ -400,14 +408,18 @@ public sealed class StatusCenterItem : ObservableObject
 		// The operation has been canceled.
 		// Do update neither progress value nor text.
 		if (CancellationToken.IsCancellationRequested)
-			return;
+        {
+            return;
+        }
 
-		// Update status code
-		if (value.Status is FileSystemStatusCode status)
-			FileSystemOperationReturnResult = status.ToStatus();
+        // Update status code
+        if (value.Status is FileSystemStatusCode status)
+        {
+            FileSystemOperationReturnResult = status.ToStatus();
+        }
 
-		// Update the footer message, percentage, processing item name
-		if (value.Percentage is double p)
+        // Update the footer message, percentage, processing item name
+        if (value.Percentage is double p)
 		{
 			if (ProgressPercentage != value.Percentage)
 			{
@@ -419,7 +431,7 @@ public sealed class StatusCenterItem : ObservableObject
 				{
 					Message =
 						$"{string.Format(
-							"StatusCenter_ProcessedItems_Header".GetLocalizedResource(),
+							"StatusCenter_ProcessedItems_Header".ToLocalized(),
 							value.ProcessedItemsCount,
 							value.ItemsCount)}";
 				}
@@ -427,27 +439,34 @@ public sealed class StatusCenterItem : ObservableObject
 				{
 					Message =
 						$"{string.Format(
-							"StatusCenter_ProcessedSize_Header".GetLocalizedResource(),
+							"StatusCenter_ProcessedSize_Header".ToLocalized(),
 							value.ProcessedSize.ToSizeString(),
 							value.TotalSize.ToSizeString())}";
 				}
 			}
 
 			if (CurrentProcessingItemName != value.FileName)
-				CurrentProcessingItemName = value.FileName;
-		}
+            {
+                CurrentProcessingItemName = value.FileName;
+            }
+        }
 
 		// Set total count
 		if (TotalItemsCount < value.ItemsCount)
-			TotalItemsCount = value.ItemsCount;
+        {
+            TotalItemsCount = value.ItemsCount;
+        }
 
-		// Set total size
-		if (TotalSize < value.TotalSize)
-			TotalSize = value.TotalSize;
+        // Set total size
+        if (TotalSize < value.TotalSize)
+        {
+            TotalSize = value.TotalSize;
+        }
 
-		// Update UI for strings
-		StatusCenterHelper.UpdateCardStrings(this);
-		OnPropertyChanged(nameof(HeaderTooltip));
+        // Update UI for strings
+        // CHANGE: Remove ui changes.
+        /*StatusCenterHelper.UpdateCardStrings(this);*/
+        OnPropertyChanged(nameof(HeaderTooltip));
 
 		// Graph item point
 		ObservablePoint point;
@@ -495,7 +514,7 @@ public sealed class StatusCenterItem : ObservableObject
 				break;
 		}
 
-		bool isSamePoint = false;
+		var isSamePoint = false;
 
 		// Remove the point that has the same X position
 		if (SpeedGraphValues?.FirstOrDefault(v => v.X == point.X) is ObservablePoint existingPoint)
@@ -516,10 +535,12 @@ public sealed class StatusCenterItem : ObservableObject
 
 		// Add percentage to the header
 		if (!IsIndeterminateProgress)
-			Header = $"{Header} ({ProgressPercentage}%)";
+        {
+            Header = $"{Header} ({ProgressPercentage}%)";
+        }
 
-		// Update UI of the address bar
-		_viewModel.NotifyChanges();
+        // Update UI of the address bar
+        _viewModel.NotifyChanges();
 	}
 
 	public void ExecuteCancelCommand()
@@ -531,7 +552,7 @@ public sealed class StatusCenterItem : ObservableObject
 			IsCancelable = false;
 			IsExpanded = false;
 			IsSpeedAndProgressAvailable = false;
-			Header = $"{"Canceling".GetLocalizedResource()} - {Header}";
+			Header = $"{"Canceling".ToLocalized()} - {Header}";
 		}
 	}
-}*/
+}

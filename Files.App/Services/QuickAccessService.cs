@@ -3,6 +3,8 @@
 
 namespace Files.App.Services;
 
+#pragma warning disable IL2026 // Unrecognized escape sequence in cref attribute
+
 public class QuickAccessService : IQuickAccessService
 {
 	private static readonly string guid = "::{679f85cb-0220-4080-b29b-5540cc05aab6}";
@@ -49,7 +51,7 @@ public class QuickAccessService : IQuickAccessService
 				.Select(link => link.FilePath).ToArray();
         }
 
-        foreach (var fi in f2.Items())
+        foreach (var fi in f2!.Items())
 		{
 			if (ShellStorageFolder.IsShellPath((string)fi.Path))
 			{

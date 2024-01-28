@@ -1,38 +1,44 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*namespace Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 public class StorageHistoryHelpers : IDisposable
 {
-	private IStorageHistoryOperations operations;
+    private readonly StorageHistoryWrapper HistoryWrapper = DependencyExtensions.GetService<StorageHistoryWrapper>();
 
-	private static SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+    private IStorageHistoryOperations operations;
 
-	public StorageHistoryHelpers(IStorageHistoryOperations storageHistoryOperations)
-		=> operations = storageHistoryOperations;
+	private static readonly SemaphoreSlim semaphore = new(1, 1);
 
-	public async Task<ReturnResult> TryUndo()
+    public StorageHistoryHelpers(IStorageHistoryOperations storageHistoryOperations)
+    {
+        operations = storageHistoryOperations;
+    }
+
+    public async Task<ReturnResult> TryUndo()
 	{
-		if (App.HistoryWrapper.CanUndo())
+		if (HistoryWrapper.CanUndo())
 		{
 			if (!await semaphore.WaitAsync(0))
 			{
 				return ReturnResult.InProgress;
 			}
-			bool keepHistory = false;
+			var keepHistory = false;
 			try
 			{
-				ReturnResult result = await operations.Undo(App.HistoryWrapper.GetCurrentHistory());
+				var result = await operations.Undo(HistoryWrapper.GetCurrentHistory());
 				keepHistory = result is ReturnResult.Cancelled;
 				return result;
 			}
 			finally
 			{
 				if (!keepHistory)
-					App.HistoryWrapper.DecreaseIndex();
+                {
+                    HistoryWrapper.DecreaseIndex();
+                }
 
-				semaphore.Release();
+                semaphore.Release();
 			}
 		}
 
@@ -41,7 +47,7 @@ public class StorageHistoryHelpers : IDisposable
 
 	public async Task<ReturnResult> TryRedo()
 	{
-		if (App.HistoryWrapper.CanRedo())
+		if (HistoryWrapper.CanRedo())
 		{
 			if (!await semaphore.WaitAsync(0))
 			{
@@ -49,8 +55,8 @@ public class StorageHistoryHelpers : IDisposable
 			}
 			try
 			{
-				App.HistoryWrapper.IncreaseIndex();
-				return await operations.Redo(App.HistoryWrapper.GetCurrentHistory());
+				HistoryWrapper.IncreaseIndex();
+				return await operations.Redo(HistoryWrapper.GetCurrentHistory());
 			}
 			finally
 			{
@@ -64,6 +70,8 @@ public class StorageHistoryHelpers : IDisposable
 	public void Dispose()
 	{
 		operations?.Dispose();
-		operations = null;
+		operations = null!;
+
+        GC.SuppressFinalize(this);
 	}
-}*/
+}

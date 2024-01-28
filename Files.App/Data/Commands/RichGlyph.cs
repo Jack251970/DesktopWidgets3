@@ -4,7 +4,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using static Microsoft.UI.Xaml.Application;
 
 namespace Files.App.Data.Commands;
 
@@ -50,7 +49,7 @@ public readonly struct RichGlyph
 
 		if (!string.IsNullOrEmpty(FontFamily))
         {
-            fontIcon.FontFamily = (FontFamily)Current.Resources[FontFamily];
+            fontIcon.FontFamily = (FontFamily)Application.Current.Resources[FontFamily];
         }
 
         return fontIcon;
@@ -65,7 +64,7 @@ public readonly struct RichGlyph
 
         return new()
 		{
-			Style = (Style)Current.Resources[OpacityStyle]
+			Style = (Style)Application.Current.Resources[OpacityStyle]
 		};
 	}
 
@@ -76,6 +75,6 @@ public readonly struct RichGlyph
             return null;
         }
 
-        return (Style)Current.Resources[OpacityStyle];
+        return (Style)Application.Current.Resources[OpacityStyle];
 	}
 }

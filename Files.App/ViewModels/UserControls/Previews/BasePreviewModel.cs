@@ -10,9 +10,9 @@ namespace Files.App.ViewModels.Previews;
 
 public abstract class BasePreviewModel : ObservableObject
 {
-	/*private readonly IUserSettingsService userSettingsService = Ioc.Default.GetRequiredService<IUserSettingsService>();*/
+    /*private readonly IUserSettingsService userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
 
-	public ListedItem Item { get; }
+    public ListedItem Item { get; }
 
 	private BitmapImage fileImage = null!;
 	public BitmapImage FileImage

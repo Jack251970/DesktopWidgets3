@@ -9,6 +9,9 @@ using Windows.Storage;
 
 namespace Files.App.ViewModels.Properties;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable IL2026 // Unrecognized escape sequence in XML doc comment
+
 /// <summary>
 /// This class is represents a system file property from the Windows.Storage API
 /// </summary>
@@ -145,7 +148,7 @@ public class FileProperty : ObservableObject
 	public void InitializeProperty()
 	{
 		Func<object, string> displayFunction;
-		if (!string.IsNullOrEmpty(DisplayFunctionName) && DisplayFuncs.TryGetValue(DisplayFunctionName, out displayFunction))
+		if (!string.IsNullOrEmpty(DisplayFunctionName) && DisplayFuncs.TryGetValue(DisplayFunctionName, out displayFunction!))
 		{
 			DisplayFunction = displayFunction;
 		}

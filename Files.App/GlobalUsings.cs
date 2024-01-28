@@ -15,7 +15,7 @@ global using SystemIO = global::System.IO;
 
 // CommunityToolkit.Mvvm
 global using global::CommunityToolkit.Mvvm.ComponentModel;
-global using global::CommunityToolkit.Mvvm.DependencyInjection;
+/*global using global::CommunityToolkit.Mvvm.DependencyInjection;*/
 global using global::CommunityToolkit.Mvvm.Input;
 global using global::CommunityToolkit.Mvvm.Messaging;
 
@@ -25,7 +25,7 @@ global using global::Files.App.Extensions;
 global using global::Files.App.Utils;
 global using global::Files.App.Utils.Archives;
 global using global::Files.App.Utils.Cloud;
-/*global using global::Files.App.Utils.FileTags;*/
+global using global::Files.App.Utils.FileTags;
 global using global::Files.App.Utils.Git;
 global using global::Files.App.Utils.Library;
 /*global using global::Files.App.Utils.RecentItem;*/
@@ -47,12 +47,12 @@ global using global::Files.App.Data.Parameters;
 global using global::Files.App.Data.TemplateSelectors;
 global using global::Files.App.Services;
 global using global::Files.App.UserControls;
-/*global using global::Files.App.UserControls.TabBar;*/
+global using global::Files.App.UserControls.TabBar;
 global using global::Files.App.ViewModels;
-/*global using global::Files.App.ViewModels.UserControls;
+global using global::Files.App.ViewModels.UserControls;
 global using global::Files.App.Views;
 global using global::Files.App.Views.Layouts;
-global using global::Files.App.Views.Shells;*/
+global using global::Files.App.Views.Shells;
 
 // Files.Core
 global using global::Files.Core.Data.Enums;

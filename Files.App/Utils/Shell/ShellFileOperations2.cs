@@ -5,6 +5,8 @@ using static Vanara.Windows.Shell.ShellFileOperations;
 
 namespace Vanara.Windows.Shell;
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+
 /// <summary>Queued and static file operations using the Shell.</summary>
 /// <seealso cref="IDisposable"/>
 /// https://github.com/dahall/Vanara/blob/master/Windows.Shell.Common/ShellFileOperations/ShellFileOperations.cs
@@ -248,7 +250,7 @@ public class ShellFileOperations2 : IDisposable
 	/// destination item is the same as the source.
 	/// </param>
 	/// <param name="options">Options that control file operations.</param>
-	public static void Move(string source, string dest, string newName = null, OperationFlags options = defaultOptions)
+	public static void Move(string source, string dest, string newName = null!, OperationFlags options = defaultOptions)
 	{
 		using ShellItem shfile = new(source);
 		using ShellFolder shfld = new(dest);
@@ -332,7 +334,7 @@ public class ShellFileOperations2 : IDisposable
 	/// <para>This parameter is normally <see langword="null"/> to specify a new, blank file.</para>
 	/// </param>
 	/// <param name="options">Options that control file operations.</param>
-	public static void NewItem(ShellFolder dest, string name, System.IO.FileAttributes attr = System.IO.FileAttributes.Normal, string template = null, OperationFlags options = defaultOptions)
+	public static void NewItem(ShellFolder dest, string name, SystemIO.FileAttributes attr = SystemIO.FileAttributes.Normal, string template = null!, OperationFlags options = defaultOptions)
 	{
 		using ShellFileOperations2 sop = new();
 		sop.Options = options;
@@ -539,7 +541,7 @@ public class ShellFileOperations2 : IDisposable
 	/// </para>
 	/// <para>This parameter is normally <see langword="null"/> to specify a new, blank file.</para>
 	/// </param>
-	public void QueueNewItemOperation(ShellFolder dest, string name, SystemIO.FileAttributes attr = System.IO.FileAttributes.Normal, string template = null)
+	public void QueueNewItemOperation(ShellFolder dest, string name, SystemIO.FileAttributes attr = SystemIO.FileAttributes.Normal, string template = null!)
 	{
 		op.NewItem(dest.IShellItem, attr, name, template, null);
 		QueuedOperations++;
@@ -592,9 +594,12 @@ public class ShellFileOperations2 : IDisposable
 	{
 		private readonly ShellFileOperations2 parent;
 
-		public OpSink(ShellFileOperations2 ops) => parent = ops;
+        public OpSink(ShellFileOperations2 ops)
+        {
+            parent = ops;
+        }
 
-		public HRESULT FinishOperations(HRESULT hrResult) => CallChkErr(() => parent.FinishOperations?.Invoke(parent, new ShellFileOpEventArgs(0, null, null, null, null, hrResult)));
+        public HRESULT FinishOperations(HRESULT hrResult) => CallChkErr(() => parent.FinishOperations?.Invoke(parent, new ShellFileOpEventArgs(0, null!, null!, null!, null!, hrResult)));
 
 		public HRESULT PauseTimer() => HRESULT.E_NOTIMPL;
 
@@ -625,7 +630,7 @@ public class ShellFileOperations2 : IDisposable
 		public HRESULT PreNewItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName) =>
             CallChkErr(() => parent.PreNewItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, null!, psiDestinationFolder, null!, pszNewName)));
 
-		public HRESULT PreRenameItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName) => CallChkErr(() => parent.PreRenameItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, null, null, pszNewName)));
+		public HRESULT PreRenameItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName) => CallChkErr(() => parent.PreRenameItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, null!, null!, pszNewName)));
 
 		public HRESULT ResetTimer() => HRESULT.E_NOTIMPL;
 
@@ -656,7 +661,7 @@ public class ShellFileOperations2 : IDisposable
 			base(flags, source, folder, dest, name, hr)
 		{
 			TemplateName = templ;
-			FileAttributes = (System.IO.FileAttributes)attr;
+			FileAttributes = (SystemIO.FileAttributes)attr;
 		}
 
 		/// <summary>Gets the name of the template.</summary>
@@ -665,7 +670,7 @@ public class ShellFileOperations2 : IDisposable
 
 		/// <summary>Gets the file attributes.</summary>
 		/// <value>The file attributes.</value>
-		public System.IO.FileAttributes FileAttributes { get; protected set; }
+		public SystemIO.FileAttributes FileAttributes { get; protected set; }
 	}
 
 	/// <summary>
@@ -674,7 +679,7 @@ public class ShellFileOperations2 : IDisposable
 	/// <seealso cref="EventArgs"/>
 	public class ShellFileOpEventArgs : EventArgs
 	{
-		internal ShellFileOpEventArgs(TRANSFER_SOURCE_FLAGS flags, IShellItem source, IShellItem folder = null!, IShellItem dest = null, string name = null, HRESULT hr = default)
+		internal ShellFileOpEventArgs(TRANSFER_SOURCE_FLAGS flags, IShellItem source, IShellItem folder = null!, IShellItem dest = null!, string name = null!, HRESULT hr = default)
 		{
 			Flags = (TransferFlags)flags;
 			if (source != null)
@@ -696,9 +701,9 @@ public class ShellFileOperations2 : IDisposable
 			Result = hr;
 		}
 
-		/// <summary>Gets the destination folder.</summary>
-		/// <value>The destination folder.</value>
-		public ShellItem DestFolder { get; protected set; }
+        /// <summary>Gets the destination folder.</summary>
+        /// <value>The destination folder.</value>
+        public ShellItem DestFolder { get; protected set; }
 
 		/// <summary>Gets the destination item.</summary>
 		/// <value>The destination item.</value>

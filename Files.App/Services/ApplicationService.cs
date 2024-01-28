@@ -1,4 +1,6 @@
-﻿namespace Files.App.Services;
+﻿using DesktopWidgets3.Core.Helpers;
+
+namespace Files.App.Services;
 
 /// <inheritdoc/>
 // TODO: change to internal.
@@ -19,18 +21,14 @@ public sealed class ApplicationService : IApplicationService
 	/// <inheritdoc/>
 	public AppEnvironment Environment { get; } = AppEnvironment;
 
-	/*/// <inheritdoc/>
-	public Version AppVersion { get; } = new(
-		Package.Current.Id.Version.Major,
-		Package.Current.Id.Version.Minor,
-		Package.Current.Id.Version.Build,
-		Package.Current.Id.Version.Revision);
+    /// <inheritdoc/>
+    public Version AppVersion { get; } = InfoHelper.GetVersion();
 
-	/// <inheritdoc/>
-	public string AppIcoPath { get; } = AppEnvironment switch
+    /// <inheritdoc/>
+    public string AppIcoPath { get; } = AppEnvironment switch
 	{
 		AppEnvironment.Dev => Constants.AssetPaths.DevLogo,
 		AppEnvironment.Preview => Constants.AssetPaths.PreviewLogo,
 		_ => Constants.AssetPaths.StableLogo
-	};*/
+	};
 }

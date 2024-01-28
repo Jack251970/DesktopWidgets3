@@ -5,11 +5,13 @@ namespace Files.App.Data.EventArguments;
 
 public class NavigationArguments
 {
-	public bool FocusOnNavigation { get; set; } = false;
+    public bool FocusOnNavigation { get; set; } = false;
 
 	public string? NavPathParam { get; set; } = null;
 
-	/*public IShellPage? AssociatedTabInstance { get; set; }*/
+    public IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
+
+    public IShellPage? AssociatedTabInstance { get; set; }
 
 	public bool IsSearchResultPage { get; set; } = false;
 
@@ -22,15 +24,4 @@ public class NavigationArguments
 	public bool IsLayoutSwitch { get; set; } = false;
 
 	public IEnumerable<string>? SelectItems { get; set; }
-
-    public required bool PushFolderPath { get; set; } = false;
-
-    public required RefreshBehaviours RefreshBehaviour { get; set; } = RefreshBehaviours.None;
-
-    public enum RefreshBehaviours
-    {
-        None,
-        RefreshItems,
-        NavigateToPath,
-    }
 }
