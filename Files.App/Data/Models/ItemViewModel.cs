@@ -43,7 +43,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 	private readonly DispatcherQueue dispatcherQueue;
 	private readonly JsonElement defaultJson = JsonSerializer.SerializeToElement("{}");
 	private readonly IStorageCacheController fileListCache = StorageCacheController.GetInstance();
-	private readonly string folderTypeTextLocalized = "Folder".ToLocalized();
+	private readonly string folderTypeTextLocalized = "Folder".GetLocalizedResource();
 
 	private Task? aProcessQueueAction;
 	private Task? gitProcessQueueAction;
@@ -531,7 +531,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 					if (e.ValueState is SizeChangedValueState.None)
 					{
 						matchingItem.FileSizeBytes = 0;
-						matchingItem.FileSize = "ItemSizeNotCalculated".ToLocalized();
+						matchingItem.FileSize = "ItemSizeNotCalculated".GetLocalizedResource();
 					}
 					else if (e.ValueState is SizeChangedValueState.Final || (long)e.NewSize > matchingItem.FileSizeBytes)
 					{
@@ -1197,7 +1197,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 								var syncStatus = await CheckCloudDriveSyncStatusAsync(matchingStorageFile);
 								var fileFRN = await FileTagsHelper.GetFileFRN(matchingStorageFile);
 								var fileTag = FileTagsHelper.ReadFileTag(item.ItemPath);
-								var itemType = (item.ItemType == "Folder".ToLocalized()) ? item.ItemType : matchingStorageFile.DisplayType;
+								var itemType = (item.ItemType == "Folder".GetLocalizedResource()) ? item.ItemType : matchingStorageFile.DisplayType;
 								cts.Token.ThrowIfCancellationRequested();
 
 								await dispatcherQueue.EnqueueOrInvokeAsync(() =>
@@ -1249,7 +1249,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 								var syncStatus = await CheckCloudDriveSyncStatusAsync(matchingStorageFolder);
 								var fileFRN = await FileTagsHelper.GetFileFRN(matchingStorageFolder);
 								var fileTag = FileTagsHelper.ReadFileTag(item.ItemPath);
-								var itemType = (item.ItemType == "Folder".ToLocalized()) ? item.ItemType : matchingStorageFolder.DisplayType;
+								var itemType = (item.ItemType == "Folder".GetLocalizedResource()) ? item.ItemType : matchingStorageFolder.DisplayType;
 								cts.Token.ThrowIfCancellationRequested();
 
 								await dispatcherQueue.EnqueueOrInvokeAsync(() =>
@@ -1667,8 +1667,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 			{
 				await DialogDisplayHelper.ShowDialogAsync(
                     FolderViewViewModel,
-					"AccessDenied".ToLocalized(),
-					"AccessDeniedToFolder".ToLocalized());
+					"AccessDenied".GetLocalizedResource(),
+					"AccessDeniedToFolder".GetLocalizedResource());
 
 				return -1;
 			}
@@ -1676,8 +1676,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 			{
 				await DialogDisplayHelper.ShowDialogAsync(
                     FolderViewViewModel,
-					"FolderNotFoundDialog/Title".ToLocalized(),
-					"FolderNotFoundDialog/Text".ToLocalized());
+					"FolderNotFoundDialog/Title".GetLocalizedResource(),
+					"FolderNotFoundDialog/Text".GetLocalizedResource());
 
 				return -1;
 			}
@@ -1685,7 +1685,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 			{
 				await DialogDisplayHelper.ShowDialogAsync(
                     FolderViewViewModel,
-					"DriveUnpluggedDialog/Title".ToLocalized(),
+					"DriveUnpluggedDialog/Title".GetLocalizedResource(),
 					res.ErrorCode.ToString());
 
 				return -1;
@@ -1790,7 +1790,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
 			if (hFile == IntPtr.Zero)
 			{
-				await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "DriveUnpluggedDialog/Title".ToLocalized(), "");
+				await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "DriveUnpluggedDialog/Title".GetLocalizedResource(), "");
 
 				return -1;
 			}
@@ -1803,8 +1803,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 				{
 					await DialogDisplayHelper.ShowDialogAsync(
                         FolderViewViewModel,
-						"AccessDenied".ToLocalized(),
-						"AccessDeniedToFolder".ToLocalized());
+						"AccessDenied".GetLocalizedResource(),
+						"AccessDeniedToFolder".GetLocalizedResource());
 
 					return -1;
 				}

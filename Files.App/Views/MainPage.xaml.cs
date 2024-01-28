@@ -75,10 +75,10 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	{
 		var promptForReviewDialog = new ContentDialog
 		{
-			Title = "ReviewFiles".ToLocalized(),
-			Content = "ReviewFilesContent".ToLocalized(),
-			PrimaryButtonText = "Yes".ToLocalized(),
-			SecondaryButtonText = "No".ToLocalized()
+			Title = "ReviewFiles".GetLocalizedResource(),
+			Content = "ReviewFilesContent".GetLocalizedResource(),
+			PrimaryButtonText = "Yes".GetLocalizedResource(),
+			SecondaryButtonText = "No".GetLocalizedResource()
 		};
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
@@ -108,10 +108,10 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	{
 		var runningAsAdminPrompt = new ContentDialog
 		{
-			Title = "FilesRunningAsAdmin".ToLocalized(),
-			Content = "FilesRunningAsAdminContent".ToLocalized(),
-			PrimaryButtonText = "Ok".ToLocalized(),
-			SecondaryButtonText = "DontShowAgain".ToLocalized()
+			Title = "FilesRunningAsAdmin".GetLocalizedResource(),
+			Content = "FilesRunningAsAdminContent".GetLocalizedResource(),
+			PrimaryButtonText = "Ok".GetLocalizedResource(),
+			SecondaryButtonText = "DontShowAgain".GetLocalizedResource()
 		};
 
 		var result = await runningAsAdminPrompt.TryShowAsync(FolderViewViewModel);

@@ -25,7 +25,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 	public override string Path { get; }
 	public override string Name { get; }
 	public override string DisplayName => Name;
-	public override string DisplayType => "Folder".ToLocalized();
+	public override string DisplayType => "Folder".GetLocalizedResource();
 	public override string FolderRelativeId => $"0\\{Name}";
 
 	public override DateTimeOffset DateCreated { get; }

@@ -10,10 +10,10 @@ internal class CutItemAction : ObservableObject, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "Cut".ToLocalized();
+		=> "Cut".GetLocalizedResource();
 
 	public string Description
-		=> "CutItemDescription".ToLocalized();
+		=> "CutItemDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconCut");

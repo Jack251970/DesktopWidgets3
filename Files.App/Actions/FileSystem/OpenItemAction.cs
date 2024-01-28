@@ -13,10 +13,10 @@ internal class OpenItemAction : ObservableObject, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "Open".ToLocalized();
+		=> "Open".GetLocalizedResource();
 
 	public string Description
-		=> "OpenItemDescription".ToLocalized();
+		=> "OpenItemDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconOpenFile");
@@ -67,10 +67,10 @@ internal class OpenItemWithApplicationPickerAction : ObservableObject, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "OpenWith".ToLocalized();
+		=> "OpenWith".GetLocalizedResource();
 
 	public string Description
-		=> "OpenItemWithApplicationPickerDescription".ToLocalized();
+		=> "OpenItemWithApplicationPickerDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconOpenWith");
@@ -116,10 +116,10 @@ internal class OpenParentFolderAction : ObservableObject, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "BaseLayoutItemContextFlyoutOpenParentFolder/Text".ToLocalized();
+		=> "BaseLayoutItemContextFlyoutOpenParentFolder/Text".GetLocalizedResource();
 
 	public string Description
-		=> "OpenParentFolderDescription".ToLocalized();
+		=> "OpenParentFolderDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(baseGlyph: "\uE197");

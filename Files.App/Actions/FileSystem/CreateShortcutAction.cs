@@ -8,10 +8,10 @@ internal class CreateShortcutAction : BaseUIAction, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "CreateShortcut".ToLocalized();
+		=> "CreateShortcut".GetLocalizedResource();
 
 	public string Description
-		=> "CreateShortcutDescription".ToLocalized();
+		=> "CreateShortcutDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconShortcut");

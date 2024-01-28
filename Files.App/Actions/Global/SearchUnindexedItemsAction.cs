@@ -8,10 +8,10 @@ internal class SearchUnindexedItemsAction : ObservableObject, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "SearchUnindexedItemsButton/Content".ToLocalized();
+		=> "SearchUnindexedItemsButton/Content".GetLocalizedResource();
 
 	public string Description
-		=> "SearchUnindexedItemsDescription".ToLocalized();
+		=> "SearchUnindexedItemsDescription".GetLocalizedResource();
 
 	public bool IsExecutable
 		=> context.ShowSearchUnindexedItemsMessage;

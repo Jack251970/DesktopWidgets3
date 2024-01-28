@@ -12,10 +12,10 @@ internal class OpenFileLocationAction : ObservableObject, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "OpenFileLocation".ToLocalized();
+		=> "OpenFileLocation".GetLocalizedResource();
 
 	public string Description
-		=> "OpenFileLocationDescription".ToLocalized();
+		=> "OpenFileLocationDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(baseGlyph: "\uE8DA");
@@ -64,12 +64,12 @@ internal class OpenFileLocationAction : ObservableObject, IAction
 		}
 		else if (destFolder == FileSystemStatusCode.NotFound)
 		{
-			await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "FileNotFoundDialog/Title".ToLocalized(), "FileNotFoundDialog/Text".ToLocalized());
+			await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "FileNotFoundDialog/Title".GetLocalizedResource(), "FileNotFoundDialog/Text".GetLocalizedResource());
 		}
 		else
 		{
-			await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InvalidItemDialogTitle".ToLocalized(),
-				string.Format("InvalidItemDialogContent".ToLocalized(), Environment.NewLine, destFolder.ErrorCode.ToString()));
+			await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InvalidItemDialogTitle".GetLocalizedResource(),
+				string.Format("InvalidItemDialogContent".GetLocalizedResource(), Environment.NewLine, destFolder.ErrorCode.ToString()));
 		}
 	}
 

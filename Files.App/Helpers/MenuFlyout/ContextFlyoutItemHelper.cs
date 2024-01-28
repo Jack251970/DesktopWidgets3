@@ -380,7 +380,7 @@ public static class ContextFlyoutItemHelper
 			}.Build(),
 			new()
 			{
-				Text = "OpenWith".ToLocalized(),
+				Text = "OpenWith".GetLocalizedResource(),
 				OpacityIcon = new OpacityIconModel()
 				{
 					OpacityIconStyle = "ColorIconOpenWith"
@@ -535,7 +535,7 @@ public static class ContextFlyoutItemHelper
 			},*/
 			new()
 			{
-				Text = "SendTo".ToLocalized(),
+				Text = "SendTo".GetLocalizedResource(),
 				Tag = "SendTo",
 				CollapseLabel = true,
 				ShowInSearchPage = true,
@@ -543,7 +543,7 @@ public static class ContextFlyoutItemHelper
 			},
 			new()
 			{
-				Text = "SendTo".ToLocalized(),
+				Text = "SendTo".GetLocalizedResource(),
 				Tag = "SendToOverflow",
 				IsHidden = true,
 				CollapseLabel = true,
@@ -587,7 +587,7 @@ public static class ContextFlyoutItemHelper
 			},
 			new()
 			{
-				Text = "Loading".ToLocalized(),
+				Text = "Loading".GetLocalizedResource(),
 				Glyph = "\xE712",
 				Items = new List<ContextMenuFlyoutItemViewModel>(),
 				ID = "ItemOverflow",
@@ -609,7 +609,7 @@ public static class ContextFlyoutItemHelper
 			new ContextMenuFlyoutItemViewModelBuilder(commands.CreateFolder).Build(),
 			new()
 			{
-				Text = "File".ToLocalized(),
+				Text = "File".GetLocalizedResource(),
 				Glyph = "\uE7C3",
 				Command = commandsViewModel.CreateNewFileCommand,
 				ShowInFtpPage = true,

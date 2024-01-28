@@ -567,8 +567,8 @@ public static class StatusCenterHelper
 			destinationDirName = destinationPath.Split('\\').Last();
 		}
 
-		var headerString = string.IsNullOrWhiteSpace(card.HeaderStringResource) ? string.Empty : card.HeaderStringResource.ToLocalized();
-		var subHeaderString = string.IsNullOrWhiteSpace(card.SubHeaderStringResource) ? string.Empty : card.SubHeaderStringResource.ToLocalized();
+		var headerString = string.IsNullOrWhiteSpace(card.HeaderStringResource) ? string.Empty : card.HeaderStringResource.GetLocalizedResource();
+		var subHeaderString = string.IsNullOrWhiteSpace(card.SubHeaderStringResource) ? string.Empty : card.SubHeaderStringResource.GetLocalizedResource();
 
 		// Update string resources
 		switch (card.Operation)

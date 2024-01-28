@@ -6,7 +6,7 @@ namespace Files.App.Services.DateTimeFormatter;
 internal class ApplicationDateTimeFormatter : AbstractDateTimeFormatter
 {
 	public override string Name
-		=> "Application".ToLocalized();
+		=> "Application".GetLocalizedResource();
 
 	public override string ToShortLabel(DateTimeOffset offset)
 	{
@@ -20,15 +20,15 @@ internal class ApplicationDateTimeFormatter : AbstractDateTimeFormatter
 		return elapsed switch
 		{
 			{ TotalDays: >= 7 } => ToString(offset, "D"),
-			{ TotalDays: >= 2 } => string.Format("DaysAgo".ToLocalized(), elapsed.Days),
-			{ TotalDays: >= 1 } => string.Format("DayAgo".ToLocalized(), elapsed.Days),
-			{ TotalHours: >= 2 } => string.Format("HoursAgo".ToLocalized(), elapsed.Hours),
-			{ TotalHours: >= 1 } => string.Format("HourAgo".ToLocalized(), elapsed.Hours),
-			{ TotalMinutes: >= 2 } => string.Format("MinutesAgo".ToLocalized(), elapsed.Minutes),
-			{ TotalMinutes: >= 1 } => string.Format("MinuteAgo".ToLocalized(), elapsed.Minutes),
-			{ TotalSeconds: >= 2 } => string.Format("SecondsAgo".ToLocalized(), elapsed.Seconds),
-			{ TotalSeconds: >= 1 } => "OneSecondAgo".ToLocalized(),
-			{ TotalSeconds: >= 0 } => "Now".ToLocalized(),
+			{ TotalDays: >= 2 } => string.Format("DaysAgo".GetLocalizedResource(), elapsed.Days),
+			{ TotalDays: >= 1 } => string.Format("DayAgo".GetLocalizedResource(), elapsed.Days),
+			{ TotalHours: >= 2 } => string.Format("HoursAgo".GetLocalizedResource(), elapsed.Hours),
+			{ TotalHours: >= 1 } => string.Format("HourAgo".GetLocalizedResource(), elapsed.Hours),
+			{ TotalMinutes: >= 2 } => string.Format("MinutesAgo".GetLocalizedResource(), elapsed.Minutes),
+			{ TotalMinutes: >= 1 } => string.Format("MinuteAgo".GetLocalizedResource(), elapsed.Minutes),
+			{ TotalSeconds: >= 2 } => string.Format("SecondsAgo".GetLocalizedResource(), elapsed.Seconds),
+			{ TotalSeconds: >= 1 } => "OneSecondAgo".GetLocalizedResource(),
+			{ TotalSeconds: >= 0 } => "Now".GetLocalizedResource(),
 			_ => ToString(offset, "D"),
 		};
 	}

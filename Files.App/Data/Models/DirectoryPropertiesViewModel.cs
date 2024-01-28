@@ -77,7 +77,7 @@ public class DirectoryPropertiesViewModel : ObservableObject
 		set => SetProperty(ref _StatusInfo, value);
 	}
 
-	private string _ExtendedStatusInfo = string.Format("CommitsNumber".ToLocalized(), 0);
+	private string _ExtendedStatusInfo = string.Format("CommitsNumber".GetLocalizedResource(), 0);
 	public string ExtendedStatusInfo
 	{
 		get => _ExtendedStatusInfo;
@@ -119,7 +119,7 @@ public class DirectoryPropertiesViewModel : ObservableObject
         var behind = head is not null ? head.BehindBy ?? 0 : 0;
 		var ahead = head is not null ? head.AheadBy ?? 0 : 0;
 
-		ExtendedStatusInfo = string.Format("GitSyncStatusExtendedInfo".ToLocalized(), ahead, behind);
+		ExtendedStatusInfo = string.Format("GitSyncStatusExtendedInfo".GetLocalizedResource(), ahead, behind);
 		StatusInfo = $"{ahead} / {behind}";
 	}
 

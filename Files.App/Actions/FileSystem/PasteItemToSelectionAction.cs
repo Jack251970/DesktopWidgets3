@@ -10,10 +10,10 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "Paste".ToLocalized();
+		=> "Paste".GetLocalizedResource();
 
 	public string Description
-		=> "PasteItemToSelectionDescription".ToLocalized();
+		=> "PasteItemToSelectionDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconPaste");

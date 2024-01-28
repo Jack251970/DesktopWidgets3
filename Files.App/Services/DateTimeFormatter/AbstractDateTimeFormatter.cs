@@ -28,19 +28,19 @@ internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
 		return 0 switch
 		{
 			_ when now.Date < time.Date
-				=> new Label("Future".ToLocalized(), "\uED28", 1000006),
+				=> new Label("Future".GetLocalizedResource(), "\uED28", 1000006),
 			_ when now.Date == time.Date
-				=> new Label("Today".ToLocalized(), "\uE8D1", 1000005),
+				=> new Label("Today".GetLocalizedResource(), "\uE8D1", 1000005),
 			_ when now.AddDays(-1).Date == time.Date
-				=> new Label("Yesterday".ToLocalized(), "\uE8BF", 1000004),
+				=> new Label("Yesterday".GetLocalizedResource(), "\uE8BF", 1000004),
 			_ when diff.Days <= 7 && GetWeekOfYear(now) == GetWeekOfYear(time)
-				=> new Label("EarlierThisWeek".ToLocalized(), "\uE8C0", 1000003),
+				=> new Label("EarlierThisWeek".GetLocalizedResource(), "\uE8C0", 1000003),
 			_ when diff.Days <= 14 && GetWeekOfYear(now.AddDays(-7)) == GetWeekOfYear(time)
-				=> new Label("LastWeek".ToLocalized(), "\uE8C0", 1000002),
+				=> new Label("LastWeek".GetLocalizedResource(), "\uE8C0", 1000002),
 			_ when now.Year == time.Year && now.Month == time.Month
-				=> new Label("EarlierThisMonth".ToLocalized(), "\uE787", 1000001),
+				=> new Label("EarlierThisMonth".GetLocalizedResource(), "\uE787", 1000001),
 			_ when now.AddMonths(-1).Year == time.Year && now.AddMonths(-1).Month == time.Month
-				=> new Label("LastMonth".ToLocalized(), "\uE787", 1000000),
+				=> new Label("LastMonth".GetLocalizedResource(), "\uE787", 1000000),
 
 			// Group by month
 			_ when unit == GroupByDateUnit.Month
@@ -48,11 +48,11 @@ internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
 
 			// Group by year
 			_ when now.Year == time.Year
-				=> new Label("EarlierThisYear".ToLocalized(), "\uEC92", 10001),
+				=> new Label("EarlierThisYear".GetLocalizedResource(), "\uEC92", 10001),
 			_ when now.AddYears(-1).Year == time.Year
-				=> new Label("LastYear".ToLocalized(), "\uEC92", 10000),
+				=> new Label("LastYear".GetLocalizedResource(), "\uEC92", 10000),
 			_
-				=> new Label(string.Format("YearN".ToLocalized(), time.Year), "\uEC92", time.Year),
+				=> new Label(string.Format("YearN".GetLocalizedResource(), time.Year), "\uEC92", time.Year),
 		};
 	}
 

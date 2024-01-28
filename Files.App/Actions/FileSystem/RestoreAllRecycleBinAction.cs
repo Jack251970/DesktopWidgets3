@@ -7,10 +7,10 @@ namespace Files.App.Actions;
 internal class RestoreAllRecycleBinAction : BaseUIAction, IAction
 {
     public string Label
-		=> "RestoreAllItems".ToLocalized();
+		=> "RestoreAllItems".GetLocalizedResource();
 
 	public string Description
-		=> "RestoreAllRecycleBinDescription".ToLocalized();
+		=> "RestoreAllRecycleBinDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconRestoreItem");

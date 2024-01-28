@@ -7,10 +7,10 @@ namespace Files.App.Actions;
 internal class DeleteItemPermanentlyAction : BaseDeleteAction, IAction
 {
     public string Label
-		=> "DeletePermanently".ToLocalized();
+		=> "DeletePermanently".GetLocalizedResource();
 
 	public string Description
-		=> "DeleteItemPermanentlyDescription".ToLocalized();
+		=> "DeleteItemPermanentlyDescription".GetLocalizedResource();
 
 	public HotKey HotKey
 		=> new(Keys.Delete, KeyModifiers.Shift);

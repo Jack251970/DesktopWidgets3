@@ -80,7 +80,7 @@ public sealed partial class ReorderSidebarItemsDialog : ContentDialog, IDialog<R
 		else
 		{
 			e.DragUIOverride.IsCaptionVisible = true;
-			e.DragUIOverride.Caption = "MoveItemsDialogPrimaryButtonText".ToLocalized();
+			e.DragUIOverride.Caption = "MoveItemsDialogPrimaryButtonText".GetLocalizedResource();
 			e.AcceptedOperation = DataPackageOperation.Move;
 		}
 	}

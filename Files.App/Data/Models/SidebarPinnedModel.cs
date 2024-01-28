@@ -83,11 +83,11 @@ public class SidebarPinnedModel
 
 			if (path.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
             {
-                locationItem.Text = "ThisPC".ToLocalized();
+                locationItem.Text = "ThisPC".GetLocalizedResource();
             }
             else if (path.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
             {
-                locationItem.Text = "Network".ToLocalized();
+                locationItem.Text = "Network".GetLocalizedResource();
             }
         }
 

@@ -16,7 +16,7 @@ public static class Win32StorageEnumerator
 {
     private static readonly ISizeProvider folderSizeProvider = DependencyExtensions.GetService<ISizeProvider>();
 
-    private static readonly string folderTypeTextLocalized = "Folder".ToLocalized();
+    private static readonly string folderTypeTextLocalized = "Folder".GetLocalizedResource();
 
     private static readonly IStorageCacheController fileListCache = StorageCacheController.GetInstance();
 
@@ -141,7 +141,7 @@ public static class Win32StorageEnumerator
 
     public static ListedItem GetAlternateStream(IFolderViewViewModel folderViewViewModel, (string Name, long Size) ads, ListedItem main)
     {
-        var itemType = "File".ToLocalized();
+        var itemType = "File".GetLocalizedResource();
         string itemFileExtension = null!;
 
         if (ads.Name.Contains('.'))
@@ -287,7 +287,7 @@ public static class Win32StorageEnumerator
 
         var itemSizeBytes = findData.GetSize();
         var itemSize = itemSizeBytes.ToSizeString();
-        var itemType = "File".ToLocalized();
+        var itemType = "File".GetLocalizedResource();
         string itemFileExtension = null!;
 
         if (findData.cFileName.Contains('.'))
@@ -328,7 +328,7 @@ public static class Win32StorageEnumerator
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,
                 ItemDateCreatedReal = itemCreatedDate,
-                ItemType = "Shortcut".ToLocalized(),
+                ItemType = "Shortcut".GetLocalizedResource(),
                 ItemPath = itemPath,
                 FileSize = itemSize,
                 FileSizeBytes = itemSizeBytes,
@@ -359,7 +359,7 @@ public static class Win32StorageEnumerator
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,
                 ItemDateCreatedReal = itemCreatedDate,
-                ItemType = isUrl ? "ShortcutWebLinkFileType".ToLocalized() : "Shortcut".ToLocalized(),
+                ItemType = isUrl ? "ShortcutWebLinkFileType".GetLocalizedResource() : "Shortcut".GetLocalizedResource(),
                 ItemPath = itemPath,
                 FileSize = itemSize,
                 FileSizeBytes = itemSizeBytes,

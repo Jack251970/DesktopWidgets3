@@ -10,10 +10,10 @@ internal class PasteItemAction : ObservableObject, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "Paste".ToLocalized();
+		=> "Paste".GetLocalizedResource();
 
 	public string Description
-		=> "PasteItemDescription".ToLocalized();
+		=> "PasteItemDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconPaste");

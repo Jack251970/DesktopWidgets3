@@ -412,13 +412,13 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 				x.Item is ZipStorageFolder) ||
 				ZipStorageFolder.IsZipPath(pathBoxItem.Path))
 		{
-			e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".ToLocalized(), pathBoxItem.Title);
+			e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalizedResource(), pathBoxItem.Title);
 			e.AcceptedOperation = DataPackageOperation.Copy;
 		}
 		else
 		{
 			e.DragUIOverride.IsCaptionVisible = true;
-			e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".ToLocalized(), pathBoxItem.Title);
+			e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalizedResource(), pathBoxItem.Title);
 			e.AcceptedOperation = DataPackageOperation.Move;
 		}
 
@@ -1013,7 +1013,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	public bool IsDetailsLayout => !IsTilesLayout && !IsColumnLayout && !IsGridSmallLayout && !IsGridMediumLayout && !IsGridLargeLayout;
 
 	public string ExtractToText
-		=> IsSelectionArchivesOnly ? SelectedItems.Count > 1 ? string.Format("ExtractToChildFolder".ToLocalized(), $"*{Path.DirectorySeparatorChar}") : string.Format("ExtractToChildFolder".ToLocalized() + "\\", Path.GetFileNameWithoutExtension(selectedItems!.First().Name)) : "ExtractToChildFolder".ToLocalized();
+		=> IsSelectionArchivesOnly ? SelectedItems.Count > 1 ? string.Format("ExtractToChildFolder".GetLocalizedResource(), $"*{Path.DirectorySeparatorChar}") : string.Format("ExtractToChildFolder".GetLocalizedResource() + "\\", Path.GetFileNameWithoutExtension(selectedItems!.First().Name)) : "ExtractToChildFolder".GetLocalizedResource();
 
 	public void Dispose()
 	{

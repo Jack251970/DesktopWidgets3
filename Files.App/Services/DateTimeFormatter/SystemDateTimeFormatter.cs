@@ -6,7 +6,7 @@ namespace Files.App.Services.DateTimeFormatter;
 internal class SystemDateTimeFormatter : AbstractDateTimeFormatter
 {
 	public override string Name
-		=> "SystemTimeStyle".ToLocalized();
+		=> "SystemTimeStyle".GetLocalizedResource();
 
 	public override string ToShortLabel(DateTimeOffset offset)
 	{

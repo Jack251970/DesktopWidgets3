@@ -17,7 +17,7 @@ public class FilePropertySection : List<FileProperty>
 	public string Key { get; set; }
 
 	public string Title
-		=> Key.ToLocalized();
+		=> Key.GetLocalizedResource();
 
 	public int Priority
 		=> sectionPriority.TryGetValue(Key, out var value) ? value : 0;

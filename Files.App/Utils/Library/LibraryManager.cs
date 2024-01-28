@@ -271,20 +271,20 @@ public class LibraryManager : IDisposable
 	{
 		if (string.IsNullOrWhiteSpace(name))
 		{
-			return (false, "ErrorInputEmpty".ToLocalized());
+			return (false, "ErrorInputEmpty".GetLocalizedResource());
 		}
 		if (FilesystemHelpers.ContainsRestrictedCharacters(folderViewViewModel, name))
 		{
-			return (false, "ErrorNameInputRestrictedCharacters".ToLocalized());
+			return (false, "ErrorNameInputRestrictedCharacters".GetLocalizedResource());
 		}
 		if (FilesystemHelpers.ContainsRestrictedFileName(name))
 		{
-			return (false, "ErrorNameInputRestricted".ToLocalized());
+			return (false, "ErrorNameInputRestricted".GetLocalizedResource());
 		}
 		if (Libraries.Any((item) => string.Equals(name, item.Text, StringComparison.OrdinalIgnoreCase) ||
 			string.Equals(name, Path.GetFileNameWithoutExtension(item.Path), StringComparison.OrdinalIgnoreCase)))
 		{
-			return (false, "CreateLibraryErrorAlreadyExists".ToLocalized());
+			return (false, "CreateLibraryErrorAlreadyExists".GetLocalizedResource());
 		}
 		return (true, string.Empty);
 	}
@@ -293,10 +293,10 @@ public class LibraryManager : IDisposable
 	{
 		var dialog = new DynamicDialog(new DynamicDialogViewModel
 		{
-			TitleText = "DialogRestoreLibrariesTitleText".ToLocalized(),
-			SubtitleText = "DialogRestoreLibrariesSubtitleText".ToLocalized(),
-			PrimaryButtonText = "Restore".ToLocalized(),
-			CloseButtonText = "Cancel".ToLocalized(),
+			TitleText = "DialogRestoreLibrariesTitleText".GetLocalizedResource(),
+			SubtitleText = "DialogRestoreLibrariesSubtitleText".GetLocalizedResource(),
+			PrimaryButtonText = "Restore".GetLocalizedResource(),
+			CloseButtonText = "Cancel".GetLocalizedResource(),
 			PrimaryButtonAction = async (vm, e) =>
 			{
 				await ContextMenu.InvokeVerb("restorelibraries", ShellLibraryItem.LibrariesPath);
@@ -319,7 +319,7 @@ public class LibraryManager : IDisposable
 	{
 		var inputText = new TextBox
 		{
-			PlaceholderText = "FolderWidgetCreateNewLibraryInputPlaceholderText".ToLocalized()
+			PlaceholderText = "FolderWidgetCreateNewLibraryInputPlaceholderText".GetLocalizedResource()
 		};
 		var tipText = new TextBlock
 		{
@@ -344,10 +344,10 @@ public class LibraryManager : IDisposable
 					}
 				}
 			},
-			TitleText = "FolderWidgetCreateNewLibraryDialogTitleText".ToLocalized(),
-			SubtitleText = "SideBarCreateNewLibrary/Text".ToLocalized(),
-			PrimaryButtonText = "Create".ToLocalized(),
-			CloseButtonText = "Cancel".ToLocalized(),
+			TitleText = "FolderWidgetCreateNewLibraryDialogTitleText".GetLocalizedResource(),
+			SubtitleText = "SideBarCreateNewLibrary/Text".GetLocalizedResource(),
+			PrimaryButtonText = "Create".GetLocalizedResource(),
+			CloseButtonText = "Cancel".GetLocalizedResource(),
 			PrimaryButtonAction = async (vm, e) =>
 			{
 				var (result, reason) = DependencyExtensions.GetService<LibraryManager>().CanCreateLibrary(folderViewViewModel, inputText.Text);

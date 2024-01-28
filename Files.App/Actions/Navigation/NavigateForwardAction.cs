@@ -8,10 +8,10 @@ internal class NavigateForwardAction : ObservableObject, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "Forward".ToLocalized();
+		=> "Forward".GetLocalizedResource();
 
 	public string Description
-		=> "NavigateForwardDescription".ToLocalized();
+		=> "NavigateForwardDescription".GetLocalizedResource();
 
 	public HotKey HotKey
 		=> new(Keys.Right, KeyModifiers.Menu);

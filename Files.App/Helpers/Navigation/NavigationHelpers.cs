@@ -142,20 +142,20 @@ public static class NavigationHelpers
 
 		if (string.IsNullOrEmpty(currentPath) || currentPath == "Home")
 		{
-			tabLocationHeader = "Home".ToLocalized();
+			tabLocationHeader = "Home".GetLocalizedResource();
 			iconSource.ImageSource = new BitmapImage(new Uri(Constants.FluentIconsPaths.HomeIcon));
 		}
 		else if (currentPath.Equals(Constants.UserEnvironmentPaths.DesktopPath, StringComparison.OrdinalIgnoreCase))
 		{
-			tabLocationHeader = "Desktop".ToLocalized();
+			tabLocationHeader = "Desktop".GetLocalizedResource();
 		}
 		else if (currentPath.Equals(Constants.UserEnvironmentPaths.DownloadsPath, StringComparison.OrdinalIgnoreCase))
 		{
-			tabLocationHeader = "Downloads".ToLocalized();
+			tabLocationHeader = "Downloads".GetLocalizedResource();
 		}
 		else if (currentPath.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
 		{
-			tabLocationHeader = "RecycleBin".ToLocalized();
+			tabLocationHeader = "RecycleBin".GetLocalizedResource();
 
 			// Use 48 for higher resolution, the other items look fine with 16.
 			var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(currentPath, 48u, Windows.Storage.FileProperties.ThumbnailMode.ListView, Windows.Storage.FileProperties.ThumbnailOptions.UseCurrentScale, true);
@@ -166,15 +166,15 @@ public static class NavigationHelpers
         }
 		else if (currentPath.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
 		{
-			tabLocationHeader = "ThisPC".ToLocalized();
+			tabLocationHeader = "ThisPC".GetLocalizedResource();
 		}
 		else if (currentPath.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
 		{
-			tabLocationHeader = "SidebarNetworkDrives".ToLocalized();
+			tabLocationHeader = "SidebarNetworkDrives".GetLocalizedResource();
 		}
 		else if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(currentPath, out var library))
 		{
-			var libName = SystemIO.Path.GetFileNameWithoutExtension(library.Path).ToLocalized();
+			var libName = SystemIO.Path.GetFileNameWithoutExtension(library.Path).GetLocalizedResource();
 			// If localized string is empty use the library name.
 			tabLocationHeader = string.IsNullOrEmpty(libName) ? library.Text : libName;
 		}
@@ -479,7 +479,7 @@ public static class NavigationHelpers
 
 		if (opened.ErrorCode == FileSystemStatusCode.NotFound && !openSilent)
 		{
-			await DialogDisplayHelper.ShowDialogAsync(folderViewViewModel, "FileNotFoundDialog/Title".ToLocalized(), "FileNotFoundDialog/Text".ToLocalized());
+			await DialogDisplayHelper.ShowDialogAsync(folderViewViewModel, "FileNotFoundDialog/Title".GetLocalizedResource(), "FileNotFoundDialog/Text".GetLocalizedResource());
 			associatedInstance.ToolbarViewModel.CanRefresh = false;
 			associatedInstance.FilesystemViewModel?.RefreshItems(previousDir);
 		}

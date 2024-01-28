@@ -207,9 +207,9 @@ public sealed class StatusCenterItem : ObservableObject
 	{
         _viewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
 		_operationCancellationToken = operationCancellationToken;
-		Header = headerResource == string.Empty ? headerResource : headerResource.ToLocalized();
+		Header = headerResource == string.Empty ? headerResource : headerResource.GetLocalizedResource();
 		HeaderStringResource = headerResource;
-		SubHeader = subHeaderResource == string.Empty ? subHeaderResource : subHeaderResource.ToLocalized();
+		SubHeader = subHeaderResource == string.Empty ? subHeaderResource : subHeaderResource.GetLocalizedResource();
 		SubHeaderStringResource = subHeaderResource;
 		FileSystemOperationReturnResult = status;
 		Operation = operation;
@@ -223,7 +223,7 @@ public sealed class StatusCenterItem : ObservableObject
 		SpeedGraphValues = new();
 		SpeedGraphBackgroundValues = new();
 		CancelCommand = new RelayCommand(ExecuteCancelCommand);
-		Message = "ProcessingItems".ToLocalized();
+		Message = "ProcessingItems".GetLocalizedResource();
 		Source = source;
 		Destination = destination;
 
@@ -347,7 +347,7 @@ public sealed class StatusCenterItem : ObservableObject
 
 					if (Operation is FileOperationType.Prepare)
                     {
-                        Header = "StatusCenter_PrepareInProgress".ToLocalized();
+                        Header = "StatusCenter_PrepareInProgress".GetLocalizedResource();
                     }
 
                     ItemKind = StatusCenterItemKind.InProgress;
@@ -431,7 +431,7 @@ public sealed class StatusCenterItem : ObservableObject
 				{
 					Message =
 						$"{string.Format(
-							"StatusCenter_ProcessedItems_Header".ToLocalized(),
+							"StatusCenter_ProcessedItems_Header".GetLocalizedResource(),
 							value.ProcessedItemsCount,
 							value.ItemsCount)}";
 				}
@@ -439,7 +439,7 @@ public sealed class StatusCenterItem : ObservableObject
 				{
 					Message =
 						$"{string.Format(
-							"StatusCenter_ProcessedSize_Header".ToLocalized(),
+							"StatusCenter_ProcessedSize_Header".GetLocalizedResource(),
 							value.ProcessedSize.ToSizeString(),
 							value.TotalSize.ToSizeString())}";
 				}
@@ -552,7 +552,7 @@ public sealed class StatusCenterItem : ObservableObject
 			IsCancelable = false;
 			IsExpanded = false;
 			IsSpeedAndProgressAvailable = false;
-			Header = $"{"Canceling".ToLocalized()} - {Header}";
+			Header = $"{"Canceling".GetLocalizedResource()} - {Header}";
 		}
 	}
 }

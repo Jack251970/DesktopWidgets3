@@ -32,7 +32,7 @@ public class DialogDisplayHelper
 	{
         if (string.IsNullOrEmpty(primaryText))
         {
-            primaryText = "OK".ToLocalized();
+            primaryText = "OK".GetLocalizedResource();
         }
 
         var dialog = new DynamicDialog(new DynamicDialogViewModel()

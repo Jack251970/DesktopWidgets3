@@ -82,8 +82,8 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 		{
 			await DialogDisplayHelper.ShowDialogAsync(
                 FolderViewViewModel,
-                "ErrorDialogThisActionCannotBeDone".ToLocalized(),
-				"ErrorDialogNameNotAllowed".ToLocalized());
+                "ErrorDialogThisActionCannotBeDone".GetLocalizedResource(),
+				"ErrorDialogNameNotAllowed".GetLocalizedResource());
 			return (ReturnResult.Failed, null);
 		}
 
@@ -574,8 +574,8 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 		{
 			await DialogDisplayHelper.ShowDialogAsync(
                 FolderViewViewModel,
-                "ErrorDialogThisActionCannotBeDone".ToLocalized(),
-				"ErrorDialogNameNotAllowed".ToLocalized());
+                "ErrorDialogThisActionCannotBeDone".GetLocalizedResource(),
+				"ErrorDialogNameNotAllowed".GetLocalizedResource());
 			return ReturnResult.Failed;
 		}
 
@@ -596,7 +596,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 					UserSettingsService.FoldersSettingsService.ShowFileExtensionWarning
 				)
 				{
-					var yesSelected = await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "Rename".ToLocalized(), "RenameFileDialog/Text".ToLocalized(), "Yes".ToLocalized(), "No".ToLocalized());
+					var yesSelected = await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "Rename".GetLocalizedResource(), "RenameFileDialog/Text".GetLocalizedResource(), "Yes".GetLocalizedResource(), "No".GetLocalizedResource());
 					if (yesSelected)
 					{
 						history = await filesystemOperations.RenameAsync(source, newName, collision, progress, cancellationToken);
@@ -641,7 +641,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 		source = source.Where(x => !string.IsNullOrEmpty(x.Path));
 		var dest = source.Select(x => Path.Combine(destination,
-			string.Format("ShortcutCreateNewSuffix".ToLocalized(), x.Name) + ".lnk"));
+			string.Format("ShortcutCreateNewSuffix".GetLocalizedResource(), x.Name) + ".lnk"));
 
 		source = await source.ToListAsync();
 		dest = await dest.ToListAsync();

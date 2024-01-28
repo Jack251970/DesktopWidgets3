@@ -12,10 +12,10 @@ internal class ShareItemAction : ObservableObject, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "Share".ToLocalized();
+		=> "Share".GetLocalizedResource();
 
 	public string Description
-		=> "ShareItemDescription".ToLocalized();
+		=> "ShareItemDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconShare");

@@ -8,10 +8,10 @@ internal class CreateShortcutFromDialogAction : BaseUIAction, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "Shortcut".ToLocalized();
+		=> "Shortcut".GetLocalizedResource();
 
 	public string Description
-		=> "CreateShortcutFromDialogDescription".ToLocalized();
+		=> "CreateShortcutFromDialogDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new("\uE71B");

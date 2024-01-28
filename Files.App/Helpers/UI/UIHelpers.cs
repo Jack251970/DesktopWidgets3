@@ -51,16 +51,16 @@ public static class UIHelpers
 						{
 							new AdaptiveText()
 							{
-								Text = "EjectNotificationHeader".ToLocalized()
+								Text = "EjectNotificationHeader".GetLocalizedResource()
 							},
 							new AdaptiveText()
 							{
-								Text = "EjectNotificationBody".ToLocalized()
+								Text = "EjectNotificationBody".GetLocalizedResource()
 							}
 						},
 						Attribution = new ToastGenericAttributionText()
 						{
-							Text = "SettingsAboutAppName".ToLocalized()
+							Text = "SettingsAboutAppName".GetLocalizedResource()
 						}
 					}
 				},
@@ -79,8 +79,8 @@ public static class UIHelpers
 
             await DialogDisplayHelper.ShowDialogAsync(
                 viewModel,
-                "EjectNotificationErrorDialogHeader".ToLocalized(),
-                "EjectNotificationErrorDialogBody".ToLocalized());
+                "EjectNotificationErrorDialogHeader".GetLocalizedResource(),
+                "EjectNotificationErrorDialogBody".GetLocalizedResource());
         }
 	}*/
 

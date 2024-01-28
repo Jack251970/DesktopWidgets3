@@ -10,10 +10,10 @@ internal class CopyPathWithQuotesAction : IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "CopyPathWithQuotes".ToLocalized();
+		=> "CopyPathWithQuotes".GetLocalizedResource();
 
 	public string Description
-		=> "CopyPathWithQuotesDescription".ToLocalized();
+		=> "CopyPathWithQuotesDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconCopyPath");

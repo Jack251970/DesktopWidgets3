@@ -29,7 +29,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 	{
 		get
 		{
-			var itemType = "File".ToLocalized();
+			var itemType = "File".GetLocalizedResource();
 			if (Name.Contains('.', StringComparison.Ordinal))
 			{
 				itemType = FileType.Trim('.') + " " + itemType;

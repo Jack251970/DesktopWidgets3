@@ -10,7 +10,7 @@ public class ReorderSidebarItemsDialogViewModel : ObservableObject
 {
 	private readonly IQuickAccessService quickAccessService = DependencyExtensions.GetService<IQuickAccessService>();
 
-	public string HeaderText = "ReorderSidebarItemsDialogText".ToLocalized();
+	public string HeaderText = "ReorderSidebarItemsDialogText".GetLocalizedResource();
 	public ICommand PrimaryButtonCommand { get; private set; }
 
 	public ObservableCollection<LocationItem> SidebarFavoriteItems = new(DependencyExtensions.GetService<QuickAccessManager>().Model.favoriteList

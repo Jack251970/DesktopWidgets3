@@ -59,7 +59,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 	{
 		InitializeComponent();
 
-        /*ToolbarViewModel.PathControlDisplayText = "Home".ToLocalized();
+        /*ToolbarViewModel.PathControlDisplayText = "Home".GetLocalizedResource();
 		ToolbarViewModel.RefreshWidgetsRequested += ModernShellPage_RefreshWidgetsRequested;*/
 
         _navigationInteractionTracker = new NavigationInteractionTracker(this, BackIcon, ForwardIcon);
@@ -132,7 +132,7 @@ public sealed partial class ModernShellPage : BaseShellPage
             FilesystemViewModel.OnSelectionRequestedEvent += FilesystemViewModel_OnSelectionRequestedEvent;
             FilesystemViewModel.GitDirectoryUpdated += FilesystemViewModel_GitDirectoryUpdated;
 
-            ToolbarViewModel.PathControlDisplayText = "Home".ToLocalized();
+            ToolbarViewModel.PathControlDisplayText = "Home".GetLocalizedResource();
         }
 
 		if (string.IsNullOrEmpty(NavParams?.NavPath) || NavParams.NavPath == "Home")

@@ -64,7 +64,7 @@ public sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetting
 
 		if (!string.IsNullOrEmpty(uid) && tag is null)
 		{
-			tag = new TagViewModel("Unknown".ToLocalized(), "#9ea3a1", uid);
+			tag = new TagViewModel("Unknown".GetLocalizedResource(), "#9ea3a1", uid);
 			FileTagList = FileTagList.Append(tag).ToList();
 		}
 

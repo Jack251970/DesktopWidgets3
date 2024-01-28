@@ -8,10 +8,10 @@ internal class RestoreRecycleBinAction : BaseUIAction, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "Restore".ToLocalized();
+		=> "Restore".GetLocalizedResource();
 
 	public string Description
-		=> "RestoreRecycleBinDescription".ToLocalized();
+		=> "RestoreRecycleBinDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconRestoreItem");

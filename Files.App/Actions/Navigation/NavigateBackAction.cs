@@ -8,10 +8,10 @@ internal class NavigateBackAction : ObservableObject, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "Back".ToLocalized();
+		=> "Back".GetLocalizedResource();
 
 	public string Description
-		=> "NavigateBackDescription".ToLocalized();
+		=> "NavigateBackDescription".GetLocalizedResource();
 
 	public HotKey HotKey
 		=> new(Keys.Left, KeyModifiers.Menu);

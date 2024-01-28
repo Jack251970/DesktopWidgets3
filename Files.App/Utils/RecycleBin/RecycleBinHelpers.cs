@@ -49,10 +49,10 @@ public static partial class RecycleBinHelpers
 		// Display confirmation dialog
 		var ConfirmEmptyBinDialog = new ContentDialog()
 		{
-			Title = "ConfirmEmptyBinDialogTitle".ToLocalized(),
-			Content = "ConfirmEmptyBinDialogContent".ToLocalized(),
-			PrimaryButtonText = "Yes".ToLocalized(),
-			SecondaryButtonText = "Cancel".ToLocalized(),
+			Title = "ConfirmEmptyBinDialogTitle".GetLocalizedResource(),
+			Content = "ConfirmEmptyBinDialogContent".GetLocalizedResource(),
+			PrimaryButtonText = "Yes".GetLocalizedResource(),
+			SecondaryButtonText = "Cancel".GetLocalizedResource(),
 			DefaultButton = ContentDialogButton.Primary
 		};
 
@@ -89,10 +89,10 @@ public static partial class RecycleBinHelpers
 	{
 		var confirmEmptyBinDialog = new ContentDialog()
 		{
-			Title = "ConfirmRestoreBinDialogTitle".ToLocalized(),
-			Content = "ConfirmRestoreBinDialogContent".ToLocalized(),
-			PrimaryButtonText = "Yes".ToLocalized(),
-			SecondaryButtonText = "Cancel".ToLocalized(),
+			Title = "ConfirmRestoreBinDialogTitle".GetLocalizedResource(),
+			Content = "ConfirmRestoreBinDialogContent".GetLocalizedResource(),
+			PrimaryButtonText = "Yes".GetLocalizedResource(),
+			SecondaryButtonText = "Cancel".GetLocalizedResource(),
 			DefaultButton = ContentDialogButton.Primary
 		};
 
@@ -113,8 +113,8 @@ public static partial class RecycleBinHelpers
 			{
 				var errorDialog = new ContentDialog()
 				{
-					Title = "FailedToRestore".ToLocalized(),
-					PrimaryButtonText = "OK".ToLocalized(),
+					Title = "FailedToRestore".GetLocalizedResource(),
+					PrimaryButtonText = "OK".GetLocalizedResource(),
 				};
 
 				if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
@@ -137,10 +137,10 @@ public static partial class RecycleBinHelpers
 
         var ConfirmEmptyBinDialog = new ContentDialog()
 		{
-			Title = "ConfirmRestoreSelectionBinDialogTitle".ToLocalized(),
-			Content = string.Format("ConfirmRestoreSelectionBinDialogContent".ToLocalized(), items.Count),
-			PrimaryButtonText = "Yes".ToLocalized(),
-			SecondaryButtonText = "Cancel".ToLocalized(),
+			Title = "ConfirmRestoreSelectionBinDialogTitle".GetLocalizedResource(),
+			Content = string.Format("ConfirmRestoreSelectionBinDialogContent".GetLocalizedResource(), items.Count),
+			PrimaryButtonText = "Yes".GetLocalizedResource(),
+			SecondaryButtonText = "Cancel".GetLocalizedResource(),
 			DefaultButton = ContentDialogButton.Primary
 		};
 

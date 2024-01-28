@@ -126,7 +126,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 			type = value;
 			if (value == DriveType.Network)
 			{
-                ToolTip = "Network".ToLocalized();
+                ToolTip = "Network".GetLocalizedResource();
 			}
 			else if (value == DriveType.CloudDrive)
 			{
@@ -218,7 +218,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 				}
 			};
 
-			ToolTipService.SetToolTip(itemDecorator, "Eject".ToLocalized());
+			ToolTipService.SetToolTip(itemDecorator, "Eject".GetLocalizedResource());
 
 			itemDecorator.Click += ItemDecorator_Click;
     
@@ -299,7 +299,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
             }
 			else
 			{
-				SpaceText = "Unknown".ToLocalized();
+				SpaceText = "Unknown".GetLocalizedResource();
 				MaxSpace = SpaceUsed = FreeSpace = ByteSize.FromBytes(0);
 			}
 
@@ -307,7 +307,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		}
 		catch (Exception)
 		{
-			SpaceText = "Unknown".ToLocalized();
+			SpaceText = "Unknown".GetLocalizedResource();
 			MaxSpace = SpaceUsed = FreeSpace = ByteSize.FromBytes(0);
 
 			OnPropertyChanged(nameof(ShowDriveDetails));
@@ -353,7 +353,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 	private string GetSizeString()
 	{
 		return string.Format(
-			"DriveFreeSpaceAndCapacity".ToLocalized(),
+			"DriveFreeSpaceAndCapacity".GetLocalizedResource(),
 			FreeSpace.ToSizeString(),
 			MaxSpace.ToSizeString());
 	}

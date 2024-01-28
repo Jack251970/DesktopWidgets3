@@ -10,10 +10,10 @@ internal class FormatDriveAction : ObservableObject, IAction
 	private readonly DrivesViewModel drivesViewModel;
 
 	public string Label
-		=> "FormatDriveText".ToLocalized();
+		=> "FormatDriveText".GetLocalizedResource();
 
 	public string Description
-		=> "FormatDriveDescription".ToLocalized();
+		=> "FormatDriveDescription".GetLocalizedResource();
 
 	public bool IsExecutable =>
 		context.HasItem &&

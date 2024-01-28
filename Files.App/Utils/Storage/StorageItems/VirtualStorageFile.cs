@@ -24,7 +24,7 @@ public class VirtualStorageFile : BaseStorageFile
 	{
 		get
 		{
-			var itemType = "File".ToLocalized();
+			var itemType = "File".GetLocalizedResource();
 			if (Name.Contains('.', StringComparison.Ordinal))
 			{
 				itemType = IO.Path.GetExtension(Name).Trim('.') + " " + itemType;

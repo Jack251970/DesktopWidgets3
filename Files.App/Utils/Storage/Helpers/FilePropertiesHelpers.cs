@@ -121,7 +121,7 @@ public static class FilePropertiesHelpers
 		propertiesWindow.SystemBackdrop = new AppSystemBackdrop(folderViewViewModel, true);
 
 		var appWindow = propertiesWindow.AppWindow;
-		appWindow.Title = "Properties".ToLocalized();
+		appWindow.Title = "Properties".GetLocalizedResource();
 		appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 		appWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
 		appWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;

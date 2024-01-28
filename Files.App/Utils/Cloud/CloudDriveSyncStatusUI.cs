@@ -15,7 +15,7 @@ public class CloudDriveSyncStatusUI : ObservableObject
 
 	public bool LoadSyncStatus { get; }
 
-	public string SyncStatusString { get; } = "CloudDriveSyncStatus_Unknown".ToLocalized();
+	public string SyncStatusString { get; } = "CloudDriveSyncStatus_Unknown".GetLocalizedResource();
 
 	public CloudDriveSyncStatusUI()
 	{
@@ -32,7 +32,7 @@ public class CloudDriveSyncStatusUI : ObservableObject
 		Glyph = glyph;
 		OpacityIcon = opacityIcon;
 		LoadSyncStatus = true;
-		SyncStatusString = SyncStatusStringKey.ToLocalized();
+		SyncStatusString = SyncStatusStringKey.GetLocalizedResource();
 	}
 
 	public static CloudDriveSyncStatusUI FromCloudDriveSyncStatus(CloudDriveSyncStatus syncStatus) => syncStatus switch

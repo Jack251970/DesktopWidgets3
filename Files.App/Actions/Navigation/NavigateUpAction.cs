@@ -8,10 +8,10 @@ internal class NavigateUpAction : ObservableObject, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "Up".ToLocalized();
+		=> "Up".GetLocalizedResource();
 
 	public string Description
-		=> "NavigateUpDescription".ToLocalized();
+		=> "NavigateUpDescription".GetLocalizedResource();
 
 	public HotKey HotKey
 		=> new(Keys.Up, KeyModifiers.Menu);

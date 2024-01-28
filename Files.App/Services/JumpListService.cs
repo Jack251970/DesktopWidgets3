@@ -109,7 +109,7 @@ public class JumpListService : IJumpListService
 
 			if (path.StartsWith("\\\\SHELL", StringComparison.OrdinalIgnoreCase))
             {
-                displayName = "ThisPC".ToLocalized();
+                displayName = "ThisPC".GetLocalizedResource();
             }
 
             if (path.EndsWith('\\'))
@@ -140,19 +140,19 @@ public class JumpListService : IJumpListService
                 }
                 else if (path.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    displayName = "Network".ToLocalized();
+                    displayName = "Network".GetLocalizedResource();
                 }
                 else if (path.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    displayName = "RecycleBin".ToLocalized();
+                    displayName = "RecycleBin".GetLocalizedResource();
                 }
                 else if (path.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    displayName = "ThisPC".ToLocalized();
+                    displayName = "ThisPC".GetLocalizedResource();
                 }
                 else if (path.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    displayName = "SidebarNetworkDrives".ToLocalized();
+                    displayName = "SidebarNetworkDrives".GetLocalizedResource();
                 }
                 else if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(path, out LibraryLocationItem library))
 				{

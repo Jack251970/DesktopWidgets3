@@ -8,10 +8,10 @@ internal class EmptyRecycleBinAction : BaseUIAction, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "EmptyRecycleBin".ToLocalized();
+		=> "EmptyRecycleBin".GetLocalizedResource();
 
 	public string Description
-		=> "EmptyRecycleBinDescription".ToLocalized();
+		=> "EmptyRecycleBinDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconDelete");

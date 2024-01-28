@@ -8,10 +8,10 @@ internal class CreateFolderAction : BaseUIAction, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "Folder".ToLocalized();
+		=> "Folder".GetLocalizedResource();
 
 	public string Description
-		=> "CreateFolderDescription".ToLocalized();
+		=> "CreateFolderDescription".GetLocalizedResource();
 
 	public HotKey HotKey
 		=> new(Keys.N, KeyModifiers.CtrlShift);

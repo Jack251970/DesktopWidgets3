@@ -287,8 +287,8 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         }
 
         var directoryItemCountLocalization = (FilesystemViewModel.FilesAndFolders.Count == 1)
-			? "ItemCount/Text".ToLocalized()
-			: "ItemsCount/Text".ToLocalized();
+			? "ItemCount/Text".GetLocalizedResource()
+			: "ItemsCount/Text".GetLocalizedResource();
 
 		BranchItem? headBranch = headBranch = InstanceViewModel.IsGitRepository
 				? await GitHelpers.GetRepositoryHead(InstanceViewModel.GitRepositoryPath)
@@ -825,7 +825,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         // TODO: Add support.
 		/*if (incomingSourcePageType == typeof(HomePage) && incomingSourcePageType is not null)
         {
-            ToolbarViewModel.PathControlDisplayText = "Home".ToLocalized();
+            ToolbarViewModel.PathControlDisplayText = "Home".GetLocalizedResource();
         }*/
     }
 

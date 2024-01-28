@@ -176,7 +176,7 @@ public class NetworkDrivesAPI
         }
         else
 		{
-            await DialogDisplayHelper.ShowDialogAsync(viewModel, "NetworkFolderErrorDialogTitle".ToLocalized(), connectionError.ToString().Split(":")[1].Trim());
+            await DialogDisplayHelper.ShowDialogAsync(viewModel, "NetworkFolderErrorDialogTitle".GetLocalizedResource(), connectionError.ToString().Split(":")[1].Trim());
             return false;
 		}
 	}

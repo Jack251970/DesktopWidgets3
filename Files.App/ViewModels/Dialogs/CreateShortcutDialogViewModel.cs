@@ -139,7 +139,7 @@ public class CreateShortcutDialogViewModel : ObservableObject
 			destinationName = uri.Host;
 		}
 
-		var shortcutName = string.Format("ShortcutCreateNewSuffix".ToLocalized(), destinationName);
+		var shortcutName = string.Format("ShortcutCreateNewSuffix".GetLocalizedResource(), destinationName);
 		ShortcutCompleteName = shortcutName + extension;
 		var filePath = Path.Combine(WorkingDirectory, ShortcutCompleteName);
 

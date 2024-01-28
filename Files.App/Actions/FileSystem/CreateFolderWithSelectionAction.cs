@@ -10,10 +10,10 @@ internal class CreateFolderWithSelectionAction : ObservableObject, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "CreateFolderWithSelection".ToLocalized();
+		=> "CreateFolderWithSelection".GetLocalizedResource();
 
 	public string Description
-		=> "CreateFolderWithSelectionDescription".ToLocalized();
+		=> "CreateFolderWithSelectionDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconNewFolder");

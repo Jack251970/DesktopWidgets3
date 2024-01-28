@@ -43,17 +43,17 @@ public class ListedItem : ObservableObject, IGroupableItem
 		get
 		{
 			var tooltipBuilder = new StringBuilder();
-			tooltipBuilder.AppendLine($"{"NameWithColon".ToLocalized()} {Name}");
-			tooltipBuilder.AppendLine($"{"ItemType".ToLocalized()} {itemType}");
-			tooltipBuilder.Append($"{"ToolTipDescriptionDate".ToLocalized()} {ItemDateModified}");
+			tooltipBuilder.AppendLine($"{"NameWithColon".GetLocalizedResource()} {Name}");
+			tooltipBuilder.AppendLine($"{"ItemType".GetLocalizedResource()} {itemType}");
+			tooltipBuilder.Append($"{"ToolTipDescriptionDate".GetLocalizedResource()} {ItemDateModified}");
 			if (!string.IsNullOrWhiteSpace(FileSize))
             {
-                tooltipBuilder.Append($"{Environment.NewLine}{"SizeLabel".ToLocalized()} {FileSize}");
+                tooltipBuilder.Append($"{Environment.NewLine}{"SizeLabel".GetLocalizedResource()} {FileSize}");
             }
 
             if (SyncStatusUI.LoadSyncStatus)
             {
-                tooltipBuilder.Append($"{Environment.NewLine}{"syncStatusColumn/Header".ToLocalized()}: {syncStatusUI.SyncStatusString}");
+                tooltipBuilder.Append($"{Environment.NewLine}{"syncStatusColumn/Header".GetLocalizedResource()}: {syncStatusUI.SyncStatusString}");
             }
 
             return tooltipBuilder.ToString();
@@ -164,7 +164,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 	}
 
     // This is used to avoid passing a null value to AutomationProperties.Name, which causes a crash
-    public string SyncStatusString => string.IsNullOrEmpty(SyncStatusUI?.SyncStatusString) ? "CloudDriveSyncStatus_Unknown".ToLocalized() : SyncStatusUI.SyncStatusString;
+    public string SyncStatusString => string.IsNullOrEmpty(SyncStatusUI?.SyncStatusString) ? "CloudDriveSyncStatus_Unknown".GetLocalizedResource() : SyncStatusUI.SyncStatusString;
 
     private BitmapImage fileImage;
 	public BitmapImage FileImage
@@ -275,7 +275,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 		}
 	}
 
-	public string FileSizeDisplay => string.IsNullOrEmpty(FileSize) ? "ItemSizeNotCalculated".ToLocalized() : FileSize;
+	public string FileSizeDisplay => string.IsNullOrEmpty(FileSize) ? "ItemSizeNotCalculated".GetLocalizedResource() : FileSize;
 
 	public long FileSizeBytes { get; set; }
 
@@ -358,19 +358,19 @@ public class ListedItem : ObservableObject, IGroupableItem
 		string suffix;
 		if (IsRecycleBinItem)
 		{
-			suffix = "RecycleBinItemAutomation".ToLocalized();
+			suffix = "RecycleBinItemAutomation".GetLocalizedResource();
 		}
 		else if (IsShortcut)
 		{
-			suffix = "ShortcutItemAutomation".ToLocalized();
+			suffix = "ShortcutItemAutomation".GetLocalizedResource();
 		}
 		else if (IsLibrary)
 		{
-			suffix = "Library".ToLocalized();
+			suffix = "Library".GetLocalizedResource();
 		}
 		else
 		{
-			suffix = PrimaryItemAttribute == StorageItemTypes.File ? "Folder".ToLocalized() : "FolderItemAutomation".ToLocalized();
+			suffix = PrimaryItemAttribute == StorageItemTypes.File ? "Folder".GetLocalizedResource() : "FolderItemAutomation".GetLocalizedResource();
 		}
 
 		return $"{Name}, {suffix}";
@@ -470,7 +470,7 @@ public class FtpItem : ListedItem
 		PrimaryItemAttribute = isFile ? StorageItemTypes.File : StorageItemTypes.Folder;
 		ItemPropertiesInitialized = false;
 
-		var itemType = isFile ? "File".ToLocalized() : "Folder".ToLocalized();
+		var itemType = isFile ? "File".GetLocalizedResource() : "Folder".GetLocalizedResource();
 		if (isFile && Name.Contains('.', StringComparison.Ordinal))
 		{
 			itemType = FileExtension.Trim('.') + " " + itemType;
@@ -550,7 +550,7 @@ public class LibraryItem : ListedItem
 		ItemPath = library.Path;
 		ItemNameRaw = library.Text;
 		PrimaryItemAttribute = StorageItemTypes.Folder;
-		ItemType = "Library".ToLocalized();
+		ItemType = "Library".GetLocalizedResource();
 		LoadCustomIcon = true;
 		CustomIcon = library.Icon;
 		//CustomIconSource = library.IconSource;

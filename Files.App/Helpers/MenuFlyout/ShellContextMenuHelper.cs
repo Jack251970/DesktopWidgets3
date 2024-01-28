@@ -91,7 +91,7 @@ public static class ShellContextmenuHelper
 			{
 				var menuLayoutSubItem = new ContextMenuFlyoutItemViewModel()
 				{
-					Text = "ShowMoreOptions".ToLocalized(),
+					Text = "ShowMoreOptions".GetLocalizedResource(),
 					Glyph = "\xE712",
 				};
 				LoadMenuFlyoutItem(menuLayoutSubItem.Items, contextMenu, overflowItems, cancellationToken, showIcons);
@@ -367,7 +367,7 @@ public static class ShellContextmenuHelper
                 overflowItem.Visibility = overflowItems?.Any() ?? false ? Visibility.Visible : Visibility.Collapsed;
 				overflowSeparator.Visibility = overflowItems?.Any() ?? false ? Visibility.Visible : Visibility.Collapsed;
 
-				overflowItem.Label = "ShowMoreOptions".ToLocalized();
+				overflowItem.Label = "ShowMoreOptions".GetLocalizedResource();
 				overflowItem.IsEnabled = true;
 			}
 

@@ -281,15 +281,15 @@ public static class StorageFileExtensions
 		if (component.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal))
 		{
 			// Handle the recycle bin: use the localized folder name
-			title = "RecycleBin".ToLocalized();
+			title = "RecycleBin".GetLocalizedResource();
 		}
 		else if (component.StartsWith(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.Ordinal))
 		{
-			title = "ThisPC".ToLocalized();
+			title = "ThisPC".GetLocalizedResource();
 		}
 		else if (component.StartsWith(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.Ordinal))
 		{
-			title = "SidebarNetworkDrives".ToLocalized();
+			title = "SidebarNetworkDrives".GetLocalizedResource();
 		}
 		else if (component.Contains(':', StringComparison.Ordinal))
 		{
@@ -297,7 +297,7 @@ public static class StorageFileExtensions
 
 			var drives = drivesViewModel.Drives.Cast<DriveItem>();
 			var drive = drives.FirstOrDefault(y => y.ItemType is NavigationControlItemType.Drive && y.Path.Contains(component, StringComparison.OrdinalIgnoreCase));
-			title = drive is not null ? drive.Text : string.Format("DriveWithLetter".ToLocalized(), component);
+			title = drive is not null ? drive.Text : string.Format("DriveWithLetter".GetLocalizedResource(), component);
 		}
 		else
 		{

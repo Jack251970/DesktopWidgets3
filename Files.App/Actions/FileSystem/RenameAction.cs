@@ -8,10 +8,10 @@ internal class RenameAction : ObservableObject, IAction
 	private readonly IContentPageContext context;
 
 	public string Label
-		=> "Rename".ToLocalized();
+		=> "Rename".GetLocalizedResource();
 
 	public string Description
-		=> "RenameDescription".ToLocalized();
+		=> "RenameDescription".GetLocalizedResource();
 
 	public HotKey HotKey
 		=> new(Keys.F2);

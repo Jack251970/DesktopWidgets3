@@ -338,14 +338,14 @@ public static class UIFilesystemHelpers
 		switch (itemType)
 		{
 			case AddItemDialogItemType.Folder:
-				userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : "NewFolder".ToLocalized();
+				userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : "NewFolder".GetLocalizedResource();
 				created = await associatedInstance.FilesystemHelpers.CreateAsync(
 					StorageHelpers.FromPathAndType(PathNormalization.Combine(currentPath!, userInput), FilesystemItemType.Directory),
 					true);
 				break;
 
 			case AddItemDialogItemType.File:
-				userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : itemInfo?.Name ?? "NewFile".ToLocalized();
+				userInput = !string.IsNullOrWhiteSpace(userInput) ? userInput : itemInfo?.Name ?? "NewFile".GetLocalizedResource();
 				created = await associatedInstance.FilesystemHelpers.CreateAsync(
 					StorageHelpers.FromPathAndType(PathNormalization.Combine(currentPath!, userInput + itemInfo?.Extension), FilesystemItemType.File),
 					true);
@@ -357,8 +357,8 @@ public static class UIFilesystemHelpers
 			await DialogDisplayHelper.ShowDialogAsync
 			(
                 folderViewViewModel,
-				"AccessDenied".ToLocalized(),
-				"AccessDeniedCreateDialog/Text".ToLocalized()
+				"AccessDenied".GetLocalizedResource(),
+				"AccessDeniedCreateDialog/Text".GetLocalizedResource()
 			);
 		}
 
@@ -410,7 +410,7 @@ public static class UIFilesystemHelpers
 
         foreach (var selectedItem in selectedItems)
 		{
-			var fileName = string.Format("ShortcutCreateNewSuffix".ToLocalized(), selectedItem.Name) + ".lnk";
+			var fileName = string.Format("ShortcutCreateNewSuffix".GetLocalizedResource(), selectedItem.Name) + ".lnk";
 			var filePath = Path.Combine(currentPath ?? string.Empty, fileName);
 
 			if (!await FileOperationsHelpers.CreateOrUpdateLinkAsync(filePath, selectedItem.ItemPath))
@@ -453,10 +453,10 @@ public static class UIFilesystemHelpers
 		var result = await DialogDisplayHelper.ShowDialogAsync
 		(
             folderViewViewModel,
-			"CannotCreateShortcutDialogTitle".ToLocalized(),
-			"CannotCreateShortcutDialogMessage".ToLocalized(),
-			"Create".ToLocalized(),
-			"Cancel".ToLocalized()
+			"CannotCreateShortcutDialogTitle".GetLocalizedResource(),
+			"CannotCreateShortcutDialogMessage".GetLocalizedResource(),
+			"Create".GetLocalizedResource(),
+			"Cancel".GetLocalizedResource()
 		);
 		if (!result)
         {

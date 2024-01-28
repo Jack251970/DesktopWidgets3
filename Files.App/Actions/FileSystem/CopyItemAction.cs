@@ -10,10 +10,10 @@ internal class CopyItemAction : ObservableObject, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "Copy".ToLocalized();
+		=> "Copy".GetLocalizedResource();
 
 	public string Description
-		=> "CopyItemDescription".ToLocalized();
+		=> "CopyItemDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconCopy");

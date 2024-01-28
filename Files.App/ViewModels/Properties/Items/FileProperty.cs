@@ -20,7 +20,7 @@ public class FileProperty : ObservableObject
 	/// <summary>
 	/// The name to display
 	/// </summary>
-	public string Name => LocalizedName ?? NameResource.ToLocalized();
+	public string Name => LocalizedName ?? NameResource.GetLocalizedResource();
 
 	/// <summary>
 	/// The name of the string resource for the property name
@@ -33,7 +33,7 @@ public class FileProperty : ObservableObject
 	/// The name of the section to display
 	/// </summary>
 	public string Section
-		=> SectionResource?.ToLocalized()!;
+		=> SectionResource?.GetLocalizedResource()!;
 
 	/// <summary>
 	/// The name of the string resource for the section name
@@ -235,7 +235,7 @@ public class FileProperty : ObservableObject
 			try
 			{
 				return EnumeratedList.TryGetValue(Convert.ToInt32(Value), out var value) ? 
-					value.ToLocalized() : null;
+					value.GetLocalizedResource() : null;
 			}
 			catch
 			{

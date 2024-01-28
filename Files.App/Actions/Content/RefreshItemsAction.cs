@@ -8,10 +8,10 @@ internal class RefreshItemsAction : ObservableObject, IAction
     private readonly IContentPageContext context;
 
 	public string Label
-		=> "Refresh".ToLocalized();
+		=> "Refresh".GetLocalizedResource();
 
 	public string Description
-		=> "RefreshItemsDescription".ToLocalized();
+		=> "RefreshItemsDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
 		=> new("\uE72C");

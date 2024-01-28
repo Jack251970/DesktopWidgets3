@@ -31,10 +31,10 @@ public static class ShellHelpers
 	{
 		return shPath switch
 		{
-			"Home" => "Home".ToLocalized(),
-			Constants.UserEnvironmentPaths.RecycleBinPath => "RecycleBin".ToLocalized(),
-			Constants.UserEnvironmentPaths.NetworkFolderPath => "SidebarNetworkDrives".ToLocalized(),
-			Constants.UserEnvironmentPaths.MyComputerPath => "ThisPC".ToLocalized(),
+			"Home" => "Home".GetLocalizedResource(),
+			Constants.UserEnvironmentPaths.RecycleBinPath => "RecycleBin".GetLocalizedResource(),
+			Constants.UserEnvironmentPaths.NetworkFolderPath => "SidebarNetworkDrives".GetLocalizedResource(),
+			Constants.UserEnvironmentPaths.MyComputerPath => "ThisPC".GetLocalizedResource(),
 			_ => shPath
 		};
 	}

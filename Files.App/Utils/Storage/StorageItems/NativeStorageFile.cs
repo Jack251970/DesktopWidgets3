@@ -33,7 +33,7 @@ public partial class NativeStorageFile : BaseStorageFile
 	{
 		get
 		{
-			var itemType = "File".ToLocalized();
+			var itemType = "File".GetLocalizedResource();
 
 			if (Name.Contains('.', StringComparison.Ordinal))
             {

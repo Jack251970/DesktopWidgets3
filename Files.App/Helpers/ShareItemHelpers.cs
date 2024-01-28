@@ -36,8 +36,8 @@ public static class ShareItemHelpers
 				{
 					if (shItem.IsLinkItem && !string.IsNullOrEmpty(shItem.TargetPath))
 					{
-						dataRequest.Data.Properties.Title = string.Format("ShareDialogTitle".ToLocalized(), item.Name);
-						dataRequest.Data.Properties.Description = "ShareDialogSingleItemDescription".ToLocalized();
+						dataRequest.Data.Properties.Title = string.Format("ShareDialogTitle".GetLocalizedResource(), item.Name);
+						dataRequest.Data.Properties.Description = "ShareDialogSingleItemDescription".GetLocalizedResource();
 						dataRequest.Data.SetWebLink(new Uri(shItem.TargetPath));
 						dataRequestDeferral.Complete();
 
@@ -62,12 +62,12 @@ public static class ShareItemHelpers
 
 			if (items.Count == 1)
 			{
-				dataRequest.Data.Properties.Title = string.Format("ShareDialogTitle".ToLocalized(), items.First().Name);
-				dataRequest.Data.Properties.Description = "ShareDialogSingleItemDescription".ToLocalized();
+				dataRequest.Data.Properties.Title = string.Format("ShareDialogTitle".GetLocalizedResource(), items.First().Name);
+				dataRequest.Data.Properties.Description = "ShareDialogSingleItemDescription".GetLocalizedResource();
 			}
 			else if (items.Count == 0)
 			{
-				dataRequest.FailWithDisplayText("ShareDialogFailMessage".ToLocalized());
+				dataRequest.FailWithDisplayText("ShareDialogFailMessage".GetLocalizedResource());
 				dataRequestDeferral.Complete();
 
 				return;
@@ -75,10 +75,10 @@ public static class ShareItemHelpers
 			else
 			{
 				dataRequest.Data.Properties.Title = string.Format(
-					"ShareDialogTitleMultipleItems".ToLocalized(),
+					"ShareDialogTitleMultipleItems".GetLocalizedResource(),
 					items.Count,
-					"ItemsCount.Text".ToLocalized());
-				dataRequest.Data.Properties.Description = "ShareDialogMultipleItemsDescription".ToLocalized();
+					"ItemsCount.Text".GetLocalizedResource());
+				dataRequest.Data.Properties.Description = "ShareDialogMultipleItemsDescription".GetLocalizedResource();
 			}
 
 			dataRequest.Data.SetStorageItems(items, false);

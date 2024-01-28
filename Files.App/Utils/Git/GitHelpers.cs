@@ -491,9 +491,9 @@ public static partial class GitHelpers
 		{
 			var viewModel = new DynamicDialogViewModel()
 			{
-				TitleText = "GitError".ToLocalized(),
-				SubtitleText = "PullTimeoutError".ToLocalized(),
-				CloseButtonText = "Close".ToLocalized(),
+				TitleText = "GitError".GetLocalizedResource(),
+				SubtitleText = "PullTimeoutError".GetLocalizedResource(),
+				CloseButtonText = "Close".GetLocalizedResource(),
 				DynamicButtons = DynamicDialogButtons.Cancel
 			};
 			var dialog = new DynamicDialog(viewModel);
@@ -616,7 +616,7 @@ public static partial class GitHelpers
 		var expiresIn = codeJsonContent.RootElement.GetProperty("expires_in").GetInt32();
 
 		var loginCTS = new CancellationTokenSource();
-		var viewModel = new GitHubLoginDialogViewModel(userCode, "ConnectGitHubDescription".ToLocalized(), loginCTS);
+		var viewModel = new GitHubLoginDialogViewModel(userCode, "ConnectGitHubDescription".GetLocalizedResource(), loginCTS);
 
         var dialogService = folderViewViewModel.GetService<IDialogService>();
         var dialog = dialogService.GetDialog(viewModel);
@@ -668,7 +668,7 @@ public static partial class GitHelpers
 				GIT_RESOURCE_USERNAME,
 				token);
 
-			viewModel.Subtitle = "AuthorizationSucceded".ToLocalized();
+			viewModel.Subtitle = "AuthorizationSucceded".GetLocalizedResource();
 			viewModel.LoginConfirmed = true;
 		}
 
@@ -731,10 +731,10 @@ public static partial class GitHelpers
 			{
 				changeKindHumanized = changeKind switch
 				{
-					ChangeKind.Added => "Added".ToLocalized(),
-					ChangeKind.Deleted => "Deleted".ToLocalized(),
-					ChangeKind.Modified => "Modified".ToLocalized(),
-					ChangeKind.Untracked => "Untracked".ToLocalized(),
+					ChangeKind.Added => "Added".GetLocalizedResource(),
+					ChangeKind.Deleted => "Deleted".GetLocalizedResource(),
+					ChangeKind.Modified => "Modified".GetLocalizedResource(),
+					ChangeKind.Untracked => "Untracked".GetLocalizedResource(),
 					_ => null,
 				};
 			}

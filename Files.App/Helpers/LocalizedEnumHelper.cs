@@ -9,11 +9,11 @@ public sealed class LocalizedEnumHelper<T> where T : Enum
 	{
 		get
 		{
-			var localized = $"{typeof(T).Name}_{Enum.GetName(typeof(T), Value)}".ToLocalized();
+			var localized = $"{typeof(T).Name}_{Enum.GetName(typeof(T), Value)}".GetLocalizedResource();
 
 			if (string.IsNullOrEmpty(localized))
 			{
-				localized = $"{Enum.GetName(typeof(T), Value)}".ToLocalized();
+				localized = $"{Enum.GetName(typeof(T), Value)}".GetLocalizedResource();
 			}
 
 			return localized;
