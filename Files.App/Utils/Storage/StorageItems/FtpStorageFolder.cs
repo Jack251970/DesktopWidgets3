@@ -26,10 +26,10 @@ public sealed class FtpStorageFolder : BaseStorageFolder, IPasswordProtectedItem
 	public override Windows.Storage.FileAttributes Attributes { get; } = Windows.Storage.FileAttributes.Directory;
 	public override IStorageItemExtraProperties Properties => new BaseBasicStorageItemExtraProperties(this);
 
-	public StorageCredential Credentials { get; set; }
+    public StorageCredential Credentials { get; set; } = null!;
 
-    public IFolderViewViewModel? FolderViewViewModel { get; set; }
-    public Func<IFolderViewViewModel, IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback { get; set; }
+    public IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
+    public Func<IFolderViewViewModel, IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback { get; set; } = null!;
 
 	public FtpStorageFolder(string path, string name, DateTimeOffset dateCreated)
 	{
@@ -48,7 +48,7 @@ public sealed class FtpStorageFolder : BaseStorageFolder, IPasswordProtectedItem
 	public FtpStorageFolder(IStorageItemWithPath item)
 	{
 		Path = item.Path;
-		Name = System.IO.Path.GetFileName(item.Path);
+		Name = SystemIO.Path.GetFileName(item.Path);
 		FtpPath = FtpHelpers.GetFtpPath(item.Path);
 	}
 
@@ -128,7 +128,7 @@ public sealed class FtpStorageFolder : BaseStorageFolder, IPasswordProtectedItem
 	}
 	public override IAsyncOperation<IReadOnlyList<IStorageItem>> GetItemsAsync()
 	{
-		return AsyncInfo.Run((cancellationToken) => SafetyExtensions.Wrap<IReadOnlyList<IStorageItem>>(async () =>
+		return AsyncInfo.Run((cancellationToken) => SafetyExtensions.Wrap(async () =>
 		{
 			using var ftpClient = GetFtpClient();
 			if (!await ftpClient.EnsureConnectedAsync())

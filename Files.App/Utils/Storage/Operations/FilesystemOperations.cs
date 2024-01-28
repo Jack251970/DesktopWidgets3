@@ -182,6 +182,7 @@ public class FilesystemOperations : IFilesystemOperations
 				{
 					if (fsSourceFolder.Result is IPasswordProtectedItem ppis)
                     {
+                        ppis.FolderViewViewModel = _folderViewViewModel;
                         ppis.PasswordRequestedCallback = UIFilesystemHelpers.RequestPassword;
                     }
 
@@ -189,6 +190,7 @@ public class FilesystemOperations : IFilesystemOperations
 
 					if (fsSourceFolder.Result is IPasswordProtectedItem ppiu)
                     {
+                        ppiu.FolderViewViewModel = _folderViewViewModel;
                         ppiu.PasswordRequestedCallback = null!;
                     }
 
@@ -242,6 +244,7 @@ public class FilesystemOperations : IFilesystemOperations
 				{
 					if (sourceResult.Result is IPasswordProtectedItem ppis)
                     {
+                        ppis.FolderViewViewModel = _folderViewViewModel;
                         ppis.PasswordRequestedCallback = UIFilesystemHelpers.RequestPassword;
                     }
 
@@ -270,6 +273,7 @@ public class FilesystemOperations : IFilesystemOperations
 
 					if (sourceResult.Result is IPasswordProtectedItem ppiu)
                     {
+                        ppiu.FolderViewViewModel = _folderViewViewModel;
                         ppiu.PasswordRequestedCallback = null!;
                     }
 
@@ -410,6 +414,7 @@ public class FilesystemOperations : IFilesystemOperations
 					{
 						if (fsSourceFolder.Result is IPasswordProtectedItem ppis)
                         {
+                            ppis.FolderViewViewModel = _folderViewViewModel;
                             ppis.PasswordRequestedCallback = UIFilesystemHelpers.RequestPassword;
                         }
 
@@ -429,6 +434,7 @@ public class FilesystemOperations : IFilesystemOperations
 
 						if (fsSourceFolder.Result is IPasswordProtectedItem ppiu)
                         {
+                            ppiu.FolderViewViewModel = _folderViewViewModel;
                             ppiu.PasswordRequestedCallback = null!;
                         }
 
@@ -476,6 +482,7 @@ public class FilesystemOperations : IFilesystemOperations
 				{
 					if (sourceResult.Result is IPasswordProtectedItem ppis)
                     {
+                        ppis.FolderViewViewModel = _folderViewViewModel;
                         ppis.PasswordRequestedCallback = UIFilesystemHelpers.RequestPassword;
                     }
 

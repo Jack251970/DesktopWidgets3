@@ -49,6 +49,7 @@ public interface IPasswordProtectedItem
 	void CopyFrom(IPasswordProtectedItem parent)
 	{
 		Credentials = parent.Credentials;
+        FolderViewViewModel = parent.FolderViewViewModel;
 		PasswordRequestedCallback = parent.PasswordRequestedCallback;
 	}
 }

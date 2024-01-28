@@ -27,6 +27,8 @@ using FileAttributes = System.IO.FileAttributes;
 namespace Files.App.Data.Models;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable IL2026 // Unrecognized escape sequence in XML doc comment
+#pragma warning disable CA2254 // Template should be a static expression
 
 public sealed class ItemViewModel : ObservableObject, IDisposable
 {
@@ -1876,6 +1878,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
 		if (rootFolder is IPasswordProtectedItem ppiu)
         {
+            ppiu.FolderViewViewModel = null!;
             ppiu.PasswordRequestedCallback = null!;
         }
     }
