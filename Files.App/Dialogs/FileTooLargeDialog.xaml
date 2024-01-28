@@ -6,10 +6,10 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:helpers="using:Files.App.Helpers"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	Title="{helpers:ResourceString Name=CopyFailureFileToLarge}"
+	Title="{helpers:ResourceString Name=/FilesResources/CopyFailureFileToLarge}"
 	CornerRadius="{StaticResource OverlayCornerRadius}"
 	DefaultButton="Primary"
-	PrimaryButtonText="{helpers:ResourceString Name=OK}"
+	PrimaryButtonText="{helpers:ResourceString Name=/FilesResources/OK}"
 	RequestedTheme="{x:Bind helpers:ThemeHelper.RootTheme}"
 	Style="{StaticResource DefaultContentDialogStyle}"
 	mc:Ignorable="d">

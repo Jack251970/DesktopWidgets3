@@ -21,7 +21,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 
     protected readonly IUserSettingsService UserSettingsService;
 
-    protected static IStartMenuService StartMenuService { get; } = DependencyExtensions.GetService<IStartMenuService>();
+    protected static readonly IStartMenuService StartMenuService = DependencyExtensions.GetService<IStartMenuService>();
 
     protected static readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
 

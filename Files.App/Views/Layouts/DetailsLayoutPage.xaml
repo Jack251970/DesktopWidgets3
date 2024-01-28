@@ -185,9 +185,9 @@
 		<!--  Invalid Item Name Tip  -->
 		<TeachingTip
 			x:Name="FileNameTeachingTip"
-			CloseButtonContent="{helpers:ResourceString Name=OK}"
+			CloseButtonContent="{helpers:ResourceString Name=/FilesResources/OK}"
 			PreferredPlacement="Auto"
-			Subtitle="{helpers:ResourceString Name=FileNameTeachingTip/Subtitle}"
+			Subtitle="{helpers:ResourceString Name=/FilesResources/FileNameTeachingTip/Subtitle}"
 			Visibility="Collapsed" />
 
 		<!--  Semantic Zooming  -->
@@ -256,7 +256,7 @@
 									<MenuFlyoutItem
 										x:Name="AllColumnsToFitMenuflyoutItem"
 										Click="SizeAllColumnsToFit_Click"
-										Text="{helpers:ResourceString Name=SizeAllColumnsToFit}" />
+										Text="{helpers:ResourceString Name=/FilesResources/SizeAllColumnsToFit}" />
 
 									<!--  (Divider)  -->
 									<MenuFlyoutSeparator />
@@ -264,7 +264,7 @@
 									<!--  Git Columns  -->
 									<MenuFlyoutSubItem
 										x:Name="GitColumnsVisibilityMenuFlyoutSubItem"
-										Text="{helpers:ResourceString Name=Git}"
+										Text="{helpers:ResourceString Name=/FilesResources/Git}"
 										Visibility="{x:Bind InstanceViewModel.IsGitRepository, Mode=OneWay}">
 
 										<!--  Git Unmerged File Kind  -->
@@ -272,7 +272,7 @@
 											x:Name="GitStatusColumnVisibilityToggleMenuFlyoutItem"
 											Click="ToggleMenuFlyoutItem_Click"
 											IsChecked="{x:Bind ColumnsViewModel.GitStatusColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-											Text="{helpers:ResourceString Name=GitStatus}"
+											Text="{helpers:ResourceString Name=/FilesResources/GitStatus}"
 											Visibility="{x:Bind ColumnsViewModel.GitStatusColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 										<!--  Git Last Commit Date  -->
@@ -280,7 +280,7 @@
 											x:Name="GitCommitDateColumnToggleMenuFlyoutItem"
 											Click="ToggleMenuFlyoutItem_Click"
 											IsChecked="{x:Bind ColumnsViewModel.GitLastCommitDateColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-											Text="{helpers:ResourceString Name=DateCommitted}"
+											Text="{helpers:ResourceString Name=/FilesResources/DateCommitted}"
 											Visibility="{x:Bind ColumnsViewModel.GitLastCommitDateColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 										<!--  Git Last Commit Message  -->
@@ -288,7 +288,7 @@
 											x:Name="GitCommititMessageColumnToggleMenuFlyoutItem"
 											Click="ToggleMenuFlyoutItem_Click"
 											IsChecked="{x:Bind ColumnsViewModel.GitLastCommitMessageColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-											Text="{helpers:ResourceString Name=CommitMessage}"
+											Text="{helpers:ResourceString Name=/FilesResources/CommitMessage}"
 											Visibility="{x:Bind ColumnsViewModel.GitLastCommitMessageColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 										<!--  Git Last Commit Author  -->
@@ -296,7 +296,7 @@
 											x:Name="GitCommitAuthorColumnToggleMenuFlyoutItem"
 											Click="ToggleMenuFlyoutItem_Click"
 											IsChecked="{x:Bind ColumnsViewModel.GitCommitAuthorColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-											Text="{helpers:ResourceString Name=Author}"
+											Text="{helpers:ResourceString Name=/FilesResources/Author}"
 											Visibility="{x:Bind ColumnsViewModel.GitCommitAuthorColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 										<!--  Git Last Commit SHA  -->
@@ -304,7 +304,7 @@
 											x:Name="GitCommitShaColumnToggleMenuFlyoutItem"
 											Click="ToggleMenuFlyoutItem_Click"
 											IsChecked="{x:Bind ColumnsViewModel.GitLastCommitShaColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-											Text="{helpers:ResourceString Name=CommitSha}"
+											Text="{helpers:ResourceString Name=/FilesResources/CommitSha}"
 											Visibility="{x:Bind ColumnsViewModel.GitLastCommitShaColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									</MenuFlyoutSubItem>
@@ -314,7 +314,7 @@
 										x:Name="FileTagColumnVisibilityToggleMenuFlyoutItem"
 										Click="ToggleMenuFlyoutItem_Click"
 										IsChecked="{x:Bind ColumnsViewModel.TagColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-										Text="{helpers:ResourceString Name=Tag}"
+										Text="{helpers:ResourceString Name=/FilesResources/Tag}"
 										Visibility="{x:Bind ColumnsViewModel.TagColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									<!--  Item Path  -->
@@ -322,7 +322,7 @@
 										x:Name="PathColumnVisibilityToggleMenuFlyoutItem"
 										Click="ToggleMenuFlyoutItem_Click"
 										IsChecked="{x:Bind ColumnsViewModel.PathColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-										Text="{helpers:ResourceString Name=PathColumn}"
+										Text="{helpers:ResourceString Name=/FilesResources/PathColumn}"
 										Visibility="{x:Bind ColumnsViewModel.PathColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									<!--  Item Original Path  -->
@@ -330,7 +330,7 @@
 										x:Name="OriginalPathColumnVisibilityToggleMenuFlyoutItem"
 										Click="ToggleMenuFlyoutItem_Click"
 										IsChecked="{x:Bind ColumnsViewModel.OriginalPathColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-										Text="{helpers:ResourceString Name=DetailsViewHeaderFlyout_ShowOriginalPath/Text}"
+										Text="{helpers:ResourceString Name=/FilesResources/DetailsViewHeaderFlyout_ShowOriginalPath/Text}"
 										Visibility="{x:Bind ColumnsViewModel.OriginalPathColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									<!--  Item Date Deleted  -->
@@ -338,7 +338,7 @@
 										x:Name="DateDeletedColumnVisibilityToggleMenuFlyoutItem"
 										Click="ToggleMenuFlyoutItem_Click"
 										IsChecked="{x:Bind ColumnsViewModel.DateDeletedColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-										Text="{helpers:ResourceString Name=DetailsViewHeaderFlyout_ShowDateDeleted/Text}"
+										Text="{helpers:ResourceString Name=/FilesResources/DetailsViewHeaderFlyout_ShowDateDeleted/Text}"
 										Visibility="{x:Bind ColumnsViewModel.DateDeletedColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									<!--  Item Date Modified  -->
@@ -346,7 +346,7 @@
 										x:Name="DateModifiedColumnVisibilityToggleMenuFlyoutItem"
 										Click="ToggleMenuFlyoutItem_Click"
 										IsChecked="{x:Bind ColumnsViewModel.DateModifiedColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-										Text="{helpers:ResourceString Name=DetailsViewHeaderFlyout_ShowDateModified/Text}"
+										Text="{helpers:ResourceString Name=/FilesResources/DetailsViewHeaderFlyout_ShowDateModified/Text}"
 										Visibility="{x:Bind ColumnsViewModel.DateModifiedColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									<!--  Item Date Created  -->
@@ -354,7 +354,7 @@
 										x:Name="DateCreatedColumnVisibilityToggleMenuFlyoutItem"
 										Click="ToggleMenuFlyoutItem_Click"
 										IsChecked="{x:Bind ColumnsViewModel.DateCreatedColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-										Text="{helpers:ResourceString Name=DetailsViewHeaderFlyout_ShowDateCreated/Text}"
+										Text="{helpers:ResourceString Name=/FilesResources/DetailsViewHeaderFlyout_ShowDateCreated/Text}"
 										Visibility="{x:Bind ColumnsViewModel.DateCreatedColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									<!--  Item Type  -->
@@ -362,7 +362,7 @@
 										x:Name="TypeColumnVisibilityToggleMenuFlyoutItem"
 										Click="ToggleMenuFlyoutItem_Click"
 										IsChecked="{x:Bind ColumnsViewModel.ItemTypeColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-										Text="{helpers:ResourceString Name=DetailsViewHeaderFlyout_ShowItemType/Text}"
+										Text="{helpers:ResourceString Name=/FilesResources/DetailsViewHeaderFlyout_ShowItemType/Text}"
 										Visibility="{x:Bind ColumnsViewModel.ItemTypeColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									<!--  Item Size  -->
@@ -370,7 +370,7 @@
 										x:Name="SizeColumnVisibilityToggleMenuFlyoutItem"
 										Click="ToggleMenuFlyoutItem_Click"
 										IsChecked="{x:Bind ColumnsViewModel.SizeColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-										Text="{helpers:ResourceString Name=DetailsViewHeaderFlyout_ShowItemSize/Text}"
+										Text="{helpers:ResourceString Name=/FilesResources/DetailsViewHeaderFlyout_ShowItemSize/Text}"
 										Visibility="{x:Bind ColumnsViewModel.SizeColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									<!--  Cloud Sync Status  -->
@@ -378,7 +378,7 @@
 										x:Name="CloudSyncStatusColumnVisibilityToggleMenuFlyoutItem"
 										Click="ToggleMenuFlyoutItem_Click"
 										IsChecked="{x:Bind ColumnsViewModel.StatusColumn.UserCollapsed, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-										Text="{helpers:ResourceString Name=DetailsViewHeaderFlyout_ShowSyncStatus/Text}"
+										Text="{helpers:ResourceString Name=/FilesResources/DetailsViewHeaderFlyout_ShowSyncStatus/Text}"
 										Visibility="{x:Bind ColumnsViewModel.StatusColumn.IsHidden, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
 									<!--  (Divider)  -->
@@ -388,7 +388,7 @@
 									<MenuFlyoutItem
 										x:Name="SetCurrentColumnsAsDefaultMenuFlyoutItem"
 										Click="SetDetailsColumnsAsDefault_Click"
-										Text="{helpers:ResourceString Name=SetAsDefault}" />
+										Text="{helpers:ResourceString Name=/FilesResources/SetAsDefault}" />
 
 								</MenuFlyout>
 							</Grid.ContextFlyout>
@@ -551,7 +551,7 @@
 								Margin="4,0,-4,0"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="Name"
-								Header="{helpers:ResourceString Name=Name}" />
+								Header="{helpers:ResourceString Name=/FilesResources/Name}" />
 
 							<!--  (Divider)  -->
 							<toolkit:GridSplitter
@@ -571,7 +571,7 @@
 								Grid.Column="4"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="GitStatus"
-								Header="{helpers:ResourceString Name=GitStatus}"
+								Header="{helpers:ResourceString Name=/FilesResources/GitStatus}"
 								Visibility="{x:Bind ColumnsViewModel.GitStatusColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -593,7 +593,7 @@
 								Grid.Column="6"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="ItemLastCommitDate"
-								Header="{helpers:ResourceString Name=DateCommitted}"
+								Header="{helpers:ResourceString Name=/FilesResources/DateCommitted}"
 								Visibility="{x:Bind ColumnsViewModel.GitLastCommitDateColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -615,7 +615,7 @@
 								Grid.Column="8"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="ItemLastCommitMessage"
-								Header="{helpers:ResourceString Name=CommitMessage}"
+								Header="{helpers:ResourceString Name=/FilesResources/CommitMessage}"
 								Visibility="{x:Bind ColumnsViewModel.GitLastCommitMessageColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -637,7 +637,7 @@
 								Grid.Column="10"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="ItemLastCommitAuthor"
-								Header="{helpers:ResourceString Name=Author}"
+								Header="{helpers:ResourceString Name=/FilesResources/Author}"
 								Visibility="{x:Bind ColumnsViewModel.GitCommitAuthorColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -659,7 +659,7 @@
 								Grid.Column="12"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="ItemLastCommitSha"
-								Header="{helpers:ResourceString Name=CommitSha}"
+								Header="{helpers:ResourceString Name=/FilesResources/CommitSha}"
 								Visibility="{x:Bind ColumnsViewModel.GitLastCommitShaColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -681,7 +681,7 @@
 								Grid.Column="14"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="FileTag"
-								Header="{helpers:ResourceString Name=Tag}"
+								Header="{helpers:ResourceString Name=/FilesResources/Tag}"
 								Visibility="{x:Bind ColumnsViewModel.TagColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -703,7 +703,7 @@
 								Grid.Column="16"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="Path"
-								Header="{helpers:ResourceString Name=Path}"
+								Header="{helpers:ResourceString Name=/FilesResources/Path}"
 								Visibility="{x:Bind ColumnsViewModel.PathColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -725,7 +725,7 @@
 								Grid.Column="18"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="OriginalFolder"
-								Header="{helpers:ResourceString Name=OriginalPath}"
+								Header="{helpers:ResourceString Name=/FilesResources/OriginalPath}"
 								Visibility="{x:Bind ColumnsViewModel.OriginalPathColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -747,7 +747,7 @@
 								Grid.Column="20"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="DateDeleted"
-								Header="{helpers:ResourceString Name=DateDeleted}"
+								Header="{helpers:ResourceString Name=/FilesResources/DateDeleted}"
 								Visibility="{x:Bind ColumnsViewModel.DateDeletedColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -769,7 +769,7 @@
 								Grid.Column="22"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="DateModified"
-								Header="{helpers:ResourceString Name=DateModifiedLowerCase}"
+								Header="{helpers:ResourceString Name=/FilesResources/DateModifiedLowerCase}"
 								Visibility="{x:Bind ColumnsViewModel.DateModifiedColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -791,7 +791,7 @@
 								Grid.Column="24"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="DateCreated"
-								Header="{helpers:ResourceString Name=DateCreated}"
+								Header="{helpers:ResourceString Name=/FilesResources/DateCreated}"
 								Visibility="{x:Bind ColumnsViewModel.DateCreatedColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -813,7 +813,7 @@
 								Grid.Column="26"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="FileType"
-								Header="{helpers:ResourceString Name=Type}"
+								Header="{helpers:ResourceString Name=/FilesResources/Type}"
 								Visibility="{x:Bind ColumnsViewModel.ItemTypeColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -835,7 +835,7 @@
 								Grid.Column="28"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="Size"
-								Header="{helpers:ResourceString Name=Size}"
+								Header="{helpers:ResourceString Name=/FilesResources/Size}"
 								Visibility="{x:Bind ColumnsViewModel.SizeColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -859,7 +859,7 @@
 								HorizontalContentAlignment="Left"
 								Command="{x:Bind UpdateSortOptionsCommand, Mode=OneWay}"
 								CommandParameter="SyncStatus"
-								Header="{helpers:ResourceString Name=syncStatusColumn/Header}"
+								Header="{helpers:ResourceString Name=/FilesResources/syncStatusColumn/Header}"
 								Visibility="{x:Bind ColumnsViewModel.StatusColumn.Visibility, Mode=OneWay}" />
 
 							<!--  (Divider)  -->
@@ -901,7 +901,7 @@
 											Height="Auto"
 											HorizontalAlignment="Center"
 											VerticalAlignment="Center"
-											AutomationProperties.Name="{helpers:ResourceString Name=FileBrowserThumbnailIconColumnGrid/AutomationProperties/Name}"
+											AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/FileBrowserThumbnailIconColumnGrid/AutomationProperties/Name}"
 											Opacity="{x:Bind Opacity, Mode=OneWay}"
 											TabFocusNavigation="Local"
 											Tag="ItemImage">
@@ -1130,7 +1130,7 @@
 																FontSize="12"
 																Glyph="&#xE711;"
 																Tapped="RemoveTagIcon_Tapped"
-																ToolTipService.ToolTip="{helpers:ResourceString Name=Remove}"
+																ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/Remove}"
 																Visibility="Collapsed" />
 															<VisualStateManager.VisualStateGroups>
 																<VisualStateGroup x:Name="CommonStates">
@@ -1516,7 +1516,7 @@
 			VerticalAlignment="Bottom"
 			x:Load="{x:Bind Commands.SearchUnindexedItems.IsExecutable, Mode=OneWay}"
 			Orientation="Vertical">
-			<TextBlock Text="{helpers:ResourceString Name=SearchUnindexedItemsLabel/Text}" />
+			<TextBlock Text="{helpers:ResourceString Name=/FilesResources/SearchUnindexedItemsLabel/Text}" />
 			<HyperlinkButton
 				x:Name="SearchUnindexedItemsButton"
 				HorizontalAlignment="Center"

@@ -7,15 +7,15 @@
 	xmlns:helpers="using:Files.App.Helpers"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	x:Name="AddBranch"
-	Title="{helpers:ResourceString Name=CreateNewBranch}"
+	Title="{helpers:ResourceString Name=/FilesResources/CreateNewBranch}"
 	Closing="ContentDialog_Closing"
 	CornerRadius="{StaticResource OverlayCornerRadius}"
 	DefaultButton="Primary"
 	IsPrimaryButtonEnabled="{x:Bind ViewModel.IsBranchValid, Mode=OneWay}"
 	PrimaryButtonStyle="{StaticResource AccentButtonStyle}"
-	PrimaryButtonText="{helpers:ResourceString Name=Create}"
+	PrimaryButtonText="{helpers:ResourceString Name=/FilesResources/Create}"
 	RequestedTheme="{x:Bind helpers:ThemeHelper.RootTheme}"
-	SecondaryButtonText="{helpers:ResourceString Name=Cancel}"
+	SecondaryButtonText="{helpers:ResourceString Name=/FilesResources/Cancel}"
 	Style="{StaticResource DefaultContentDialogStyle}"
 	mc:Ignorable="d">
 
@@ -36,17 +36,17 @@
 			<TextBlock
 				Grid.Column="0"
 				VerticalAlignment="Center"
-				Text="{helpers:ResourceString Name=Name}" />
+				Text="{helpers:ResourceString Name=/FilesResources/Name}" />
 			<TextBox
 				x:Name="BranchNameBox"
 				Grid.Column="1"
 				Width="260"
-				PlaceholderText="{helpers:ResourceString Name=EnterName}"
+				PlaceholderText="{helpers:ResourceString Name=/FilesResources/EnterName}"
 				Text="{x:Bind ViewModel.NewBranchName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 				<TextBox.Resources>
 					<TeachingTip
 						x:Name="InvalidNameWarning"
-						Title="{helpers:ResourceString Name=InvalidBranchName}"
+						Title="{helpers:ResourceString Name=/FilesResources/InvalidBranchName}"
 						IsOpen="{x:Bind ViewModel.ShowWarningTip, Mode=OneWay}"
 						PreferredPlacement="Bottom"
 						Target="{x:Bind BranchNameBox}" />
@@ -77,7 +77,7 @@
 				Grid.Row="0"
 				Grid.Column="0"
 				VerticalAlignment="Center"
-				Text="{helpers:ResourceString Name=BasedOn}" />
+				Text="{helpers:ResourceString Name=/FilesResources/BasedOn}" />
 			<ComboBox
 				x:Name="BranchBox"
 				Grid.Row="0"
@@ -91,7 +91,7 @@
 				Grid.Row="1"
 				Grid.Column="0"
 				VerticalAlignment="Center"
-				Text="{helpers:ResourceString Name=SwitchToNewBranch}" />
+				Text="{helpers:ResourceString Name=/FilesResources/SwitchToNewBranch}" />
 			<ToggleSwitch
 				Grid.Row="1"
 				Grid.Column="1"

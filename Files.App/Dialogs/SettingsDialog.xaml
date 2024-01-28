@@ -50,7 +50,7 @@
 				HorizontalAlignment="Left"
 				VerticalAlignment="Center"
 				FontWeight="SemiBold"
-				Text="{helpers:ResourceString Name=Settings}" />
+				Text="{helpers:ResourceString Name=/FilesResources/Settings}" />
 
 			<Button
 				x:Name="CloseSettingsDialogButton"
@@ -58,12 +58,12 @@
 				Height="36"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Center"
-				AutomationProperties.Name="{helpers:ResourceString Name=Close}"
+				AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/Close}"
 				Background="Transparent"
 				BorderBrush="Transparent"
 				Click="CloseSettingsDialogButton_Click"
 				ToolTipService.Placement="Bottom"
-				ToolTipService.ToolTip="{helpers:ResourceString Name=Close}">
+				ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/Close}">
 				<FontIcon FontSize="12" Glyph="&#xE8BB;" />
 			</Button>
 		</Grid>
@@ -86,7 +86,7 @@
 				<NavigationViewItem
 					AccessKey="P"
 					AutomationProperties.AutomationId="SettingsItemGeneral"
-					Content="{helpers:ResourceString Name=General}"
+					Content="{helpers:ResourceString Name=/FilesResources/General}"
 					IsSelected="True"
 					Tag="0">
 					<NavigationViewItem.Icon>
@@ -96,7 +96,7 @@
 				<NavigationViewItem
 					AccessKey="A"
 					AutomationProperties.AutomationId="SettingsItemAppearance"
-					Content="{helpers:ResourceString Name=Appearance}"
+					Content="{helpers:ResourceString Name=/FilesResources/Appearance}"
 					Tag="1">
 					<NavigationViewItem.Icon>
 						<FontIcon HorizontalAlignment="Left" Glyph="&#xE790;" />
@@ -105,7 +105,7 @@
 				<NavigationViewItem
 					AccessKey="F"
 					AutomationProperties.AutomationId="SettingsItemFolders"
-					Content="{helpers:ResourceString Name=Folders}"
+					Content="{helpers:ResourceString Name=/FilesResources/Folders}"
 					Tag="2">
 					<NavigationViewItem.Icon>
 						<FontIcon Glyph="&#xE8B7;" />
@@ -114,7 +114,7 @@
 				<NavigationViewItem
 					AccessKey="T"
 					AutomationProperties.AutomationId="SettingsItemTags"
-					Content="{helpers:ResourceString Name=FileTags}"
+					Content="{helpers:ResourceString Name=/FilesResources/FileTags}"
 					Tag="3">
 					<NavigationViewItem.Icon>
 						<FontIcon Glyph="&#xE8EC;" />
@@ -123,7 +123,7 @@
 				<NavigationViewItem
 					AccessKey="G"
 					AutomationProperties.AutomationId="SettingsItemGit"
-					Content="{helpers:ResourceString Name=Git}"
+					Content="{helpers:ResourceString Name=/FilesResources/Git}"
 					Tag="4">
 					<NavigationViewItem.Icon>
 						<FontIcon Glyph="&#xE794;" />
@@ -132,7 +132,7 @@
 				<NavigationViewItem
 					AccessKey="E"
 					AutomationProperties.AutomationId="SettingsItemAdvanced"
-					Content="{helpers:ResourceString Name=Advanced}"
+					Content="{helpers:ResourceString Name=/FilesResources/Advanced}"
 					Tag="5">
 					<NavigationViewItem.Icon>
 						<FontIcon Glyph="&#xF1AD;" />
@@ -141,7 +141,7 @@
 				<NavigationViewItem
 					AccessKey="B"
 					AutomationProperties.AutomationId="SettingsItemAbout"
-					Content="{helpers:ResourceString Name=About}"
+					Content="{helpers:ResourceString Name=/FilesResources/About}"
 					Tag="6">
 					<NavigationViewItem.Icon>
 						<FontIcon FontSize="16" Glyph="&#xE946;" />
