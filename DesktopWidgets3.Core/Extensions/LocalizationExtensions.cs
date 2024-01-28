@@ -8,30 +8,43 @@ namespace DesktopWidgets3.Core.Extensions;
 /// </summary>
 public static class LocalizationExtensions
 {
-    private static readonly ResourceMap resourcesTree = new ResourceManager().MainResourceMap.TryGetSubtree("Resources");
+    private static readonly string DefaultResourceFileName = "Resources";
 
     private static readonly ConcurrentDictionary<string, string> cachedResources = new();
 
-    public static string ToLocalized(this string resourceKey)
+    private static readonly Dictionary<string, ResourceMap> resourcesTrees = new()
     {
-        if (cachedResources.TryGetValue(resourceKey, out var value))
+        { DefaultResourceFileName, new ResourceManager().MainResourceMap.TryGetSubtree(DefaultResourceFileName) }
+    };
+
+    public static void AddResourceFile(string resourceFileName)
+    {
+        var resourceMap = new ResourceManager().MainResourceMap.TryGetSubtree(resourceFileName);
+        resourcesTrees.Add(resourceFileName, resourceMap);
+    }
+
+    public static string GetLocalized(this string resourceKey, string resourceFileName = "Resources")
+    {
+        var cachedResourceKey = $"{resourceFileName}/{resourceKey}";
+        if (cachedResources.TryGetValue(cachedResourceKey, out var value))
         {
             return value;
         }
 
+        var resourcesTree = resourcesTrees[resourceFileName];
         value = resourcesTree.TryGetValue(resourceKey)?.ValueAsString;
 
         // TODO: Check string here.
-        return cachedResources[resourceKey] = value ?? string.Empty;
+        return cachedResources[cachedResourceKey] = value ?? string.Empty;
 
 #if DEBUG
         if (value is null)
         {
-            throw new Exception($"Resource key '{resourceKey}' not found.");
+            throw new Exception($"Resource key '{cachedResourceKey}' not found.");
         }
-        return cachedResources[resourceKey] = value;
+        return cachedResources[cachedResourceKey] = value;
 #else
-        return cachedResources[resourceKey] = value ?? string.Empty;
+            return cachedResources[cachedResourceKey] = value ?? string.Empty;
 #endif
     }
 }

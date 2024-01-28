@@ -3632,4 +3632,8 @@
   <data name="Login" xml:space="preserve">
     <value>登录</value>
   </data>
+  <data name="CommitsNumber" xml:space="preserve">
+    <value>{0} 个提交</value>
+    <comment>CHANGE</comment>
+  </data>
 </root>

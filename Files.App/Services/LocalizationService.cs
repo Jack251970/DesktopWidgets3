@@ -3,11 +3,11 @@
 
 namespace Files.App.Services;
 
-// TODO: change to internal.
+// TODO: Change to internal.
 public sealed class LocalizationService : ILocalizationService
 {
 	public string LocalizeFromResourceKey(string resourceKey)
 	{
-		return resourceKey.ToLocalized();
+		return resourceKey.GetLocalized("FilesResources");
 	}
 }

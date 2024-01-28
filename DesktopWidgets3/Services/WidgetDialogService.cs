@@ -11,13 +11,13 @@ public class WidgetDialogService : IWidgetDialogService
         Right
     }
 
-    private readonly string Ok = "Ok".ToLocalized();
-    private readonly string Cancel = "Cancel".ToLocalized();
+    private readonly string Ok = "Ok".GetLocalized();
+    private readonly string Cancel = "Cancel".GetLocalized();
 
     public async Task<WidgetDialogResult> ShowDeleteWidgetDialog(WindowEx window)
     {
-        var title = "Dialog_DeleteWidget_Title".ToLocalized();
-        var content = "Dialog_DeleteWidget_Content".ToLocalized();
+        var title = "Dialog_DeleteWidget_Title".GetLocalized();
+        var content = "Dialog_DeleteWidget_Content".GetLocalized();
         return await ShowTwoButtonDialog(window, title, content);
     }
 

@@ -28,7 +28,7 @@ public sealed partial class NavShellPage : Page
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
         App.AppTitleBar = AppTitleBar;
-        AppTitleBarText.Text = "AppDisplayName".ToLocalized();
+        AppTitleBarText.Text = "AppDisplayName".GetLocalized();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

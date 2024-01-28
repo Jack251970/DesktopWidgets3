@@ -9,7 +9,7 @@ public class WidgetResourceService : IWidgetResourceService
     {
         return widgetType switch
         {
-            _ => $"Widget_{widgetType}_Label".ToLocalized(),
+            _ => $"Widget_{widgetType}_Label".GetLocalized(),
         };
     }
 

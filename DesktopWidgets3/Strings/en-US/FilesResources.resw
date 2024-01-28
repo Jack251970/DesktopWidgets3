@@ -3644,4 +3644,8 @@
   <data name="ExtractHereSmart" xml:space="preserve">
     <value>Extract here (Smart)</value>
   </data>
+  <data name="CommitsNumber" xml:space="preserve">
+    <value>{0} commits</value>
+    <comment>CHANGE</comment>
+  </data>
 </root>

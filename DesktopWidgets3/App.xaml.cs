@@ -71,7 +71,7 @@ public partial class App : Application
     {
         // Check if app is already running
 #if DEBUG
-        if (SystemHelper.IsWindowExist(null, "AppDisplayName".ToLocalized(), false))
+        if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), false))
         {
             // Do nothing here to let the debug app run
         }
@@ -307,6 +307,7 @@ public partial class App : Application
 
         // Initialize core extensions
         DependencyExtensions.Initialize(GetService<IDependencyService>());
+        LocalizationExtensions.AddResourceFile("FilesResources");
         LocalSettingsExtensions.ApplicationDataFolder = GetService<ILocalSettingsService>().GetApplicationDataFolder();
 
         UnhandledException += App_UnhandledException;

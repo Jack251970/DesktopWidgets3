@@ -116,14 +116,14 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
         var menuFlyout = new MenuFlyout();
         var disableMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_DisableWidget_Text".ToLocalized()
+            Text = "MenuFlyoutItem_DisableWidget_Text".GetLocalized()
         };
         disableMenuItem.Click += (s, e) => DisableWidget();
         menuFlyout.Items.Add(disableMenuItem);
 
         var deleteMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_DeleteWidget_Text".ToLocalized()
+            Text = "MenuFlyoutItem_DeleteWidget_Text".GetLocalized()
         };
         deleteMenuItem.Click += (s, e) => DeleteWidget();
         menuFlyout.Items.Add(deleteMenuItem);
@@ -132,7 +132,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
         var enterMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_EnterEditMode_Text".ToLocalized()
+            Text = "MenuFlyoutItem_EnterEditMode_Text".GetLocalized()
         };
         enterMenuItem.Click += (s, e) => EnterEidtMode();
         menuFlyout.Items.Add(enterMenuItem);

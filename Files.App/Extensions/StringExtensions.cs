@@ -80,4 +80,6 @@ public static class StringExtensions
 	public static string ToLongSizeString(this long size) => ByteSize.FromBytes(size).ToLongSizeString();
 	public static string ToLongSizeString(this ulong size) => ByteSize.FromBytes(size).ToLongSizeString();
 	public static string ToLongSizeString(this ByteSize size) => $"{size.ToSizeString()} ({size.Bytes:#,##0} {"ItemSizeBytes".ToLocalized()})";
+
+    public static string GetLocalizedResource(this string s) => s.GetLocalized("FilesResources");
 }
