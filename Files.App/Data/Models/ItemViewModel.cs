@@ -1436,7 +1436,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 		// This prevents both the shortcut glyph and folder icon being shown
 		else if (!item.IsShortcut)
 		{
-			await dispatcherQueue.EnqueueOrInvokeAsync(() => groupImage = new SvgImageSource(new Uri("ms-appx:///Assets/FolderIcon2.svg"))
+			await dispatcherQueue.EnqueueOrInvokeAsync(() => groupImage = new SvgImageSource(new Uri("ms-appx:///Files.App/Assets/FolderIcon2.svg"))
 			{
 				RasterizePixelHeight = 128,
 				RasterizePixelWidth = 128,

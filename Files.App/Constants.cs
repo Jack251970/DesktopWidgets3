@@ -63,27 +63,27 @@ public static class Constants
 
 	public static class FluentIconsPaths
 	{
-		public const string CloudDriveIcon = "ms-appx:///Assets/FluentIcons/CloudDrive.png";
-		public const string FavoritesIcon = "ms-appx:///Assets/FluentIcons/Favorites.png";
-		public const string FileTagsIcon = "ms-appx:///Assets/FluentIcons/FileTags.png";
-		public const string HomeIcon = "ms-appx:///Assets/FluentIcons/Home.png";
+		public const string CloudDriveIcon = "ms-appx:///Files.App/Assets/FluentIcons/CloudDrive.png";
+		public const string FavoritesIcon = "ms-appx:///Files.App/Assets/FluentIcons/Favorites.png";
+		public const string FileTagsIcon = "ms-appx:///Files.App/Assets/FluentIcons/FileTags.png";
+		public const string HomeIcon = "ms-appx:///Files.App/Assets/FluentIcons/Home.png";
 	}
 
 	public static class WslIconsPaths
 	{
-		public const string Alpine = "ms-appx:///Assets/WSL/alpinepng.png";
-		public const string DebianIcon = "ms-appx:///Assets/WSL/debianpng.png";
-		public const string GenericIcon = "ms-appx:///Assets/WSL/genericpng.png";
-		public const string KaliIcon = "ms-appx://./Assets/WSL/kalipng.png";
-		public const string OpenSuse = "ms-appx:///Assets/WSL/opensusepng.png";
-		public const string UbuntuIcon = "ms-appx:///Assets/WSL/ubuntupng.png";
+		public const string Alpine = "ms-appx:///Files.App/Assets/WSL/alpinepng.png";
+		public const string DebianIcon = "ms-appx:///Files.App/Assets/WSL/debianpng.png";
+		public const string GenericIcon = "ms-appx:///Files.App/Assets/WSL/genericpng.png";
+		public const string KaliIcon = "ms-appx:///Files.App/Assets/WSL/kalipng.png";
+		public const string OpenSuse = "ms-appx:///Files.App/Assets/WSL/opensusepng.png";
+		public const string UbuntuIcon = "ms-appx:///Files.App/Assets/WSL/ubuntupng.png";
 	}
 
 	public static class AssetPaths
 	{
-		public const string DevLogo = "/Assets/AppTiles/Dev/Logo.ico";
-		public const string PreviewLogo = "/Assets/AppTiles/Preview/Logo.ico";
-		public const string StableLogo = "/Assets/AppTiles/Release/Logo.ico";
+		public const string DevLogo = "/Files.App/Assets/AppTiles/Dev/Logo.ico";
+		public const string PreviewLogo = "/Files.App/Assets/AppTiles/Preview/Logo.ico";
+		public const string StableLogo = "/Files.App/Assets/AppTiles/Release/Logo.ico";
 	}
 
 	public static class UI
@@ -194,12 +194,12 @@ public static class Constants
 		/// <summary>
 		/// The path to the json file containing a list of file properties to be loaded in the properties window details page.
 		/// </summary>
-		public const string DetailsPagePropertiesJsonPath = @"ms-appx:///Resources/PropertiesInformation.json";
+		public const string DetailsPagePropertiesJsonPath = @"ms-appx:///Files.App/Resources/PropertiesInformation.json";
 
 		/// <summary>
 		/// The path to the json file containing a list of file properties to be loaded in the preview pane.
 		/// </summary>
-		public const string PreviewPaneDetailsPropertiesJsonPath = @"ms-appx:///Resources/PreviewPanePropertiesInformation.json";
+		public const string PreviewPaneDetailsPropertiesJsonPath = @"ms-appx:///Files.App/Resources/PreviewPanePropertiesInformation.json";
 	}
 
 	public static class Filesystem
@@ -247,7 +247,7 @@ public static class Constants
 
 		public static readonly string RecentItemsPath = Environment.GetFolderPath(Environment.SpecialFolder.Recent);
 
-		public static Dictionary<string, string> ShellPlaces =
+		public static readonly Dictionary<string, string> ShellPlaces =
 			new()
 			{
 				{ "::{645FF040-5081-101B-9F08-00AA002F954E}", RecycleBinPath },

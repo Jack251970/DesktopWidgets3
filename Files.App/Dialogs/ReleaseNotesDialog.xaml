@@ -32,7 +32,7 @@
 				Padding="20"
 				Orientation="Horizontal"
 				Spacing="12">
-				<Image Width="32" Source="\Assets\AppTiles\Dev\Logo.ico" />
+                <Image Width="32" Source="/Files.App/Assets/AppTiles/Dev/Logo.ico" />
 
 				<TextBlock
 					VerticalAlignment="Center"

@@ -197,7 +197,7 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 		if (Path.Exists(destExeFilePath))
 		{
 			var hashEqual = false;
-			var srcHashFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/FilesOpenDialog/Files.App.Launcher.exe.sha256"));
+			var srcHashFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Files.App/Assets/FilesOpenDialog/Files.App.Launcher.exe.sha256"));
 			var destHashFilePath = Path.Combine(destFolderPath, "Files.App.Launcher.exe.sha256");
 
 			if (Path.Exists(destHashFilePath))
@@ -210,7 +210,7 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 
 			if (!hashEqual)
 			{
-				var srcExeFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/FilesOpenDialog/Files.App.Launcher.exe"));
+				var srcExeFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Files.App/Assets/FilesOpenDialog/Files.App.Launcher.exe"));
 				var destFolder = await StorageFolder.GetFolderFromPathAsync(destFolderPath);
 
 				await srcExeFile.CopyAsync(destFolder, "Files.App.Launcher.exe", NameCollisionOption.ReplaceExisting);

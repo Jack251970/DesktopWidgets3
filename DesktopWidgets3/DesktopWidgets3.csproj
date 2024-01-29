@@ -28,17 +28,18 @@
     <PackageCertificateThumbprint>318145A86B844B1C331B4CECF2F874EA139197BC</PackageCertificateThumbprint>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>D:\VS\DesktopWidgets3\DesktopWidgets3\bin\x64\Release\net7.0-windows10.0.19041.0\AppPackages\</AppxPackageDir>
+    <AppxPackageDir>E:\source\DesktopWidgets3\DesktopWidgets3\bin\x64\Release\net7.0-windows10.0.19041.0\AppPackages\</AppxPackageDir>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
-    <AppInstallerUri>D:\VS\DesktopWidgets3\DesktopWidgets3\bin\x64\Release\net7.0-windows10.0.19041.0\AppPackages\</AppInstallerUri>
-    
+    <AppInstallerUri>E:\source\DesktopWidgets3\DesktopWidgets3\bin\x64\Release\net7.0-windows10.0.19041.0\AppPackages\</AppInstallerUri>
   </PropertyGroup>
+  
   <ItemGroup>
     <Content Remove="Assets\PackageIcon.png" />
   </ItemGroup>
+  
   <ItemGroup>
     <None Remove="Views\Controls\TrayIconView.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
@@ -53,6 +54,7 @@
     <None Remove="Views\Windows\OverlayWindow.xaml" />
     <None Remove="Views\Windows\WidgetWindow.xaml" />
   </ItemGroup>
+  
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
       <WrapperTool>tlbimp</WrapperTool>
@@ -87,6 +89,7 @@
     <ProjectReference Include="..\Files.Core\Files.Core.csproj" />
     <ProjectReference Include="..\Files.Shared\Files.Shared.csproj" />
   </ItemGroup>
+  
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -156,6 +159,6 @@
   </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir $(TargetDir)Assets&#xD;&#xA;copy $(ProjectDir)Assets\WindowIcon.ico $(TargetDir)Assets\WindowIcon.ico&#xD;&#xA;mkdir $(TargetDir)Assets\FluentIcons&#xD;&#xA;copy $(ProjectDir)Assets\FluentIcons\* $(TargetDir)Assets\FluentIcons\*&#xD;&#xA;copy $(ProjectDir)..\Files.App\Assets\* $(TargetDir)Assets\*&#xD;&#xA;" />
+    <Exec Command="mkdir $(TargetDir)Assets&#xD;&#xA;copy $(ProjectDir)Assets\WindowIcon.ico $(TargetDir)Assets\WindowIcon.ico&#xD;&#xA;mkdir $(TargetDir)Assets\FluentIcons&#xD;&#xA;copy $(ProjectDir)Assets\FluentIcons\* $(TargetDir)Assets\FluentIcons\*&#xD;&#xA;" />
   </Target>
 </Project>

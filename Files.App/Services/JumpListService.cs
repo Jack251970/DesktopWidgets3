@@ -172,7 +172,7 @@ public class JumpListService : IJumpListService
 			var jumplistItem = JumpListItem.CreateWithArguments(path, displayName);
 			jumplistItem.Description = jumplistItem.Arguments ?? string.Empty;
 			jumplistItem.GroupName = group;
-			jumplistItem.Logo = new Uri("ms-appx:///Assets/FolderIcon.png");
+			jumplistItem.Logo = new Uri("ms-appx:///Files.App/Assets/FolderIcon.png");
 
 			if (string.Equals(group, JumpListRecentGroupHeader, StringComparison.OrdinalIgnoreCase))
 			{

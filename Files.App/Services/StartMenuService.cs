@@ -22,7 +22,7 @@ public sealed class StartMenuService : IStartMenuService
 		return Task.FromResult(exists);
 	}
 
-	/*/// <inheritdoc/>
+    /*/// <inheritdoc/>
 	public async Task PinAsync(IFolder folder, string? displayName = null)
 	{
 		var tileId = GetNativeTileId(folder.Id);
@@ -30,8 +30,8 @@ public sealed class StartMenuService : IStartMenuService
 
 		try
 		{
-			var path150x150 = new Uri("ms-appx:///Assets/tile-0-300x300.png");
-			var path71x71 = new Uri("ms-appx:///Assets/tile-0-250x250.png");
+			var path150x150 = new Uri("ms-appx:///Files.App/Assets/tile-0-300x300.png");
+			var path71x71 = new Uri("ms-appx:///Files.App/Assets/tile-0-250x250.png");
 
 			var tile = new SecondaryTile(
 				tileId,
@@ -58,8 +58,8 @@ public sealed class StartMenuService : IStartMenuService
 		}
 	}*/
 
-	/// <inheritdoc/>
-	public async Task UnpinAsync(IFolder folder)
+    /// <inheritdoc/>
+    public async Task UnpinAsync(IFolder folder)
 	{
 		var startScreen = StartScreenManager.GetDefault();
 		var tileId = GetNativeTileId(folder.Id);
