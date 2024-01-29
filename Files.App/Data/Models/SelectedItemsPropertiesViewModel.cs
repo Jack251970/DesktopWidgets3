@@ -592,7 +592,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 
     public bool ContainsFilesOrFolders { get; set; }
 
-    public Uri FolderIconSource => ContainsFilesOrFolders ? new Uri("ms-appx:///Files.App/Assets/FolderIcon2.svg") : new Uri("ms-appx:///Assets/FolderIcon.svg");
+    public Uri FolderIconSource => ContainsFilesOrFolders ? new Uri("ms-appx:///Files.App/Assets/FolderIcon2.svg") : new Uri("ms-appx:///Files.App/Assets/FolderIcon.svg");
 
     private ObservableCollection<FilePropertySection> propertySections = new();
 	public ObservableCollection<FilePropertySection> PropertySections

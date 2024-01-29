@@ -5,8 +5,7 @@ using System.Collections.Concurrent;
 
 namespace Files.App.Utils.Storage;
 
-// TODO: change to internal.
-public class StorageCacheController : IStorageCacheController
+internal class StorageCacheController : IStorageCacheController
 {
 	private static StorageCacheController instance = null!;
 

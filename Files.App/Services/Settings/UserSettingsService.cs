@@ -6,8 +6,7 @@ using System.IO;
 
 namespace Files.App.Services.Settings;
 
-// TODO: change to internal.
-public sealed class UserSettingsService : BaseJsonSettings, IUserSettingsService
+internal sealed class UserSettingsService : BaseJsonSettings, IUserSettingsService
 {
 	private IGeneralSettingsService _GeneralSettingsService = null!;
     public IGeneralSettingsService GeneralSettingsService => GetSettingsService(ref _GeneralSettingsService);

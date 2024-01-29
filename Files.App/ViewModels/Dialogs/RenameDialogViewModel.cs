@@ -3,8 +3,7 @@
 
 namespace Files.App.ViewModels.Dialogs;
 
-// TODO: change to internal.
-public class RenameDialogViewModel : ObservableObject
+internal class RenameDialogViewModel : ObservableObject
 {
 	private bool isNameInvalid;
 	public bool IsNameInvalid

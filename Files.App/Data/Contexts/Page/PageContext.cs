@@ -3,8 +3,7 @@
 
 namespace Files.App.Data.Contexts;
 
-// TODO: Change to internal.
-public class PageContext : IPageContext
+internal class PageContext : IPageContext
 {
 	public event EventHandler? Changing;
 	public event EventHandler? Changed;

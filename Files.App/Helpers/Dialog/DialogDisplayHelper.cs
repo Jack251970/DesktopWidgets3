@@ -6,8 +6,7 @@ using Files.App.ViewModels.Dialogs;
 
 namespace Files.App.Helpers;
 
-// TODO: change to internal.
-public class DialogDisplayHelper
+internal class DialogDisplayHelper
 {
 	/// <summary>
 	/// Standard dialog, to ensure consistency.

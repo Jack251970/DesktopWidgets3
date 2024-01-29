@@ -13,8 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace Files.App.Utils.Git;
 
-// TODO: change to internal.
-public static partial class GitHelpers
+internal static partial class GitHelpers
 {
 	private const string BRANCH_NAME_PATTERN = @"^(?!/)(?!.*//)[^\000-\037\177 ~^:?*[]+(?!.*\.\.)(?!.*@\{)(?!.*\\)(?<!/\.)(?<!\.)(?<!/)(?<!\.lock)$";
 
@@ -850,7 +849,7 @@ public static partial class GitHelpers
 	{
 		var uniqueName = branch.FriendlyName[END_OF_ORIGIN_PREFIX..];
 
-		// TODO: This is a temp fix to avoid an issue where Files would create many branches in a loop
+		// FILESTODO: This is a temp fix to avoid an issue where Files would create many branches in a loop
 		if (repository.Branches.Any(b => !b.IsRemote && b.FriendlyName == uniqueName))
         {
             return;

@@ -35,6 +35,7 @@ using Files.App.Services.Settings;
 using Files.App.ViewModels.UserControls;
 using Files.App.ViewModels;
 using Files.App.Data.Contexts;
+using Files.App.Helpers;
 
 namespace DesktopWidgets3;
 
@@ -110,6 +111,9 @@ public partial class App : Application
             // Theme Management
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
 
+            // Dependency Injection
+            services.AddSingleton<IDependencyService, DependencyService>();
+
             #endregion
 
             #region Navigation Service
@@ -153,103 +157,6 @@ public partial class App : Application
 
             // System Info
             services.AddSingleton<ISystemInfoService, SystemInfoService>();
-
-            #endregion
-
-            #region Files
-
-            // File Commands
-            services.AddTransient<ICommandManager, CommandManager>();
-            services.AddTransient<IModifiableCommandManager, ModifiableCommandManager>();
-
-            // DateTime Format
-            services.AddSingleton<IDateTimeFormatter, UserDateTimeFormatter>();
-            services.AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>();
-
-            // File Commands
-            services.AddSingleton<IImageService, ImagingService>();
-
-            // File Dialogs
-            services.AddTransient<IDialogService, DialogService>();
-
-            // Drivers
-            services.AddSingleton<DrivesViewModel>();
-
-            // Network Drivers
-            services.AddSingleton<NetworkDrivesViewModel>();
-            services.AddSingleton<INetworkDrivesService, NetworkDrivesService>();
-
-            // Files App Model
-            services.AddSingleton<AppModel>();
-
-            // Removable Drives
-            services.AddSingleton<IRemovableDrivesService, RemovableDrivesService>();
-
-            // Size Provider
-            services.AddSingleton<ISizeProvider, UserSizeProvider>();
-
-            // Ftp Storage
-            services.AddSingleton<IFtpStorageService, FtpStorageService>();
-
-            // Add Item
-            services.AddSingleton<IAddItemService, AddItemService>();
-
-            // Localization Resource
-            services.AddSingleton<ILocalizationService, LocalizationService>();
-
-            // Threading
-            services.AddSingleton<IThreadingService, ThreadingService>();
-
-            // Dependency Injection
-            services.AddSingleton<IDependencyService, DependencyService>();
-
-            // Quick Access
-            services.AddSingleton<QuickAccessManager>();
-            services.AddSingleton<IQuickAccessService, QuickAccessService>();
-
-            // Cloud Drives
-            services.AddSingleton<ICloudDetector, CloudDetector>();
-
-            // Start Menu
-            services.AddSingleton<IStartMenuService, StartMenuService>();
-
-            // Application
-            services.AddSingleton<IApplicationService, ApplicationService>();
-
-            // Libarary
-            services.AddSingleton<LibraryManager>();
-
-            // Settings
-            services.AddTransient<IUserSettingsService, UserSettingsService>();
-            services.AddTransient<IAppearanceSettingsService, AppearanceSettingsService>(sp => new AppearanceSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
-            services.AddTransient<IGeneralSettingsService, GeneralSettingsService>(sp => new GeneralSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
-            services.AddTransient<IFoldersSettingsService, FoldersSettingsService>(sp => new FoldersSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
-            services.AddTransient<IApplicationSettingsService, ApplicationSettingsService>(sp => new ApplicationSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
-            services.AddTransient<IInfoPaneSettingsService, InfoPaneSettingsService>(sp => new InfoPaneSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
-            services.AddTransient<ILayoutSettingsService, LayoutSettingsService>(sp => new LayoutSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
-            services.AddTransient<Files.Core.Services.Settings.IAppSettingsService, Files.App.Services.Settings.AppSettingsService>(sp => new Files.App.Services.Settings.AppSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()));
-
-            // Starus Center
-            services.AddTransient<StatusCenterViewModel>();
-
-            // Main Page
-            services.AddTransient<MainPageViewModel>();
-
-            // Storage History
-            services.AddSingleton<StorageHistoryWrapper>();
-
-            // Jump List
-            services.AddSingleton<IJumpListService, JumpListService>();
-
-            // File Tag
-            services.AddSingleton<IFileTagsSettingsService, FileTagsSettingsService>();
-
-            // Context
-            services.AddTransient<IContentPageContext, ContentPageContext>();
-            services.AddTransient<IPageContext, PageContext>();
-
-            // Info Pane
-            services.AddTransient<InfoPaneViewModel>();
 
             #endregion
 
@@ -300,17 +207,22 @@ public partial class App : Application
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
 
             #endregion
-        }).
-        Build();
+        })
+        .ConfigureHost()
+        .Build();
 
         GetService<IAppNotificationService>().Initialize();
+
+        UnhandledException += App_UnhandledException;
+
+        UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.ExceptionObject as Exception, false);
+        TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);
 
         // Initialize core extensions
         DependencyExtensions.Initialize(GetService<IDependencyService>());
         LocalizationExtensions.AddResourceFile("FilesResources");
         LocalSettingsExtensions.ApplicationDataFolder = GetService<ILocalSettingsService>().GetApplicationDataFolder();
-
-        UnhandledException += App_UnhandledException;
     }
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e) {}

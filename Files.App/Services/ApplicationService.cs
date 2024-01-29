@@ -3,8 +3,7 @@
 namespace Files.App.Services;
 
 /// <inheritdoc/>
-// TODO: change to internal.
-public sealed class ApplicationService : IApplicationService
+internal sealed class ApplicationService : IApplicationService
 {
 	// Workaround to help improve code clarity
 	internal static readonly AppEnvironment AppEnvironment =

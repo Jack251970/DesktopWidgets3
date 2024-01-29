@@ -3,8 +3,7 @@
 
 namespace Files.App.Utils.Serialization;
 
-// TODO: change to internal.
-public interface IJsonSettingsDatabase
+internal interface IJsonSettingsDatabase
 {
 	TValue? GetValue<TValue>(string key, TValue? defaultValue = default);
 

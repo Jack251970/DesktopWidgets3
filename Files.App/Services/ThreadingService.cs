@@ -5,8 +5,7 @@ using Microsoft.UI.Dispatching;
 
 namespace Files.App.Services;
 
-// TODO: change to internal.
-public sealed class ThreadingService : IThreadingService
+internal sealed class ThreadingService : IThreadingService
 {
 	private readonly DispatcherQueue _dispatcherQueue;
 

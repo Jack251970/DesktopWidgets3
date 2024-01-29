@@ -5,8 +5,7 @@ using System.Collections.Immutable;
 
 namespace Files.App.Data.Contexts;
 
-// TODO: Change to internal.
-public class ContentPageContext : ObservableObject, IContentPageContext
+internal class ContentPageContext : ObservableObject, IContentPageContext
 {
 	private readonly IReadOnlyList<ListedItem> emptyItems = Enumerable.Empty<ListedItem>().ToImmutableList();
 

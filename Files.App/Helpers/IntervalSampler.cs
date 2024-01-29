@@ -3,8 +3,7 @@
 
 namespace Files.App.Helpers;
 
-// TODO: change to internal.
-public class IntervalSampler
+internal class IntervalSampler
 {
 	private DateTime recordPoint;
 	private readonly TimeSpan sampleInterval;

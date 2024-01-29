@@ -103,7 +103,7 @@ namespace WinRT
 		readonly string _fileName;
 		readonly IntPtr _moduleHandle;
 		readonly delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int> _GetActivationFactory;
-		readonly delegate* unmanaged[Stdcall]<int> _CanUnloadNow; // TODO: Eventually periodically call
+		readonly delegate* unmanaged[Stdcall]<int> _CanUnloadNow; // FILESTODO: Eventually periodically call
 
 		static readonly string _currentModuleDirectory = AppContext.BaseDirectory;
 

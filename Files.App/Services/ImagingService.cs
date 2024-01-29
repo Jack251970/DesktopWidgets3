@@ -8,8 +8,7 @@ using Windows.Storage.FileProperties;
 
 namespace Files.App.Services;
 
-// TODO: change to internal.
-public sealed class ImagingService : IImageService
+internal sealed class ImagingService : IImageService
 {
 	/// <inheritdoc/>
 	public async Task<IImage?> GetIconAsync(IStorable storable, CancellationToken cancellationToken)

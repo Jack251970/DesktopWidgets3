@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 
 namespace Files.App.Utils.FileTags;
@@ -74,4 +74,5 @@ public class FileTagsManager
 
 		return Task.CompletedTask;
 	}
-}*/
+}
+

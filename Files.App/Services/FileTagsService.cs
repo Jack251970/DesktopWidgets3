@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Files.Core.Storage;
+using Files.Core.Storage;
 using Files.Core.Storage.Extensions;
 using Files.Core.Storage.LocatableStorage;
 using System.Runtime.CompilerServices;
@@ -32,9 +32,11 @@ internal sealed class FileTagsService : IFileTagsService
 	public async IAsyncEnumerable<TagViewModel> GetTagsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
 		foreach (var item in FileTagsSettingsService.FileTagList)
-			yield return item;
+        {
+            yield return item;
+        }
 
-		await Task.CompletedTask;
+        await Task.CompletedTask;
 	}
 
 	/// <inheritdoc/>
@@ -43,13 +45,17 @@ internal sealed class FileTagsService : IFileTagsService
 		foreach (var item in FileTagsHelper.GetDbInstance().GetAll())
 		{
 			if (!item.Tags.Contains(tagUid) || RecycleBinHelpers.IsPathUnderRecycleBin(item.FilePath))
-				continue;
+            {
+                continue;
+            }
 
-			var storable = await StorageService.TryGetStorableAsync(item.FilePath, cancellationToken);
+            var storable = await StorageService.TryGetStorableAsync(item.FilePath, cancellationToken);
 			if (storable is null)
-				continue;
+            {
+                continue;
+            }
 
-			yield return new(item.Tags, storable);
+            yield return new(item.Tags, storable);
 		}
 
 		await Task.CompletedTask;
@@ -62,11 +68,14 @@ internal sealed class FileTagsService : IFileTagsService
 		{
 			var storable = await StorageService.TryGetStorableAsync(item.FilePath, cancellationToken);
 			if (storable is null)
-				continue;
+            {
+                continue;
+            }
 
-			yield return new(item.Tags, storable);
+            yield return new(item.Tags, storable);
 		}
 
 		await Task.CompletedTask;
 	}
-}*/
+}
+

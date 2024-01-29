@@ -5,8 +5,7 @@ using Microsoft.UI.Xaml;
 
 namespace Files.App.Data.TemplateSelectors;
 
-// TODO: change to internal.
-public sealed class FileSystemDialogItemSelector : BaseTemplateSelector<BaseFileSystemDialogItemViewModel>
+internal sealed class FileSystemDialogItemSelector : BaseTemplateSelector<BaseFileSystemDialogItemViewModel>
 {
 	public DataTemplate? ConflictItemDataTemplate { get; set; }
 

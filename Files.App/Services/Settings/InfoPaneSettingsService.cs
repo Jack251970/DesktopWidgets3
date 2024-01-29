@@ -5,8 +5,7 @@ using Microsoft.AppCenter.Analytics;
 
 namespace Files.App.Services.Settings;
 
-// TODO: change to internal.
-public sealed class InfoPaneSettingsService : BaseObservableJsonSettings, IInfoPaneSettingsService
+internal sealed class InfoPaneSettingsService : BaseObservableJsonSettings, IInfoPaneSettingsService
 {
 	public bool IsEnabled
 	{

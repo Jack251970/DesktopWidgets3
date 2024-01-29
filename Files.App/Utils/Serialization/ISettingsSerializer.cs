@@ -3,8 +3,7 @@
 
 namespace Files.App.Utils.Serialization;
 
-// TODO: change to internal.
-public interface ISettingsSerializer
+internal interface ISettingsSerializer
 {
 	bool CreateFile(string path);
 

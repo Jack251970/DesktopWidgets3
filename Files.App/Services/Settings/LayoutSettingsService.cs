@@ -3,8 +3,7 @@
 
 namespace Files.App.Services.Settings;
 
-// TODO: change to internal.
-public sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayoutSettingsService
+internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayoutSettingsService
 {
 	public LayoutSettingsService(ISettingsSharingContext settingsSharingContext)
 	{

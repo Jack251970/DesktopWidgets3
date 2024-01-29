@@ -3,8 +3,7 @@
 
 namespace Files.App.Services.Settings;
 
-// TODO: change to internal.
-public sealed class ApplicationSettingsService : BaseObservableJsonSettings, IApplicationSettingsService
+internal sealed class ApplicationSettingsService : BaseObservableJsonSettings, IApplicationSettingsService
 {
 	public bool ClickedToReviewApp
 	{

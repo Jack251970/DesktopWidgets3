@@ -5,8 +5,7 @@ using Microsoft.Win32;
 
 namespace Files.App.Helpers;
 
-// TODO: change to internal.
-public static class SoftwareHelpers
+internal static class SoftwareHelpers
 {
 	public static bool IsVSCodeInstalled()
 	{

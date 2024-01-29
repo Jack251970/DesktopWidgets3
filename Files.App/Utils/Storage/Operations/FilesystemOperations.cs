@@ -579,7 +579,7 @@ public class FilesystemOperations : IFilesystemOperations
 		}
 		else if (fsResult == FileSystemStatusCode.InUse)
 		{
-			// TODO: Retry
+			// FILESTODO: Retry
 			await DialogDisplayHelper.ShowDialogAsync(_folderViewViewModel, DynamicDialogFactory.GetFor_FileInUseDialog());
 		}
 
@@ -701,7 +701,7 @@ public class FilesystemOperations : IFilesystemOperations
 			}
 			else if (renamed == FileSystemStatusCode.InUse)
 			{
-				// TODO: Retry
+				// FILESTODO: Retry
 				await DialogDisplayHelper.ShowDialogAsync(_folderViewViewModel, DynamicDialogFactory.GetFor_FileInUseDialog());
 			}
 			else if (renamed == FileSystemStatusCode.NotFound)
@@ -813,7 +813,7 @@ public class FilesystemOperations : IFilesystemOperations
                         fsResult = await FilesystemTasks.Wrap(() => CloneDirectoryAsync(sourceFolder.Result, destinationFolder.Result, Path.GetFileName(destination), CreationCollisionOption.FailIfExists));
                     }
 
-                    // TODO: we could use here FilesystemHelpers with registerHistory false?
+                    // FILESTODO: we could use here FilesystemHelpers with registerHistory false?
                 }
 
 				fsProgress.ReportStatus(fsResult);

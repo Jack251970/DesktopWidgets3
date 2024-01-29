@@ -3,8 +3,7 @@
 
 namespace Files.App.Utils.Serialization;
 
-// TODO: change to internal.
-public interface IJsonSettingsSerializer
+internal interface IJsonSettingsSerializer
 {
 	string? SerializeToJson(object? obj);
 

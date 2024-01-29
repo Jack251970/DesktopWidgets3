@@ -4,12 +4,10 @@
 namespace Files.App.Services;
 
 /// <inheritdoc cref="IAddItemService"/>
-// TODO: Change to internal.
-public sealed class AddItemService : IAddItemService
+internal sealed class AddItemService : IAddItemService
 {
 	private List<ShellNewEntry> _cached = null!;
 
-    // TODO: Initalize this service in AppLifecycleService.cs.
 	public async Task InitializeAsync()
 	{
 		_cached = await ShellNewEntryExtensions.GetNewContextMenuEntries();

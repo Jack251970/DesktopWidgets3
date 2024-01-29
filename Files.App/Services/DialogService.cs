@@ -10,8 +10,7 @@ using Windows.Foundation.Metadata;
 namespace Files.App.Services;
 
 /// <inheritdoc cref="IDialogService"/>
-// TODO: change to internal.
-public sealed class DialogService : IDialogService
+internal sealed class DialogService : IDialogService
 {
     private IFolderViewViewModel _folderViewViewModel = null!;
 

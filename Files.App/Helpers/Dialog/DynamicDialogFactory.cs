@@ -56,7 +56,7 @@ public static class DynamicDialogFactory
 		return dialog;
 	}
 
-	public static DynamicDialog GetFor_RenameDialog()
+	public static DynamicDialog GetFor_RenameDialog(IFolderViewViewModel folderViewViewModel)
 	{
 		DynamicDialog? dialog = null;
 		TextBox inputText = new()
@@ -85,7 +85,7 @@ public static class DynamicDialogFactory
 
 		inputText.TextChanged += (textBox, args) =>
 		{
-            var isInputValid = false;/*FilesystemHelpers.IsValidForFilename(inputText.Text);*/ // TODO: Add support.
+            var isInputValid = FilesystemHelpers.IsValidForFilename(folderViewViewModel, inputText.Text);
 			((RenameDialogViewModel)warning.DataContext).IsNameInvalid = !string.IsNullOrEmpty(inputText.Text) && !isInputValid;
 			dialog!.ViewModel.DynamicButtonsEnabled = isInputValid
 													? DynamicDialogButtons.Primary | DynamicDialogButtons.Cancel

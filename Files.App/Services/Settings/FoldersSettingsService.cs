@@ -5,8 +5,7 @@ using Microsoft.AppCenter.Analytics;
 
 namespace Files.App.Services.Settings;
 
-// TODO: change to internal.
-public sealed class FoldersSettingsService : BaseObservableJsonSettings, IFoldersSettingsService
+internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFoldersSettingsService
 {
 	public FoldersSettingsService(ISettingsSharingContext settingsSharingContext)
 	{

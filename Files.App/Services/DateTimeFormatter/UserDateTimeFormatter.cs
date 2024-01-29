@@ -3,8 +3,8 @@
 
 namespace Files.App.Services.DateTimeFormatter;
 
-// TODO: Add AppLifeCycleHelper.cs and change to internal.
-public class UserDateTimeFormatter : IDateTimeFormatter
+// TODO: Add AppLifeCycleHelper.cs.
+internal class UserDateTimeFormatter : IDateTimeFormatter
 {
     /*public IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
 

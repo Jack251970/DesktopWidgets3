@@ -8,8 +8,7 @@ namespace Files.App.Utils.Serialization;
 /// <summary>
 /// A base class to easily manage all application's settings.
 /// </summary>
-// TODO: change to internal.
-public abstract class BaseJsonSettings : ISettingsSharingContext
+internal abstract class BaseJsonSettings : ISettingsSharingContext
 {
 	private ISettingsSharingContext? _settingsSharingContext;
 

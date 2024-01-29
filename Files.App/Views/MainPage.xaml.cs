@@ -326,7 +326,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 		// Notify user that drag and drop is disabled
 		// Prompt is disabled in the dev environment to prevent issues with the automation testing 
-		// ToDo put this in a StartupPromptService
+		// FILESTODO: put this in a StartupPromptService
 		if
 		(
 			ApplicationService.Environment is not AppEnvironment.Dev &&
@@ -337,8 +337,8 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 			DispatcherQueue.TryEnqueue(async () => await AppRunningAsAdminPromptAsync());
 		}
 
-		// ToDo put this in a StartupPromptService
-		if (InfoHelper.GetName() != "49306atecsolution.FilesUWP" || UserSettingsService.ApplicationSettingsService.ClickedToReviewApp)
+        // FILESTODO: put this in a StartupPromptService
+        if (InfoHelper.GetName() != "49306atecsolution.FilesUWP" || UserSettingsService.ApplicationSettingsService.ClickedToReviewApp)
         {
             return;
         }

@@ -5,8 +5,7 @@ using Microsoft.AppCenter.Analytics;
 
 namespace Files.App.Services.Settings;
 
-// TODO: change to internal.
-public sealed class AppSettingsService : BaseObservableJsonSettings, IAppSettingsService
+internal sealed class AppSettingsService : BaseObservableJsonSettings, IAppSettingsService
 {
 	public AppSettingsService(ISettingsSharingContext settingsSharingContext)
 	{

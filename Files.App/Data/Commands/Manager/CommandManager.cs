@@ -10,8 +10,7 @@ using System.Collections.Immutable;
 
 namespace Files.App.Data.Commands;
 
-// TODO: Change to internal.
-public class CommandManager : ICommandManager
+internal class CommandManager : ICommandManager
 {
     private IFolderViewViewModel FolderViewViewModel = null!;
 

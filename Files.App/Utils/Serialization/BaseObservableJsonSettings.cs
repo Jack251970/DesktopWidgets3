@@ -5,8 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Files.App.Utils.Serialization;
 
-// TODO: change to internal.
-public abstract class BaseObservableJsonSettings : BaseJsonSettings, INotifyPropertyChanged
+internal abstract class BaseObservableJsonSettings : BaseJsonSettings, INotifyPropertyChanged
 {
 	public event PropertyChangedEventHandler? PropertyChanged;
 

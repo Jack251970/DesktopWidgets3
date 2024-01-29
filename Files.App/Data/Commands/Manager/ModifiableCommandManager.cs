@@ -5,8 +5,7 @@ using System.Collections.Immutable;
 
 namespace Files.App.Data.Commands;
 
-// TODO: Change to internal.
-public class ModifiableCommandManager : IModifiableCommandManager
+internal class ModifiableCommandManager : IModifiableCommandManager
 {
     /*private readonly ICommandManager Commands = DependencyExtensions.GetService<ICommandManager>();*/
 

@@ -7,8 +7,7 @@ using System.IO;
 
 namespace Files.App.Services.Settings;
 
-// TODO: Change to internal.
-public sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSettingsService
+internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSettingsService
 {
 	public event EventHandler? OnSettingImportedEvent;
 

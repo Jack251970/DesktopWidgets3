@@ -7,8 +7,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 namespace Files.App.Data.Models;
 
 /// <inheritdoc cref="IImage"/>
-// TODO: change to internal.
-public sealed class BitmapImageModel : IImage
+internal sealed class BitmapImageModel : IImage
 {
 	public BitmapImage Image { get; }
 

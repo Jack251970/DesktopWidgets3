@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Contracts.ViewModels;
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.Views.Windows;
 using Microsoft.UI.Dispatching;

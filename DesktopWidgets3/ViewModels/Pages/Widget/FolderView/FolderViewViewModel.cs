@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 using Files.App.Views;
 using Files.App.Data.Contexts;
 using System.ComponentModel;
+using Files.App.Helpers;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -93,10 +94,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public Frame WidgetFrame { get; set; } = null!;
 
-    private void FolderViewViewModel_NavigatedTo(object? parameter, bool isInitialized)
+    private async void FolderViewViewModel_NavigatedTo(object? parameter, bool isInitialized)
     {
         if (!isInitialized)
         {
+            await AppLifecycleHelper.InitializeAppComponentsAsync(this);
+
             _userSettingsService.GeneralSettingsService.OpenSpecificPageOnStartup = true;
             _userSettingsService.GeneralSettingsService.TabsOnStartupList = new List<string>() { "D:\\"/*FolderPath*/ };
             WidgetFrame.Navigate(typeof(MainPage), this);

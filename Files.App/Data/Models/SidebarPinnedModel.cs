@@ -67,7 +67,7 @@ public class SidebarPinnedModel
 		}
 	}
 
-	public async Task<LocationItem> CreateLocationItemFromPathAsync(string path)
+	public static async Task<LocationItem> CreateLocationItemFromPathAsync(string path)
 	{
 		var item = await FilesystemTasks.Wrap(() => DriveHelpers.GetRootFromPathAsync(path));
 		var res = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(path, item));

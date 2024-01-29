@@ -9,8 +9,7 @@ using Windows.Storage.Streams;
 
 namespace Files.App.Helpers;
 
-// TODO: change to internal.
-public static class BitmapHelper
+internal static class BitmapHelper
 {
     public static async Task<BitmapImage?> ToBitmapAsync(this byte[]? data, int decodeSize = -1)
     {

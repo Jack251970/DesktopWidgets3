@@ -255,3 +255,4 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 		IsUpdating = false;
 	}
 }*/
+

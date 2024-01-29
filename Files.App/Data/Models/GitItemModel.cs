@@ -6,8 +6,7 @@ namespace Files.App.Data.Models;
 /// <summary>
 /// Represents a model for Git items
 /// </summary>
-// TODO: change to internal.
-public class GitItemModel
+internal class GitItemModel
 {
 	/// <summary>
 	/// Gets or initializes file change kind

@@ -228,7 +228,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		IsUpdateAvailable = UpdateService.IsUpdateAvailable;
 		IsUpdating = UpdateService.IsUpdating;
 
-		// TODO: Bad code, result is called twice when checking for release notes
+		// FILESTODO: Bad code, result is called twice when checking for release notes
 		if (UpdateService.IsReleaseNotesAvailable)
         {
             await CheckForReleaseNotesAsync();
@@ -269,7 +269,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	{
 		switch (e.SettingName)
 		{
-			// TODO: Move this to the widget page, it doesn't belong here.
+			// FILESTODO: Move this to the widget page, it doesn't belong here.
 			case nameof(UserSettingsService.GeneralSettingsService.ShowQuickAccessWidget):
 			case nameof(UserSettingsService.GeneralSettingsService.ShowDrivesWidget):
 			case nameof(UserSettingsService.GeneralSettingsService.ShowFileTagsWidget):

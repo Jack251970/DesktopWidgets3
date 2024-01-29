@@ -6,8 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.Data.TemplateSelectors;
 
-// TODO: change to internal.
-public abstract class BaseTemplateSelector<TItem> : DataTemplateSelector
+internal abstract class BaseTemplateSelector<TItem> : DataTemplateSelector
 {
 	protected override sealed DataTemplate SelectTemplateCore(object item)
 	{

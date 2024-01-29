@@ -322,7 +322,7 @@ public static class UIFilesystemHelpers
 		string? userInput = null;
 		if (itemType != AddItemDialogItemType.File || itemInfo?.Command is null)
 		{
-			var dialog = DynamicDialogFactory.GetFor_RenameDialog();
+			var dialog = DynamicDialogFactory.GetFor_RenameDialog(folderViewViewModel);
 			await dialog.TryShowAsync(folderViewViewModel); // Show rename dialog
 
 			if (dialog.DynamicResult != DynamicDialogResult.Primary)

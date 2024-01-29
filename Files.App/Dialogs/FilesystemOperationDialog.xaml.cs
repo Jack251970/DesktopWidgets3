@@ -200,8 +200,7 @@ public sealed partial class FilesystemOperationDialog : ContentDialog, IDialog<F
 
 	private void EndRename(FileSystemDialogConflictItemViewModel conflictItem)
 	{
-        // TODO: Add support.
-		/*conflictItem.CustomName = FilesystemHelpers.FilterRestrictedCharacters(conflictItem.CustomName);*/
+		conflictItem.CustomName = FilesystemHelpers.FilterRestrictedCharacters(FolderViewViewModel, conflictItem.CustomName);
 
 		if (ViewModel.IsNameAvailableForItem(conflictItem, conflictItem.CustomName!))
         {

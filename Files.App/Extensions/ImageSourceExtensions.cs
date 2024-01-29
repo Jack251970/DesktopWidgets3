@@ -8,8 +8,7 @@ using Windows.Storage.Streams;
 
 namespace Files.App.Extensions;
 
-// TODO: change to internal.
-public static class ImageSourceExtensions
+internal static class ImageSourceExtensions
 {
 	public static async Task<byte[]> ToByteArrayAsync(this IInputStream stream)
 	{

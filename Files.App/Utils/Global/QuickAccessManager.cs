@@ -40,7 +40,6 @@ public sealed class QuickAccessManager
 	private void PinnedItemsWatcher_Changed(object sender, FileSystemEventArgs e)
 		=> PinnedItemsModified?.Invoke(this, e);
 
-    // TODO: Remember to add initialize events in AppLifecycleHelper.cs.
     public async Task InitializeAsync()
     {
         PinnedItemsModified += Model.LoadAsync;

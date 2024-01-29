@@ -3,8 +3,7 @@
 
 namespace Files.App.Utils.Storage;
 
-// TODO: change to internal.
-public interface IStorageCacheController
+internal interface IStorageCacheController
 {
 	public ValueTask<string> ReadFileDisplayNameFromCache(string path, CancellationToken cancellationToken);
 
