@@ -36,6 +36,7 @@ using Files.App.ViewModels.UserControls;
 using Files.App.ViewModels;
 using Files.App.Data.Contexts;
 using Files.App.Helpers;
+using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3;
 
@@ -223,6 +224,7 @@ public partial class App : Application
         DependencyExtensions.Initialize(GetService<IDependencyService>());
         LocalizationExtensions.AddResourceFile("FilesResources");
         LocalSettingsExtensions.ApplicationDataFolder = GetService<ILocalSettingsService>().GetApplicationDataFolder();
+        UIThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
     }
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e) {}
@@ -235,9 +237,6 @@ public partial class App : Application
         {
             MainWindow = new MainWindow();
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
-
-            // Initialize core extensions
-            UIThreadExtensions.Initialize(MainWindow.DispatcherQueue);
         }
     }
 
