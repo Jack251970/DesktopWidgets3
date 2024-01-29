@@ -21,9 +21,9 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 {
     protected IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
-	private readonly DispatcherQueueTimer _updateDateDisplayTimer;
+	/*private readonly DispatcherQueueTimer _updateDateDisplayTimer;
 
-	private DateTimeFormats _lastDateTimeFormats;
+	private DateTimeFormats _lastDateTimeFormats;*/
 
 	private Task _gitFetch = Task.CompletedTask;
 
@@ -224,12 +224,12 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 		GitHelpers.GitFetchCompleted += FilesystemViewModel_GitDirectoryUpdated;
 
-		_updateDateDisplayTimer = DispatcherQueue.CreateTimer();
+        /*_updateDateDisplayTimer = DispatcherQueue.CreateTimer();
 		_updateDateDisplayTimer.Interval = TimeSpan.FromSeconds(1);
-		_updateDateDisplayTimer.Tick += UpdateDateDisplayTimer_Tick;
-		/*_lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
+        _updateDateDisplayTimer.Tick += UpdateDateDisplayTimer_Tick;
+		_lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
 		_updateDateDisplayTimer.Start();*/
-	}
+    }
 
     // CHANGE: Initialize folder view view model and related services.
     protected void InitializeBaseShellPage(CurrentInstanceViewModel instanceViewModel)
@@ -258,8 +258,8 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
         FilesystemHelpers = new FilesystemHelpers(FolderViewViewModel, this, cancellationTokenSource.Token);
 
-        _lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
-        _updateDateDisplayTimer.Start();
+        /*_lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
+        _updateDateDisplayTimer.Start();*/
     }
 
 	protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
@@ -875,7 +875,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	public abstract void NavigateToPath(string? navigationPath, Type? sourcePageType, NavigationArguments? navArgs = null);
 
-	private void UpdateDateDisplayTimer_Tick(object sender, object e)
+	/*private void UpdateDateDisplayTimer_Tick(object sender, object e)
 	{
 		if (DependencyExtensions.GetService<AppModel>().IsMainWindowClosed)
         {
@@ -891,7 +891,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		{
 			FilesystemViewModel?.UpdateDateDisplay(false);
 		}
-	}
+	}*/
 
 	public virtual void Dispose()
 	{
@@ -934,7 +934,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
         GitHelpers.GitFetchCompleted -= FilesystemViewModel_GitDirectoryUpdated;
 
-		_updateDateDisplayTimer.Stop();
+		/*_updateDateDisplayTimer.Stop();*/
 
         GC.SuppressFinalize(this);
 	}

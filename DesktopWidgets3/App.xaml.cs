@@ -16,25 +16,7 @@ using DesktopWidgets3.Views.Windows;
 using DesktopWidgets3.ViewModels.Pages;
 using DesktopWidgets3.ViewModels.Pages.Widget;
 using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
-using Files.App.Data.Commands;
-using Files.App.Utils.Storage;
-using Files.App.Services.DateTimeFormatter;
-using Files.Core.Services.DateTimeFormatter;
-using Files.App.Services;
 using Files.Core.Services;
-using Files.App.Data.Models;
-using Files.Core.Services.SizeProvider;
-using Files.Core.Storage;
-using Files.App.Storage.FtpStorage;
-using Files.App.Utils;
-using Files.Core.Utils.Cloud;
-using Files.App.Utils.Cloud;
-using Files.App.Utils.Library;
-using Files.Core.Services.Settings;
-using Files.App.Services.Settings;
-using Files.App.ViewModels.UserControls;
-using Files.App.ViewModels;
-using Files.App.Data.Contexts;
 using Files.App.Helpers;
 using Microsoft.UI.Dispatching;
 
@@ -222,8 +204,11 @@ public partial class App : Application
 
         // Initialize core extensions
         DependencyExtensions.Initialize(GetService<IDependencyService>());
-        LocalizationExtensions.AddResourceFile("FilesResources");
+        
         LocalSettingsExtensions.ApplicationDataFolder = GetService<ILocalSettingsService>().GetApplicationDataFolder();
+
+        ResourceExtensions.AddStringResource("FilesResources");
+
         UIThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
     }
 

@@ -43,16 +43,16 @@ public static class AppLifecycleHelper
 
         // Start off a list of tasks we need to run before we can continue startup
         await Task.WhenAll(
-			OptionalTaskAsync(CloudDrivesManager.UpdateDrivesAsync(), !isCloudDrivesManagerInitialized),
+			OptionalTaskAsync(CloudDrivesManager.UpdateDrivesAsync(), !isCloudDrivesManagerInitialized && generalSettingsService.ShowCloudDrivesSection),
             OptionalTaskAsync(DependencyExtensions.GetService<LibraryManager>().UpdateLibrariesAsync(), !isInitialized),
-			OptionalTaskAsync(WSLDistroManager.UpdateDrivesAsync(), !isWSLDistroManagerInitialized),
-            OptionalTaskAsync(DependencyExtensions.GetService<FileTagsManager>().UpdateFileTagsAsync(), !isFileTagsManagerInitialized),
+			OptionalTaskAsync(WSLDistroManager.UpdateDrivesAsync(), !isWSLDistroManagerInitialized && generalSettingsService.ShowWslSection),
+            OptionalTaskAsync(DependencyExtensions.GetService<FileTagsManager>().UpdateFileTagsAsync(), !isFileTagsManagerInitialized && generalSettingsService.ShowFileTagsSection),
             OptionalTaskAsync(DependencyExtensions.GetService<QuickAccessManager>().InitializeAsync(), !isInitialized)
         );
 
-        isCloudDrivesManagerInitialized = generalSettingsService.ShowCloudDrivesSection;
-        isWSLDistroManagerInitialized = generalSettingsService.ShowWslSection;
-        isFileTagsManagerInitialized = generalSettingsService.ShowFileTagsSection;
+        isCloudDrivesManagerInitialized = isCloudDrivesManagerInitialized is true || generalSettingsService.ShowCloudDrivesSection;
+        isWSLDistroManagerInitialized = isWSLDistroManagerInitialized is true || generalSettingsService.ShowWslSection;
+        isFileTagsManagerInitialized = isFileTagsManagerInitialized is true || generalSettingsService.ShowFileTagsSection;
 
         if (isInitialized)
         {

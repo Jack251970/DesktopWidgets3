@@ -4,9 +4,9 @@ using Microsoft.Windows.ApplicationModel.Resources;
 namespace DesktopWidgets3.Core.Extensions;
 
 /// <summary>
-/// Provides static extension for string localization.
+/// Provides static extension for resources.
 /// </summary>
-public static class LocalizationExtensions
+public static class ResourceExtensions
 {
     private static readonly string DefaultResourceFileName = "Resources";
 
@@ -17,7 +17,7 @@ public static class LocalizationExtensions
         { DefaultResourceFileName, new ResourceManager().MainResourceMap.TryGetSubtree(DefaultResourceFileName) }
     };
 
-    public static void AddResourceFile(string resourceFileName)
+    public static void AddStringResource(string resourceFileName)
     {
         var resourceMap = new ResourceManager().MainResourceMap.TryGetSubtree(resourceFileName);
         resourcesTrees.Add(resourceFileName, resourceMap);

@@ -101,7 +101,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             await AppLifecycleHelper.InitializeAppComponentsAsync(this);
 
             _userSettingsService.GeneralSettingsService.OpenSpecificPageOnStartup = true;
-            _userSettingsService.GeneralSettingsService.TabsOnStartupList = new List<string>() { "D:\\"/*FolderPath*/ };
+            _userSettingsService.GeneralSettingsService.TabsOnStartupList = new List<string>() { FolderPath };
             WidgetFrame.Navigate(typeof(MainPage), this);
         }
     }
