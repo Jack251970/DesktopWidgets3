@@ -288,4 +288,16 @@
   <data name="WidgetSettings_ShowBps_Card.Header" xml:space="preserve">
     <value>Show Bps</value>
   </data>
+  <data name="WidgetSettings_ShowExtension_Card.Description" xml:space="preserve">
+    <value>Show extensions for known file types</value>
+  </data>
+  <data name="WidgetSettings_ShowExtension_Card.Header" xml:space="preserve">
+    <value>Show extensions</value>
+  </data>
+  <data name="WidgetSettings_ShowThumbnail_Card.Description" xml:space="preserve">
+    <value>Show thumbnails for image file types</value>
+  </data>
+  <data name="WidgetSettings_ShowThumbnail_Card.Header" xml:space="preserve">
+    <value>Show thumbnails</value>
+  </data>
 </root>
