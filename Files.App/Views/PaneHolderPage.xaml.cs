@@ -83,7 +83,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 	{
 		get
 		{
-			if (DependencyExtensions.GetService<AppModel>().IsMainWindowClosed)
+			if (App.AppModel.IsMainWindowClosed)
             {
                 return false;
             }

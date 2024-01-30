@@ -370,7 +370,7 @@ public static class Win32StorageEnumerator
                 IsUrl = isUrl,
             };
         }
-        else if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(itemPath, out var library))
+        else if (App.LibraryManager.TryGetLibrary(itemPath, out var library))
         {
             return new LibraryItem(folderViewViewModel, library)
             {

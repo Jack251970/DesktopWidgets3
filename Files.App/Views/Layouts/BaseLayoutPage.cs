@@ -82,7 +82,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		=> ParentShellPageInstance?.InstanceViewModel;
 
 	public static AppModel AppModel
-		=> DependencyExtensions.GetService<AppModel>();
+		=> App.AppModel;
 
 #pragma warning disable CA1822 // Mark members as static
 
@@ -500,7 +500,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
 			if (!navigationArguments.IsLayoutSwitch)
 			{
-				var displayName = DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(navigationArguments.SearchPathParam!, out var lib) ? lib.Text : navigationArguments.SearchPathParam;
+				var displayName = App.LibraryManager.TryGetLibrary(navigationArguments.SearchPathParam!, out var lib) ? lib.Text : navigationArguments.SearchPathParam;
 				ParentShellPageInstance.UpdatePathUIToWorkingDirectory(null!, string.Format("SearchPagePathBoxOverrideText".GetLocalizedResource(), navigationArguments.SearchQuery, displayName));
 				var searchInstance = new Utils.Storage.FolderSearch
 				{

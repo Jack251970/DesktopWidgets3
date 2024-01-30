@@ -19,21 +19,21 @@ public class RemovableDrivesService : IRemovableDrivesService
 	public async IAsyncEnumerable<ILocatableFolder> GetDrivesAsync()
 	{
 		var list = DriveInfo.GetDrives();
-		var googleDrivePath = DependencyExtensions.GetService<AppModel>().GoogleDrivePath;
-		var pCloudDrivePath = DependencyExtensions.GetService<AppModel>().PCloudDrivePath;
+		var googleDrivePath = App.AppModel.GoogleDrivePath;
+		var pCloudDrivePath = App.AppModel.PCloudDrivePath;
 
 		foreach (var drive in list)
 		{
 			var res = await FilesystemTasks.Wrap(() => StorageFolder.GetFolderFromPathAsync(drive.Name).AsTask());
 			if (res.ErrorCode is FileSystemStatusCode.Unauthorized)
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
+				App.Logger?.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
 					+ " failed at the StorageFolder initialization step. This device will be ignored.");
 				continue;
 			}
 			else if (!res)
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
+				App.Logger?.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
 					+ " failed at the StorageFolder initialization step. This device will be ignored.");
 				continue;
 			}
@@ -49,7 +49,7 @@ public class RemovableDrivesService : IRemovableDrivesService
                 continue;
             }
 
-            DependencyExtensions.GetService<ILogger>()?.LogInformation($"Drive added: {driveItem.Path}, {driveItem.Type}");
+            App.Logger?.LogInformation($"Drive added: {driveItem.Path}, {driveItem.Type}");
 
 			yield return driveItem;
 		}

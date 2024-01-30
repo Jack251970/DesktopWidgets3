@@ -54,7 +54,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		=> Type == DriveType.Network;
 
     public bool IsPinned
-        => DependencyExtensions.GetService<QuickAccessManager>().Model.FavoriteItems.Contains(path);
+        => App.QuickAccessManager.Model.FavoriteItems.Contains(path);
 
 	public string MaxSpaceText
 		=> MaxSpace.ToSizeString();

@@ -225,7 +225,7 @@ public class NativeWinApiHelper
 			if (isRunningOnArm is null)
 			{
 				isRunningOnArm = IsArmProcessor();
-				DependencyExtensions.GetService<ILogger>()?.LogInformation("Running on ARM: {0}", isRunningOnArm);
+				App.Logger?.LogInformation("Running on ARM: {0}", isRunningOnArm);
 			}
 			return isRunningOnArm ?? false;
 		}

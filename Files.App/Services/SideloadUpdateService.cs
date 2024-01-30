@@ -31,7 +31,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 
 	private const string TEMPORARY_UPDATE_PACKAGE_NAME = "UpdatePackage.msix";
 
-	private ILogger? Logger { get; } = DependencyExtensions.GetService<ILogger>();
+	private ILogger? Logger { get; } = App.Logger;
 
 	private string PackageName { get; } = Package.Current.Id.Name;
 
@@ -178,7 +178,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 				await srcExeFile.CopyAsync(destFolder, "Files.App.Launcher.exe", NameCollisionOption.ReplaceExisting);
 				await srcHashFile.CopyAsync(destFolder, "Files.App.Launcher.exe.sha256", NameCollisionOption.ReplaceExisting);
 
-				DependencyExtensions.GetService<ILogger>()?.LogInformation("Files.App.Launcher updated.");
+				App.Logger?.LogInformation("Files.App.Launcher updated.");
 			}
 		}
 
@@ -236,7 +236,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 		try
 		{
 			var restartStatus = RegisterApplicationRestart(null!, 0);
-			DependencyExtensions.GetService<AppModel>().ForceProcessTermination = true;
+			App.AppModel.ForceProcessTermination = true;
 
 			Logger?.LogInformation($"Register for restart: {restartStatus}");
 

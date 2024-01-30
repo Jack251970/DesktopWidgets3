@@ -27,10 +27,10 @@ public class QuickAccessService : IQuickAccessService
             await ContextMenu.InvokeVerb("pintohome", new[] {folderPath});
         }
 
-        await DependencyExtensions.GetService<QuickAccessManager>().Model.LoadAsync();
+        await App.QuickAccessManager.Model.LoadAsync();
 		/*if (doUpdateQuickAccessWidget)
         {
-            DependencyExtensions.GetService<QuickAccessManager>().UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(folderPaths, true));
+            App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(folderPaths, true));
         }*/
     }
 
@@ -78,34 +78,34 @@ public class QuickAccessService : IQuickAccessService
 			}
 		}
 
-		await DependencyExtensions.GetService<QuickAccessManager>().Model.LoadAsync();
+		await App.QuickAccessManager.Model.LoadAsync();
 		/*if (doUpdateQuickAccessWidget)
         {
-            DependencyExtensions.GetService<QuickAccessManager>().UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(folderPaths, false));
+            App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(folderPaths, false));
         }*/
     }
 
 	public bool IsItemPinned(string folderPath)
 	{
-		return DependencyExtensions.GetService<QuickAccessManager>().Model.FavoriteItems.Contains(folderPath);
+		return App.QuickAccessManager.Model.FavoriteItems.Contains(folderPath);
 	}
 
 	public async Task SaveAsync(string[] items)
 	{
-		if (Equals(items, DependencyExtensions.GetService<QuickAccessManager>().Model.FavoriteItems.ToArray()))
+		if (Equals(items, App.QuickAccessManager.Model.FavoriteItems.ToArray()))
         {
             return;
         }
 
-        DependencyExtensions.GetService<QuickAccessManager>().PinnedItemsWatcher!.EnableRaisingEvents = false;
+        App.QuickAccessManager.PinnedItemsWatcher!.EnableRaisingEvents = false;
 
 		// Unpin every item that is below this index and then pin them all in order
 		await UnpinFromSidebarAsync(Array.Empty<string>(), false);
 
 		await PinToSidebarAsync(items, false);
-        DependencyExtensions.GetService<QuickAccessManager>().PinnedItemsWatcher!.EnableRaisingEvents = true;
+        App.QuickAccessManager.PinnedItemsWatcher!.EnableRaisingEvents = true;
 
-        /*DependencyExtensions.GetService<QuickAccessManager>().UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(items, true)
+        /*App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(items, true)
 		{
 			Reorder = true
 		});*/

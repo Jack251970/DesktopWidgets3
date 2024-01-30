@@ -8,7 +8,7 @@ namespace Files.App.Utils.Storage;
 
 public class StorageHistoryOperations : IStorageHistoryOperations
 {
-    private readonly StorageHistoryWrapper HistoryWrapper = DependencyExtensions.GetService<StorageHistoryWrapper>();
+    private readonly StorageHistoryWrapper HistoryWrapper = App.HistoryWrapper;
 
 	private IFilesystemHelpers helpers;
 	private IFilesystemOperations operations;

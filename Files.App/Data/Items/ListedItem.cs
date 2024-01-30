@@ -387,7 +387,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 	public bool IsGitItem => this is GitItem;
 	public virtual bool IsExecutable => FileExtensionHelpers.IsExecutableFile(ItemPath);
 	public virtual bool IsPythonFile => FileExtensionHelpers.IsPythonFile(ItemPath);
-	public bool IsPinned => DependencyExtensions.GetService<QuickAccessManager>().Model.FavoriteItems.Contains(itemPath);
+	public bool IsPinned => App.QuickAccessManager.Model.FavoriteItems.Contains(itemPath);
 	public bool IsDriveRoot => ItemPath == PathNormalization.GetPathRoot(ItemPath);
 	public bool IsElevated => CheckElevationRights();
 

@@ -211,13 +211,13 @@ public class SidebarPinnedModel
 
 	public async void LoadAsync(object? sender, FileSystemEventArgs e)
 	{
-		DependencyExtensions.GetService<QuickAccessManager>().PinnedItemsWatcher!.EnableRaisingEvents = false;
+		App.QuickAccessManager.PinnedItemsWatcher!.EnableRaisingEvents = false;
 		await LoadAsync();
-        /*DependencyExtensions.GetService<QuickAccessManager>().UpdateQuickAccessWidget?.Invoke(null, new ModifyQuickAccessEventArgs((await QuickAccessService.GetPinnedFoldersAsync()).ToArray(), true)
+        /*App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(null, new ModifyQuickAccessEventArgs((await QuickAccessService.GetPinnedFoldersAsync()).ToArray(), true)
 		{
 			Reset = true
 		});*/
-        DependencyExtensions.GetService<QuickAccessManager>().PinnedItemsWatcher!.EnableRaisingEvents = true;
+        App.QuickAccessManager.PinnedItemsWatcher!.EnableRaisingEvents = true;
 	}
 
 	public async Task LoadAsync()

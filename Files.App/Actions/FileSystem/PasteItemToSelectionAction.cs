@@ -5,8 +5,6 @@ namespace Files.App.Actions;
 
 internal class PasteItemToSelectionAction : BaseUIAction, IAction
 {
-    private readonly AppModel AppModel = DependencyExtensions.GetService<AppModel>();
-
     private readonly IContentPageContext context;
 
 	public string Label
@@ -29,7 +27,7 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
 		context = FolderViewViewModel.GetService<IContentPageContext>();
 
 		context.PropertyChanged += Context_PropertyChanged;
-		AppModel.PropertyChanged += AppModel_PropertyChanged;
+        App.AppModel.PropertyChanged += AppModel_PropertyChanged;
 	}
 
 	public async Task ExecuteAsync()
@@ -48,7 +46,7 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
 
 	public bool GetIsExecutable()
 	{
-		if (!AppModel.IsPasteEnabled)
+		if (!App.AppModel.IsPasteEnabled)
         {
             return false;
         }

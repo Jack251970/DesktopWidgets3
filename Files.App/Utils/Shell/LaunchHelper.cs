@@ -244,7 +244,7 @@ public static partial class LaunchHelper
 		catch (Exception ex)
 		{
 			// Generic error, log
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, $"Error launching: {application}");
+			App.Logger?.LogWarning(ex, $"Error launching: {application}");
 			return false;
 		}
 	}

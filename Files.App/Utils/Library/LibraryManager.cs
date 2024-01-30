@@ -99,7 +99,7 @@ public class LibraryManager : IDisposable
 			}
 			catch (Exception e)
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogWarning(e, null);
+				App.Logger?.LogWarning(e, null);
 			}
 
 			return new();
@@ -161,7 +161,7 @@ public class LibraryManager : IDisposable
 			}
 			catch (Exception e)
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogWarning(e, null);
+				App.Logger?.LogWarning(e, null);
 			}
 
 			return Task.FromResult<ShellLibraryItem>(null!);
@@ -244,7 +244,7 @@ public class LibraryManager : IDisposable
 			}
 			catch (Exception e)
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogWarning(e, null);
+				App.Logger?.LogWarning(e, null);
 			}
 
 			return Task.FromResult<ShellLibraryItem>(null!);
@@ -300,7 +300,7 @@ public class LibraryManager : IDisposable
 			PrimaryButtonAction = async (vm, e) =>
 			{
 				await ContextMenu.InvokeVerb("restorelibraries", ShellLibraryItem.LibrariesPath);
-				await DependencyExtensions.GetService<LibraryManager>().UpdateLibrariesAsync();
+				await App.LibraryManager.UpdateLibrariesAsync();
 			},
 			CloseButtonAction = (vm, e) => vm.HideDialog(),
 			KeyDownAction = (vm, e) =>
@@ -350,7 +350,7 @@ public class LibraryManager : IDisposable
 			CloseButtonText = "Cancel".GetLocalizedResource(),
 			PrimaryButtonAction = async (vm, e) =>
 			{
-				var (result, reason) = DependencyExtensions.GetService<LibraryManager>().CanCreateLibrary(folderViewViewModel, inputText.Text);
+				var (result, reason) = App.LibraryManager.CanCreateLibrary(folderViewViewModel, inputText.Text);
 				tipText.Text = reason;
 				tipText.Visibility = result ? Visibility.Collapsed : Visibility.Visible;
 				if (!result)
@@ -358,7 +358,7 @@ public class LibraryManager : IDisposable
 					e.Cancel = true;
 					return;
 				}
-				await DependencyExtensions.GetService<LibraryManager>().CreateNewLibrary(folderViewViewModel, inputText.Text);
+				await App.LibraryManager.CreateNewLibrary(folderViewViewModel, inputText.Text);
 			},
 			CloseButtonAction = (vm, e) =>
 			{
@@ -368,7 +368,7 @@ public class LibraryManager : IDisposable
 			{
 				if (e.Key == VirtualKey.Enter)
 				{
-					await DependencyExtensions.GetService<LibraryManager>().CreateNewLibrary(folderViewViewModel, inputText.Text);
+					await App.LibraryManager.CreateNewLibrary(folderViewViewModel, inputText.Text);
 				}
 				else if (e.Key == VirtualKey.Escape)
 				{
@@ -395,7 +395,7 @@ public class LibraryManager : IDisposable
 			var library = SafetyExtensions.IgnoreExceptions(() => new ShellLibraryEx(Shell32.ShellUtil.GetShellItemForPath(newPath), true));
 			if (library is null)
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogWarning($"Failed to open library after {changeType}: {newPath}");
+				App.Logger?.LogWarning($"Failed to open library after {changeType}: {newPath}");
 				return;
 			}
 

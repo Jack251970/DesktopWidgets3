@@ -198,7 +198,7 @@ public class CompressArchiveModel : ICompressArchiveModel
 		}
 		catch (Exception ex)
 		{
-			var logger = DependencyExtensions.GetService<ILogger>();
+			var logger = App.Logger;
 			logger?.LogWarning(ex, $"Error compressing folder: {ArchivePath}");
 
 			cts.Cancel();

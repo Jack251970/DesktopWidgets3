@@ -13,13 +13,13 @@ public class ReorderSidebarItemsDialogViewModel : ObservableObject
 	public string HeaderText = "ReorderSidebarItemsDialogText".GetLocalizedResource();
 	public ICommand PrimaryButtonCommand { get; private set; }
 
-	public ObservableCollection<LocationItem> SidebarFavoriteItems = new(DependencyExtensions.GetService<QuickAccessManager>().Model.favoriteList
+	public ObservableCollection<LocationItem> SidebarFavoriteItems = new(App.QuickAccessManager.Model.favoriteList
 		.Where(x => x is LocationItem loc && loc.Section is SectionType.Favorites && !loc.IsHeader)
 		.Cast<LocationItem>());
 
 	public ReorderSidebarItemsDialogViewModel() 
 	{
-		DependencyExtensions.GetService<ILogger>()?.LogWarning(string.Join(", ", SidebarFavoriteItems.Select(x => x.Path)));
+		App.Logger?.LogWarning(string.Join(", ", SidebarFavoriteItems.Select(x => x.Path)));
 		PrimaryButtonCommand = new RelayCommand(SaveChanges);
 	}
 

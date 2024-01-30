@@ -5,8 +5,6 @@ using DesktopWidgets3.Core.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.AppLifecycle;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 
@@ -50,7 +48,6 @@ public partial class App
 
         /*InitializeComponent();*/
 
-		// Configure exception handlers and resouces dispose handlers
 		Initialize();
     }
 
@@ -65,7 +62,22 @@ public partial class App
         ApplicationExtensions.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
         AppDomain.CurrentDomain.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.ExceptionObject as Exception, false);
         TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);
-        
+
+#if STORE || STABLE || PREVIEW
+			// Configure AppCenter
+			AppLifecycleHelper.ConfigureAppCenter();
+#endif
+
+        // FILESTODO: Replace with DI
+        QuickAccessManager = DependencyExtensions.GetService<QuickAccessManager>();
+        HistoryWrapper = DependencyExtensions.GetService<StorageHistoryWrapper>();
+        FileTagsManager = DependencyExtensions.GetService<FileTagsManager>();
+        /*RecentItemsManager = DependencyExtensions.GetService<RecentItems>();*/
+        LibraryManager = DependencyExtensions.GetService<LibraryManager>();
+        Logger = DependencyExtensions.GetService<ILogger<App>>();
+        AppModel = DependencyExtensions.GetService<AppModel>();
+
+        // Configure resouces dispose handler
         ApplicationExtensions.MainWindow_Closed_Widgets_Closed += MainWindow_Closed;
 
         isInitialized = true;
@@ -106,20 +118,6 @@ public partial class App
             // Configure the DI (dependency injection) container
             var host = AppLifecycleHelper.ConfigureHost();
 			Ioc.Default.ConfigureServices(host.Services);*/
-
-#if STORE || STABLE || PREVIEW
-			// Configure AppCenter
-			AppLifecycleHelper.ConfigureAppCenter();
-#endif
-
-            // FILESTODO: Replace with DI
-            QuickAccessManager = DependencyExtensions.GetService<QuickAccessManager>();
-			HistoryWrapper = DependencyExtensions.GetService<StorageHistoryWrapper>();
-			FileTagsManager = DependencyExtensions.GetService<FileTagsManager>();
-            /*RecentItemsManager = DependencyExtensions.GetService<RecentItems>();*/
-            LibraryManager = DependencyExtensions.GetService<LibraryManager>();
-			Logger = DependencyExtensions.GetService<ILogger<App>>();
-			AppModel = DependencyExtensions.GetService<AppModel>();
 
 			// Hook events for the window
 			MainWindow.Closed += Window_Closed;
@@ -246,30 +244,6 @@ public partial class App
         // CHANGE: Register folder view view model and its app instances.
         MainPageViewModel.AppInstances.Remove(FolderViewViewModel);
         FolderViewViewModels.Remove(FolderViewViewModel);
-
-		/*// Try to maintain clipboard data after app close
-		SafetyExtensions.IgnoreExceptions(() =>
-		{
-			var dataPackage = Clipboard.GetContent();
-			if (dataPackage.Properties.PackageFamilyName == InfoHelper.GetFamilyName())
-			{
-				if (dataPackage.Contains(StandardDataFormats.StorageItems))
-                {
-                    Clipboard.Flush();
-                }
-            }
-		},
-		Logger);
-
-		// Dispose git operations' thread
-		GitHelpers.TryDispose();
-
-		// Destroy cached properties windows
-		FilePropertiesHelpers.DestroyCachedWindows();
-		AppModel.IsMainWindowClosed = true;
-
-		// Wait for ongoing file operations
-		FileOperationsHelpers.WaitForCompletion();*/
     }
 
     private static void MainWindow_Closed(object sender, WindowEventArgs e)

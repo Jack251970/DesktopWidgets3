@@ -77,7 +77,7 @@ public class LocationItem : ObservableObject, INavigationControlItem
 
 	public bool IsInvalid { get; set; } = false;
 
-	public bool IsPinned => DependencyExtensions.GetService<QuickAccessManager>().Model.FavoriteItems.Contains(path);
+	public bool IsPinned => App.QuickAccessManager.Model.FavoriteItems.Contains(path);
 
 	public SectionType Section { get; set; }
 

@@ -13,14 +13,14 @@ public sealed class JumpListHelper
 	{
 		try
 		{
-			/*DependencyExtensions.GetService<QuickAccessManager>().UpdateQuickAccessWidget -= UpdateQuickAccessWidgetAsync;
-            DependencyExtensions.GetService<QuickAccessManager>().UpdateQuickAccessWidget += UpdateQuickAccessWidgetAsync;*/
+			/*App.QuickAccessManager.UpdateQuickAccessWidget -= UpdateQuickAccessWidgetAsync;
+            App.QuickAccessManager.UpdateQuickAccessWidget += UpdateQuickAccessWidgetAsync;*/
 
 			await jumpListService.RefreshPinnedFoldersAsync();
 		}
 		catch (Exception ex)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+			App.Logger?.LogWarning(ex, ex.Message);
 		}
 	}
 

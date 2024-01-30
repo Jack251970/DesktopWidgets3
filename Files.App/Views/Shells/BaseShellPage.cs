@@ -60,7 +60,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	public LayoutPreferencesManager FolderSettings => InstanceViewModel.FolderSettings;
 
-	/*public AppModel AppModel => DependencyExtensions.GetService<AppModel>();*/
+	/*public AppModel AppModel => App.AppModel;*/
 
 	protected abstract Frame ItemDisplay { get; }
 
@@ -877,7 +877,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	/*private void UpdateDateDisplayTimer_Tick(object sender, object e)
 	{
-		if (DependencyExtensions.GetService<AppModel>().IsMainWindowClosed)
+		if (App.AppModel.IsMainWindowClosed)
         {
             return;
         }

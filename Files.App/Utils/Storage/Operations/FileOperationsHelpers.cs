@@ -101,7 +101,7 @@ public class FileOperationsHelpers
 					using var fs = new FileStream(shellOperationResult.Items.Single().Destination, FileMode.Open);
 					fs.Write(dataBytes, 0, dataBytes.Length);
 					fs.Flush();
-				}, DependencyExtensions.GetService<ILogger>());
+				}, App.Logger);
 			}
 
 			return (await createTcs.Task, shellOperationResult);
@@ -677,7 +677,7 @@ public class FileOperationsHelpers
 
 	public static IEnumerable<Win32Process>? CheckFileInUse(string[] fileToCheckPath)
 	{
-		var processes = SafetyExtensions.IgnoreExceptions(() => FileUtils.WhoIsLocking(fileToCheckPath), DependencyExtensions.GetService<ILogger>());
+		var processes = SafetyExtensions.IgnoreExceptions(() => FileUtils.WhoIsLocking(fileToCheckPath), App.Logger);
 
 		if (processes is not null)
 		{
@@ -735,7 +735,7 @@ public class FileOperationsHelpers
 		}
 		catch (FileNotFoundException ex) // Could not parse shortcut
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+			App.Logger?.LogWarning(ex, ex.Message);
 			// Return a item containing the invalid target path
 			return new ShellLinkItem
 			{
@@ -746,7 +746,7 @@ public class FileOperationsHelpers
 		catch (Exception ex)
 		{
 			// Could not parse shortcut
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+			App.Logger?.LogWarning(ex, ex.Message);
 			return null;
 		}
 	}
@@ -776,7 +776,7 @@ public class FileOperationsHelpers
 		catch (Exception ex)
 		{
 			// Could not create shortcut
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+			App.Logger?.LogWarning(ex, ex.Message);
 		}
 
 		return Task.FromResult(false);
@@ -794,7 +794,7 @@ public class FileOperationsHelpers
 		catch (Exception ex)
 		{
 			// Could not create shortcut
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+			App.Logger?.LogWarning(ex, ex.Message);
 		}
 
 		return false;
@@ -845,7 +845,7 @@ public class FileOperationsHelpers
 				return null;
 			}
 			return (string?)compatKey.GetValue(filePath, null);
-		}, DependencyExtensions.GetService<ILogger>());
+		}, App.Logger);
 
 	public static bool SetCompatOptions(string filePath, string options)
 	{
@@ -916,7 +916,7 @@ public class FileOperationsHelpers
 					{
 						dbInstance.UpdateTag(sourcePath, FileTagsHelper.GetFileFRN(destination), destination); // move tag to new files
 					}
-				}, DependencyExtensions.GetService<ILogger>());
+				}, App.Logger);
 			}
 			if (e.Result == HRESULT.COPYENGINE_S_DONT_PROCESS_CHILDREN) // child items not processed, update manually
 			{
@@ -935,7 +935,7 @@ public class FileOperationsHelpers
 							{
 								var subPath = t.FilePath.Replace(sourcePath, destination, StringComparison.Ordinal);
 								dbInstance.SetTags(subPath, FileTagsHelper.GetFileFRN(subPath), t.Tags);
-							}, DependencyExtensions.GetService<ILogger>());
+							}, App.Logger);
 						});
 					}
 					else // move tag to new files
@@ -946,7 +946,7 @@ public class FileOperationsHelpers
 							{
 								var subPath = t.FilePath.Replace(sourcePath, destination, StringComparison.Ordinal);
 								dbInstance.UpdateTag(t.FilePath, FileTagsHelper.GetFileFRN(subPath), subPath);
-							}, DependencyExtensions.GetService<ILogger>());
+							}, App.Logger);
 						});
 					}
 				}

@@ -76,7 +76,7 @@ public class QuickLookProvider : IPreviewPopupProvider
 		}
 		catch (Exception ex)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogInformation(ex, ex.Message);
+			App.Logger?.LogInformation(ex, ex.Message);
 			return false;
 		}
 	}

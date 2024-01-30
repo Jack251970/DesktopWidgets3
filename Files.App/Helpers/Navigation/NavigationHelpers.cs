@@ -169,7 +169,7 @@ public static class NavigationHelpers
 		{
 			tabLocationHeader = "SidebarNetworkDrives".GetLocalizedResource();
 		}
-		else if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(currentPath, out var library))
+		else if (App.LibraryManager.TryGetLibrary(currentPath, out var library))
 		{
 			var libName = SystemIO.Path.GetFileNameWithoutExtension(library.Path).GetLocalizedResource();
 			// If localized string is empty use the library name.
@@ -495,7 +495,7 @@ public static class NavigationHelpers
 			await OpenPath(folderViewViewModel, forceOpenInNewTab, UserSettingsService.FoldersSettingsService.OpenFoldersInNewTab, path, associatedInstance);
 			opened = (FilesystemResult)true;
 		}
-		else if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(path, out var library))
+		else if (App.LibraryManager.TryGetLibrary(path, out var library))
 		{
 			opened = (FilesystemResult)await library.CheckDefaultSaveFolderAccess();
 			if (opened)

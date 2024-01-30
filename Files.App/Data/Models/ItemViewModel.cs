@@ -144,7 +144,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         var isLibrary = false;
 		string? name = null;
-		if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(value, out var library))
+		if (App.LibraryManager.TryGetLibrary(value, out var library))
 		{
 			isLibrary = true;
 			name = library.Text;
@@ -777,7 +777,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 		}
 		catch (Exception ex)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+			App.Logger?.LogWarning(ex, ex.Message);
 		}
 	}
 
@@ -922,7 +922,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 		}
 		catch (Exception ex)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+			App.Logger?.LogWarning(ex, ex.Message);
 		}
 		finally
 		{
@@ -1489,7 +1489,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
 			if (path.ToLowerInvariant().EndsWith(ShellLibraryItem.EXTENSION, StringComparison.Ordinal))
 			{
-				if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(path, out var library) && !library.IsEmpty)
+				if (App.LibraryManager.TryGetLibrary(path, out var library) && !library.IsEmpty)
 				{
 					var libItem = new LibraryItem(FolderViewViewModel, library);
 					foreach (var folder in library.Folders)
@@ -2342,7 +2342,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 						}
 						catch (Exception ex)
 						{
-							DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+							App.Logger?.LogWarning(ex, ex.Message);
 						}
 
 						if (anyEdits && sampler.CheckNow())

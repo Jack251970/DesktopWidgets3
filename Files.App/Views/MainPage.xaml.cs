@@ -39,7 +39,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	public StatusCenterViewModel OngoingTasksViewModel { get; private set; } = null!;
 
     public static AppModel AppModel
-		=> DependencyExtensions.GetService<AppModel>();
+		=> App.AppModel;
 
 	/*private bool keyReleased = true;*/
 
@@ -96,7 +96,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 				InitializeWithWindow.Initialize(storeContext, FolderViewViewModel.WindowHandle);
 				var storeRateAndReviewResult = await storeContext.RequestRateAndReviewAppAsync();
 
-				DependencyExtensions.GetService<ILogger>()?.LogInformation($"STORE: review request status: {storeRateAndReviewResult.Status}");
+				App.Logger?.LogInformation($"STORE: review request status: {storeRateAndReviewResult.Status}");
 
 				UserSettingsService.ApplicationSettingsService.ClickedToReviewApp = true;
 			}
@@ -363,7 +363,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 	private void UpdateDateDisplayTimer_Tick(object sender, object e)
 	{
-		if (!DependencyExtensions.GetService<AppModel>().IsMainWindowClosed)
+		if (!App.AppModel.IsMainWindowClosed)
         {
             PreviewPane?.ViewModel.UpdateDateDisplay();
         }

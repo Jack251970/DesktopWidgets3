@@ -27,7 +27,7 @@ internal static partial class GitHelpers
 
 	private const int MAX_NUMBER_OF_BRANCHES = 30;
 
-	private static readonly ILogger? _logger = DependencyExtensions.GetService<ILogger>();
+	private static readonly ILogger? _logger = App.Logger;
 
 	/*private static readonly IDialogService _dialogService = DependencyExtensions.GetService<IDialogService>();*/
 

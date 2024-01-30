@@ -151,7 +151,7 @@ public static class FilePropertiesHelpers
 				+ Math.Max(0, Math.Min(displayArea.WorkArea.Height - appWindow.Size.Height, pointerPosition.Y - displayArea.WorkArea.Y)),
 		};
 
-		if (DependencyExtensions.GetService<AppModel>().IncrementPropertiesWindowCount() == 1)
+		if (App.AppModel.IncrementPropertiesWindowCount() == 1)
         {
             PropertiesWindowsClosingTCS = new();
         }
@@ -164,7 +164,7 @@ public static class FilePropertiesHelpers
 	// So instead of destroying the Window object, cache it and reuse it as a workaround.
 	private static void PropertiesWindow_Closed(object sender, WindowEventArgs args)
 	{
-		if (!DependencyExtensions.GetService<AppModel>().IsMainWindowClosed && sender is WinUIEx.WindowEx window)
+		if (!App.AppModel.IsMainWindowClosed && sender is WinUIEx.WindowEx window)
 		{
 			args.Handled = true;
 
@@ -172,7 +172,7 @@ public static class FilePropertiesHelpers
 			window.Content = null;
 			WindowCache.Add(window);
 
-			if (DependencyExtensions.GetService<AppModel>().DecrementPropertiesWindowCount() == 0)
+			if (App.AppModel.DecrementPropertiesWindowCount() == 0)
 			{
 				PropertiesWindowsClosingTCS!.TrySetResult();
 				PropertiesWindowsClosingTCS = null;
@@ -180,7 +180,7 @@ public static class FilePropertiesHelpers
 		}
 		else
         {
-            DependencyExtensions.GetService<AppModel>().DecrementPropertiesWindowCount();
+            App.AppModel.DecrementPropertiesWindowCount();
         }
     }
 

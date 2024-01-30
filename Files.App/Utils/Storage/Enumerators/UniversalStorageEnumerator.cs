@@ -66,7 +66,7 @@ public static class UniversalStorageEnumerator
 			}
 			catch (Exception ex)
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, "Error enumerating directory contents.");
+				App.Logger?.LogWarning(ex, "Error enumerating directory contents.");
 
 				break;
 			}
@@ -167,7 +167,7 @@ public static class UniversalStorageEnumerator
 			}
 			catch (Exception ex)
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, "Error enumerating directory contents.");
+				App.Logger?.LogWarning(ex, "Error enumerating directory contents.");
 				break;
 			}
 
@@ -275,7 +275,7 @@ public static class UniversalStorageEnumerator
         }
 
         // FILESTODO: is this needed to be handled here?
-        if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(file.Path, out var library))
+        if (App.LibraryManager.TryGetLibrary(file.Path, out var library))
 		{
 			return new LibraryItem(folderViewViewModel,library)
 			{

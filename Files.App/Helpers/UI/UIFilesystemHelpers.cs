@@ -310,7 +310,7 @@ public static class UIFilesystemHelpers
 		if (associatedInstance.SlimContentPage is not null)
 		{
 			currentPath = associatedInstance.FilesystemViewModel.WorkingDirectory;
-			if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(currentPath, out var library) &&
+			if (App.LibraryManager.TryGetLibrary(currentPath, out var library) &&
 				!library.IsEmpty &&
 				library.Folders.Count == 1) // FILESTODO: handle libraries with multiple folders
 			{
@@ -383,7 +383,7 @@ public static class UIFilesystemHelpers
 		}
 		catch (Exception ex)
 		{
-            DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, null);
+            App.Logger?.LogWarning(ex, null);
 		}
 	}
 
@@ -403,7 +403,7 @@ public static class UIFilesystemHelpers
 	{
 		var currentPath = associatedInstance?.FilesystemViewModel.WorkingDirectory;
 
-		if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(currentPath ?? string.Empty, out var library) && !library.IsEmpty)
+		if (App.LibraryManager.TryGetLibrary(currentPath ?? string.Empty, out var library) && !library.IsEmpty)
         {
             currentPath = library.DefaultSaveFolder;
         }
@@ -428,7 +428,7 @@ public static class UIFilesystemHelpers
 	public static async Task CreateShortcutFromDialogAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
 	{
 		var currentPath = associatedInstance.FilesystemViewModel.WorkingDirectory;
-		if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(currentPath, out var library) &&
+		if (App.LibraryManager.TryGetLibrary(currentPath, out var library) &&
 			!library.IsEmpty)
 		{
 			currentPath = library.DefaultSaveFolder;

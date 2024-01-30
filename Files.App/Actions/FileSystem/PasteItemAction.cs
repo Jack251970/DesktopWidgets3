@@ -5,8 +5,6 @@ namespace Files.App.Actions;
 
 internal class PasteItemAction : ObservableObject, IAction
 {
-    private readonly AppModel AppModel = DependencyExtensions.GetService<AppModel>();
-
     private readonly IContentPageContext context;
 
 	public string Label
@@ -29,7 +27,7 @@ internal class PasteItemAction : ObservableObject, IAction
         context = folderViewViewModel.GetService<IContentPageContext>();
 
         context.PropertyChanged += Context_PropertyChanged;
-		AppModel.PropertyChanged += AppModel_PropertyChanged;
+        App.AppModel.PropertyChanged += AppModel_PropertyChanged;
 	}
 
 	public async Task ExecuteAsync()
@@ -46,7 +44,7 @@ internal class PasteItemAction : ObservableObject, IAction
 	public bool GetIsExecutable()
 	{
 		return
-			AppModel.IsPasteEnabled &&
+            App.AppModel.IsPasteEnabled &&
 			context.PageType != ContentPageTypes.Home &&
 			context.PageType != ContentPageTypes.RecycleBin &&
 			context.PageType != ContentPageTypes.SearchResults;

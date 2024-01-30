@@ -54,7 +54,7 @@ public static class CompressHelper
         var directory = associatedInstance.FilesystemViewModel.WorkingDirectory.Normalize();
 
 
-		if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(directory, out var library) && !library.IsEmpty)
+		if (App.LibraryManager.TryGetLibrary(directory, out var library) && !library.IsEmpty)
         {
             directory = library.DefaultSaveFolder;
         }

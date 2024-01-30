@@ -17,14 +17,14 @@ public class CloudDrivesDetector
 	{
 		var tasks = new Task<IEnumerable<ICloudProvider>>[]
 		{
-			SafetyExtensions.IgnoreExceptions(DetectOneDrive, DependencyExtensions.GetService<ILogger>())!,
-			SafetyExtensions.IgnoreExceptions(DetectSharepoint, DependencyExtensions.GetService<ILogger>())!,
-			SafetyExtensions.IgnoreExceptions(DetectGenericCloudDrive, DependencyExtensions.GetService<ILogger>())!,
-			SafetyExtensions.IgnoreExceptions(DetectYandexDisk, DependencyExtensions.GetService<ILogger>())!,
-			SafetyExtensions.IgnoreExceptions(DetectpCloudDrive, DependencyExtensions.GetService<ILogger>())!,
-			SafetyExtensions.IgnoreExceptions(DetectNutstoreDrive, DependencyExtensions.GetService<ILogger>())!,
-			SafetyExtensions.IgnoreExceptions(DetectSeadriveDrive, DependencyExtensions.GetService<ILogger>())!,
-			SafetyExtensions.IgnoreExceptions(DetectAutodeskDrive, DependencyExtensions.GetService<ILogger>())!,
+			SafetyExtensions.IgnoreExceptions(DetectOneDrive, App.Logger)!,
+			SafetyExtensions.IgnoreExceptions(DetectSharepoint, App.Logger)!,
+			SafetyExtensions.IgnoreExceptions(DetectGenericCloudDrive, App.Logger)!,
+			SafetyExtensions.IgnoreExceptions(DetectYandexDisk, App.Logger)!,
+			SafetyExtensions.IgnoreExceptions(DetectpCloudDrive, App.Logger)!,
+			SafetyExtensions.IgnoreExceptions(DetectNutstoreDrive, App.Logger)!,
+			SafetyExtensions.IgnoreExceptions(DetectSeadriveDrive, App.Logger)!,
+			SafetyExtensions.IgnoreExceptions(DetectAutodeskDrive, App.Logger)!,
 		};
 
 		await Task.WhenAll(tasks);
@@ -257,7 +257,7 @@ public class CloudDrivesDetector
 			var iconPath = Path.Combine(programFilesFolder, "pCloud Drive", "pCloud.exe");
 			var iconFile = Win32API.ExtractSelectedIconsFromDLL(iconPath, new List<int>() { 32512 }, 32).FirstOrDefault();
 
-			DependencyExtensions.GetService<AppModel>().PCloudDrivePath = syncedFolder;
+			App.AppModel.PCloudDrivePath = syncedFolder;
 
 			results.Add(new CloudProvider(CloudProviders.pCloud)
 			{

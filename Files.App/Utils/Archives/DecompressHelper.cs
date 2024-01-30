@@ -89,7 +89,7 @@ public static class DecompressHelper
 		}
 		catch (Exception ex)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, $"Error extracting file: {archive.Name}");
+			App.Logger?.LogWarning(ex, $"Error extracting file: {archive.Name}");
 
 			return false;
 		}

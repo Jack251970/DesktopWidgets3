@@ -58,7 +58,7 @@ public class SuggestionModel : ObservableObject
 				{
 					LoadFileIcon = true;
 					NeedsPlaceholderGlyph = false;
-				}, DependencyExtensions.GetService<ILogger>()); // 2009482836u
+				}, App.Logger); // 2009482836u
 			}
 		}
 	}

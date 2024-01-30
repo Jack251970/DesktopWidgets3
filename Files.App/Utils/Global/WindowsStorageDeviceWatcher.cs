@@ -55,7 +55,7 @@ public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 		var rootAdded = await FilesystemTasks.Wrap(() => StorageFolder.GetFolderFromPathAsync(e.DeviceId).AsTask());
 		if (!rootAdded)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning($"{rootAdded.ErrorCode}: Attempting to add the device, {e.DeviceId},"
+			App.Logger?.LogWarning($"{rootAdded.ErrorCode}: Attempting to add the device, {e.DeviceId},"
 				+ " failed at the StorageFolder initialization step. This device will be ignored.");
 			return;
 		}
@@ -87,7 +87,7 @@ public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 		}
 		catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException)
 		{
-            DependencyExtensions.GetService<ILogger>()?.LogWarning($"{ex.GetType()}: Attempting to add the device, {args.Name},"
+            App.Logger?.LogWarning($"{ex.GetType()}: Attempting to add the device, {args.Name},"
 				+ $" failed at the StorageFolder initialization step. This device will be ignored. Device ID: {deviceId}");
 			return;
 		}

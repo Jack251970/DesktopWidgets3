@@ -73,7 +73,7 @@ public class FolderSearch
 	{
 		try
 		{
-			if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(Folder!, out var library))
+			if (App.LibraryManager.TryGetLibrary(Folder!, out var library))
 			{
 				return AddItemsForLibraryAsync(folderViewViewModel, library, results, token);
 			}
@@ -88,7 +88,7 @@ public class FolderSearch
 		}
 		catch (Exception e)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(e, "Search failure");
+			App.Logger?.LogWarning(e, "Search failure");
 		}
 
 		return Task.CompletedTask;
@@ -115,7 +115,7 @@ public class FolderSearch
 		try
 		{
 			var token = CancellationToken.None;
-			if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(Folder!, out var library))
+			if (App.LibraryManager.TryGetLibrary(Folder!, out var library))
 			{
 				await AddItemsForLibraryAsync(folderViewViewModel, library, results, token);
 			}
@@ -130,7 +130,7 @@ public class FolderSearch
 		}
 		catch (Exception e)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(e, "Search failure");
+			App.Logger?.LogWarning(e, "Search failure");
 		}
 
 		return results;
@@ -165,7 +165,7 @@ public class FolderSearch
                 }
 				catch (Exception ex)
 				{
-					DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, "Error creating ListedItem from StorageItem");
+					App.Logger?.LogWarning(ex, "Error creating ListedItem from StorageItem");
 				}
 
 				if (results.Count == 32 || results.Count % 300 == 0 /*|| sampler.CheckNow()*/)
@@ -252,7 +252,7 @@ public class FolderSearch
                 }
 				catch (Exception ex)
 				{
-					DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, "Error creating ListedItem from StorageItem");
+					App.Logger?.LogWarning(ex, "Error creating ListedItem from StorageItem");
 				}
 			}
 

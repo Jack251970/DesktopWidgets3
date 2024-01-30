@@ -91,7 +91,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 		if (registerHistory && !string.IsNullOrWhiteSpace(source.Path))
 		{
-			DependencyExtensions.GetService<StorageHistoryWrapper>().AddHistory(result.Item1);
+			App.HistoryWrapper.AddHistory(result.Item1);
 		}
 
 		await Task.Yield();
@@ -178,7 +178,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 		if (!permanently && registerHistory)
         {
-            DependencyExtensions.GetService<StorageHistoryWrapper>().AddHistory(history);
+            App.HistoryWrapper.AddHistory(history);
         }
 
         var itemsDeleted = history?.Source.Count ?? 0;
@@ -236,7 +236,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 		if (registerHistory && source.Any((item) => !string.IsNullOrWhiteSpace(item.Path)))
 		{
-			DependencyExtensions.GetService<StorageHistoryWrapper>().AddHistory(history);
+			App.HistoryWrapper.AddHistory(history);
 		}
 		var itemsMoved = history?.Source.Count ?? 0;
 
@@ -359,7 +359,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 					}
 				}
 			}
-			DependencyExtensions.GetService<StorageHistoryWrapper>().AddHistory(history);
+			App.HistoryWrapper.AddHistory(history);
 		}
 
 		var itemsCount = banner.TotalItemsCount;
@@ -500,7 +500,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 				}
 			}
 
-			DependencyExtensions.GetService<StorageHistoryWrapper>().AddHistory(history);
+			App.HistoryWrapper.AddHistory(history);
 		}
 
 		// Remove items from jump list
@@ -616,7 +616,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 		if (registerHistory && !string.IsNullOrWhiteSpace(source.Path))
 		{
-			DependencyExtensions.GetService<StorageHistoryWrapper>().AddHistory(history);
+			App.HistoryWrapper.AddHistory(history);
 		}
 
 		await jumpListService.RemoveFolderAsync(source.Path); // Remove items from jump list
@@ -650,7 +650,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 		if (registerHistory)
 		{
-			DependencyExtensions.GetService<StorageHistoryWrapper>().AddHistory(history);
+			App.HistoryWrapper.AddHistory(history);
 		}
 
 		await Task.Yield();
@@ -690,7 +690,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			if (path is not null && collisions.ContainsKey(path))
 			{
 				// Something strange happened, log
-				DependencyExtensions.GetService<ILogger>()?.LogWarning($"Duplicate key when resolving conflicts: {incomingItems.ElementAt(item.index).SourcePath}, {item.src.Name}\n" +
+				App.Logger?.LogWarning($"Duplicate key when resolving conflicts: {incomingItems.ElementAt(item.index).SourcePath}, {item.src.Name}\n" +
 					$"Source: {string.Join(", ", source.Select(x => string.IsNullOrEmpty(x.Path) ? x.Item.Name : x.Path))}");
 			}
 			collisions!.AddIfNotPresent(incomingItems.ElementAt(item.index).SourcePath, FileNameConflictResolveOptionType.GenerateNewName);
@@ -778,7 +778,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			}
 			catch (Exception ex)
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+				App.Logger?.LogWarning(ex, ex.Message);
 				return itemsList;
 			}
 		}
@@ -805,7 +805,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 		}
 		catch (Exception ex)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, ex.Message);
+			App.Logger?.LogWarning(ex, ex.Message);
 		}
 
 		// workaround for GetStorageItemsAsync() bug that only yields 16 items at most

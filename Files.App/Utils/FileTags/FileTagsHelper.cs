@@ -78,7 +78,7 @@ public static class FileTagsHelper
 						var frn = GetFileFRN(file.FilePath);
 						dbInstance.UpdateTag(file.FilePath, frn, null);
 						dbInstance.SetTags(file.FilePath, frn, tag);
-					}, DependencyExtensions.GetService<ILogger>()))
+					}, App.Logger))
 					{
 						dbInstance.SetTags(file.FilePath, null, null);
 					}

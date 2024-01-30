@@ -9,7 +9,7 @@ namespace Files.App.Utils.Cloud;
 
 public static class CloudDrivesManager
 {
-	private static readonly ILogger _logger = DependencyExtensions.GetService<ILogger>();
+	private static readonly ILogger _logger = App.Logger;
 
 	private static readonly ICloudDetector _detector = DependencyExtensions.GetService<ICloudDetector>();
 

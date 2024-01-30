@@ -45,10 +45,10 @@ public static class AppLifecycleHelper
         // Start off a list of tasks we need to run before we can continue startup
         await Task.WhenAll(
 			OptionalTaskAsync(CloudDrivesManager.UpdateDrivesAsync(), !isCloudDrivesManagerInitialized && generalSettingsService.ShowCloudDrivesSection),
-            OptionalTaskAsync(DependencyExtensions.GetService<LibraryManager>().UpdateLibrariesAsync(), !isInitialized),
+            OptionalTaskAsync(App.LibraryManager.UpdateLibrariesAsync(), !isInitialized),
 			OptionalTaskAsync(WSLDistroManager.UpdateDrivesAsync(), !isWSLDistroManagerInitialized && generalSettingsService.ShowWslSection),
-            OptionalTaskAsync(DependencyExtensions.GetService<FileTagsManager>().UpdateFileTagsAsync(), !isFileTagsManagerInitialized && generalSettingsService.ShowFileTagsSection),
-            OptionalTaskAsync(DependencyExtensions.GetService<QuickAccessManager>().InitializeAsync(), !isInitialized)
+            OptionalTaskAsync(App.FileTagsManager.UpdateFileTagsAsync(), !isFileTagsManagerInitialized && generalSettingsService.ShowFileTagsSection),
+            OptionalTaskAsync(App.QuickAccessManager.InitializeAsync(), !isInitialized)
         );
 
         isCloudDrivesManagerInitialized = isCloudDrivesManagerInitialized is true || generalSettingsService.ShowCloudDrivesSection;
@@ -116,7 +116,7 @@ public static class AppLifecycleHelper
 		}
 		catch (Exception ex)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogWarning(ex, "Failed to start AppCenter service.");
+			App.Logger?.LogWarning(ex, "Failed to start AppCenter service.");
 		}
 	}
 
@@ -283,7 +283,7 @@ public static class AppLifecycleHelper
         Debugger.Break();
 
         SaveSessionTabs();
-        DependencyExtensions.GetService<ILogger>()?.LogError(ex, ex?.Message ?? "An unhandled error occurred.");
+        App.Logger?.LogError(ex, ex?.Message ?? "An unhandled error occurred.");
 
         if (!showToastNotification)
         {

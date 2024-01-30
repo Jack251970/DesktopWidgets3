@@ -74,7 +74,7 @@ public class JumpListService : IJumpListService
 
                 var itemsToRemove = instance.Items.Where(x => string.Equals(x.GroupName, JumpListPinnedGroupHeader, StringComparison.OrdinalIgnoreCase)).ToList();
 				itemsToRemove.ForEach(x => instance.Items.Remove(x));
-				DependencyExtensions.GetService<QuickAccessManager>().Model.FavoriteItems.ForEach(x => AddFolder(x, JumpListPinnedGroupHeader, instance));
+				App.QuickAccessManager.Model.FavoriteItems.ForEach(x => AddFolder(x, JumpListPinnedGroupHeader, instance));
 				await instance.SaveAsync();
 			}
 		}
@@ -154,7 +154,7 @@ public class JumpListService : IJumpListService
                 {
                     displayName = "SidebarNetworkDrives".GetLocalizedResource();
                 }
-                else if (DependencyExtensions.GetService<LibraryManager>().TryGetLibrary(path, out LibraryLocationItem library))
+                else if (App.LibraryManager.TryGetLibrary(path, out LibraryLocationItem library))
 				{
 					var libName = Path.GetFileNameWithoutExtension(library.Path);
 					displayName = libName switch

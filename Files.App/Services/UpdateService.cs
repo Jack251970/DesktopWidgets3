@@ -82,7 +82,7 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 		{
 			if (await ShowDialogAsync())
 			{
-				DependencyExtensions.GetService<ILogger>()?.LogInformation("STORE: Downloading updates...");
+				App.Logger?.LogInformation("STORE: Downloading updates...");
 				OnUpdateInProgress();
 				await DownloadAndInstallAsync();
 				OnUpdateCompleted();
@@ -93,13 +93,13 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 	public async Task CheckForUpdatesAsync()
 	{
 		IsUpdateAvailable = false;
-		DependencyExtensions.GetService<ILogger>()?.LogInformation("STORE: Checking for updates...");
+		App.Logger?.LogInformation("STORE: Checking for updates...");
 
 		await GetUpdatePackagesAsync();
 
 		if (_updatePackages is not null && _updatePackages.Count > 0)
 		{
-			DependencyExtensions.GetService<ILogger>()?.LogInformation("STORE: Update found.");
+			App.Logger?.LogInformation("STORE: Update found.");
 			IsUpdateAvailable = true;
 		}
 	}
@@ -107,13 +107,13 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 	private async Task DownloadAndInstallAsync()
 	{
 		AppLifecycleHelper.SaveSessionTabs();
-		DependencyExtensions.GetService<AppModel>().ForceProcessTermination = true;
+		App.AppModel.ForceProcessTermination = true;
 		var downloadOperation = _storeContext?.RequestDownloadAndInstallStorePackageUpdatesAsync(_updatePackages);
 		var result = await downloadOperation.AsTask();
 
 		if (result.OverallState == StorePackageUpdateState.Canceled)
         {
-            DependencyExtensions.GetService<AppModel>().ForceProcessTermination = false;
+            App.AppModel.ForceProcessTermination = false;
         }
     }
 
@@ -216,7 +216,7 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 				await srcExeFile.CopyAsync(destFolder, "Files.App.Launcher.exe", NameCollisionOption.ReplaceExisting);
 				await srcHashFile.CopyAsync(destFolder, "Files.App.Launcher.exe.sha256", NameCollisionOption.ReplaceExisting);
 
-				DependencyExtensions.GetService<ILogger>()?.LogInformation("Files.App.Launcher updated.");
+				App.Logger?.LogInformation("Files.App.Launcher updated.");
 			}
 		}
 

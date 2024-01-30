@@ -5,7 +5,7 @@ namespace Files.App.Utils.Storage;
 
 public class StorageHistoryHelpers : IDisposable
 {
-    private readonly StorageHistoryWrapper HistoryWrapper = DependencyExtensions.GetService<StorageHistoryWrapper>();
+    private readonly StorageHistoryWrapper HistoryWrapper = App.HistoryWrapper;
 
     private IStorageHistoryOperations operations;
 
