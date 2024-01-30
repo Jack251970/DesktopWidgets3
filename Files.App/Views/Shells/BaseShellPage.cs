@@ -50,9 +50,9 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
     protected ICommandManager commands { get; set; } = null!;
 
-    public ToolbarViewModel ToolbarViewModel { get; set; } = null!;
+    public ToolbarViewModel ToolbarViewModel { get; } = new();
 
-	public IBaseLayoutPage SlimContentPage => ContentPage;
+    public IBaseLayoutPage SlimContentPage => ContentPage;
 
     public IFilesystemHelpers FilesystemHelpers { get; protected set; } = null!;
 
@@ -60,7 +60,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	public LayoutPreferencesManager FolderSettings => InstanceViewModel.FolderSettings;
 
-	/*public AppModel AppModel => App.AppModel;*/
+	public static AppModel AppModel => App.AppModel;
 
 	protected abstract Frame ItemDisplay { get; }
 
@@ -72,7 +72,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
     public ItemViewModel FilesystemViewModel { get; protected set; } = null!;
 
-    public CurrentInstanceViewModel InstanceViewModel { get; protected set; } = null!;
+    public CurrentInstanceViewModel InstanceViewModel { get; }
 
 	protected BaseLayoutPage _ContentPage = null!;
 	public BaseLayoutPage ContentPage
@@ -180,17 +180,17 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	public event EventHandler<CustomTabViewItemParameter>? ContentChanged;
 
-	public BaseShellPage(/*CurrentInstanceViewModel instanceViewModel*/)
+	public BaseShellPage(CurrentInstanceViewModel instanceViewModel)
 	{
-		/*InstanceViewModel = instanceViewModel;
-		InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired += FolderSettings_LayoutPreferencesUpdateRequired;*/
-		cancellationTokenSource = new CancellationTokenSource();
+		InstanceViewModel = instanceViewModel;
+        /*InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired += FolderSettings_LayoutPreferencesUpdateRequired;*/
+        cancellationTokenSource = new CancellationTokenSource();
         /*FilesystemHelpers = new FilesystemHelpers(this, cancellationTokenSource.Token);*/
         StorageHistoryHelpers = new StorageHistoryHelpers(new StorageHistoryOperations(FolderViewViewModel, this, cancellationTokenSource.Token));
 
-		/*ToolbarViewModel.InstanceViewModel = InstanceViewModel;*/
+		ToolbarViewModel.InstanceViewModel = InstanceViewModel;
 
-		/*InitToolbarCommands();*/
+		InitToolbarCommands();
 
 		_ = DisplayFilesystemConsentDialogAsync();
 
@@ -203,11 +203,11 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		ToolbarViewModel.ToolbarFlyoutOpened += ShellPage_ToolbarFlyoutOpened;
 		ToolbarViewModel.ToolbarPathItemLoaded += ShellPage_ToolbarPathItemLoaded;
 		ToolbarViewModel.AddressBarTextEntered += ShellPage_AddressBarTextEntered;
-		ToolbarViewModel.PathBoxItemDropped += ShellPage_PathBoxItemDropped;
+		ToolbarViewModel.PathBoxItemDropped += ShellPage_PathBoxItemDropped;*/
 
 		ToolbarViewModel.RefreshRequested += ShellPage_RefreshRequested;
 		ToolbarViewModel.EditModeEnabled += NavigationToolbar_EditModeEnabled;
-		ToolbarViewModel.ItemDraggedOverPathItem += ShellPage_NavigationRequested;
+		/*ToolbarViewModel.ItemDraggedOverPathItem += ShellPage_NavigationRequested;
 		ToolbarViewModel.PathBoxQuerySubmitted += NavigationToolbar_QuerySubmitted;
 		ToolbarViewModel.SearchBox.TextChanged += ShellPage_TextChanged;
 		ToolbarViewModel.SearchBox.QuerySubmitted += ShellPage_QuerySubmitted;
@@ -232,25 +232,17 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
     }
 
     // CHANGE: Initialize folder view view model and related services.
-    protected void InitializeBaseShellPage(CurrentInstanceViewModel instanceViewModel)
+    protected void InitializeBaseShellPage()
     {
         dialogService = FolderViewViewModel.GetService<IDialogService>();
         userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
 
         commands = FolderViewViewModel.GetService<ICommandManager>();
 
-        InstanceViewModel = instanceViewModel;
+        InstanceViewModel.Initialize(FolderViewViewModel);
         InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired += FolderSettings_LayoutPreferencesUpdateRequired;
 
-        ToolbarViewModel = new(FolderViewViewModel)
-        {
-            InstanceViewModel = InstanceViewModel
-        };
-
-        ToolbarViewModel.RefreshRequested += ShellPage_RefreshRequested;
-        ToolbarViewModel.EditModeEnabled += NavigationToolbar_EditModeEnabled;
-
-        InitToolbarCommands();
+        ToolbarViewModel.Initialize(FolderViewViewModel);
 
         InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated += AppSettings_SortDirectionPreferenceUpdated;
         InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated += AppSettings_SortOptionPreferenceUpdated;

@@ -5,7 +5,7 @@ namespace Files.App.Data.Contexts;
 
 public interface IPageContext
 {
-    void Initialize(PaneHolderPage? modifiedPage);
+    void Initialize(PaneHolderPage modifiedPage);
 
     event EventHandler? Changing;
 	event EventHandler? Changed;

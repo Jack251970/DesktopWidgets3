@@ -60,7 +60,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         remove => PropertyChanged -= value;
     }
 
-    private int tabStripSelectedIndex = 0;
+    private int tabStripSelectedIndex = -1;
     int IFolderViewViewModel.TabStripSelectedIndex
     {
         get => tabStripSelectedIndex;

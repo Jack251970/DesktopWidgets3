@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*namespace Files.App.UserControls.TabBar;
+namespace Files.App.UserControls.TabBar;
 
 /// <summary>
 /// Represents an interface for <see cref="UserControls.TabBar"/>.
@@ -16,9 +16,9 @@ public interface ITabBar
 
 	public List<ITabBarItemContent> GetAllTabInstances();
 
-	public Task ReopenClosedTabAsync();
+    /*public Task ReopenClosedTabAsync();
 
-	public void CloseTab(TabBarItem tabItem);
+	public void CloseTab(TabBarItem tabItem);*/
 
-	public void SetLoadingIndicatorStatus(ITabBarItem item, bool loading);
-}*/
+    public void SetLoadingIndicatorStatus(ITabBarItem item, bool loading);
+}

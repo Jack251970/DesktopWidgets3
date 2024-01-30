@@ -35,7 +35,7 @@ internal class CopyItemAction : ObservableObject, IAction
 
 	public Task ExecuteAsync()
 	{
-		if (context.ShellPage is not null)
+        if (context.ShellPage is not null)
         {
             return UIFilesystemHelpers.CopyItemAsync(FolderViewViewModel, context.ShellPage);
         }

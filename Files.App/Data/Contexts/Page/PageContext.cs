@@ -21,9 +21,9 @@ internal class PageContext : IPageContext
 		/*PaneHolderPage.CurrentInstanceChanged += Page_CurrentInstanceChanged;*/
 	}
 
-    public void Initialize(PaneHolderPage? modifiedPage)
+    public void Initialize(PaneHolderPage modifiedPage)
     {
-        modifiedPage!.CurrentInstanceChanged += Page_CurrentInstanceChanged;
+        modifiedPage.CurrentInstanceChanged += Page_CurrentInstanceChanged;
     }
 
     private void Page_CurrentInstanceChanged(object? sender, PaneHolderPage? modifiedPage)

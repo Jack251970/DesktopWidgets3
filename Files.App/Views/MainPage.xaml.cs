@@ -2,12 +2,9 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
-using CommunityToolkit.WinUI.UI;
-using CommunityToolkit.WinUI.UI.Controls;
 using DesktopWidgets3.Core.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -23,6 +20,8 @@ namespace Files.App.Views;
 
 public sealed partial class MainPage : Page, INotifyPropertyChanged
 {
+    public readonly TabBar TabControl;
+
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     public IUserSettingsService UserSettingsService { get; private set; } = null!;
@@ -50,6 +49,8 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	public MainPage()
 	{
 		InitializeComponent();
+        TabControl = new();
+        TabControl.Loaded += HorizontalMultitaskingControl_Loaded;
 
 		// Dependency Injection
 		/*UserSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
@@ -144,26 +145,26 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		}*/
 	}
 
-    /*private void HorizontalMultitaskingControl_Loaded(object sender, RoutedEventArgs e)
+    private void HorizontalMultitaskingControl_Loaded(object sender, RoutedEventArgs e)
 	{
-		TabControl.DragArea.SizeChanged += (_, _) => SetRectDragRegion();
+		/*TabControl.DragArea.SizeChanged += (_, _) => SetRectDragRegion();*/
 
-		if (ViewModel.MultitaskingControl is not UserControls.TabBar.TabBar)
+		if (ViewModel.MultitaskingControl is not TabBar)
 		{
 			ViewModel.MultitaskingControl = TabControl;
 			ViewModel.MultitaskingControls.Add(TabControl);
-			ViewModel.MultitaskingControl.CurrentInstanceChanged += MultitaskingControl_CurrentInstanceChanged;
+			/*ViewModel.MultitaskingControl.CurrentInstanceChanged += MultitaskingControl_CurrentInstanceChanged;*/
 		}
 	}
 
-	private void SetRectDragRegion()
+	/*private void SetRectDragRegion()
 	{
 		DragZoneHelper.SetDragZones(
-			MainWindow.Instance,
+			FolderViewViewModel.MainWindow,
 			dragZoneLeftIndent: (int)(TabControl.ActualWidth + TabControl.Margin.Left - TabControl.DragArea.ActualWidth));
-	}
+	}*/
 
-    public async void TabItemContent_ContentChanged(object? sender, CustomTabViewItemParameter e)
+    /*public async void TabItemContent_ContentChanged(object? sender, CustomTabViewItemParameter e)
 	{
 		if (SidebarAdaptiveViewModel.PaneHolder is null)
         {
@@ -177,7 +178,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		UpdateStatusBarProperties();
 		LoadPaneChanged();
 		UpdateNavToolbarProperties();
-		await NavigationHelpers.UpdateInstancePropertiesAsync(paneArgs);
+		await NavigationHelpers.UpdateInstancePropertiesAsync(FolderViewViewModel, paneArgs);
 	}
 
 	public void MultitaskingControl_CurrentInstanceChanged(object? sender, CurrentInstanceChangedEventArgs e)
@@ -203,7 +204,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         UpdateStatusBarProperties();
 		UpdateNavToolbarProperties();
 		LoadPaneChanged();
-		NavigationHelpers.UpdateInstancePropertiesAsync(navArgs);
+		NavigationHelpers.UpdateInstancePropertiesAsync(FolderViewViewModel, navArgs);
 
 		e.CurrentInstance.ContentChanged -= TabItemContent_ContentChanged;
 		e.CurrentInstance.ContentChanged += TabItemContent_ContentChanged;
@@ -234,14 +235,18 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         }
 
         if (InnerNavigationToolbar is not null)
-			InnerNavigationToolbar.ViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.ToolbarViewModel;
+        {
+            InnerNavigationToolbar.ViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.ToolbarViewModel;
+        }
     }*/
 
 	protected override void OnNavigatedTo(NavigationEventArgs e)
 	{
-        // CHANGE: Initialize folder view view model and related services.
+        // CHANGE: Initialize page components, folder view view model and related services.
         if (e.Parameter is IFolderViewViewModel folderViewViewModel)
         {
+            TabControl.Initialize(folderViewViewModel);
+
             FolderViewViewModel = folderViewViewModel;
 
             UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
@@ -506,7 +511,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         }*/
     }
 
-	private void RootGrid_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+    private void RootGrid_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
 	{
 		switch (e.Key)
 		{
@@ -530,7 +535,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		}
 	}
 
-	/*private void NavToolbar_Loaded(object sender, RoutedEventArgs e) => UpdateNavToolbarProperties();
+    /*private void NavToolbar_Loaded(object sender, RoutedEventArgs e) => UpdateNavToolbarProperties();
 
 	private void PaneSplitter_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
 	{

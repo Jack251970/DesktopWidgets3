@@ -10,19 +10,33 @@ public class CurrentInstanceViewModel : ObservableObject
     //  a single enum property providing simplified customization of the
     //  values being manipulated inside the setter blocks
 
-	public LayoutPreferencesManager FolderSettings { get; }
+    public LayoutPreferencesManager FolderSettings { get; private set; } = null!;
 
-	public CurrentInstanceViewModel(IFolderViewViewModel folderViewViewModel)
+    private FolderLayoutModes? RootLayoutMode { get; set; }
+
+	public CurrentInstanceViewModel()
 	{
-		FolderSettings = new LayoutPreferencesManager(folderViewViewModel);
+
 	}
 
-	public CurrentInstanceViewModel(IFolderViewViewModel folderViewViewModel, FolderLayoutModes rootLayoutMode)
-	{
-		FolderSettings = new LayoutPreferencesManager(folderViewViewModel, rootLayoutMode);
-	}
+    public CurrentInstanceViewModel(FolderLayoutModes rootLayoutMode)
+    {
+        RootLayoutMode = rootLayoutMode;
+    }
 
-	private bool isPageTypeSearchResults = false;
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
+    {
+        if (RootLayoutMode is null)
+        {
+            FolderSettings = new LayoutPreferencesManager(folderViewViewModel);
+        }
+        else
+        {
+            FolderSettings = new LayoutPreferencesManager(folderViewViewModel, (FolderLayoutModes)RootLayoutMode);
+        }
+    }
+
+    private bool isPageTypeSearchResults = false;
 	public bool IsPageTypeSearchResults
 	{
 		get => isPageTypeSearchResults;

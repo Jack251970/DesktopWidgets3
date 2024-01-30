@@ -42,7 +42,7 @@ public sealed partial class ColumnShellPage : BaseShellPage
 		}
 	}
 
-	public ColumnShellPage()/* : base(new CurrentInstanceViewModel(FolderLayoutModes.ColumnView))*/
+	public ColumnShellPage() : base(new CurrentInstanceViewModel(FolderLayoutModes.ColumnView))
 	{
 		InitializeComponent();
 	}
@@ -70,7 +70,7 @@ public sealed partial class ColumnShellPage : BaseShellPage
         {
             FolderViewViewModel = ColumnParams.FolderViewViewModel;
 
-            InitializeBaseShellPage(new CurrentInstanceViewModel(FolderViewViewModel, FolderLayoutModes.ColumnView));
+            InitializeBaseShellPage();
 
             FilesystemViewModel = new ItemViewModel(FolderViewViewModel, InstanceViewModel?.FolderSettings!);
             FilesystemViewModel.WorkingDirectoryModified += ViewModel_WorkingDirectoryModified;

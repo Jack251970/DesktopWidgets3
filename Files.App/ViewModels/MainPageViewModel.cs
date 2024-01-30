@@ -29,9 +29,9 @@ public class MainPageViewModel : ObservableObject
 
     public static Dictionary<IFolderViewViewModel, ObservableCollection<TabBarItem>> AppInstances { get; private set; } = new();
 
-    /*public List<ITabBar> MultitaskingControls { get; } = new();
+    public List<ITabBar> MultitaskingControls { get; } = new();
 
-	public ITabBar? MultitaskingControl { get; set; }*/
+	public ITabBar? MultitaskingControl { get; set; }
 
     private TabBarItem? selectedTabItem;
 	public TabBarItem? SelectedTabItem

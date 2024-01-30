@@ -7,7 +7,7 @@ namespace Files.App.Data.Contexts;
 
 internal class ContentPageContext : ObservableObject, IContentPageContext
 {
-	private readonly IReadOnlyList<ListedItem> emptyItems = Enumerable.Empty<ListedItem>().ToImmutableList();
+	private static readonly IReadOnlyList<ListedItem> emptyItems = Enumerable.Empty<ListedItem>().ToImmutableList();
 
 	private IPageContext Context { get; set; } = null!;
 
@@ -27,7 +27,7 @@ internal class ContentPageContext : ObservableObject, IContentPageContext
 	public bool HasSelection => SelectedItems.Count is not 0;
 	public ListedItem? SelectedItem => SelectedItems.Count is 1 ? SelectedItems[0] : null;
 
-	private IReadOnlyList<ListedItem> selectedItems;
+	private IReadOnlyList<ListedItem> selectedItems = emptyItems;
 	public IReadOnlyList<ListedItem> SelectedItems => selectedItems;
 
 	public bool CanRefresh => ShellPage is not null && ShellPage.ToolbarViewModel.CanRefresh;
@@ -61,8 +61,6 @@ internal class ContentPageContext : ObservableObject, IContentPageContext
 		GitHelpers.IsExecutingGitActionChanged += GitHelpers_IsExecutingGitActionChanged;
 
 		Update();*/
-
-        selectedItems = emptyItems;
     }
 
     public void Initialize(IPageContext context)

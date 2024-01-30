@@ -55,7 +55,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 			typeof(ModernShellPage),
 			new PropertyMetadata(null));
 
-	public ModernShellPage()/* : base(new CurrentInstanceViewModel())*/
+	public ModernShellPage() : base(new CurrentInstanceViewModel())
 	{
 		InitializeComponent();
 
@@ -122,7 +122,7 @@ public sealed partial class ModernShellPage : BaseShellPage
         {
             FolderViewViewModel = NavParams.FolderViewViewModel;
 
-            InitializeBaseShellPage(new CurrentInstanceViewModel(FolderViewViewModel));
+            InitializeBaseShellPage();
 
             FilesystemViewModel = new ItemViewModel(FolderViewViewModel, InstanceViewModel.FolderSettings);
             FilesystemViewModel.WorkingDirectoryModified += ViewModel_WorkingDirectoryModified;

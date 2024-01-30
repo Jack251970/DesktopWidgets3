@@ -360,7 +360,7 @@ public static class ContextFlyoutItemHelper
 				ShowItem = !itemsSelected,
 				ShowInFtpPage = true
 			},
-			/*new ContextMenuFlyoutItemViewModelBuilder(commands.FormatDrive).Build(),
+			new ContextMenuFlyoutItemViewModelBuilder(commands.FormatDrive).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.EmptyRecycleBin)
 			{
 				IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && !itemsSelected,
@@ -372,7 +372,7 @@ public static class ContextFlyoutItemHelper
 			new ContextMenuFlyoutItemViewModelBuilder(commands.RestoreRecycleBin)
 			{
 				IsVisible = currentInstanceViewModel.IsPageTypeRecycleBin && itemsSelected,
-			}.Build(),*/
+			}.Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItem).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenItemWithApplicationPicker)
 			{
@@ -398,8 +398,8 @@ public static class ContextFlyoutItemHelper
 				ShowInSearchPage = true,
 				ShowItem = itemsSelected && showOpenItemWith
 			},
-			/*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenFileLocation).Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
+			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenFileLocation).Build(),
+			/*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenInNewWindowItemAction).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewPaneAction).Build(),
 			new ContextMenuFlyoutItemViewModel()

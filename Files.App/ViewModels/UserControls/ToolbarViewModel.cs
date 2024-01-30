@@ -17,17 +17,17 @@ namespace Files.App.ViewModels.UserControls;
 
 public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
-	private readonly IUserSettingsService UserSettingsService;
+	private IUserSettingsService UserSettingsService { get; set; } = null!;
 
-	private readonly IDialogService _dialogService;
+    private IDialogService _dialogService { get; set; } = null!;
 
-	private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+    private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
     /*public IUpdateService UpdateService { get; } = DependencyExtensions.GetService<IUpdateService>()!;*/
 
-    public readonly ICommandManager Commands;
+    public ICommandManager Commands { get; set; } = null!;
 
     /*public delegate void ToolbarPathItemInvokedEventHandler(object sender, PathNavigationEventArgs e);
 
@@ -47,7 +47,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 	public event IAddressToolbar.ItemDraggedOverPathItemEventHandler? ItemDraggedOverPathItem;*/
 
-	public event EventHandler? EditModeEnabled;
+    public event EventHandler? EditModeEnabled;
 
     /*public event IAddressToolbar.ToolbarQuerySubmittedEventHandler? PathBoxQuerySubmitted;
 
@@ -205,14 +205,9 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 	/*private PointerRoutedEventArgs? pointerRoutedEventArgs;*/
 
-	public ToolbarViewModel(IFolderViewViewModel folderViewViewModel)
+	public ToolbarViewModel()
 	{
-        FolderViewViewModel = folderViewViewModel;
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-        _dialogService = folderViewViewModel.GetService<IDialogService>();
-        Commands = folderViewViewModel.GetService<ICommandManager>();
-
-		RefreshClickCommand = new RelayCommand<RoutedEventArgs>(e => RefreshRequested?.Invoke(this, EventArgs.Empty));
+        RefreshClickCommand = new RelayCommand<RoutedEventArgs>(e => RefreshRequested?.Invoke(this, EventArgs.Empty));
 		/*ViewReleaseNotesAsyncCommand = new AsyncRelayCommand(ViewReleaseNotesAsync);*/
 
 		/*dispatcherQueue = DispatcherQueue.GetForCurrentThread();*/
@@ -222,6 +217,14 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		/*UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;*/
 		/*UpdateService.PropertyChanged += UpdateService_OnPropertyChanged;*/
 	}
+
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
+    {
+        FolderViewViewModel = folderViewViewModel;
+        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        _dialogService = folderViewViewModel.GetService<IDialogService>();
+        Commands = folderViewViewModel.GetService<ICommandManager>();
+    }
 
 	/*private async void UpdateService_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{

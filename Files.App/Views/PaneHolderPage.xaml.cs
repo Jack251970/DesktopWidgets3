@@ -232,7 +232,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 		ActivePane = PaneLeft;
 		IsRightPaneVisible = IsMultiPaneEnabled && UserSettingsService.GeneralSettingsService.AlwaysOpenDualPaneInNewTab;*/
 
-        // TODO?: Fallback or an error can occur when failing to get NavigationViewCompactPaneLength value
+        // FILESTODO?: Fallback or an error can occur when failing to get NavigationViewCompactPaneLength value
     }
 
     private void Current_SizeChanged(object sender, WindowSizeChangedEventArgs e)
@@ -260,8 +260,9 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 
             // CHANGE: Initialize context services.
             var pageContext = FolderViewViewModel.GetService<IPageContext>();
+            var contentPageContext = FolderViewViewModel.GetService<IContentPageContext>();
+            contentPageContext.Initialize(pageContext);
             pageContext.Initialize(this);
-            FolderViewViewModel.GetService<IContentPageContext>().Initialize(pageContext);
 
             FolderViewViewModel.MainWindow.SizeChanged += Current_SizeChanged;
             ActivePane = PaneLeft;
