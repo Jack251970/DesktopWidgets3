@@ -7,7 +7,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;
 using Windows.Storage.Search;
 using Windows.System;
-using WinRT;
 
 namespace Files.App.Helpers;
 
@@ -61,11 +60,11 @@ public static class NavigationHelpers
 
 		await UpdateTabInfoAsync(folderViewViewModel, tabItem, path);
 
-        AppModel.SetTabStripSelectedIndex(folderViewViewModel, tabItem);
+        var index = atIndex == -1 ? MainPageViewModel.AppInstances[folderViewViewModel].Count : atIndex;
 
-        /*var index = atIndex == -1 ? MainPageViewModel.AppInstances.Count : atIndex;
-		MainPageViewModel.AppInstances.Insert(index, tabItem);
-        DependencyExtensions.GetService<AppModel>().TabStripSelectedIndex = index;*/
+        MainPageViewModel.AppInstances[folderViewViewModel].Insert(index, tabItem);
+
+        folderViewViewModel.TabStripSelectedIndex = index;
     }
 
 	public static async Task AddNewTabByParamAsync(IFolderViewViewModel folderViewViewModel, Type type, object tabViewItemArgs, int atIndex = -1)
@@ -88,11 +87,9 @@ public static class NavigationHelpers
 
 		await UpdateTabInfoAsync(folderViewViewModel, tabItem, tabViewItemArgs);
 
-        AppModel.SetTabStripSelectedIndex(folderViewViewModel, tabItem);
-
-        /*var index = atIndex == -1 ? MainPageViewModel.AppInstances.Count : atIndex;
-		MainPageViewModel.AppInstances.Insert(index, tabItem);
-        DependencyExtensions.GetService<AppModel>().TabStripSelectedIndex = index;*/
+        var index = atIndex == -1 ? MainPageViewModel.AppInstances[folderViewViewModel].Count : atIndex;
+        MainPageViewModel.AppInstances[folderViewViewModel].Insert(index, tabItem);
+        folderViewViewModel.TabStripSelectedIndex = index;
     }
 
 	private static async Task UpdateTabInfoAsync(IFolderViewViewModel folderViewViewModel, TabBarItem tabItem, object navigationArg)
@@ -226,7 +223,7 @@ public static class NavigationHelpers
 		return (tabLocationHeader, iconSource, toolTipText);
 	}
 
-	/*public static async Task UpdateInstancePropertiesAsync(object? navigationArg)
+	public static async Task UpdateInstancePropertiesAsync(IFolderViewViewModel folderViewViewModel, object? navigationArg)
 	{
 		await SafetyExtensions.IgnoreExceptions(async () =>
 		{
@@ -249,17 +246,17 @@ public static class NavigationHelpers
 				(windowTitle, _, _) = await GetSelectedTabInfoAsync(pathArgs);
 			}
 
-			if (MainPageViewModel.AppInstances.Count > 1)
+			if (MainPageViewModel.AppInstances[folderViewViewModel].Count > 1)
             {
-                windowTitle = $"{windowTitle} ({MainPageViewModel.AppInstances.Count})";
+                windowTitle = $"{windowTitle} ({MainPageViewModel.AppInstances[folderViewViewModel].Count})";
             }
 
-            if (navigationArg == MainPageViewModel.SelectedTabItem?.NavigationParameter?.NavigationParameter)
+            /*if (navigationArg == folderViewViewModel.SelectedTabItem?.NavigationParameter?.NavigationParameter)
             {
                 folderViewViewModel.MainWindow.AppWindow.Title = $"{windowTitle} - Files";
-            }
+            }*/
         });
-	}*/
+	}
 
     public static async void Control_ContentChanged(object? sender, CustomTabViewItemParameter e)
     {
@@ -268,7 +265,7 @@ public static class NavigationHelpers
             return;
         }
 
-        var matchingTabItem = (TabBarItem)sender; /*MainPageViewModel.AppInstances.SingleOrDefault(x => x == (TabBarItem)sender);*/
+        var matchingTabItem = MainPageViewModel.AppInstances[e.FolderViewViewModel].SingleOrDefault(x => x == (TabBarItem)sender);
         if (matchingTabItem is null)
         {
             return;

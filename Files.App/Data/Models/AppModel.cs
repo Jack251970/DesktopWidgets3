@@ -44,14 +44,6 @@ public class AppModel : ObservableObject
         }
     }*/
 
-    public static void SetTabStripSelectedIndex(IFolderViewViewModel folderViewViewModel, TabBarItem item)
-    {
-        var rootFrame = folderViewViewModel.RootFrame;
-        var mainView = (MainPage)rootFrame.Content;
-        mainView.ViewModel.SelectedTabItem = item;
-    }
-
-
     private bool isAppElevated = false;
 	public bool IsAppElevated
 	{

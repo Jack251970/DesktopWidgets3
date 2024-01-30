@@ -7,13 +7,19 @@ public partial interface IFolderViewViewModel
 {
     Window MainWindow { get; }
 
-    IntPtr WindowHandle { get; }
+    Page Page { get; }
 
-    bool CanShowDialog { get; set; }
+    IntPtr WindowHandle { get; }
 
     event PropertyChangedEventHandler? PropertyChanged;
 
+    int TabStripSelectedIndex { get; set; }
+
+    bool CanShowDialog { get; set; }
+
     Frame RootFrame { get; }
+
+    TaskCompletionSource? SplashScreenLoadingTCS { get; }
 
     CommandBarFlyout? LastOpenedFlyout { get; set; }
 

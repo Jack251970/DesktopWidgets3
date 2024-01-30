@@ -16,6 +16,6 @@ public sealed partial class FolderViewPage : Page
         ViewModel = App.GetService<FolderViewViewModel>();
         InitializeComponent();
 
-        ViewModel.WidgetFrame = ContentFrame;
+        ViewModel.WidgetPage = this;
     }
 }

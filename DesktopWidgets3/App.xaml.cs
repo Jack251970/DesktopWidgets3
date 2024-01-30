@@ -30,7 +30,8 @@ public partial class App : Application
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
-    public IHost? Host { get; }
+    public IHost? Host { get; private set; }
+    public static new Action<object, Microsoft.UI.Xaml.UnhandledExceptionEventArgs>? UnhandledException { get; set; }
 
     public static T GetService<T>()
         where T : class
@@ -69,150 +70,148 @@ public partial class App : Application
 #endif
         InitializeComponent();
 
-        Host = Microsoft.Extensions.Hosting.Host.
-        CreateDefaultBuilder().
-        UseContentRoot(AppContext.BaseDirectory)
-        .ConfigureServices((context, services) =>
-        {
-            #region Core Service
+        Host = Microsoft.Extensions.Hosting.Host
+            .CreateDefaultBuilder()
+            .UseContentRoot(AppContext.BaseDirectory)
+            .ConfigureServices((context, services) =>
+            {
+                #region Core Service
 
-            // Default Activation Handler
-            services.AddSingleton<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
+                // Default Activation Handler
+                services.AddSingleton<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
-            // Other Activation Handlers
-            services.AddSingleton<IActivationHandler, AppNotificationActivationHandler>();
+                // Other Activation Handlers
+                services.AddSingleton<IActivationHandler, AppNotificationActivationHandler>();
 
-            // Windows Activation
-            services.AddSingleton<IActivationService, ActivationService>();
+                // Windows Activation
+                services.AddSingleton<IActivationService, ActivationService>();
 
-            // Notifications
-            services.AddSingleton<IAppNotificationService, AppNotificationService>();
+                // Notifications
+                services.AddSingleton<IAppNotificationService, AppNotificationService>();
 
-            // File Storage
-            services.AddSingleton<IFileService, FileService>();
+                // File Storage
+                services.AddSingleton<IFileService, FileService>();
 
-            // Theme Management
-            services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
+                // Theme Management
+                services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
 
-            // Dependency Injection
-            services.AddSingleton<IDependencyService, DependencyService>();
+                // Dependency Injection
+                services.AddSingleton<IDependencyService, DependencyService>();
 
-            #endregion
+                #endregion
 
-            #region Navigation Service
+                #region Navigation Service
 
-            // MainWindow Shell
-            services.AddSingleton<IShellService, ShellService>();
+                // MainWindow Shell
+                services.AddSingleton<IShellService, ShellService>();
 
-            // MainWindow Pages
-            services.AddSingleton<IPageService, PageService>();
-            services.AddSingleton<INavigationService, NavigationService>();
+                // MainWindow Pages
+                services.AddSingleton<IPageService, PageService>();
+                services.AddSingleton<INavigationService, NavigationService>();
 
-            // Widgets Window Pages
-            services.AddSingleton<IWidgetPageService, WidgetPageService>();
-            services.AddTransient<IWidgetNavigationService, WidgetNavigationService>();
+                // Widgets Window Pages
+                services.AddSingleton<IWidgetPageService, WidgetPageService>();
+                services.AddTransient<IWidgetNavigationService, WidgetNavigationService>();
 
-            #endregion
+                #endregion
 
-            #region Settings Service
+                #region Settings Service
 
-            // Local Storage
-            services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
+                // Local Storage
+                services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
 
-            // Settings Management
-            services.AddSingleton<DesktopWidgets3.Contracts.Services.IAppSettingsService, DesktopWidgets3.Services.AppSettingsService>();
+                // Settings Management
+                services.AddSingleton<DesktopWidgets3.Contracts.Services.IAppSettingsService, DesktopWidgets3.Services.AppSettingsService>();
 
-            #endregion
+                #endregion
 
-            #region Functional Service
+                #region Functional Service
 
-            // Widget Dialogs
-            services.AddSingleton<IWidgetDialogService, WidgetDialogService>();
+                // Widget Dialogs
+                services.AddSingleton<IWidgetDialogService, WidgetDialogService>();
 
-            // Timers
-            services.AddSingleton<ITimersService, TimersService>();
+                // Timers
+                services.AddSingleton<ITimersService, TimersService>();
 
-            // Widgets Management
-            services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
+                // Widgets Management
+                services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
 
-            // Widgets Resources
-            services.AddSingleton<IWidgetResourceService, WidgetResourceService>();
+                // Widgets Resources
+                services.AddSingleton<IWidgetResourceService, WidgetResourceService>();
 
-            // System Info
-            services.AddSingleton<ISystemInfoService, SystemInfoService>();
+                // System Info
+                services.AddSingleton<ISystemInfoService, SystemInfoService>();
 
-            #endregion
+                #endregion
 
-            #region Views & ViewModels
+                #region Views & ViewModels
 
-            // MainwWindow Pages
-            services.AddTransient<NavShellPage>();
-            services.AddTransient<NavShellViewModel>();
-            services.AddTransient<HomeViewModel>();
-            services.AddTransient<HomePage>();
-            services.AddTransient<SettingsViewModel>();
-            services.AddTransient<SettingsPage>();
-            services.AddTransient<DashboardViewModel>();
-            services.AddTransient<DashboardPage>();
-            services.AddTransient<ClockSettingsViewModel>();
-            services.AddTransient<ClockSettingsPage>();
-            services.AddTransient<PerformanceSettingsViewModel>();
-            services.AddTransient<PerformanceSettingsPage>();
-            services.AddTransient<DiskSettingsViewModel>();
-            services.AddTransient<DiskSettingsPage>();
-            services.AddTransient<FolderViewSettingsViewModel>();
-            services.AddTransient<FolderViewSettingsPage>();
-            services.AddTransient<NetworkSettingsViewModel>();
-            services.AddTransient<NetworkSettingsPage>();
+                // MainwWindow Pages
+                services.AddTransient<NavShellPage>();
+                services.AddTransient<NavShellViewModel>();
+                services.AddTransient<HomeViewModel>();
+                services.AddTransient<HomePage>();
+                services.AddTransient<SettingsViewModel>();
+                services.AddTransient<SettingsPage>();
+                services.AddTransient<DashboardViewModel>();
+                services.AddTransient<DashboardPage>();
+                services.AddTransient<ClockSettingsViewModel>();
+                services.AddTransient<ClockSettingsPage>();
+                services.AddTransient<PerformanceSettingsViewModel>();
+                services.AddTransient<PerformanceSettingsPage>();
+                services.AddTransient<DiskSettingsViewModel>();
+                services.AddTransient<DiskSettingsPage>();
+                services.AddTransient<FolderViewSettingsViewModel>();
+                services.AddTransient<FolderViewSettingsPage>();
+                services.AddTransient<NetworkSettingsViewModel>();
+                services.AddTransient<NetworkSettingsPage>();
 
-            // Widgets Window Pages
-            services.AddTransient<FrameShellPage>();
-            services.AddTransient<FrameShellViewModel>();
-            services.AddTransient<EditModeOverlayPage>();
-            services.AddTransient<EditModeOverlayViewModel>();
-            services.AddTransient<ClockViewModel>();
-            services.AddTransient<ClockPage>();
-            services.AddTransient<PerformanceViewModel>();
-            services.AddTransient<PerformancePage>();
-            services.AddTransient<DiskViewModel>();
-            services.AddTransient<DiskPage>();
-            services.AddTransient<FolderViewViewModel>();
-            services.AddTransient<FolderViewPage>();
-            services.AddTransient<NetworkViewModel>();
-            services.AddTransient<NetworkPage>();
+                // Widgets Window Pages
+                services.AddTransient<FrameShellPage>();
+                services.AddTransient<FrameShellViewModel>();
+                services.AddTransient<EditModeOverlayPage>();
+                services.AddTransient<EditModeOverlayViewModel>();
+                services.AddTransient<ClockViewModel>();
+                services.AddTransient<ClockPage>();
+                services.AddTransient<PerformanceViewModel>();
+                services.AddTransient<PerformancePage>();
+                services.AddTransient<DiskViewModel>();
+                services.AddTransient<DiskPage>();
+                services.AddTransient<FolderViewViewModel>();
+                services.AddTransient<FolderViewPage>();
+                services.AddTransient<NetworkViewModel>();
+                services.AddTransient<NetworkPage>();
 
-            #endregion
+                #endregion
 
-            #region Configurations
+                #region Configurations
 
-            // Local Storage
-            services.Configure<LocalSettingsKeys>(context.Configuration.GetSection(nameof(LocalSettingsKeys)));
-            services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+                // Local Storage
+                services.Configure<LocalSettingsKeys>(context.Configuration.GetSection(nameof(LocalSettingsKeys)));
+                services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
 
-            #endregion
-        })
-        .ConfigureHost()
-        .Build();
+                #endregion
+            })
+            .ConfigureHost()
+            .Build();
 
+        // Initialize core services
         GetService<IAppNotificationService>().Initialize();
 
-        UnhandledException += App_UnhandledException;
-
-        UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
-        AppDomain.CurrentDomain.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.ExceptionObject as Exception, false);
-        TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);
+        // Configure exception handlers
+        base.UnhandledException += App_UnhandledException;
 
         // Initialize core extensions
         DependencyExtensions.Initialize(GetService<IDependencyService>());
-        
         LocalSettingsExtensions.ApplicationDataFolder = GetService<ILocalSettingsService>().GetApplicationDataFolder();
-
         ResourceExtensions.AddStringResource("FilesResources");
-
         UIThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
     }
 
-    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e) {}
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        UnhandledException?.Invoke(sender, e);
+    }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {

@@ -37,7 +37,7 @@ public class InfoHelper
         }
         else
         {
-            return "";
+            return GetDisplayName();
         }
     }
 
@@ -49,7 +49,7 @@ public class InfoHelper
         }
         else
         {
-            return "";
+            return GetDisplayName();
         }
     }
 

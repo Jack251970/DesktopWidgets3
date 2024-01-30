@@ -27,9 +27,9 @@ public class MainPageViewModel : ObservableObject
 
     // Properties
 
-    /*public static ObservableCollection<TabBarItem> AppInstances { get; private set; } = new();
+    public static Dictionary<IFolderViewViewModel, ObservableCollection<TabBarItem>> AppInstances { get; private set; } = new();
 
-    public List<ITabBar> MultitaskingControls { get; } = new();
+    /*public List<ITabBar> MultitaskingControls { get; } = new();
 
 	public ITabBar? MultitaskingControl { get; set; }*/
 
@@ -75,16 +75,15 @@ public class MainPageViewModel : ObservableObject
         // to handle theme changes without restarting the app
         var isInitialized = ThemeHelper.Initialize();
 
-        // CHANGE: Disable event argument handling.
-        /*var parameter = e.Parameter;
+        var parameter = e.Parameter;
 		var ignoreStartupSettings = false;
         if (parameter is MainPageNavigationArguments mainPageNavigationArguments)
 		{
 			parameter = mainPageNavigationArguments.Parameter;
 			ignoreStartupSettings = mainPageNavigationArguments.IgnoreStartupSettings;
-		}*/
+		}
 
-        /*if (parameter is null || (parameter is string eventStr && string.IsNullOrEmpty(eventStr)))
+        if (parameter is null || (parameter is string eventStr && string.IsNullOrEmpty(eventStr)))
 		{
 			try
 			{
@@ -97,7 +96,7 @@ public class MainPageViewModel : ObservableObject
                         items[i] = CustomTabViewItemParameter.Deserialize(UserSettingsService.GeneralSettingsService.LastSessionTabList[i]);
                     }
 
-                    BaseTabBar.PushRecentTab(items);
+                    /*BaseTabBar.PushRecentTab(items);*/
 				}
 
 				if (UserSettingsService.AppSettingsService.RestoreTabsOnStartup)
@@ -108,7 +107,7 @@ public class MainPageViewModel : ObservableObject
 						foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 						{
 							var tabArgs = CustomTabViewItemParameter.Deserialize(tabArgsString);
-							await NavigationHelpers.AddNewTabByParamAsync(tabArgs.InitialPageType, tabArgs.NavigationParameter);
+							await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 						}
 
 						if (!UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp)
@@ -122,7 +121,7 @@ public class MainPageViewModel : ObservableObject
 				{
 					foreach (var path in UserSettingsService.GeneralSettingsService.TabsOnStartupList)
                     {
-                        await NavigationHelpers.AddNewTabByPathAsync(typeof(PaneHolderPage), path);
+                        await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), path);
                     }
                 }
 				else if (UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp &&
@@ -131,7 +130,7 @@ public class MainPageViewModel : ObservableObject
 					foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 					{
 						var tabArgs = CustomTabViewItemParameter.Deserialize(tabArgsString);
-						await NavigationHelpers.AddNewTabByParamAsync(tabArgs.InitialPageType, tabArgs.NavigationParameter);
+						await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 					}
 
 					var defaultArg = new CustomTabViewItemParameter() { InitialPageType = typeof(PaneHolderPage), NavigationParameter = "Home" };
@@ -140,12 +139,12 @@ public class MainPageViewModel : ObservableObject
 				}
 				else
 				{
-					await NavigationHelpers.AddNewTabAsync();
+					await NavigationHelpers.AddNewTabAsync(FolderViewViewModel);
 				}
 			}
 			catch
 			{
-				await NavigationHelpers.AddNewTabAsync();
+				await NavigationHelpers.AddNewTabAsync(FolderViewViewModel);
 			}
 		}
 		else
@@ -159,7 +158,7 @@ public class MainPageViewModel : ObservableObject
 					{
 						foreach (var path in UserSettingsService.GeneralSettingsService.TabsOnStartupList)
                         {
-                            await NavigationHelpers.AddNewTabByPathAsync(typeof(PaneHolderPage), path);
+                            await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), path);
                         }
                     }
 					else if (UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp &&
@@ -168,7 +167,7 @@ public class MainPageViewModel : ObservableObject
 						foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 						{
 							var tabArgs = CustomTabViewItemParameter.Deserialize(tabArgsString);
-							await NavigationHelpers.AddNewTabByParamAsync(tabArgs.InitialPageType, tabArgs.NavigationParameter);
+							await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 						}
 
 						var defaultArg = new CustomTabViewItemParameter() { InitialPageType = typeof(PaneHolderPage), NavigationParameter = "Home" };
@@ -181,38 +180,17 @@ public class MainPageViewModel : ObservableObject
 
 			if (parameter is string navArgs)
             {
-                await NavigationHelpers.AddNewTabByPathAsync(typeof(PaneHolderPage), navArgs);
+                await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), navArgs);
             }
             else if (parameter is PaneNavigationArguments paneArgs)
             {
-                await NavigationHelpers.AddNewTabByParamAsync(typeof(PaneHolderPage), paneArgs);
+                await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, typeof(PaneHolderPage), paneArgs);
             }
             else if (parameter is CustomTabViewItemParameter tabArgs)
             {
-                await NavigationHelpers.AddNewTabByParamAsync(tabArgs.InitialPageType, tabArgs.NavigationParameter);
-            }
-        }*/
-
-        try
-        {
-            if (UserSettingsService.GeneralSettingsService.OpenSpecificPageOnStartup &&
-            UserSettingsService.GeneralSettingsService.TabsOnStartupList is not null)
-            {
-                foreach (var path in UserSettingsService.GeneralSettingsService.TabsOnStartupList)
-                {
-                    await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), path);
-                }
-            }
-            else
-            {
-                await NavigationHelpers.AddNewTabAsync(FolderViewViewModel);
+                await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
             }
         }
-        catch
-        {
-            await NavigationHelpers.AddNewTabAsync(FolderViewViewModel);
-        }
-        
 
         if (isInitialized)
 		{
@@ -225,9 +203,9 @@ public class MainPageViewModel : ObservableObject
 		}
 	}
 
-	// Command methods
+    // Command methods
 
-	/*private void ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand(KeyboardAcceleratorInvokedEventArgs? e)
+    /*private void ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand(KeyboardAcceleratorInvokedEventArgs? e)
 	{
 		var indexToSelect = e!.KeyboardAccelerator.Key switch
 		{
@@ -239,14 +217,14 @@ public class MainPageViewModel : ObservableObject
 			VirtualKey.Number6 => 5,
 			VirtualKey.Number7 => 6,
 			VirtualKey.Number8 => 7,
-			VirtualKey.Number9 => AppInstances.Count - 1,
-			_ => AppInstances.Count - 1,
+			VirtualKey.Number9 => AppInstances[FolderViewViewModel].Count - 1,
+			_ => AppInstances[FolderViewViewModel].Count - 1,
 		};
 
 		// Only select the tab if it is in the list
-		if (indexToSelect < AppInstances.Count)
+		if (indexToSelect < AppInstances[FolderViewViewModel].Count)
         {
-            DependencyExtensions.GetService<AppModel>().TabStripSelectedIndex = indexToSelect;
+            FolderViewViewModel.TabStripSelectedIndex = indexToSelect;
         }
 
         e.Handled = true;

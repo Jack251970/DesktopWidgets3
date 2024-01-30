@@ -10,8 +10,5 @@
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
-
-    <Grid x:Name="ContentArea">
-        <Frame Name="ContentFrame"/>
-    </Grid>
+    
 </Page>

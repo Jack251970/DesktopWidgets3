@@ -11,7 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 using Files.App.Views;
 using Files.App.Data.Contexts;
 using System.ComponentModel;
-using Files.App.Helpers;
+using Files.App.ViewModels;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -22,6 +22,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private string FolderPath = string.Empty;
 
     private bool ShowIconOverlay = true;
+
+    private readonly Files.App.App App;
 
     private readonly ICommandManager _commandManager;
     private readonly IModifiableCommandManager _modifiableCommandManager;
@@ -38,46 +40,68 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     Window IFolderViewViewModel.MainWindow => WidgetWindow;
 
+    Page IFolderViewViewModel.Page => WidgetPage;
+
     IntPtr IFolderViewViewModel.WindowHandle => WidgetWindow.WindowHandle;
 
-    Frame IFolderViewViewModel.RootFrame => WidgetFrame;
+    Frame IFolderViewViewModel.RootFrame => (Frame)WidgetPage.Content;
 
-    public CommandBarFlyout? LastOpenedFlyout { get; set; }
+    TaskCompletionSource? IFolderViewViewModel.SplashScreenLoadingTCS => App.SplashScreenLoadingTCS;
 
-    public new event PropertyChangedEventHandler? PropertyChanged;
+    CommandBarFlyout? IFolderViewViewModel.LastOpenedFlyout 
+    {
+        get => App.LastOpenedFlyout;
+        set => App.LastOpenedFlyout = value;
+    }
+
     event PropertyChangedEventHandler? IFolderViewViewModel.PropertyChanged
     {
         add => PropertyChanged += value;
         remove => PropertyChanged -= value;
     }
 
+    private int tabStripSelectedIndex = 0;
+    int IFolderViewViewModel.TabStripSelectedIndex
+    {
+        get => tabStripSelectedIndex;
+        set
+        {
+            SetProperty(ref tabStripSelectedIndex, value);
+
+            if (value >= 0 && value < MainPageViewModel.AppInstances[this].Count)
+            {
+                var rootFrame = (Frame)WidgetPage.Content;
+                var mainView = (MainPage)rootFrame.Content;
+                mainView.ViewModel.SelectedTabItem = MainPageViewModel.AppInstances[this][value];
+            }
+        }
+    }
+
     private bool canShowDialog = true;
     public bool CanShowDialog
     {
         get => canShowDialog;
-        set
-        {
-            if (value == canShowDialog)
-            {
-                return;
-            }
-
-            canShowDialog = value;
-            PropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(CanShowDialog)));
-        }
+        set => SetProperty(ref canShowDialog, value);
     }
 
     #endregion
 
-    public FolderViewViewModel(ICommandManager commandManager, IModifiableCommandManager modifiableCommandManager, IDialogService dialogService, StatusCenterViewModel statusCenterViewModel, InfoPaneViewModel infoPaneViewModel, IUserSettingsService userSettingsService, IWidgetManagerService widgetManagerService, IContentPageContext contentPageContext, IPageContext pageContext)
+    public FolderViewViewModel(IWidgetManagerService widgetManagerService, ICommandManager commandManager, IModifiableCommandManager modifiableCommandManager, IDialogService dialogService, StatusCenterViewModel statusCenterViewModel, InfoPaneViewModel infoPaneViewModel, IUserSettingsService userSettingsService, IContentPageContext contentPageContext, IPageContext pageContext)
     {
+        _widgetManagerService = widgetManagerService;
+
+        NavigatedTo += FolderViewViewModel_NavigatedTo;
+
+        // Configure exception handlers and initialize related services of Files
+        App = new(this);
+        Files.App.App.Initialize(DesktopWidgets3.App.UnhandledException);
+
         _commandManager = commandManager;
         _modifiableCommandManager = modifiableCommandManager;
         _dialogService = dialogService;
         _statusCenterViewModel = statusCenterViewModel;
         _infoPaneViewModel = infoPaneViewModel;
         _userSettingsService = userSettingsService;
-        _widgetManagerService = widgetManagerService;
         _contentPageContext = contentPageContext;
         _pageContext = pageContext;
 
@@ -85,24 +109,17 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         _modifiableCommandManager.Initialize(_commandManager);
         _dialogService.Initialize(this);
         _infoPaneViewModel.Initialize(this);
-
-        NavigatedTo += FolderViewViewModel_NavigatedTo;
-        _modifiableCommandManager = modifiableCommandManager;
     }
-
+    
     #region initialization
 
-    public Frame WidgetFrame { get; set; } = null!;
+    public Page WidgetPage { get; set; } = null!;
 
-    private async void FolderViewViewModel_NavigatedTo(object? parameter, bool isInitialized)
+    private void FolderViewViewModel_NavigatedTo(object? parameter, bool isInitialized)
     {
         if (!isInitialized)
         {
-            await AppLifecycleHelper.InitializeAppComponentsAsync(this);
-
-            _userSettingsService.GeneralSettingsService.OpenSpecificPageOnStartup = true;
-            _userSettingsService.GeneralSettingsService.TabsOnStartupList = new List<string>() { FolderPath };
-            WidgetFrame.Navigate(typeof(MainPage), this);
+            App.OnLaunched(FolderPath);
         }
     }
 

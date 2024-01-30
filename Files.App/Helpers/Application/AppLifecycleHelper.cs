@@ -9,6 +9,7 @@ using Files.App.Storage.NativeStorage;
 /*using Files.App.ViewModels.Settings;*/
 using Files.Core.Services.SizeProvider;
 using Files.Core.Storage;
+using Files.Core.ViewModels.FolderView;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -199,11 +200,20 @@ public static class AppLifecycleHelper
     /// <summary>
     /// Saves saves all opened tabs to the app cache.
     /// </summary>
-    public static void SaveSessionTabs()
+    public static void SaveSessionTabs(IFolderViewViewModel? folderViewViewModel = null)
 	{
-		/*var userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();
+        if (folderViewViewModel is null)
+        {
+            foreach (var folderView in App.FolderViewViewModels)
+            {
+                SaveSessionTabs(folderView);
+            }
+            return;
+        }
 
-		userSettingsService.GeneralSettingsService.LastSessionTabList = MainPageViewModel.AppInstances.DefaultIfEmpty().Select(tab =>
+		var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+
+		userSettingsService.GeneralSettingsService.LastSessionTabList = MainPageViewModel.AppInstances[folderViewViewModel].DefaultIfEmpty().Select(tab =>
 		{
 			if (tab is not null && tab.NavigationParameter is not null)
 			{
@@ -220,7 +230,7 @@ public static class AppLifecycleHelper
 				return defaultArg.Serialize();
 			}
 		})
-		.ToList();*/
+		.ToList();
 	}
 
 	/// <summary>
@@ -269,10 +279,10 @@ public static class AppLifecycleHelper
 
 		Debug.WriteLine(formattedException.ToString());
 
-		// Please check "Output Window" for exception details (View -> Output Window) (CTRL + ALT + O)
-		Debugger.Break();
+        // Please check "Output Window" for exception details (View -> Output Window) (CTRL + ALT + O)
+        Debugger.Break();
 
-		SaveSessionTabs();
+        SaveSessionTabs();
         DependencyExtensions.GetService<ILogger>()?.LogError(ex, ex?.Message ?? "An unhandled error occurred.");
 
         if (!showToastNotification)
