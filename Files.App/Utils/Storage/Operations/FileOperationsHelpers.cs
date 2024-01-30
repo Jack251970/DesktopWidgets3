@@ -304,7 +304,7 @@ public class FileOperationsHelpers
 					HResult = (int)e.Result
 				});
 
-				/*UpdateFileTagsDb(e, "delete");*/
+				UpdateFileTagsDb(e, "delete");
 			};
 
 			op.FinishOperations += (s, e)
@@ -388,7 +388,7 @@ public class FileOperationsHelpers
 					HResult = (int)e.Result
 				});
 			};
-			/*op.PostRenameItem += (_, e) => UpdateFileTagsDb(e, "rename");*/
+			op.PostRenameItem += (_, e) => UpdateFileTagsDb(e, "rename");
 			op.FinishOperations += (s, e) => renameTcs.TrySetResult(e.Result.Succeeded);
 
 			try
@@ -503,7 +503,7 @@ public class FileOperationsHelpers
 					HResult = (int)e.Result
 				});
 					
-				/*UpdateFileTagsDb(e, "move");*/
+				UpdateFileTagsDb(e, "move");
 			};
 
 			op.FinishOperations += (s, e)
@@ -637,7 +637,7 @@ public class FileOperationsHelpers
 					HResult = (int)e.Result
 				});
 					
-				/*UpdateFileTagsDb(e, "copy");*/
+				UpdateFileTagsDb(e, "copy");
 			};
 
 			op.FinishOperations += (s, e)
@@ -879,7 +879,7 @@ public class FileOperationsHelpers
 		return null;
 	}
 
-	/*private static void UpdateFileTagsDb(ShellFileOperations2.ShellFileOpEventArgs e, string operationType)
+	private static void UpdateFileTagsDb(ShellFileOperations2.ShellFileOpEventArgs e, string operationType)
 	{
 		var dbInstance = FileTagsHelper.GetDbInstance();
 		if (e.Result.Succeeded)
@@ -889,7 +889,7 @@ public class FileOperationsHelpers
 			var destination = operationType switch
 			{
 				"delete" => e.DestItem.GetParsingPath(),
-				"rename" => !string.IsNullOrEmpty(e.Name) ? Path.Combine(Path.GetDirectoryName(sourcePath), e.Name) : null,
+				"rename" => !string.IsNullOrEmpty(e.Name) ? Path.Combine(Path.GetDirectoryName(sourcePath)!, e.Name) : null,
 				"copy" => destPath is not null && !string.IsNullOrEmpty(e.Name) ? Path.Combine(destPath, e.Name) : null,
 				_ => destPath is not null && !string.IsNullOrEmpty(e.Name) ? Path.Combine(destPath, e.Name) : null
 			};
@@ -909,7 +909,7 @@ public class FileOperationsHelpers
 						using var si = new ShellItem(destination);
 						if (si.IsFolder) // File tag is not copied automatically for folders
 						{
-							FileTagsHelper.WriteFileTag(destination, tag);
+							FileTagsHelper.WriteFileTag(destination, tag!);
 						}
 					}
 					else
@@ -952,7 +952,7 @@ public class FileOperationsHelpers
 				}
 			}
 		}
-	}*/
+	}
 
 	public static void WaitForCompletion()
 		=> progressHandler?.WaitForCompletion();

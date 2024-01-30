@@ -1,7 +1,6 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.Helpers;
 using DesktopWidgets3.Core.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
@@ -29,7 +28,7 @@ public partial class App
 	public CommandBarFlyout? LastOpenedFlyout { get; set; }
     public static string? OutputPath { get; set; }
 
-    // TODO: Replace with DI
+    // FILESTODO: Replace with DI
     public static QuickAccessManager QuickAccessManager { get; private set; } = null!;
 	public static StorageHistoryWrapper HistoryWrapper { get; private set; } = null!;
 	public static FileTagsManager FileTagsManager { get; private set; } = null!;
@@ -49,15 +48,13 @@ public partial class App
         FolderViewViewModels.Add(folderViewViewModel);
         MainPageViewModel.AppInstances.Add(folderViewViewModel, new());
 
-        /*InitializeComponent();
+        /*InitializeComponent();*/
 
-		// Configure exception handlers
-		UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
-		AppDomain.CurrentDomain.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.ExceptionObject as Exception, false);
-		TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);*/
+		// Configure exception handlers and resouces dispose handlers
+		Initialize();
     }
 
-    public static void Initialize(Action<object, Microsoft.UI.Xaml.UnhandledExceptionEventArgs>? UnhandledException)
+    private static void Initialize()
     {
         if (isInitialized)
         {
@@ -65,10 +62,12 @@ public partial class App
         }
 
         // Configure exception handlers
-        UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
+        ApplicationExtensions.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
         AppDomain.CurrentDomain.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.ExceptionObject as Exception, false);
         TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);
         
+        ApplicationExtensions.MainWindow_Closed_Widgets_Closed += MainWindow_Closed;
+
         isInitialized = true;
     }
 
@@ -174,7 +173,6 @@ public partial class App
 		var statusCenterViewModel = FolderViewViewModel.GetService<StatusCenterViewModel>();
 
         // A Workaround for the crash (#10110)
-        // TODO: Add support.
         /*if (LastOpenedFlyout?.IsOpen ?? false)
 		{
 			args.Handled = true;
@@ -224,7 +222,7 @@ public partial class App
 
 		AppLifecycleHelper.SaveSessionTabs(FolderViewViewModel);
 
-		if (OutputPath is not null)
+        if (OutputPath is not null)
 		{
 			await SafetyExtensions.IgnoreExceptions(async () =>
 			{
@@ -245,7 +243,11 @@ public partial class App
 			Logger);
 		}
 
-		// Try to maintain clipboard data after app close
+        // CHANGE: Register folder view view model and its app instances.
+        MainPageViewModel.AppInstances.Remove(FolderViewViewModel);
+        FolderViewViewModels.Remove(FolderViewViewModel);
+
+		/*// Try to maintain clipboard data after app close
 		SafetyExtensions.IgnoreExceptions(() =>
 		{
 			var dataPackage = Clipboard.GetContent();
@@ -267,10 +269,33 @@ public partial class App
 		AppModel.IsMainWindowClosed = true;
 
 		// Wait for ongoing file operations
-		FileOperationsHelpers.WaitForCompletion();
+		FileOperationsHelpers.WaitForCompletion();*/
+    }
 
-        // CHANGE: Register folder view view model and its app instances.
-        MainPageViewModel.AppInstances.Remove(FolderViewViewModel);
-        FolderViewViewModels.Remove(FolderViewViewModel);
+    private static void MainWindow_Closed(object sender, WindowEventArgs e)
+    {
+        // Try to maintain clipboard data after app close
+        SafetyExtensions.IgnoreExceptions(() =>
+        {
+            var dataPackage = Clipboard.GetContent();
+            if (dataPackage.Properties.PackageFamilyName == InfoHelper.GetFamilyName())
+            {
+                if (dataPackage.Contains(StandardDataFormats.StorageItems))
+                {
+                    Clipboard.Flush();
+                }
+            }
+        },
+        Logger);
+
+        // Dispose git operations' thread
+        GitHelpers.TryDispose();
+
+        // Destroy cached properties windows
+        FilePropertiesHelpers.DestroyCachedWindows();
+        AppModel.IsMainWindowClosed = true;
+
+        // Wait for ongoing file operations
+        FileOperationsHelpers.WaitForCompletion();
     }
 }

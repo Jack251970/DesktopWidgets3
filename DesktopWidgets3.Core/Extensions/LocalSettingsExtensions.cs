@@ -5,8 +5,5 @@
 /// </summary>
 public static class LocalSettingsExtensions
 {
-    public static string ApplicationDataFolder
-    {
-        get; set;
-    } = null!;
+    public static string ApplicationDataFolder { get; set; } = null!;
 }

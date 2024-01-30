@@ -92,9 +92,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
         NavigatedTo += FolderViewViewModel_NavigatedTo;
 
-        // Configure exception handlers and initialize related services of Files
+        // Initialize related services of Files
         App = new(this);
-        Files.App.App.Initialize(DesktopWidgets3.App.UnhandledException);
 
         _commandManager = commandManager;
         _modifiableCommandManager = modifiableCommandManager;

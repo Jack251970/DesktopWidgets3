@@ -19,6 +19,7 @@ using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
 using Files.Core.Services;
 using Files.App.Helpers;
 using Microsoft.UI.Dispatching;
+using UnhandledExceptionEventArgs = Microsoft.UI.Xaml.UnhandledExceptionEventArgs;
 
 namespace DesktopWidgets3;
 
@@ -31,8 +32,7 @@ public partial class App : Application
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
     public IHost? Host { get; private set; }
-    public static new Action<object, Microsoft.UI.Xaml.UnhandledExceptionEventArgs>? UnhandledException { get; set; }
-
+    
     public static T GetService<T>()
         where T : class
     {
@@ -199,7 +199,7 @@ public partial class App : Application
         GetService<IAppNotificationService>().Initialize();
 
         // Configure exception handlers
-        base.UnhandledException += App_UnhandledException;
+        UnhandledException += App_UnhandledException;
 
         // Initialize core extensions
         DependencyExtensions.Initialize(GetService<IDependencyService>());
@@ -208,9 +208,9 @@ public partial class App : Application
         UIThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
     }
 
-    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        UnhandledException?.Invoke(sender, e);
+        ApplicationExtensions.UnhandledException?.Invoke(sender, e);
     }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
