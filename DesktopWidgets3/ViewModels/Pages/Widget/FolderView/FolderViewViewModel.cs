@@ -40,9 +40,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     Window IFolderViewViewModel.MainWindow => WidgetWindow;
 
-    Page IFolderViewViewModel.Page => WidgetPage;
-
     IntPtr IFolderViewViewModel.WindowHandle => WidgetWindow.WindowHandle;
+
+    Page IFolderViewViewModel.Page => WidgetPage;
 
     Frame IFolderViewViewModel.RootFrame => (Frame)WidgetPage.Content;
 
