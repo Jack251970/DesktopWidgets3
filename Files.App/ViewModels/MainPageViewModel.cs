@@ -93,7 +93,7 @@ public class MainPageViewModel : ObservableObject
 					var items = new CustomTabViewItemParameter[UserSettingsService.GeneralSettingsService.LastSessionTabList.Count];
 					for (var i = 0; i < items.Length; i++)
                     {
-                        items[i] = CustomTabViewItemParameter.Deserialize(UserSettingsService.GeneralSettingsService.LastSessionTabList[i]);
+                        items[i] = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, UserSettingsService.GeneralSettingsService.LastSessionTabList[i]);
                     }
 
                     /*BaseTabBar.PushRecentTab(items);*/
@@ -106,7 +106,7 @@ public class MainPageViewModel : ObservableObject
 					{
 						foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 						{
-							var tabArgs = CustomTabViewItemParameter.Deserialize(tabArgsString);
+							var tabArgs = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
 							await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 						}
 
@@ -129,7 +129,7 @@ public class MainPageViewModel : ObservableObject
 				{
 					foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 					{
-						var tabArgs = CustomTabViewItemParameter.Deserialize(tabArgsString);
+						var tabArgs = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
 						await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 					}
 
@@ -166,7 +166,7 @@ public class MainPageViewModel : ObservableObject
 					{
 						foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 						{
-							var tabArgs = CustomTabViewItemParameter.Deserialize(tabArgsString);
+							var tabArgs = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
 							await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 						}
 

@@ -138,7 +138,7 @@ public sealed partial class MainWindow
 					{
 						case "tab":
 							rootFrame.Navigate(typeof(MainPage),
-								new MainPageNavigationArguments() { Parameter = CustomTabViewItemParameter.Deserialize(unescapedValue), IgnoreStartupSettings = true },
+								new MainPageNavigationArguments() { Parameter = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, unescapedValue), IgnoreStartupSettings = true },
 								new SuppressNavigationTransitionInfo());
 							break;
 
