@@ -24,11 +24,11 @@ internal class CopyItemAction : ObservableObject, IAction
 	public bool IsExecutable
 		=> context.HasSelection;
 
-	public CopyItemAction(IFolderViewViewModel folderViewViewModel)
+	public CopyItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         FolderViewViewModel = folderViewViewModel;
 
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

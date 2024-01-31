@@ -22,11 +22,11 @@ internal class CreateFolderWithSelectionAction : ObservableObject, IAction
 		context.ShellPage is not null &&
 		context.HasSelection;
 
-	public CreateFolderWithSelectionAction(IFolderViewViewModel folderViewViewModel)
+	public CreateFolderWithSelectionAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         FolderViewViewModel = folderViewViewModel;
 
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

@@ -24,11 +24,11 @@ internal class CutItemAction : ObservableObject, IAction
 	public bool IsExecutable
 		=> context.HasSelection;
 
-	public CutItemAction(IFolderViewViewModel folderViewViewModel)
+	public CutItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         FolderViewViewModel = folderViewViewModel;
 
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

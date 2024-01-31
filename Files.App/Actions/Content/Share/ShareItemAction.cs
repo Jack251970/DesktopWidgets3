@@ -26,11 +26,11 @@ internal class ShareItemAction : ObservableObject, IAction
 		context.SelectedItems.Any() &&
 		context.SelectedItems.All(ShareItemHelpers.IsItemShareable);
 
-	public ShareItemAction(IFolderViewViewModel folderViewViewModel)
+	public ShareItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
 	{
         FolderViewViewModel = folderViewViewModel;
 
-		context = folderViewViewModel.GetService<IContentPageContext>();
+		this.context = context;
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}

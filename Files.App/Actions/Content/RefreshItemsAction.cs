@@ -25,9 +25,9 @@ internal class RefreshItemsAction : ObservableObject, IAction
 	public bool IsExecutable
 		=> context.CanRefresh;
 
-	public RefreshItemsAction(IFolderViewViewModel folderViewViewModel)
+	public RefreshItemsAction(IContentPageContext context)
 	{
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}

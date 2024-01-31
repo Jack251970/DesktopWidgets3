@@ -20,11 +20,11 @@ internal class CreateShortcutFromDialogAction : BaseUIAction, IAction
 		context.CanCreateItem &&
 		FolderViewViewModel.CanShowDialog;
 
-	public CreateShortcutFromDialogAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
-	{
-		context = folderViewViewModel.GetService<IContentPageContext>();
+	public CreateShortcutFromDialogAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel)
+    {
+        this.context = context;
 
-		context.PropertyChanged += Context_PropertyChanged;
+        context.PropertyChanged += Context_PropertyChanged;
 	}
 
 	public Task ExecuteAsync()

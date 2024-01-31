@@ -25,9 +25,9 @@ internal class RenameAction : ObservableObject, IAction
 		context.ShellPage.SlimContentPage is not null &&
 		IsSelectionValid();
 
-	public RenameAction(IFolderViewViewModel folderViewViewModel)
+	public RenameAction(IContentPageContext context)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

@@ -23,9 +23,9 @@ internal class CreateFolderAction : BaseUIAction, IAction
 		context.CanCreateItem &&
 		FolderViewViewModel.CanShowDialog;
 
-	public CreateFolderAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
-	{
-        context = folderViewViewModel.GetService<IContentPageContext>();
+	public CreateFolderAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel)
+    {
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

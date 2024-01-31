@@ -21,9 +21,9 @@ internal class FormatDriveAction : ObservableObject, IAction
 		(drivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(x =>
 			string.Equals(x.Path, context.Folder?.ItemPath))?.MenuOptions.ShowFormatDrive ?? false);
 
-	public FormatDriveAction(IFolderViewViewModel folderViewViewModel)
+	public FormatDriveAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
         drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
 		context.PropertyChanged += Context_PropertyChanged;

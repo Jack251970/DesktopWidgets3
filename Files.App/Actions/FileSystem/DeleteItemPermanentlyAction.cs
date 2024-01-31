@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-
 namespace Files.App.Actions;
 
 internal class DeleteItemPermanentlyAction : BaseDeleteAction, IAction
@@ -15,7 +14,7 @@ internal class DeleteItemPermanentlyAction : BaseDeleteAction, IAction
 	public HotKey HotKey
 		=> new(Keys.Delete, KeyModifiers.Shift);
 
-    public DeleteItemPermanentlyAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
+    public DeleteItemPermanentlyAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel, context)
     {
     }
 

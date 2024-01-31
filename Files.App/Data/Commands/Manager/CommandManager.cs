@@ -205,7 +205,8 @@ internal class CommandManager : ICommandManager
         FolderViewViewModel = folderViewViewModel;
         Settings = FolderViewViewModel.GetService<IGeneralSettingsService>();
 
-        commands = CreateActions(FolderViewViewModel)
+        var context = FolderViewViewModel.GetService<IContentPageContext>();
+        commands = CreateActions(FolderViewViewModel, context)
             .Select(action => new ActionCommand(this, action.Key, action.Value))
             .Cast<IRichCommand>()
             .Append(new NoneCommand())
@@ -218,15 +219,15 @@ internal class CommandManager : ICommandManager
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	public IEnumerator<IRichCommand> GetEnumerator() => commands.Values.GetEnumerator();
 
-	private static IDictionary<CommandCodes, IAction> CreateActions(IFolderViewViewModel folderViewViewModel) => new Dictionary<CommandCodes, IAction>
+	private static IDictionary<CommandCodes, IAction> CreateActions(IFolderViewViewModel folderViewViewModel, IContentPageContext context) => new Dictionary<CommandCodes, IAction>
 	{
-		/*[CommandCodes.OpenHelp] = new OpenHelpAction(),
+        /*[CommandCodes.OpenHelp] = new OpenHelpAction(),
 		[CommandCodes.ToggleFullScreen] = new ToggleFullScreenAction(),
 		[CommandCodes.EnterCompactOverlay] = new EnterCompactOverlayAction(),
 		[CommandCodes.ExitCompactOverlay] = new ExitCompactOverlayAction(),
 		[CommandCodes.ToggleCompactOverlay] = new ToggleCompactOverlayAction(),
 		[CommandCodes.Search] = new SearchAction(),*/
-		[CommandCodes.SearchUnindexedItems] = new SearchUnindexedItemsAction(folderViewViewModel),
+		[CommandCodes.SearchUnindexedItems] = new SearchUnindexedItemsAction(context),
 		/*[CommandCodes.EditPath] = new EditPathAction(),
 		[CommandCodes.Redo] = new RedoAction(),
 		[CommandCodes.Undo] = new UndoAction(),
@@ -239,17 +240,17 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.InvertSelection] = new InvertSelectionAction(),
 		[CommandCodes.ClearSelection] = new ClearSelectionAction(),
 		[CommandCodes.ToggleSelect] = new ToggleSelectAction(),*/
-		[CommandCodes.ShareItem] = new ShareItemAction(folderViewViewModel),
-		[CommandCodes.EmptyRecycleBin] = new EmptyRecycleBinAction(folderViewViewModel),
-		[CommandCodes.RestoreRecycleBin] = new RestoreRecycleBinAction(folderViewViewModel),
+		[CommandCodes.ShareItem] = new ShareItemAction(folderViewViewModel, context),
+		[CommandCodes.EmptyRecycleBin] = new EmptyRecycleBinAction(folderViewViewModel, context),
+		[CommandCodes.RestoreRecycleBin] = new RestoreRecycleBinAction(folderViewViewModel, context),
 		[CommandCodes.RestoreAllRecycleBin] = new RestoreAllRecycleBinAction(folderViewViewModel),
-		[CommandCodes.RefreshItems] = new RefreshItemsAction(folderViewViewModel),
-		[CommandCodes.Rename] = new RenameAction(folderViewViewModel),
-		[CommandCodes.CreateShortcut] = new CreateShortcutAction(folderViewViewModel),
-		[CommandCodes.CreateShortcutFromDialog] = new CreateShortcutFromDialogAction(folderViewViewModel),
-		[CommandCodes.CreateFolder] = new CreateFolderAction(folderViewViewModel),
-		[CommandCodes.CreateFolderWithSelection] = new CreateFolderWithSelectionAction(folderViewViewModel),
-		[CommandCodes.AddItem] = new AddItemAction(folderViewViewModel),
+		[CommandCodes.RefreshItems] = new RefreshItemsAction(context),
+		[CommandCodes.Rename] = new RenameAction(context),
+		[CommandCodes.CreateShortcut] = new CreateShortcutAction(folderViewViewModel, context),
+		[CommandCodes.CreateShortcutFromDialog] = new CreateShortcutFromDialogAction(folderViewViewModel, context),
+		[CommandCodes.CreateFolder] = new CreateFolderAction(folderViewViewModel, context),
+		[CommandCodes.CreateFolderWithSelection] = new CreateFolderWithSelectionAction(folderViewViewModel, context),
+		[CommandCodes.AddItem] = new AddItemAction(folderViewViewModel, context),
 		/*[CommandCodes.PinToStart] = new PinToStartAction(),
 		[CommandCodes.UnpinFromStart] = new UnpinFromStartAction(),
 		[CommandCodes.PinItemToFavorites] = new PinItemAction(),
@@ -257,14 +258,14 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.SetAsWallpaperBackground] = new SetAsWallpaperBackgroundAction(),
 		[CommandCodes.SetAsSlideshowBackground] = new SetAsSlideshowBackgroundAction(),
 		[CommandCodes.SetAsLockscreenBackground] = new SetAsLockscreenBackgroundAction(),*/
-		[CommandCodes.CopyItem] = new CopyItemAction(folderViewViewModel),
-		[CommandCodes.CopyPath] = new CopyPathAction(folderViewViewModel),
-		[CommandCodes.CopyPathWithQuotes] = new CopyPathWithQuotesAction(folderViewViewModel),
-		[CommandCodes.CutItem] = new CutItemAction(folderViewViewModel),
-		[CommandCodes.PasteItem] = new PasteItemAction(folderViewViewModel),
-		[CommandCodes.PasteItemToSelection] = new PasteItemToSelectionAction(folderViewViewModel),
-		[CommandCodes.DeleteItem] = new DeleteItemAction(folderViewViewModel),
-		[CommandCodes.DeleteItemPermanently] = new DeleteItemPermanentlyAction(folderViewViewModel),
+		[CommandCodes.CopyItem] = new CopyItemAction(folderViewViewModel, context),
+		[CommandCodes.CopyPath] = new CopyPathAction(context),
+		[CommandCodes.CopyPathWithQuotes] = new CopyPathWithQuotesAction(context),
+		[CommandCodes.CutItem] = new CutItemAction(folderViewViewModel, context),
+		[CommandCodes.PasteItem] = new PasteItemAction(context),
+		[CommandCodes.PasteItemToSelection] = new PasteItemToSelectionAction(folderViewViewModel, context),
+		[CommandCodes.DeleteItem] = new DeleteItemAction(folderViewViewModel, context),
+		[CommandCodes.DeleteItemPermanently] = new DeleteItemPermanentlyAction(folderViewViewModel, context),
         /*[CommandCodes.InstallFont] = new InstallFontAction(),
 		[CommandCodes.InstallInfDriver] = new InstallInfDriverAction(),
 		[CommandCodes.InstallCertificate] = new InstallCertificateAction(),
@@ -281,7 +282,7 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.DecompressArchiveToChildFolder] = new DecompressArchiveToChildFolderAction(),
 		[CommandCodes.RotateLeft] = new RotateLeftAction(),
 		[CommandCodes.RotateRight] = new RotateRightAction(),*/
-        [CommandCodes.OpenItem] = new OpenItemAction(folderViewViewModel),
+        [CommandCodes.OpenItem] = new OpenItemAction(folderViewViewModel, context),
 		[CommandCodes.OpenItemWithApplicationPicker] = new OpenItemWithApplicationPickerAction(folderViewViewModel),
 		[CommandCodes.OpenParentFolder] = new OpenParentFolderAction(folderViewViewModel),
         /*[CommandCodes.OpenInVSCode] = new OpenInVSCodeAction(),
@@ -338,10 +339,10 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.GroupByMonth] = new GroupByMonthAction(),
 		[CommandCodes.ToggleGroupByDateUnit] = new ToggleGroupByDateUnitAction(),
 		[CommandCodes.NewTab] = new NewTabAction(),*/
-        [CommandCodes.FormatDrive] = new FormatDriveAction(folderViewViewModel),
-        [CommandCodes.NavigateBack] = new NavigateBackAction(folderViewViewModel),
-		[CommandCodes.NavigateForward] = new NavigateForwardAction(folderViewViewModel),
-		[CommandCodes.NavigateUp] = new NavigateUpAction(folderViewViewModel),
+        [CommandCodes.FormatDrive] = new FormatDriveAction(folderViewViewModel, context),
+        [CommandCodes.NavigateBack] = new NavigateBackAction(context),
+		[CommandCodes.NavigateForward] = new NavigateForwardAction(context),
+		[CommandCodes.NavigateUp] = new NavigateUpAction(context),
         /*[CommandCodes.DuplicateCurrentTab] = new DuplicateCurrentTabAction(),
 		[CommandCodes.DuplicateSelectedTab] = new DuplicateSelectedTabAction(),
 		[CommandCodes.CloseTabsToTheLeftCurrent] = new CloseTabsToTheLeftCurrentAction(),
@@ -359,7 +360,7 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.CloseSelectedTab] = new CloseSelectedTabAction(),
 		[CommandCodes.OpenNewPane] = new OpenNewPaneAction(),
 		[CommandCodes.ClosePane] = new ClosePaneAction(),*/
-        [CommandCodes.OpenFileLocation] = new OpenFileLocationAction(folderViewViewModel),
+        [CommandCodes.OpenFileLocation] = new OpenFileLocationAction(folderViewViewModel, context),
 		/*[CommandCodes.PlayAll] = new PlayAllAction(),
 		[CommandCodes.GitFetch] = new GitFetchAction(),
 		[CommandCodes.GitInit] = new GitInitAction(),

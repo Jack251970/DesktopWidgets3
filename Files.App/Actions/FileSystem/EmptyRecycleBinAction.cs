@@ -21,11 +21,11 @@ internal class EmptyRecycleBinAction : BaseUIAction, IAction
 		((context.PageType == ContentPageTypes.RecycleBin && context.HasItem) ||
 		RecycleBinHelpers.RecycleBinHasItems());
 
-	public EmptyRecycleBinAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
+	public EmptyRecycleBinAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel)
     {
-		context = FolderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
-		context.PropertyChanged += Context_PropertyChanged;
+        context.PropertyChanged += Context_PropertyChanged;
 	}
 
 	public async Task ExecuteAsync()

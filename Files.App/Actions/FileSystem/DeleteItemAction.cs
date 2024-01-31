@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-
 namespace Files.App.Actions;
 
 internal class DeleteItemAction : BaseDeleteAction, IAction
@@ -21,7 +20,7 @@ internal class DeleteItemAction : BaseDeleteAction, IAction
 	public HotKey SecondHotKey
 		=> new(Keys.D, KeyModifiers.Ctrl);
 
-    public DeleteItemAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
+    public DeleteItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel, context)
     {
     }
 

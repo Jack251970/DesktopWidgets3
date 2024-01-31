@@ -25,11 +25,11 @@ internal class OpenFileLocationAction : ObservableObject, IAction
 		context.HasSelection &&
 		context.SelectedItem is ShortcutItem;
 
-	public OpenFileLocationAction(IFolderViewViewModel folderViewViewModel)
+	public OpenFileLocationAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         FolderViewViewModel = folderViewViewModel;
 
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

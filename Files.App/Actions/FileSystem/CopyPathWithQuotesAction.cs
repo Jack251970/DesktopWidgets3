@@ -24,9 +24,9 @@ internal class CopyPathWithQuotesAction : IAction
 	public bool IsExecutable
 		=> context.HasSelection;
 
-	public CopyPathWithQuotesAction(IFolderViewViewModel folderViewViewModel)
+	public CopyPathWithQuotesAction(IContentPageContext context)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
     }
 
 	public Task ExecuteAsync()

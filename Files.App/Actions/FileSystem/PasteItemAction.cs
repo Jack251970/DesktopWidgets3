@@ -22,9 +22,9 @@ internal class PasteItemAction : ObservableObject, IAction
 	public bool IsExecutable
 		=> GetIsExecutable();
 
-	public PasteItemAction(IFolderViewViewModel folderViewViewModel)
+	public PasteItemAction(IContentPageContext context)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
         App.AppModel.PropertyChanged += AppModel_PropertyChanged;

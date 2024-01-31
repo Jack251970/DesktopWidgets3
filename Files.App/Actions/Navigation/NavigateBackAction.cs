@@ -31,9 +31,9 @@ internal class NavigateBackAction : ObservableObject, IAction
 	public bool IsExecutable
 		=> context.CanGoBack;
 
-	public NavigateBackAction(IFolderViewViewModel folderViewViewModel)
+	public NavigateBackAction(IContentPageContext context)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

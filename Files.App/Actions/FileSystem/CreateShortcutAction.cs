@@ -21,9 +21,9 @@ internal class CreateShortcutAction : BaseUIAction, IAction
 		context.CanCreateItem &&
 		FolderViewViewModel.CanShowDialog;
 
-	public CreateShortcutAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
-	{
-        context = folderViewViewModel.GetService<IContentPageContext>();
+	public CreateShortcutAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel)
+    {
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

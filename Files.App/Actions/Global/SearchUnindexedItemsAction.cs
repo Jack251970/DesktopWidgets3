@@ -16,9 +16,9 @@ internal class SearchUnindexedItemsAction : ObservableObject, IAction
 	public bool IsExecutable
 		=> context.ShowSearchUnindexedItemsMessage;
 
-	public SearchUnindexedItemsAction(IFolderViewViewModel folderViewViewModel)
+	public SearchUnindexedItemsAction(IContentPageContext context)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

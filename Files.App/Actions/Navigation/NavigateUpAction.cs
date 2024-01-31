@@ -22,9 +22,9 @@ internal class NavigateUpAction : ObservableObject, IAction
 	public bool IsExecutable
 		=> context.CanNavigateToParent;
 
-	public NavigateUpAction(IFolderViewViewModel folderViewViewModel)
+	public NavigateUpAction(IContentPageContext context)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

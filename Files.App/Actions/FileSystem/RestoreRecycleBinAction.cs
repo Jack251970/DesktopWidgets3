@@ -21,9 +21,9 @@ internal class RestoreRecycleBinAction : BaseUIAction, IAction
 		context.SelectedItems.Any() &&
 		FolderViewViewModel.CanShowDialog;
 
-	public RestoreRecycleBinAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
+	public RestoreRecycleBinAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

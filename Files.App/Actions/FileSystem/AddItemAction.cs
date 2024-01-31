@@ -28,11 +28,11 @@ internal class AddItemAction : ObservableObject, IAction
 	public bool IsExecutable
 		=> context.CanCreateItem;
 
-	public AddItemAction(IFolderViewViewModel folderViewViewModel)
+	public AddItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         FolderViewViewModel = folderViewViewModel;
 
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
         dialogService = folderViewViewModel.GetService<IDialogService>();
 
 		context.PropertyChanged += Context_PropertyChanged;

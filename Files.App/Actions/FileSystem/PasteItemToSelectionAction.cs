@@ -22,11 +22,11 @@ internal class PasteItemToSelectionAction : BaseUIAction, IAction
 	public override bool IsExecutable
 		=> GetIsExecutable();
 
-	public PasteItemToSelectionAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
+	public PasteItemToSelectionAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel)
     {
-		context = FolderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
-		context.PropertyChanged += Context_PropertyChanged;
+        context.PropertyChanged += Context_PropertyChanged;
         App.AppModel.PropertyChanged += AppModel_PropertyChanged;
 	}
 

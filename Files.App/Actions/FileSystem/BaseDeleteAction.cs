@@ -16,9 +16,9 @@ internal abstract class BaseDeleteAction : BaseUIAction
 		(!context.ShellPage?.SlimContentPage?.IsRenamingItem ?? false) &&
 		FolderViewViewModel.CanShowDialog;
 
-	public BaseDeleteAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
+	public BaseDeleteAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
         settings = folderViewViewModel.GetService<IFoldersSettingsService>();
 
 		context.PropertyChanged += Context_PropertyChanged;

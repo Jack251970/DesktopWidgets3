@@ -32,11 +32,11 @@ internal class OpenItemAction : ObservableObject, IAction
 		!(context.ShellPage is ColumnShellPage &&
 		context.SelectedItem?.PrimaryItemAttribute == StorageItemTypes.Folder);
 
-	public OpenItemAction(IFolderViewViewModel folderViewViewModel)
+	public OpenItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         FolderViewViewModel = folderViewViewModel;
 
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

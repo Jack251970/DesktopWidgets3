@@ -28,9 +28,9 @@ internal class NavigateForwardAction : ObservableObject, IAction
 	public bool IsExecutable
 		=> context.CanGoForward;
 
-	public NavigateForwardAction(IFolderViewViewModel folderViewViewModel)
+	public NavigateForwardAction(IContentPageContext context)
     {
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        this.context = context;
 
         context.PropertyChanged += Context_PropertyChanged;
 	}
