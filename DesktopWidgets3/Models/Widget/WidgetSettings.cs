@@ -43,11 +43,13 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
 
     public bool ShowExtension { get; set; } = false;
 
-    public DeleteConfirmationPolicies DeleteConfirmationPolicy { get; set; } = DeleteConfirmationPolicies.Always;
-
     public bool ShowThumbnail { get; set; } = true;
 
+    public DeleteConfirmationPolicies DeleteConfirmationPolicy { get; set; } = DeleteConfirmationPolicies.Always;
+
     public FileNameConflictResolveOptionType ConflictsResolveOption { get; set; } = FileNameConflictResolveOptionType.GenerateNewName;
+
+    public bool ShowRunningAsAdminPrompt { get; set; } = true;
 
     public override BaseWidgetSettings Clone()
     {
@@ -60,6 +62,7 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
         clone.DeleteConfirmationPolicy = DeleteConfirmationPolicy;
         clone.ShowThumbnail = ShowThumbnail;
         clone.ConflictsResolveOption = ConflictsResolveOption;
+        clone.ShowRunningAsAdminPrompt = ShowRunningAsAdminPrompt;
         return clone;
     }
 }

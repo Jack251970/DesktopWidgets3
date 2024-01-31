@@ -721,7 +721,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
                 new() { ConflictsExist = mustResolveConflicts },
 				(false, false),
 				operationType,
-				incomingItems.Except(conflictingItems).ToList(), // TODO: Could be optimized
+				incomingItems.Except(conflictingItems).ToList(), // FILESTODO: Could be optimized
 				conflictingItems);
 
 			var result = await dialogService.ShowDialogAsync(dialogViewModel);

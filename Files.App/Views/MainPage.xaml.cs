@@ -119,7 +119,6 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 		if (result == ContentDialogResult.Secondary)
         {
-            // TODO: Save to settings.
             UserSettingsService.ApplicationSettingsService.ShowRunningAsAdminPrompt = false;
         }
     }

@@ -484,8 +484,7 @@ public static class UIFilesystemHelpers
 		item.RunAsAdmin = runAsAdmin;
 	}
 
-    // TODO: Add IFolderViewViewModel parameter when called this function.
-	public static async Task<StorageCredential> RequestPassword(IFolderViewViewModel folderViewViewModel, IPasswordProtectedItem sender)
+    public static async Task<StorageCredential> RequestPassword(IFolderViewViewModel folderViewViewModel, IPasswordProtectedItem sender)
 	{
 		var path = ((IStorageItem)sender).Path;
 		var isFtp = FtpHelpers.IsFtpPath(path);

@@ -12,6 +12,8 @@ using Files.App.Views;
 using Files.App.Data.Contexts;
 using System.ComponentModel;
 using Files.App.ViewModels;
+using Files.Core.Data.EventArguments;
+using Files.Core.Data.Enums;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -118,6 +120,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         if (!isInitialized)
         {
+            _userSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
             App.OnLaunched(FolderPath);
         }
     }
@@ -164,6 +167,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             _userSettingsService.GeneralSettingsService.ConflictsResolveOption = settings.ConflictsResolveOption;
         }
 
+        if (_userSettingsService.ApplicationSettingsService.ShowRunningAsAdminPrompt != settings.ShowRunningAsAdminPrompt)
+        {
+            _userSettingsService.ApplicationSettingsService.ShowRunningAsAdminPrompt = settings.ShowRunningAsAdminPrompt;
+        }
+
         // Put this last so that it will navigate to the new path even if it needs to refresh items
         if (FolderPath != settings.FolderPath)
         {
@@ -182,10 +190,46 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             ShowHiddenFile = _userSettingsService.FoldersSettingsService.ShowHiddenItems,
             AllowNavigation = AllowNavigation,
             ShowExtension = _userSettingsService.FoldersSettingsService.ShowFileExtensions,
-            DeleteConfirmationPolicy = _userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy,
             ShowThumbnail = _userSettingsService.FoldersSettingsService.ShowThumbnails,
+            DeleteConfirmationPolicy = _userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy,
             ConflictsResolveOption = _userSettingsService.GeneralSettingsService.ConflictsResolveOption,
+            ShowRunningAsAdminPrompt = _userSettingsService.ApplicationSettingsService.ShowRunningAsAdminPrompt,
         };
+    }
+
+    private async void UserSettingsService_OnSettingChangedEvent(object? sender, SettingChangedEventArgs e)
+    {
+        var WidgetType = WidgetWindow.WidgetType;
+        var IndexTag = WidgetWindow.IndexTag;
+        var Settings = GetSettings();
+
+        switch (e.SettingName)
+		{
+			case nameof(IFoldersSettingsService.ShowHiddenItems):
+                Settings.ShowHiddenFile = (bool)e.NewValue!;
+                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                break;
+            case nameof(IFoldersSettingsService.ShowFileExtensions):
+                Settings.ShowExtension = (bool)e.NewValue!;
+                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                break;
+            case nameof(IFoldersSettingsService.ShowThumbnails):
+                Settings.ShowThumbnail = (bool)e.NewValue!;
+                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                break;
+            case nameof(IFoldersSettingsService.DeleteConfirmationPolicy):
+                Settings.DeleteConfirmationPolicy = (DeleteConfirmationPolicies)e.NewValue!;
+                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                break;
+            case nameof(IGeneralSettingsService.ConflictsResolveOption):
+                Settings.ConflictsResolveOption = (FileNameConflictResolveOptionType)e.NewValue!;
+                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                break;
+            case nameof(IApplicationSettingsService.ShowRunningAsAdminPrompt):
+                Settings.ShowRunningAsAdminPrompt = (bool)e.NewValue!;
+                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                break;
+		}
     }
 
     #endregion
