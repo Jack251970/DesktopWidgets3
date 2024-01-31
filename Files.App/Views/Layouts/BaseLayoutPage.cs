@@ -45,7 +45,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 	// ViewModels
 
 	public SelectedItemsPropertiesViewModel SelectedItemsPropertiesViewModel { get; }
-    public DirectoryPropertiesViewModel DirectoryPropertiesViewModel { get; private set; } = null!;
+    public DirectoryPropertiesViewModel DirectoryPropertiesViewModel { get; }
 	public ItemManipulationModel ItemManipulationModel { get; private set; }
 	public BaseLayoutViewModel? CommandsViewModel { get; protected set; }
 
@@ -301,7 +301,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		Item_DragOverEventHandler = new DragEventHandler(Item_DragOver);
 
 		SelectedItemsPropertiesViewModel = new SelectedItemsPropertiesViewModel();
-		/*DirectoryPropertiesViewModel = new DirectoryPropertiesViewModel(FolderViewViewModel);*/
+		DirectoryPropertiesViewModel = new DirectoryPropertiesViewModel();
 
 		dragOverTimer = DispatcherQueue.CreateTimer();
 		tapDebounceTimer = DispatcherQueue.CreateTimer();
@@ -419,7 +419,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
         Commands = FolderViewViewModel.GetService<ICommandManager>();
         InfoPaneViewModel = FolderViewViewModel.GetService<InfoPaneViewModel>();
 
-        DirectoryPropertiesViewModel = new DirectoryPropertiesViewModel(FolderViewViewModel);
+        SelectedItemsPropertiesViewModel.Initialize(FolderViewViewModel);
+        DirectoryPropertiesViewModel.Initialize(FolderViewViewModel);
 
         // Git properties are not loaded by default
         ParentShellPageInstance!.FilesystemViewModel.EnabledGitProperties = GitProperties.None;

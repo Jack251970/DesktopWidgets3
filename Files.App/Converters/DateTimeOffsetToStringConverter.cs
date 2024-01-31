@@ -7,7 +7,12 @@ namespace Files.App.Converters;
 
 internal sealed class DateTimeOffsetToStringConverter : IValueConverter
 {
-	private static readonly IDateTimeFormatter formatter = DependencyExtensions.GetService<IDateTimeFormatter>();
+	private readonly IDateTimeFormatter formatter;
+
+    public DateTimeOffsetToStringConverter(IFolderViewViewModel folderViewViewModel)
+    {
+        formatter = folderViewViewModel.GetService<IDateTimeFormatter>();
+    }
 
 	public object Convert(object value, Type targetType, object parameter, string language)
 	{

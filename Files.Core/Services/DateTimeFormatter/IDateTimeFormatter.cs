@@ -5,7 +5,9 @@ namespace Files.Core.Services.DateTimeFormatter;
 
 public interface IDateTimeFormatter
 {
-	string Name { get; }
+    public void Initialize(IFolderViewViewModel folderViewViewModel);
+
+    string Name { get; }
 
 	string ToShortLabel(DateTimeOffset offset);
 	string ToLongLabel(DateTimeOffset offset);

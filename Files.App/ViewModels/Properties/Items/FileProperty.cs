@@ -17,6 +17,8 @@ namespace Files.App.ViewModels.Properties;
 /// </summary>
 public class FileProperty : ObservableObject
 {
+    private readonly IFolderViewViewModel FolderViewViewModel;
+
 	/// <summary>
 	/// The name to display
 	/// </summary>
@@ -120,24 +122,26 @@ public class FileProperty : ObservableObject
 	/// </summary>
 	public Dictionary<int, string> EnumeratedList { get; set; }
 
-	public FileProperty()
+	public FileProperty(IFolderViewViewModel folderViewViewModel)
 	{
+        FolderViewViewModel = folderViewViewModel;
 	}
 
-	public FileProperty(string nameResource, string sectionResource)
+	public FileProperty(IFolderViewViewModel folderViewViewModel, string nameResource, string sectionResource) 
+        : this(folderViewViewModel)
 	{
 		NameResource = nameResource;
 		SectionResource = sectionResource;
 	}
 
-	public FileProperty(string property, string nameResource, string sectionResource)
-		: this(nameResource, sectionResource)
+	public FileProperty(IFolderViewViewModel folderViewViewModel, string property, string nameResource, string sectionResource)
+		: this(folderViewViewModel, nameResource, sectionResource)
 	{
 		Property = property;
 	}
 
-	public FileProperty(string property, string nameResource, string sectionResource, bool isReadOnly)
-		: this(property, nameResource, sectionResource)
+	public FileProperty(IFolderViewViewModel folderViewViewModel, string property, string nameResource, string sectionResource, bool isReadOnly)
+		: this(folderViewViewModel, property, nameResource, sectionResource)
 	{
 		IsReadOnly = isReadOnly;
 	}
@@ -200,7 +204,7 @@ public class FileProperty : ObservableObject
 
 		if (Value is DateTimeOffset)
 		{
-			return new DateTimeOffsetToStringConverter();
+			return new DateTimeOffsetToStringConverter(FolderViewViewModel);
 		}
 
 		if (Value is not null && Value.GetType().IsArray)

@@ -14,6 +14,7 @@ using System.ComponentModel;
 using Files.App.ViewModels;
 using Files.Core.Data.EventArguments;
 using Files.Core.Data.Enums;
+using Files.Core.Services.DateTimeFormatter;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -27,13 +28,15 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private readonly Files.App.App App;
 
+    private readonly IWidgetManagerService _widgetManagerService;
+
     private readonly ICommandManager _commandManager;
     private readonly IModifiableCommandManager _modifiableCommandManager;
     private readonly IDialogService _dialogService;
     private readonly StatusCenterViewModel _statusCenterViewModel;
     private readonly InfoPaneViewModel _infoPaneViewModel;
     private readonly IUserSettingsService _userSettingsService;
-    private readonly IWidgetManagerService _widgetManagerService;
+    private readonly IDateTimeFormatter _dateTimeFormatter;
 
     private readonly IContentPageContext _contentPageContext;
     private readonly IPageContext _pageContext;
@@ -88,7 +91,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    public FolderViewViewModel(IWidgetManagerService widgetManagerService, ICommandManager commandManager, IModifiableCommandManager modifiableCommandManager, IDialogService dialogService, StatusCenterViewModel statusCenterViewModel, InfoPaneViewModel infoPaneViewModel, IUserSettingsService userSettingsService, IContentPageContext contentPageContext, IPageContext pageContext)
+    public FolderViewViewModel(IWidgetManagerService widgetManagerService, ICommandManager commandManager, IModifiableCommandManager modifiableCommandManager, IDialogService dialogService, StatusCenterViewModel statusCenterViewModel, InfoPaneViewModel infoPaneViewModel, IUserSettingsService userSettingsService, IDateTimeFormatter dateTimeFormatter, IContentPageContext contentPageContext, IPageContext pageContext)
     {
         _widgetManagerService = widgetManagerService;
 
@@ -103,13 +106,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         _statusCenterViewModel = statusCenterViewModel;
         _infoPaneViewModel = infoPaneViewModel;
         _userSettingsService = userSettingsService;
+        _dateTimeFormatter = dateTimeFormatter;
         _contentPageContext = contentPageContext;
         _pageContext = pageContext;
-
-        _commandManager.Initialize(this);
-        _modifiableCommandManager.Initialize(_commandManager);
-        _dialogService.Initialize(this);
-        _infoPaneViewModel.Initialize(this);
     }
     
     #region initialization
@@ -120,6 +119,12 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         if (!isInitialized)
         {
+            _commandManager.Initialize(this);
+            _modifiableCommandManager.Initialize(_commandManager);
+            _dialogService.Initialize(this);
+            _infoPaneViewModel.Initialize(this);
+            _dateTimeFormatter.Initialize(this);
+
             _userSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
             App.OnLaunched(FolderPath);
         }
@@ -262,6 +267,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             Type t when t == typeof(IApplicationSettingsService) => (_userSettingsService.ApplicationSettingsService as T)!,
             Type t when t == typeof(IInfoPaneSettingsService) => (_userSettingsService.InfoPaneSettingsService as T)!,
             Type t when t == typeof(ILayoutSettingsService) => (_userSettingsService.LayoutSettingsService as T)!,
+            Type t when t == typeof(IDateTimeFormatter) => (_dateTimeFormatter as T)!,
             Type t when t == typeof(Files.Core.Services.Settings.IAppSettingsService) => (_userSettingsService.AppSettingsService as T)!,
             Type t when t == typeof(IContentPageContext) => (_contentPageContext as T)!,
             Type t when t == typeof(IPageContext) => (_pageContext as T)!,

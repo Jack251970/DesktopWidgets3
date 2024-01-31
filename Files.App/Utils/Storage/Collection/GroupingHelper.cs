@@ -7,10 +7,11 @@ namespace Files.App.Utils.Storage;
 
 public static class GroupingHelper
 {
-	private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();
+	/*private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();*/
 
-	public static Func<ListedItem, string> GetItemGroupKeySelector(GroupOption option, GroupByDateUnit unit)
+	public static Func<ListedItem, string> GetItemGroupKeySelector(IFolderViewViewModel folderViewViewModel, GroupOption option, GroupByDateUnit unit)
 	{
+        var dateTimeFormatter = folderViewViewModel.GetService<IDateTimeFormatter>();
 		return option switch
 		{
 			GroupOption.Name => x => new string(x.Name.Take(1).ToArray()).ToUpperInvariant(),
@@ -19,7 +20,7 @@ public static class GroupingHelper
 			GroupOption.DateModified => x => dateTimeFormatter.ToTimeSpanLabel(x.ItemDateModifiedReal, unit).Text,
 			GroupOption.FileType => x => x.PrimaryItemAttribute == StorageItemTypes.Folder && !x.IsShortcut ? x.ItemType : x.FileExtension?.ToLowerInvariant() ?? " ",
 			GroupOption.SyncStatus => x => x.SyncStatusString,
-			/*GroupOption.FileTag => x => x.FileTags?.FirstOrDefault() ?? "Untagged",*/
+			GroupOption.FileTag => x => x.FileTags?.FirstOrDefault() ?? "Untagged",
 			GroupOption.OriginalFolder => x => (x as RecycleBinItem)?.ItemOriginalFolder!,
 			GroupOption.DateDeleted => x => dateTimeFormatter.ToTimeSpanLabel((x as RecycleBinItem)?.ItemDateDeletedReal ?? DateTimeOffset.Now, unit).Text,
 			GroupOption.FolderPath => x => PathNormalization.GetParentDir(x.ItemPath.TrimPath()!),
@@ -27,8 +28,9 @@ public static class GroupingHelper
 		};
 	}
 
-	public static (Action<GroupedCollection<ListedItem>>, Action<GroupedCollection<ListedItem>>) GetGroupInfoSelector(GroupOption option, GroupByDateUnit unit)
+	public static (Action<GroupedCollection<ListedItem>>, Action<GroupedCollection<ListedItem>>) GetGroupInfoSelector(IFolderViewViewModel folderViewViewModel, GroupOption option, GroupByDateUnit unit)
 	{
+        var dateTimeFormatter = folderViewViewModel.GetService<IDateTimeFormatter>();
 		return option switch
 		{
 			GroupOption.FileType => (x =>
@@ -88,13 +90,13 @@ public static class GroupingHelper
 				x.Model.Icon = first?.SyncStatusUI.Glyph!;
 			}, null!),
 
-			/*GroupOption.FileTag => (x =>
+			GroupOption.FileTag => (x =>
 			{
 				var first = x.FirstOrDefault();
 				x.Model.ShowCountTextBelow = true;
-				x.Model.Text = first.FileTagsUI?.FirstOrDefault()?.Name ?? "Untagged".GetLocalizedResource();
-				//x.Model.Icon = first.FileTagsUI?.FirstOrDefault()?.Color;
-			}, null!),*/
+				x.Model.Text = first!.FileTagsUI?.FirstOrDefault()?.Name ?? "Untagged".GetLocalizedResource();
+				//x.Model.Icon = first!.FileTagsUI?.FirstOrDefault()?.Color;
+			}, null!),
 
 			GroupOption.DateDeleted => (x =>
 				{

@@ -17,7 +17,7 @@ namespace Files.App.Utils;
 
 public class ListedItem : ObservableObject, IGroupableItem
 {
-    protected readonly IFolderViewViewModel ViewModel;
+    public readonly IFolderViewViewModel FolderViewViewModel;
 
     protected readonly IUserSettingsService UserSettingsService;
 
@@ -25,7 +25,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 
     protected static readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
 
-    protected static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();
+    protected readonly IDateTimeFormatter dateTimeFormatter;
 
 	public bool IsHiddenItem { get; set; } = false;
 
@@ -332,18 +332,17 @@ public class ListedItem : ObservableObject, IGroupableItem
     /// Initializes a new instance of the <see cref="ListedItem" /> class.
     /// </summary>
     /// <param name="folderRelativeId"></param>
-    public ListedItem(IFolderViewViewModel viewModel, string folderRelativeId)
+    public ListedItem(IFolderViewViewModel viewModel, string folderRelativeId) : this(viewModel)
     {
         FolderRelativeId = folderRelativeId;
-        ViewModel = viewModel;
-        UserSettingsService = ViewModel.GetService<IUserSettingsService>();
     }
 
     // Parameterless constructor for JsonConvert
     public ListedItem(IFolderViewViewModel viewModel) 
     {
-        ViewModel = viewModel;
-        UserSettingsService = ViewModel.GetService<IUserSettingsService>();
+        FolderViewViewModel = viewModel;
+        UserSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
+        dateTimeFormatter = FolderViewViewModel.GetService<IDateTimeFormatter>();
     }
 
 	private ObservableCollection<FileProperty> fileDetails;

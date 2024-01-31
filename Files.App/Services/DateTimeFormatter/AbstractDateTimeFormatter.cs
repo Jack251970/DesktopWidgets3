@@ -18,7 +18,9 @@ internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
 	public virtual string ToLongLabel(DateTimeOffset offset)
 		=> ToShortLabel(offset);
 
-	public ITimeSpanLabel ToTimeSpanLabel(DateTimeOffset offset, GroupByDateUnit unit)
+    public void Initialize(IFolderViewViewModel folderViewViewModel) => throw new NotImplementedException();
+
+    public ITimeSpanLabel ToTimeSpanLabel(DateTimeOffset offset, GroupByDateUnit unit)
 	{
 		var now = DateTimeOffset.Now;
 		var time = offset.ToLocalTime();
@@ -64,7 +66,7 @@ internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
 		return cultureInfo.Calendar.GetWeekOfYear(t.DateTime, CalendarWeekRule.FirstFullWeek, cultureInfo.DateTimeFormat.FirstDayOfWeek);
 	}
 
-	private class Label : ITimeSpanLabel
+    private class Label : ITimeSpanLabel
 	{
 		public string Text { get; }
 

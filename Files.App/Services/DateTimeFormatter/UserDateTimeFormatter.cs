@@ -3,10 +3,9 @@
 
 namespace Files.App.Services.DateTimeFormatter;
 
-// TODO: Add AppLifeCycleHelper.cs.
 internal class UserDateTimeFormatter : IDateTimeFormatter
 {
-    /*public IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
+    public IUserSettingsService UserSettingsService { get; private set; } = null!;
 
     private IDateTimeFormatter formatter = null!;
 
@@ -15,11 +14,19 @@ internal class UserDateTimeFormatter : IDateTimeFormatter
 
 	public UserDateTimeFormatter()
 	{
-        // TODO: Add Callback of settings.
         /*UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;*/
 
         Update();
 	}
+
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
+    {
+        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+
+        UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
+
+        Update();
+    }
 
 	public string ToShortLabel(DateTimeOffset offset)
 		=> formatter.ToShortLabel(offset);
@@ -32,18 +39,17 @@ internal class UserDateTimeFormatter : IDateTimeFormatter
 
 	private void Update()
 	{
-        // TODO: Add UserSettingsService.GeneralSettingsService.DateTimeFormat
-        var dateTimeFormat = DateTimeFormats.Application;
+        var dateTimeFormat = UserSettingsService is null ? DateTimeFormats.Application : UserSettingsService.GeneralSettingsService.DateTimeFormat;
         var factory = DependencyExtensions.GetService<IDateTimeFormatterFactory>();
 
 		formatter = factory.GetDateTimeFormatter(dateTimeFormat);
 	}
 
-	/*private void UserSettingsService_OnSettingChangedEvent(object sender, SettingChangedEventArgs e)
+	private void UserSettingsService_OnSettingChangedEvent(object? sender, SettingChangedEventArgs e)
 	{
 		if (e.SettingName is nameof(UserSettingsService.GeneralSettingsService.DateTimeFormat))
         {
             Update();
         }
-    }*/
+    }
 }

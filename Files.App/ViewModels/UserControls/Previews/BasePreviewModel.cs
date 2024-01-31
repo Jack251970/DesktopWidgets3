@@ -10,7 +10,9 @@ namespace Files.App.ViewModels.Previews;
 
 public abstract class BasePreviewModel : ObservableObject
 {
-    /*private readonly IUserSettingsService userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
+    protected readonly IFolderViewViewModel FolderViewViewModel;
+
+    private readonly IUserSettingsService userSettingsService;
 
     public ListedItem Item { get; }
 
@@ -31,6 +33,9 @@ public abstract class BasePreviewModel : ObservableObject
     public BasePreviewModel(ListedItem item) : base()
     {
         Item = item;
+
+        FolderViewViewModel = item.FolderViewViewModel;
+        userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
     }
 
     public delegate void LoadedEventHandler(object sender, EventArgs e);
@@ -62,8 +67,7 @@ public abstract class BasePreviewModel : ObservableObject
 		await Task.Run(async () =>
 		{
 			DetailsFromPreview = await LoadPreviewAndDetailsAsync();
-            // TODO: add userSettingsService.InfoPaneSettingsService.SelectedTab here.
-            /*if (userSettingsService.InfoPaneSettingsService.SelectedTab == InfoPaneTabs.Details)
+            if (userSettingsService.InfoPaneSettingsService.SelectedTab == InfoPaneTabs.Details)
 			{
 				// Add the details from the preview function, then the system file properties
 				DetailsFromPreview?.ForEach(i => detailsFull.Add(i));
@@ -72,7 +76,7 @@ public abstract class BasePreviewModel : ObservableObject
 				{
 					detailsFull.AddRange(props);
 				}
-			}*/
+			}
         });
 
 		Item.FileDetails = new ObservableCollection<FileProperty>(detailsFull);
@@ -110,8 +114,8 @@ public abstract class BasePreviewModel : ObservableObject
 	public virtual void PreviewControlBase_Unloaded(object sender, RoutedEventArgs e)
 		=> LoadCancelledTokenSource.Cancel();
 
-	protected static FileProperty GetFileProperty(string nameResource, object value)
-		=> new() { NameResource = nameResource, Value = value };
+	protected FileProperty GetFileProperty(string nameResource, object value)
+		=> new(FolderViewViewModel) { NameResource = nameResource, Value = value };
 
 	private async Task<List<FileProperty>> GetSystemFilePropertiesAsync()
 	{
@@ -129,8 +133,8 @@ public abstract class BasePreviewModel : ObservableObject
         );
 
         // Adds the value for the file tag
-        list.FirstOrDefault(x => x.ID is "filetag")!.Value = null!;
-			/*Item.FileTagsUI is not null ? string.Join(',', Item.FileTagsUI.Select(x => x.Name)) : null!;*/
+        list.FirstOrDefault(x => x.ID is "filetag")!.Value =
+			Item.FileTagsUI is not null ? string.Join(',', Item.FileTagsUI.Select(x => x.Name)) : null!;
 
 		return list.Where(i => i.ValueText is not null).ToList();
 	}

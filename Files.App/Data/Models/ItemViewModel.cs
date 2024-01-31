@@ -953,8 +953,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
 	public void UpdateGroupOptions()
 	{
-		FilesAndFolders.ItemGroupKeySelector = GroupingHelper.GetItemGroupKeySelector(folderSettings.DirectoryGroupOption, folderSettings.DirectoryGroupByDateUnit);
-		var groupInfoSelector = GroupingHelper.GetGroupInfoSelector(folderSettings.DirectoryGroupOption, folderSettings.DirectoryGroupByDateUnit);
+		FilesAndFolders.ItemGroupKeySelector = GroupingHelper.GetItemGroupKeySelector(FolderViewViewModel, folderSettings.DirectoryGroupOption, folderSettings.DirectoryGroupByDateUnit);
+		var groupInfoSelector = GroupingHelper.GetGroupInfoSelector(FolderViewViewModel, folderSettings.DirectoryGroupOption, folderSettings.DirectoryGroupByDateUnit);
 		FilesAndFolders.GetGroupHeaderInfo = groupInfoSelector.Item1;
 		FilesAndFolders.GetExtendedGroupHeaderInfo = groupInfoSelector.Item2;
 	}

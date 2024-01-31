@@ -11,7 +11,7 @@ namespace Files.App.Data.Models;
 
 public class SelectedItemsPropertiesViewModel : ObservableObject
 {
-	private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();
+	private IDateTimeFormatter DateTimeFormatter { get; set; } = null!;
 
 	private bool loadFolderGlyph;
 	public bool LoadFolderGlyph
@@ -349,7 +349,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 		{
 			ItemCreatedTimestampVisibility = true;
 			SetProperty(ref itemCreatedTimestampReal, value);
-			ItemCreatedTimestamp = dateTimeFormatter.ToShortLabel(value);
+			ItemCreatedTimestamp = DateTimeFormatter.ToShortLabel(value);
 			OnPropertyChanged(nameof(ItemCreatedTimestamp));
 		}
 	}
@@ -371,7 +371,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 		{
 			ItemModifiedTimestampVisibility = true;
 			SetProperty(ref itemModifiedTimestampReal, value);
-			ItemModifiedTimestamp = dateTimeFormatter.ToShortLabel(value);
+			ItemModifiedTimestamp = DateTimeFormatter.ToShortLabel(value);
 			OnPropertyChanged(nameof(ItemModifiedTimestamp));
 		}
 	}
@@ -393,7 +393,7 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 		{
 			ItemAccessedTimestampVisibility = true;
 			SetProperty(ref itemAccessedTimestampReal, value);
-			ItemAccessedTimestamp = dateTimeFormatter.ToShortLabel(value);
+			ItemAccessedTimestamp = DateTimeFormatter.ToShortLabel(value);
 			OnPropertyChanged(nameof(ItemAccessedTimestamp));
 		}
 	}
@@ -505,6 +505,11 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 	{
 	}
 
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
+    {
+        DateTimeFormatter = folderViewViewModel.GetService<IDateTimeFormatter>();
+    }
+
 	private bool isSelectedItemImage = false;
 	public bool IsSelectedItemImage
 	{
@@ -522,9 +527,9 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 	public void CheckAllFileExtensions(List<string> itemExtensions)
 	{
 		// Checks if all the item extensions are image extensions of some kind.
-		IsSelectedItemImage = itemExtensions.TrueForAll(itemExtension => FileExtensionHelpers.IsImageFile(itemExtension));
+		IsSelectedItemImage = itemExtensions.TrueForAll(FileExtensionHelpers.IsImageFile);
 		// Checks if there is only one selected item and if it's a shortcut.
-		IsSelectedItemShortcut = (itemExtensions.Count == 1) && (itemExtensions.TrueForAll(itemExtension => FileExtensionHelpers.IsShortcutFile(itemExtension)));
+		IsSelectedItemShortcut = (itemExtensions.Count == 1) && (itemExtensions.TrueForAll(FileExtensionHelpers.IsShortcutFile));
 	}
 
 	private string shortcutItemType;

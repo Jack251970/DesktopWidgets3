@@ -10,9 +10,11 @@ namespace Files.App.ViewModels.Previews;
 
 public class FolderPreviewViewModel
 {
-	/*private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();*/
+    private readonly IFolderViewViewModel FolderViewViewModel;
 
-	public ListedItem Item { get; }
+    /*private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();*/
+
+    public ListedItem Item { get; }
 
 	public BitmapImage Thumbnail { get; set; } = new();
 
@@ -21,6 +23,8 @@ public class FolderPreviewViewModel
     public FolderPreviewViewModel(ListedItem item)
     {
         Item = item;
+
+        FolderViewViewModel = item.FolderViewViewModel;
     }
 
     public Task LoadAsync()
@@ -69,6 +73,6 @@ public class FolderPreviewViewModel
         }
 	}
 
-	private static FileProperty GetFileProperty(string nameResource, object value)
-		=> new() { NameResource = nameResource, Value = value };
+	private FileProperty GetFileProperty(string nameResource, object value)
+		=> new(FolderViewViewModel) { NameResource = nameResource, Value = value };
 }

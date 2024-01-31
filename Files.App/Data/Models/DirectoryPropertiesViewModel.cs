@@ -7,9 +7,9 @@ namespace Files.App.Data.Models;
 
 public class DirectoryPropertiesViewModel : ObservableObject
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
-	private readonly IContentPageContext ContentPageContext;
+	private IContentPageContext ContentPageContext { get; set; } = null!;
 
 	// The first branch will always be the active one.
 	public const int ACTIVE_BRANCH_INDEX = 0;
@@ -90,15 +90,22 @@ public class DirectoryPropertiesViewModel : ObservableObject
 
 	public EventHandler<string>? CheckoutRequested;
 
-	public ICommand NewBranchCommand { get; }
+    public ICommand NewBranchCommand { get; private set; } = null!;
 
-	public DirectoryPropertiesViewModel(IFolderViewViewModel folderViewViewModel)
+	public DirectoryPropertiesViewModel()
 	{
+        /*NewBranchCommand = new AsyncRelayCommand(()
+			=> GitHelpers.CreateNewBranchAsync(_gitRepositoryPath!, _localBranches[ACTIVE_BRANCH_INDEX].Name));*/
+	}
+
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
+    {
         FolderViewViewModel = folderViewViewModel;
         ContentPageContext = folderViewViewModel.GetService<IContentPageContext>();
+
         NewBranchCommand = new AsyncRelayCommand(()
-			=> GitHelpers.CreateNewBranchAsync(folderViewViewModel, _gitRepositoryPath!, _localBranches[ACTIVE_BRANCH_INDEX].Name));
-	}
+            => GitHelpers.CreateNewBranchAsync(FolderViewViewModel, _gitRepositoryPath!, _localBranches[ACTIVE_BRANCH_INDEX].Name));
+    }
 
 	public void UpdateGitInfo(bool isGitRepository, string? repositoryPath, BranchItem? head)
 	{

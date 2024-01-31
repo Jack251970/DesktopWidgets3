@@ -168,7 +168,7 @@ public static class AppLifecycleHelper
 #endif
                 .AddSingleton<IPreviewPopupService, PreviewPopupService>()
                 .AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>()
-                .AddSingleton<IDateTimeFormatter, UserDateTimeFormatter>()
+                .AddTransient<IDateTimeFormatter, UserDateTimeFormatter>()
                 .AddSingleton<IVolumeInfoFactory, VolumeInfoFactory>()
                 .AddSingleton<ISizeProvider, UserSizeProvider>()
                 .AddSingleton<IQuickAccessService, QuickAccessService>()

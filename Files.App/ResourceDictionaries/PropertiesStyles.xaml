@@ -73,7 +73,7 @@
 	<converters:StringArrayToStringConverter x:Key="StringArrayToString" />
 	<converters:UInt32ToStringConverter x:Key="UInt32ToString" />
 	<converters:DoubleToStringConverter x:Key="DoubleToString" />
-	<converters:DateTimeOffsetToStringConverter x:Key="DateTimeOffsetToString" />
+	<!--<converters:DateTimeOffsetToStringConverter x:Key="DateTimeOffsetToString" />-->
 
 	<Style x:Key="Separator" TargetType="MenuFlyoutSeparator">
 		<Setter Property="Grid.Column" Value="0" />
