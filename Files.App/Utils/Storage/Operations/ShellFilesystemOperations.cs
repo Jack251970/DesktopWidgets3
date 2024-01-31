@@ -891,7 +891,5 @@ public class ShellFilesystemOperations : IFilesystemOperations
 
 		_filesystemOperations = null!;
 		_associatedInstance = null!;
-
-        GC.SuppressFinalize(this);
 	}
 }

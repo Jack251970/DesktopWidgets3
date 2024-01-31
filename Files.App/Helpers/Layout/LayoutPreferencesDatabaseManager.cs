@@ -198,7 +198,5 @@ public class LayoutPreferencesDatabaseManager : IDisposable
 	public void Dispose()
 	{
 		_database.Dispose();
-
-        GC.SuppressFinalize(this);
 	}
 }

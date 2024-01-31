@@ -927,7 +927,5 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         GitHelpers.GitFetchCompleted -= FilesystemViewModel_GitDirectoryUpdated;
 
 		/*_updateDateDisplayTimer.Stop();*/
-
-        GC.SuppressFinalize(this);
 	}
 }

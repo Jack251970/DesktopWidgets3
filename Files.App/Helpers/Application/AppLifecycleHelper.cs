@@ -170,7 +170,7 @@ public static class AppLifecycleHelper
                 .AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>()
                 .AddTransient<IDateTimeFormatter, UserDateTimeFormatter>()
                 .AddSingleton<IVolumeInfoFactory, VolumeInfoFactory>()
-                .AddSingleton<ISizeProvider, UserSizeProvider>()
+                .AddTransient<ISizeProvider, UserSizeProvider>()
                 .AddSingleton<IQuickAccessService, QuickAccessService>()
                 /*.AddSingleton<IResourcesService, ResourcesService>()*/
                 .AddSingleton<IJumpListService, JumpListService>()

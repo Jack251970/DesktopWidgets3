@@ -1020,7 +1020,5 @@ public class FilesystemOperations : IFilesystemOperations
 	public void Dispose()
 	{
 		_associatedInstance = null!;
-
-        GC.SuppressFinalize(this);
 	}
 }

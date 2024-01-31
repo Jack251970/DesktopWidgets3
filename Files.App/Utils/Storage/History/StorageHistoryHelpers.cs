@@ -71,7 +71,5 @@ public class StorageHistoryHelpers : IDisposable
 	{
 		operations?.Dispose();
 		operations = null!;
-
-        GC.SuppressFinalize(this);
 	}
 }

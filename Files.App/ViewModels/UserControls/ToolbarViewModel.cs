@@ -1022,7 +1022,5 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	{
 		/*SearchBox.Escaped -= SearchRegion_Escaped;*/
 		/*UserSettingsService.OnSettingChangedEvent -= UserSettingsService_OnSettingChangedEvent;*/
-
-        GC.SuppressFinalize(this);
 	}
 }

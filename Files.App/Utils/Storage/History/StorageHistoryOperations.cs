@@ -194,8 +194,6 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 
 		operations?.Dispose();
 		operations = null!;
-
-        GC.SuppressFinalize(this);
 	}
 
 	private static bool IsHistoryNull(IStorageHistory history) // history.Destination is null with CreateNew

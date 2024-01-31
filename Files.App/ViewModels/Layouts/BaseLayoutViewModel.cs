@@ -186,7 +186,7 @@ public class BaseLayoutViewModel : IDisposable
 
 	public void Dispose()
 	{
-        GC.SuppressFinalize(this);
+        
 	}
 }
 

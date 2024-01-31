@@ -392,7 +392,5 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 		base.Dispose();
 		UnhookEvents();
 		CommandsViewModel?.Dispose();
-
-        GC.SuppressFinalize(this);
 	}
 }

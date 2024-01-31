@@ -15,6 +15,7 @@ using Files.App.ViewModels;
 using Files.Core.Data.EventArguments;
 using Files.Core.Data.Enums;
 using Files.Core.Services.DateTimeFormatter;
+using Files.Core.Services.SizeProvider;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -37,6 +38,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private readonly InfoPaneViewModel _infoPaneViewModel;
     private readonly IUserSettingsService _userSettingsService;
     private readonly IDateTimeFormatter _dateTimeFormatter;
+    private readonly ISizeProvider _sizeProvider;
 
     private readonly IContentPageContext _contentPageContext;
     private readonly IPageContext _pageContext;
@@ -91,13 +93,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    public FolderViewViewModel(IWidgetManagerService widgetManagerService, ICommandManager commandManager, IModifiableCommandManager modifiableCommandManager, IDialogService dialogService, StatusCenterViewModel statusCenterViewModel, InfoPaneViewModel infoPaneViewModel, IUserSettingsService userSettingsService, IDateTimeFormatter dateTimeFormatter, IContentPageContext contentPageContext, IPageContext pageContext)
+    public FolderViewViewModel(IWidgetManagerService widgetManagerService, ICommandManager commandManager, IModifiableCommandManager modifiableCommandManager, IDialogService dialogService, StatusCenterViewModel statusCenterViewModel, InfoPaneViewModel infoPaneViewModel, IUserSettingsService userSettingsService, IDateTimeFormatter dateTimeFormatter, ISizeProvider sizeProvider, IContentPageContext contentPageContext, IPageContext pageContext)
     {
         _widgetManagerService = widgetManagerService;
 
         NavigatedTo += FolderViewViewModel_NavigatedTo;
 
-        // Initialize related services of Files
+        // Initialize related services and contexts of Files
         App = new(this);
 
         _commandManager = commandManager;
@@ -107,6 +109,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         _infoPaneViewModel = infoPaneViewModel;
         _userSettingsService = userSettingsService;
         _dateTimeFormatter = dateTimeFormatter;
+        _sizeProvider = sizeProvider;
+
         _contentPageContext = contentPageContext;
         _pageContext = pageContext;
     }
@@ -268,6 +272,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             Type t when t == typeof(IInfoPaneSettingsService) => (_userSettingsService.InfoPaneSettingsService as T)!,
             Type t when t == typeof(ILayoutSettingsService) => (_userSettingsService.LayoutSettingsService as T)!,
             Type t when t == typeof(IDateTimeFormatter) => (_dateTimeFormatter as T)!,
+            Type t when t == typeof(ISizeProvider) => (_sizeProvider as T)!,
             Type t when t == typeof(Files.Core.Services.Settings.IAppSettingsService) => (_userSettingsService.AppSettingsService as T)!,
             Type t when t == typeof(IContentPageContext) => (_contentPageContext as T)!,
             Type t when t == typeof(IPageContext) => (_pageContext as T)!,

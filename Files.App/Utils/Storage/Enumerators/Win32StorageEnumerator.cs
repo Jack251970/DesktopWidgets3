@@ -14,7 +14,7 @@ namespace Files.App.Utils.Storage;
 
 public static class Win32StorageEnumerator
 {
-    private static readonly ISizeProvider folderSizeProvider = DependencyExtensions.GetService<ISizeProvider>();
+    /*private static readonly ISizeProvider folderSizeProvider = DependencyExtensions.GetService<ISizeProvider>();*/
 
     private static readonly string folderTypeTextLocalized = "Folder".GetLocalizedResource();
 
@@ -99,6 +99,7 @@ public static class Win32StorageEnumerator
 
                             if (CalculateFolderSizes)
                             {
+                                var folderSizeProvider = folderViewViewModel.GetService<ISizeProvider>();
                                 if (folderSizeProvider.TryGetSize(folder.ItemPath, out var size))
                                 {
                                     folder.FileSizeBytes = (long)size;

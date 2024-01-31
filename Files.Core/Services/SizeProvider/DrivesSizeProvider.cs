@@ -55,12 +55,12 @@ public class DrivesSizeProvider : ISizeProvider
 	public bool TryGetSize(string path, out ulong size)
 	{
 		var driveName = GetDriveName(path);
-		if (!providers.ContainsKey(driveName))
+		if (!providers.TryGetValue(driveName, out var value))
 		{
 			size = 0;
 			return false;
 		}
-		var provider = providers[driveName];
+		var provider = value;
 		return provider.TryGetSize(path, out size);
 	}
 

@@ -497,6 +497,6 @@ public class InfoPaneViewModel : ObservableObject, IDisposable
 
 	public void Dispose()
 	{
-        GC.SuppressFinalize(this);
+        
 	}
 }

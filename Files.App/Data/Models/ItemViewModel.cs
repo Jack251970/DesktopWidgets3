@@ -54,7 +54,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
     private readonly IDialogService DialogService;
 	private readonly IUserSettingsService UserSettingsService;
 	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
-	private readonly ISizeProvider folderSizeProvider = DependencyExtensions.GetService<ISizeProvider>();
+	private readonly ISizeProvider folderSizeProvider;
 
 	// Only used for Binding and ApplyFilesAndFoldersChangesAsync, don't manipulate on this!
 	public BulkConcurrentObservableCollection<ListedItem> FilesAndFolders { get; }
@@ -431,6 +431,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         DialogService = folderViewViewModel.GetService<IDialogService>();
         UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+
+        folderSizeProvider = folderViewViewModel.GetService<ISizeProvider>();
 
         folderSettings = folderSettingsViewModel;
 		filesAndFolders = new ConcurrentCollection<ListedItem>();
