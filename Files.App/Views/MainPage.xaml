@@ -21,10 +21,10 @@
 	KeyboardAcceleratorPlacementMode="Hidden"
 	Loaded="Page_Loaded"
 	NavigationCacheMode="Required"
+    SizeChanged="Page_SizeChanged"
 	mc:Ignorable="d">
-    <!-- SizeChanged="Page_SizeChanged" -->
 
-	<Page.Resources>
+    <Page.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/DefaultGridSplitterStyle.xaml" />
@@ -35,7 +35,7 @@
 
             <wctconverters:BoolNegationConverter x:Key="BoolNegationConverter" />
 
-            <!--<MenuFlyout x:Key="SidebarContextMenu">
+            <MenuFlyout x:Key="SidebarContextMenu">
 				<ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowFavoritesSection, Mode=TwoWay}" Text="{helpers:ResourceString Name=/FilesResources/SidebarFavorites}" />
 				<ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowLibrarySection, Mode=TwoWay}" Text="{helpers:ResourceString Name=/FilesResources/SidebarLibraries}" />
 				<ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowDrivesSection, Mode=TwoWay}" Text="{helpers:ResourceString Name=/FilesResources/Drives}" />
@@ -46,7 +46,7 @@
 					x:Name="SidebarContextMenuFileTagsSection"
 					IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowFileTagsSection, Mode=TwoWay}"
 					Text="{helpers:ResourceString Name=/FilesResources/FileTags}" />
-			</MenuFlyout>-->
+			</MenuFlyout>
 		</ResourceDictionary>
 	</Page.Resources>
 
@@ -124,14 +124,164 @@
 	</Page.KeyboardAccelerators>-->
 
     <Grid>
-        
-        <!--  Page Content  -->
-        <ContentPresenter
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="RightMarginGrid" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!--  Tab Control  -->
+            <!--<tabbar:TabBar
+				x:Name="TabControl"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch"
+				HorizontalContentAlignment="Stretch"
+				x:FieldModifier="public"
+				x:Load="False"
+				Loaded="HorizontalMultitaskingControl_Loaded"
+				TabIndex="0"
+				TabStripVisibility="Visible"
+				Visibility="Visible">
+                <tabbar:TabBar.FooterElement>
+                    <Button
+						x:Name="HorizontalMultitaskingControlAddButton"
+						Width="32"
+						Height="32"
+						Padding="8"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Bottom"
+						AutomationProperties.Name="{x:Bind Commands.NewTab.AutomationName}"
+						Background="Transparent"
+						BorderThickness="0"
+						Command="{x:Bind Commands.NewTab}"
+						ToolTipService.ToolTip="{x:Bind Commands.NewTab.LabelWithHotKey, Mode=OneWay}">
+                        <Button.Content>
+                            <FontIcon
+								x:Name="HorizontalMultitaskingControlAddButtonIcon"
+								FontSize="12"
+								Glyph="&#xE710;" />
+                        </Button.Content>
+                    </Button>
+                </tabbar:TabBar.FooterElement>
+            </tabbar:TabBar>-->
+
+            <!--  Address Bar  -->
+            <uc:AddressToolbar
+				x:Name="NavToolbar"
+				Grid.Row="1"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Stretch"
+				x:Load="False"
+				Loaded="NavToolbar_Loaded"
+				OngoingTasksViewModel="{x:Bind OngoingTasksViewModel}"
+				ShowOngoingTasks="True"
+				ShowSearchBox="True"
+				ShowSettingsButton="{x:Bind WindowContext.IsCompactOverlay, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
+				TabIndex="1" />
+
+            <Button
+				x:Name="TogglePaneButton"
+				Margin="2,2,0,0"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Top"
+				Background="Transparent"
+				BorderThickness="0"
+				Click="TogglePaneButton_Click"
+				Style="{StaticResource PaneToggleButtonStyle}"
+				Visibility="Collapsed" />
+        </Grid>
+
+        <!--  Root  -->
+        <sidebar:SidebarView
+			x:Name="SidebarControl"
 			Grid.Row="1"
-			Grid.Column="0"
 			HorizontalAlignment="Stretch"
 			HorizontalContentAlignment="Stretch"
-			Content="{x:Bind ((viewmodels:MainPageViewModel)DataContext).SelectedTabItem.ContentFrame, Mode=OneWay}" />
+			DisplayMode="{x:Bind SidebarAdaptiveViewModel.SidebarDisplayMode, Mode=TwoWay}"
+			Loaded="SidebarControl_Loaded"
+			OpenPaneLength="{x:Bind UserSettingsService.AppearanceSettingsService.SidebarWidth, Mode=TwoWay}"
+			SelectedItem="{x:Bind SidebarAdaptiveViewModel.SidebarSelectedItem, Mode=TwoWay}"
+			ViewModel="{x:Bind SidebarAdaptiveViewModel}">
+
+            <Grid
+				x:Name="RootGrid"
+				PreviewKeyDown="RootGrid_PreviewKeyDown"
+				SizeChanged="RootGrid_SizeChanged">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition
+						x:Name="ContentRow"
+						Height="*"
+						MinHeight="100" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition x:Name="PaneRow" Height="Auto" />
+                    <RowDefinition Height="32" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+						x:Name="ContentColumn"
+						Width="*"
+						MinWidth="100" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition x:Name="PaneColumn" Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--  File Navigation Toolbar  -->
+                <uc:InnerNavigationToolbar
+					x:Name="InnerNavigationToolbar"
+					Grid.ColumnSpan="3"
+					x:Load="False"
+					Loaded="InnerNavToolbar_Loaded"
+					ShowPreviewPaneButton="{x:Bind ShouldPreviewPaneBeDisplayed, Mode=OneWay}"
+					ShowViewControlButton="{x:Bind ShouldViewControlBeDisplayed, Mode=OneWay}"
+					TabIndex="2" />
+
+                <!--  Page Content  -->
+				<ContentPresenter
+					Grid.Row="1"
+					Grid.Column="0"
+					HorizontalAlignment="Stretch"
+					HorizontalContentAlignment="Stretch"
+					Content="{x:Bind ((viewmodels:MainPageViewModel)DataContext).SelectedTabItem.ContentFrame, Mode=OneWay}" />
+
+                <!--  Preview Pane Splitter  -->
+                <toolkit:GridSplitter
+					x:Name="PaneSplitter"
+					Grid.Row="1"
+					Grid.Column="1"
+					x:Load="{x:Bind ShouldPreviewPaneBeActive, Mode=OneWay}"
+					ManipulationCompleted="PaneSplitter_ManipulationCompleted"
+					ManipulationStarted="PaneSplitter_ManipulationStarted"
+					ResizeBehavior="BasedOnAlignment"
+					Style="{StaticResource DefaultGridSplitterStyle}" />
+
+                <!--  Preview Pane  -->
+                <uc:InfoPane
+					x:Name="PreviewPane"
+					Grid.Row="1"
+					Grid.Column="2"
+					HorizontalContentAlignment="Stretch"
+					x:Load="{x:Bind ShouldPreviewPaneBeActive, Mode=OneWay}"
+					Loaded="PreviewPane_Loaded"
+					Unloaded="PreviewPane_Unloaded" />
+
+                <!--  Status Bar  -->
+                <uc:StatusBarControl
+					x:Name="StatusBarControl"
+					Grid.Row="4"
+					Grid.ColumnSpan="3"
+					x:Load="False"
+                    Loaded="StatusBar_Loaded"
+					ShowInfoText="{x:Bind SidebarAdaptiveViewModel.PaneHolder.ActivePaneOrColumn.InstanceViewModel.IsPageTypeNotHome, Mode=OneWay}" />
+
+            </Grid>
+
+        </sidebar:SidebarView>
 
         <VisualStateManager.VisualStateGroups>
 			<VisualStateGroup>

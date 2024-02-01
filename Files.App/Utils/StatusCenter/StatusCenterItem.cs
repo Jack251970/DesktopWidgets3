@@ -398,8 +398,7 @@ public sealed class StatusCenterItem : ObservableObject
 				}
 		}
 
-        // CHANGE: Remove ui changes.
-		/*StatusCenterHelper.UpdateCardStrings(this);*/
+		StatusCenterHelper.UpdateCardStrings(this);
 		OnPropertyChanged(nameof(HeaderTooltip));
 	}
 
@@ -464,8 +463,7 @@ public sealed class StatusCenterItem : ObservableObject
         }
 
         // Update UI for strings
-        // CHANGE: Remove ui changes.
-        /*StatusCenterHelper.UpdateCardStrings(this);*/
+        StatusCenterHelper.UpdateCardStrings(this);
         OnPropertyChanged(nameof(HeaderTooltip));
 
 		// Graph item point

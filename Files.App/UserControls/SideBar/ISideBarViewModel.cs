@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.UI.Input;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
@@ -44,4 +44,4 @@ public interface ISidebarViewModel
 	/// </summary>
 	/// <param name="item">The item that was invoked.</param>
 	void HandleItemInvokedAsync(object item, PointerUpdateKind pointerUpdateKind);
-}*/
+}

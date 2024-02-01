@@ -9,7 +9,8 @@ public class NavigationArguments
 
 	public string? NavPathParam { get; set; } = null;
 
-    public IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
+    // CHECK: Required is just for checking.
+    public /*required*/ IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     public IShellPage? AssociatedTabInstance { get; set; }
 

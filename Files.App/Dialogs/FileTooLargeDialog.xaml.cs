@@ -17,9 +17,9 @@ public sealed partial class FileTooLargeDialog : ContentDialog, IDialog<FileTooL
 
 	public FileTooLargeDialog(IFolderViewViewModel folderViewViewModel)
 	{
-		InitializeComponent();
-
         FolderViewViewModel = folderViewViewModel;
+
+        InitializeComponent();
 	}
 
 	public async new Task<DialogResult> ShowAsync()

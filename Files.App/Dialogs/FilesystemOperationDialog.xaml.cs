@@ -27,9 +27,10 @@ public sealed partial class FilesystemOperationDialog : ContentDialog, IDialog<F
 
 	public FilesystemOperationDialog(IFolderViewViewModel folderViewViewModel)
 	{
-		InitializeComponent();
-
         FolderViewViewModel = folderViewViewModel;
+
+        InitializeComponent();
+
         FolderViewViewModel.MainWindow.SizeChanged += Current_SizeChanged;
 	}
 

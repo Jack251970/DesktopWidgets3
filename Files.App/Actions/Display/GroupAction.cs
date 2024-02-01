@@ -1,0 +1,650 @@
+﻿// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
+
+namespace Files.App.Actions;
+
+internal class GroupByNoneAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.None;
+
+	public override string Label
+		=> "None".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByNoneDescription".GetLocalizedResource();
+
+    public GroupByNoneAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByNameAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.Name;
+
+	public override string Label
+		=> "Name".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByNameDescription".GetLocalizedResource();
+
+    public GroupByNameAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateModifiedAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.DateModified;
+
+	public override string Label
+		=> "DateModifiedLowerCase".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByDateModifiedDescription".GetLocalizedResource();
+
+    public GroupByDateModifiedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateCreatedAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.DateCreated;
+
+	public override string Label
+		=> "DateCreated".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByDateCreatedDescription".GetLocalizedResource();
+
+    public GroupByDateCreatedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupBySizeAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.Size;
+
+	public override string Label
+		=> "Size".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupBySizeDescription".GetLocalizedResource();
+
+    public GroupBySizeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByTypeAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.FileType;
+
+	public override string Label
+		=> "Type".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByTypeDescription".GetLocalizedResource();
+
+    public GroupByTypeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupBySyncStatusAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.SyncStatus;
+
+	public override string Label
+		=> "SyncStatus".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupBySyncStatusDescription".GetLocalizedResource();
+
+	protected override bool GetIsExecutable(ContentPageTypes pageType)
+		=> pageType is ContentPageTypes.CloudDrive;
+
+    public GroupBySyncStatusAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByTagAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.FileTag;
+
+	public override string Label
+		=> "FileTags".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByTagDescription".GetLocalizedResource();
+
+    public GroupByTagAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByOriginalFolderAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.OriginalFolder;
+
+	public override string Label
+		=> "OriginalFolder".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByOriginalFolderDescription".GetLocalizedResource();
+
+	protected override bool GetIsExecutable(ContentPageTypes pageType)
+		=> pageType is ContentPageTypes.RecycleBin;
+
+    public GroupByOriginalFolderAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateDeletedAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.DateDeleted;
+
+	public override string Label
+		=> "DateDeleted".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByDateDeletedDescription".GetLocalizedResource();
+
+	protected override bool GetIsExecutable(ContentPageTypes pageType)
+		=> pageType is ContentPageTypes.RecycleBin;
+
+    public GroupByDateDeletedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByFolderPathAction : GroupByAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.FolderPath;
+
+	public override string Label
+		=> "FolderPath".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByFolderPathDescription".GetLocalizedResource();
+
+	protected override bool GetIsExecutable(ContentPageTypes pageType)
+		=> pageType is ContentPageTypes.Library or ContentPageTypes.SearchResults;
+    
+    public GroupByFolderPathAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal abstract class GroupByAction : ObservableObject, IToggleAction
+{
+	protected IContentPageContext ContentContext;
+
+	protected IDisplayPageContext DisplayContext;
+
+	protected abstract GroupOption GroupOption { get; }
+
+	public abstract string Label { get; }
+
+	public abstract string Description { get; }
+
+	public bool IsOn
+		=> DisplayContext.GroupOption == GroupOption;
+
+	public bool IsExecutable
+		=> GetIsExecutable(ContentContext.PageType);
+
+	public GroupByAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext)
+    {
+        ContentContext = contentPageContext;
+        DisplayContext = displayPageContext;
+
+        ContentContext.PropertyChanged += ContentContext_PropertyChanged;
+		DisplayContext.PropertyChanged += DisplayContext_PropertyChanged;
+	}
+
+	public Task ExecuteAsync()
+	{
+		DisplayContext.GroupOption = GroupOption;
+
+		return Task.CompletedTask;
+	}
+
+	protected virtual bool GetIsExecutable(ContentPageTypes pageType)
+	{
+		return true;
+	}
+
+	private void ContentContext_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(IContentPageContext.PageType))
+        {
+            OnPropertyChanged(nameof(IsExecutable));
+        }
+    }
+
+	private void DisplayContext_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(IDisplayPageContext.GroupOption))
+        {
+            OnPropertyChanged(nameof(IsOn));
+        }
+    }
+}
+
+internal class GroupByDateModifiedYearAction : GroupByDateAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.DateModified;
+
+	protected override GroupByDateUnit GroupByDateUnit
+		=> GroupByDateUnit.Year;
+
+	public override string Label
+		=> "Year".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByDateModifiedYearDescription".GetLocalizedResource();
+
+    public GroupByDateModifiedYearAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateModifiedMonthAction : GroupByDateAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.DateModified;
+
+	protected override GroupByDateUnit GroupByDateUnit
+		=> GroupByDateUnit.Month;
+
+	public override string Label
+		=> "Month".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByDateModifiedMonthDescription".GetLocalizedResource();
+
+    public GroupByDateModifiedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateCreatedYearAction : GroupByDateAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.DateCreated;
+
+	protected override GroupByDateUnit GroupByDateUnit
+		=> GroupByDateUnit.Year;
+
+	public override string Label
+		=> "Year".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByDateCreatedYearDescription".GetLocalizedResource();
+
+    public GroupByDateCreatedYearAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateCreatedMonthAction : GroupByDateAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.DateCreated;
+
+	protected override GroupByDateUnit GroupByDateUnit
+		=> GroupByDateUnit.Month;
+
+	public override string Label
+		=> "Month".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByDateCreatedMonthDescription".GetLocalizedResource();
+
+    public GroupByDateCreatedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateDeletedYearAction : GroupByDateAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.DateDeleted;
+
+	protected override GroupByDateUnit GroupByDateUnit
+		=> GroupByDateUnit.Year;
+
+	public override string Label
+		=> "Year".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByDateDeletedYearDescription".GetLocalizedResource();
+
+	protected override bool GetIsExecutable(ContentPageTypes pageType)
+		=> pageType is ContentPageTypes.RecycleBin;
+
+    public GroupByDateDeletedYearAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateDeletedMonthAction : GroupByDateAction
+{
+    protected override GroupOption GroupOption
+		=> GroupOption.DateDeleted;
+
+	protected override GroupByDateUnit GroupByDateUnit
+		=> GroupByDateUnit.Month;
+
+	public override string Label
+		=> "Month".GetLocalizedResource();
+
+	public override string Description
+		=> "GroupByDateDeletedMonthDescription".GetLocalizedResource();
+
+	protected override bool GetIsExecutable(ContentPageTypes pageType)
+		=> pageType is ContentPageTypes.RecycleBin;
+
+    public GroupByDateDeletedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal abstract class GroupByDateAction : ObservableObject, IToggleAction
+{
+	protected IContentPageContext ContentContext;
+
+	protected IDisplayPageContext DisplayContext;
+
+	protected abstract GroupOption GroupOption { get; }
+
+	protected abstract GroupByDateUnit GroupByDateUnit { get; }
+
+	public abstract string Label { get; }
+
+	public abstract string Description { get; }
+
+	public bool IsOn =>
+		DisplayContext.GroupOption == GroupOption &&
+		DisplayContext.GroupByDateUnit == GroupByDateUnit;
+
+	public bool IsExecutable
+		=> GetIsExecutable(ContentContext.PageType);
+
+	public GroupByDateAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext)
+	{
+		ContentContext = contentPageContext;
+		DisplayContext = displayPageContext;
+
+		ContentContext.PropertyChanged += ContentContext_PropertyChanged;
+		DisplayContext.PropertyChanged += DisplayContext_PropertyChanged;
+	}
+
+	public Task ExecuteAsync()
+	{
+		DisplayContext.GroupOption = GroupOption;
+		DisplayContext.GroupByDateUnit = GroupByDateUnit;
+
+		return Task.CompletedTask;
+	}
+
+	protected virtual bool GetIsExecutable(ContentPageTypes pageType)
+	{
+		return true;
+	}
+
+	private void ContentContext_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(IContentPageContext.PageType))
+        {
+            OnPropertyChanged(nameof(IsExecutable));
+        }
+    }
+
+	private void DisplayContext_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(IDisplayPageContext.GroupOption) or nameof(IDisplayPageContext.GroupByDateUnit))
+        {
+            OnPropertyChanged(nameof(IsOn));
+        }
+    }
+}
+
+internal class GroupAscendingAction : ObservableObject, IToggleAction
+{
+	private readonly IDisplayPageContext context;
+
+	public string Label
+		=> "Ascending".GetLocalizedResource();
+
+	public string Description
+		=> "GroupAscendingDescription".GetLocalizedResource();
+
+	public bool IsOn
+		=> context.GroupDirection is SortDirection.Ascending;
+
+	public bool IsExecutable
+		=> context.GroupOption is not GroupOption.None;
+
+	public GroupAscendingAction(IDisplayPageContext context)
+    {
+        this.context = context;
+
+        context.PropertyChanged += Context_PropertyChanged;
+	}
+
+	public Task ExecuteAsync()
+	{
+		context.GroupDirection = SortDirection.Ascending;
+
+		return Task.CompletedTask;
+	}
+
+	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		switch (e.PropertyName)
+		{
+			case nameof(IDisplayPageContext.GroupOption):
+				OnPropertyChanged(nameof(IsExecutable));
+				break;
+			case nameof(IDisplayPageContext.GroupDirection):
+				OnPropertyChanged(nameof(IsOn));
+				break;
+		}
+	}
+}
+
+internal class GroupDescendingAction : ObservableObject, IToggleAction
+{
+	private readonly IDisplayPageContext context;
+
+	public string Label
+		=> "Descending".GetLocalizedResource();
+
+	public string Description
+		=> "GroupDescendingDescription".GetLocalizedResource();
+
+	public bool IsOn
+		=> context.GroupDirection is SortDirection.Descending;
+
+	public bool IsExecutable
+		=> context.GroupOption is not GroupOption.None;
+
+	public GroupDescendingAction(IDisplayPageContext context)
+    {
+        this.context = context;
+
+        context.PropertyChanged += Context_PropertyChanged;
+	}
+
+	public Task ExecuteAsync()
+	{
+		context.GroupDirection = SortDirection.Descending;
+
+		return Task.CompletedTask;
+	}
+
+	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		switch (e.PropertyName)
+		{
+			case nameof(IDisplayPageContext.GroupOption):
+				OnPropertyChanged(nameof(IsExecutable));
+				break;
+			case nameof(IDisplayPageContext.GroupDirection):
+				OnPropertyChanged(nameof(IsOn));
+				break;
+		}
+	}
+}
+
+internal class ToggleGroupDirectionAction : IAction
+{
+	private readonly IDisplayPageContext context;
+
+	public string Label
+		=> "ToggleSortDirection".GetLocalizedResource();
+
+	public string Description
+		=> "ToggleGroupDirectionDescription".GetLocalizedResource();
+
+	public ToggleGroupDirectionAction(IDisplayPageContext context)
+    {
+        this.context = context;
+    }
+
+	public Task ExecuteAsync()
+	{
+		context.GroupDirection = context.SortDirection is SortDirection.Descending ? SortDirection.Ascending : SortDirection.Descending;
+
+		return Task.CompletedTask;
+	}
+}
+
+internal class GroupByYearAction : ObservableObject, IToggleAction
+{
+	private readonly IDisplayPageContext context;
+
+	public string Label
+		=> "Year".GetLocalizedResource();
+
+	public string Description
+		=> "GroupByYearDescription".GetLocalizedResource();
+
+	public bool IsOn
+		=> context.GroupByDateUnit is GroupByDateUnit.Year;
+
+	public bool IsExecutable
+		=> context.GroupOption.IsGroupByDate();
+
+	public GroupByYearAction(IDisplayPageContext context)
+    {
+        this.context = context;
+
+        context.PropertyChanged += Context_PropertyChanged;
+	}
+
+	public Task ExecuteAsync()
+	{
+		context.GroupByDateUnit = GroupByDateUnit.Year;
+
+		return Task.CompletedTask;
+	}
+
+	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		switch (e.PropertyName)
+		{
+			case nameof(IDisplayPageContext.GroupOption):
+				OnPropertyChanged(nameof(IsExecutable));
+				break;
+			case nameof(IDisplayPageContext.GroupByDateUnit):
+				OnPropertyChanged(nameof(IsOn));
+				break;
+		}
+	}
+}
+
+internal class GroupByMonthAction : ObservableObject, IToggleAction
+{
+	private readonly IDisplayPageContext context;
+
+	public string Label
+		=> "Month".GetLocalizedResource();
+
+	public string Description
+		=> "GroupByMonthDescription".GetLocalizedResource();
+
+	public bool IsOn
+		=> context.GroupByDateUnit is GroupByDateUnit.Month;
+
+	public bool IsExecutable
+		=> context.GroupOption.IsGroupByDate();
+
+	public GroupByMonthAction(IDisplayPageContext context)
+    {
+        this.context = context;
+
+        context.PropertyChanged += Context_PropertyChanged;
+	}
+
+	public Task ExecuteAsync()
+	{
+		context.GroupByDateUnit = GroupByDateUnit.Month;
+
+		return Task.CompletedTask;
+	}
+
+	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		switch (e.PropertyName)
+		{
+			case nameof(IDisplayPageContext.GroupOption):
+				OnPropertyChanged(nameof(IsExecutable));
+				break;
+			case nameof(IDisplayPageContext.GroupByDateUnit):
+				OnPropertyChanged(nameof(IsOn));
+				break;
+		}
+	}
+}
+
+internal class ToggleGroupByDateUnitAction : IAction
+{
+	private readonly IDisplayPageContext context;
+
+	public string Label
+		=> "ToggleGroupingUnit".GetLocalizedResource();
+
+	public string Description
+		=> "ToggleGroupByDateUnitDescription".GetLocalizedResource();
+
+	public ToggleGroupByDateUnitAction(IDisplayPageContext context)
+    {
+        this.context = context;
+    }
+
+	public Task ExecuteAsync()
+	{
+		context.GroupByDateUnit = context.GroupByDateUnit is GroupByDateUnit.Month ? GroupByDateUnit.Year : GroupByDateUnit.Month;
+
+		return Task.CompletedTask;
+	}
+}

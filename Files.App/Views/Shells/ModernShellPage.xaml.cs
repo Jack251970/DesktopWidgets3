@@ -60,7 +60,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 		InitializeComponent();
 
         /*ToolbarViewModel.PathControlDisplayText = "Home".GetLocalizedResource();
-		ToolbarViewModel.RefreshWidgetsRequested += ModernShellPage_RefreshWidgetsRequested;*/
+        ToolbarViewModel.RefreshWidgetsRequested += ModernShellPage_RefreshWidgetsRequested;*/
 
         _navigationInteractionTracker = new NavigationInteractionTracker(this, BackIcon, ForwardIcon);
 		_navigationInteractionTracker.NavigationRequested += OverscrollNavigationRequested;
@@ -186,11 +186,11 @@ public sealed partial class ModernShellPage : BaseShellPage
 	private async void ItemDisplayFrame_Navigated(object sender, NavigationEventArgs e)
 	{
 		ContentPage = await GetContentOrNullAsync();
-		/*if (!ToolbarViewModel.SearchBox.WasQuerySubmitted)
+		if (!ToolbarViewModel.SearchBox.WasQuerySubmitted)
 		{
 			ToolbarViewModel.SearchBox.Query = string.Empty;
 			ToolbarViewModel.IsSearchBoxVisible = false;
-		}*/
+		}
 
 		ToolbarViewModel.UpdateAdditionalActions();
 		if (ItemDisplayFrame.CurrentSourcePageType == (typeof(DetailsLayoutPage))

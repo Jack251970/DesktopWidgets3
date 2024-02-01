@@ -25,7 +25,7 @@ public interface IContentPageContext : INotifyPropertyChanged
 	bool CanGoForward { get; }
 	bool CanNavigateToParent { get; }
 
-	/*bool IsSearchBoxVisible { get; }*/
+	bool IsSearchBoxVisible { get; }
 
 	bool CanCreateItem { get; }
 

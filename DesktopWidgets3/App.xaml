@@ -36,7 +36,7 @@
 
                 <!-- Files -->
                 <ResourceDictionary Source="../Files.App/ResourceDictionaries/PathIcons.xaml" />
-                <!--<ResourceDictionary Source="../Files.App/UserControls/SideBar/SideBarControls.xaml" />-->
+                <ResourceDictionary Source="../Files.App/UserControls/SideBar/SideBarControls.xaml" />
                 <ResourceDictionary Source="../Files.App/ResourceDictionaries/App.Theme.TextBlockStyles.xaml" />
                 <ResourceDictionary Source="../Files.App/ResourceDictionaries/MenuFlyoutSubItemWithImageStyle.xaml" />
                 <!--  Styles for the custom icons  -->

@@ -10,7 +10,8 @@ namespace Files.App.Data.Parameters;
 
 public sealed class CustomTabViewItemParameter
 {
-	public IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
+    // CHECK: Required is just for checking.
+    public /*required*/ IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     public Type InitialPageType { get; set; } = null!;
 
@@ -18,7 +19,7 @@ public sealed class CustomTabViewItemParameter
 
     public string Serialize()
 	{
-        // CHANGE: Remove folder view view model from parameter for serialization.
+        // CHANGE: Remove folder view view model from parameter of serialization.
         var tempArgs = new CustomTabViewItemParameterJson() { InitialPageType = InitialPageType, NavigationParameter = NavigationParameter };
         if (tempArgs.NavigationParameter is PaneNavigationArguments args)
         {
@@ -30,7 +31,7 @@ public sealed class CustomTabViewItemParameter
 
     public static CustomTabViewItemParameter Deserialize(IFolderViewViewModel folderViewViewModel, string obj)
 	{
-        // CHANGE: Add folder view view model from parameter for deserialization.
+        // CHANGE: Add folder view view model from parameter of deserialization.
         var tabArgs = new CustomTabViewItemParameter
         {
             FolderViewViewModel = folderViewViewModel

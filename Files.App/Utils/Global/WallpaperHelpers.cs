@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls;
 using Vanara.PInvoke;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
@@ -11,7 +11,7 @@ namespace Files.App.Utils;
 
 public static class WallpaperHelpers
 {
-	public static async Task SetAsBackgroundAsync(WallpaperType type, string filePath)
+	public static async Task SetAsBackgroundAsync(IFolderViewViewModel folderViewViewModel, WallpaperType type, string filePath)
 	{
 
 		if (type == WallpaperType.Desktop)
@@ -25,7 +25,7 @@ public static class WallpaperHelpers
 			}
 			catch (Exception ex)
 			{
-				ShowErrorPrompt(ex.Message);
+				ShowErrorPrompt(folderViewViewModel, ex.Message);
 			}
 		}
 		else if (type == WallpaperType.LockScreen)
@@ -36,7 +36,7 @@ public static class WallpaperHelpers
 		}
 	}
 
-	public static void SetSlideshow(string[] filePaths)
+	public static void SetSlideshow(IFolderViewViewModel folderViewViewModel, string[] filePaths)
 	{
 		if (filePaths is null || !filePaths.Any())
         {
@@ -57,11 +57,11 @@ public static class WallpaperHelpers
 		}
 		catch (Exception ex)
 		{
-			ShowErrorPrompt(ex.Message);
+			ShowErrorPrompt(folderViewViewModel, ex.Message);
 		}
 	}
 
-	private static async void ShowErrorPrompt(string exception)
+	private static async void ShowErrorPrompt(IFolderViewViewModel folderViewViewModel, string exception)
 	{
 		var errorDialog = new ContentDialog()
 		{
@@ -72,9 +72,10 @@ public static class WallpaperHelpers
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            errorDialog.XamlRoot = MainWindow.Instance.Content.XamlRoot;
+            errorDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
         }
 
-        await errorDialog.TryShowAsync();
+        await errorDialog.TryShowAsync(folderViewViewModel);
 	}
-}*/
+}
+

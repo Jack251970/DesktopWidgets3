@@ -17,9 +17,10 @@ public sealed partial class SettingsDialog : ContentDialog, IDialog<SettingsDial
 
 	public SettingsDialog(IFolderViewViewModel folderViewViewModel)
 	{
-		InitializeComponent();
-
         FolderViewViewModel = folderViewViewModel;
+
+        InitializeComponent();
+        
         FolderViewViewModel.MainWindow.SizeChanged += Current_SizeChanged;
 		UpdateDialogLayout();
 	}

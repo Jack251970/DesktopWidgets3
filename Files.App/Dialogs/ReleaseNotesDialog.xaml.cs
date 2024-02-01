@@ -18,9 +18,10 @@ public sealed partial class ReleaseNotesDialog : ContentDialog, IDialog<ReleaseN
 
 	public ReleaseNotesDialog(IFolderViewViewModel folderViewViewModel)
 	{
-		InitializeComponent();
-
         FolderViewViewModel = folderViewViewModel;
+
+        InitializeComponent();
+
         FolderViewViewModel.MainWindow.SizeChanged += Current_SizeChanged;
 		UpdateDialogLayout();
 	}

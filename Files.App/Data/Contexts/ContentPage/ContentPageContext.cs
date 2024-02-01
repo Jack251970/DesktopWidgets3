@@ -38,7 +38,7 @@ internal class ContentPageContext : ObservableObject, IContentPageContext
 
 	public bool CanNavigateToParent => ShellPage is not null && ShellPage.ToolbarViewModel.CanNavigateToParent;
 
-	/*public bool IsSearchBoxVisible => ShellPage is not null && ShellPage.ToolbarViewModel.IsSearchBoxVisible;*/
+	public bool IsSearchBoxVisible => ShellPage is not null && ShellPage.ToolbarViewModel.IsSearchBoxVisible;
 
 	public bool CanCreateItem => GetCanCreateItem();
 
@@ -190,7 +190,7 @@ internal class ContentPageContext : ObservableObject, IContentPageContext
 			case nameof(ToolbarViewModel.CanNavigateToParent):
 			case nameof(ToolbarViewModel.HasItem):
 			case nameof(ToolbarViewModel.CanRefresh):
-			/*case nameof(ToolbarViewModel.IsSearchBoxVisible):*/
+			case nameof(ToolbarViewModel.IsSearchBoxVisible):
 				OnPropertyChanged(e.PropertyName);
 				break;
 			case nameof(ToolbarViewModel.SelectedItems):

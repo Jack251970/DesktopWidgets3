@@ -72,8 +72,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
 	// Properties
 
-	/*protected AddressToolbar? NavToolbar
-		=> (FolderViewViewModel.MainWindow.Content as Frame)?.FindDescendant<AddressToolbar>();*/
+	protected AddressToolbar? NavToolbar
+		=> FolderViewViewModel.RootFrame?.FindDescendant<AddressToolbar>();
 
 	public LayoutPreferencesManager? FolderSettings
 		=> ParentShellPageInstance?.InstanceViewModel.FolderSettings;

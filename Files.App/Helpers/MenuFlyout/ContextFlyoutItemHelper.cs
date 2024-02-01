@@ -9,7 +9,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
 using Windows.Storage;
 using Files.App.Services.Settings;
-using Files.Core.ViewModels.FolderView;
 
 namespace Files.App.Helpers;
 
@@ -106,8 +105,7 @@ public static class ContextFlyoutItemHelper
         var modifiableCommands = folderViewViewModel.GetService<IModifiableCommandManager>();
         return new List<ContextMenuFlyoutItemViewModel>()
 		{
-            // TODO: Add support.
-			/*new ContextMenuFlyoutItemViewModel()
+			new()
 			{
 				Text = "LayoutMode".GetLocalizedResource(),
 				Glyph = "\uE152",
@@ -148,7 +146,7 @@ public static class ContextFlyoutItemHelper
 					}.Build(),
 				},
 			},
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
 				Text = "SortBy".GetLocalizedResource(),
 				OpacityIcon = new OpacityIconModel()
@@ -202,8 +200,8 @@ public static class ContextFlyoutItemHelper
 					{
 						IsToggle = true
 					}.Build(),
-					new ContextMenuFlyoutItemViewModel
-					{
+					new() 
+                    {
 						ItemType = ContextMenuFlyoutItemType.Separator,
 						ShowInRecycleBin = true,
 						ShowInSearchPage = true,
@@ -220,7 +218,7 @@ public static class ContextFlyoutItemHelper
 					}.Build(),
 				},
 			},
-			new ContextMenuFlyoutItemViewModel()
+			new()
 			{
 				Text = "NavToolbarGroupByRadioButtons/Text".GetLocalizedResource(),
 				Glyph = "\uF168",
@@ -239,7 +237,7 @@ public static class ContextFlyoutItemHelper
 					{
 						IsToggle = true
 					}.Build(),
-					new ContextMenuFlyoutItemViewModel()
+					new()
 					{
 						Text = "DateModifiedLowerCase".GetLocalizedResource(),
 						ShowInRecycleBin = true,
@@ -258,8 +256,8 @@ public static class ContextFlyoutItemHelper
 							}.Build(),
 						},
 					},
-					new ContextMenuFlyoutItemViewModel()
-					{
+                    new()
+                    {
 						Text = "DateCreated".GetLocalizedResource(),
 						ShowInRecycleBin = true,
 						ShowInSearchPage = true,
@@ -297,8 +295,8 @@ public static class ContextFlyoutItemHelper
 					{
 						IsToggle = true
 					}.Build(),
-					new ContextMenuFlyoutItemViewModel()
-					{
+                    new()
+                    {
 						Text = "DateDeleted".GetLocalizedResource(),
 						ShowInRecycleBin = true,
 						IsHidden = !currentInstanceViewModel.IsPageTypeRecycleBin,
@@ -318,8 +316,8 @@ public static class ContextFlyoutItemHelper
 					{
 						IsToggle = true
 					}.Build(),
-					new ContextMenuFlyoutItemViewModel
-					{
+                    new()
+                    {
 						ItemType = ContextMenuFlyoutItemType.Separator,
 						ShowInRecycleBin = true,
 						ShowInSearchPage = true,
@@ -337,7 +335,7 @@ public static class ContextFlyoutItemHelper
 						IsVisible = true
 					}.Build(),
 				},
-			},*/
+			},
 			new ContextMenuFlyoutItemViewModelBuilder(commands.RefreshItems)
 			{
 				IsVisible = !itemsSelected,
@@ -399,6 +397,7 @@ public static class ContextFlyoutItemHelper
 				ShowItem = itemsSelected && showOpenItemWith
 			},
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenFileLocation).Build(),
+            // TODO: Add support.
 			/*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenInNewWindowItemAction).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewPaneAction).Build(),
@@ -413,7 +412,7 @@ public static class ContextFlyoutItemHelper
 					new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsLockscreenBackground).Build(),
 					new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsSlideshowBackground).Build(),
 				}
-			},
+			},*/
 			new ContextMenuFlyoutItemViewModelBuilder(commands.RotateLeft)
 			{
 				IsVisible = !currentInstanceViewModel.IsPageTypeRecycleBin
@@ -427,7 +426,7 @@ public static class ContextFlyoutItemHelper
 							&& (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false)
 			}.Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAdmin).Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAnotherUser).Build(),*/
+			new ContextMenuFlyoutItemViewModelBuilder(commands.RunAsAnotherUser).Build(),
 			new()
 			{
 				ItemType = ContextMenuFlyoutItemType.Separator,
@@ -476,7 +475,7 @@ public static class ContextFlyoutItemHelper
 				IsVisible = itemsSelected,
 				IsPrimary = true,
 			}.Build(),
-			/*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
+			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
 			{
 				IsPrimary = true,
 				IsVisible = commands.OpenProperties.IsExecutable
@@ -532,7 +531,7 @@ public static class ContextFlyoutItemHelper
 					new ContextMenuFlyoutItemViewModelBuilder(commands.DecompressArchiveToChildFolder).Build(),
 				},
 				ShowItem = CompressHelper.CanDecompress(selectedItems)
-			},*/
+			},
 			new()
 			{
 				Text = "SendTo".GetLocalizedResource(),
@@ -557,7 +556,7 @@ public static class ContextFlyoutItemHelper
 				ShowInSearchPage = true,
 				ShowItem = itemsSelected && userSettingsService.GeneralSettingsService.ShowSendToMenu
 			},
-			/*new()
+			new()
 			{
 				Text = "TurnOnBitLocker".GetLocalizedResource(),
 				Tag = "TurnOnBitLockerPlaceholder",
@@ -572,7 +571,7 @@ public static class ContextFlyoutItemHelper
 				CollapseLabel = true,
 				ShowItem = isDriveRoot,
 				IsEnabled = false
-			},*/
+			},
 			// Shell extensions are not available on the FTP server or in the archive,
 			// but following items are intentionally added because icons in the context menu will not appear
 			// unless there is at least one menu item with an icon that is not an OpacityIcon. (#12943)

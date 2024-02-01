@@ -2,15 +2,17 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
+using CommunityToolkit.WinUI.UI.Controls;
 using DesktopWidgets3.Core.Helpers;
+using Files.App.UserControls.Sidebar;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using System.Runtime.CompilerServices;
-using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
 using Windows.Services.Store;
 using WinRT.Interop;
@@ -20,6 +22,7 @@ namespace Files.App.Views;
 
 public sealed partial class MainPage : Page, INotifyPropertyChanged
 {
+    // CHANGE: Use tab control model instead tab control component.
     public readonly TabBar TabControl;
 
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
@@ -29,9 +32,9 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 	public ICommandManager Commands { get; private set; } = null!;
 
-    /*public IWindowContext WindowContext { get; }*/
+    public IWindowContext WindowContext { get; private set; } = null!;
 
-    /*public SidebarViewModel SidebarAdaptiveViewModel { get; }*/
+    public SidebarViewModel SidebarAdaptiveViewModel { get; private set; } = null!;
 
     public MainPageViewModel ViewModel { get; }
 
@@ -44,7 +47,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 	private bool IsAppRunningAsAdmin => ElevationHelpers.IsAppRunAsAdmin();
 
-	/*private readonly DispatcherQueueTimer _updateDateDisplayTimer;*/
+	private readonly DispatcherQueueTimer _updateDateDisplayTimer;
 
 	public MainPage()
 	{
@@ -55,11 +58,11 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		// Dependency Injection
 		/*UserSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
 		ApplicationService = DependencyExtensions.GetService<IApplicationService>();
-		/*Commands = DependencyExtensions.GetService<ICommandManager>();*/
-		/*WindowContext = DependencyExtensions.GetService<IWindowContext>();*/
-		/*SidebarAdaptiveViewModel = DependencyExtensions.GetService<SidebarViewModel>();
-		SidebarAdaptiveViewModel.PaneFlyout = (MenuFlyout)Resources["SidebarContextMenu"];*/
-		ViewModel = DependencyExtensions.GetService<MainPageViewModel>();
+        /*Commands = DependencyExtensions.GetService<ICommandManager>();*/
+        /*WindowContext = DependencyExtensions.GetService<IWindowContext>();*/
+        SidebarAdaptiveViewModel = DependencyExtensions.GetService<SidebarViewModel>();
+        SidebarAdaptiveViewModel.PaneFlyout = (MenuFlyout)Resources["SidebarContextMenu"];
+        ViewModel = DependencyExtensions.GetService<MainPageViewModel>();
 		/*OngoingTasksViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
 
 		if (FilePropertiesHelpers.FlowDirectionSettingIsRightToLeft)
@@ -67,9 +70,9 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
             FlowDirection = FlowDirection.RightToLeft;
         }
 
-		/*_updateDateDisplayTimer = DispatcherQueue.CreateTimer();
+		_updateDateDisplayTimer = DispatcherQueue.CreateTimer();
 		_updateDateDisplayTimer.Interval = TimeSpan.FromSeconds(1);
-		_updateDateDisplayTimer.Tick += UpdateDateDisplayTimer_Tick;*/
+		_updateDateDisplayTimer.Tick += UpdateDateDisplayTimer_Tick;
 	}
 
 	private async Task PromptForReviewAsync()
@@ -136,12 +139,12 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 	private void UserSettingsService_OnSettingChangedEvent(object? sender, SettingChangedEventArgs e)
 	{
-		/*switch (e.SettingName)
+		switch (e.SettingName)
 		{
 			case nameof(IInfoPaneSettingsService.IsEnabled):
 				LoadPaneChanged();
 				break;
-		}*/
+		}
 	}
 
     private void HorizontalMultitaskingControl_Loaded(object sender, RoutedEventArgs e)
@@ -152,18 +155,18 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		{
 			ViewModel.MultitaskingControl = TabControl;
 			ViewModel.MultitaskingControls.Add(TabControl);
-			/*ViewModel.MultitaskingControl.CurrentInstanceChanged += MultitaskingControl_CurrentInstanceChanged;*/
-		}
-	}
+            ViewModel.MultitaskingControl.CurrentInstanceChanged += MultitaskingControl_CurrentInstanceChanged;
+        }
+    }
 
-	/*private void SetRectDragRegion()
+    /*private void SetRectDragRegion()
 	{
 		DragZoneHelper.SetDragZones(
 			FolderViewViewModel.MainWindow,
 			dragZoneLeftIndent: (int)(TabControl.ActualWidth + TabControl.Margin.Left - TabControl.DragArea.ActualWidth));
 	}*/
 
-    /*public async void TabItemContent_ContentChanged(object? sender, CustomTabViewItemParameter e)
+    public async void TabItemContent_ContentChanged(object? sender, CustomTabViewItemParameter e)
 	{
 		if (SidebarAdaptiveViewModel.PaneHolder is null)
         {
@@ -203,7 +206,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         UpdateStatusBarProperties();
 		UpdateNavToolbarProperties();
 		LoadPaneChanged();
-		NavigationHelpers.UpdateInstancePropertiesAsync(FolderViewViewModel, navArgs);
+		_ = NavigationHelpers.UpdateInstancePropertiesAsync(FolderViewViewModel, navArgs);
 
 		e.CurrentInstance.ContentChanged -= TabItemContent_ContentChanged;
 		e.CurrentInstance.ContentChanged += TabItemContent_ContentChanged;
@@ -217,7 +220,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		LoadPaneChanged();
 	}
 
-	private void UpdateStatusBarProperties()
+    private void UpdateStatusBarProperties()
 	{
 		if (StatusBarControl is not null)
 		{
@@ -237,9 +240,9 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         {
             InnerNavigationToolbar.ViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.ToolbarViewModel;
         }
-    }*/
+    }
 
-	protected override void OnNavigatedTo(NavigationEventArgs e)
+    protected override void OnNavigatedTo(NavigationEventArgs e)
 	{
         // CHANGE: Initialize page components, folder view view model and related services.
         if (e.Parameter is IFolderViewViewModel folderViewViewModel)
@@ -250,6 +253,10 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
             UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
             Commands = folderViewViewModel.GetService<ICommandManager>();
+            WindowContext = folderViewViewModel.GetService<IWindowContext>();
+
+            SidebarAdaptiveViewModel.Initialize(folderViewViewModel);
+
             OngoingTasksViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
 
             UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
@@ -258,6 +265,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         _ = ViewModel.OnNavigatedToAsync(e);
 	}
 
+    // CHANGE: Remove keyboard event handlers.
 	/*protected async override void OnPreviewKeyDown(KeyRoutedEventArgs e) => await OnPreviewKeyDownAsync(e);
 
 	private async Task OnPreviewKeyDownAsync(KeyRoutedEventArgs e)
@@ -323,10 +331,10 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	private void Page_Loaded(object sender, RoutedEventArgs e)
 	{
 		// Defers the status bar loading until after the page has loaded to improve startup perf
-		/*FindName(nameof(StatusBarControl));
+		FindName(nameof(StatusBarControl));
 		FindName(nameof(InnerNavigationToolbar));
 		FindName(nameof(TabControl));
-		FindName(nameof(NavToolbar));*/
+		FindName(nameof(NavToolbar));
 
 		// Notify user that drag and drop is disabled
 		// Prompt is disabled in the dev environment to prevent issues with the automation testing 
@@ -355,9 +363,12 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		}
 	}
 
-    /*private void PreviewPane_Loaded(object sender, RoutedEventArgs e)
+    private void PreviewPane_Loaded(object sender, RoutedEventArgs e)
 	{
-		_updateDateDisplayTimer.Start();
+        // CHANGE: Initalize folder view view model.
+        PreviewPane.Initialize(FolderViewViewModel);
+
+        _updateDateDisplayTimer.Start();
 	}
 
 	private void PreviewPane_Unloaded(object sender, RoutedEventArgs e)
@@ -386,15 +397,15 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 				UpdatePositioning();
 				break;
 		}
-	}*/
+	}
 
-    /*private void SidebarControl_Loaded(object sender, RoutedEventArgs e)
+    private void SidebarControl_Loaded(object sender, RoutedEventArgs e)
 	{
 		// Set the correct tab margin on startup
 		SidebarAdaptiveViewModel.UpdateTabControlMargin();
-	}*/
+	}
 
-    /*private void RootGrid_SizeChanged(object sender, SizeChangedEventArgs e) => LoadPaneChanged();
+    private void RootGrid_SizeChanged(object sender, SizeChangedEventArgs e) => LoadPaneChanged();
 
 	/// <summary>
 	/// Call this function to update the positioning of the preview pane.
@@ -471,13 +482,13 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		}
 
 		this.ChangeCursor(InputSystemCursor.Create(InputSystemCursorShape.Arrow));
-	}*/
+	}
 
-    /*public bool ShouldViewControlBeDisplayed => SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false;*/
+    public bool ShouldViewControlBeDisplayed => SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false;
 
     public bool ShouldPreviewPaneBeActive => UserSettingsService.InfoPaneSettingsService.IsEnabled && false;//ShouldPreviewPaneBeDisplayed;
 
-	/*public bool ShouldPreviewPaneBeDisplayed
+	public bool ShouldPreviewPaneBeDisplayed
 	{
 		get
 		{
@@ -496,7 +507,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		OnPropertyChanged(nameof(ShouldPreviewPaneBeActive));
 		OnPropertyChanged(nameof(ShouldPreviewPaneBeDisplayed));
 		UpdatePositioning();
-	}*/
+	}
 
 	public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -504,10 +515,10 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	{
 		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-		/*if (propertyName == nameof(ShouldPreviewPaneBeActive) && ShouldPreviewPaneBeActive)
+		if (propertyName == nameof(ShouldPreviewPaneBeActive) && ShouldPreviewPaneBeActive)
         {
-            _ = FolderViewViewModel.GetRequiredService<InfoPaneViewModel>().UpdateSelectedItemPreviewAsync();
-        }*/
+            _ = FolderViewViewModel.GetService<InfoPaneViewModel>().UpdateSelectedItemPreviewAsync();
+        }
     }
 
     private void RootGrid_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
@@ -534,9 +545,29 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		}
 	}
 
-    /*private void NavToolbar_Loaded(object sender, RoutedEventArgs e) => UpdateNavToolbarProperties();
+    private void NavToolbar_Loaded(object sender, RoutedEventArgs e)
+    {
+        // CHANGE: Initalize folder view view model.
+        NavToolbar.Initialize(FolderViewViewModel);
 
-	private void PaneSplitter_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        UpdateNavToolbarProperties();
+    }
+
+    private void InnerNavToolbar_Loaded(object sender, RoutedEventArgs e)
+    {
+        // CHANGE: Initalize folder view view model.
+        InnerNavigationToolbar.Initialize(FolderViewViewModel);
+
+        UpdateNavToolbarProperties();
+    }
+
+    private void StatusBar_Loaded(object sender, RoutedEventArgs e)
+    {
+        // CHANGE: Initalize folder view view model.
+        StatusBarControl.Initialize(FolderViewViewModel);
+    }
+
+    private void PaneSplitter_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
 	{
 		this.ChangeCursor(InputSystemCursor.Create(PaneSplitter.GripperCursor == GridSplitter.GripperCursorType.SizeWestEast ?
 			InputSystemCursorShape.SizeWestEast : InputSystemCursorShape.SizeNorthSouth));
@@ -548,5 +579,5 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		{
 			SidebarControl.IsPaneOpen = !SidebarControl.IsPaneOpen;
 		}
-	}*/
+	}
 }

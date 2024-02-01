@@ -126,11 +126,11 @@ public sealed partial class ColumnShellPage : BaseShellPage
 	{
 		ContentPage = await GetContentOrNullAsync();
 
-		/*if (!ToolbarViewModel.SearchBox.WasQuerySubmitted)
+		if (!ToolbarViewModel.SearchBox.WasQuerySubmitted)
 		{
 			ToolbarViewModel.SearchBox.Query = string.Empty;
 			ToolbarViewModel.IsSearchBoxVisible = false;
-		}*/
+		}
 
 		if (ItemDisplayFrame.CurrentSourcePageType == typeof(ColumnLayoutPage))
 		{

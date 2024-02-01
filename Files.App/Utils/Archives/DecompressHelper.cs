@@ -282,7 +282,7 @@ public static class DecompressHelper
                 return;
             }
 
-            if (await FilesystemTasks.Wrap(() => DecompressHelper.IsArchiveEncrypted(archive)))
+            if (await FilesystemTasks.Wrap(() => IsArchiveEncrypted(archive)))
 			{
 				DecompressArchiveDialog decompressArchiveDialog = new();
 				DecompressArchiveDialogViewModel decompressArchiveViewModel = new(folderViewViewModel, archive)

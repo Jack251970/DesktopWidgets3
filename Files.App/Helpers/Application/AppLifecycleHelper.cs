@@ -9,7 +9,6 @@ using Files.App.Storage.NativeStorage;
 /*using Files.App.ViewModels.Settings;*/
 using Files.Core.Services.SizeProvider;
 using Files.Core.Storage;
-using Files.Core.ViewModels.FolderView;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -144,10 +143,10 @@ public static class AppLifecycleHelper
                 // Contexts
                 .AddTransient<IPageContext, PageContext>()
                 .AddTransient<IContentPageContext, ContentPageContext>()
-                /*.AddSingleton<IDisplayPageContext, DisplayPageContext>()
-                .AddSingleton<IWindowContext, WindowContext>()
-                .AddSingleton<IMultitaskingContext, MultitaskingContext>()
-                .AddSingleton<ITagsContext, TagsContext>()*/
+                .AddTransient<IDisplayPageContext, DisplayPageContext>()
+                .AddTransient<IWindowContext, WindowContext>()
+                /*.AddSingleton<IMultitaskingContext, MultitaskingContext>()*/
+                .AddSingleton<ITagsContext, TagsContext>()
                 // Services
                 .AddTransient<IDialogService, DialogService>()
                 .AddSingleton<IImageService, ImagingService>()
@@ -180,8 +179,8 @@ public static class AppLifecycleHelper
                 // ViewModels
                 .AddTransient<MainPageViewModel>()
                 .AddTransient<InfoPaneViewModel>()
-                /*.AddSingleton<SidebarViewModel>()
-                .AddSingleton<SettingsViewModel>()*/
+                .AddTransient<SidebarViewModel>()
+                /*.AddSingleton<SettingsViewModel>()*/
                 .AddSingleton<DrivesViewModel>()
                 .AddSingleton<NetworkDrivesViewModel>()
                 .AddTransient<StatusCenterViewModel>()
@@ -223,6 +222,7 @@ public static class AppLifecycleHelper
 			{
 				var defaultArg = new CustomTabViewItemParameter()
 				{
+                    FolderViewViewModel = folderViewViewModel,
 					InitialPageType = typeof(PaneHolderPage),
 					NavigationParameter = "Home"
 				};

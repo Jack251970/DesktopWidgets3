@@ -22,8 +22,8 @@ public sealed class StartMenuService : IStartMenuService
 		return Task.FromResult(exists);
 	}
 
-    /*/// <inheritdoc/>
-	public async Task PinAsync(IFolder folder, string? displayName = null)
+    /// <inheritdoc/>
+	public async Task PinAsync(IFolderViewViewModel folderViewViewModel, IFolder folder, string? displayName = null)
 	{
 		var tileId = GetNativeTileId(folder.Id);
 		displayName ??= folder.Name;
@@ -47,7 +47,7 @@ public sealed class StartMenuService : IStartMenuService
 				}
 			};
 
-			WinRT.Interop.InitializeWithWindow.Initialize(tile, MainWindow.Instance.WindowHandle);
+			WinRT.Interop.InitializeWithWindow.Initialize(tile, folderViewViewModel.WindowHandle);
 
 			await tile.RequestCreateAsync();
 		}
@@ -56,7 +56,7 @@ public sealed class StartMenuService : IStartMenuService
 			Debug.WriteLine(tileId);
 			Debug.WriteLine(e.ToString());
 		}
-	}*/
+	}
 
     /// <inheritdoc/>
     public async Task UnpinAsync(IFolder folder)

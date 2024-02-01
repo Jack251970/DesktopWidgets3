@@ -274,7 +274,7 @@ public static class NavigationHelpers
         await UpdateTabInfoAsync(e.FolderViewViewModel, matchingTabItem, e.NavigationParameter);
     }
 
-    /*public static Task<bool> OpenPathInNewWindowAsync(string? path)
+    public static Task<bool> OpenPathInNewWindowAsync(string? path)
 	{
 		if (string.IsNullOrWhiteSpace(path))
         {
@@ -290,7 +290,7 @@ public static class NavigationHelpers
 	{
 		var folderUri = new Uri($"files-uwp:?tab={Uri.EscapeDataString(tabArgs)}");
 		return Launcher.LaunchUriAsync(folderUri).AsTask();
-	}*/
+	}
 
 	public static void OpenInSecondaryPane(IShellPage associatedInstance, ListedItem listedItem)
 	{

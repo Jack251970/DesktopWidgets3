@@ -25,11 +25,11 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
     private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
-    /*public IUpdateService UpdateService { get; } = DependencyExtensions.GetService<IUpdateService>()!;*/
+    /*public IUpdateService UpdateService { get; } = DependencyExtensions.GetService<IUpdateService>();*/
 
     public ICommandManager Commands { get; set; } = null!;
 
-    /*public delegate void ToolbarPathItemInvokedEventHandler(object sender, PathNavigationEventArgs e);
+    public delegate void ToolbarPathItemInvokedEventHandler(object sender, PathNavigationEventArgs e);
 
 	public delegate void ToolbarFlyoutOpenedEventHandler(object sender, ToolbarFlyoutOpenedEventArgs e);
 
@@ -45,19 +45,19 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 	public event ToolbarPathItemLoadedEventHandler? ToolbarPathItemLoaded;
 
-	public event IAddressToolbar.ItemDraggedOverPathItemEventHandler? ItemDraggedOverPathItem;*/
+	public event IAddressToolbar.ItemDraggedOverPathItemEventHandler? ItemDraggedOverPathItem;
 
     public event EventHandler? EditModeEnabled;
 
-    /*public event IAddressToolbar.ToolbarQuerySubmittedEventHandler? PathBoxQuerySubmitted;
+    public event IAddressToolbar.ToolbarQuerySubmittedEventHandler? PathBoxQuerySubmitted;
 
 	public event AddressBarTextEnteredEventHandler? AddressBarTextEntered;
 
-	public event PathBoxItemDroppedEventHandler? PathBoxItemDropped;*/
+	public event PathBoxItemDroppedEventHandler? PathBoxItemDropped;
 
     public event EventHandler? RefreshRequested;
 
-	/*public event EventHandler? RefreshWidgetsRequested;*/
+	public event EventHandler? RefreshWidgetsRequested;
 
 	public ObservableCollection<PathBoxItem> PathComponents { get; } = new();
 
@@ -68,7 +68,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		set => SetProperty(ref _isCommandPaletteOpen, value);
 	}
 
-	/*private bool isUpdating;
+	private bool isUpdating;
 	public bool IsUpdating
 	{
 		get => isUpdating;
@@ -94,7 +94,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	{
 		get => isReleaseNotesVisible;
 		set => SetProperty(ref isReleaseNotesVisible, value);
-	}*/
+	}
 
 	private bool canCopyPathInPage;
 	public bool CanCopyPathInPage
@@ -138,7 +138,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		set => SetProperty(ref canRefresh, value);
 	}
 
-    /*private string searchButtonGlyph = "\uE721";
+    private string searchButtonGlyph = "\uE721";
 	public string SearchButtonGlyph
 	{
 		get => searchButtonGlyph;
@@ -156,9 +156,9 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
                 SearchButtonGlyph = value ? "\uE711" : "\uE721";
             }
         }
-	}*/
+	}
 
-    /*private string? pathText;
+    private string? pathText;
 	public string? PathText
 	{
 		get => pathText;
@@ -170,7 +170,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		}
 	}
 
-	public ObservableCollection<NavigationBarSuggestionItem> NavigationBarSuggestions = new();*/
+	public ObservableCollection<NavigationBarSuggestionItem> NavigationBarSuggestions = new();
 
     private CurrentInstanceViewModel instanceViewModel = null!;
 	public CurrentInstanceViewModel InstanceViewModel
@@ -203,20 +203,20 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		}
 	}
 
-	/*private PointerRoutedEventArgs? pointerRoutedEventArgs;*/
+	private PointerRoutedEventArgs? pointerRoutedEventArgs;
 
 	public ToolbarViewModel()
 	{
         RefreshClickCommand = new RelayCommand<RoutedEventArgs>(e => RefreshRequested?.Invoke(this, EventArgs.Empty));
-		/*ViewReleaseNotesAsyncCommand = new AsyncRelayCommand(ViewReleaseNotesAsync);*/
+		ViewReleaseNotesAsyncCommand = new AsyncRelayCommand(ViewReleaseNotesAsync);
 
-		/*dispatcherQueue = DispatcherQueue.GetForCurrentThread();*/
-		/*dragOverTimer = dispatcherQueue.CreateTimer();*/
+		dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+		dragOverTimer = dispatcherQueue.CreateTimer();
 
-		/*SearchBox.Escaped += SearchRegion_Escaped;*/
-		/*UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;*/
-		/*UpdateService.PropertyChanged += UpdateService_OnPropertyChanged;*/
-	}
+		SearchBox.Escaped += SearchRegion_Escaped;
+        /*UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
+		UpdateService.PropertyChanged += UpdateService_OnPropertyChanged;*/
+    }
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
@@ -224,6 +224,8 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
         UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
         _dialogService = folderViewViewModel.GetService<IDialogService>();
         Commands = folderViewViewModel.GetService<ICommandManager>();
+
+        UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
     }
 
 	/*private async void UpdateService_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -236,7 +238,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
         {
             await CheckForReleaseNotesAsync();
         }
-    }
+    }*/
 
 	private async Task ViewReleaseNotesAsync()
 	{
@@ -248,22 +250,24 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
         var viewModel = new ReleaseNotesDialogViewModel(ReleaseNotes);
 		var dialog = _dialogService.GetDialog(viewModel);
 
-		await dialog.TryShowAsync();
+		await dialog.TryShowAsync(FolderViewViewModel);
 	}
 
-	public async Task CheckForReleaseNotesAsync()
-	{
-        var result = await UpdateService.GetLatestReleaseNotesAsync();
+    public async Task CheckForReleaseNotesAsync()
+    {
+        /*var result = await UpdateService.GetLatestReleaseNotesAsync();
         if (result is null)
         {
             return;
         }
 
         ReleaseNotes = result;
-        IsReleaseNotesVisible = true;
-    }*/
+        IsReleaseNotesVisible = true;*/
 
-	/*public void RefreshWidgets()
+        await Task.CompletedTask;
+    }
+
+    public void RefreshWidgets()
 	{
 		RefreshWidgetsRequested?.Invoke(this, EventArgs.Empty);
 	}
@@ -281,12 +285,12 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 				OnPropertyChanged(e.SettingName);
 				break;
 		}
-	}*/
+	}
 
-	/*private readonly DispatcherQueue dispatcherQueue;
-	private readonly DispatcherQueueTimer dragOverTimer;*/
+	private readonly DispatcherQueue dispatcherQueue;
+	private readonly DispatcherQueueTimer dragOverTimer;
 
-	/*private ISearchBox searchBox = new SearchBoxViewModel();
+	private ISearchBox searchBox = new SearchBoxViewModel();
 	public ISearchBox SearchBox
 	{
 		get => searchBox;
@@ -294,11 +298,11 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	}
 
 	public SearchBoxViewModel SearchBoxViewModel
-		=> (SearchBoxViewModel)SearchBox;*/
+		=> (SearchBoxViewModel)SearchBox;
 
 	public bool IsSingleItemOverride { get; set; } = false;
 
-    /*private string? dragOverPath = null;
+    private string? dragOverPath = null;
 
     public void PathBoxItem_DragLeave(object sender, DragEventArgs e)
 	{
@@ -426,7 +430,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		}
 
 		deferral.Complete();
-	}*/
+	}
 
     public bool IsEditModeEnabled
 	{
@@ -437,11 +441,11 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 			{
 				EditModeEnabled?.Invoke(this, EventArgs.Empty);
 
-				/*var visiblePath = AddressToolbar?.FindDescendant<AutoSuggestBox>(x => x.Name == "VisiblePath");
+				var visiblePath = AddressToolbar?.FindDescendant<AutoSuggestBox>(x => x.Name == "VisiblePath");
 				visiblePath?.Focus(FocusState.Programmatic);
-				visiblePath?.FindDescendant<TextBox>()?.SelectAll();*/
+				visiblePath?.FindDescendant<TextBox>()?.SelectAll();
 
-				/*AddressBarTextEntered?.Invoke(this, new AddressBarTextEnteredEventArgs() { AddressBarTextField = visiblePath });*/
+				AddressBarTextEntered?.Invoke(this, new AddressBarTextEnteredEventArgs() { AddressBarTextField = visiblePath! });
 			}
 			else
 			{
@@ -474,9 +478,9 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	}
 
 	public ICommand RefreshClickCommand { get; }
-	/*public ICommand ViewReleaseNotesAsyncCommand { get; }*/
+	public ICommand ViewReleaseNotesAsyncCommand { get; }
 
-	/*public void PathItemSeparator_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+	public void PathItemSeparator_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 	{
         if (sender is not FontIcon pathSeparatorIcon || pathSeparatorIcon.DataContext is null)
         {
@@ -533,7 +537,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		{
 			await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{
-				await NavigationHelpers.AddNewTabByPathAsync(typeof(PaneHolderPage), itemTappedPath);
+				await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), itemTappedPath);
 			}, DispatcherQueuePriority.Low);
 			e.Handled = true;
 			pointerRoutedEventArgs = null;
@@ -545,20 +549,20 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		{
 			ItemPath = itemTappedPath
 		});
-	}*/
+	}
 
 	public void OpenCommandPalette()
 	{
-		/*PathText = ">";*/
+		PathText = ">";
 		IsCommandPaletteOpen = true;
 		ManualEntryBoxLoaded = true;
 		ClickablePathLoaded = false;
 
-        /*var visiblePath = AddressToolbar?.FindDescendant<AutoSuggestBox>(x => x.Name == "VisiblePath");
-		AddressBarTextEntered?.Invoke(this, new AddressBarTextEnteredEventArgs() { AddressBarTextField = visiblePath });*/
+        var visiblePath = AddressToolbar?.FindDescendant<AutoSuggestBox>(x => x.Name == "VisiblePath");
+		AddressBarTextEntered?.Invoke(this, new AddressBarTextEnteredEventArgs() { AddressBarTextField = visiblePath! });
     }
 
-    /*public void SwitchSearchBoxVisibility()
+    public void SwitchSearchBoxVisibility()
 	{
 		if (IsSearchBoxVisible)
 		{
@@ -574,16 +578,16 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 			searchbox?.UpdateLayout();
 			searchbox?.Focus(FocusState.Programmatic);
 		}
-	}*/
+	}
 
     public void UpdateAdditionalActions()
 	{
 		OnPropertyChanged(nameof(HasAdditionalAction));
 	}
 
-	/*private AddressToolbar? AddressToolbar => (FolderViewViewModel.RootFrame)?.FindDescendant<AddressToolbar>();*/
+	private AddressToolbar? AddressToolbar => (FolderViewViewModel.RootFrame)?.FindDescendant<AddressToolbar>();
 
-	/*private void CloseSearchBox(bool doFocus = false)
+	private void CloseSearchBox(bool doFocus = false)
 	{
 		if (searchBox.WasQuerySubmitted)
 		{
@@ -599,16 +603,20 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 				var page = FolderViewViewModel.GetService<IContentPageContext>().ShellPage?.SlimContentPage;
 
 				if (page is BaseGroupableLayoutPage svb && svb.IsLoaded)
-					page.ItemManipulationModel.FocusFileList();
-				else
-					AddressToolbar?.Focus(FocusState.Programmatic);
-			}
+                {
+                    page.ItemManipulationModel.FocusFileList();
+                }
+                else
+                {
+                    AddressToolbar?.Focus(FocusState.Programmatic);
+                }
+            }
 		}
-	}*/
+	}
 
 	public bool SearchHasFocus { get; private set; }
 
-	/*public void SearchRegion_GotFocus(object sender, RoutedEventArgs e)
+	public void SearchRegion_GotFocus(object sender, RoutedEventArgs e)
 	{
 		SearchHasFocus = true;
 	}
@@ -617,14 +625,16 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	{
 		var element = FocusManager.GetFocusedElement();
 		if (element is FlyoutBase or AppBarButton)
-			return;
+        {
+            return;
+        }
 
-		SearchHasFocus = false;
+        SearchHasFocus = false;
 		CloseSearchBox();
 	}
 
 	private void SearchRegion_Escaped(object? sender, ISearchBox searchBox)
-		=> CloseSearchBox(true);*/
+		=> CloseSearchBox(true);
 
 	public IAsyncRelayCommand? OpenNewWindowCommand { get; set; }
 
@@ -634,12 +644,12 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 	public ICommand? UpdateCommand { get; set; }
 
-	/*public async Task SetPathBoxDropDownFlyoutAsync(MenuFlyout flyout, PathBoxItem pathItem, IShellPage shellPage)
+	public async Task SetPathBoxDropDownFlyoutAsync(MenuFlyout flyout, PathBoxItem pathItem, IShellPage shellPage)
 	{
 		var nextPathItemTitle = PathComponents[PathComponents.IndexOf(pathItem) + 1].Title;
 		IList<StorageFolderWithPath>? childFolders = null;
 
-		StorageFolderWithPath folder = await shellPage.FilesystemViewModel.GetFolderWithPathFromPathAsync(pathItem.Path);
+		StorageFolderWithPath folder = await shellPage.FilesystemViewModel.GetFolderWithPathFromPathAsync(pathItem.Path!);
 		if (folder is not null)
         {
             childFolders = (await FilesystemTasks.Wrap(() => folder.GetFoldersWithPathAsync(string.Empty))).Result;
@@ -666,7 +676,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		var normalFontWeight = new FontWeight { Weight = 400 };
 
 		var workingPath =
-			PathComponents[PathComponents.Count - 1].Path?.TrimEnd(Path.DirectorySeparatorChar);
+			PathComponents[^1].Path?.TrimEnd(Path.DirectorySeparatorChar);
 
 		foreach (var childFolder in childFolders)
 		{
@@ -701,35 +711,47 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	{
 		if (currentInput.StartsWith('>'))
 		{
-			var code = currentInput.Substring(1).Trim();
+			var code = currentInput[1..].Trim();
 			var command = Commands[code];
 
 			if (command == Commands.None)
-				await DialogDisplayHelper.ShowDialogAsync("InvalidCommand".GetLocalizedResource(),
+            {
+                await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InvalidCommand".GetLocalizedResource(),
 					string.Format("InvalidCommandContent".GetLocalizedResource(), code));
-			else if (!command.IsExecutable)
-				await DialogDisplayHelper.ShowDialogAsync("CommandNotExecutable".GetLocalizedResource(),
+            }
+            else if (!command.IsExecutable)
+            {
+                await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "CommandNotExecutable".GetLocalizedResource(),
 					string.Format("CommandNotExecutableContent".GetLocalizedResource(), command.Code));
-			else
-				await command.ExecuteAsync();
+            }
+            else
+            {
+                await command.ExecuteAsync();
+            }
 
-			return;
+            return;
 		}
 
 		var isFtp = FtpHelpers.IsFtpPath(currentInput);
 
-		if (currentInput.Contains('/') && !isFtp)
-			currentInput = currentInput.Replace("/", "\\", StringComparison.Ordinal);
+        if (currentInput.Contains('/') && !isFtp)
+        {
+            currentInput = currentInput.Replace("/", "\\", StringComparison.Ordinal);
+        }
 
-		currentInput = currentInput.Replace("\\\\", "\\", StringComparison.Ordinal);
+        currentInput = currentInput.Replace("\\\\", "\\", StringComparison.Ordinal);
 
 		if (currentInput.StartsWith('\\') && !currentInput.StartsWith("\\\\", StringComparison.Ordinal))
-			currentInput = currentInput.Insert(0, "\\");
+        {
+            currentInput = currentInput.Insert(0, "\\");
+        }
 
-		if (currentSelectedPath == currentInput || string.IsNullOrWhiteSpace(currentInput))
-			return;
+        if (currentSelectedPath == currentInput || string.IsNullOrWhiteSpace(currentInput))
+        {
+            return;
+        }
 
-		if (currentInput != shellPage.FilesystemViewModel.WorkingDirectory || shellPage.CurrentPageType == typeof(HomePage))
+        if (currentInput != shellPage.FilesystemViewModel.WorkingDirectory || false/*shellPage.CurrentPageType == typeof(HomePage)*/) // TODO: Add support.
 		{
 			if (currentInput.Equals("Home", StringComparison.OrdinalIgnoreCase) || currentInput.Equals("Home".GetLocalizedResource(), StringComparison.OrdinalIgnoreCase))
 			{
@@ -737,11 +759,13 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 			}
 			else
 			{
-				currentInput = StorageFileExtensions.GetResolvedPath(currentInput, isFtp);
+				currentInput = StorageFileExtensions.GetResolvedPath(FolderViewViewModel, currentInput, isFtp);
 				if (currentSelectedPath == currentInput)
-					return;
+                {
+                    return;
+                }
 
-				var item = await FilesystemTasks.Wrap(() => DriveHelpers.GetRootFromPathAsync(currentInput));
+                var item = await FilesystemTasks.Wrap(() => DriveHelpers.GetRootFromPathAsync(currentInput));
 
 				var resFolder = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderWithPathFromPathAsync(currentInput, item));
 				if (resFolder || FolderHelpers.CheckFolderAccessWithWin32(currentInput))
@@ -749,11 +773,11 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 					var matchingDrive = drivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(x => PathNormalization.NormalizePath(currentInput).StartsWith(PathNormalization.NormalizePath(x.Path), StringComparison.Ordinal));
 					if (matchingDrive is not null && matchingDrive.Type == Data.Items.DriveType.CDRom && matchingDrive.MaxSpace == ByteSizeLib.ByteSize.FromBytes(0))
 					{
-						bool ejectButton = await DialogDisplayHelper.ShowDialogAsync("InsertDiscDialog/Title".GetLocalizedResource(), string.Format("InsertDiscDialog/Text".GetLocalizedResource(), matchingDrive.Path), "InsertDiscDialog/OpenDriveButton".GetLocalizedResource(), "Close".GetLocalizedResource());
+						var ejectButton = await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InsertDiscDialog/Title".GetLocalizedResource(), string.Format("InsertDiscDialog/Text".GetLocalizedResource(), matchingDrive.Path), "InsertDiscDialog/OpenDriveButton".GetLocalizedResource(), "Close".GetLocalizedResource());
 						if (ejectButton)
 						{
 							var result = await DriveHelpers.EjectDeviceAsync(matchingDrive.Path);
-							await UIHelpers.ShowDeviceEjectResultAsync(matchingDrive.Type, result);
+							await UIHelpers.ShowDeviceEjectResultAsync(FolderViewViewModel, matchingDrive.Type, result);
 						}
 						return;
 					}
@@ -776,22 +800,27 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 					{
 						var workingDir =
 							string.IsNullOrEmpty(shellPage.FilesystemViewModel.WorkingDirectory) ||
-							shellPage.CurrentPageType == typeof(HomePage) ?
+                            // TODO: Add support.
+							/*shellPage.CurrentPageType == typeof(HomePage)*/false ?
 								Constants.UserEnvironmentPaths.HomePath :
 								shellPage.FilesystemViewModel.WorkingDirectory;
 
 						if (await LaunchApplicationFromPath(currentInput, workingDir))
-							return;
+                        {
+                            return;
+                        }
 
-						try
+                        try
 						{
 							if (!await Windows.System.Launcher.LaunchUriAsync(new Uri(currentInput)))
-								await DialogDisplayHelper.ShowDialogAsync("InvalidItemDialogTitle".GetLocalizedResource(),
+                            {
+                                await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InvalidItemDialogTitle".GetLocalizedResource(),
 									string.Format("InvalidItemDialogContent".GetLocalizedResource(), Environment.NewLine, resFolder.ErrorCode.ToString()));
-						}
+                            }
+                        }
 						catch (Exception ex) when (ex is UriFormatException || ex is ArgumentException)
 						{
-							await DialogDisplayHelper.ShowDialogAsync("InvalidItemDialogTitle".GetLocalizedResource(),
+							await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InvalidItemDialogTitle".GetLocalizedResource(),
 								string.Format("InvalidItemDialogContent".GetLocalizedResource(), Environment.NewLine, resFolder.ErrorCode.ToString()));
 						}
 					}
@@ -800,7 +829,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 			PathControlDisplayText = shellPage.FilesystemViewModel.WorkingDirectory;
 		}
-	}*/
+	}
 
 	private static async Task<bool> LaunchApplicationFromPath(string currentInput, string workingDir)
 	{
@@ -817,7 +846,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		return await LaunchHelper.LaunchAppAsync(fileName, arguments, workingDir);
 	}
 
-	/*public async Task SetAddressBarSuggestionsAsync(AutoSuggestBox sender, IShellPage shellpage, int maxSuggestions = 7)
+	public async Task SetAddressBarSuggestionsAsync(AutoSuggestBox sender, IShellPage shellpage, int maxSuggestions = 7)
 	{
 		if (!string.IsNullOrWhiteSpace(sender.Text) && shellpage.FilesystemViewModel is not null)
 		{
@@ -828,7 +857,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 				if (sender.Text.StartsWith(">"))
 				{
 					IsCommandPaletteOpen = true;
-					var searchText = sender.Text.Substring(1).Trim();
+					var searchText = sender.Text[1..].Trim();
 					suggestions = Commands.Where(command => command.IsExecutable &&
 						(command.Description.Contains(searchText, StringComparison.OrdinalIgnoreCase)
 						|| command.Code.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase)))
@@ -844,14 +873,16 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 				{
 					IsCommandPaletteOpen = false;
 					var isFtp = FtpHelpers.IsFtpPath(sender.Text);
-					var expandedPath = StorageFileExtensions.GetResolvedPath(sender.Text, isFtp);
+					var expandedPath = StorageFileExtensions.GetResolvedPath(FolderViewViewModel, sender.Text, isFtp);
 					var folderPath = PathNormalization.GetParentDir(expandedPath) ?? expandedPath;
 					StorageFolderWithPath folder = await shellpage.FilesystemViewModel.GetFolderWithPathFromPathAsync(folderPath);
 
 					if (folder is null)
-						return false;
+                    {
+                        return false;
+                    }
 
-					var currPath = await folder.GetFoldersWithPathAsync(Path.GetFileName(expandedPath), (uint)maxSuggestions);
+                    var currPath = await folder.GetFoldersWithPathAsync(Path.GetFileName(expandedPath), (uint)maxSuggestions);
 					if (currPath.Count >= maxSuggestions)
 					{
 						suggestions = currPath.Select(x => new NavigationBarSuggestionItem()
@@ -878,7 +909,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 				if (suggestions is null || suggestions.Count == 0)
 				{
-					suggestions = new List<NavigationBarSuggestionItem>() { new NavigationBarSuggestionItem() {
+					suggestions = new List<NavigationBarSuggestionItem>() { new() {
 					Text = shellpage.FilesystemViewModel.WorkingDirectory,
 					PrimaryDisplay = "NavigationToolbarVisiblePathNoResults".GetLocalizedResource() } };
 				}
@@ -888,7 +919,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 				if (!NavigationBarSuggestions.IntersectBy(suggestions, x => x.PrimaryDisplay).Any())
 				{
 					// No elements in common, update the list in-place
-					for (int index = 0; index < suggestions.Count; index++)
+					for (var index = 0; index < suggestions.Count; index++)
 					{
 						if (index < NavigationBarSuggestions.Count)
 						{
@@ -905,21 +936,29 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 					}
 
 					while (NavigationBarSuggestions.Count > suggestions.Count)
-						NavigationBarSuggestions.RemoveAt(NavigationBarSuggestions.Count - 1);
-				}
+                    {
+                        NavigationBarSuggestions.RemoveAt(NavigationBarSuggestions.Count - 1);
+                    }
+                }
 				else
 				{
 					// At least an element in common, show animation
 					foreach (var s in NavigationBarSuggestions.ExceptBy(suggestions, x => x.PrimaryDisplay).ToList())
-						NavigationBarSuggestions.Remove(s);
+                    {
+                        NavigationBarSuggestions.Remove(s);
+                    }
 
-					for (int index = 0; index < suggestions.Count; index++)
+                    for (var index = 0; index < suggestions.Count; index++)
 					{
 						if (NavigationBarSuggestions.Count > index && NavigationBarSuggestions[index].PrimaryDisplay == suggestions[index].PrimaryDisplay)
-							NavigationBarSuggestions[index].SearchText = suggestions[index].SearchText;
-						else
-							NavigationBarSuggestions.Insert(index, suggestions[index]);
-					}
+                        {
+                            NavigationBarSuggestions[index].SearchText = suggestions[index].SearchText;
+                        }
+                        else
+                        {
+                            NavigationBarSuggestions.Insert(index, suggestions[index]);
+                        }
+                    }
 				}
 
 				return true;
@@ -933,7 +972,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 				});
 			}
 		}
-	}*/
+	}
 
 	private void FolderSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
@@ -941,8 +980,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		{
 			case nameof(LayoutPreferencesManager.GridViewSize):
 			case nameof(LayoutPreferencesManager.LayoutMode):
-                // TODO: Add support.
-				/*LayoutOpacityIcon = instanceViewModel.FolderSettings.LayoutMode switch
+				LayoutOpacityIcon = instanceViewModel.FolderSettings.LayoutMode switch
 				{
 					FolderLayoutModes.TilesView => Commands.LayoutTiles.OpacityStyle!,
 					FolderLayoutModes.ColumnView => Commands.LayoutColumns.OpacityStyle!,
@@ -953,7 +991,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 								? Commands.LayoutGridMedium.OpacityStyle!
 								: Commands.LayoutGridLarge.OpacityStyle!,
 					_ => Commands.LayoutDetails.OpacityStyle!
-				};*/
+				};
 				OnPropertyChanged(nameof(IsTilesLayout));
 				OnPropertyChanged(nameof(IsColumnLayout));
 				OnPropertyChanged(nameof(IsGridSmallLayout));
@@ -1008,11 +1046,12 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	public bool IsInfFile => SelectedItems is not null && SelectedItems.Count == 1 && FileExtensionHelpers.IsInfFile(SelectedItems.First().FileExtension) && !InstanceViewModel.IsPageTypeRecycleBin;
 	public bool IsFont => SelectedItems is not null && SelectedItems.Any() && SelectedItems.All(x => FileExtensionHelpers.IsFontFile(x.FileExtension)) && !InstanceViewModel.IsPageTypeRecycleBin;
 
-	public bool IsTilesLayout => instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.TilesView;
-	public bool IsColumnLayout => instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.ColumnView;
-	public bool IsGridSmallLayout => instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.GridView && instanceViewModel.FolderSettings.GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeSmall;
-	public bool IsGridMediumLayout => instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.GridView && !IsGridSmallLayout && instanceViewModel.FolderSettings.GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeMedium;
-	public bool IsGridLargeLayout => instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.GridView && !IsGridSmallLayout && !IsGridMediumLayout;
+    // CHANGE: Default set to details layout.
+	public bool IsTilesLayout => instanceViewModel.FolderSettings is not null && instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.TilesView;
+	public bool IsColumnLayout => instanceViewModel.FolderSettings is not null && instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.ColumnView;
+	public bool IsGridSmallLayout => instanceViewModel.FolderSettings is not null && instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.GridView && instanceViewModel.FolderSettings.GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeSmall;
+	public bool IsGridMediumLayout => instanceViewModel.FolderSettings is not null && instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.GridView && !IsGridSmallLayout && instanceViewModel.FolderSettings.GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeMedium;
+	public bool IsGridLargeLayout => instanceViewModel.FolderSettings is not null && instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.GridView && !IsGridSmallLayout && !IsGridMediumLayout;
 	public bool IsDetailsLayout => !IsTilesLayout && !IsColumnLayout && !IsGridSmallLayout && !IsGridMediumLayout && !IsGridLargeLayout;
 
 	public string ExtractToText
@@ -1020,7 +1059,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 	public void Dispose()
 	{
-		/*SearchBox.Escaped -= SearchRegion_Escaped;*/
-		/*UserSettingsService.OnSettingChangedEvent -= UserSettingsService_OnSettingChangedEvent;*/
+		SearchBox.Escaped -= SearchRegion_Escaped;
+		UserSettingsService.OnSettingChangedEvent -= UserSettingsService_OnSettingChangedEvent;
 	}
 }

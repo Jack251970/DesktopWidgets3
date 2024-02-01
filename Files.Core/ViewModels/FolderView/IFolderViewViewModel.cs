@@ -1,11 +1,11 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
+using WinUIEx;
 
 namespace Files.Core.ViewModels.FolderView;
 
 public partial interface IFolderViewViewModel
 {
-    Window MainWindow { get; }
+    WindowEx MainWindow { get; }
 
     IntPtr WindowHandle { get; }
 

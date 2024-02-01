@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using System.Runtime.CompilerServices;
+using Windows.System;
 
 namespace Files.App.Views;
 
@@ -356,7 +357,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 		ActivePane = PaneRight;
 	}
 
-	/*private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+	private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
 	{
 		args.Handled = true;
 		var ctrl = args.KeyboardAccelerator.Modifiers.HasFlag(VirtualKeyModifiers.Control);
@@ -378,7 +379,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 				ActivePane = PaneRight;
 				break;
 		}
-	}*/
+	}
 
 	private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
 	{

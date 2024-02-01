@@ -33,7 +33,7 @@ public static class DriveHelpers
         return string.Empty;
     }
 
-    /*public static async Task<bool> CheckEmptyDrive(string? drivePath)
+    public static async Task<bool> CheckEmptyDrive(IFolderViewViewModel folderViewViewModel, string? drivePath)
 	{
 		if (string.IsNullOrWhiteSpace(drivePath))
         {
@@ -49,6 +49,7 @@ public static class DriveHelpers
         }
 
         var ejectButton = await DialogDisplayHelper.ShowDialogAsync(
+            folderViewViewModel,
 			"InsertDiscDialog/Title".GetLocalizedResource(),
 			string.Format("InsertDiscDialog/Text".GetLocalizedResource(), matchingDrive.Path),
 			"InsertDiscDialog/OpenDriveButton".GetLocalizedResource(),
@@ -56,10 +57,10 @@ public static class DriveHelpers
 		if (ejectButton)
 		{
 			var result = await EjectDeviceAsync(matchingDrive.Path);
-			await UIHelpers.ShowDeviceEjectResultAsync(matchingDrive.Type, result);
+			await UIHelpers.ShowDeviceEjectResultAsync(folderViewViewModel, matchingDrive.Type, result);
 		}
 		return true;
-	}*/
+	}
 
 	public static async Task<StorageFolderWithPath> GetRootFromPathAsync(string devicePath)
 	{

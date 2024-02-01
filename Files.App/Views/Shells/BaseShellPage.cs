@@ -21,9 +21,9 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 {
     protected IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
-	/*private readonly DispatcherQueueTimer _updateDateDisplayTimer;
+	private readonly DispatcherQueueTimer _updateDateDisplayTimer;
 
-	private DateTimeFormats _lastDateTimeFormats;*/
+	private DateTimeFormats _lastDateTimeFormats;
 
 	private Task _gitFetch = Task.CompletedTask;
 
@@ -199,20 +199,20 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
             FlowDirection = FlowDirection.RightToLeft;
         }
 
-        /*ToolbarViewModel.ToolbarPathItemInvoked += ShellPage_NavigationRequested;
+        ToolbarViewModel.ToolbarPathItemInvoked += ShellPage_NavigationRequested;
 		ToolbarViewModel.ToolbarFlyoutOpened += ShellPage_ToolbarFlyoutOpened;
 		ToolbarViewModel.ToolbarPathItemLoaded += ShellPage_ToolbarPathItemLoaded;
 		ToolbarViewModel.AddressBarTextEntered += ShellPage_AddressBarTextEntered;
-		ToolbarViewModel.PathBoxItemDropped += ShellPage_PathBoxItemDropped;*/
+		ToolbarViewModel.PathBoxItemDropped += ShellPage_PathBoxItemDropped;
 
 		ToolbarViewModel.RefreshRequested += ShellPage_RefreshRequested;
 		ToolbarViewModel.EditModeEnabled += NavigationToolbar_EditModeEnabled;
-		/*ToolbarViewModel.ItemDraggedOverPathItem += ShellPage_NavigationRequested;
+		ToolbarViewModel.ItemDraggedOverPathItem += ShellPage_NavigationRequested;
 		ToolbarViewModel.PathBoxQuerySubmitted += NavigationToolbar_QuerySubmitted;
 		ToolbarViewModel.SearchBox.TextChanged += ShellPage_TextChanged;
 		ToolbarViewModel.SearchBox.QuerySubmitted += ShellPage_QuerySubmitted;
 
-        InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated += AppSettings_SortDirectionPreferenceUpdated;
+        /*InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated += AppSettings_SortDirectionPreferenceUpdated;
 		InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated += AppSettings_SortOptionPreferenceUpdated;
 		InstanceViewModel.FolderSettings.SortDirectoriesAlongsideFilesPreferenceUpdated += AppSettings_SortDirectoriesAlongsideFilesPreferenceUpdated;*/
 
@@ -224,10 +224,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 		GitHelpers.GitFetchCompleted += FilesystemViewModel_GitDirectoryUpdated;
 
-        /*_updateDateDisplayTimer = DispatcherQueue.CreateTimer();
+        _updateDateDisplayTimer = DispatcherQueue.CreateTimer();
 		_updateDateDisplayTimer.Interval = TimeSpan.FromSeconds(1);
         _updateDateDisplayTimer.Tick += UpdateDateDisplayTimer_Tick;
-		_lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
+		/*_lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
 		_updateDateDisplayTimer.Start();*/
     }
 
@@ -241,6 +241,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
         InstanceViewModel.Initialize(FolderViewViewModel);
         InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired += FolderSettings_LayoutPreferencesUpdateRequired;
+        FilesystemHelpers = new FilesystemHelpers(FolderViewViewModel, this, cancellationTokenSource.Token);
 
         ToolbarViewModel.Initialize(FolderViewViewModel);
 
@@ -248,10 +249,8 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated += AppSettings_SortOptionPreferenceUpdated;
         InstanceViewModel.FolderSettings.SortDirectoriesAlongsideFilesPreferenceUpdated += AppSettings_SortDirectoriesAlongsideFilesPreferenceUpdated;
 
-        FilesystemHelpers = new FilesystemHelpers(FolderViewViewModel, this, cancellationTokenSource.Token);
-
-        /*_lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
-        _updateDateDisplayTimer.Start();*/
+        _lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
+        _updateDateDisplayTimer.Start();
     }
 
 	protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
@@ -380,21 +379,20 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		{
 			// Ctrl + Space, toggle media playback
 			case (true, false, false, true, VirtualKey.Space):
-                // TODO: Add support.
-				/*if (DependencyExtensions.GetService<InfoPaneViewModel>().PreviewPaneContent is UserControls.FilePreviews.MediaPreview mediaPreviewContent)
+				if (FolderViewViewModel.GetService<InfoPaneViewModel>().PreviewPaneContent is UserControls.FilePreviews.MediaPreview mediaPreviewContent)
 				{
 					mediaPreviewContent.ViewModel.TogglePlayback();
 					args.Handled = true;
-				}*/
+				}
 				break;
 		}
 	}
 
-	/*protected async void ShellPage_QuerySubmitted(ISearchBox sender, SearchBoxQuerySubmittedEventArgs e)
+	protected async void ShellPage_QuerySubmitted(ISearchBox sender, SearchBoxQuerySubmittedEventArgs e)
 	{
 		if (e.ChosenSuggestion is SuggestionModel item && !string.IsNullOrWhiteSpace(item.ItemPath))
         {
-            await NavigationHelpers.OpenPath(item.ItemPath, this);
+            await NavigationHelpers.OpenPath(FolderViewViewModel, item.ItemPath, this);
         }
         else if (e.ChosenSuggestion is null && !string.IsNullOrWhiteSpace(sender.Query))
         {
@@ -419,13 +417,13 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 				SearchUnindexedItems = userSettingsService.GeneralSettingsService.SearchUnindexedItems
 			};
 
-			sender.SetSuggestions((await search.SearchAsync()).Select(suggestion => new SuggestionModel(suggestion)));
+			sender.SetSuggestions((await search.SearchAsync(FolderViewViewModel)).Select(suggestion => new SuggestionModel(suggestion)));
 		}
 		else
 		{
 			sender.AddRecentQueries();
 		}
-	}*/
+	}
 
 	protected async void ShellPage_RefreshRequested(object? sender, EventArgs e)
 	{
@@ -464,13 +462,13 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         }
     }
 
-	/*protected async void ShellPage_PathBoxItemDropped(object sender, PathBoxItemDroppedEventArgs e)
+	protected async void ShellPage_PathBoxItemDropped(object sender, PathBoxItemDroppedEventArgs e)
 	{
 		await FilesystemHelpers.PerformOperationTypeAsync(e.AcceptedOperation, e.Package, e.Path, false, true);
 		e.SignalEvent?.Set();
-	}*/
+	}
 
-	/*protected async void ShellPage_AddressBarTextEntered(object sender, AddressBarTextEnteredEventArgs e)
+	protected async void ShellPage_AddressBarTextEntered(object sender, AddressBarTextEnteredEventArgs e)
 	{
 		await ToolbarViewModel.SetAddressBarSuggestionsAsync(e.AddressBarTextField, this);
 	}
@@ -492,16 +490,16 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected async void NavigationToolbar_QuerySubmitted(object sender, ToolbarQuerySubmittedEventArgs e)
 	{
-		await ToolbarViewModel.CheckPathInputAsync(e.QueryText, ToolbarViewModel.PathComponents.LastOrDefault()?.Path, this);
-	}*/
+		await ToolbarViewModel.CheckPathInputAsync(e.QueryText, ToolbarViewModel.PathComponents.LastOrDefault()?.Path!, this);
+	}
 
 	protected void NavigationToolbar_EditModeEnabled(object? sender, EventArgs e)
 	{
 		ToolbarViewModel.ManualEntryBoxLoaded = true;
 		ToolbarViewModel.ClickablePathLoaded = false;
-		/*ToolbarViewModel.PathText = string.IsNullOrEmpty(FilesystemViewModel?.WorkingDirectory)
+		ToolbarViewModel.PathText = string.IsNullOrEmpty(FilesystemViewModel?.WorkingDirectory)
 			? Constants.UserEnvironmentPaths.HomePath
-			: FilesystemViewModel.WorkingDirectory;*/
+			: FilesystemViewModel.WorkingDirectory;
 	}
 
 	protected async void DrivesManager_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -824,12 +822,12 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 	protected void SetLoadingIndicatorForTabs(bool isLoading)
 	{
         // TODO: Set loading indicator here.
-		/*var multitaskingControls = (FolderViewViewModel.RootFrame.Content as MainPage)!.ViewModel.MultitaskingControls;
+		var multitaskingControls = (FolderViewViewModel.RootFrame.Content as MainPage)!.ViewModel.MultitaskingControls;
 
 		foreach (var x in multitaskingControls)
         {
-            x.SetLoadingIndicatorStatus(x.Items.FirstOrDefault(x => x.TabItemContent == PaneHolder), isLoading);
-        }*/
+            x.SetLoadingIndicatorStatus(x.Items.FirstOrDefault(x => x.TabItemContent == PaneHolder)!, isLoading);
+        }
     }
 
 	/*// WINUI3
@@ -867,7 +865,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	public abstract void NavigateToPath(string? navigationPath, Type? sourcePageType, NavigationArguments? navArgs = null);
 
-	/*private void UpdateDateDisplayTimer_Tick(object sender, object e)
+	private void UpdateDateDisplayTimer_Tick(object sender, object e)
 	{
 		if (App.AppModel.IsMainWindowClosed)
         {
@@ -883,7 +881,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		{
 			FilesystemViewModel?.UpdateDateDisplay(false);
 		}
-	}*/
+	}
 
 	public virtual void Dispose()
 	{
@@ -891,16 +889,16 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		PointerPressed -= CoreWindow_PointerPressed;
 		drivesViewModel.PropertyChanged -= DrivesManager_PropertyChanged;
 
-		/*ToolbarViewModel.ToolbarPathItemInvoked -= ShellPage_NavigationRequested;
+		ToolbarViewModel.ToolbarPathItemInvoked -= ShellPage_NavigationRequested;
 		ToolbarViewModel.ToolbarFlyoutOpened -= ShellPage_ToolbarFlyoutOpened;
 		ToolbarViewModel.ToolbarPathItemLoaded -= ShellPage_ToolbarPathItemLoaded;
 		ToolbarViewModel.AddressBarTextEntered -= ShellPage_AddressBarTextEntered;
-		ToolbarViewModel.PathBoxItemDropped -= ShellPage_PathBoxItemDropped;*/
+		ToolbarViewModel.PathBoxItemDropped -= ShellPage_PathBoxItemDropped;
 		ToolbarViewModel.RefreshRequested -= ShellPage_RefreshRequested;
 		ToolbarViewModel.EditModeEnabled -= NavigationToolbar_EditModeEnabled;
-		/*ToolbarViewModel.ItemDraggedOverPathItem -= ShellPage_NavigationRequested;
+		ToolbarViewModel.ItemDraggedOverPathItem -= ShellPage_NavigationRequested;
 		ToolbarViewModel.PathBoxQuerySubmitted -= NavigationToolbar_QuerySubmitted;
-		ToolbarViewModel.SearchBox.TextChanged -= ShellPage_TextChanged;*/
+		ToolbarViewModel.SearchBox.TextChanged -= ShellPage_TextChanged;
 
 		InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired -= FolderSettings_LayoutPreferencesUpdateRequired;
 		InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated -= AppSettings_SortDirectionPreferenceUpdated;
@@ -926,6 +924,6 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
         GitHelpers.GitFetchCompleted -= FilesystemViewModel_GitDirectoryUpdated;
 
-		/*_updateDateDisplayTimer.Stop();*/
+		_updateDateDisplayTimer.Stop();
 	}
 }

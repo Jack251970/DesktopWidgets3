@@ -4,7 +4,6 @@ using Files.App.Data.Commands;
 using DesktopWidgets3.Views.Windows;
 using Files.Core.Services;
 using Files.Core.ViewModels.FolderView;
-using Microsoft.UI.Xaml;
 using Files.Core.Services.Settings;
 using Files.App.ViewModels.UserControls;
 using Microsoft.UI.Xaml.Controls;
@@ -40,12 +39,14 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private readonly IDateTimeFormatter _dateTimeFormatter;
     private readonly ISizeProvider _sizeProvider;
 
+    private readonly IWindowContext _windowContext;
     private readonly IContentPageContext _contentPageContext;
     private readonly IPageContext _pageContext;
+    private readonly IDisplayPageContext _displayPageContext;
 
     #region interfaces
 
-    Window IFolderViewViewModel.MainWindow => WidgetWindow;
+    WindowEx IFolderViewViewModel.MainWindow => WidgetWindow;
 
     IntPtr IFolderViewViewModel.WindowHandle => WidgetWindow.WindowHandle;
 
@@ -93,7 +94,19 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    public FolderViewViewModel(IWidgetManagerService widgetManagerService, ICommandManager commandManager, IModifiableCommandManager modifiableCommandManager, IDialogService dialogService, StatusCenterViewModel statusCenterViewModel, InfoPaneViewModel infoPaneViewModel, IUserSettingsService userSettingsService, IDateTimeFormatter dateTimeFormatter, ISizeProvider sizeProvider, IContentPageContext contentPageContext, IPageContext pageContext)
+    public FolderViewViewModel(IWidgetManagerService widgetManagerService, 
+        ICommandManager commandManager, 
+        IModifiableCommandManager modifiableCommandManager, 
+        IDialogService dialogService, 
+        StatusCenterViewModel statusCenterViewModel, 
+        InfoPaneViewModel infoPaneViewModel, 
+        IUserSettingsService userSettingsService, 
+        IDateTimeFormatter dateTimeFormatter, 
+        ISizeProvider sizeProvider, 
+        IWindowContext windowContext, 
+        IContentPageContext contentPageContext, 
+        IPageContext pageContext,
+        IDisplayPageContext displayPageContext)
     {
         _widgetManagerService = widgetManagerService;
 
@@ -111,8 +124,19 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         _dateTimeFormatter = dateTimeFormatter;
         _sizeProvider = sizeProvider;
 
+        _windowContext = windowContext;
         _contentPageContext = contentPageContext;
         _pageContext = pageContext;
+        _displayPageContext = displayPageContext;
+
+        _windowContext.Initialize(this);
+        _displayPageContext.Initialize(this);
+
+        _commandManager.Initialize(this);
+        _modifiableCommandManager.Initialize(_commandManager);
+        _dialogService.Initialize(this);
+        _infoPaneViewModel.Initialize(this);
+        _dateTimeFormatter.Initialize(this);
     }
     
     #region initialization
@@ -123,13 +147,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         if (!isInitialized)
         {
-            _commandManager.Initialize(this);
-            _modifiableCommandManager.Initialize(_commandManager);
-            _dialogService.Initialize(this);
-            _infoPaneViewModel.Initialize(this);
-            _dateTimeFormatter.Initialize(this);
-
+            // All callback of user settings service after setting initialization
             _userSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
+
             App.OnLaunched(FolderPath);
         }
     }
@@ -274,8 +294,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             Type t when t == typeof(IDateTimeFormatter) => (_dateTimeFormatter as T)!,
             Type t when t == typeof(ISizeProvider) => (_sizeProvider as T)!,
             Type t when t == typeof(Files.Core.Services.Settings.IAppSettingsService) => (_userSettingsService.AppSettingsService as T)!,
+            Type t when t == typeof(IWindowContext) => (_windowContext as T)!,
             Type t when t == typeof(IContentPageContext) => (_contentPageContext as T)!,
             Type t when t == typeof(IPageContext) => (_pageContext as T)!,
+            Type t when t == typeof(IDisplayPageContext) => (_displayPageContext as T)!,
             _ => null!,
         };
     }

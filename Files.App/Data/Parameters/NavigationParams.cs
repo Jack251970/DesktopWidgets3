@@ -5,7 +5,8 @@ namespace Files.App.Data.Parameters;
 
 public class NavigationParams
 {
-    public IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
+    // CHECK: Required is just for checking.
+    public /*required*/ IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     public string? NavPath { get; set; }
 

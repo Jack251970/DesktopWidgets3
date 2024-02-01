@@ -13,28 +13,28 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 
 	IRichCommand None { get; }
 
-    /*IRichCommand OpenHelp { get; }
+    IRichCommand OpenHelp { get; }
 	IRichCommand ToggleFullScreen { get; }
 	IRichCommand EnterCompactOverlay { get; }
 	IRichCommand ExitCompactOverlay { get; }
 	IRichCommand ToggleCompactOverlay { get; }
-	IRichCommand Search { get; }*/
+    IRichCommand Search { get; }
 	IRichCommand SearchUnindexedItems { get; }
-	/*IRichCommand EditPath { get; }*/
+	IRichCommand EditPath { get; }
 
-    /*IRichCommand Redo { get; }
-	IRichCommand Undo { get; }*/
+    IRichCommand Redo { get; }
+	IRichCommand Undo { get; }
 
-    /*IRichCommand ToggleShowHiddenItems { get; }
+    IRichCommand ToggleShowHiddenItems { get; }
 	IRichCommand ToggleShowFileExtensions { get; }
 	IRichCommand TogglePreviewPane { get; }
 	IRichCommand ToggleDetailsPane { get; }
-	IRichCommand ToggleInfoPane { get; }*/
+	IRichCommand ToggleInfoPane { get; }
 
-    /*IRichCommand SelectAll { get; }
+    IRichCommand SelectAll { get; }
     IRichCommand InvertSelection { get; }
     IRichCommand ClearSelection { get; }
-    IRichCommand ToggleSelect { get; }*/
+    IRichCommand ToggleSelect { get; }
 
     IRichCommand ShareItem { get; }
 
@@ -52,14 +52,14 @@ public interface ICommandManager : IEnumerable<IRichCommand>
     IRichCommand CreateFolderWithSelection { get; }
     IRichCommand AddItem { get; }
 
-    /*IRichCommand PinToStart { get; }
+    IRichCommand PinToStart { get; }
     IRichCommand UnpinFromStart { get; }
     IRichCommand PinItemToFavorites { get; }
-    IRichCommand UnpinItemFromFavorites { get; }*/
+    IRichCommand UnpinItemFromFavorites { get; }
 
-    /*IRichCommand SetAsWallpaperBackground { get; }
+    IRichCommand SetAsWallpaperBackground { get; }
     IRichCommand SetAsSlideshowBackground { get; }
-    IRichCommand SetAsLockscreenBackground { get; }*/
+    IRichCommand SetAsLockscreenBackground { get; }
 
     IRichCommand CopyItem { get; }
 	IRichCommand CopyPath { get; }
@@ -72,40 +72,40 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand DeleteItem { get; }
     IRichCommand DeleteItemPermanently { get; }
 
-    /*IRichCommand InstallFont { get; }
+    IRichCommand InstallFont { get; }
 	IRichCommand InstallInfDriver { get; }
-	IRichCommand InstallCertificate { get; }*/
+	IRichCommand InstallCertificate { get; }
 
-    /*IRichCommand RunAsAdmin { get; }
+    IRichCommand RunAsAdmin { get; }
 	IRichCommand RunAsAnotherUser { get; }
-	IRichCommand RunWithPowershell { get; }*/
+	IRichCommand RunWithPowershell { get; }
 
-    /*IRichCommand LaunchPreviewPopup { get; }*/
+    IRichCommand LaunchPreviewPopup { get; }
 
-    /*IRichCommand CompressIntoArchive { get; }
+    IRichCommand CompressIntoArchive { get; }
 	IRichCommand CompressIntoSevenZip { get; }
 	IRichCommand CompressIntoZip { get; }
 	IRichCommand DecompressArchive { get; }
 	IRichCommand DecompressArchiveHere { get; }
 	IRichCommand DecompressArchiveHereSmart { get; }
-	IRichCommand DecompressArchiveToChildFolder { get; }*/
+	IRichCommand DecompressArchiveToChildFolder { get; }
 
-    /*IRichCommand RotateLeft { get; }
-	IRichCommand RotateRight { get; }*/
+    IRichCommand RotateLeft { get; }
+	IRichCommand RotateRight { get; }
 
     IRichCommand OpenItem { get; }
     IRichCommand OpenItemWithApplicationPicker { get; }
     IRichCommand OpenParentFolder { get; }
 
-    /*IRichCommand OpenInVSCode { get; }
+    IRichCommand OpenInVSCode { get; }
 	IRichCommand OpenRepoInVSCode { get; }
 	IRichCommand OpenProperties { get; }
 	IRichCommand OpenSettings { get; }
 	IRichCommand OpenTerminal { get; }
 	IRichCommand OpenTerminalAsAdmin { get; }
-	IRichCommand OpenCommandPalette { get; }*/
+	IRichCommand OpenCommandPalette { get; }
 
-	/*IRichCommand LayoutDecreaseSize { get; }
+	IRichCommand LayoutDecreaseSize { get; }
 	IRichCommand LayoutIncreaseSize { get; }
 	IRichCommand LayoutDetails { get; }
 	IRichCommand LayoutTiles { get; }
@@ -113,9 +113,9 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand LayoutGridMedium { get; }
 	IRichCommand LayoutGridLarge { get; }
 	IRichCommand LayoutColumns { get; }
-	IRichCommand LayoutAdaptive { get; }*/
+	IRichCommand LayoutAdaptive { get; }
 
-	/*IRichCommand SortByName { get; }
+	IRichCommand SortByName { get; }
 	IRichCommand SortByDateModified { get; }
 	IRichCommand SortByDateCreated { get; }
 	IRichCommand SortBySize { get; }
@@ -128,9 +128,9 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand SortAscending { get; }
 	IRichCommand SortDescending { get; }
 	IRichCommand ToggleSortDirection { get; }
-	IRichCommand ToggleSortDirectoriesAlongsideFiles { get; }*/
+	IRichCommand ToggleSortDirectoriesAlongsideFiles { get; }
 
-	/*IRichCommand GroupByNone { get; }
+	IRichCommand GroupByNone { get; }
 	IRichCommand GroupByName { get; }
 	IRichCommand GroupByDateModified { get; }
 	IRichCommand GroupByDateCreated { get; }
@@ -152,9 +152,7 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand ToggleGroupDirection { get; }
 	IRichCommand GroupByYear { get; }
 	IRichCommand GroupByMonth { get; }
-	IRichCommand ToggleGroupByDateUnit { get; }*/
-
-	/*IRichCommand NewTab { get; }*/
+	IRichCommand ToggleGroupByDateUnit { get; }
 
     IRichCommand FormatDrive { get; }
 
@@ -162,7 +160,8 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand NavigateForward { get; }
 	IRichCommand NavigateUp { get; }
 
-	/*IRichCommand DuplicateCurrentTab { get; }
+    /*IRichCommand NewTab { get; }
+    IRichCommand DuplicateCurrentTab { get; }
 	IRichCommand DuplicateSelectedTab { get; }
 	IRichCommand CloseTabsToTheLeftCurrent { get; }
 	IRichCommand CloseTabsToTheLeftSelected { get; }
@@ -176,19 +175,20 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand ReopenClosedTab { get; }
 	IRichCommand PreviousTab { get; }
 	IRichCommand NextTab { get; }
-	IRichCommand CloseSelectedTab { get; }
-	IRichCommand OpenNewPane { get; }
-	IRichCommand ClosePane { get; }*/
+	IRichCommand CloseSelectedTab { get; }*/
+
+    IRichCommand OpenNewPane { get; }
+	IRichCommand ClosePane { get; }
 
     IRichCommand OpenFileLocation { get; }
 
-    /*IRichCommand PlayAll { get; }*/
+    IRichCommand PlayAll { get; }
 
-	/*IRichCommand GitFetch { get; }
+	IRichCommand GitFetch { get; }
 	IRichCommand GitInit { get; }
 	IRichCommand GitPull { get; }
 	IRichCommand GitPush { get; }
-	IRichCommand GitSync { get; }*/
+	IRichCommand GitSync { get; }
 
-	/*IRichCommand OpenAllTaggedItems { get; }*/
+	IRichCommand OpenAllTaggedItems { get; }
 }

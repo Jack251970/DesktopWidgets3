@@ -133,7 +133,7 @@ public class MainPageViewModel : ObservableObject
 						await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 					}
 
-					var defaultArg = new CustomTabViewItemParameter() { InitialPageType = typeof(PaneHolderPage), NavigationParameter = "Home" };
+					var defaultArg = new CustomTabViewItemParameter() { FolderViewViewModel = FolderViewViewModel, InitialPageType = typeof(PaneHolderPage), NavigationParameter = "Home" };
 
 					UserSettingsService.GeneralSettingsService.LastSessionTabList = new List<string> { defaultArg.Serialize() };
 				}
@@ -170,7 +170,7 @@ public class MainPageViewModel : ObservableObject
 							await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 						}
 
-						var defaultArg = new CustomTabViewItemParameter() { InitialPageType = typeof(PaneHolderPage), NavigationParameter = "Home" };
+						var defaultArg = new CustomTabViewItemParameter() { FolderViewViewModel = FolderViewViewModel, InitialPageType = typeof(PaneHolderPage), NavigationParameter = "Home" };
 
 						UserSettingsService.GeneralSettingsService.LastSessionTabList = new List<string> { defaultArg.Serialize() };
 					}

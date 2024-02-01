@@ -39,7 +39,7 @@
 		</ResourceDictionary>
 	</Page.Resources>
 
-	<!--<Page.KeyboardAccelerators>
+	<Page.KeyboardAccelerators>
 		<KeyboardAccelerator
 			Key="Left"
 			Invoked="KeyboardAccelerator_Invoked"
@@ -48,7 +48,7 @@
 			Key="Right"
 			Invoked="KeyboardAccelerator_Invoked"
 			Modifiers="Control,Shift" />
-	</Page.KeyboardAccelerators>-->
+	</Page.KeyboardAccelerators>
 
 	<Grid x:Name="RootGrid">
 		<Grid.ColumnDefinitions>

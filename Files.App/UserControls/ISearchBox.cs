@@ -7,7 +7,7 @@ namespace Files.App.UserControls;
 
 public interface ISearchBox
 {
-	/*event TypedEventHandler<ISearchBox, SearchBoxTextChangedEventArgs> TextChanged;
+	event TypedEventHandler<ISearchBox, SearchBoxTextChangedEventArgs> TextChanged;
 
 	event TypedEventHandler<ISearchBox, SearchBoxQuerySubmittedEventArgs> QuerySubmitted;
 
@@ -21,5 +21,5 @@ public interface ISearchBox
 
 	void SetSuggestions(IEnumerable<SuggestionModel> suggestions);
 
-	void AddRecentQueries();*/
+	void AddRecentQueries();
 }
