@@ -23,7 +23,8 @@
 	<CornerRadius x:Key="DetailsLayoutThumbnailCornerRadius">2</CornerRadius>
 
 	<ResourceDictionary.MergedDictionaries>
-		<XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+        <!-- CHANGE: Import this resources in App.xaml directly. -->
+		<!--<XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />-->
 
 		<!--  Styles for the custom icons  -->
 		<ResourceDictionary Source="ms-appx:///Files.App/ResourceDictionaries/PathIcons.xaml" />
