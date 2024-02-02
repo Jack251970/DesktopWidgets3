@@ -5,27 +5,6 @@
     
     <Application.Resources>
         <ResourceDictionary>
-            
-            <!-- Files -->
-
-            <!--  Default list view item height  -->
-            <x:Double x:Key="ListItemHeight">36</x:Double>
-
-            <!--  Default list view item margin  -->
-            <x:Double x:Key="ListItemMargin">0</x:Double>
-
-            <!--  Fix caption buttons background  -->
-            <SolidColorBrush x:Key="WindowCaptionBackground" Color="Transparent" />
-            <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled" Color="Transparent" />
-
-            <!--  Workaround for https://github.com/microsoft/microsoft-ui-xaml/issues/5441  -->
-            <x:Double x:Key="MediaTransportControlsMinWidth">50</x:Double>
-
-            <!--  Workaround for an issue where the shadow was showing on the tab control  -->
-            <x:Double x:Key="TabViewShadowDepth">0</x:Double>
-
-            <CornerRadius x:Key="GridViewThumbnailCornerRadius">2</CornerRadius>
-            <CornerRadius x:Key="DetailsLayoutThumbnailCornerRadius">2</CornerRadius>
 
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
@@ -35,57 +14,8 @@
                 <ResourceDictionary Source="/Styles/Values.xaml" />
 
                 <!-- Files -->
-                <ResourceDictionary Source="../Files.App/ResourceDictionaries/PathIcons.xaml" />
-                <ResourceDictionary Source="../Files.App/UserControls/SideBar/SideBarControls.xaml" />
-                <ResourceDictionary Source="../Files.App/ResourceDictionaries/App.Theme.TextBlockStyles.xaml" />
-                <ResourceDictionary Source="../Files.App/ResourceDictionaries/MenuFlyoutSubItemWithImageStyle.xaml" />
-                <!--  Styles for the custom icons  -->
-                <ResourceDictionary>
-                    <ResourceDictionary.ThemeDictionaries>
-                        <ResourceDictionary x:Key="Light">
-                            <SolidColorBrush x:Key="App.Theme.BackgroundBrush" Color="Transparent" />
-                            <SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-                            <SolidColorBrush x:Key="App.Theme.Sidebar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-                            <SolidColorBrush x:Key="App.Theme.FileArea.BackgroundBrush" Color="#C0FCFCFC" />
-
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackground" Color="{StaticResource SubtleFillColorTransparent}" />
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundPressed" Color="{StaticResource SubtleFillColorTertiary}" />
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundPointerOver" Color="{StaticResource SubtleFillColorSecondary}" />
-
-                            <Color x:Key="App.Theme.FillColorAttention">#0070CB</Color>
-                            <SolidColorBrush x:Key="App.Theme.FillColorAttentionBrush" Color="{StaticResource App.Theme.FillColorAttention}" />
-                        </ResourceDictionary>
-                        <ResourceDictionary x:Key="Dark">
-                            <SolidColorBrush x:Key="App.Theme.BackgroundBrush" Color="Transparent" />
-                            <SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-                            <SolidColorBrush x:Key="App.Theme.Sidebar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-                            <SolidColorBrush x:Key="App.Theme.FileArea.BackgroundBrush" Color="#10f9f9f9" />
-
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackground" Color="{StaticResource SubtleFillColorTransparent}" />
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundPressed" Color="{StaticResource SubtleFillColorTertiary}" />
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundPointerOver" Color="{StaticResource SubtleFillColorSecondary}" />
-
-                            <Color x:Key="App.Theme.FillColorAttention">#50C0FF</Color>
-                            <SolidColorBrush x:Key="App.Theme.FillColorAttentionBrush" Color="{StaticResource App.Theme.FillColorAttention}" />
-                        </ResourceDictionary>
-                        <ResourceDictionary x:Key="HighContrast">
-                            <SolidColorBrush x:Key="App.Theme.BackgroundBrush" Color="Transparent" />
-                            <SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="Transparent" />
-                            <SolidColorBrush x:Key="App.Theme.Sidebar.BackgroundBrush" Color="Transparent" />
-                            <SolidColorBrush x:Key="App.Theme.FileArea.BackgroundBrush" Color="Transparent" />
-
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackground" Color="{StaticResource SystemColorWindowColor}" />
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="{StaticResource SystemColorHighlightColor}" />
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundPressed" Color="{StaticResource SystemColorHighlightColor}" />
-                            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundPointerOver" Color="{StaticResource SystemColorHighlightColor}" />
-
-                            <Color x:Key="App.Theme.FillColorAttention">#50C0FF</Color>
-                            <SolidColorBrush x:Key="App.Theme.FillColorAttentionBrush" Color="{StaticResource App.Theme.FillColorAttention}" />
-                        </ResourceDictionary>
-                    </ResourceDictionary.ThemeDictionaries>
-                </ResourceDictionary>
+                <ResourceDictionary Source="../Files.App/App.xaml" />
+                
             </ResourceDictionary.MergedDictionaries>
             
         </ResourceDictionary>

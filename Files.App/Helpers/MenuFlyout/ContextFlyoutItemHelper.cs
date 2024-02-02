@@ -475,11 +475,12 @@ public static class ContextFlyoutItemHelper
 				IsVisible = itemsSelected,
 				IsPrimary = true,
 			}.Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
+            // Fix: Fix loading bug here.
+			/*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
 			{
 				IsPrimary = true,
 				IsVisible = commands.OpenProperties.IsExecutable
-			}.Build(),
+			}.Build(),*/
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenParentFolder).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.PinItemToFavorites)
 			{
@@ -499,6 +500,7 @@ public static class ContextFlyoutItemHelper
 				IsVisible = selectedItems.All(x => !x.IsShortcut && (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable) && !x.IsArchive && x.IsItemPinnedToStart),
 				ShowOnShift = true,
 			}.Build(),
+            // Fix: Fix command bug here.
 			new()
             {
 				Text = "Compress".GetLocalizedResource(),

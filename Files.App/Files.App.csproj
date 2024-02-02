@@ -25,6 +25,9 @@
         <DefineConstants>TRACE;RELEASE;NETFX_CORE;DISABLE_XAML_GENERATED_MAIN</DefineConstants>
         <Optimize>true</Optimize>
     </PropertyGroup>
+    <ItemGroup>
+      <Page Remove="App.xaml" />
+    </ItemGroup>
 
     <ItemGroup>
         <Content Include="7z.dll">
@@ -96,6 +99,12 @@
         <TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
         <TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Media" />
         <TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Primitives" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="App.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
     </ItemGroup>
     
 </Project>
