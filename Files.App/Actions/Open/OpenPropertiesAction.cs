@@ -59,18 +59,22 @@ internal class OpenPropertiesAction : ObservableObject, IAction
 	{
 		var page = context.ShellPage?.SlimContentPage;
 		if (page is not null)
-			page.ItemContextMenuFlyout.Closed -= OpenPropertiesFromItemContextMenuFlyout;
-			
-		FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, context.ShellPage!);
+        {
+            page.ItemContextMenuFlyout.Closed -= OpenPropertiesFromItemContextMenuFlyout;
+        }
+
+        FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, context.ShellPage!);
 	}
 
 	private void OpenPropertiesFromBaseContextMenuFlyout(object? _, object e)
 	{
 		var page = context.ShellPage?.SlimContentPage;
 		if (page is not null)
-			page.BaseContextMenuFlyout.Closed -= OpenPropertiesFromBaseContextMenuFlyout;
-			
-		FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, context.ShellPage!);
+        {
+            page.BaseContextMenuFlyout.Closed -= OpenPropertiesFromBaseContextMenuFlyout;
+        }
+
+        FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, context.ShellPage!);
 	}
 
 	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
