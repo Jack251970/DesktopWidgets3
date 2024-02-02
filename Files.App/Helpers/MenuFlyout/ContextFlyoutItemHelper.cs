@@ -475,14 +475,14 @@ public static class ContextFlyoutItemHelper
 				IsVisible = itemsSelected,
 				IsPrimary = true,
 			}.Build(),
-            // Fix: Fix loading bug here.
-			/*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
+			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenProperties)
 			{
 				IsPrimary = true,
 				IsVisible = commands.OpenProperties.IsExecutable
-			}.Build(),*/
+			}.Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenParentFolder).Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(commands.PinItemToFavorites)
+            // Fix: Fix loading bug here.
+			/*new ContextMenuFlyoutItemViewModelBuilder(commands.PinItemToFavorites)
 			{
 				IsVisible = commands.PinItemToFavorites.IsExecutable && userSettingsService.GeneralSettingsService.ShowFavoritesSection,
 			}.Build(),
@@ -499,7 +499,7 @@ public static class ContextFlyoutItemHelper
 			{
 				IsVisible = selectedItems.All(x => !x.IsShortcut && (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable) && !x.IsArchive && x.IsItemPinnedToStart),
 				ShowOnShift = true,
-			}.Build(),
+			}.Build(),*/
             // Fix: Fix command bug here.
 			new()
             {
@@ -558,22 +558,22 @@ public static class ContextFlyoutItemHelper
 				ShowInSearchPage = true,
 				ShowItem = itemsSelected && userSettingsService.GeneralSettingsService.ShowSendToMenu
 			},
-			new()
-			{
-				Text = "TurnOnBitLocker".GetLocalizedResource(),
-				Tag = "TurnOnBitLockerPlaceholder",
-				CollapseLabel = true,
-				IsEnabled = false,
-				ShowItem = isDriveRoot
-			},
-			new()
-			{
-				Text = "ManageBitLocker".GetLocalizedResource(),
-				Tag = "ManageBitLockerPlaceholder",
-				CollapseLabel = true,
-				ShowItem = isDriveRoot,
-				IsEnabled = false
-			},
+            new()
+            {
+                Text = "TurnOnBitLocker".GetLocalizedResource(),
+                Tag = "TurnOnBitLockerPlaceholder",
+                CollapseLabel = true,
+                IsEnabled = false,
+                ShowItem = isDriveRoot
+            },
+            new()
+            {
+                Text = "ManageBitLocker".GetLocalizedResource(),
+                Tag = "ManageBitLockerPlaceholder",
+                CollapseLabel = true,
+                ShowItem = isDriveRoot,
+                IsEnabled = false
+            },
 			// Shell extensions are not available on the FTP server or in the archive,
 			// but following items are intentionally added because icons in the context menu will not appear
 			// unless there is at least one menu item with an icon that is not an OpacityIcon. (#12943)
