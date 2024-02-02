@@ -526,7 +526,7 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 		}
 	}
 
-	private (int, int) GetLastCommonAndRelativeIndex(List<PathBoxItem> destComponents, string columnPath, string columnFirstPath)
+	private static (int, int) GetLastCommonAndRelativeIndex(List<PathBoxItem> destComponents, string columnPath, string columnFirstPath)
 	{
 		var columnComponents = StorageFileExtensions.GetDirectoryPathComponents(columnPath);
 		var columnFirstComponents = StorageFileExtensions.GetDirectoryPathComponents(columnFirstPath);
