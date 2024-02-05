@@ -900,13 +900,17 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		ToolbarViewModel.PathBoxQuerySubmitted -= NavigationToolbar_QuerySubmitted;
 		ToolbarViewModel.SearchBox.TextChanged -= ShellPage_TextChanged;
 
-		InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired -= FolderSettings_LayoutPreferencesUpdateRequired;
-		InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated -= AppSettings_SortDirectionPreferenceUpdated;
-		InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated -= AppSettings_SortOptionPreferenceUpdated;
-		InstanceViewModel.FolderSettings.SortDirectoriesAlongsideFilesPreferenceUpdated -= AppSettings_SortDirectoriesAlongsideFilesPreferenceUpdated;
+        // CHANGE: For columns layout page, we don't need folder settings.
+        if (InstanceViewModel.FolderSettings is not null)
+        {
+            InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired -= FolderSettings_LayoutPreferencesUpdateRequired;
+            InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated -= AppSettings_SortDirectionPreferenceUpdated;
+            InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated -= AppSettings_SortOptionPreferenceUpdated;
+            InstanceViewModel.FolderSettings.SortDirectoriesAlongsideFilesPreferenceUpdated -= AppSettings_SortDirectoriesAlongsideFilesPreferenceUpdated;
+        }
 
-		// Prevent weird case of this being null when many tabs are opened/closed quickly
-		if (FilesystemViewModel is not null)
+        // Prevent weird case of this being null when many tabs are opened/closed quickly
+        if (FilesystemViewModel is not null)
 		{
 			FilesystemViewModel.WorkingDirectoryModified -= ViewModel_WorkingDirectoryModified;
 			FilesystemViewModel.ItemLoadStatusChanged -= FilesystemViewModel_ItemLoadStatusChanged;
