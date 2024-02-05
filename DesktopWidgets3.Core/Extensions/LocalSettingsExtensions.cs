@@ -8,7 +8,11 @@ namespace DesktopWidgets3.Core.Extensions;
 /// </summary>
 public static class LocalSettingsExtensions
 {
+#if DEBUG
+    private static readonly string DefaultApplicationDataFolder = "DesktopWidgets3/ApplicationData(Debug)";
+#else
     private static readonly string DefaultApplicationDataFolder = "DesktopWidgets3/ApplicationData";
+#endif
     private static string ApplicationDataFolder { get; set; } = null!;
     private static readonly List<string> SubFolders = new();
 
@@ -22,9 +26,6 @@ public static class LocalSettingsExtensions
         {
             var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             ApplicationDataFolder = Path.Combine(localAppDataPath, DefaultApplicationDataFolder);
-#if DEBUG
-            ApplicationDataFolder = Path.Combine(ApplicationDataFolder, "Debug");
-#endif
         }
     }
 
