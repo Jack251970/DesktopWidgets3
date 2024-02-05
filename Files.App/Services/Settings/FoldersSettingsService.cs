@@ -7,13 +7,20 @@ namespace Files.App.Services.Settings;
 
 internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFoldersSettingsService
 {
-	public FoldersSettingsService(ISettingsSharingContext settingsSharingContext)
+    /*public FoldersSettingsService(ISettingsSharingContext settingsSharingContext)
 	{
 		// Register root
 		RegisterSettingsContext(settingsSharingContext);
-	}
+	}*/
 
-	public bool SyncFolderPreferencesAcrossDirectories
+    public void Initialize(IUserSettingsService userSettingsService)
+    {
+        // Register root
+        var settingsSharingContext = ((UserSettingsService)userSettingsService).GetSharingContext();
+        RegisterSettingsContext(settingsSharingContext);
+    }
+
+    public bool SyncFolderPreferencesAcrossDirectories
 	{
 		get => Get(false);
 		set => Set(value);

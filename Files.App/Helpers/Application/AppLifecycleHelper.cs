@@ -132,13 +132,13 @@ public static class AppLifecycleHelper
             .ConfigureServices(services => services
                 // Settings services
                 .AddTransient<IUserSettingsService, UserSettingsService>()
-                .AddTransient<IAppearanceSettingsService, AppearanceSettingsService>(sp => new AppearanceSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()))
-                .AddTransient<IGeneralSettingsService, GeneralSettingsService>(sp => new GeneralSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()))
-                .AddTransient<IFoldersSettingsService, FoldersSettingsService>(sp => new FoldersSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()))
-                .AddTransient<IApplicationSettingsService, ApplicationSettingsService>(sp => new ApplicationSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()))
-                .AddTransient<IInfoPaneSettingsService, InfoPaneSettingsService>(sp => new InfoPaneSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()))
-                .AddTransient<ILayoutSettingsService, LayoutSettingsService>(sp => new LayoutSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()))
-                .AddTransient<IAppSettingsService, AppSettingsService>(sp => new AppSettingsService(((UserSettingsService)sp.GetRequiredService<IUserSettingsService>()).GetSharingContext()))
+                .AddTransient<IAppearanceSettingsService, AppearanceSettingsService>()
+                .AddTransient<IGeneralSettingsService, GeneralSettingsService>()
+                .AddTransient<IFoldersSettingsService, FoldersSettingsService>()
+                .AddTransient<IApplicationSettingsService, ApplicationSettingsService>()
+                .AddTransient<IInfoPaneSettingsService, InfoPaneSettingsService>()
+                .AddTransient<ILayoutSettingsService, LayoutSettingsService>()
+                .AddTransient<IAppSettingsService, AppSettingsService>()
                 .AddSingleton<IFileTagsSettingsService, FileTagsSettingsService>()
                 // Contexts
                 .AddTransient<IPageContext, PageContext>()

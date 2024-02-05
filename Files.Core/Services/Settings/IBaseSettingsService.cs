@@ -5,5 +5,5 @@ namespace Files.Core.Services.Settings;
 
 public interface IBaseSettingsService
 {
-
+    void Initialize(IUserSettingsService userSettingsService);
 }

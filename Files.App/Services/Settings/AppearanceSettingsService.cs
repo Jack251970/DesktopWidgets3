@@ -7,13 +7,20 @@ namespace Files.App.Services.Settings;
 
 internal sealed class AppearanceSettingsService : BaseObservableJsonSettings, IAppearanceSettingsService
 {
-	public AppearanceSettingsService(ISettingsSharingContext settingsSharingContext)
+    /*public AppearanceSettingsService(ISettingsSharingContext settingsSharingContext)
 	{
 		// Register root
 		RegisterSettingsContext(settingsSharingContext);
-	}
+	}*/
 
-	public double SidebarWidth
+    public void Initialize(IUserSettingsService userSettingsService)
+    {
+        // Register root
+        var settingsSharingContext = ((UserSettingsService)userSettingsService).GetSharingContext();
+        RegisterSettingsContext(settingsSharingContext);
+    }
+
+    public double SidebarWidth
 	{
 		get => Get(Math.Min(Math.Max(Get(255d), Constants.UI.MinimumSidebarWidth), 500d));
 		set => Set(value);

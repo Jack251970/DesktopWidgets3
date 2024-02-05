@@ -5,7 +5,20 @@ namespace Files.App.Services.Settings;
 
 internal sealed class ApplicationSettingsService : BaseObservableJsonSettings, IApplicationSettingsService
 {
-	public bool ClickedToReviewApp
+    /*public ApplicationSettingsService(ISettingsSharingContext settingsSharingContext)
+    {
+        // Register root
+        RegisterSettingsContext(settingsSharingContext);
+    }*/
+
+    public void Initialize(IUserSettingsService userSettingsService)
+    {
+        // Register root
+        var settingsSharingContext = ((UserSettingsService)userSettingsService).GetSharingContext();
+        RegisterSettingsContext(settingsSharingContext);
+    }
+
+    public bool ClickedToReviewApp
 	{
 		get => Get(false);
 		set => Set(value);
@@ -15,10 +28,5 @@ internal sealed class ApplicationSettingsService : BaseObservableJsonSettings, I
 	{
 		get => Get(true);
 		set => Set(value);
-	}
-
-	public ApplicationSettingsService(ISettingsSharingContext settingsSharingContext)
-	{
-		RegisterSettingsContext(settingsSharingContext);
 	}
 }

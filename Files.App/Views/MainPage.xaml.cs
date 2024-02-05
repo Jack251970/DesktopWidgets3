@@ -486,7 +486,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
     public bool ShouldViewControlBeDisplayed => SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false;
 
-    public bool ShouldPreviewPaneBeActive => UserSettingsService.InfoPaneSettingsService.IsEnabled && false;//ShouldPreviewPaneBeDisplayed;
+    public bool ShouldPreviewPaneBeActive => UserSettingsService.InfoPaneSettingsService.IsEnabled && ShouldPreviewPaneBeDisplayed;
 
 	public bool ShouldPreviewPaneBeDisplayed
 	{

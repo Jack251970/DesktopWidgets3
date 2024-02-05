@@ -38,6 +38,8 @@ internal class ToggleInfoPaneAction : ObservableObject, IToggleAction
 	private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName is nameof(InfoPaneViewModel.IsEnabled))
-			OnPropertyChanged(nameof(IsOn));
-	}
+        {
+            OnPropertyChanged(nameof(IsOn));
+        }
+    }
 }

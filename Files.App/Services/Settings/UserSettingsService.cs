@@ -38,6 +38,8 @@ internal sealed class UserSettingsService : BaseJsonSettings, IUserSettingsServi
         Initialize(Path.Combine(LocalSettingsExtensions.ApplicationDataFolder, Constants.LocalSettings.SettingsFolderName, Constants.LocalSettings.UserSettingsFileName));
 	}
 
+    public void Initialize(IUserSettingsService userSettingsService) => throw new NotImplementedException();
+
 	public override object ExportSettings()
 	{
 		var export = (IDictionary<string, object>)base.ExportSettings();
@@ -71,10 +73,15 @@ internal sealed class UserSettingsService : BaseJsonSettings, IUserSettingsServi
 		return false;
 	}
 
-	private static TSettingsService GetSettingsService<TSettingsService>(ref TSettingsService settingsServiceMember)
+	private TSettingsService GetSettingsService<TSettingsService>(ref TSettingsService settingsServiceMember)
 		where TSettingsService : class, IBaseSettingsService
 	{
-		settingsServiceMember ??= DependencyExtensions.GetService<TSettingsService>()!;
+        // CHANGE: Initialize setting sharing context of settings members.
+        if (settingsServiceMember is null)
+        {
+            settingsServiceMember = DependencyExtensions.GetService<TSettingsService>()!;
+            settingsServiceMember.Initialize(this);
+        }
 
 		return settingsServiceMember;
 	}

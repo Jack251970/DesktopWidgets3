@@ -7,13 +7,20 @@ namespace Files.App.Services.Settings;
 
 internal sealed class AppSettingsService : BaseObservableJsonSettings, IAppSettingsService
 {
-	public AppSettingsService(ISettingsSharingContext settingsSharingContext)
+    /*public AppSettingsService(ISettingsSharingContext settingsSharingContext)
 	{
-		// Initialize settings
-		RegisterSettingsContext(settingsSharingContext);
-	}
+        // Register root
+        RegisterSettingsContext(settingsSharingContext);
+	}*/
 
-	public bool ShowStatusCenterTeachingTip
+    public void Initialize(IUserSettingsService userSettingsService)
+    {
+        // Register root
+        var settingsSharingContext = ((UserSettingsService)userSettingsService).GetSharingContext();
+        RegisterSettingsContext(settingsSharingContext);
+    }
+
+    public bool ShowStatusCenterTeachingTip
 	{
 		get => Get(true);
 		set => Set(value);

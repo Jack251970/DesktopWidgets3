@@ -7,13 +7,20 @@ namespace Files.App.Services.Settings;
 
 internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGeneralSettingsService
 {
-	public GeneralSettingsService(ISettingsSharingContext settingsSharingContext)
+    /*public GeneralSettingsService(ISettingsSharingContext settingsSharingContext)
 	{
 		// Register root
 		RegisterSettingsContext(settingsSharingContext);
-	}
+	}*/
 
-	public bool SearchUnindexedItems
+    public void Initialize(IUserSettingsService userSettingsService)
+    {
+        // Register root
+        var settingsSharingContext = ((UserSettingsService)userSettingsService).GetSharingContext();
+        RegisterSettingsContext(settingsSharingContext);
+    }
+
+    public bool SearchUnindexedItems
 	{
 		get => Get(false);
 		set => Set(value);

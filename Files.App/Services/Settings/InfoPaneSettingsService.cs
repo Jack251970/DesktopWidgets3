@@ -7,7 +7,20 @@ namespace Files.App.Services.Settings;
 
 internal sealed class InfoPaneSettingsService : BaseObservableJsonSettings, IInfoPaneSettingsService
 {
-	public bool IsEnabled
+    /*public InfoPaneSettingsService(ISettingsSharingContext settingsSharingContext)
+    {
+        // Register root
+        RegisterSettingsContext(settingsSharingContext);
+    }*/
+
+    public void Initialize(IUserSettingsService userSettingsService)
+    {
+        // Register root
+        var settingsSharingContext = ((UserSettingsService)userSettingsService).GetSharingContext();
+        RegisterSettingsContext(settingsSharingContext);
+    }
+
+    public bool IsEnabled
 	{
 		get => Get(false);
 		set => Set(value);
@@ -35,11 +48,6 @@ internal sealed class InfoPaneSettingsService : BaseObservableJsonSettings, IInf
 	{
 		get => Get(InfoPaneTabs.Details);
 		set => Set(value);
-	}
-
-	public InfoPaneSettingsService(ISettingsSharingContext settingsSharingContext)
-	{
-		RegisterSettingsContext(settingsSharingContext);
 	}
 
 	protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)

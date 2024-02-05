@@ -31,7 +31,9 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 			Constants.LocalSettings.SettingsFolderName, Constants.LocalSettings.FileTagSettingsFileName));
 	}
 
-	public IList<TagViewModel> FileTagList
+    public void Initialize(IUserSettingsService userSettingsService) => throw new NotImplementedException();
+
+    public IList<TagViewModel> FileTagList
 	{
 		get
 		{
