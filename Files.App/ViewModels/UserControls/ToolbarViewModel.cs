@@ -226,6 +226,11 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
         Commands = folderViewViewModel.GetService<ICommandManager>();
 
         UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
+
+        // CHANGE: Reset the instance view model to bind the property changed event.
+        var temp = InstanceViewModel;
+        InstanceViewModel = null!;
+        InstanceViewModel = temp;
     }
 
 	/*private async void UpdateService_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)

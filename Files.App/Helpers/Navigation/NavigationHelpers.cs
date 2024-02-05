@@ -302,11 +302,11 @@ public static class NavigationHelpers
         associatedInstance.PaneHolder?.OpenPathInNewPane((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
 	}
 
-	/*public static Task LaunchNewWindowAsync()
+	public static Task LaunchNewWindowAsync()
 	{
 		var filesUWPUri = new Uri("files-uwp:");
 		return Launcher.LaunchUriAsync(filesUWPUri).AsTask();
-	}*/
+	}
 
 	public static async Task OpenSelectedItemsAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, bool openViaApplicationPicker = false)
 	{

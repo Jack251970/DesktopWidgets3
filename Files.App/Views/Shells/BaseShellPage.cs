@@ -774,7 +774,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected void InitToolbarCommands()
 	{
-		/*ToolbarViewModel.OpenNewWindowCommand = new AsyncRelayCommand(NavigationHelpers.LaunchNewWindowAsync);*/
+		ToolbarViewModel.OpenNewWindowCommand = new AsyncRelayCommand(NavigationHelpers.LaunchNewWindowAsync);
 		ToolbarViewModel.CreateNewFileCommand = new RelayCommand<ShellNewEntry>(x => _ = UIFilesystemHelpers.CreateFileFromDialogResultTypeAsync(FolderViewViewModel, AddItemDialogItemType.File, x, this));
 		/*ToolbarViewModel.UpdateCommand = new AsyncRelayCommand(async () => await updateSettingsService.DownloadUpdatesAsync());*/
 	}
