@@ -19,8 +19,7 @@ public class LayoutPreferencesDatabaseManager : IDisposable
 
 	public LayoutPreferencesDatabaseManager(string connection, bool shared = false)
 	{
-        // TODO: Add support for Database.
-		/*SafetyExtensions.IgnoreExceptions(() => EnsureDatabaseVersion(connection));
+		SafetyExtensions.IgnoreExceptions(() => EnsureDatabaseVersion(connection));
 
 		_database = new(
 			new ConnectionString(connection)
@@ -32,20 +31,19 @@ public class LayoutPreferencesDatabaseManager : IDisposable
 			new()
 			{
 				IncludeFields = true
-			});*/
+			});
 	}
 
 	// Methods
 
 	public LayoutPreferencesItem? GetPreferences(string? filePath = null, ulong? frn = null)
 	{
-        /*return FindPreferences(filePath, frn)?.LayoutPreferencesManager;*/
-        return null;
+        return FindPreferences(filePath, frn)?.LayoutPreferencesManager;
 	}
 
-	public void SetPreferences(string filePath, ulong? frn, LayoutPreferencesItem? preferencesItem)
+	public void SetPreferences(IFolderViewViewModel folderViewViewModel, string filePath, ulong? frn, LayoutPreferencesItem? preferencesItem)
 	{
-		/*// Get a collection (or create, if doesn't exist)
+		// Get a collection (or create, if doesn't exist)
 		var col = _database.GetCollection<LayoutPreferencesDatabaseItem>("layoutprefs");
 
 		var tmp = FindPreferences(filePath, frn);
@@ -55,7 +53,7 @@ public class LayoutPreferencesDatabaseManager : IDisposable
 			if (preferencesItem is not null)
 			{
 				// Insert new tagged file (Id will be auto-incremented)
-				var newPref = new LayoutPreferencesDatabaseItem()
+				var newPref = new LayoutPreferencesDatabaseItem(folderViewViewModel)
 				{
 					FilePath = filePath,
 					Frn = frn,
@@ -80,12 +78,12 @@ public class LayoutPreferencesDatabaseManager : IDisposable
 				// Remove file tag
 				col.Delete(tmp.Id);
 			}
-		}*/
+		}
 	}
 
 	public void ResetAll(Func<LayoutPreferencesDatabaseItem, bool>? predicate = null)
 	{
-		/*var col = _database.GetCollection<LayoutPreferencesDatabaseItem>("layoutprefs");
+		var col = _database.GetCollection<LayoutPreferencesDatabaseItem>("layoutprefs");
 
 		if (predicate is null)
 		{
@@ -94,38 +92,37 @@ public class LayoutPreferencesDatabaseManager : IDisposable
 		else
 		{
 			col.Delete(x => predicate(x));
-		}*/
+		}
 	}
 
 	public void ApplyToAll(Action<LayoutPreferencesDatabaseItem> updateAction, Func<LayoutPreferencesDatabaseItem, bool>? predicate = null)
 	{
-		/*var col = _database.GetCollection<LayoutPreferencesDatabaseItem>("layoutprefs");
+		var col = _database.GetCollection<LayoutPreferencesDatabaseItem>("layoutprefs");
 
 		var allDocs = predicate is null ? col.FindAll() : col.Find(x => predicate(x));
 
 		allDocs.ForEach(x => updateAction(x));
-		col.Update(allDocs);*/
+		col.Update(allDocs);
 	}
 
 	public void Import(string json)
 	{
-		/*var dataValues = JsonSerializer.DeserializeArray(json);
+		var dataValues = JsonSerializer.DeserializeArray(json);
 
 		var col = _database.GetCollection("layoutprefs");
 
 		col.Delete(Query.All());
-		col.InsertBulk(dataValues.Select(x => x.AsDocument));*/
+		col.InsertBulk(dataValues.Select(x => x.AsDocument));
 	}
 
 	public string Export()
 	{
-        /*return JsonSerializer.Serialize(new BsonArray(_database.GetCollection("layoutprefs").FindAll()));*/
-        return string.Empty;
+        return JsonSerializer.Serialize(new BsonArray(_database.GetCollection("layoutprefs").FindAll()));
 	}
 
 	private LayoutPreferencesDatabaseItem? FindPreferences(string? filePath = null, ulong? frn = null)
 	{
-		/*// Get a collection (or create, if doesn't exist)
+		// Get a collection (or create, if doesn't exist)
 		var col = _database.GetCollection<LayoutPreferencesDatabaseItem>("layoutprefs");
 
 		if (filePath is not null)
@@ -158,7 +155,7 @@ public class LayoutPreferencesDatabaseManager : IDisposable
 
 				return tmp;
 			}
-		}*/
+		}
 
 		return null;
 	}

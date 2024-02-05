@@ -8,13 +8,13 @@ namespace Files.App.Helpers;
 /// </summary>
 public class LayoutPreferencesItem
 {
-	// Dependency injections
+    // Dependency injections
 
-	private readonly IUserSettingsService UserSettingsService;
+    /*private readonly IUserSettingsService UserSettingsService;*/
 
-	// Fields
+    // Fields
 
-	public ColumnsViewModel ColumnsViewModel;
+    public ColumnsViewModel ColumnsViewModel = null!;
 
 	public bool SortDirectoriesAlongsideFiles;
 	public bool IsAdaptiveLayoutOverridden;
@@ -29,11 +29,15 @@ public class LayoutPreferencesItem
 	public GroupOption DirectoryGroupOption;
 	public GroupByDateUnit DirectoryGroupByDateUnit;
 
-	// Constructor
+    // Constructor
 
-	public LayoutPreferencesItem(IFolderViewViewModel folderViewViewModel)
+    public LayoutPreferencesItem()
+    {
+    }
+
+    public LayoutPreferencesItem(IFolderViewViewModel folderViewViewModel)
 	{
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
 		var defaultLayout = UserSettingsService.FoldersSettingsService.DefaultLayoutMode;
 
 		LayoutMode = defaultLayout is FolderLayoutModes.Adaptive ? FolderLayoutModes.DetailsView : defaultLayout;
@@ -95,7 +99,7 @@ public class LayoutPreferencesItem
 
         if (obj is LayoutPreferencesItem item)
 		{
-			return item.UserSettingsService == UserSettingsService &&
+			return
 				item.LayoutMode == LayoutMode &&
 				item.GridViewSize == GridViewSize &&
 				item.DirectoryGroupOption == DirectoryGroupOption &&
@@ -114,7 +118,6 @@ public class LayoutPreferencesItem
 	{
 		HashCode hash = new();
 
-        hash.Add(UserSettingsService);
 		hash.Add(LayoutMode);
 		hash.Add(GridViewSize);
 		hash.Add(DirectoryGroupOption);

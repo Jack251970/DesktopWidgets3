@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Text.Json;
-using Windows.Storage;
 
 namespace Files.App.Data.Models;
 
@@ -21,7 +20,7 @@ public class LayoutPreferencesManager : ObservableObject
 
 	// Fields
 
-	private /*static*/ readonly Lazy<LayoutPreferencesDatabaseManager> _databaseInstance =
+	private static readonly Lazy<LayoutPreferencesDatabaseManager> _databaseInstance =
 		new(() => new LayoutPreferencesDatabaseManager(LayoutSettingsDbPath, true));
 
 	private readonly FolderLayoutModes? _rootLayoutMode;
@@ -460,7 +459,7 @@ public class LayoutPreferencesManager : ObservableObject
 
 	// Static methods
 
-	public /*static*/ LayoutPreferencesDatabaseManager GetDatabaseManagerInstance()
+	public static LayoutPreferencesDatabaseManager GetDatabaseManagerInstance()
 	{
 		return _databaseInstance.Value;
 	}
@@ -647,7 +646,7 @@ public class LayoutPreferencesManager : ObservableObject
 		return layoutPreferences;
 	}
 
-	private /*static*/ LayoutPreferencesItem? GetLayoutPreferencesFromDatabase(string path, ulong? frn)
+	private static LayoutPreferencesItem? GetLayoutPreferencesFromDatabase(string path, ulong? frn)
 	{
 		if (string.IsNullOrEmpty(path))
         {
@@ -706,6 +705,6 @@ public class LayoutPreferencesManager : ObservableObject
 			return;
 		}
 
-		dbInstance.SetPreferences(path, frn, preferencesItem);
+		dbInstance.SetPreferences(FolderViewViewModel, path, frn, preferencesItem);
 	}
 }

@@ -17,7 +17,12 @@ public class LayoutPreferencesDatabaseItem
 
 	public string FilePath { get; set; } = string.Empty;
 
-	public LayoutPreferencesItem LayoutPreferencesManager { get; set; }
+    public LayoutPreferencesItem LayoutPreferencesManager { get; set; } = null!;
+
+    public LayoutPreferencesDatabaseItem()
+    {
+        LayoutPreferencesManager = new();
+    }
 
     public LayoutPreferencesDatabaseItem(IFolderViewViewModel folderViewViewModel)
     {
