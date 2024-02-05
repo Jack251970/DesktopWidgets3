@@ -13,7 +13,6 @@ namespace DesktopWidgets3.Services;
 // WidgetList saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\LocalState\WidgetList.json
 public class LocalSettingsService : ILocalSettingsService
 {
-    private const string _defaultApplicationDataFolder = "DesktopWidgets3/ApplicationData";
     private const string _defaultLocalSettingsFile = "LocalSettings.json";
     private const string _defaultWidgetListFile = "WidgetList.json";
 
@@ -21,7 +20,6 @@ public class LocalSettingsService : ILocalSettingsService
     private readonly LocalSettingsOptions _options;
 
     private readonly string _applicationDataFolder;
-    private readonly string _localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
     private readonly string _localsettingsFile;
     private readonly string _widgetListFile;
@@ -40,17 +38,7 @@ public class LocalSettingsService : ILocalSettingsService
         _localsettingsFile = _options.LocalSettingsFile ?? _defaultLocalSettingsFile;
         _widgetListFile = _options.WidgetListFile ?? _defaultWidgetListFile;
         
-        if (RuntimeHelper.IsMSIX)
-        {
-            _applicationDataFolder = ApplicationData.Current.LocalFolder.Path;
-        }
-        else
-        {
-            _applicationDataFolder = Path.Combine(_localApplicationData, _options.ApplicationDataFolder ?? _defaultApplicationDataFolder);
-#if DEBUG
-            _applicationDataFolder = Path.Combine(_applicationDataFolder, "Debug");
-#endif
-        }
+        _applicationDataFolder = LocalSettingsExtensions.GetApplicationDataFolder();
 
         if (!Directory.Exists(_applicationDataFolder))
         {
@@ -99,7 +87,7 @@ public class LocalSettingsService : ILocalSettingsService
 
     public async Task SaveSettingAsync<T>(string key, T value)
     {
-        var stringValue = await JsonHelper.StringifyAsync(value);
+        var stringValue = await JsonHelper.StringifyAsync(value!);
 
         if (RuntimeHelper.IsMSIX)
         {

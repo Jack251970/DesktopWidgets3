@@ -70,6 +70,11 @@ public partial class App : Application
 #endif
         InitializeComponent();
 
+        // Initialize core extensions
+        LocalSettingsExtensions.Initialize();
+        LocalSettingsExtensions.RegisterSubFolder("Files");
+        ResourceExtensions.AddStringResource("FilesResources");
+
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
             .UseContentRoot(AppContext.BaseDirectory)
@@ -203,8 +208,6 @@ public partial class App : Application
 
         // Initialize core extensions
         DependencyExtensions.Initialize(GetService<IDependencyService>());
-        LocalSettingsExtensions.ApplicationDataFolder = GetService<ILocalSettingsService>().GetApplicationDataFolder();
-        ResourceExtensions.AddStringResource("FilesResources");
         UIThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
     }
 

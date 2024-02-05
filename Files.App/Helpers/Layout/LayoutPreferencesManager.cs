@@ -28,7 +28,7 @@ public class LayoutPreferencesManager : ObservableObject
 	// Properties
 
 	public static string LayoutSettingsDbPath
-		=> SystemIO.Path.Combine(LocalSettingsExtensions.ApplicationDataFolder, "user_settings.db");
+		=> SystemIO.Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), "user_settings.db");
 
 	public bool IsLayoutModeFixed
 		=> _rootLayoutMode is not null;

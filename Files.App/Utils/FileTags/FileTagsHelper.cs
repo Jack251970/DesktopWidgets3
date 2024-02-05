@@ -1,7 +1,6 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using IO = System.IO;
@@ -10,7 +9,7 @@ namespace Files.App.Utils.FileTags;
 
 public static class FileTagsHelper
 {
-	public static string FileTagsDbPath => IO.Path.Combine(LocalSettingsExtensions.ApplicationDataFolder, "filetags.db");
+	public static string FileTagsDbPath => IO.Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), "filetags.db");
 
 	private static readonly Lazy<FileTagsDb> dbInstance = new(() => new FileTagsDb(FileTagsDbPath, true));
 

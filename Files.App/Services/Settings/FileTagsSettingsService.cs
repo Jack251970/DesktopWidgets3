@@ -27,7 +27,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 		JsonSettingsSerializer = new DefaultJsonSettingsSerializer();
 		JsonSettingsDatabase = new CachingJsonSettingsDatabase(SettingsSerializer, JsonSettingsSerializer);
 
-		Initialize(Path.Combine(LocalSettingsExtensions.ApplicationDataFolder,
+		Initialize(Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"),
 			Constants.LocalSettings.SettingsFolderName, Constants.LocalSettings.FileTagSettingsFileName));
 	}
 

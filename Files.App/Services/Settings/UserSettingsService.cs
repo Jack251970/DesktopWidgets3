@@ -35,7 +35,7 @@ internal sealed class UserSettingsService : BaseJsonSettings, IUserSettingsServi
 		JsonSettingsSerializer = new DefaultJsonSettingsSerializer();
 		JsonSettingsDatabase = new CachingJsonSettingsDatabase(SettingsSerializer, JsonSettingsSerializer);
 
-        Initialize(Path.Combine(LocalSettingsExtensions.ApplicationDataFolder, Constants.LocalSettings.SettingsFolderName, Constants.LocalSettings.UserSettingsFileName));
+        Initialize(Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), Constants.LocalSettings.SettingsFolderName, Constants.LocalSettings.UserSettingsFileName));
 	}
 
     public void Initialize(IUserSettingsService userSettingsService) => throw new NotImplementedException();

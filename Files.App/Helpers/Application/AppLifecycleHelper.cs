@@ -17,7 +17,6 @@ using System.Text;
 using Windows.Storage;
 using Windows.System;
 using Windows.UI.Notifications;
-using static Vanara.PInvoke.ComCtl32;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Files.App.Helpers;
@@ -126,9 +125,9 @@ public static class AppLifecycleHelper
     {
         return host
             .UseEnvironment(ApplicationService.AppEnvironment.ToString())
-            /*.ConfigureLogging(builder => builder
-                    .AddProvider(new FileLoggerProvider(Path.Combine(ApplicationData.Current.LocalFolder.Path, "debug.log")))
-                    .SetMinimumLevel(LogLevel.Information))*/
+            .ConfigureLogging(builder => builder
+                    .AddProvider(new FileLoggerProvider(Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), "debug.log")))
+                    .SetMinimumLevel(LogLevel.Information))
             .ConfigureServices(services => services
                 // Settings services
                 .AddTransient<IUserSettingsService, UserSettingsService>()
