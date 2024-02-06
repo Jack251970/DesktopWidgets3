@@ -56,7 +56,7 @@ public sealed partial class ReleaseNotesDialog : ContentDialog, IDialog<ReleaseN
 	{
 		if (Windows.Foundation.Metadata.ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            contentDialog.XamlRoot = FolderViewViewModel.MainWindow.Content.XamlRoot;
+            contentDialog.XamlRoot = FolderViewViewModel.XamlRoot;
         }
 
         return contentDialog;

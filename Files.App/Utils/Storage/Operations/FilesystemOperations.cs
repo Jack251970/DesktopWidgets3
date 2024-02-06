@@ -155,7 +155,7 @@ public class FilesystemOperations : IFilesystemOperations
 
 				if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
                 {
-                    dialog.XamlRoot = _folderViewViewModel.MainWindow.Content.XamlRoot;
+                    dialog.XamlRoot = _folderViewViewModel.XamlRoot;
                 }
 
                 var result = await dialog.TryShowAsync(_folderViewViewModel);
@@ -382,7 +382,7 @@ public class FilesystemOperations : IFilesystemOperations
 
 				if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
                 {
-                    dialog.XamlRoot = _folderViewViewModel.MainWindow.Content.XamlRoot;
+                    dialog.XamlRoot = _folderViewViewModel.XamlRoot;
                 }
 
                 var result = await dialog.TryShowAsync(_folderViewViewModel);

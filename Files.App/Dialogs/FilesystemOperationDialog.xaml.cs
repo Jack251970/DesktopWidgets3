@@ -44,7 +44,7 @@ public sealed partial class FilesystemOperationDialog : ContentDialog, IDialog<F
 	{
 		if (Windows.Foundation.Metadata.ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            contentDialog.XamlRoot = FolderViewViewModel.MainWindow.Content.XamlRoot;
+            contentDialog.XamlRoot = FolderViewViewModel.XamlRoot;
         }
 
         return contentDialog;

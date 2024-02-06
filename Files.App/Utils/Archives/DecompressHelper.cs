@@ -170,7 +170,7 @@ public static class DecompressHelper
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            decompressArchiveDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+            decompressArchiveDialog.XamlRoot = folderViewViewModel.XamlRoot;
         }
 
         var option = await decompressArchiveDialog.TryShowAsync(folderViewViewModel);
@@ -238,7 +238,7 @@ public static class DecompressHelper
 
 				if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
                 {
-                    decompressArchiveDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+                    decompressArchiveDialog.XamlRoot = folderViewViewModel.XamlRoot;
                 }
 
                 var option = await decompressArchiveDialog.TryShowAsync(folderViewViewModel);
@@ -294,7 +294,7 @@ public static class DecompressHelper
 
 				if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
                 {
-                    decompressArchiveDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+                    decompressArchiveDialog.XamlRoot = folderViewViewModel.XamlRoot;
                 }
 
                 var option = await decompressArchiveDialog.TryShowAsync(folderViewViewModel);

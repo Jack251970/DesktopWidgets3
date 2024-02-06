@@ -119,14 +119,14 @@ public static class UIHelpers
 	{
 		if (Windows.Foundation.Metadata.ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
 		{
-			contentDialog.XamlRoot = viewModel.MainWindow.Content.XamlRoot;
+			contentDialog.XamlRoot = viewModel.XamlRoot;
 		}
 		return contentDialog;
 	}
 
 	public static void CloseAllDialogs(IFolderViewViewModel viewModel)
 	{
-		var openedDialogs = VisualTreeHelper.GetOpenPopupsForXamlRoot(viewModel.MainWindow.Content.XamlRoot);
+		var openedDialogs = VisualTreeHelper.GetOpenPopupsForXamlRoot(viewModel.XamlRoot);
 
 		foreach (var item in openedDialogs)
 		{

@@ -590,7 +590,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		OnPropertyChanged(nameof(HasAdditionalAction));
 	}
 
-	private AddressToolbar? AddressToolbar => (FolderViewViewModel.RootFrame)?.FindDescendant<AddressToolbar>();
+	private AddressToolbar? AddressToolbar => (FolderViewViewModel.MainWindowContent as Frame)?.FindDescendant<AddressToolbar>();
 
 	private void CloseSearchBox(bool doFocus = false)
 	{

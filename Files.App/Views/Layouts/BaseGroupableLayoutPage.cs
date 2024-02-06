@@ -178,7 +178,7 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 
 	protected virtual void ItemManipulationModel_FocusFileListInvoked(object? sender, EventArgs e)
 	{
-		var focusedElement = (FrameworkElement)FocusManager.GetFocusedElement(FolderViewViewModel.MainWindow.Content.XamlRoot);
+		var focusedElement = (FrameworkElement)FocusManager.GetFocusedElement(FolderViewViewModel.XamlRoot);
 		var isFileListFocused = DependencyObjectHelpers.FindParent<ListViewBase>(focusedElement) == ItemsControl;
 		if (!isFileListFocused)
         {
@@ -295,7 +295,7 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 	protected async virtual void RenameTextBox_LostFocus(object sender, RoutedEventArgs e)
 	{
 		// This check allows the user to use the text box context menu without ending the rename
-		if (!(FocusManager.GetFocusedElement(FolderViewViewModel.MainWindow.Content.XamlRoot) is AppBarButton or Popup))
+		if (!(FocusManager.GetFocusedElement(FolderViewViewModel.XamlRoot) is AppBarButton or Popup))
 		{
 			var textBox = (TextBox)e.OriginalSource;
 			await CommitRenameAsync(textBox);

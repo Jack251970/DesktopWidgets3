@@ -35,7 +35,7 @@ internal sealed class CompressIntoArchiveAction : BaseCompressArchiveAction
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            dialog.XamlRoot = FolderViewViewModel.MainWindow.Content.XamlRoot;
+            dialog.XamlRoot = FolderViewViewModel.XamlRoot;
         }
 
         var result = await dialog.TryShowAsync(FolderViewViewModel);

@@ -58,7 +58,7 @@ public static partial class RecycleBinHelpers
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            ConfirmEmptyBinDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+            ConfirmEmptyBinDialog.XamlRoot = folderViewViewModel.XamlRoot;
         }
 
         var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
@@ -98,7 +98,7 @@ public static partial class RecycleBinHelpers
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            confirmEmptyBinDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+            confirmEmptyBinDialog.XamlRoot = folderViewViewModel.XamlRoot;
         }
 
         var result = await confirmEmptyBinDialog.TryShowAsync(folderViewViewModel);
@@ -119,7 +119,7 @@ public static partial class RecycleBinHelpers
 
 				if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
                 {
-                    errorDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+                    errorDialog.XamlRoot = folderViewViewModel.XamlRoot;
                 }
 
                 await errorDialog.TryShowAsync(folderViewViewModel);
@@ -146,7 +146,7 @@ public static partial class RecycleBinHelpers
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            ConfirmEmptyBinDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+            ConfirmEmptyBinDialog.XamlRoot = folderViewViewModel.XamlRoot;
         }
 
         var result = await ConfirmEmptyBinDialog.TryShowAsync(folderViewViewModel);

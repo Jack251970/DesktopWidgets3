@@ -31,7 +31,7 @@ internal sealed class DialogService : IDialogService
             { typeof(ElevateConfirmDialogViewModel), () => new ElevateConfirmDialog() },
             { typeof(FileSystemDialogViewModel), () => new FilesystemOperationDialog(folderViewViewModel) },
             { typeof(DecompressArchiveDialogViewModel), () => new DecompressArchiveDialog() },
-            /*{ typeof(SettingsDialogViewModel), () => new SettingsDialog(folderViewViewModel) },*/
+            { typeof(SettingsDialogViewModel), () => new SettingsDialog(folderViewViewModel) },
             { typeof(CreateShortcutDialogViewModel), () => new CreateShortcutDialog() },
             { typeof(ReorderSidebarItemsDialogViewModel), () => new ReorderSidebarItemsDialog() },
             { typeof(AddBranchDialogViewModel), () => new AddBranchDialog() },
@@ -60,7 +60,7 @@ internal sealed class DialogService : IDialogService
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            contentDialog.XamlRoot = _folderViewViewModel.MainWindow.Content.XamlRoot;
+            contentDialog.XamlRoot = _folderViewViewModel.XamlRoot;
         }
 
         return dialog;

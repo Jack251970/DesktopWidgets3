@@ -13,7 +13,7 @@ public sealed partial class SettingsDialog : ContentDialog, IDialog<SettingsDial
     public SettingsDialogViewModel ViewModel { get; set; } = null!;
 
 	private FrameworkElement RootAppElement
-		=> (FrameworkElement)FolderViewViewModel.MainWindow.Content;
+		=> (FrameworkElement)FolderViewViewModel.MainWindowContent;
 
 	public SettingsDialog(IFolderViewViewModel folderViewViewModel)
 	{

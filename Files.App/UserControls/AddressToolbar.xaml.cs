@@ -120,7 +120,7 @@ public sealed partial class AddressToolbar : UserControl
     }
 	private void VisiblePath_LostFocus(object _, RoutedEventArgs e)
 	{
-		var element = FocusManager.GetFocusedElement(FolderViewViewModel.MainWindow.Content.XamlRoot);
+		var element = FocusManager.GetFocusedElement(FolderViewViewModel.XamlRoot);
 		if (element is FlyoutBase or AppBarButton or Popup)
         {
             return;

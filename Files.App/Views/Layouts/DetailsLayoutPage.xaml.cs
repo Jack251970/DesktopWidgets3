@@ -369,7 +369,7 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 
         var ctrlPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
 		var shiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
-		var focusedElement = (FrameworkElement)FocusManager.GetFocusedElement(FolderViewViewModel.MainWindow.Content.XamlRoot);
+		var focusedElement = (FrameworkElement)FocusManager.GetFocusedElement(FolderViewViewModel.XamlRoot);
 		var isHeaderFocused = DependencyObjectHelpers.FindParent<DataGridHeader>(focusedElement) is not null;
 		var isFooterFocused = focusedElement is HyperlinkButton;
 

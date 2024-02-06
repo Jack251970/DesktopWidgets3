@@ -87,7 +87,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            promptForReviewDialog.XamlRoot = FolderViewViewModel.MainWindow.Content.XamlRoot;
+            promptForReviewDialog.XamlRoot = FolderViewViewModel.XamlRoot;
         }
 
         var result = await promptForReviewDialog.TryShowAsync(FolderViewViewModel);
@@ -131,7 +131,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	{
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            contentDialog.XamlRoot = FolderViewViewModel.MainWindow.Content.XamlRoot;
+            contentDialog.XamlRoot = FolderViewViewModel.XamlRoot;
         }
 
         return contentDialog;

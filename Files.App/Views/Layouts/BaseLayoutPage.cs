@@ -73,7 +73,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 	// Properties
 
 	protected AddressToolbar? NavToolbar
-		=> FolderViewViewModel.RootFrame?.FindDescendant<AddressToolbar>();
+		=> (FolderViewViewModel.MainWindowContent as Frame)?.FindDescendant<AddressToolbar>();
 
 	public LayoutPreferencesManager? FolderSettings
 		=> ParentShellPageInstance?.InstanceViewModel.FolderSettings;
@@ -837,7 +837,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		{
 			contextMenuFlyout.SetValue(ContextMenuExtensions.ItemsControlProperty, itemsControl);
 
-			var ttv = secondaryMenu.TransformToVisual(FolderViewViewModel.MainWindow.Content);
+			var ttv = secondaryMenu.TransformToVisual(FolderViewViewModel.MainWindowContent);
 			var cMenuPos = ttv.TransformPoint(new Point(0, 0));
 
 			var requiredHeight = contextMenuFlyout.SecondaryCommands.Concat(mainItems).Where(x => x is not AppBarSeparator).Count() * Constants.UI.ContextMenuSecondaryItemsHeight;

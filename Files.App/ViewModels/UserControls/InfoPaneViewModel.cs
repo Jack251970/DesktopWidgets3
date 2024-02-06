@@ -154,7 +154,7 @@ public class InfoPaneViewModel : ObservableObject, IDisposable
                     SelectedItem = null!;
                 }
 
-                var shouldUpdatePreview = ((FolderViewViewModel.MainWindow.Content as Frame)?.Content as MainPage)?.ShouldPreviewPaneBeActive;
+                var shouldUpdatePreview = ((FolderViewViewModel.MainWindowContent as Frame)?.Content as MainPage)?.ShouldPreviewPaneBeActive;
 				if (shouldUpdatePreview == true)
                 {
                     _ = UpdateSelectedItemPreviewAsync();

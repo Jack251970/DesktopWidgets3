@@ -15,6 +15,7 @@ using Files.Core.Data.EventArguments;
 using Files.Core.Data.Enums;
 using Files.Core.Services.DateTimeFormatter;
 using Files.Core.Services.SizeProvider;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
@@ -52,7 +53,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     Page IFolderViewViewModel.Page => WidgetPage;
 
-    Frame IFolderViewViewModel.RootFrame => (Frame)WidgetPage.Content;
+    UIElement IFolderViewViewModel.MainWindowContent => WidgetPage.Content;
+
+    XamlRoot IFolderViewViewModel.XamlRoot => WidgetPage.Content.XamlRoot;
 
     TaskCompletionSource? IFolderViewViewModel.SplashScreenLoadingTCS => App.SplashScreenLoadingTCS;
 

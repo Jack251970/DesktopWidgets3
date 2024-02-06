@@ -39,6 +39,6 @@ internal class ToggleSelectAction : IAction
 
 	private static SelectorItem? GetFocusedElement(IFolderViewViewModel folderViewViewModel)
 	{
-		return FocusManager.GetFocusedElement(folderViewViewModel.MainWindow.Content.XamlRoot) as SelectorItem;
+		return FocusManager.GetFocusedElement(folderViewViewModel.XamlRoot) as SelectorItem;
 	}
 }

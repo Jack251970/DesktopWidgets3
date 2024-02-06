@@ -32,7 +32,7 @@ public sealed partial class FileTooLargeDialog : ContentDialog, IDialog<FileTooL
 	{
 		if (Windows.Foundation.Metadata.ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            contentDialog.XamlRoot = FolderViewViewModel.MainWindow.Content.XamlRoot;
+            contentDialog.XamlRoot = FolderViewViewModel.XamlRoot;
         }
 
         return contentDialog;

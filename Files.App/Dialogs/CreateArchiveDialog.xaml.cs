@@ -72,7 +72,7 @@ public sealed partial class CreateArchiveDialog : ContentDialog
 	{
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            contentDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot; // WinUi3
+            contentDialog.XamlRoot = folderViewViewModel.XamlRoot; // WinUi3
         }
 
         return contentDialog;

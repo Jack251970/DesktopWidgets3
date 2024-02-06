@@ -802,7 +802,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 				if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
                 {
-                    dialog.XamlRoot = FolderViewViewModel.MainWindow.Content.XamlRoot;
+                    dialog.XamlRoot = FolderViewViewModel.XamlRoot;
                 }
 
                 await dialog.ShowAsync();
@@ -822,9 +822,9 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 	protected void SetLoadingIndicatorForTabs(bool isLoading)
 	{
         // TODO: Set loading indicator here.
-		var multitaskingControls = (FolderViewViewModel.RootFrame.Content as MainPage)!.ViewModel.MultitaskingControls;
+		var multitaskingControls = ((FolderViewViewModel.MainWindowContent as Frame)!.Content as MainPage)!.ViewModel.MultitaskingControls;
 
-		foreach (var x in multitaskingControls)
+		foreach (var x in multitaskingControls!)
         {
             x.SetLoadingIndicatorStatus(x.Items.FirstOrDefault(x => x.TabItemContent == PaneHolder)!, isLoading);
         }

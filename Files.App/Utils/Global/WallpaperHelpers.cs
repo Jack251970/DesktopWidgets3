@@ -72,7 +72,7 @@ public static class WallpaperHelpers
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            errorDialog.XamlRoot = folderViewViewModel.MainWindow.Content.XamlRoot;
+            errorDialog.XamlRoot = folderViewViewModel.XamlRoot;
         }
 
         await errorDialog.TryShowAsync(folderViewViewModel);

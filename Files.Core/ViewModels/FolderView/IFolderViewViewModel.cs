@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using WinUIEx;
 
 namespace Files.Core.ViewModels.FolderView;
@@ -10,8 +11,10 @@ public partial interface IFolderViewViewModel
     IntPtr WindowHandle { get; }
 
     Page Page { get; }
-    
-    Frame RootFrame { get; }
+
+    UIElement MainWindowContent { get; }
+
+    XamlRoot XamlRoot { get; }
     
     TaskCompletionSource? SplashScreenLoadingTCS { get; }
 
