@@ -160,19 +160,19 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand NavigateForward { get; }
 	IRichCommand NavigateUp { get; }
 
-    /*IRichCommand NewTab { get; }
-    IRichCommand DuplicateCurrentTab { get; }
+    IRichCommand NewTab { get; }
+    /*IRichCommand DuplicateCurrentTab { get; }
 	IRichCommand DuplicateSelectedTab { get; }
 	IRichCommand CloseTabsToTheLeftCurrent { get; }
 	IRichCommand CloseTabsToTheLeftSelected { get; }
 	IRichCommand CloseTabsToTheRightCurrent { get; }
 	IRichCommand CloseTabsToTheRightSelected { get; }
 	IRichCommand CloseOtherTabsCurrent { get; }
-	IRichCommand CloseOtherTabsSelected { get; }
-	IRichCommand OpenDirectoryInNewPaneAction { get; }
+	IRichCommand CloseOtherTabsSelected { get; }*/
+    IRichCommand OpenDirectoryInNewPaneAction { get; }
 	IRichCommand OpenDirectoryInNewTabAction { get; }
 	IRichCommand OpenInNewWindowItemAction { get; }
-	IRichCommand ReopenClosedTab { get; }
+	/*IRichCommand ReopenClosedTab { get; }
 	IRichCommand PreviousTab { get; }
 	IRichCommand NextTab { get; }
 	IRichCommand CloseSelectedTab { get; }*/

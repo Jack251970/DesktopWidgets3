@@ -56,11 +56,7 @@ internal class ContentPageContext : ObservableObject, IContentPageContext
 
 	public ContentPageContext()
 	{
-        /*context.Changing += Context_Changing;
-		context.Changed += Context_Changed;
-		GitHelpers.IsExecutingGitActionChanged += GitHelpers_IsExecutingGitActionChanged;
 
-		Update();*/
     }
 
     public void Initialize(IPageContext context)

@@ -133,9 +133,7 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
 
 	public DisplayPageContext()
 	{
-		/*context.Changing += Context_Changing;
-		context.Changed += Context_Changed;
-		settings.PropertyChanged += Settings_PropertyChanged;*/
+		
 	}
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)

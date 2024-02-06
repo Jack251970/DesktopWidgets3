@@ -12,7 +12,7 @@ internal class WindowContext : ObservableObject, IWindowContext
 
 	public WindowContext()
 	{
-		/*MainWindow.Instance.PresenterChanged += Window_PresenterChanged;*/
+		
 	}
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
