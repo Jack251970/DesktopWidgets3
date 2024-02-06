@@ -1,6 +1,7 @@
 // Copyright(c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Core.Helpers;
 using Files.App.Converters;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
@@ -17,7 +18,7 @@ namespace Files.App.ViewModels.Properties;
 /// </summary>
 public class FileProperty : ObservableObject
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
 	/// <summary>
 	/// The name to display
@@ -122,9 +123,19 @@ public class FileProperty : ObservableObject
 	/// </summary>
 	public Dictionary<int, string> EnumeratedList { get; set; }
 
-	public FileProperty(IFolderViewViewModel folderViewViewModel)
+    public FileProperty()
+    {
+
+    }
+
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
+    {
+        FolderViewViewModel ??= folderViewViewModel;
+    }
+
+    public FileProperty(IFolderViewViewModel folderViewViewModel)
 	{
-        FolderViewViewModel = folderViewViewModel;
+        Initialize(folderViewViewModel);
 	}
 
 	public FileProperty(IFolderViewViewModel folderViewViewModel, string nameResource, string sectionResource) 
@@ -284,26 +295,26 @@ public class FileProperty : ObservableObject
 
 	private static readonly Dictionary<string, string> cachedPropertiesListFiles = new();
 
-	/// <summary>
-	/// This function retrieves the list of properties to display from the PropertiesInformation.json
-	/// file, then initializes them.
-	/// If you would like to add more properties, define them in the PropertiesInformation file, then
-	/// add the string resources to Strings/en-Us/Resources.resw file
-	/// A full list of file properties and their information can be found here
-	/// <a href="https://learn.microsoft.com/windows/win32/properties/props"/>.
-	/// </summary>
-	/// <param name="file">The file whose properties you wish to obtain</param>
-	/// <param name="path">The path to the json file of properties to be loaded</param>
-	/// <returns>A list if FileProperties containing their values</returns>
-	public static async Task<List<FileProperty>> RetrieveAndInitializePropertiesAsync(BaseStorageFile file, string path = Constants.ResourceFilePaths.DetailsPagePropertiesJsonPath)
+    /// <summary>
+    /// This function retrieves the list of properties to display from the PropertiesInformation.json
+    /// file, then initializes them.
+    /// If you would like to add more properties, define them in the PropertiesInformation file, then
+    /// add the string resources to Strings/en-Us/Resources.resw file
+    /// A full list of file properties and their information can be found here
+    /// <a href="https://learn.microsoft.com/windows/win32/properties/props"/>.
+    /// </summary>
+    /// <param name="file">The file whose properties you wish to obtain</param>
+    /// <param name="uriPath">The uri path to the json file of properties to be loaded</param>
+    /// <returns>A list if FileProperties containing their values</returns>
+    public static async Task<List<FileProperty>> RetrieveAndInitializePropertiesAsync(IFolderViewViewModel folderViewViewModel, BaseStorageFile file, string uriPath = Constants.ResourceFilePaths.DetailsPagePropertiesJsonUriPath)
 	{
-		// cache the contents of the file to avoid repeatedly reading the file
+        // cache the contents of the file to avoid repeatedly reading the file
 		string text;
-		if (!cachedPropertiesListFiles.TryGetValue(path, out text!))
+		if (!cachedPropertiesListFiles.TryGetValue(uriPath, out text!))
 		{
-			var propertiesJsonFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(path));
+			var propertiesJsonFile = await StorageHelper.GetStorageFile(uriPath);
 			text = await FileIO.ReadTextAsync(propertiesJsonFile);
-			cachedPropertiesListFiles[path] = text;
+			cachedPropertiesListFiles[uriPath] = text;
 		}
 
 		var list = JsonSerializer.Deserialize<List<FileProperty>>(text);
@@ -354,6 +365,12 @@ public class FileProperty : ObservableObject
 
 			prop.InitializeProperty();
 		}
+
+        // CHANGE: Initialize folder view view model.
+        foreach (var prop in list)
+        {
+            prop.Initialize(folderViewViewModel);
+        }
 
 		return list;
 	}

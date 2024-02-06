@@ -194,12 +194,12 @@ public static class Constants
 		/// <summary>
 		/// The path to the json file containing a list of file properties to be loaded in the properties window details page.
 		/// </summary>
-		public const string DetailsPagePropertiesJsonPath = @"ms-appx:///Files.App/Resources/PropertiesInformation.json";
-
+		public const string DetailsPagePropertiesJsonUriPath = @"ms-appx:///Resources/PropertiesInformation.json";
+        
 		/// <summary>
 		/// The path to the json file containing a list of file properties to be loaded in the preview pane.
 		/// </summary>
-		public const string PreviewPaneDetailsPropertiesJsonPath = @"ms-appx:///Files.App/Resources/PreviewPanePropertiesInformation.json";
+		public const string PreviewPaneDetailsPropertiesJsonUriPath = @"ms-appx:///Resources/PreviewPanePropertiesInformation.json";
 	}
 
 	public static class Filesystem

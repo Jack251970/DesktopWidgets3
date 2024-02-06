@@ -124,8 +124,10 @@ public abstract class BasePreviewModel : ObservableObject
             return null!;
         }
 
-        var list = await FileProperty.RetrieveAndInitializePropertiesAsync(Item.ItemFile,
-			Constants.ResourceFilePaths.PreviewPaneDetailsPropertiesJsonPath);
+        var list = await FileProperty.RetrieveAndInitializePropertiesAsync(
+            FolderViewViewModel,
+            Item.ItemFile,
+			Constants.ResourceFilePaths.PreviewPaneDetailsPropertiesJsonUriPath);
 
 		list.Find(x => x.ID is "address")!.Value = await LocationHelpers.GetAddressFromCoordinatesAsync(
             (double?)list.Find(x => x.Property is "System.GPS.LatitudeDecimal")!.Value,
