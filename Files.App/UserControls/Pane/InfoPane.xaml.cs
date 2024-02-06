@@ -20,11 +20,26 @@ public sealed partial class InfoPane : UserControl
 
 	private IInfoPaneSettingsService PaneSettingsService { get; set; } = null!;
 
-	private ICommandManager Commands { get; set; } = null!;
+    // CHANGE: Use dependency properties instead of fields.
+    // Using a DependencyProperty as the backing store for Commands.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty CommandsProperty =
+        DependencyProperty.Register(nameof(Commands), typeof(ICommandManager), typeof(InfoPane), new PropertyMetadata(null));
+    public ICommandManager? Commands
+    {
+        get => (ICommandManager)GetValue(CommandsProperty);
+        set => SetValue(CommandsProperty, value);
+    }
 
-    public InfoPaneViewModel ViewModel { get; private set; } = null!;
+    // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty ViewModelProperty =
+        DependencyProperty.Register(nameof(ViewModel), typeof(InfoPaneViewModel), typeof(InfoPane), new PropertyMetadata(null));
+    public InfoPaneViewModel? ViewModel
+    {
+        get => (InfoPaneViewModel)GetValue(ViewModelProperty);
+        set => SetValue(ViewModelProperty, value);
+    }
 
-	private ObservableContext Context { get; } = new();
+    private ObservableContext Context { get; } = new();
 
 	public InfoPane()
 	{
@@ -37,8 +52,8 @@ public sealed partial class InfoPane : UserControl
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         PaneSettingsService = folderViewViewModel.GetService<IInfoPaneSettingsService>();
-        Commands = DependencyExtensions.GetService<ICommandManager>();
-        ViewModel = DependencyExtensions.GetService<InfoPaneViewModel>();
+        Commands = folderViewViewModel.GetService<ICommandManager>();
+        ViewModel = folderViewViewModel.GetService<InfoPaneViewModel>();
     }
 
 	public void UpdatePosition(double panelWidth, double panelHeight)
@@ -56,8 +71,6 @@ public sealed partial class InfoPane : UserControl
 			VisualStateManager.GoToState(this, "Horizontal", true);
 		}
 	}
-
-	private string GetLocalizedResource(string resName) => resName.GetLocalizedResource();
 
 	private void Root_Unloaded(object sender, RoutedEventArgs e)
 	{
