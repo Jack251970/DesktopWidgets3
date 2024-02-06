@@ -156,4 +156,16 @@ public class InfoHelper
             return (attributes.Length == 0) ? "" : ((AssemblyCultureAttribute)attributes[0]).Culture;
         }
     }
+
+    public static string GetInstalledLocation()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return Package.Current.InstalledLocation.Path;
+        }
+        else
+        {
+            return AppContext.BaseDirectory; //Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        }
+    }
 }

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using System.Drawing;
 
 namespace Files.App.Services;
@@ -48,6 +48,7 @@ public class ResourcesService : IResourcesService
 		var listItemHeight = useCompactSpacing ? 28 : 36;
 		var listItemMargin = useCompactSpacing ? "-2" : "0";
 
+        // TODO: Add support for different widgets.
 		Application.Current.Resources["ListItemHeight"] = listItemHeight;
 		Application.Current.Resources["ListItemMargin"] = listItemMargin;
 	}
@@ -55,6 +56,8 @@ public class ResourcesService : IResourcesService
 	/// <inheritdoc/>
 	public void ApplyResources()
 	{
-		ThemeHelper.ApplyResources();
+        // CHNAGE: Don't apply resources.
+		/*ThemeHelper.ApplyResources();*/
 	}
-}*/
+}
+

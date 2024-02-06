@@ -52,7 +52,7 @@ public sealed partial class MainWindow
 		MinWidth = 516;
 
 		AppWindow.Title = "Files";
-		AppWindow.SetIcon(Path.Combine(Package.Current.InstalledLocation.Path, ApplicationService.AppIcoPath));
+		AppWindow.SetIcon(Path.Combine(InfoHelper.GetInstalledLocation(), ApplicationService.AppIcoPath));
 		AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 		AppWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
 		AppWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;

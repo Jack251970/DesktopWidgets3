@@ -6,7 +6,7 @@ using Files.App.Services.DateTimeFormatter;
 using Files.App.Services.Settings;
 using Files.App.Storage.FtpStorage;
 using Files.App.Storage.NativeStorage;
-/*using Files.App.ViewModels.Settings;*/
+using Files.App.ViewModels.Settings;
 using Files.Core.Services.SizeProvider;
 using Files.Core.Storage;
 using Microsoft.Extensions.DependencyInjection;
@@ -170,7 +170,7 @@ public static class AppLifecycleHelper
                 .AddSingleton<IVolumeInfoFactory, VolumeInfoFactory>()
                 .AddTransient<ISizeProvider, UserSizeProvider>()
                 .AddSingleton<IQuickAccessService, QuickAccessService>()
-                /*.AddSingleton<IResourcesService, ResourcesService>()*/
+                .AddSingleton<IResourcesService, ResourcesService>()
                 .AddSingleton<IJumpListService, JumpListService>()
                 .AddSingleton<IRemovableDrivesService, RemovableDrivesService>()
                 .AddSingleton<INetworkDrivesService, NetworkDrivesService>()
@@ -183,8 +183,8 @@ public static class AppLifecycleHelper
                 .AddSingleton<DrivesViewModel>()
                 .AddSingleton<NetworkDrivesViewModel>()
                 .AddTransient<StatusCenterViewModel>()
-                /*.AddSingleton<AppearanceViewModel>()
-                .AddTransient<HomeViewModel>()*/
+                .AddSingleton<AppearanceViewModel>()
+                /*.AddTransient<HomeViewModel>()*/
                 // Utilities
                 .AddSingleton<QuickAccessManager>()
                 .AddSingleton<StorageHistoryWrapper>()

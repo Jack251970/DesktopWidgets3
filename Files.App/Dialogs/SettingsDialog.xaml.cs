@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.Views.Settings;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -47,17 +48,17 @@ public sealed partial class SettingsDialog : ContentDialog, IDialog<SettingsDial
 		var selectedItem = (NavigationViewItem)args.SelectedItem;
 		var selectedItemTag = Convert.ToInt32(selectedItem.Tag);
 
-		/*_ = selectedItemTag switch
+		_ = selectedItemTag switch
 		{
-			0 => SettingsContentFrame.Navigate(typeof(GeneralPage)),
-			1 => SettingsContentFrame.Navigate(typeof(AppearancePage)),
-			2 => SettingsContentFrame.Navigate(typeof(FoldersPage)),
-			3 => SettingsContentFrame.Navigate(typeof(TagsPage)),
-			4 => SettingsContentFrame.Navigate(typeof(GitPage)),
-			5 => SettingsContentFrame.Navigate(typeof(AdvancedPage)),
-			6 => SettingsContentFrame.Navigate(typeof(AboutPage)),
-			_ => SettingsContentFrame.Navigate(typeof(AppearancePage))
-		};*/
+			0 => SettingsContentFrame.Navigate(typeof(GeneralPage), FolderViewViewModel),
+			1 => SettingsContentFrame.Navigate(typeof(AppearancePage), FolderViewViewModel),
+			2 => SettingsContentFrame.Navigate(typeof(FoldersPage), FolderViewViewModel),
+			3 => SettingsContentFrame.Navigate(typeof(TagsPage), FolderViewViewModel),
+			4 => SettingsContentFrame.Navigate(typeof(GitPage), FolderViewViewModel),
+			5 => SettingsContentFrame.Navigate(typeof(AdvancedPage), FolderViewViewModel),
+			6 => SettingsContentFrame.Navigate(typeof(AboutPage), FolderViewViewModel),
+			_ => SettingsContentFrame.Navigate(typeof(AppearancePage), FolderViewViewModel)
+		};
 	}
 
 	private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
