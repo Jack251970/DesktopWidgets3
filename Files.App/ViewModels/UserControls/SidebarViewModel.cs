@@ -455,7 +455,7 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 		}
 
         // TODO: Add support.
-		/*section.IsExpanded = FolderViewViewModel.GetService<SettingsViewModel>().Get(section.Text == "SidebarFavorites".GetLocalizedResource(), $"section:{section.Text.Replace('\\', '_')}");*/
+        /*section.IsExpanded = FolderViewViewModel.GetService<SettingsViewModel>().Get(section.Text == "SidebarFavorites".GetLocalizedResource(), $"section:{section.Text.Replace('\\', '_')}");*/
         section.IsExpanded = section.Text == "SidebarFavorites".GetLocalizedResource();
         section.PropertyChanged += Section_PropertyChanged;
 	}

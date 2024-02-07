@@ -274,7 +274,7 @@ public class InfoPaneViewModel : ObservableObject, IDisposable
 			var model = new MediaPreviewViewModel(item);
 			await model.LoadAsync();
 
-			return new MediaPreview(model);
+			return new MediaPreview(FolderViewViewModel, model);
 		}
 
 		if (MarkdownPreviewViewModel.ContainsExtension(ext))

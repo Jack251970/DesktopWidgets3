@@ -10,10 +10,12 @@ namespace Files.App.UserControls.FilePreviews;
 
 public sealed partial class MediaPreview : UserControl
 {
-    /*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
+    private IUserSettingsService UserSettingsService { get; }
 
-    public MediaPreview(MediaPreviewViewModel model)
+    public MediaPreview(IFolderViewViewModel folderViewViewModel, MediaPreviewViewModel model)
 	{
+        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+
 		ViewModel = model;
 		InitializeComponent();
 		PlayerContext.Loaded += PlayerContext_Loaded;
@@ -23,18 +25,17 @@ public sealed partial class MediaPreview : UserControl
 
 	private void PlayerContext_Loaded(object sender, RoutedEventArgs e)
 	{
-        PlayerContext.MediaPlayer.Volume = 12.0;//UserSettingsService.InfoPaneSettingsService.MediaVolume;
+        PlayerContext.MediaPlayer.Volume = UserSettingsService.InfoPaneSettingsService.MediaVolume;
 		PlayerContext.MediaPlayer.VolumeChanged += MediaPlayer_VolumeChanged;
 		ViewModel.TogglePlaybackRequested += TogglePlaybackRequestInvoked;
 	}
 
 	private void MediaPlayer_VolumeChanged(MediaPlayer sender, object args)
 	{
-        // TODO: Add support.
-		/*if (sender.Volume != UserSettingsService.InfoPaneSettingsService.MediaVolume)
+		if (sender.Volume != UserSettingsService.InfoPaneSettingsService.MediaVolume)
 		{
 			UserSettingsService.InfoPaneSettingsService.MediaVolume = sender.Volume;
-		}*/
+		}
 	}
 
 	private void TogglePlaybackRequestInvoked(object? sender, EventArgs e)

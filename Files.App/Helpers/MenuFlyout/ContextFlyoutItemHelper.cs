@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
 using Windows.Storage;
-using Files.App.Services.Settings;
 
 namespace Files.App.Helpers;
 
@@ -397,11 +396,10 @@ public static class ContextFlyoutItemHelper
 				ShowItem = itemsSelected && showOpenItemWith
 			},
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenFileLocation).Build(),
-            // TODO: Add support.
-			/*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
+            /*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenInNewWindowItemAction).Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewPaneAction).Build(),
-			new ContextMenuFlyoutItemViewModel()
+			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewPaneAction).Build(),*/
+			new()
 			{
 				Text = "BaseLayoutItemContextFlyoutSetAs/Text".GetLocalizedResource(),
 				ShowItem = itemsSelected && (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false),
@@ -412,7 +410,7 @@ public static class ContextFlyoutItemHelper
 					new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsLockscreenBackground).Build(),
 					new ContextMenuFlyoutItemViewModelBuilder(commands.SetAsSlideshowBackground).Build(),
 				}
-			},*/
+			},
 			new ContextMenuFlyoutItemViewModelBuilder(commands.RotateLeft)
 			{
 				IsVisible = !currentInstanceViewModel.IsPageTypeRecycleBin
