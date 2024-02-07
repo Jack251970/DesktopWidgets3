@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.ViewModels.Widgets;
 using System.Collections.Immutable;
 
 namespace Files.App.Data.Contexts;
@@ -28,7 +29,7 @@ internal sealed class TagsContext : ITagsContext
 
 	public TagsContext()
 	{
-		/*FileTagsContainerViewModel.SelectedTagChanged += SelectedTagsChanged;*/
+		FileTagsContainerViewModel.SelectedTagChanged += SelectedTagsChanged;
 		SidebarViewModel.SelectedTagChanged += SelectedTagsChanged;
 	}
 

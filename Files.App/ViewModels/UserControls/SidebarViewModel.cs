@@ -48,8 +48,8 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 	private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
 	private INavigationControlItem rightClickedItem = null!;
 
-	public object SidebarItems => sidebarItems;
-	public BulkConcurrentObservableCollection<INavigationControlItem> sidebarItems { get; init; }
+	public object SidebarItems => _SidebarItems;
+	public BulkConcurrentObservableCollection<INavigationControlItem> _SidebarItems { get; init; }
 	public static SidebarPinnedModel SidebarPinnedModel => App.QuickAccessManager.Model;
 	public IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetService<IQuickAccessService>();
 
@@ -106,14 +106,14 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 		var value = arg;
 
 		INavigationControlItem? item = null;
-		var filteredItems = sidebarItems
+		var filteredItems = _SidebarItems
 			.Where(x => !string.IsNullOrWhiteSpace(x.Path))
-			.Concat(sidebarItems.Where(x => x is LocationItem { ChildItems: not null }).SelectMany(x => ((LocationItem)x).ChildItems!).Where(x => !string.IsNullOrWhiteSpace(x.Path)))
+			.Concat(_SidebarItems.Where(x => x is LocationItem { ChildItems: not null }).SelectMany(x => ((LocationItem)x).ChildItems!).Where(x => !string.IsNullOrWhiteSpace(x.Path)))
 			.ToList();
 
 		if (string.IsNullOrEmpty(value))
 		{
-			//SidebarSelectedItem = sidebarItems.FirstOrDefault(x => x.Path.Equals("Home"));
+			//SidebarSelectedItem = _SidebarItems.FirstOrDefault(x => x.Path.Equals("Home"));
 			return;
 		}
 
@@ -259,7 +259,7 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 	{
 		dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
-		sidebarItems = new BulkConcurrentObservableCollection<INavigationControlItem>();
+		_SidebarItems = new BulkConcurrentObservableCollection<INavigationControlItem>();
 		/*UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
 		CreateItemHomeAsync();
 
@@ -477,7 +477,7 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 
 	private LocationItem? GetSection(SectionType sectionType)
 	{
-		return sidebarItems.FirstOrDefault(x => x.Section == sectionType) as LocationItem;
+		return _SidebarItems.FirstOrDefault(x => x.Section == sectionType) as LocationItem;
 	}
 
 	private async Task<LocationItem> CreateSectionAsync(SectionType sectionType)
@@ -623,8 +623,8 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 
 	private void AddSectionToSideBar(LocationItem section)
 	{
-		var index = SectionOrder.TakeWhile(x => x != section.Section).Select(x => sidebarItems.Any(item => item.Section == x) ? 1 : 0).Sum();
-		sidebarItems.Insert(Math.Min(index, sidebarItems.Count), section);
+		var index = SectionOrder.TakeWhile(x => x != section.Section).Select(x => _SidebarItems.Any(item => item.Section == x) ? 1 : 0).Sum();
+		_SidebarItems.Insert(Math.Min(index, _SidebarItems.Count), section);
 	}
 
 	public async Task UpdateSectionVisibilityAsync(SectionType sectionType, bool show)
@@ -651,7 +651,7 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 		}
 		else
 		{
-			sidebarItems.Remove(sidebarItems.FirstOrDefault(x => x.Section == sectionType));
+			_SidebarItems.Remove(_SidebarItems.FirstOrDefault(x => x.Section == sectionType));
 		}
 	}
 
@@ -818,8 +818,7 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 					if (ItemPath != null && ItemPath.Equals("Home", StringComparison.OrdinalIgnoreCase))
 					{
 						navigationPath = "Home";
-                        // TODO: Add support.
-						/*sourcePageType = typeof(HomePage);*/
+						sourcePageType = typeof(HomePage);
 					}
 					else
 					{

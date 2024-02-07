@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.UserControls.Widgets;
 using System.IO;
 
 namespace Files.App.Utils;
@@ -11,7 +12,7 @@ public sealed class QuickAccessManager
 
 	public event FileSystemEventHandler? PinnedItemsModified;
 		
-	/*public EventHandler<ModifyQuickAccessEventArgs>? UpdateQuickAccessWidget;*/
+	public EventHandler<ModifyQuickAccessEventArgs>? UpdateQuickAccessWidget;
 
 	public IQuickAccessService QuickAccessService;
 

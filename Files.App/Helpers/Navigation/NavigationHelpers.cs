@@ -537,11 +537,11 @@ public static class NavigationHelpers
 			opened = await associatedInstance.FilesystemViewModel.GetFolderWithPathFromPathAsync(path)
 				.OnSuccess((childFolder) =>
 				{
-					/*// Add location to Recent Items List
+                    // Add location to Recent Items List
 					if (childFolder.Item is SystemStorageFolder)
                     {
                         App.RecentItemsManager.AddToRecentItems(childFolder.Path);
-                    }*/
+                    }
                 });
 			if (!opened)
             {
@@ -576,12 +576,12 @@ public static class NavigationHelpers
 			{
 				if (!FileExtensionHelpers.IsWebLinkFile(path))
 				{
-					/*StorageFileWithPath childFile = await associatedInstance.FilesystemViewModel.GetFileWithPathFromPathAsync(shortcutInfo.TargetPath);
+					StorageFileWithPath childFile = await associatedInstance.FilesystemViewModel.GetFileWithPathFromPathAsync(shortcutInfo.TargetPath);
 					// Add location to Recent Items List
 					if (childFile?.Item is SystemStorageFile)
                     {
                         App.RecentItemsManager.AddToRecentItems(childFile.Path);
-                    }*/
+                    }
                 }
 				await Win32Helpers.InvokeWin32ComponentAsync(shortcutInfo.TargetPath, associatedInstance, $"{args} {shortcutInfo.Arguments}", shortcutInfo.RunAsAdmin, shortcutInfo.WorkingDirectory);
 			}
@@ -596,11 +596,11 @@ public static class NavigationHelpers
 			opened = await associatedInstance.FilesystemViewModel.GetFileWithPathFromPathAsync(path)
 				.OnSuccess(async childFile =>
 				{
-					/*// Add location to Recent Items List
+					// Add location to Recent Items List
 					if (childFile.Item is SystemStorageFile)
                     {
                         App.RecentItemsManager.AddToRecentItems(childFile.Path);
-                    }*/
+                    }
 
                     if (openViaApplicationPicker)
 					{

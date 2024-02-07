@@ -1,6 +1,8 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.UserControls.Widgets;
+
 namespace Files.App.Actions;
 
 internal class UnpinItemAction : ObservableObject, IAction
@@ -27,7 +29,7 @@ internal class UnpinItemAction : ObservableObject, IAction
         service = folderViewViewModel.GetService<IQuickAccessService>();
 
         context.PropertyChanged += Context_PropertyChanged;
-		/*App.QuickAccessManager.UpdateQuickAccessWidget += QuickAccessManager_DataChanged;*/
+		App.QuickAccessManager.UpdateQuickAccessWidget += QuickAccessManager_DataChanged;
 	}
 
 	public async Task ExecuteAsync()
@@ -68,8 +70,8 @@ internal class UnpinItemAction : ObservableObject, IAction
 		}
 	}
 
-	/*private void QuickAccessManager_DataChanged(object? sender, ModifyQuickAccessEventArgs e)
+	private void QuickAccessManager_DataChanged(object? sender, ModifyQuickAccessEventArgs e)
 	{
 		OnPropertyChanged(nameof(IsExecutable));
-	}*/
+	}
 }

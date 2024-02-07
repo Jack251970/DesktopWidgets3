@@ -179,17 +179,17 @@ public static class AppLifecycleHelper
                 .AddTransient<MainPageViewModel>()
                 .AddTransient<InfoPaneViewModel>()
                 .AddTransient<SidebarViewModel>()
-                /*.AddSingleton<SettingsViewModel>()*/
+                /*.AddSingleton<SettingsViewModel>() // deprecated service*/
                 .AddSingleton<DrivesViewModel>()
                 .AddSingleton<NetworkDrivesViewModel>()
                 .AddTransient<StatusCenterViewModel>()
                 .AddSingleton<AppearanceViewModel>()
-                /*.AddTransient<HomeViewModel>()*/
+                .AddTransient<HomeViewModel>()
                 // Utilities
                 .AddSingleton<QuickAccessManager>()
                 .AddSingleton<StorageHistoryWrapper>()
                 .AddSingleton<FileTagsManager>()
-                /*.AddSingleton<RecentItems>()*/
+                .AddSingleton<RecentItems>()
                 .AddSingleton<LibraryManager>()
                 .AddSingleton<AppModel>()
             );

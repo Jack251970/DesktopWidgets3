@@ -30,7 +30,7 @@ public partial class App
     public static QuickAccessManager QuickAccessManager { get; private set; } = null!;
 	public static StorageHistoryWrapper HistoryWrapper { get; private set; } = null!;
 	public static FileTagsManager FileTagsManager { get; private set; } = null!;
-	/*public static RecentItems RecentItemsManager { get; private set; } = null!;*/
+	public static RecentItems RecentItemsManager { get; private set; } = null!;
 	public static LibraryManager LibraryManager { get; private set; } = null!;
 	public static AppModel AppModel { get; private set; } = null!;
 	public static ILogger Logger { get; private set; } = null!;
@@ -72,7 +72,7 @@ public partial class App
         QuickAccessManager = DependencyExtensions.GetService<QuickAccessManager>();
         HistoryWrapper = DependencyExtensions.GetService<StorageHistoryWrapper>();
         FileTagsManager = DependencyExtensions.GetService<FileTagsManager>();
-        /*RecentItemsManager = DependencyExtensions.GetService<RecentItems>();*/
+        RecentItemsManager = DependencyExtensions.GetService<RecentItems>();
         LibraryManager = DependencyExtensions.GetService<LibraryManager>();
         Logger = DependencyExtensions.GetService<ILogger<App>>();
         AppModel = DependencyExtensions.GetService<AppModel>();

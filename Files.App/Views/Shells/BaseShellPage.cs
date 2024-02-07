@@ -614,7 +614,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 			await FilesystemViewModel.SearchAsync(FolderViewViewModel, searchInstance);
         }
-        else /*if (CurrentPageType != typeof(HomePage))*/ // TODO: Add support.
+        else if (CurrentPageType != typeof(HomePage))
         {
 			ToolbarViewModel.CanRefresh = false;
 			FilesystemViewModel?.RefreshItems(null);
@@ -626,16 +626,14 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		var previousPageContent = ItemDisplay.BackStack[ItemDisplay.BackStack.Count - 1];
 		HandleBackForwardRequest(previousPageContent);
 
-        // TODO: Add support.
-        /*if (previousPageContent.SourcePageType == typeof(HomePage))
+        if (previousPageContent.SourcePageType == typeof(HomePage))
         {
             ItemDisplay.GoBack(new EntranceNavigationTransitionInfo());
         }
         else
         {
             ItemDisplay.GoBack();
-        }*/
-        ItemDisplay.GoBack();
+        }
     }
 
 	public virtual void Forward_Click()
@@ -812,11 +810,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected void SelectSidebarItemFromPath(Type incomingSourcePageType = null!)
 	{
-        // TODO: Add support.
-		/*if (incomingSourcePageType == typeof(HomePage) && incomingSourcePageType is not null)
+		if (incomingSourcePageType == typeof(HomePage) && incomingSourcePageType is not null)
         {
             ToolbarViewModel.PathControlDisplayText = "Home".GetLocalizedResource();
-        }*/
+        }
     }
 
 	protected void SetLoadingIndicatorForTabs(bool isLoading)
@@ -850,11 +847,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         }
 
         // Update layout type
-        // TODO: Add support.
-        /*if (pageContent.SourcePageType != typeof(HomePage))
+        if (pageContent.SourcePageType != typeof(HomePage))
         {
             InstanceViewModel.FolderSettings.GetLayoutType((incomingPageNavPath!.IsSearchResultPage ? incomingPageNavPath.SearchPathParam : incomingPageNavPath.NavPathParam)!);
-        }*/
+        }
 
         SelectSidebarItemFromPath(pageContent.SourcePageType);
 	}

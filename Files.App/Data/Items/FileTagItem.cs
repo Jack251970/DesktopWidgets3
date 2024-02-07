@@ -11,9 +11,9 @@ namespace Files.App.Data.Items;
 
 public class FileTagItem : ObservableObject, INavigationControlItem
 {
-	public string Text { get; set; }
+	public string Text { get; set; } = null!;
 
-	private string path;
+    private string path = null!;
 	public string Path
 	{
 		get => path;
@@ -25,19 +25,19 @@ public class FileTagItem : ObservableObject, INavigationControlItem
 		}
 	}
 
-	public string ToolTipText { get; private set; }
+	public string ToolTipText { get; private set; } = null!;
 
-	public SectionType Section { get; set; }
+    public SectionType Section { get; set; }
 
-	public ContextMenuOptions MenuOptions { get; set; }
+	public ContextMenuOptions MenuOptions { get; set; } = null!;
 
-	public NavigationControlItemType ItemType
+    public NavigationControlItemType ItemType
 		=> NavigationControlItemType.FileTag;
 
 	public int CompareTo(INavigationControlItem? other)
 		=> Text.CompareTo(other?.Text);
 
-	public TagViewModel FileTag { get; set; }
+    public TagViewModel FileTag { get; set; } = null!;
 
 	public object? Children => null;
 

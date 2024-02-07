@@ -1,9 +1,13 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.UserControls.Widgets;
+
 namespace Files.App.Services;
 
 #pragma warning disable IL2026 // Unrecognized escape sequence in cref attribute
+#pragma warning disable IL2072 // Unrecognized escape sequence in cref attribute
+#pragma warning disable IL2075 // Unrecognized escape sequence in cref attribute
 
 public class QuickAccessService : IQuickAccessService
 {
@@ -28,10 +32,10 @@ public class QuickAccessService : IQuickAccessService
         }
 
         await App.QuickAccessManager.Model.LoadAsync();
-		/*if (doUpdateQuickAccessWidget)
+		if (doUpdateQuickAccessWidget)
         {
             App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(folderPaths, true));
-        }*/
+        }
     }
 
 	public Task UnpinFromSidebarAsync(string folderPath) => UnpinFromSidebarAsync(new[] { folderPath }); 
@@ -41,7 +45,7 @@ public class QuickAccessService : IQuickAccessService
 	private async Task UnpinFromSidebarAsync(string[] folderPaths, bool doUpdateQuickAccessWidget)
 	{
 		var shellAppType = Type.GetTypeFromProgID("Shell.Application");
-		var shell = Activator.CreateInstance(shellAppType);
+		var shell = Activator.CreateInstance(shellAppType!);
 		dynamic? f2 = shellAppType.InvokeMember("NameSpace", System.Reflection.BindingFlags.InvokeMethod, null, shell, new object[] { $"shell:{guid}" });
 
 		if (folderPaths.Length == 0)
@@ -79,10 +83,10 @@ public class QuickAccessService : IQuickAccessService
 		}
 
 		await App.QuickAccessManager.Model.LoadAsync();
-		/*if (doUpdateQuickAccessWidget)
+		if (doUpdateQuickAccessWidget)
         {
             App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(folderPaths, false));
-        }*/
+        }
     }
 
 	public bool IsItemPinned(string folderPath)
@@ -105,9 +109,9 @@ public class QuickAccessService : IQuickAccessService
 		await PinToSidebarAsync(items, false);
         App.QuickAccessManager.PinnedItemsWatcher!.EnableRaisingEvents = true;
 
-        /*App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(items, true)
+        App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(this, new ModifyQuickAccessEventArgs(items, true)
 		{
 			Reorder = true
-		});*/
+		});
 	}
 }

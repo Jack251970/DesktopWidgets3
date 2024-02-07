@@ -756,7 +756,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
             return;
         }
 
-        if (currentInput != shellPage.FilesystemViewModel.WorkingDirectory || false/*shellPage.CurrentPageType == typeof(HomePage)*/) // TODO: Add support.
+        if (currentInput != shellPage.FilesystemViewModel.WorkingDirectory || shellPage.CurrentPageType == typeof(HomePage))
 		{
 			if (currentInput.Equals("Home", StringComparison.OrdinalIgnoreCase) || currentInput.Equals("Home".GetLocalizedResource(), StringComparison.OrdinalIgnoreCase))
 			{
@@ -805,8 +805,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 					{
 						var workingDir =
 							string.IsNullOrEmpty(shellPage.FilesystemViewModel.WorkingDirectory) ||
-                            // TODO: Add support.
-							/*shellPage.CurrentPageType == typeof(HomePage)*/false ?
+							shellPage.CurrentPageType == typeof(HomePage) ?
 								Constants.UserEnvironmentPaths.HomePath :
 								shellPage.FilesystemViewModel.WorkingDirectory;
 

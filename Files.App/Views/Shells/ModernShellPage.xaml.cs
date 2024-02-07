@@ -59,20 +59,20 @@ public sealed partial class ModernShellPage : BaseShellPage
 	{
 		InitializeComponent();
 
-        /*ToolbarViewModel.PathControlDisplayText = "Home".GetLocalizedResource();
-        ToolbarViewModel.RefreshWidgetsRequested += ModernShellPage_RefreshWidgetsRequested;*/
+        ToolbarViewModel.PathControlDisplayText = "Home".GetLocalizedResource();
+        ToolbarViewModel.RefreshWidgetsRequested += ModernShellPage_RefreshWidgetsRequested;
 
         _navigationInteractionTracker = new NavigationInteractionTracker(this, BackIcon, ForwardIcon);
 		_navigationInteractionTracker.NavigationRequested += OverscrollNavigationRequested;
 	}
 
-	/*private void ModernShellPage_RefreshWidgetsRequested(object? sender, EventArgs e)
+	private void ModernShellPage_RefreshWidgetsRequested(object? sender, EventArgs e)
 	{
         if (ItemDisplayFrame?.Content is HomePage currentPage)
         {
             currentPage.RefreshWidgetList();
         }
-    }*/
+    }
 
 	protected override void FolderSettings_LayoutPreferencesUpdateRequired(object? sender, LayoutPreferenceEventArgs e)
 	{
@@ -137,15 +137,14 @@ public sealed partial class ModernShellPage : BaseShellPage
 
 		if (string.IsNullOrEmpty(NavParams?.NavPath) || NavParams.NavPath == "Home")
 		{
-            // TODO: Add support.
-			/*ItemDisplayFrame.Navigate(
+			ItemDisplayFrame.Navigate(
 				typeof(HomePage),
 				new NavigationArguments()
 				{
                     FolderViewViewModel = FolderViewViewModel,
 					NavPathParam = NavParams?.NavPath,
 					AssociatedTabInstance = this
-				}, new SuppressNavigationTransitionInfo());*/
+				}, new SuppressNavigationTransitionInfo());
 		}
 		else
 		{
@@ -294,8 +293,7 @@ public sealed partial class ModernShellPage : BaseShellPage
         var isPathRooted = string.Equals(FilesystemViewModel.WorkingDirectory, PathNormalization.GetPathRoot(FilesystemViewModel.WorkingDirectory), StringComparison.OrdinalIgnoreCase);
 		if (isPathRooted)
 		{
-            // TODO: Add support.
-			/*ItemDisplayFrame.Navigate(
+			ItemDisplayFrame.Navigate(
 				typeof(HomePage),
 				new NavigationArguments()
 				{
@@ -303,7 +301,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 					NavPathParam = "Home",
 					AssociatedTabInstance = this
 				},
-				new SuppressNavigationTransitionInfo());*/
+				new SuppressNavigationTransitionInfo());
 		}
 		else
 		{
@@ -340,7 +338,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 
 	public override void Dispose()
 	{
-		/*ToolbarViewModel.RefreshWidgetsRequested -= ModernShellPage_RefreshWidgetsRequested;*/
+		ToolbarViewModel.RefreshWidgetsRequested -= ModernShellPage_RefreshWidgetsRequested;
 		_navigationInteractionTracker.NavigationRequested -= OverscrollNavigationRequested;
 		_navigationInteractionTracker.Dispose();
 
@@ -349,8 +347,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 
 	public override void NavigateHome()
 	{
-        // TODO: Add support.
-		/*ItemDisplayFrame.Navigate(
+		ItemDisplayFrame.Navigate(
 			typeof(HomePage),
 			new NavigationArguments()
 			{
@@ -358,7 +355,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 				NavPathParam = "Home",
 				AssociatedTabInstance = this
 			},
-			new SuppressNavigationTransitionInfo());*/
+			new SuppressNavigationTransitionInfo());
 	}
 
 	public override void NavigateToPath(string? navigationPath, Type? sourcePageType, NavigationArguments? navArgs = null)
@@ -401,13 +398,12 @@ public sealed partial class ModernShellPage : BaseShellPage
 
             NavigationTransitionInfo transition = new SuppressNavigationTransitionInfo();
 
-            // TODO: Add support.
-			/*if (sourcePageType == typeof(HomePage) ||
+			if (sourcePageType == typeof(HomePage) ||
 				ItemDisplayFrame.Content.GetType() == typeof(HomePage) &&
 				(sourcePageType == typeof(DetailsLayoutPage) || sourcePageType == typeof(GridLayoutPage)))
 			{
 				transition = new SuppressNavigationTransitionInfo();
-			}*/
+			}
 
 			ItemDisplayFrame.Navigate(
 				sourcePageType,

@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.UserControls.Widgets;
 using Windows.Storage;
 
 namespace Files.App.Actions;
@@ -29,7 +30,7 @@ internal class PinItemAction : ObservableObject, IAction
         service = folderViewViewModel.GetService<IQuickAccessService>();
 
 		context.PropertyChanged += Context_PropertyChanged;
-		/*App.QuickAccessManager.UpdateQuickAccessWidget += QuickAccessManager_DataChanged;*/
+		App.QuickAccessManager.UpdateQuickAccessWidget += QuickAccessManager_DataChanged;
 	}
 
 	public async Task ExecuteAsync()
@@ -73,8 +74,8 @@ internal class PinItemAction : ObservableObject, IAction
 		}
 	}
 
-	/*private void QuickAccessManager_DataChanged(object? sender, ModifyQuickAccessEventArgs e)
+	private void QuickAccessManager_DataChanged(object? sender, ModifyQuickAccessEventArgs e)
 	{
 		OnPropertyChanged(nameof(IsExecutable));
-	}*/
+	}
 }

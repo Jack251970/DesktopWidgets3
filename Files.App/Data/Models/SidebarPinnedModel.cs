@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.UserControls.Widgets;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text.Json.Serialization;
@@ -213,10 +214,10 @@ public class SidebarPinnedModel
 	{
 		App.QuickAccessManager.PinnedItemsWatcher!.EnableRaisingEvents = false;
 		await LoadAsync();
-        /*App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(null, new ModifyQuickAccessEventArgs((await QuickAccessService.GetPinnedFoldersAsync()).ToArray(), true)
+        App.QuickAccessManager.UpdateQuickAccessWidget?.Invoke(null, new ModifyQuickAccessEventArgs((await QuickAccessService.GetPinnedFoldersAsync()).ToArray(), true)
 		{
 			Reset = true
-		});*/
+		});
         App.QuickAccessManager.PinnedItemsWatcher!.EnableRaisingEvents = true;
 	}
 
