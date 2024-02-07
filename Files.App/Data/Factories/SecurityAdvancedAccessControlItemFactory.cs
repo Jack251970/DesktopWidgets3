@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*namespace Files.App.Data.Factories;
+namespace Files.App.Data.Factories;
 
 public static class SecurityAdvancedAccessControlItemFactory
 {
@@ -204,4 +204,5 @@ public static class SecurityAdvancedAccessControlItemFactory
 
 		return new ObservableCollection<AccessMaskItem>(accessControls);
 	}
-}*/
+}
+

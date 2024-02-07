@@ -128,17 +128,17 @@ public static class FilePropertiesHelpers
 
 		appWindow.SetIcon(applicationService.AppIcoPath);
 
-        // TODO: Add support.
-		/*frame.Navigate(
+		frame.Navigate(
 			typeof(Views.Properties.MainPropertiesPage),
 			new PropertiesPageNavigationParameter
 			{
+                FolderViewViewModel = folderViewViewModel,
 				Parameter = item,
 				AppInstance = associatedInstance,
 				AppWindow = appWindow,
 				Window = propertiesWindow
 			},
-			new SuppressNavigationTransitionInfo());*/
+			new SuppressNavigationTransitionInfo());
 
 		// WINUI3: Move window to cursor position
 		InteropHelpers.GetCursorPos(out var pointerPosition);

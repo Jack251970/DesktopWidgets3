@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Vanara.PInvoke;
+using Vanara.PInvoke;
 using static Vanara.PInvoke.AdvApi32;
 using SystemSecurity = System.Security.AccessControl;
 
@@ -42,7 +42,7 @@ public static class FileSecurityHelpers
 	/// <returns></returns>
 	public static bool SetOwner(string path, string sid)
 	{
-		SECURITY_INFORMATION secInfo = SECURITY_INFORMATION.OWNER_SECURITY_INFORMATION;
+		var secInfo = SECURITY_INFORMATION.OWNER_SECURITY_INFORMATION;
 
 		// Get PSID object from string sid
 		var pSid = ConvertStringSidToSid(sid);
@@ -85,15 +85,19 @@ public static class FileSecurityHelpers
 			out _);
 
 		if (win32Error.Failed || pDacl == PACL.NULL)
-			return win32Error;
+        {
+            return win32Error;
+        }
 
-		// Get ACL size info
-		bool bResult = GetAclInformation(pDacl, out ACL_SIZE_INFORMATION aclSize);
+        // Get ACL size info
+        var bResult = GetAclInformation(pDacl, out ACL_SIZE_INFORMATION aclSize);
 		if (!bResult)
-			return Kernel32.GetLastError();
+        {
+            return Kernel32.GetLastError();
+        }
 
-		// Get owner
-		var szOwnerSid = GetOwner(path);
+        // Get owner
+        var szOwnerSid = GetOwner(path);
 		var principal = new Principal(szOwnerSid);
 
 		var isValidAcl = IsValidAcl(pDacl);
@@ -105,13 +109,15 @@ public static class FileSecurityHelpers
 		{
 			bResult = GetAce(pDacl, i, out var pAce);
 			if (!bResult)
-				return Kernel32.GetLastError();
+            {
+                return Kernel32.GetLastError();
+            }
 
-			var szSid = ConvertSidToStringSid(pAce.GetSid());
+            var szSid = ConvertSidToStringSid(pAce.GetSid());
 
 			AccessControlEntryType type;
-			AccessControlEntryFlags inheritanceFlags = AccessControlEntryFlags.None;
-			AccessMaskFlags accessMaskFlags = (AccessMaskFlags)pAce.GetMask();
+			var inheritanceFlags = AccessControlEntryFlags.None;
+			var accessMaskFlags = (AccessMaskFlags)pAce.GetMask();
 
 			var header = pAce.GetHeader();
 			type = header.AceType switch
@@ -120,19 +126,30 @@ public static class FileSecurityHelpers
 				_ => AccessControlEntryType.Deny
 			};
 
-			bool isInherited = header.AceFlags.HasFlag(SystemSecurity.AceFlags.InheritanceFlags);
+			var isInherited = header.AceFlags.HasFlag(SystemSecurity.AceFlags.InheritanceFlags);
 
 			if (header.AceFlags.HasFlag(SystemSecurity.AceFlags.ContainerInherit))
-				inheritanceFlags |= AccessControlEntryFlags.ContainerInherit;
-			if (header.AceFlags.HasFlag(SystemSecurity.AceFlags.ObjectInherit))
-				inheritanceFlags |= AccessControlEntryFlags.ObjectInherit;
-			if (header.AceFlags.HasFlag(SystemSecurity.AceFlags.NoPropagateInherit))
-				inheritanceFlags |= AccessControlEntryFlags.NoPropagateInherit;
-			if (header.AceFlags.HasFlag(SystemSecurity.AceFlags.InheritOnly))
-				inheritanceFlags |= AccessControlEntryFlags.InheritOnly;
+            {
+                inheritanceFlags |= AccessControlEntryFlags.ContainerInherit;
+            }
 
-			// Initialize an ACE
-			aces.Add(new(isFolder, szSid, type, accessMaskFlags, isInherited, inheritanceFlags));
+            if (header.AceFlags.HasFlag(SystemSecurity.AceFlags.ObjectInherit))
+            {
+                inheritanceFlags |= AccessControlEntryFlags.ObjectInherit;
+            }
+
+            if (header.AceFlags.HasFlag(SystemSecurity.AceFlags.NoPropagateInherit))
+            {
+                inheritanceFlags |= AccessControlEntryFlags.NoPropagateInherit;
+            }
+
+            if (header.AceFlags.HasFlag(SystemSecurity.AceFlags.InheritOnly))
+            {
+                inheritanceFlags |= AccessControlEntryFlags.InheritOnly;
+            }
+
+            // Initialize an ACE
+            aces.Add(new(isFolder, szSid, type, accessMaskFlags, isInherited, inheritanceFlags));
 		}
 
 		// Initialize with proper data
@@ -140,9 +157,11 @@ public static class FileSecurityHelpers
 
 		// Set access control entries
 		foreach (var ace in aces)
-			acl.AccessControlEntries.Add(ace);
+        {
+            acl.AccessControlEntries.Add(ace);
+        }
 
-		return Kernel32.GetLastError();
+        return Kernel32.GetLastError();
 	}
 
 	/// <summary>
@@ -184,10 +203,12 @@ public static class FileSecurityHelpers
 			out _);
 
 		if (result.Failed)
-			return result;
+        {
+            return result;
+        }
 
-		// Initialize default trustee
-		var explicitAccess = new EXPLICIT_ACCESS
+        // Initialize default trustee
+        var explicitAccess = new EXPLICIT_ACCESS
 		{
 			grfAccessMode = ACCESS_MODE.GRANT_ACCESS,
 			grfAccessPermissions = ACCESS_MASK.GENERIC_READ | ACCESS_MASK.GENERIC_EXECUTE,
@@ -199,19 +220,23 @@ public static class FileSecurityHelpers
 		result = SetEntriesInAcl(1, new[] { explicitAccess }, pDACL, out var pNewDACL);
 
 		if (result.Failed)
-			return result;
+        {
+            return result;
+        }
 
-		// Set the new ACL
-		result = SetNamedSecurityInfo(
+        // Set the new ACL
+        result = SetNamedSecurityInfo(
 			szPath,
 			SE_OBJECT_TYPE.SE_FILE_OBJECT,
 			SECURITY_INFORMATION.DACL_SECURITY_INFORMATION | SECURITY_INFORMATION.PROTECTED_DACL_SECURITY_INFORMATION,
 			ppDacl: pNewDACL);
 
 		if (result.Failed)
-			return result;
+        {
+            return result;
+        }
 
-		return result;
+        return result;
 	}
 
 	/// <summary>
@@ -234,24 +259,31 @@ public static class FileSecurityHelpers
 			out _);
 
 		if (result.Failed)
-			return result;
+        {
+            return result;
+        }
 
-		// Remove an ACE
-		bool bResult = DeleteAce(pDACL, dwAceIndex);
+        // Remove an ACE
+        var bResult = DeleteAce(pDACL, dwAceIndex);
 
 		if (!bResult)
-			return Kernel32.GetLastError();
+        {
+            return Kernel32.GetLastError();
+        }
 
-		// Set the new ACL
-		result = SetNamedSecurityInfo(
+        // Set the new ACL
+        result = SetNamedSecurityInfo(
 			szPath,
 			SE_OBJECT_TYPE.SE_FILE_OBJECT,
 			SECURITY_INFORMATION.DACL_SECURITY_INFORMATION | SECURITY_INFORMATION.PROTECTED_DACL_SECURITY_INFORMATION,
 			ppDacl: pDACL);
 
 		if (result.Failed)
-			return result;
+        {
+            return result;
+        }
 
-		return result;
+        return result;
 	}
-}*/
+}
+

@@ -14,7 +14,7 @@ public class FilePropertySection : List<FileProperty>
 
 	public Visibility Visibility { get; set; }
 
-	public string Key { get; set; }
+    public string Key { get; set; } = null!;
 
 	public string Title
 		=> Key.GetLocalizedResource();

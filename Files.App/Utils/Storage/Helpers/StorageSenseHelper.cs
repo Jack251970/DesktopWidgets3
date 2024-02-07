@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Windows.Foundation.Metadata;
+using Windows.Foundation.Metadata;
 using Windows.System;
 
 namespace Files.App.Utils.Storage;
@@ -20,4 +20,4 @@ internal class StorageSenseHelper
 			await Launcher.LaunchUriAsync(new Uri("ms-settings:storagesense"));
 		}
 	}
-}*/
+}

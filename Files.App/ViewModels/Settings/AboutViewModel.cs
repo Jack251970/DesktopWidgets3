@@ -140,6 +140,7 @@ public class AboutViewModel : ObservableObject
 		return query.ToString() ?? string.Empty;
 	}
 
+    // CHECK: Update AppVersion and Commits properties.
     public string Version => string.Format($"{"SettingsAboutVersionTitle".GetLocalizedResource()} {AppVersion.Major}.{AppVersion.Minor}.{AppVersion.Build}.{AppVersion.Revision} ({Commits})");
 
     public string AppName => InfoHelper.GetDisplayName();

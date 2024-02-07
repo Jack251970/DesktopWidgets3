@@ -380,7 +380,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	{
 		if (!App.AppModel.IsMainWindowClosed)
         {
-            PreviewPane?.ViewModel.UpdateDateDisplay();
+            PreviewPane?.ViewModel!.UpdateDateDisplay();
         }
     }
 

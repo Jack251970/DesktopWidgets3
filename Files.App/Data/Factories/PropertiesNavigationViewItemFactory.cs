@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Windows.Storage;
 using Files.Shared.Helpers;
 
@@ -78,12 +78,16 @@ public static class PropertiesNavigationViewItemFactory
 			var onlyFiles = listedItems.All(listedItem => listedItem.PrimaryItemAttribute == StorageItemTypes.File || listedItem.IsArchive);
 
 			if (!compatibilityItemEnabled)
-				PropertiesNavigationViewItems.Remove(compatibilityItem);
+            {
+                PropertiesNavigationViewItems.Remove(compatibilityItem);
+            }
 
-			if (!onlyFiles)
-				PropertiesNavigationViewItems.Remove(detailsItem);
+            if (!onlyFiles)
+            {
+                PropertiesNavigationViewItems.Remove(detailsItem);
+            }
 
-			PropertiesNavigationViewItems.Remove(libraryItem);
+            PropertiesNavigationViewItems.Remove(libraryItem);
 			PropertiesNavigationViewItems.Remove(shortcutItem);
 			PropertiesNavigationViewItems.Remove(securityItem);
 			PropertiesNavigationViewItems.Remove(customizationItem);
@@ -103,26 +107,40 @@ public static class PropertiesNavigationViewItemFactory
 			var compatibilityItemEnabled = FileExtensionHelpers.IsExecutableFile(listedItem is ShortcutItem sht ? sht.TargetPath : fileExt, true);
 
 			if (!securityItemEnabled)
-				PropertiesNavigationViewItems.Remove(securityItem);
+            {
+                PropertiesNavigationViewItems.Remove(securityItem);
+            }
 
-			if (!hashItemEnabled)
-				PropertiesNavigationViewItems.Remove(hashesItem);
+            if (!hashItemEnabled)
+            {
+                PropertiesNavigationViewItems.Remove(hashesItem);
+            }
 
-			if (!isShortcut)
-				PropertiesNavigationViewItems.Remove(shortcutItem);
+            if (!isShortcut)
+            {
+                PropertiesNavigationViewItems.Remove(shortcutItem);
+            }
 
-			if (!isLibrary)
-				PropertiesNavigationViewItems.Remove(libraryItem);
+            if (!isLibrary)
+            {
+                PropertiesNavigationViewItems.Remove(libraryItem);
+            }
 
-			if (!detailsItemEnabled)
-				PropertiesNavigationViewItems.Remove(detailsItem);
+            if (!detailsItemEnabled)
+            {
+                PropertiesNavigationViewItems.Remove(detailsItem);
+            }
 
-			if (!customizationItemEnabled)
-				PropertiesNavigationViewItems.Remove(customizationItem);
+            if (!customizationItemEnabled)
+            {
+                PropertiesNavigationViewItems.Remove(customizationItem);
+            }
 
-			if (!compatibilityItemEnabled)
-				PropertiesNavigationViewItems.Remove(compatibilityItem);
-		}
+            if (!compatibilityItemEnabled)
+            {
+                PropertiesNavigationViewItems.Remove(compatibilityItem);
+            }
+        }
 		else if (item is DriveItem)
 		{
 			PropertiesNavigationViewItems.Remove(hashesItem);
@@ -136,4 +154,3 @@ public static class PropertiesNavigationViewItemFactory
 		return PropertiesNavigationViewItems;
 	}
 }
-*/

@@ -526,21 +526,21 @@ public class Win32API
         return success;
 	}
 
-	/*public static bool SetCustomFileIcon(string? filePath, string? iconFile, int iconIndex = 0)
+	public static bool SetCustomFileIcon(string? filePath, string? iconFile, int iconIndex = 0)
 	{
 		if (filePath is null)
         {
             return false;
         }
 
-        var success = FileOperationsHelpers.SetLinkIcon(filePath, iconFile, iconIndex);
+        var success = FileOperationsHelpers.SetLinkIcon(filePath, iconFile!, iconIndex);
 		if (success)
         {
             _iconAndOverlayCache[filePath] = new();
         }
 
         return success;
-	}*/
+	}
 
 	public static Task OpenFormatDriveDialog(string drive)
 	{

@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*namespace Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 /// <summary>
 /// Represents an access control entry (ACE).
@@ -329,12 +329,12 @@ public class AccessControlEntry : ObservableObject
 		get => DeniedAccessMaskFlags.HasFlag(AccessMaskFlags.FullControl) || DeniedInheritedFullControlAccess;
 		set => ToggleDenyAccess(AccessMaskFlags.FullControl, value);
 	}
-	#endregion
+    #endregion
 
-	public IRelayCommand<string> ChangeAccessControlTypeCommand { get; set; }
-	public IRelayCommand<string> ChangeInheritanceFlagsCommand { get; set; }
+    public IRelayCommand<string> ChangeAccessControlTypeCommand { get; set; } = null!;
+	public IRelayCommand<string> ChangeInheritanceFlagsCommand { get; set; } = null!;
 
-	public AccessControlEntry(bool isFolder, string ownerSid, AccessControlEntryType type, AccessMaskFlags accessMaskFlags, bool isInherited, AccessControlEntryFlags inheritanceFlags)
+    public AccessControlEntry(bool isFolder, string ownerSid, AccessControlEntryType type, AccessMaskFlags accessMaskFlags, bool isInherited, AccessControlEntryFlags inheritanceFlags)
 	{
 		AccessMaskItems = SecurityAdvancedAccessControlItemFactory.Initialize(this, AreAdvancedPermissionsShown, IsInherited, IsFolder);
 
@@ -360,16 +360,24 @@ public class AccessControlEntry : ObservableObject
 		{
 			case AccessControlEntryType.Allow:
 				if (IsInherited)
-					InheritedAllowAccessMaskFlags |= AccessMaskFlags;
-				else
-					AllowedAccessMaskFlags |= AccessMaskFlags;
-				break;
+                {
+                    InheritedAllowAccessMaskFlags |= AccessMaskFlags;
+                }
+                else
+                {
+                    AllowedAccessMaskFlags |= AccessMaskFlags;
+                }
+                break;
 			case AccessControlEntryType.Deny:
 				if (IsInherited)
-					InheritedDenyAccessMaskFlags |= AccessMaskFlags;
-				else
-					DeniedAccessMaskFlags |= AccessMaskFlags;
-				break;
+                {
+                    InheritedDenyAccessMaskFlags |= AccessMaskFlags;
+                }
+                else
+                {
+                    DeniedAccessMaskFlags |= AccessMaskFlags;
+                }
+                break;
 		}
 	}
 
@@ -404,4 +412,5 @@ public class AccessControlEntry : ObservableObject
 			DeniedAccessMaskFlags &= ~accessMask;
 		}
 	}
-}*/
+}
+

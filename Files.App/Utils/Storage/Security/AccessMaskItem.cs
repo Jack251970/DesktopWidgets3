@@ -1,31 +1,30 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*namespace Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 /// <summary>
 /// Represents an access mask details, such as its name and changeability.
 /// </summary>
 public class AccessMaskItem : ObservableObject
 {
-	public string AccessMaskName { get; set; }
+    public string AccessMaskName { get; set; } = null!;
 
 	public AccessMaskFlags AccessMask { get; set; }
 
 	public bool IsEnabled
-	{
-		get
-		{
-			return _ace.AccessMaskFlags.HasFlag(AccessMask);
-		}
-		set
-		{
-			if (IsEditable)
-				ToggleAccess(AccessMask, value);
-		}
-	}
+    {
+        get => _ace.AccessMaskFlags.HasFlag(AccessMask);
+        set
+        {
+            if (IsEditable)
+            {
+                ToggleAccess(AccessMask, value);
+            }
+        }
+    }
 
-	public bool IsEditable { get; set; }
+    public bool IsEditable { get; set; }
 
 	private readonly AccessControlEntry _ace;
 
@@ -40,15 +39,20 @@ public class AccessMaskItem : ObservableObject
 	private void ToggleAccess(AccessMaskFlags accessMask, bool value)
 	{
 		if (value && !_ace.AccessMaskFlags.HasFlag(accessMask))
-			_ace.AccessMaskFlags |= accessMask;
-		else if (!value && _ace.AccessMaskFlags.HasFlag(accessMask))
-			_ace.AccessMaskFlags &= ~accessMask;
-	}
+        {
+            _ace.AccessMaskFlags |= accessMask;
+        }
+        else if (!value && _ace.AccessMaskFlags.HasFlag(accessMask))
+        {
+            _ace.AccessMaskFlags &= ~accessMask;
+        }
+    }
 
 	private void AccessControlEntry_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName == nameof(AccessControlEntry.AccessMaskFlags))
-			OnPropertyChanged(nameof(IsEnabled));
-	}
+        {
+            OnPropertyChanged(nameof(IsEnabled));
+        }
+    }
 }
-*/

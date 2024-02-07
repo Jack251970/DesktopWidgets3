@@ -8,6 +8,9 @@ namespace Files.App.Data.Parameters;
 
 public class PropertiesPageNavigationParameter
 {
+    // CHECK: Required is just for checking.
+    public /*required*/ IFolderViewViewModel FolderViewViewModel = null!;
+
 	public CancellationTokenSource CancellationTokenSource = null!;
 
 	public object Parameter = null!;

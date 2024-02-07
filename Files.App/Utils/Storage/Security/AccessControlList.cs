@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*namespace Files.App.Utils.Storage;
+namespace Files.App.Utils.Storage;
 
 /// <summary>
 /// Represents an access control list (ACL).
@@ -49,4 +49,5 @@ public class AccessControlList : ObservableObject
 		Owner = new(string.Empty);
 		AccessControlEntries = new();
 	}
-}*/
+}
+
