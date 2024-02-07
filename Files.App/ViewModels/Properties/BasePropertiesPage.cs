@@ -29,6 +29,9 @@ public abstract class BasePropertiesPage : Page, IDisposable
         FolderViewViewModel = np.FolderViewViewModel;
 		AppInstance = np.AppInstance;
 
+        // CHANGE: Initiallize folder view view model.
+        ViewModel.Initialize(FolderViewViewModel);
+
 		// Library
 		if (np.Parameter is LibraryItem library)
         {
