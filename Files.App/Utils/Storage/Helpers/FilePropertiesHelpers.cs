@@ -99,16 +99,16 @@ public static class FilePropertiesHelpers
             return;
         }
 
-        var frame = new Frame
+        /*var frame = new Frame
 		{
 			RequestedTheme = ThemeHelper.RootTheme
-		};
+		};*/
 
 		WinUIEx.WindowEx propertiesWindow;
 		if (!WindowCache.TryTake(out propertiesWindow!))
 		{
-			propertiesWindow = new();
-			propertiesWindow.Closed += PropertiesWindow_Closed;
+            propertiesWindow = UIElementExtensions.BlankWindow;
+            propertiesWindow.Closed += PropertiesWindow_Closed;
 		}
 
 		propertiesWindow.IsMinimizable = false;
@@ -117,10 +117,10 @@ public static class FilePropertiesHelpers
 		propertiesWindow.MinHeight = 550;
 		propertiesWindow.Width = 800;
 		propertiesWindow.Height = 550;
-		propertiesWindow.Content = frame;
-		propertiesWindow.SystemBackdrop = new AppSystemBackdrop(folderViewViewModel, true);
+        /*propertiesWindow.Content = frame;
+		propertiesWindow.SystemBackdrop = new AppSystemBackdrop(folderViewViewModel, true);*/
 
-		var appWindow = propertiesWindow.AppWindow;
+        var appWindow = propertiesWindow.AppWindow;
 		appWindow.Title = "Properties".GetLocalizedResource();
 		appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 		appWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
@@ -128,7 +128,8 @@ public static class FilePropertiesHelpers
 
 		appWindow.SetIcon(applicationService.AppIcoPath);
 
-		frame.Navigate(
+        var frame = propertiesWindow.Content as Frame;
+		frame?.Navigate(
 			typeof(Views.Properties.MainPropertiesPage),
 			new PropertiesPageNavigationParameter
 			{

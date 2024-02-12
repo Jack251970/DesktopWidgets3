@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
-
-namespace DesktopWidgets3.Core.Contracts.Services;
+﻿namespace DesktopWidgets3.Core.Contracts.Services;
 
 public interface IFileService
 {
-    T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null);
+    T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null!);
 
     void Save<T>(string folderPath, string fileName, T content, bool indent);
 

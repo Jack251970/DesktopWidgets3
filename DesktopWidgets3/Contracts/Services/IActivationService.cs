@@ -9,4 +9,6 @@ public interface IActivationService
     Task ActivateWidgetWindowAsync(WidgetWindow window, object widgetSettings);
 
     Task ActivateOverlayWindowAsync(OverlayWindow window);
+
+    Task ActivateBlankWindowAsync(BlankWindow window);
 }

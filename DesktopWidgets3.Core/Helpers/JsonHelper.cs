@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace DesktopWidgets3.Core.Helpers;
+﻿namespace DesktopWidgets3.Core.Helpers;
 
 public static class JsonHelper
 {

@@ -147,6 +147,9 @@ public partial class App : Application
                 // System Info
                 services.AddSingleton<ISystemInfoService, SystemInfoService>();
 
+                // Window Registeration
+                services.AddSingleton<IWindowService, WindowService>();
+
                 #endregion
 
                 #region Views & ViewModels
@@ -208,6 +211,7 @@ public partial class App : Application
 
         // Initialize core extensions
         DependencyExtensions.Initialize(GetService<IDependencyService>());
+        UIElementExtensions.Initialize(GetService<IWindowService>());
         UIThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
     }
 
