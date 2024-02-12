@@ -5,6 +5,8 @@ using DesktopWidgets3.Activation;
 using DesktopWidgets3.Views.Pages;
 using DesktopWidgets3.Views.Pages.Widget;
 using DesktopWidgets3.Views.Windows;
+using DesktopWidgets3.Helpers;
+using Windows.UI.ViewManagement;
 
 namespace DesktopWidgets3.Services;
 
@@ -84,6 +86,9 @@ public class ActivationService : IActivationService
 
     public async Task ActivateBlankWindowAsync(BlankWindow window)
     {
+        // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
+        window.settings_ColorValuesChanged += Window_ColorValuesChanged;
+
         // Execute tasks before activation.
         await InitializeAsync();
 
@@ -95,6 +100,13 @@ public class ActivationService : IActivationService
 
         // Execute tasks after activation.
         await StartupAsync(window);
+    }
+
+    // this handles updating the caption button colors correctly when windows system theme is changed while the app is open
+    private void Window_ColorValuesChanged(UISettings sender, object args)
+    {
+        // This calls comes off-thread, hence we will need to dispatch it to current app's thread
+        UIThreadExtensions.DispatcherQueue!.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
 
     private async Task HandleActivationAsync(object activationArgs)

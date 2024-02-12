@@ -2,25 +2,22 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
-using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.System;
-using Windows.UI;
 
 namespace Files.App.Views.Properties;
 
 public sealed partial class MainPropertiesPage : BasePropertiesPage
 {
-    private IFolderViewViewModel FolderViewViewModel = null!;
-
-	private AppWindow AppWindow = null!;
+    private AppWindow AppWindow = null!;
 
 	private Window Window = null!;
 
+    // CHANGE: Move app settings to BlankWindow.
 	/*private SettingsViewModel AppSettings { get; set; } = null!;*/
 
     private MainPropertiesViewModel MainPropertiesViewModel { get; set; } = null!;
@@ -39,8 +36,7 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 	{
 		var parameter = (PropertiesPageNavigationParameter)e.Parameter;
 
-        FolderViewViewModel = parameter.FolderViewViewModel;
-		AppWindow = parameter.AppWindow;
+        AppWindow = parameter.AppWindow;
 		Window = parameter.Window;
 
 		base.OnNavigatedTo(e);
@@ -50,10 +46,10 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 
 	private void Page_Loaded(object sender, RoutedEventArgs e)
 	{
-        // TODO: Register theme mode change event.
-		/*AppSettings = DependencyExtensions.GetService<SettingsViewModel>();
+        // CHANGE: Register theme mode change event in BlankWindow.
+        /*AppSettings = DependencyExtensions.GetService<SettingsViewModel>();
 		AppSettings.ThemeModeChanged += AppSettings_ThemeModeChanged;*/
-		Window.Closed += Window_Closed;
+        Window.Closed += Window_Closed;
 
 		UpdatePageLayout();
 	}
@@ -71,11 +67,12 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 
 	private void UpdatePageLayout()
 	{
-		// Drag zone
-		DragZoneHelper.SetDragZones(Window, (int)TitlebarArea.ActualHeight, 40);
+        // CHANGE: Remove drag zone change event.
+        /*// Drag zone
+		DragZoneHelper.SetDragZones(Window, (int)TitlebarArea.ActualHeight, 40);*/
 
-		// NavigationView Pane Mode
-		MainPropertiesWindowNavigationView.PaneDisplayMode =
+        // NavigationView Pane Mode
+        MainPropertiesWindowNavigationView.PaneDisplayMode =
 			ActualWidth <= 600
 				? NavigationViewPaneDisplayMode.LeftCompact
 				: NavigationViewPaneDisplayMode.Left;
@@ -97,7 +94,7 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
         }
     }
 
-	private async void AppSettings_ThemeModeChanged(object? sender, EventArgs e)
+	/*private async void AppSettings_ThemeModeChanged(object? sender, EventArgs e)
 	{
 		if (Parent is null)
         {
@@ -124,7 +121,7 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 					break;
 			}
 		});
-	}
+	}*/
 
 	private void Window_Closed(object sender, WindowEventArgs args)
 	{
