@@ -44,6 +44,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     private readonly IContentPageContext _contentPageContext;
     private readonly IPageContext _pageContext;
     private readonly IDisplayPageContext _displayPageContext;
+    private readonly IMultitaskingContext _multitaskingContext;
 
     #region interfaces
 
@@ -109,7 +110,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         IWindowContext windowContext, 
         IContentPageContext contentPageContext, 
         IPageContext pageContext,
-        IDisplayPageContext displayPageContext)
+        IDisplayPageContext displayPageContext,
+        IMultitaskingContext multitaskingContext)
     {
         _widgetManagerService = widgetManagerService;
 
@@ -131,9 +133,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         _contentPageContext = contentPageContext;
         _pageContext = pageContext;
         _displayPageContext = displayPageContext;
+        _multitaskingContext = multitaskingContext;
 
         _windowContext.Initialize(this);
         _displayPageContext.Initialize(this);
+        _multitaskingContext.Initialize(this);
 
         _commandManager.Initialize(this);
         _modifiableCommandManager.Initialize(_commandManager);
@@ -301,6 +305,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             Type t when t == typeof(IContentPageContext) => (_contentPageContext as T)!,
             Type t when t == typeof(IPageContext) => (_pageContext as T)!,
             Type t when t == typeof(IDisplayPageContext) => (_displayPageContext as T)!,
+            Type t when t == typeof(IMultitaskingContext) => (_multitaskingContext as T)!,
             _ => null!,
         };
     }

@@ -144,7 +144,7 @@ public static class AppLifecycleHelper
                 .AddTransient<IContentPageContext, ContentPageContext>()
                 .AddTransient<IDisplayPageContext, DisplayPageContext>()
                 .AddTransient<IWindowContext, WindowContext>()
-                /*.AddSingleton<IMultitaskingContext, MultitaskingContext>()*/
+                .AddTransient<IMultitaskingContext, MultitaskingContext>()
                 .AddSingleton<ITagsContext, TagsContext>()
                 // Services
                 .AddTransient<IDialogService, DialogService>()
