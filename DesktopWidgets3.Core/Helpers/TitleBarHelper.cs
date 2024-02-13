@@ -7,12 +7,12 @@ using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 
-namespace DesktopWidgets3.Helpers;
+namespace DesktopWidgets3.Core.Helpers;
 
 // Helper class to workaround custom title bar bugs.
 // DISCLAIMER: The resource key names and color values used below are subject to change. Do not depend on them.
 // https://github.com/microsoft/TemplateStudio/issues/4516
-internal partial class TitleBarHelper
+public partial class TitleBarHelper
 {
     private const int WAINACTIVE = 0x00;
     private const int WAACTIVE = 0x01;
@@ -24,9 +24,9 @@ internal partial class TitleBarHelper
     [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
     private static partial IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
 
-    public static void UpdateTitleBar(ElementTheme theme)
+    public static void UpdateTitleBar(Window Window, ElementTheme theme)
     {
-        if (App.MainWindow.ExtendsContentIntoTitleBar)
+        if (Window.ExtendsContentIntoTitleBar)
         {
             if (theme == ElementTheme.Default)
             {
@@ -86,7 +86,7 @@ internal partial class TitleBarHelper
             Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(Colors.Transparent);
             Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(Colors.Transparent);
 
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(Window);
             if (hwnd == GetActiveWindow())
             {
                 SendMessage(hwnd, WMACTIVATE, WAINACTIVE, IntPtr.Zero);
@@ -100,10 +100,10 @@ internal partial class TitleBarHelper
         }
     }
 
-    public static void ApplySystemThemeToCaptionButtons()
+    public static void ApplySystemThemeToCaptionButtons(Window Window, UIElement? TitleBarText)
     {
         var res = Application.Current.Resources;
-        var frame = App.AppTitleBarText as FrameworkElement;
+        var frame = TitleBarText as FrameworkElement;
         if (frame != null)
         {
             if (frame.ActualTheme == ElementTheme.Dark)
@@ -115,7 +115,7 @@ internal partial class TitleBarHelper
                 res["WindowCaptionForeground"] = Colors.Black;
             }
 
-            UpdateTitleBar(frame.ActualTheme);
+            UpdateTitleBar(Window, frame.ActualTheme);
         }
     }
 }

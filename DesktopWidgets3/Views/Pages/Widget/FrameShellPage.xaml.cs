@@ -1,7 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
 using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.Helpers;
 using Microsoft.UI.Xaml;
 using DesktopWidgets3.Views.Windows;
 
@@ -45,6 +44,6 @@ public sealed partial class FrameShellPage : Page
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        TitleBarHelper.UpdateTitleBar(RequestedTheme);
+        TitleBarHelper.UpdateTitleBar(WidgetWindow, RequestedTheme);
     }
 }

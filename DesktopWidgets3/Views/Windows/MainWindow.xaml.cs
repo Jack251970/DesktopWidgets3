@@ -12,6 +12,10 @@ public sealed partial class MainWindow : WindowEx
 
     private readonly UISettings settings;
 
+    public UIElement? TitleBar { get; set; }
+
+    public UIElement? TitleBarText { get; set; }
+
     public MainWindow()
     {
         InitializeComponent();
@@ -32,7 +36,7 @@ public sealed partial class MainWindow : WindowEx
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
-        dispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, TitleBarHelper.ApplySystemThemeToCaptionButtons);
+        dispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () => TitleBarHelper.ApplySystemThemeToCaptionButtons(this, TitleBarText));
     }
 
     // this enables the app to continue running in background after clicking close button
@@ -42,6 +46,7 @@ public sealed partial class MainWindow : WindowEx
         {
             ApplicationExtensions.MainWindow_Closed_Widgets_Closing?.Invoke(this, args);
             App.GetService<IWidgetManagerService>().DisableAllWidgets();
+            UIElementExtensions.CloseAllWindows();
             ApplicationExtensions.MainWindow_Closed_Widgets_Closed?.Invoke(this, args);
             Application.Current.Exit();
         }

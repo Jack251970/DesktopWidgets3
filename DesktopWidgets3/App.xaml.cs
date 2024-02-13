@@ -46,9 +46,6 @@ public partial class App : Application
 
     public static MainWindow MainWindow { get; set; } = null!;
 
-    public static UIElement? AppTitleBar { get; set; }
-    public static UIElement? AppTitleBarText { get; set; }
-
     public static bool CanCloseWindow { get; set; }
     private static bool IsExistWindow { get; set; }
 

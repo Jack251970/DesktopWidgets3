@@ -5,8 +5,6 @@ namespace DesktopWidgets3.Contracts.Services;
 
 public interface IWidgetManagerService
 {
-    Task SetThemeAsync();
-
     Task EnableAllEnabledWidgets();
 
     Task AddWidget(WidgetType widgetType);

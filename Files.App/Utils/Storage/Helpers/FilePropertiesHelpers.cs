@@ -107,7 +107,7 @@ public static class FilePropertiesHelpers
 		WinUIEx.WindowEx propertiesWindow;
 		if (!WindowCache.TryTake(out propertiesWindow!))
 		{
-            propertiesWindow = UIElementExtensions.BlankWindow;
+            propertiesWindow = UIElementExtensions.GetWindowEx();
             propertiesWindow.Closed += PropertiesWindow_Closed;
 		}
 

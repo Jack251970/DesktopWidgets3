@@ -62,7 +62,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         if (_isInitialized)
         {
             _themeSelectorService.SetThemeAsync((ElementTheme)value);
-            _widgetManagerService.SetThemeAsync();
         }
     }
 

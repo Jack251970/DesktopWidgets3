@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
 
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models;
-using Files.App.Helpers;
 
 namespace DesktopWidgets3.Services;
 
@@ -16,10 +14,8 @@ public class ThemeSelectorService : IThemeSelectorService
         {
             if (theme != value)
             {
-                theme = value;
-
-                // Update theme for dialogs of Files
-                ThemeHelper.RootTheme = value;
+                ThemeExtensions.RootTheme = theme = value;
+                ThemeExtensions.ElementTheme_Changed?.Invoke(this, value);
             }
         } 
     }
@@ -50,14 +46,7 @@ public class ThemeSelectorService : IThemeSelectorService
 
     public async Task SetRequestedThemeAsync(Window window)
     {
-        if (window.Content is FrameworkElement rootElement)
-        {
-            rootElement.RequestedTheme = Theme;
-
-            TitleBarHelper.UpdateTitleBar(Theme);
-        }
-
-        await Task.CompletedTask;
+        await ThemeHelper.SetRequestedThemeAsync(window, Theme);
     }
 
     public async Task SetThemeAsync(ElementTheme theme)
@@ -65,6 +54,12 @@ public class ThemeSelectorService : IThemeSelectorService
         Theme = theme;
 
         await SetRequestedThemeAsync(App.MainWindow);
+
+        foreach (var window in UIElementExtensions.WindowInstances)
+        {
+            await SetRequestedThemeAsync(window);
+        }
+
         await SaveThemeInSettingsAsync(Theme);
     }
 

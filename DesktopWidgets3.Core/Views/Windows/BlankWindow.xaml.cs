@@ -1,12 +1,18 @@
-﻿using Windows.UI.ViewManagement;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Windows.UI.ViewManagement;
 
 namespace DesktopWidgets3.Core.Views.Windows;
 
 public sealed partial class BlankWindow : WindowEx
 {
+    private readonly DispatcherQueue dispatcherQueue;
+
     private readonly UISettings settings;
 
-    public Action<UISettings, object>? settings_ColorValuesChanged;
+    public UIElement? TitleBar { get; set; }
+
+    public UIElement? TitleBarText { get; set; }
 
     public BlankWindow()
     {
@@ -14,12 +20,16 @@ public sealed partial class BlankWindow : WindowEx
 
         Content = null;
 
+        // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
+        dispatcherQueue = UIThreadExtensions.DispatcherQueue!;
         settings = new UISettings();
-        settings.ColorValuesChanged += Settings_ColorValuesChanged;
+        settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
     }
 
+    // this handles updating the caption button colors correctly when windows system theme is changed while the app is open
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
-        settings_ColorValuesChanged?.Invoke(sender, args);
+        // This calls comes off-thread, hence we will need to dispatch it to current app's thread
+        dispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () => TitleBarHelper.ApplySystemThemeToCaptionButtons(this, TitleBarText));
     }
 }

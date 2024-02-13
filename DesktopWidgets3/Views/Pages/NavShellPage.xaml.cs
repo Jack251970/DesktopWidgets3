@@ -2,7 +2,6 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.ViewModels.Pages;
 
 namespace DesktopWidgets3.Views.Pages;
@@ -27,13 +26,13 @@ public sealed partial class NavShellPage : Page
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
-        App.AppTitleBar = AppTitleBar;
+        App.MainWindow.TitleBar = AppTitleBar;
         AppTitleBarText.Text = "AppDisplayName".GetLocalized();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        TitleBarHelper.UpdateTitleBar(RequestedTheme);
+        TitleBarHelper.UpdateTitleBar(App.MainWindow, RequestedTheme);
 
         var _widgetManagerService = App.GetService<IWidgetManagerService>();
         _widgetManagerService.EnableAllEnabledWidgets();
@@ -44,7 +43,7 @@ public sealed partial class NavShellPage : Page
         var resource = args.WindowActivationState == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
 
         AppTitleBarText.Foreground = (SolidColorBrush)Application.Current.Resources[resource];
-        App.AppTitleBarText = AppTitleBarText;
+        App.MainWindow.TitleBarText = AppTitleBarText;
     }
 
     private void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)

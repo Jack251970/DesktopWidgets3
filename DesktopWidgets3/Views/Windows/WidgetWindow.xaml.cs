@@ -93,7 +93,7 @@ public sealed partial class WidgetWindow : WindowEx
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
-        UIThreadExtensions.DispatcherQueue!.TryEnqueue(DispatcherQueuePriority.High, TitleBarHelper.ApplySystemThemeToCaptionButtons);
+        UIThreadExtensions.DispatcherQueue!.TryEnqueue(DispatcherQueuePriority.High, () => TitleBarHelper.ApplySystemThemeToCaptionButtons(this, null));
     }
 
     public void InitializeTitleBar()

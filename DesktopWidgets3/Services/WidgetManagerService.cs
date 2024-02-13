@@ -16,38 +16,20 @@ public class WidgetManagerService : IWidgetManagerService
     private readonly IActivationService _activationService;
     private readonly IAppSettingsService _appSettingsService;
     private readonly ISystemInfoService _systemInfoService;
-    private readonly IThemeSelectorService _themeSelectorService;
     private readonly ITimersService _timersService;
     private readonly IWidgetResourceService _widgetResourceService;
 
     private WidgetType currentWidgetType;
     private int currentIndexTag = -1;
 
-    public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, IThemeSelectorService themeSelectorService, ITimersService timersService, IWidgetResourceService widgetResourceService)
+    public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
         _activationService = activationService;
         _appSettingsService = appSettingsService;
         _systemInfoService = systemInfoService;
-        _themeSelectorService = themeSelectorService;
         _timersService = timersService;
         _widgetResourceService = widgetResourceService;
     }
-
-    #region theme setting
-
-    public async Task SetThemeAsync()
-    {
-        foreach (var widgetWindow in WidgetsList)
-        {
-            await _themeSelectorService.SetRequestedThemeAsync(widgetWindow);
-        }
-        if (EditModeOverlayWindow != null)
-        {
-            await _themeSelectorService.SetRequestedThemeAsync(EditModeOverlayWindow);
-        }
-    }
-
-    #endregion
 
     #region widget window
 
@@ -192,13 +174,16 @@ public class WidgetManagerService : IWidgetManagerService
 
     private async Task CreateWidgetWindow(JsonWidgetItem widget)
     {
-        // Load widget info
+        // load widget info
         currentWidgetType = widget.Type;
         currentIndexTag = widget.IndexTag;
 
         // create widget window
         var widgetWindow = new WidgetWindow(widget);
         WidgetsList.Add(widgetWindow);
+
+        // register window
+        UIElementExtensions.RegisterWindow(widgetWindow);
 
         // handle widget settings
         await _activationService.ActivateWidgetWindowAsync(widgetWindow, widget.Settings);
@@ -379,6 +364,9 @@ public class WidgetManagerService : IWidgetManagerService
         if (EditModeOverlayWindow == null)
         {
             EditModeOverlayWindow = new OverlayWindow();
+
+            // register window
+            UIElementExtensions.RegisterWindow(EditModeOverlayWindow);
 
             await _activationService.ActivateOverlayWindowAsync(EditModeOverlayWindow);
             var _shell = EditModeOverlayWindow.Content as Frame;

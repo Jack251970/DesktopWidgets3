@@ -2,5 +2,5 @@
 
 public interface IWindowService
 {
-    Task RegisterWindowEx(BlankWindow window);
+    Task ActivateWindow(BlankWindow window);
 }
