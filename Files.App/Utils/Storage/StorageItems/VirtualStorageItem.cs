@@ -17,15 +17,15 @@ namespace Files.App.Utils.Storage;
 /// </summary>
 public class VirtualStorageItem : IStorageItem
 {
-	private static BasicProperties props;
+	private static BasicProperties props = null!;
 
 	public Windows.Storage.FileAttributes Attributes { get; init; }
 
 	public DateTimeOffset DateCreated { get; init; }
 
-	public string Name { get; init; }
+    public string Name { get; init; } = null!;
 
-	public string Path { get; init; }
+	public string Path { get; init; } = null!;
 
 	private VirtualStorageItem() 
     {
@@ -61,7 +61,7 @@ public class VirtualStorageItem : IStorageItem
 
 				try
 				{
-					FileTimeToSystemTime(ref findData.ftCreationTime, out SYSTEMTIME systemCreatedDateOutput);
+					FileTimeToSystemTime(ref findData.ftCreationTime, out var systemCreatedDateOutput);
 					itemCreatedDate = systemCreatedDateOutput.ToDateTime();
 				}
 				catch (ArgumentException)

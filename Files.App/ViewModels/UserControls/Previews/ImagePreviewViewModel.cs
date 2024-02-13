@@ -10,7 +10,7 @@ namespace Files.App.ViewModels.Previews;
 
 public class ImagePreviewViewModel : BasePreviewModel
 {
-	private ImageSource imageSource;
+	private ImageSource imageSource = null!;
 	public ImageSource ImageSource
 	{
 		get => imageSource;

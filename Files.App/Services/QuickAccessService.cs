@@ -46,7 +46,7 @@ public class QuickAccessService : IQuickAccessService
 	{
 		var shellAppType = Type.GetTypeFromProgID("Shell.Application");
 		var shell = Activator.CreateInstance(shellAppType!);
-		dynamic? f2 = shellAppType.InvokeMember("NameSpace", System.Reflection.BindingFlags.InvokeMethod, null, shell, new object[] { $"shell:{guid}" });
+		dynamic? f2 = shellAppType!.InvokeMember("NameSpace", System.Reflection.BindingFlags.InvokeMethod, null, shell, new object[] { $"shell:{guid}" });
 
 		if (folderPaths.Length == 0)
         {

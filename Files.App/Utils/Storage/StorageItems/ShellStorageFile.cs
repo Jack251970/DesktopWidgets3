@@ -53,7 +53,7 @@ public class ShellStorageFile : BaseStorageFile
 
 	public override FileAttributes Attributes => FileAttributes.Normal | FileAttributes.ReadOnly;
 
-	private IStorageItemExtraProperties properties;
+	private IStorageItemExtraProperties properties = null!;
 	public override IStorageItemExtraProperties Properties => properties ??= new BaseBasicStorageItemExtraProperties(this);
 
 	public ShellStorageFile(ShellFileItem item)

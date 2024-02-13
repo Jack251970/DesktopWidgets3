@@ -5,6 +5,8 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.Data.Items;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 public class WslDistroItem : ObservableObject, INavigationControlItem
 {
 	public string Text { get; set; }

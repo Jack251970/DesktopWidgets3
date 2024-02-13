@@ -13,6 +13,8 @@ using IO = System.IO;
 
 namespace Files.App.Utils.Storage;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 {
 	private readonly string containerPath;
@@ -379,7 +381,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
                 {
                     var compressor = new SevenZipCompressor() { CompressionMode = CompressionMode.Append };
                     compressor.SetFormatFromExistingArchive(archiveStream);
-                    await compressor.ModifyArchiveAsync(archiveStream, new Dictionary<int, string>() { { index, null } }, Credentials.Password, ms);
+                    await compressor.ModifyArchiveAsync(archiveStream, new Dictionary<int, string>() { { index, null! } }, Credentials.Password, ms);
                 }
                 using (var archiveStream = await OpenZipFileAsync(FileAccessMode.ReadWrite))
                 {

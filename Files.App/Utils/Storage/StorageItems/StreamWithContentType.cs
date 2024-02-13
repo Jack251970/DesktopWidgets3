@@ -10,6 +10,8 @@ using Windows.Storage.Streams;
 
 namespace Files.App.Utils.Storage;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 public class InputStreamWithDisposeCallback : IInputStream
 {
 	private readonly Stream stream;

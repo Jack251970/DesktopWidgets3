@@ -9,7 +9,7 @@ public class SystemTypeToXaml : MarkupExtension
 {
 	#region Private Members
 
-	private object parameter;
+	private object parameter = null!;
 
 	#endregion Private Members
 

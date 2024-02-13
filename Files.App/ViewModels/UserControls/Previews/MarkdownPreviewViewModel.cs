@@ -7,7 +7,7 @@ namespace Files.App.ViewModels.Previews;
 
 public class MarkdownPreviewViewModel : BasePreviewModel
 {
-	private string textValue;
+	private string textValue = null!;
 	public string TextValue
 	{
 		get => textValue;

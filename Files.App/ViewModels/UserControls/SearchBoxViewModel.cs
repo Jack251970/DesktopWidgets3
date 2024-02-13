@@ -7,133 +7,178 @@ using Microsoft.UI.Xaml.Input;
 using Windows.Foundation;
 using Windows.System;
 
-namespace Files.App.ViewModels.UserControls
+namespace Files.App.ViewModels.UserControls;
+
+public class SearchBoxViewModel : ObservableObject, ISearchBox
 {
-	public class SearchBoxViewModel : ObservableObject, ISearchBox
+	private string query = null!;
+	public string Query
 	{
-		private string query;
-		public string Query
+		get => query;
+		set => SetProperty(ref query, value);
+	}
+
+	public bool WasQuerySubmitted { get; set; } = false;
+
+	public event TypedEventHandler<ISearchBox, SearchBoxTextChangedEventArgs>? TextChanged;
+
+	public event TypedEventHandler<ISearchBox, SearchBoxQuerySubmittedEventArgs>? QuerySubmitted;
+
+	public event EventHandler<ISearchBox>? Escaped;
+
+	private readonly SuggestionComparer suggestionComparer = new();
+
+	public ObservableCollection<SuggestionModel> Suggestions { get; } = new ObservableCollection<SuggestionModel>();
+
+	private readonly List<SuggestionModel> oldQueries = new();
+
+	public void ClearSuggestions()
+	{
+		Suggestions.Clear();
+	}
+
+	public void SetSuggestions(IEnumerable<SuggestionModel> suggestions)
+	{
+		ClearSuggestions();
+
+		var items = suggestions.OrderBy(suggestion => suggestion, suggestionComparer).ToList();
+
+		var oldSuggestions = Suggestions.Except(items, suggestionComparer).ToList();
+		foreach (var oldSuggestion in oldSuggestions)
+        {
+            Suggestions.Remove(oldSuggestion);
+        }
+
+        var newSuggestions = items.Except(Suggestions, suggestionComparer).ToList();
+		foreach (var newSuggestion in newSuggestions)
 		{
-			get => query;
-			set => SetProperty(ref query, value);
-		}
-
-		public bool WasQuerySubmitted { get; set; } = false;
-
-		public event TypedEventHandler<ISearchBox, SearchBoxTextChangedEventArgs>? TextChanged;
-
-		public event TypedEventHandler<ISearchBox, SearchBoxQuerySubmittedEventArgs>? QuerySubmitted;
-
-		public event EventHandler<ISearchBox>? Escaped;
-
-		private readonly SuggestionComparer suggestionComparer = new SuggestionComparer();
-
-		public ObservableCollection<SuggestionModel> Suggestions { get; } = new ObservableCollection<SuggestionModel>();
-
-		private readonly List<SuggestionModel> oldQueries = new List<SuggestionModel>();
-
-		public void ClearSuggestions()
-		{
-			Suggestions.Clear();
-		}
-
-		public void SetSuggestions(IEnumerable<SuggestionModel> suggestions)
-		{
-			ClearSuggestions();
-
-			var items = suggestions.OrderBy(suggestion => suggestion, suggestionComparer).ToList();
-
-			var oldSuggestions = Suggestions.Except(items, suggestionComparer).ToList();
-			foreach (var oldSuggestion in oldSuggestions)
-				Suggestions.Remove(oldSuggestion);
-
-			var newSuggestions = items.Except(Suggestions, suggestionComparer).ToList();
-			foreach (var newSuggestion in newSuggestions)
+			var indexSuggestion = Suggestions.FirstOrDefault(suggestion => suggestionComparer.Compare(suggestion, newSuggestion) < 1);
+			if (indexSuggestion is not null)
 			{
-				var indexSuggestion = Suggestions.FirstOrDefault(suggestion => suggestionComparer.Compare(suggestion, newSuggestion) < 1);
-				if (!(indexSuggestion is null))
-				{
-					int index = Suggestions.IndexOf(indexSuggestion);
-					Suggestions.Insert(index, newSuggestion);
-				}
-				else
-				{
-					Suggestions.Add(newSuggestion);
-				}
-			}
-		}
-
-		public void SearchRegion_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs e)
-		{
-			TextChanged?.Invoke(this, new SearchBoxTextChangedEventArgs(e.Reason));
-		}
-
-		public void SearchRegion_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs e)
-		{
-			if (e.ChosenSuggestion is null && string.IsNullOrWhiteSpace(e.QueryText))
-				return;
-
-			WasQuerySubmitted = true;
-
-			if (e.ChosenSuggestion is SuggestionModel chosen && chosen.ItemPath is null)
-			{
-				Query = chosen.Name;
-				QuerySubmitted?.Invoke(this, new SearchBoxQuerySubmittedEventArgs(null));
+				var index = Suggestions.IndexOf(indexSuggestion);
+				Suggestions.Insert(index, newSuggestion);
 			}
 			else
 			{
-				QuerySubmitted?.Invoke(this, new SearchBoxQuerySubmittedEventArgs((SuggestionModel)e.ChosenSuggestion));
-			}
-
-			if (!string.IsNullOrWhiteSpace(e.QueryText))
-			{
-				// If the element is already contained, update its position
-				if (oldQueries.FirstOrDefault(suggestion => suggestion.Name == e.QueryText) is SuggestionModel old)
-					oldQueries.Remove(old);
-
-				oldQueries.Insert(0, new SuggestionModel(e.QueryText, true));
-
-				// Limit to last 10 queries to improve performance
-				if (oldQueries.Count > 10)
-					oldQueries.RemoveAt(10);
+				Suggestions.Add(newSuggestion);
 			}
 		}
+	}
 
-		public void SearchRegion_Escaped(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs e)
+	public void SearchRegion_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs e)
+	{
+		TextChanged?.Invoke(this, new SearchBoxTextChangedEventArgs(e.Reason));
+	}
+
+	public void SearchRegion_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs e)
+	{
+		if (e.ChosenSuggestion is null && string.IsNullOrWhiteSpace(e.QueryText))
+        {
+            return;
+        }
+
+        WasQuerySubmitted = true;
+
+		if (e.ChosenSuggestion is SuggestionModel chosen && chosen.ItemPath is null)
 		{
-			Escaped?.Invoke(this, this);
+			Query = chosen.Name;
+			QuerySubmitted?.Invoke(this, new SearchBoxQuerySubmittedEventArgs(null!));
+		}
+		else
+		{
+			QuerySubmitted?.Invoke(this, new SearchBoxQuerySubmittedEventArgs((SuggestionModel)e.ChosenSuggestion!));
 		}
 
-		public void SearchRegion_GotFocus(object sender, RoutedEventArgs e)
+		if (!string.IsNullOrWhiteSpace(e.QueryText))
 		{
-			if (string.IsNullOrWhiteSpace(query))
-				AddRecentQueries();
-		}
+			// If the element is already contained, update its position
+			if (oldQueries.FirstOrDefault(suggestion => suggestion.Name == e.QueryText) is SuggestionModel old)
+            {
+                oldQueries.Remove(old);
+            }
 
-		public void SearchRegion_KeyDown(object sender, KeyRoutedEventArgs e)
-		{
-			e.Handled =
-				e.Key is VirtualKey.Left ||
-				e.Key is VirtualKey.Right ||
-				((e.Key is VirtualKey.Up || e.Key is VirtualKey.Down) && Suggestions.Count == 0);
-		}
+            oldQueries.Insert(0, new SuggestionModel(e.QueryText, true));
 
-		public void AddRecentQueries()
-		{
-			ClearSuggestions();
-			oldQueries.ForEach(Suggestions.Add);
-		}
+			// Limit to last 10 queries to improve performance
+			if (oldQueries.Count > 10)
+            {
+                oldQueries.RemoveAt(10);
+            }
+        }
+	}
 
-		private class SuggestionComparer : IEqualityComparer<SuggestionModel>, IComparer<SuggestionModel>
-		{
-			public int Compare(SuggestionModel x, SuggestionModel y)
-				=> y.ItemPath.CompareTo(x.ItemPath);
+	public void SearchRegion_Escaped(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs e)
+	{
+		Escaped?.Invoke(this, this);
+	}
 
-			public bool Equals(SuggestionModel x, SuggestionModel y)
-				=> y.ItemPath.Equals(x.ItemPath);
+	public void SearchRegion_GotFocus(object sender, RoutedEventArgs e)
+	{
+		if (string.IsNullOrWhiteSpace(query))
+        {
+            AddRecentQueries();
+        }
+    }
 
-			public int GetHashCode(SuggestionModel o)
-				=> o.ItemPath.GetHashCode();
-		}
+	public void SearchRegion_KeyDown(object sender, KeyRoutedEventArgs e)
+	{
+		e.Handled =
+			e.Key is VirtualKey.Left ||
+			e.Key is VirtualKey.Right ||
+			((e.Key is VirtualKey.Up || e.Key is VirtualKey.Down) && Suggestions.Count == 0);
+	}
+
+	public void AddRecentQueries()
+	{
+		ClearSuggestions();
+		oldQueries.ForEach(Suggestions.Add);
+	}
+
+	private class SuggestionComparer : IEqualityComparer<SuggestionModel>, IComparer<SuggestionModel>
+	{
+    public int Compare(SuggestionModel? x, SuggestionModel? y)
+    {
+        if (x is null && y is null)
+        {
+            return 0;
+        }
+
+        if (x is null)
+        {
+            return y!.ItemPath!.CompareTo(null);
+        }
+
+        if (y is null)
+        {
+            return -x!.ItemPath!.CompareTo(null);
+        }
+
+        return y.ItemPath!.CompareTo(x.ItemPath);
+    }
+
+    public bool Equals(SuggestionModel? x, SuggestionModel? y)
+    {
+        if (x is null && y is null)
+        {
+            return true;
+        }
+
+        if (x is null || y is null)
+        {
+            return false;
+        }
+
+        return y.ItemPath!.Equals(x.ItemPath);
+    }
+
+    public int GetHashCode(SuggestionModel? o)
+    {
+        if (o is null)
+        {
+            return 0;
+        }
+
+        return o.ItemPath!.GetHashCode();
+    }
 	}
 }

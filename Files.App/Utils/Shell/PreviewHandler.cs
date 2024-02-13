@@ -5,6 +5,8 @@ using Windows.UI;
 
 namespace Files.App.Utils.Shell;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 /// <summary>
 /// Credits: https://github.com/GeeLaw/PreviewHost/
 /// </summary>
@@ -73,7 +75,7 @@ public sealed class PreviewHandler : IDisposable
 	#region IPreviewHandler major interfaces
 
 	[ComImport, Guid("8895b1c6-b41f-4c1c-a562-0d564250836f"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	interface IPreviewHandler
+	private interface IPreviewHandler
 	{
 		[PreserveSig]
 		HRESULT SetWindow(IntPtr hwnd, ref RECT prc);
@@ -91,7 +93,7 @@ public sealed class PreviewHandler : IDisposable
 	}
 
 	[ComImport, Guid("196bf9a5-b346-4ef0-aa1e-5dcdb76768b1"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	interface IPreviewHandlerVisuals
+	private interface IPreviewHandlerVisuals
 	{
 		[PreserveSig]
 		HRESULT SetBackgroundColor(uint color);
@@ -101,13 +103,13 @@ public sealed class PreviewHandler : IDisposable
 		HRESULT SetTextColor(uint color);
 	}
 
-	static uint ColorRefFromColor(Color color)
+	private static uint ColorRefFromColor(Color color)
 	{
 		return (((uint)color.B) << 16) | (((uint)color.G) << 8) | ((uint)color.R);
 	}
 
 	[ComImport, Guid("fc4801a3-2ba9-11cf-a229-00aa003d7352"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	interface IObjectWithSite
+	private interface IObjectWithSite
 	{
 		[PreserveSig]
 		HRESULT SetSite([In, MarshalAs(UnmanagedType.IUnknown)] object pUnkSite);
@@ -116,14 +118,14 @@ public sealed class PreviewHandler : IDisposable
 
 	#endregion IPreviewHandler major interfaces
 
-	bool disposed;
-	bool init;
-	bool shown;
-    readonly PreviewHandlerFrame comSite;
-    readonly nint hwnd;
-	IPreviewHandler previewHandler;
-	IPreviewHandlerVisuals visuals;
-	IntPtr pPreviewHandler;
+	private bool disposed;
+	private bool init;
+	private bool shown;
+    private readonly PreviewHandlerFrame comSite;
+    private readonly nint hwnd;
+	private IPreviewHandler previewHandler;
+	private IPreviewHandlerVisuals visuals;
+	private IntPtr pPreviewHandler;
 
 	public PreviewHandler(Guid clsid, nint frame)
 	{
@@ -158,17 +160,17 @@ public sealed class PreviewHandler : IDisposable
 	}
 
 	[Flags]
-	enum ClassContext : uint
+	private enum ClassContext : uint
 	{
 		LocalServer = 0x4
 	}
 
 	[DllImport("ole32.dll", CallingConvention = CallingConvention.StdCall)]
-	static extern HRESULT CoCreateInstance(ref Guid rclsid, IntPtr pUnkOuter, ClassContext dwClsContext, ref Guid riid, out IntPtr ppv);
+	private static extern HRESULT CoCreateInstance(ref Guid rclsid, IntPtr pUnkOuter, ClassContext dwClsContext, ref Guid riid, out IntPtr ppv);
 
-	static readonly Guid IPreviewHandlerIid = Guid.ParseExact("8895b1c6-b41f-4c1c-a562-0d564250836f", "d");
+	private static readonly Guid IPreviewHandlerIid = Guid.ParseExact("8895b1c6-b41f-4c1c-a562-0d564250836f", "d");
 
-	void SetupHandler(Guid clsid)
+	private void SetupHandler(Guid clsid)
 	{
 		IntPtr pph;
 		var iid = IPreviewHandlerIid;
@@ -217,38 +219,38 @@ public sealed class PreviewHandler : IDisposable
 	#region Initialization interfaces
 
 	[ComImport, Guid("b824b49d-22ac-4161-ac8a-9916e8fa3f7f"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	interface IInitializeWithStream
+	private interface IInitializeWithStream
 	{
 		[PreserveSig]
 		HRESULT Initialize(IStream psi, STGM grfMode);
 	}
 
 	[ComImport, Guid("b824b49d-22ac-4161-ac8a-9916e8fa3f7f"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	interface IInitializeWithStreamNative
+	private interface IInitializeWithStreamNative
 	{
 		[PreserveSig]
 		HRESULT Initialize(IntPtr psi, STGM grfMode);
 	}
 
-	static readonly Guid IInitializeWithStreamIid = Guid.ParseExact("b824b49d-22ac-4161-ac8a-9916e8fa3f7f", "d");
+	private static readonly Guid IInitializeWithStreamIid = Guid.ParseExact("b824b49d-22ac-4161-ac8a-9916e8fa3f7f", "d");
 
 	[ComImport, Guid("b7d14566-0509-4cce-a71f-0a554233bd9b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	interface IInitializeWithFile
+	private interface IInitializeWithFile
 	{
 		[PreserveSig]
 		HRESULT Initialize([MarshalAs(UnmanagedType.LPWStr)] string pszFilePath, STGM grfMode);
 	}
 
-	static readonly Guid IInitializeWithFileIid = Guid.ParseExact("b7d14566-0509-4cce-a71f-0a554233bd9b", "d");
+	private static readonly Guid IInitializeWithFileIid = Guid.ParseExact("b7d14566-0509-4cce-a71f-0a554233bd9b", "d");
 
 	[ComImport, Guid("7f73be3f-fb79-493c-a6c7-7ee14e245841"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-	interface IInitializeWithItem
+	private interface IInitializeWithItem
 	{
 		[PreserveSig]
 		HRESULT Initialize(IntPtr psi, STGM grfMode);
 	}
 
-	static readonly Guid IInitializeWithItemIid = Guid.ParseExact("7f73be3f-fb79-493c-a6c7-7ee14e245841", "d");
+	private static readonly Guid IInitializeWithItemIid = Guid.ParseExact("7f73be3f-fb79-493c-a6c7-7ee14e245841", "d");
 
 	#endregion
 
@@ -264,7 +266,7 @@ public sealed class PreviewHandler : IDisposable
 	{
 		if (mode != STGM.STGM_READ && mode != STGM.STGM_READWRITE)
         {
-            throw new ArgumentOutOfRangeException("mode", mode, "The argument mode must be Read or ReadWrite.");
+            throw new ArgumentOutOfRangeException(nameof(mode), mode, "The argument mode must be Read or ReadWrite.");
         }
 
         if (previewHandler is not IInitializeWithStream iws)
@@ -301,7 +303,7 @@ public sealed class PreviewHandler : IDisposable
 		EnsureNotInitialized();
 		if (mode != STGM.STGM_READ && mode != STGM.STGM_READWRITE)
         {
-            throw new ArgumentOutOfRangeException("mode", mode, "The argument mode must be Read or ReadWrite.");
+            throw new ArgumentOutOfRangeException(nameof(mode), mode, "The argument mode must be Read or ReadWrite.");
         }
 
         if (previewHandler is not IInitializeWithStreamNative iws)
@@ -338,7 +340,7 @@ public sealed class PreviewHandler : IDisposable
 		EnsureNotInitialized();
 		if (mode != STGM.STGM_READ && mode != STGM.STGM_READWRITE)
         {
-            throw new ArgumentOutOfRangeException("mode", mode, "The argument mode must be Read or ReadWrite.");
+            throw new ArgumentOutOfRangeException(nameof(mode), mode, "The argument mode must be Read or ReadWrite.");
         }
 
         if (previewHandler is not IInitializeWithItem iwi)
@@ -375,7 +377,7 @@ public sealed class PreviewHandler : IDisposable
 		EnsureNotInitialized();
 		if (mode != STGM.STGM_READ && mode != STGM.STGM_READWRITE)
         {
-            throw new ArgumentOutOfRangeException("mode", mode, "The argument mode must be Read or ReadWrite.");
+            throw new ArgumentOutOfRangeException(nameof(mode), mode, "The argument mode must be Read or ReadWrite.");
         }
 
         if (previewHandler is not IInitializeWithFile iwf)
@@ -472,7 +474,7 @@ public sealed class PreviewHandler : IDisposable
                 ItemStreamHelper.ReleaseObject(pobj);
             }
 
-            pobj = IntPtr.Zero;
+            //pobj = IntPtr.Zero;
 		}
 		throw new AggregateException(exceptions);
 	}

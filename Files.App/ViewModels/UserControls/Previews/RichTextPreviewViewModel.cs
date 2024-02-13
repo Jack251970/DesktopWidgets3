@@ -8,7 +8,7 @@ namespace Files.App.ViewModels.Previews;
 
 public class RichTextPreviewViewModel : BasePreviewModel
 {
-	public IRandomAccessStream Stream { get; set; }
+	public IRandomAccessStream Stream { get; set; } = null!;
 
 	public RichTextPreviewViewModel(ListedItem item) : base(item) { }
 

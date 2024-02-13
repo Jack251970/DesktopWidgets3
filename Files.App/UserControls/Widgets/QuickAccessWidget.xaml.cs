@@ -136,7 +136,8 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 
 	public event QuickAccessCardPropertiesInvokedEventHandler CardPropertiesInvoked;
 
-	public event EventHandler QuickAccessWidgetShowMultiPaneControlsInvoked;
+    // CHANGE: Unused event.
+	/*public event EventHandler QuickAccessWidgetShowMultiPaneControlsInvoked;*/
 
 	public event PropertyChangedEventHandler? PropertyChanged;
 

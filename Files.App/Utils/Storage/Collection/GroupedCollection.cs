@@ -10,7 +10,7 @@ public class GroupedCollection<T> : BulkConcurrentObservableCollection<T>, IGrou
     public GroupedHeaderViewModel Model
     {
         get; set;
-    }
+    } = null!;
 
     public GroupedCollection(IEnumerable<T> items) : base(items)
     {

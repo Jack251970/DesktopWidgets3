@@ -8,6 +8,8 @@ using Vanara.Windows.Shell;
 
 namespace Files.App.Utils.Shell;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 /// <summary>
 /// Represents an encapsulated item for shell library.
 /// </summary>
@@ -217,7 +219,7 @@ public class ShellLibraryEx : ShellFolder
 	/// <param name="allowUnindexableLocations">
 	/// If set to <c>true</c> do not display a warning dialog to the user in collisions that concern network locations that cannot be indexed.
 	/// </param>
-	public void ShowLibraryManagementDialog(IWin32Window parentWindow = null!, string title = null!, string instruction = null, bool allowUnindexableLocations = false)
+	public void ShowLibraryManagementDialog(IWin32Window parentWindow = null!, string title = null!, string instruction = null!, bool allowUnindexableLocations = false)
 	{
 		Shell32.SHShowManageLibraryUI(
 			IShellItem,

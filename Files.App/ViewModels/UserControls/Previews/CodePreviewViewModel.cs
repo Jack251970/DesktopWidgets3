@@ -10,14 +10,14 @@ public class CodePreviewViewModel : BasePreviewModel
 {
 	private static readonly Lazy<IReadOnlyDictionary<string, ILanguage>> extensions = new(GetDictionary);
 
-	private string textValue;
+	private string textValue = null!;
 	public string TextValue
 	{
 		get => textValue;
 		private set => SetProperty(ref textValue, value);
 	}
 
-	private ILanguage codeLanguage;
+	private ILanguage codeLanguage = null!;
 	public ILanguage CodeLanguage
 	{
 		get => codeLanguage;
