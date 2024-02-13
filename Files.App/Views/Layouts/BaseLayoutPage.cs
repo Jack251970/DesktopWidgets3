@@ -437,7 +437,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		ParentShellPageInstance.FilesystemViewModel.EmptyTextType = EmptyTextType.None;
 		ParentShellPageInstance.ToolbarViewModel.CanRefresh = true;
 
-		if (!navigationArguments.IsSearchResultPage)
+        if (!navigationArguments.IsSearchResultPage)
 		{
 			var previousDir = ParentShellPageInstance.FilesystemViewModel.WorkingDirectory;
 			await ParentShellPageInstance.FilesystemViewModel.SetWorkingDirectoryAsync(navigationArguments.NavPathParam);
@@ -503,7 +503,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			{
 				var displayName = App.LibraryManager.TryGetLibrary(navigationArguments.SearchPathParam!, out var lib) ? lib.Text : navigationArguments.SearchPathParam;
 				ParentShellPageInstance.UpdatePathUIToWorkingDirectory(null!, string.Format("SearchPagePathBoxOverrideText".GetLocalizedResource(), navigationArguments.SearchQuery, displayName));
-				var searchInstance = new Utils.Storage.FolderSearch
+				var searchInstance = new FolderSearch
 				{
 					Query = navigationArguments.SearchQuery,
 					Folder = navigationArguments.SearchPathParam,
@@ -515,11 +515,11 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			}
 		}
 
-		// Show controls that were hidden on the home page
-		ParentShellPageInstance.InstanceViewModel.IsPageTypeNotHome = true;
+        // Show controls that were hidden on the home page
+        ParentShellPageInstance.InstanceViewModel.IsPageTypeNotHome = true;
 		ParentShellPageInstance.FilesystemViewModel.UpdateGroupOptions();
 
-		UpdateCollectionViewSource();
+        UpdateCollectionViewSource();
 		FolderSettings.IsLayoutModeChanging = false;
 
 		SetSelectedItemsOnNavigation();
