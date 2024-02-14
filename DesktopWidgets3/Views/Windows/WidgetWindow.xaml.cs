@@ -63,6 +63,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region manager & handle
 
+    public WindowManager WindowManager => _manager;
     public IntPtr WindowHandle => _handle;
 
     private readonly WindowManager _manager;

@@ -3,6 +3,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using DesktopWidgets3.Helpers;
 using Windows.UI.ViewManagement;
+using WinUIEx;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -12,13 +13,30 @@ public sealed partial class MainWindow : WindowEx
 
     private readonly UISettings settings;
 
+    #region ui elements
+
     public UIElement? TitleBar { get; set; }
 
     public UIElement? TitleBarText { get; set; }
 
+    #endregion
+
+    #region manager & handle
+
+    public WindowManager WindowManager => _manager;
+    public IntPtr WindowHandle => _handle;
+
+    private readonly WindowManager _manager;
+    private readonly IntPtr _handle;
+
+    #endregion
+
     public MainWindow()
     {
         InitializeComponent();
+
+        _manager = WindowManager.Get(this);
+        _handle = this.GetWindowHandle();
 
         AppWindow.SetIcon("/Assets/WindowIcon.ico");
         Content = null;

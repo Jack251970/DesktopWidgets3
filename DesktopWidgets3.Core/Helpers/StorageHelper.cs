@@ -1,4 +1,5 @@
 ﻿using Windows.Storage;
+using Windows.Storage.Pickers;
 
 namespace DesktopWidgets3.Core.Helpers;
 
@@ -43,5 +44,27 @@ public class StorageHelper
 
             return StorageFile.GetFileFromPathAsync(path).AsTask();
         }
+    }
+
+    // Picked from: https://github.com/files-community/Files.
+    public static async Task<string?> PickSingleFolderDialog(IntPtr windowHandle)
+    {
+        // WINUI3
+        static FolderPicker InitializeWithWindow(FolderPicker obj, IntPtr windowHandle)
+        {
+            WinRT.Interop.InitializeWithWindow.Initialize(obj, windowHandle);
+
+            return obj;
+        }
+
+        var folderPicker = InitializeWithWindow(new FolderPicker(), windowHandle);
+        folderPicker.FileTypeFilter.Add("*");
+
+        var folder = await folderPicker.PickSingleFolderAsync();
+        if (folder is not null)
+        {
+            return folder.Path;
+        }
+        return null;
     }
 }
