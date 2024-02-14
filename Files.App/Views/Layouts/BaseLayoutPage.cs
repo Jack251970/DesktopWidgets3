@@ -517,7 +517,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
         // Show controls that were hidden on the home page
         ParentShellPageInstance.InstanceViewModel.IsPageTypeNotHome = true;
-		ParentShellPageInstance.FilesystemViewModel.UpdateGroupOptions();
+        // Fix: Fix grouping bug here.
+		//ParentShellPageInstance.FilesystemViewModel.UpdateGroupOptions();
 
         UpdateCollectionViewSource();
 		FolderSettings.IsLayoutModeChanging = false;
