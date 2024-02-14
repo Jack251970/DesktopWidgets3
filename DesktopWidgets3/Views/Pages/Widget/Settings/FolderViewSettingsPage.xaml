@@ -35,10 +35,6 @@
                         </Button>
                     </StackPanel>
                 </labs:SettingsCard>
-                
-                <labs:SettingsCard x:Uid="WidgetSettings_ShowIconOverlay_Card">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowIconOverlay, Mode=TwoWay}" />
-                </labs:SettingsCard>
 
                 <labs:SettingsCard x:Uid="WidgetSettings_ShowHiddenFile_Card">
                     <ToggleSwitch IsOn="{x:Bind ViewModel.ShowHiddenFile, Mode=TwoWay}" />

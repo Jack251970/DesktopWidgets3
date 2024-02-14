@@ -216,17 +216,11 @@
   <data name="WidgetSettings_FolderPath_Card.Header" xml:space="preserve">
     <value>文件夹路径</value>
   </data>
-  <data name="WidgetSettings_ShowIconOverlay_Card.Header" xml:space="preserve">
-    <value>上层图标</value>
-  </data>
   <data name="WidgetSettings_ShowSeconds_Card.Header" xml:space="preserve">
     <value>显示秒数</value>
   </data>
   <data name="WidgetSettings_FolderPath_Card.Description" xml:space="preserve">
     <value>组件加载的默认路径</value>
-  </data>
-  <data name="WidgetSettings_ShowIconOverlay_Card.Description" xml:space="preserve">
-    <value>在文件列表中显示上层图标</value>
   </data>
   <data name="WidgetSettings_ShowSeconds_Card.Description" xml:space="preserve">
     <value>在组件中显示秒数</value>

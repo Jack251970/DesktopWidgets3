@@ -22,8 +22,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private string FolderPath = string.Empty;
 
-    private bool ShowIconOverlay = true;
-
     private readonly FilesApp App;
 
     #region interfaces
@@ -111,12 +109,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         var _userSettingsService = App.GetService<IUserSettingsService>();
 
-        if (ShowIconOverlay != settings.ShowIconOverlay)
-        {
-            ShowIconOverlay = settings.ShowIconOverlay;
-            // TODO: Add support.
-        }
-
         if (_userSettingsService.FoldersSettingsService.ShowHiddenItems != settings.ShowHiddenFile)
         {
             _userSettingsService.FoldersSettingsService.ShowHiddenItems = settings.ShowHiddenFile;
@@ -167,7 +159,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         return new FolderViewWidgetSettings()
         {
             FolderPath = FolderPath,
-            ShowIconOverlay = ShowIconOverlay,
             ShowHiddenFile = _userSettingsService.FoldersSettingsService.ShowHiddenItems,
             AllowNavigation = AllowNavigation,
             ShowExtension = _userSettingsService.FoldersSettingsService.ShowFileExtensions,

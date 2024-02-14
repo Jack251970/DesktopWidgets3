@@ -1,5 +1,4 @@
-﻿using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Models.Widget;
+﻿using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Services;
 
@@ -57,7 +56,6 @@ public class WidgetResourceService : IWidgetResourceService
             WidgetType.FolderView => new FolderViewWidgetSettings()
             {
                 FolderPath = "C:\\",
-                ShowIconOverlay = true,
                 ShowHiddenFile = false,
                 AllowNavigation = true,
             },

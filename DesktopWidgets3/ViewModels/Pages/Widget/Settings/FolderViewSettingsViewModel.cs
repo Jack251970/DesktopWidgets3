@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Helpers;
 using DesktopWidgets3.Models.Widget;
 using DesktopWidgets3.ViewModels.Commands;
 
@@ -20,9 +19,6 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
 
     [ObservableProperty]
     private string _folderPath = $"C:\\";
-
-    [ObservableProperty]
-    private bool _showIconOverlay = true;
 
     [ObservableProperty]
     private bool _showHiddenFile;
@@ -54,7 +50,6 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     protected override void InitializeWidgetSettings()
     {
         FolderPath = Settings.FolderPath;
-        ShowIconOverlay = Settings.ShowIconOverlay;
         ShowHiddenFile = Settings.ShowHiddenFile;
         AllowNavigation = Settings.AllowNavigation;
         ShowExtension = Settings.ShowExtension;
@@ -71,15 +66,6 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
                 Settings.FolderPath = FolderPath = newPath;
                 await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
             }
-        }
-    }
-
-    partial void OnShowIconOverlayChanged(bool value)
-    {
-        if (_isInitialized)
-        {
-            Settings.ShowIconOverlay = value;
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
         }
     }
 

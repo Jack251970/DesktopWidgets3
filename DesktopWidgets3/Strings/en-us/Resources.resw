@@ -228,17 +228,11 @@
   <data name="WidgetSettings_FolderPath_Card.Header" xml:space="preserve">
     <value>Folder path</value>
   </data>
-  <data name="WidgetSettings_ShowIconOverlay_Card.Header" xml:space="preserve">
-    <value>Icon overlay</value>
-  </data>
   <data name="WidgetSettings_ShowSeconds_Card.Header" xml:space="preserve">
     <value>Show seconds</value>
   </data>
   <data name="WidgetSettings_FolderPath_Card.Description" xml:space="preserve">
     <value>The default folder path when loading the widget</value>
-  </data>
-  <data name="WidgetSettings_ShowIconOverlay_Card.Description" xml:space="preserve">
-    <value>Show the overlay of the icons in the file list</value>
   </data>
   <data name="WidgetSettings_ShowSeconds_Card.Description" xml:space="preserve">
     <value>Show seconds in the widget</value>
