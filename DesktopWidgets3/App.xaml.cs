@@ -33,8 +33,7 @@ public partial class App : Application
     // https://docs.microsoft.com/dotnet/core/extensions/logging
     public IHost? Host { get; private set; }
     
-    public static T GetService<T>()
-        where T : class
+    public static T GetService<T>() where T : class
     {
         if ((Current as App)!.Host!.Services.GetService(typeof(T)) is not T service)
         {

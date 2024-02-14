@@ -1,50 +1,30 @@
 ﻿using DesktopWidgets3.Contracts.ViewModels;
 using DesktopWidgets3.Models.Widget;
-using Files.App.Data.Commands;
 using DesktopWidgets3.Views.Windows;
-using Files.Core.Services;
 using Files.Core.ViewModels.FolderView;
 using Files.Core.Services.Settings;
-using Files.App.ViewModels.UserControls;
 using Microsoft.UI.Xaml.Controls;
 using Files.App.Views;
-using Files.App.Data.Contexts;
 using System.ComponentModel;
 using Files.App.ViewModels;
 using Files.Core.Data.EventArguments;
 using Files.Core.Data.Enums;
-using Files.Core.Services.DateTimeFormatter;
-using Files.Core.Services.SizeProvider;
 using Microsoft.UI.Xaml;
+using FilesApp = Files.App.App;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widget;
 
 public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetSettings>, IWidgetUpdate, IWidgetClose, IFolderViewViewModel
 {
+    private readonly IWidgetManagerService _widgetManagerService;
+
     private bool AllowNavigation = true;
 
     private string FolderPath = string.Empty;
 
     private bool ShowIconOverlay = true;
 
-    private readonly Files.App.App App;
-
-    private readonly IWidgetManagerService _widgetManagerService;
-
-    private readonly ICommandManager _commandManager;
-    private readonly IModifiableCommandManager _modifiableCommandManager;
-    private readonly IDialogService _dialogService;
-    private readonly StatusCenterViewModel _statusCenterViewModel;
-    private readonly InfoPaneViewModel _infoPaneViewModel;
-    private readonly IUserSettingsService _userSettingsService;
-    private readonly IDateTimeFormatter _dateTimeFormatter;
-    private readonly ISizeProvider _sizeProvider;
-
-    private readonly IWindowContext _windowContext;
-    private readonly IContentPageContext _contentPageContext;
-    private readonly IPageContext _pageContext;
-    private readonly IDisplayPageContext _displayPageContext;
-    private readonly IMultitaskingContext _multitaskingContext;
+    private readonly FilesApp App;
 
     #region interfaces
 
@@ -98,52 +78,14 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #endregion
 
-    public FolderViewViewModel(IWidgetManagerService widgetManagerService, 
-        ICommandManager commandManager, 
-        IModifiableCommandManager modifiableCommandManager, 
-        IDialogService dialogService, 
-        StatusCenterViewModel statusCenterViewModel, 
-        InfoPaneViewModel infoPaneViewModel, 
-        IUserSettingsService userSettingsService, 
-        IDateTimeFormatter dateTimeFormatter, 
-        ISizeProvider sizeProvider, 
-        IWindowContext windowContext, 
-        IContentPageContext contentPageContext, 
-        IPageContext pageContext,
-        IDisplayPageContext displayPageContext,
-        IMultitaskingContext multitaskingContext)
+    public FolderViewViewModel(IWidgetManagerService widgetManagerService)
     {
         _widgetManagerService = widgetManagerService;
 
         NavigatedTo += FolderViewViewModel_NavigatedTo;
-
-        // Initialize related services and contexts of Files
+        
+        // Initialize files app to handle files lifecycle
         App = new(this);
-
-        _commandManager = commandManager;
-        _modifiableCommandManager = modifiableCommandManager;
-        _dialogService = dialogService;
-        _statusCenterViewModel = statusCenterViewModel;
-        _infoPaneViewModel = infoPaneViewModel;
-        _userSettingsService = userSettingsService;
-        _dateTimeFormatter = dateTimeFormatter;
-        _sizeProvider = sizeProvider;
-
-        _windowContext = windowContext;
-        _contentPageContext = contentPageContext;
-        _pageContext = pageContext;
-        _displayPageContext = displayPageContext;
-        _multitaskingContext = multitaskingContext;
-
-        _windowContext.Initialize(this);
-        _displayPageContext.Initialize(this);
-        _multitaskingContext.Initialize(this);
-
-        _commandManager.Initialize(this);
-        _modifiableCommandManager.Initialize(_commandManager);
-        _dialogService.Initialize(this);
-        _infoPaneViewModel.Initialize(this);
-        _dateTimeFormatter.Initialize(this);
     }
     
     #region initialization
@@ -155,7 +97,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (!isInitialized)
         {
             // All callback of user settings service after setting initialization
-            _userSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
+            App.GetService<IUserSettingsService>().OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
 
             App.OnLaunched(FolderPath);
         }
@@ -167,6 +109,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     protected override void LoadSettings(FolderViewWidgetSettings settings)
     {
+        var _userSettingsService = App.GetService<IUserSettingsService>();
+
         if (ShowIconOverlay != settings.ShowIconOverlay)
         {
             ShowIconOverlay = settings.ShowIconOverlay;
@@ -219,6 +163,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public override FolderViewWidgetSettings GetSettings()
     {
+        var _userSettingsService = App.GetService<IUserSettingsService>();
         return new FolderViewWidgetSettings()
         {
             FolderPath = FolderPath,
@@ -282,33 +227,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         NavigatedTo -= FolderViewViewModel_NavigatedTo;
     }
 
-    T IFolderViewViewModel.GetService<T>() where T : class
-    {
-        return typeof(T) switch
-        {
-            Type t when t == typeof(ICommandManager) => (_commandManager as T)!,
-            Type t when t == typeof(IModifiableCommandManager) => (_modifiableCommandManager as T)!,
-            Type t when t == typeof(IDialogService) => (_dialogService as T)!,
-            Type t when t == typeof(StatusCenterViewModel) => (_statusCenterViewModel as T)!,
-            Type t when t == typeof(InfoPaneViewModel) => (_infoPaneViewModel as T)!,
-            Type t when t == typeof(IUserSettingsService) => (_userSettingsService as T)!,
-            Type t when t == typeof(IGeneralSettingsService) => (_userSettingsService.GeneralSettingsService as T)!,
-            Type t when t == typeof(IFoldersSettingsService) => (_userSettingsService.FoldersSettingsService as T)!,
-            Type t when t == typeof(IAppearanceSettingsService) => (_userSettingsService.AppearanceSettingsService as T)!,
-            Type t when t == typeof(IApplicationSettingsService) => (_userSettingsService.ApplicationSettingsService as T)!,
-            Type t when t == typeof(IInfoPaneSettingsService) => (_userSettingsService.InfoPaneSettingsService as T)!,
-            Type t when t == typeof(ILayoutSettingsService) => (_userSettingsService.LayoutSettingsService as T)!,
-            Type t when t == typeof(IDateTimeFormatter) => (_dateTimeFormatter as T)!,
-            Type t when t == typeof(ISizeProvider) => (_sizeProvider as T)!,
-            Type t when t == typeof(Files.Core.Services.Settings.IAppSettingsService) => (_userSettingsService.AppSettingsService as T)!,
-            Type t when t == typeof(IWindowContext) => (_windowContext as T)!,
-            Type t when t == typeof(IContentPageContext) => (_contentPageContext as T)!,
-            Type t when t == typeof(IPageContext) => (_pageContext as T)!,
-            Type t when t == typeof(IDisplayPageContext) => (_displayPageContext as T)!,
-            Type t when t == typeof(IMultitaskingContext) => (_multitaskingContext as T)!,
-            _ => null!,
-        };
-    }
+    T IFolderViewViewModel.GetService<T>() where T : class => App.GetService<T>();
 
     #endregion
 }

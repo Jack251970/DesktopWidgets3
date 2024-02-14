@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Core.Helpers;
+using Files.Core.Services.SizeProvider;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -42,7 +43,8 @@ public partial class App
 	{
         FolderViewViewModel = folderViewViewModel;
 
-        // CHANGE: Register folder view view model and its app instances.
+        // CHANGE: Initialize user settings service, register folder view view model and its app instances.
+        UserSettingsService ??= DependencyExtensions.GetService<IUserSettingsService>();
         FolderViewViewModels.Add(folderViewViewModel);
         MainPageViewModel.AppInstances.Add(folderViewViewModel, new());
 
@@ -116,11 +118,12 @@ public partial class App
 			if (appActivationArguments.Data is Windows.ApplicationModel.Activation.IActivatedEventArgs activationEventArgs)
             {
                 SystemInformation.Instance.TrackAppUse(activationEventArgs);
-            }
+            }*/
 
             // Configure the DI (dependency injection) container
-            var host = AppLifecycleHelper.ConfigureHost();
+            /*var host = AppLifecycleHelper.ConfigureHost();
 			Ioc.Default.ConfigureServices(host.Services);*/
+            InitializeServices();
 
 			// Hook events for the window
 			MainWindow.Closed += Window_Closed;
@@ -275,4 +278,79 @@ public partial class App
         // Wait for ongoing file operations
         FileOperationsHelpers.WaitForCompletion();
     }
+
+    #region Services & Interfaces
+
+    public ICommandManager CommandManager { get; private set; } = null!;
+    public IModifiableCommandManager ModifiableCommandManager { get; private set; } = null!;
+    public IDialogService DialogService { get; private set; } = null!;
+    public StatusCenterViewModel StatusCenterViewModel { get; private set; } = null!;
+    public InfoPaneViewModel InfoPaneViewModel { get; private set; } = null!;
+    public IUserSettingsService UserSettingsService { get; private set; } = null!;
+    public IDateTimeFormatter DateTimeFormatter { get; private set; } = null!;
+    public ISizeProvider SizeProvider { get; private set; } = null!;
+
+    public IWindowContext WindowContext { get; private set; } = null!;
+    public IContentPageContext ContentPageContext { get; private set; } = null!;
+    public IPageContext PageContext { get; private set; } = null!;
+    public IDisplayPageContext DisplayPageContext { get; private set; } = null!;
+    public IMultitaskingContext MultitaskingContext { get; private set; } = null!;
+
+    private void InitializeServices()
+    {
+        CommandManager ??= DependencyExtensions.GetService<ICommandManager>();
+        ModifiableCommandManager ??= DependencyExtensions.GetService<IModifiableCommandManager>();
+        DialogService ??= DependencyExtensions.GetService<IDialogService>();
+        StatusCenterViewModel ??= DependencyExtensions.GetService<StatusCenterViewModel>();
+        InfoPaneViewModel ??= DependencyExtensions.GetService<InfoPaneViewModel>();
+        UserSettingsService ??= DependencyExtensions.GetService<IUserSettingsService>();
+        DateTimeFormatter ??= DependencyExtensions.GetService<IDateTimeFormatter>();
+        SizeProvider ??= DependencyExtensions.GetService<ISizeProvider>();
+
+        WindowContext ??= DependencyExtensions.GetService<IWindowContext>();
+        ContentPageContext ??= DependencyExtensions.GetService<IContentPageContext>();
+        PageContext ??= DependencyExtensions.GetService<IPageContext>();
+        DisplayPageContext ??= DependencyExtensions.GetService<IDisplayPageContext>();
+        MultitaskingContext ??= DependencyExtensions.GetService<IMultitaskingContext>();
+
+        WindowContext.Initialize(FolderViewViewModel);
+        DisplayPageContext.Initialize(FolderViewViewModel);
+        MultitaskingContext.Initialize(FolderViewViewModel);
+
+        CommandManager.Initialize(FolderViewViewModel);
+        ModifiableCommandManager.Initialize(CommandManager);
+        DialogService.Initialize(FolderViewViewModel);
+        InfoPaneViewModel.Initialize(FolderViewViewModel);
+        DateTimeFormatter.Initialize(FolderViewViewModel);
+    }
+
+    public T GetService<T>() where T : class
+    {
+        return typeof(T) switch
+        {
+            Type t when t == typeof(ICommandManager) => (CommandManager as T)!,
+            Type t when t == typeof(IModifiableCommandManager) => (ModifiableCommandManager as T)!,
+            Type t when t == typeof(IDialogService) => (DialogService as T)!,
+            Type t when t == typeof(StatusCenterViewModel) => (StatusCenterViewModel as T)!,
+            Type t when t == typeof(InfoPaneViewModel) => (InfoPaneViewModel as T)!,
+            Type t when t == typeof(IUserSettingsService) => (UserSettingsService as T)!,
+            Type t when t == typeof(IGeneralSettingsService) => (UserSettingsService.GeneralSettingsService as T)!,
+            Type t when t == typeof(IFoldersSettingsService) => (UserSettingsService.FoldersSettingsService as T)!,
+            Type t when t == typeof(IAppearanceSettingsService) => (UserSettingsService.AppearanceSettingsService as T)!,
+            Type t when t == typeof(IApplicationSettingsService) => (UserSettingsService.ApplicationSettingsService as T)!,
+            Type t when t == typeof(IInfoPaneSettingsService) => (UserSettingsService.InfoPaneSettingsService as T)!,
+            Type t when t == typeof(ILayoutSettingsService) => (UserSettingsService.LayoutSettingsService as T)!,
+            Type t when t == typeof(IDateTimeFormatter) => (DateTimeFormatter as T)!,
+            Type t when t == typeof(ISizeProvider) => (SizeProvider as T)!,
+            Type t when t == typeof(IAppSettingsService) => (UserSettingsService.AppSettingsService as T)!,
+            Type t when t == typeof(IWindowContext) => (WindowContext as T)!,
+            Type t when t == typeof(IContentPageContext) => (ContentPageContext as T)!,
+            Type t when t == typeof(IPageContext) => (PageContext as T)!,
+            Type t when t == typeof(IDisplayPageContext) => (DisplayPageContext as T)!,
+            Type t when t == typeof(IMultitaskingContext) => (MultitaskingContext as T)!,
+            _ => null!,
+        };
+    }
+
+    #endregion
 }
