@@ -26,6 +26,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     #region interfaces
 
+    public event Action<string>? FolderPathChanged;
+
     WindowEx IFolderViewViewModel.MainWindow => WidgetWindow;
 
     IntPtr IFolderViewViewModel.WindowHandle => WidgetWindow.WindowHandle;
@@ -144,11 +146,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             _userSettingsService.ApplicationSettingsService.ShowRunningAsAdminPrompt = settings.ShowRunningAsAdminPrompt;
         }
 
-        // Put this last so that it will navigate to the new path even if it needs to refresh items
         if (FolderPath != settings.FolderPath)
         {
             FolderPath = settings.FolderPath;
-            /*navigationFolderPaths.Clear();*/
+            FolderPathChanged?.Invoke(FolderPath);
             // TODO: Navigate to new path.
         }
     }

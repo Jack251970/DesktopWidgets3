@@ -6,6 +6,12 @@ namespace Files.Core.ViewModels.FolderView;
 
 public partial interface IFolderViewViewModel
 {
+    #region widget settings
+
+    event Action<string>? FolderPathChanged;
+
+    #endregion
+
     WindowEx MainWindow { get; }
 
     IntPtr WindowHandle { get; }

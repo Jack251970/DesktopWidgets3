@@ -251,9 +251,25 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
         _lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
         _updateDateDisplayTimer.Start();
+
+        // CHANGE: Register event handler for folder path changed.
+        FolderViewViewModel.FolderPathChanged += FolderViewViewModel_FolderPathChanged;
     }
 
-	protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+    private async void FolderViewViewModel_FolderPathChanged(string folderPath)
+    {
+        // Move to new path
+        await ToolbarViewModel.CheckPathInputAsync(folderPath, ToolbarViewModel.PathComponents.LastOrDefault()?.Path!, this);
+
+        // Clear back stack
+        ItemDisplay.BackStack.Clear();
+
+        // Clear back & forward buttons state
+        ToolbarViewModel.CanGoBack = false;
+        ToolbarViewModel.CanGoForward = false;
+    }
+
+    protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
 	{
 		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 	}
@@ -925,5 +941,8 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         GitHelpers.GitFetchCompleted -= FilesystemViewModel_GitDirectoryUpdated;
 
 		_updateDateDisplayTimer.Stop();
-	}
+
+        // CHANGE: Unregister event handler for folder path changed.
+        FolderViewViewModel.FolderPathChanged -= FolderViewViewModel_FolderPathChanged;
+    }
 }
