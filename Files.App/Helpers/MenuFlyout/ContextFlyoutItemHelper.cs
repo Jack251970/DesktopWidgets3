@@ -396,9 +396,9 @@ public static class ContextFlyoutItemHelper
 				ShowItem = itemsSelected && showOpenItemWith
 			},
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenFileLocation).Build(),
-            /*new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewTabAction).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenInNewWindowItemAction).Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewPaneAction).Build(),*/
+			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenDirectoryInNewPaneAction).Build(),
 			new()
 			{
 				Text = "BaseLayoutItemContextFlyoutSetAs/Text".GetLocalizedResource(),

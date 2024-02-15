@@ -8,6 +8,8 @@ public partial interface IFolderViewViewModel
 {
     #region widget settings
 
+    bool AllowNavigation { get; }
+
     event Action<string>? FolderPathChanged;
 
     #endregion

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Windows.System;
-
 namespace Files.App.Actions;
 
 internal class OpenInNewWindowItemAction : ObservableObject, IAction
@@ -49,12 +47,14 @@ internal class OpenInNewWindowItemAction : ObservableObject, IAction
 
 		foreach (var listedItem in items)
 		{
-			var selectedItemPath = (listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath;
-			var folderUri = new Uri($"files-uwp:?folder={@selectedItemPath}");
+            // CHANGE: Open in new window means opening in explorer.
+            await NavigationHelpers.OpenInExplorerAsync((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
+            /*var selectedItemPath = (listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath;
+            var folderUri = new Uri($"files-uwp:?folder={@selectedItemPath}");
 
-			await Launcher.LaunchUriAsync(folderUri);
-		}
-	}
+			await Launcher.LaunchUriAsync(folderUri);*/
+        }
+    }
 
 	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{

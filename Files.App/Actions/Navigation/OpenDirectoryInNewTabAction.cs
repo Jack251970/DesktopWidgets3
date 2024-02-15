@@ -39,21 +39,23 @@ internal class OpenDirectoryInNewTabAction : ObservableObject, IAction
 
 	public async Task ExecuteAsync()
 	{
-		if (context.ShellPage?.SlimContentPage?.SelectedItems is null)
+		if (context.ShellPage?.SlimContentPage?.SelectedItems is null || FolderViewViewModel is null)
         {
             return;
         }
 
         foreach (var listedItem in context.ShellPage.SlimContentPage.SelectedItems)
 		{
-			await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+            // CHANGE: Open in new tab means opening in explorer.
+            await NavigationHelpers.OpenInExplorerAsync((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
+			/*await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{
 				await NavigationHelpers.AddNewTabByPathAsync(
                     FolderViewViewModel,
 					typeof(PaneHolderPage),
 					(listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
 			},
-			Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
+			Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);*/
 		}
 	}
 

@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Core.Helpers;
 using Files.Shared.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -16,12 +17,40 @@ public static class NavigationHelpers
 	private static DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetService<DrivesViewModel>();
 	private static NetworkDrivesViewModel NetworkDrivesViewModel { get; } = DependencyExtensions.GetService<NetworkDrivesViewModel>();
 
-	public static Task OpenPathInNewTab(IFolderViewViewModel folderViewViewModel, string? path)
+    public static async Task OpenInExplorerAsync(string path) => await OpenInExplorerAsync(path, string.Empty);
+
+    public static async Task OpenInExplorerAsync(string path, string args)
+    {
+        try
+        {
+            var process = new Process();
+            process.StartInfo.FileName = "explorer.exe";
+            process.StartInfo.Arguments = args + " \"" + path + "\"";
+            process.StartInfo.UseShellExecute = true;
+            process.StartInfo.Verb = "open";
+            process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+            process.Start();
+            await process.WaitForExitAsync();
+        }
+        catch (Exception)
+        {
+            // Ignored
+        }
+    }
+
+    public static Task OpenPathInNewTab(IFolderViewViewModel folderViewViewModel, string? path)
 	{
-		return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), path);
+        // CHANGE: Open path in new tab means opening in explorer.
+        if (folderViewViewModel is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        return OpenInExplorerAsync(path!);
+		/*return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), path);*/
 	}
 
-	public static Task AddNewTabAsync(IFolderViewViewModel folderViewViewModel)
+    public static Task AddNewTabAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), "Home");
 	}
@@ -306,9 +335,9 @@ public static class NavigationHelpers
 	{
 		var filesUWPUri = new Uri("files-uwp:");
 		return Launcher.LaunchUriAsync(filesUWPUri).AsTask();
-	}
+    }
 
-	public static async Task OpenSelectedItemsAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, bool openViaApplicationPicker = false)
+    public static async Task OpenSelectedItemsAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, bool openViaApplicationPicker = false)
 	{
 		// Don't open files and folders inside recycle bin
 		if (associatedInstance.FilesystemViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
@@ -334,6 +363,8 @@ public static class NavigationHelpers
             return;
         }
 
+        // CHANGE: Opening in new tab, which means opening in explorer, only happens when multiple folders are selected.
+        forceOpenInNewTab = selectedItems.Count(item => item.PrimaryItemAttribute == StorageItemTypes.Folder) > 1;
         foreach (var item in selectedItems)
 		{
 			var type = item.PrimaryItemAttribute == StorageItemTypes.Folder
@@ -342,10 +373,10 @@ public static class NavigationHelpers
 
 			await OpenPath(folderViewViewModel, item.ItemPath, associatedInstance, type, false, openViaApplicationPicker, forceOpenInNewTab: forceOpenInNewTab);
 
-			if (type == FilesystemItemType.Directory)
+			/*if (type == FilesystemItemType.Directory)
             {
                 forceOpenInNewTab = true;
-            }
+            }*/
         }
 	}
 
@@ -716,7 +747,8 @@ public static class NavigationHelpers
 
 	private static async Task OpenPathAsync(IFolderViewViewModel folderViewViewModel, bool forceOpenInNewTab, bool openFolderInNewTabSetting, string path, string text, IShellPage associatedInstance, IEnumerable<string>? selectItems = null)
 	{
-		if (forceOpenInNewTab || openFolderInNewTabSetting)
+        // CHANGE: Add allow navigation setting.
+		if (forceOpenInNewTab || openFolderInNewTabSetting || !folderViewViewModel.AllowNavigation)
         {
 			await OpenPathInNewTab(folderViewViewModel, text);
 		}

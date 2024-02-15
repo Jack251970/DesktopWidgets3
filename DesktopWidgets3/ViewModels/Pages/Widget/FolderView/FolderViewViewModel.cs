@@ -18,13 +18,15 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 {
     private readonly IWidgetManagerService _widgetManagerService;
 
-    private bool AllowNavigation = true;
-
     private string FolderPath = string.Empty;
+
+    private bool AllowNavigation = true;
 
     private readonly FilesApp App;
 
     #region interfaces
+
+    bool IFolderViewViewModel.AllowNavigation => AllowNavigation;
 
     public event Action<string>? FolderPathChanged;
 
@@ -150,7 +152,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             FolderPath = settings.FolderPath;
             FolderPathChanged?.Invoke(FolderPath);
-            // TODO: Navigate to new path.
         }
     }
 
