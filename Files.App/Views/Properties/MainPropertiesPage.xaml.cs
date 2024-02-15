@@ -39,6 +39,9 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
         AppWindow = parameter.AppWindow;
 		Window = parameter.Window;
 
+        // CHANGE: Set title bar to TitlebarArea.
+        Window.SetTitleBar(TitlebarArea);
+
 		base.OnNavigatedTo(e);
 
 		MainPropertiesViewModel = new(FolderViewViewModel, Window, AppWindow, MainContentFrame, BaseProperties, parameter);
