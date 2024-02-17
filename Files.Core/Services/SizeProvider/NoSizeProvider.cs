@@ -3,6 +3,8 @@
 
 namespace Files.Core.Services.SizeProvider;
 
+#pragma warning disable CS0067 // The event is never used
+
 public class NoSizeProvider : ISizeProvider
 {
 	public event EventHandler<SizeChangedEventArgs>? SizeChanged;

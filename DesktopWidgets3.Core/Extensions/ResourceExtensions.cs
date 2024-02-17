@@ -1,5 +1,6 @@
-﻿using System.Collections.Concurrent;
-using Microsoft.Windows.ApplicationModel.Resources;
+﻿using Microsoft.Windows.ApplicationModel.Resources;
+
+using System.Collections.Concurrent;
 
 namespace DesktopWidgets3.Core.Extensions;
 

@@ -58,10 +58,10 @@
         <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
         <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.3" />
         <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.3" />
-        <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.2" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231219000" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.240211001" />
         <PackageReference Include="SevenZipSharp" Version="1.0.2" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.8" />
         <PackageReference Include="Tulpep.ActiveDirectoryObjectPicker" Version="3.0.11" />

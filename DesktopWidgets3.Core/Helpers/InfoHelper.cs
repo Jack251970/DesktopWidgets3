@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+
 using Windows.ApplicationModel;
 
 namespace DesktopWidgets3.Core.Helpers;

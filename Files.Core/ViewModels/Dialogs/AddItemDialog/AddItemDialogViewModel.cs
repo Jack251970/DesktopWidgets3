@@ -5,6 +5,8 @@ using Files.Shared.Utils;
 
 namespace Files.Core.ViewModels.Dialogs.AddItemDialog;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 public sealed class AddItemDialogViewModel : ObservableObject
 {
 	private readonly IImageService _imagingService;

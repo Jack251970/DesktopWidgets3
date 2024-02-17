@@ -5,6 +5,8 @@ using Files.Shared.Extensions;
 
 namespace Files.Core.ViewModels.Dialogs.FileSystemDialog;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<FileSystemDialogOptionChangedMessage>
 {
     private readonly IFolderViewViewModel FolderViewViewModel;

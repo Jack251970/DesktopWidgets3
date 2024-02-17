@@ -12,6 +12,8 @@ using Windows.Graphics;
 
 namespace Files.App.Utils.Storage;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 /// <summary>
 /// Represents a helper class that helps users open and handle item properties window
 /// </summary>

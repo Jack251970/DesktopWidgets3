@@ -1,4 +1,4 @@
-<!--  Copyright (c) 2023 Files Community. Licensed under the MIT License. See the LICENSE.  -->
+﻿<!--  Copyright (c) 2023 Files Community. Licensed under the MIT License. See the LICENSE.  -->
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
@@ -13,7 +13,6 @@
     <ItemGroup>
         <PackageReference Include="ByteSize" Version="2.1.2" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-        <PackageReference Include="WinUIEx" Version="2.3.3" />
     </ItemGroup>
 
     <ItemGroup>

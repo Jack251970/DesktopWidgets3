@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
+
 using UnhandledExceptionEventArgs = Microsoft.UI.Xaml.UnhandledExceptionEventArgs;
 
 namespace DesktopWidgets3.Core.Extensions;

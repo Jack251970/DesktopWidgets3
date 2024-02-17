@@ -12,6 +12,8 @@ using Windows.UI.Core;
 
 namespace Files.App.UserControls.Sidebar;
 
+#pragma warning disable CS0067 // The event is never used
+
 [ContentProperty(Name = "InnerContent")]
 public sealed partial class SidebarView : UserControl, INotifyPropertyChanged
 {
