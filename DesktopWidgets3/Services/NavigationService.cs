@@ -3,14 +3,11 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
-using DesktopWidgets3.Contracts.ViewModels;
-using DesktopWidgets3.Helpers;
-
 namespace DesktopWidgets3.Services;
 
 // For more information on navigation between pages see
 // https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/navigation.md
-public class NavigationService : INavigationService
+internal class NavigationService : INavigationService
 {
     private readonly IPageService _pageService;
     private object? _lastParameter;

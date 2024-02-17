@@ -1,7 +1,6 @@
-﻿using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 
-namespace DesktopWidgets3.Views.Pages.Widget.Settings;
+namespace DesktopWidgets3.Views.Pages.Widgets.Settings;
 
 public sealed partial class DiskSettingsPage : Page
 {

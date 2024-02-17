@@ -1,6 +1,4 @@
-﻿using DesktopWidgets3.Views.Windows;
-
-namespace DesktopWidgets3.Contracts.Services;
+﻿namespace DesktopWidgets3.Contracts.Services;
 
 public interface IActivationService
 {

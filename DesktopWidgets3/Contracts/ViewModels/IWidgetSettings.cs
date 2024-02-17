@@ -1,8 +1,6 @@
-﻿using DesktopWidgets3.Models.Widget;
+﻿namespace DesktopWidgets3.Contracts.ViewModels;
 
-namespace DesktopWidgets3.Contracts.ViewModels;
-
-public interface IWidgetSettings
+internal interface IWidgetSettings
 {
     BaseWidgetSettings GetWidgetSettings();
 }

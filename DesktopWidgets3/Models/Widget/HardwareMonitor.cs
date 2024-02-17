@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Models.Widget;
 
-public class HardwareMonitor
+internal class HardwareMonitor
 {
     #region monitor options
 

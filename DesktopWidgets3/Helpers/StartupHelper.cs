@@ -7,7 +7,7 @@ namespace DesktopWidgets3.Helpers;
 /// Helper for startup register and unregister.
 /// For MSIX package, you need to add extension: uap5:StartupTask.
 /// </summary>
-public class StartupHelper
+internal class StartupHelper
 {
     private static readonly string RegistryPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
     private static readonly string ApprovalPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run";

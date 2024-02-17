@@ -1,10 +1,7 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
-using DesktopWidgets3.ViewModels.Pages.Widget;
-using Microsoft.UI.Xaml;
-using DesktopWidgets3.Views.Windows;
-
-namespace DesktopWidgets3.Views.Pages.Widget;
+namespace DesktopWidgets3.Views.Pages.Widgets;
 
 public sealed partial class FrameShellPage : Page
 {

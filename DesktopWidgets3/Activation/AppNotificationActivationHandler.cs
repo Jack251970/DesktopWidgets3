@@ -4,7 +4,7 @@ using Microsoft.Windows.AppLifecycle;
 
 namespace DesktopWidgets3.Activation;
 
-public class AppNotificationActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
+internal class AppNotificationActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
 {
     private readonly INavigationService _navigationService;
     private readonly IAppNotificationService _notificationService;

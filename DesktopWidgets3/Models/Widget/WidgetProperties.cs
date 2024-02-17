@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Models.Widget;
 
-public class WidgetProperties
+internal class WidgetProperties
 {
     // Widget Type
     public static readonly DependencyProperty WidgetTypeProperty =

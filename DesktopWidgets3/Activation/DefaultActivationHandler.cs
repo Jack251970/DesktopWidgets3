@@ -1,10 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
 
-using DesktopWidgets3.ViewModels.Pages;
-
 namespace DesktopWidgets3.Activation;
 
-public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
+internal class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
 {
     private readonly INavigationService _navigationService;
 

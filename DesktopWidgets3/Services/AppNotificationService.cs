@@ -1,10 +1,11 @@
 ﻿using System.Collections.Specialized;
 using System.Web;
+
 using Microsoft.Windows.AppNotifications;
 
-namespace DesktopWidgets3.Notifications;
+namespace DesktopWidgets3.Services;
 
-public class AppNotificationService : IAppNotificationService
+internal class AppNotificationService : IAppNotificationService
 {
     private readonly INavigationService _navigationService;
 

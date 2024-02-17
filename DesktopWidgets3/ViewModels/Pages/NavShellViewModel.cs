@@ -2,8 +2,6 @@
 
 using Microsoft.UI.Xaml.Navigation;
 
-using DesktopWidgets3.Views.Pages;
-
 namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class NavShellViewModel : ObservableRecipient

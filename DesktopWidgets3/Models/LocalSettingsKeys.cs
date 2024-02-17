@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Models;
 
-public class LocalSettingsKeys
+internal class LocalSettingsKeys
 {
     public readonly string ThemeKey = "Theme";
 

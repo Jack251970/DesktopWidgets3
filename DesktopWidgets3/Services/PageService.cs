@@ -2,14 +2,9 @@
 
 using Microsoft.UI.Xaml.Controls;
 
-using DesktopWidgets3.ViewModels.Pages;
-using DesktopWidgets3.Views.Pages;
-using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
-using DesktopWidgets3.Views.Pages.Widget.Settings;
-
 namespace DesktopWidgets3.Services;
 
-public class PageService : IPageService
+internal class PageService : IPageService
 {
     private readonly Dictionary<string, Type> _pages = new();
 

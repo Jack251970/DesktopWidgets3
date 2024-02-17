@@ -1,17 +1,15 @@
 ﻿using Microsoft.Extensions.Options;
 
-using DesktopWidgets3.Models;
-using DesktopWidgets3.Models.Widget;
+using Newtonsoft.Json;
 
 using Windows.Storage;
-using Newtonsoft.Json;
 
 namespace DesktopWidgets3.Services;
 
 // For MSIX package:
 // Settings saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\Settings\settings.dat
 // WidgetList saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\LocalState\WidgetList.json
-public class LocalSettingsService : ILocalSettingsService
+internal class LocalSettingsService : ILocalSettingsService
 {
     private const string _defaultLocalSettingsFile = "LocalSettings.json";
     private const string _defaultWidgetListFile = "WidgetList.json";

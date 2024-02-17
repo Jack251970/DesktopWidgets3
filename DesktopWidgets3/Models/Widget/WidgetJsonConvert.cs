@@ -4,7 +4,7 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Models.Widget;
 
-public class JsonWidgetItemConverter : JsonConverter
+internal class JsonWidgetItemConverter : JsonConverter
 {
     public override bool CanConvert(Type objectType)
     {

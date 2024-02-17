@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Models;
 
-public class LocalSettingsOptions
+internal class LocalSettingsOptions
 {
     public string? LocalSettingsFile { get; set; }
 

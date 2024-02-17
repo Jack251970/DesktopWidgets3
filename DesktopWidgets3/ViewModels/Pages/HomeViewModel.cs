@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Helpers;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 

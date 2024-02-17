@@ -1,9 +1,9 @@
 ﻿using H.NotifyIcon;
+
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using DesktopWidgets3.Helpers;
+
 using Windows.UI.ViewManagement;
-using WinUIEx;
 
 namespace DesktopWidgets3.Views.Windows;
 

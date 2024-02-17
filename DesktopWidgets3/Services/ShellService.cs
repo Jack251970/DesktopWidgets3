@@ -2,12 +2,9 @@
 
 using Microsoft.UI.Xaml.Controls;
 
-using DesktopWidgets3.Helpers;
-using DesktopWidgets3.ViewModels.Pages;
-
 namespace DesktopWidgets3.Services;
 
-public class ShellService : IShellService
+internal class ShellService : IShellService
 {
     private readonly INavigationService _navigationService;
 

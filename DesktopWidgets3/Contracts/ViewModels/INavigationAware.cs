@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Contracts.ViewModels;
 
-public interface INavigationAware
+internal interface INavigationAware
 {
     void OnNavigatedTo(object parameter);
 

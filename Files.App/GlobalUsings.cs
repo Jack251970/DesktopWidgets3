@@ -15,7 +15,7 @@ global using SystemIO = global::System.IO;
 
 // CommunityToolkit.Mvvm
 global using global::CommunityToolkit.Mvvm.ComponentModel;
-/*global using global::CommunityToolkit.Mvvm.DependencyInjection;*/
+global using global::CommunityToolkit.Mvvm.DependencyInjection;
 global using global::CommunityToolkit.Mvvm.Input;
 global using global::CommunityToolkit.Mvvm.Messaging;
 
@@ -71,7 +71,6 @@ global using global::Files.Core.ViewModels.Dialogs.AddItemDialog;
 global using global::Files.Core.ViewModels.Dialogs.FileSystemDialog;
 global using global::Files.Core.ViewModels.FileTags;
 global using global::Files.Core.ViewModels.Widgets;
-global using global::Files.Core.ViewModels.FolderView;
 global using global::Files.Core.Utils;
 global using global::Files.Core.Utils.Cloud;
 global using global::Files.Core.Utils.CommandLine;
@@ -80,5 +79,7 @@ global using global::Files.Core.Utils.CommandLine;
 global using global::Files.Shared;
 global using global::Files.Shared.Extensions;
 
-// Core Extensions
+// Core
+global using global::DesktopWidgets3.Core.Contracts.Widgets;
 global using global::DesktopWidgets3.Core.Extensions;
+

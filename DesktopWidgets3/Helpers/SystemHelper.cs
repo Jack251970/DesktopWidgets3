@@ -5,7 +5,7 @@ namespace DesktopWidgets3.Helpers;
 /// <summary>
 /// Helper for actions related to windows system.
 /// </summary>
-public partial class SystemHelper
+internal partial class SystemHelper
 {
     #region check window existence
 

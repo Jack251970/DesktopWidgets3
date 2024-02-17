@@ -7,7 +7,7 @@ using System.Text;
 
 namespace DesktopWidgets3.Helpers;
 
-public class ShellGetFolder
+internal class ShellGetFolder
 {
     public delegate int BrowseCallbackProc(IntPtr hwnd, int msg, IntPtr lp, IntPtr wp);
 

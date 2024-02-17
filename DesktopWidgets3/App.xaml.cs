@@ -1,24 +1,13 @@
-﻿using H.NotifyIcon;
+﻿using Files.Core.Services;
+using Files.App.Helpers;
+
+using H.NotifyIcon;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
-using DesktopWidgets3.Activation;
-using DesktopWidgets3.Helpers;
-using DesktopWidgets3.Models;
-using DesktopWidgets3.Notifications;
-using DesktopWidgets3.Services;
-using DesktopWidgets3.Views.Pages;
-using DesktopWidgets3.Views.Pages.Widget;
-using DesktopWidgets3.Views.Pages.Widget.Settings;
-using DesktopWidgets3.Views.Windows;
-using DesktopWidgets3.ViewModels.Pages;
-using DesktopWidgets3.ViewModels.Pages.Widget;
-using DesktopWidgets3.ViewModels.Pages.Widget.Settings;
-using Files.Core.Services;
-using Files.App.Helpers;
-using Microsoft.UI.Dispatching;
 using UnhandledExceptionEventArgs = Microsoft.UI.Xaml.UnhandledExceptionEventArgs;
 
 namespace DesktopWidgets3;

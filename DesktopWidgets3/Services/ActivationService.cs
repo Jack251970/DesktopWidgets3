@@ -1,14 +1,9 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-using DesktopWidgets3.Activation;
-using DesktopWidgets3.Views.Pages;
-using DesktopWidgets3.Views.Pages.Widget;
-using DesktopWidgets3.Views.Windows;
-
 namespace DesktopWidgets3.Services;
 
-public class ActivationService : IActivationService
+internal class ActivationService : IActivationService
 {
     private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;

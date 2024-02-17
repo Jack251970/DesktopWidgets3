@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
-using DesktopWidgets3.Contracts.ViewModels;
-using DesktopWidgets3.Helpers;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 

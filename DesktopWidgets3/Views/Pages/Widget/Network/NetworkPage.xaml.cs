@@ -1,9 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
-
-using DesktopWidgets3.ViewModels.Pages.Widget;
 using Microsoft.UI.Xaml.Input;
 
-namespace DesktopWidgets3.Views.Pages.Widget;
+namespace DesktopWidgets3.Views.Pages.Widgets;
 
 public sealed partial class NetworkPage : Page
 {

@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Activation;
 
-public interface IActivationHandler
+internal interface IActivationHandler
 {
     bool CanHandle(object args);
 

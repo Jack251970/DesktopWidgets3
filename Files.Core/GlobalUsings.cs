@@ -31,9 +31,9 @@ global using global::Files.Core.Services;
 global using global::Files.Core.Services.Settings;
 global using global::Files.Core.Services.SizeProvider;
 global using global::Files.Core.ViewModels;
-global using global::Files.Core.ViewModels.FolderView;
 global using global::Files.Core.Utils;
 global using global::Files.Core.Utils.CommandLine;
 
-// Core Extensions
+// Core
+global using global::DesktopWidgets3.Core.Contracts.Widgets;
 global using global::DesktopWidgets3.Core.Extensions;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.UI.Dispatching;
-using DesktopWidgets3.Helpers;
+
 using Windows.UI.ViewManagement;
 using Windows.Graphics;
 

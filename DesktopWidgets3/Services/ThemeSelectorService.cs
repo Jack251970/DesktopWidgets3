@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
 
-using DesktopWidgets3.Models;
-
 namespace DesktopWidgets3.Services;
 
-public class ThemeSelectorService : IThemeSelectorService
+internal class ThemeSelectorService : IThemeSelectorService
 {
     private ElementTheme theme = ElementTheme.Default;
     public ElementTheme Theme {

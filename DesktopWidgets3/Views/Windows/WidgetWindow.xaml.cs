@@ -1,13 +1,13 @@
-﻿using Microsoft.UI.Dispatching;
-using DesktopWidgets3.Helpers;
-using Windows.UI.ViewManagement;
-using DesktopWidgets3.Models.Widget;
-using Windows.Graphics;
-using DesktopWidgets3.Views.Pages.Widget;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+using Microsoft.UI.Dispatching;
+
 using System.Runtime.InteropServices;
+
+using Windows.UI.ViewManagement;
+using Windows.Graphics;
+
 using WinUIEx.Messaging;
-using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Contracts.ViewModels;
 
 namespace DesktopWidgets3.Views.Windows;
 

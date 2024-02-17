@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
-using DesktopWidgets3.Models;
-using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.Services;
 
-public class AppSettingsService : IAppSettingsService
+internal class AppSettingsService : IAppSettingsService
 {
     private readonly ILocalSettingsService _localSettingsService;
     private readonly LocalSettingsKeys _localSettingsKeys;

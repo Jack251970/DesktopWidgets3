@@ -40,12 +40,12 @@ public struct WidgetSize
     {
         if (width < 0f)
         {
-            throw new ArgumentOutOfRangeException("width", GSR.ArgumentOutOfRange_NeedNonNegNum);
+            throw new ArgumentOutOfRangeException(nameof(width), GSR.ArgumentOutOfRange_NeedNonNegNum);
         }
 
         if (height < 0f)
         {
-            throw new ArgumentOutOfRangeException("height", GSR.ArgumentOutOfRange_NeedNonNegNum);
+            throw new ArgumentOutOfRangeException(nameof(height), GSR.ArgumentOutOfRange_NeedNonNegNum);
         }
 
         _width = width;
@@ -72,7 +72,7 @@ public struct WidgetSize
         return !(size1 == size2);
     }
 
-    public override bool Equals(object? o)
+    public readonly override bool Equals(object? o)
     {
         if (o is WidgetSize size)
         {
@@ -82,12 +82,12 @@ public struct WidgetSize
         return false;
     }
 
-    public bool Equals(WidgetSize value)
+    public readonly bool Equals(WidgetSize value)
     {
         return Equals(this, value);
     }
 
-    public override int GetHashCode()
+    public readonly override int GetHashCode()
     {
         if (IsEmpty)
         {
@@ -112,7 +112,7 @@ public struct WidgetSize
         return false;
     }
 
-    public override string ToString()
+    public readonly override string ToString()
     {
         if (IsEmpty)
         {

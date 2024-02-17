@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Windows.Input;
-using DesktopWidgets3.Models.Widget;
 
 namespace DesktopWidgets3.ViewModels.Commands;
 
