@@ -19,7 +19,6 @@ public class AppearanceViewModel : ObservableObject
 	public AppearanceViewModel()
 	{
         /*UserSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
-        // TODO: Add support for different widgets.
         ResourcesService = DependencyExtensions.GetService<IResourcesService>();
 
 		Themes = new List<string>()

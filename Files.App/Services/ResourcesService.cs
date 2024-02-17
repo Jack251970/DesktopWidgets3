@@ -48,7 +48,6 @@ public class ResourcesService : IResourcesService
 		var listItemHeight = useCompactSpacing ? 28 : 36;
 		var listItemMargin = useCompactSpacing ? "-2" : "0";
 
-        // TODO: Add support for different widgets.
 		Application.Current.Resources["ListItemHeight"] = listItemHeight;
 		Application.Current.Resources["ListItemMargin"] = listItemMargin;
 	}

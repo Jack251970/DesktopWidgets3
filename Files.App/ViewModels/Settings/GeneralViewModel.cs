@@ -166,7 +166,7 @@ public class GeneralViewModel : ObservableObject, IDisposable
 
 	private void AddSupportedAppLanguages()
 	{
-        // Fix: Fix languages fetching bug.
+        // FIX: Fix languages fetching bug.
         try
         {
             var appLanguages = ApplicationLanguages.ManifestLanguages
