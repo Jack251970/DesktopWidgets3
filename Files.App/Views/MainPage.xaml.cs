@@ -250,6 +250,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
             TabControl.Initialize(folderViewViewModel);
 
             FolderViewViewModel = folderViewViewModel;
+            FolderViewViewModel.RegisterRightTappedMenu(RightMarginGrid);
 
             UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
             Commands = folderViewViewModel.GetService<ICommandManager>();

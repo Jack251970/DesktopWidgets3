@@ -13,8 +13,7 @@
 
     <Grid
         x:Name="ContentArea"
-        Background="Transparent"
-        RightTapped="ContentArea_RightTapped">
+        Background="Transparent">
         <TextBlock 
             Text="{x:Bind ViewModel.SystemTime, Mode=OneWay}"
             HorizontalAlignment="Center"

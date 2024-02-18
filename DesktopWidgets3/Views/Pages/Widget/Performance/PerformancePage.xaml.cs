@@ -14,10 +14,7 @@ public sealed partial class PerformancePage : Page
     {
         ViewModel = App.GetService<PerformanceViewModel>();
         InitializeComponent();
-    }
 
-    private void ContentArea_RightTapped(object sender, RightTappedRoutedEventArgs e)
-    {
-        ViewModel.ShowRightTappedMenu(sender, e);
+        ViewModel.RegisterRightTappedMenu(ContentArea);
     }
 }

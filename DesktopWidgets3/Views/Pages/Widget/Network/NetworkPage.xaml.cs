@@ -14,10 +14,7 @@ public sealed partial class NetworkPage : Page
     {
         ViewModel = App.GetService<NetworkViewModel>();
         InitializeComponent();
-    }
 
-    private void ContentArea_RightTapped(object sender, RightTappedRoutedEventArgs e)
-    {
-        ViewModel.ShowRightTappedMenu(sender, e);
+        ViewModel.RegisterRightTappedMenu(ContentArea);
     }
 }

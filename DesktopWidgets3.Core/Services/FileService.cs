@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Core.Services;
 
 public class FileService : IFileService
 {
-    public T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null)
+    public T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null!)
     {
         var path = Path.Combine(folderPath, fileName);
         if (File.Exists(path))

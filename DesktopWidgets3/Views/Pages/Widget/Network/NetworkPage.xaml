@@ -13,8 +13,7 @@
 
     <Grid
         x:Name="ContentArea"
-        Background="Transparent"
-        RightTapped="ContentArea_RightTapped">
+        Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>

@@ -14,6 +14,12 @@ public partial interface IFolderViewViewModel
 
     #endregion
 
+    #region right tapped menu
+
+    void RegisterRightTappedMenu(FrameworkElement element);
+
+    #endregion
+
     WindowEx MainWindow { get; }
 
     IntPtr WindowHandle { get; }

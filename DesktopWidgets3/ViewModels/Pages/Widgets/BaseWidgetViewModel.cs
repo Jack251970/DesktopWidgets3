@@ -97,7 +97,12 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     #region right tapped menu
 
-    public void ShowRightTappedMenu(object sender, RightTappedRoutedEventArgs e)
+    public void RegisterRightTappedMenu(FrameworkElement element)
+    {
+        element.RightTapped += ShowRightTappedMenu;
+    }
+
+    private void ShowRightTappedMenu(object sender, RightTappedRoutedEventArgs e)
     {
         var element = sender as FrameworkElement;
         if (element != null)

@@ -15,10 +15,7 @@ public sealed partial class ClockPage : Page
     {
         ViewModel = App.GetService<ClockViewModel>();
         InitializeComponent();
-    }
 
-    private void ContentArea_RightTapped(object sender, RightTappedRoutedEventArgs e)
-    {
-        ViewModel.ShowRightTappedMenu(sender, e);
+        ViewModel.RegisterRightTappedMenu(ContentArea);
     }
 }
