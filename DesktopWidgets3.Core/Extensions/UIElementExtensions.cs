@@ -51,6 +51,11 @@ public static class UIElementExtensions
         }
     }
 
+    public static bool CheckWindowClosed(Window window)
+    {
+        return !WindowInstances.Contains(window);
+    }
+
     public static void CloseAllWindows()
     {
         var windowInstances = WindowInstances.ToList();

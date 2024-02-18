@@ -207,17 +207,21 @@ internal class WidgetManagerService : IWidgetManagerService
 
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
     {
-        // set edit mode
-        await SetEditMode(widgetWindow, false);
-
-        // widget close event
-        if (widgetWindow.PageViewModel is IWidgetClose viewModel)
+        // check if window is closed
+        if (!UIElementExtensions.CheckWindowClosed(widgetWindow))
         {
-            viewModel.WidgetWindow_Closing();
-        }
+            // set edit mode
+            await SetEditMode(widgetWindow, false);
 
-        // close windows
-        widgetWindow.Close();
+            // widget close event
+            if (widgetWindow.PageViewModel is IWidgetClose viewModel)
+            {
+                viewModel.WidgetWindow_Closing();
+            }
+
+            // close windows
+            widgetWindow.Close();
+        }
 
         // remove from widget list
         WidgetsList.Remove(widgetWindow);
@@ -452,7 +456,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         // set title bar
         var frameShellPage = window.Content as FrameShellPage;
-        frameShellPage?.SetCustomTitleBar(isEditMode);
+        frameShellPage!.SetCustomTitleBar(isEditMode);
 
         // set page update status
         if (window.PageViewModel is IWidgetUpdate viewModel)
