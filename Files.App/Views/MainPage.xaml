@@ -130,10 +130,10 @@
         </Grid.RowDefinitions>
 
         <Grid x:Name="RightMarginGrid" VerticalAlignment="Top">
-            <Grid.RowDefinitions>
+            <!--<Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+            </Grid.RowDefinitions>-->
 
             <!--  Tab Control  -->
             <!--<tabbar:TabBar
@@ -184,7 +184,7 @@
 				ShowSettingsButton="{x:Bind WindowContext.IsCompactOverlay, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
 				TabIndex="1" />
 
-            <Button
+            <!--<Button
 				x:Name="TogglePaneButton"
 				Margin="2,2,0,0"
 				HorizontalAlignment="Left"
@@ -193,7 +193,7 @@
 				BorderThickness="0"
 				Click="TogglePaneButton_Click"
 				Style="{StaticResource PaneToggleButtonStyle}"
-				Visibility="Collapsed" />
+				Visibility="Collapsed" />-->
         </Grid>
 
         <!--  Root  -->

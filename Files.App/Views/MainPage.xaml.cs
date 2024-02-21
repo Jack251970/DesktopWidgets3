@@ -578,11 +578,12 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 			InputSystemCursorShape.SizeWestEast : InputSystemCursorShape.SizeNorthSouth));
     }
 
-	private void TogglePaneButton_Click(object sender, RoutedEventArgs e)
+    // CHANGE: Remove toggle pane button.
+	/*private void TogglePaneButton_Click(object sender, RoutedEventArgs e)
 	{
 		if (SidebarControl.DisplayMode == SidebarDisplayMode.Minimal)
 		{
 			SidebarControl.IsPaneOpen = !SidebarControl.IsPaneOpen;
 		}
-	}
+	}*/
 }
