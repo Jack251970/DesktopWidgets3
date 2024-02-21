@@ -493,7 +493,8 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
     public bool ShouldPreviewPaneBeActive => UserSettingsService.InfoPaneSettingsService.IsEnabled && ShouldPreviewPaneBeDisplayed;
 
-	public bool ShouldPreviewPaneBeDisplayed
+    // CHANGE: Disable preview pane.
+    /*public bool ShouldPreviewPaneBeDisplayed
 	{
 		get
 		{
@@ -504,9 +505,10 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 			return isEnabled;
 		}
-	}
+	}*/
+    public bool ShouldPreviewPaneBeDisplayed => false;
 
-	private void LoadPaneChanged()
+    private void LoadPaneChanged()
 	{
 		OnPropertyChanged(nameof(ShouldViewControlBeDisplayed));
 		OnPropertyChanged(nameof(ShouldPreviewPaneBeActive));
