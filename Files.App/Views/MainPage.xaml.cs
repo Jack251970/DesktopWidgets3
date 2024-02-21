@@ -264,7 +264,11 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         }
 
         _ = ViewModel.OnNavigatedToAsync(e);
-	}
+
+        // CHANGE: Remove sidebar.
+        SidebarControl.DisplayMode = SidebarDisplayMode.Minimal;
+        SidebarControl.IsPaneOpen = false;
+    }
 
     // CHANGE: Remove keyboard event handlers.
 	/*protected async override void OnPreviewKeyDown(KeyRoutedEventArgs e) => await OnPreviewKeyDownAsync(e);
@@ -572,7 +576,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	{
 		this.ChangeCursor(InputSystemCursor.Create(PaneSplitter.GripperCursor == GridSplitter.GripperCursorType.SizeWestEast ?
 			InputSystemCursorShape.SizeWestEast : InputSystemCursorShape.SizeNorthSouth));
-	}
+    }
 
 	private void TogglePaneButton_Click(object sender, RoutedEventArgs e)
 	{

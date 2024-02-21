@@ -318,15 +318,19 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
         networkDrivesViewModel.Drives.CollectionChanged += (x, args) => Manager_DataChanged(SectionType.Network, args);
         WSLDistroManager.DataChanged += Manager_DataChanged;
         App.FileTagsManager.DataChanged += Manager_DataChanged;
-        SidebarDisplayMode = UserSettingsService.AppearanceSettingsService.IsSidebarOpen ? SidebarDisplayMode.Expanded : SidebarDisplayMode.Compact;
+        // CHANGE: Default set to minimal.
+        /*SidebarDisplayMode = UserSettingsService.AppearanceSettingsService.IsSidebarOpen ? SidebarDisplayMode.Expanded : SidebarDisplayMode.Compact;*/
+        SidebarDisplayMode = SidebarDisplayMode.Minimal;
 
         CreateLibraryCommand = new AsyncRelayCommand(() => LibraryManager.ShowCreateNewLibraryDialogAsync(FolderViewViewModel));
     }
 
 	private Task CreateItemHomeAsync()
 	{
-		return CreateSectionAsync(SectionType.Home);
-	}
+        // CHANGE: Remove home section.
+        return Task.CompletedTask;
+        /*return CreateSectionAsync(SectionType.Home);*/
+    }
 
 	private async void Manager_DataChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
