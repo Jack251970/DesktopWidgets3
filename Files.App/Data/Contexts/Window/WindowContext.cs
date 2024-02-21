@@ -7,7 +7,8 @@ namespace Files.App.Data.Contexts;
 
 internal class WindowContext : ObservableObject, IWindowContext
 {
-	private bool isCompactOverlay;
+    // CHANGE: Default to true.
+	private bool isCompactOverlay = true;
 	public bool IsCompactOverlay => isCompactOverlay;
 
 	public WindowContext()
