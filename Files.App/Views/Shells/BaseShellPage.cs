@@ -42,13 +42,13 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
-    protected IDialogService dialogService { get; set; } = null!;
+    protected IDialogService DialogService { get; set; } = null!;
 
-	protected IUserSettingsService userSettingsService { get; set; } = null!;
+	protected IUserSettingsService UserSettingsService { get; set; } = null!;
 
     /*protected readonly IUpdateService updateSettingsService = DependencyExtensions.GetService<IUpdateService>();*/
 
-    protected ICommandManager commands { get; set; } = null!;
+    protected ICommandManager Commands { get; set; } = null!;
 
     public ToolbarViewModel ToolbarViewModel { get; } = new();
 
@@ -234,10 +234,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
     // CHANGE: Initialize folder view view model and related services.
     protected void InitializeBaseShellPage()
     {
-        dialogService = FolderViewViewModel.GetService<IDialogService>();
-        userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
+        DialogService = FolderViewViewModel.GetService<IDialogService>();
+        UserSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
 
-        commands = FolderViewViewModel.GetService<ICommandManager>();
+        Commands = FolderViewViewModel.GetService<ICommandManager>();
 
         InstanceViewModel.Initialize(FolderViewViewModel);
         InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired += FolderSettings_LayoutPreferencesUpdateRequired;
@@ -249,7 +249,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated += AppSettings_SortOptionPreferenceUpdated;
         InstanceViewModel.FolderSettings.SortDirectoriesAlongsideFilesPreferenceUpdated += AppSettings_SortDirectoriesAlongsideFilesPreferenceUpdated;
 
-        _lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
+        _lastDateTimeFormats = UserSettingsService.GeneralSettingsService.DateTimeFormat;
         _updateDateDisplayTimer.Start();
 
         // CHANGE: Register event handler for folder path changed.
@@ -412,7 +412,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         }
         else if (e.ChosenSuggestion is null && !string.IsNullOrWhiteSpace(sender.Query))
         {
-            SubmitSearch(sender.Query, userSettingsService.GeneralSettingsService.SearchUnindexedItems);
+            SubmitSearch(sender.Query, UserSettingsService.GeneralSettingsService.SearchUnindexedItems);
         }
     }
 
@@ -430,7 +430,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 				Query = sender.Query,
 				Folder = FilesystemViewModel.WorkingDirectory,
 				MaxItemCount = 10,
-				SearchUnindexedItems = userSettingsService.GeneralSettingsService.SearchUnindexedItems
+				SearchUnindexedItems = UserSettingsService.GeneralSettingsService.SearchUnindexedItems
 			};
 
 			sender.SetSuggestions((await search.SearchAsync(FolderViewViewModel)).Select(suggestion => new SuggestionModel(suggestion)));
@@ -884,12 +884,12 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
             return;
         }
 
-        if (userSettingsService.GeneralSettingsService.DateTimeFormat != _lastDateTimeFormats)
+        if (UserSettingsService.GeneralSettingsService.DateTimeFormat != _lastDateTimeFormats)
 		{
-			_lastDateTimeFormats = userSettingsService.GeneralSettingsService.DateTimeFormat;
+			_lastDateTimeFormats = UserSettingsService.GeneralSettingsService.DateTimeFormat;
 			FilesystemViewModel?.UpdateDateDisplay(true);
 		}
-		else if (userSettingsService.GeneralSettingsService.DateTimeFormat == DateTimeFormats.Application)
+		else if (UserSettingsService.GeneralSettingsService.DateTimeFormat == DateTimeFormats.Application)
 		{
 			FilesystemViewModel?.UpdateDateDisplay(false);
 		}

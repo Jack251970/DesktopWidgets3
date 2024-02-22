@@ -21,7 +21,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 	private IUserSettingsService UserSettingsService { get; set; } = null!;
 
-    private IDialogService _dialogService { get; set; } = null!;
+    private IDialogService DialogService { get; set; } = null!;
 
     private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
@@ -222,7 +222,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
     {
         FolderViewViewModel = folderViewViewModel;
         UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-        _dialogService = folderViewViewModel.GetService<IDialogService>();
+        DialogService = folderViewViewModel.GetService<IDialogService>();
         Commands = folderViewViewModel.GetService<ICommandManager>();
 
         UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
@@ -253,7 +253,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
         }
 
         var viewModel = new ReleaseNotesDialogViewModel(ReleaseNotes);
-		var dialog = _dialogService.GetDialog(viewModel);
+		var dialog = DialogService.GetDialog(viewModel);
 
 		await dialog.TryShowAsync(FolderViewViewModel);
 	}
