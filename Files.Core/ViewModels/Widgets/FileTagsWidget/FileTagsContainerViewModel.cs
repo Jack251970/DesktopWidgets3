@@ -5,6 +5,8 @@ using Files.Shared.Utils;
 
 namespace Files.Core.ViewModels.Widgets.FileTagsWidget;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
+
 public sealed partial class FileTagsContainerViewModel : ObservableObject, IAsyncInitialize
 {
 	private readonly IFileTagsService _fileTagsService;

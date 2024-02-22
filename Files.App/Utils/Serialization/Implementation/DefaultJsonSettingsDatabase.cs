@@ -6,6 +6,8 @@ using System.Text.Json;
 
 namespace Files.App.Utils.Serialization.Implementation;
 
+#pragma warning disable IL2026 // Misuse of dynamic method signature
+
 internal class DefaultJsonSettingsDatabase : IJsonSettingsDatabase
 {
 	protected ISettingsSerializer SettingsSerializer { get; }

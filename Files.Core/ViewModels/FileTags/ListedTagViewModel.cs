@@ -3,6 +3,8 @@
 
 namespace Files.Core.ViewModels.FileTags;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
+
 public class ListedTagViewModel : ObservableObject
 {
 	private TagViewModel _Tag;

@@ -3,6 +3,8 @@
 
 namespace Files.Core.Data.Items;
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+
 public class ShellFileItem
 {
 	public bool IsFolder { get; set; }

@@ -13,6 +13,9 @@ using System.Text.RegularExpressions;
 
 namespace Files.App.Utils.Git;
 
+#pragma warning disable IL2026 // Misuse of dynamic method signature
+#pragma warning disable CA2254 // Template should be a static expression
+
 internal static partial class GitHelpers
 {
 	private const string BRANCH_NAME_PATTERN = @"^(?!/)(?!.*//)[^\000-\037\177 ~^:?*[]+(?!.*\.\.)(?!.*@\{)(?!.*\\)(?<!/\.)(?<!\.)(?<!/)(?<!\.lock)$";

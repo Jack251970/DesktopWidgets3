@@ -3,6 +3,8 @@
 
 namespace Files.Core.Data.Models;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
+
 public class HashInfoItem : ObservableObject
 {
 	private string _Algorithm;

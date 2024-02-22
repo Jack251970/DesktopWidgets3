@@ -3,6 +3,8 @@
 
 namespace Files.Core.Data.Items;
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+
 // Same definition of Vanara.PInvoke.User32.MenuItemType
 public enum MenuItemType : uint
 {

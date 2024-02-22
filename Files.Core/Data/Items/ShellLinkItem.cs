@@ -3,6 +3,8 @@
 
 namespace Files.Core.Data.Items;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
+
 public class ShellLinkItem : ShellFileItem
 {
 	public string TargetPath { get; set; }

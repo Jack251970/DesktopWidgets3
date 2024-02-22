@@ -5,6 +5,8 @@ using System.Text.Json;
 
 namespace Files.App.Utils.Serialization.Implementation;
 
+#pragma warning disable IL2026 // Misuse of dynamic method signature
+
 internal sealed class DefaultJsonSettingsSerializer : IJsonSettingsSerializer
 {
 	public static readonly JsonSerializerOptions Options = new()
