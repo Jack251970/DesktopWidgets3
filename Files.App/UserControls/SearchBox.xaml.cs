@@ -18,9 +18,12 @@ public sealed partial class SearchBox : UserControl
 		set => SetValue(SearchBoxViewModelProperty, value);
 	}
 
-	public SearchBox() => InitializeComponent();
+    public SearchBox()
+    {
+        InitializeComponent();
+    }
 
-	private void SearchRegion_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs e)
+    private void SearchRegion_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs e)
 		=> SearchBoxViewModel.SearchRegion_TextChanged(sender, e);
 
 	private void SearchRegion_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs e)

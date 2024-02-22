@@ -20,6 +20,8 @@ using VirtualKey = Windows.System.VirtualKey;
 
 namespace Files.App.Views;
 
+#pragma warning disable CA2254 // Template should be a static expression
+
 public sealed partial class MainPage : Page, INotifyPropertyChanged
 {
     // CHANGE: Use tab control model instead tab control component.
@@ -43,11 +45,15 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
     public static AppModel AppModel
 		=> App.AppModel;
 
-	/*private bool keyReleased = true;*/
+    /*private bool keyReleased = true;*/
 
-	private bool IsAppRunningAsAdmin => ElevationHelpers.IsAppRunAsAdmin();
+#pragma warning disable CA1822 // Mark members as static
 
-	private readonly DispatcherQueueTimer _updateDateDisplayTimer;
+    private bool IsAppRunningAsAdmin => ElevationHelpers.IsAppRunAsAdmin();
+
+#pragma warning disable CA1822 // Mark members as static
+
+    private readonly DispatcherQueueTimer _updateDateDisplayTimer;
 
 	public MainPage()
 	{
@@ -126,7 +132,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         }
     }
 
-	// WINUI3
+	/*// WINUI3
 	private ContentDialog SetContentDialogRoot(ContentDialog contentDialog)
 	{
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
@@ -135,7 +141,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         }
 
         return contentDialog;
-	}
+	}*/
 
 	private void UserSettingsService_OnSettingChangedEvent(object? sender, SettingChangedEventArgs e)
 	{
