@@ -154,11 +154,13 @@ public sealed partial class AddressToolbar : UserControl
         }
     }
 
-	private void SearchRegion_OnGotFocus(object sender, RoutedEventArgs e) => ViewModel!.SearchRegion_GotFocus(sender, e);
+	private void SearchRegion_OnGotFocus(object sender, RoutedEventArgs e) => ViewModel?.SearchRegion_GotFocus(sender, e);
 	private void SearchRegion_LostFocus(object sender, RoutedEventArgs e) => ViewModel!.SearchRegion_LostFocus(sender, e);
-	private void SearchRegion_AccessKeyInvoked(UIElement sender, AccessKeyInvokedEventArgs args) => sender.Focus(FocusState.Keyboard);
+#pragma warning disable CA1822 // Mark members as static
+    private void SearchRegion_AccessKeyInvoked(UIElement sender, AccessKeyInvokedEventArgs args) => sender.Focus(FocusState.Keyboard);
+#pragma warning disable CA1822 // Mark members as static
 
-	private void VisiblePath_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+    private void VisiblePath_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
 		=> ViewModel!.VisiblePath_QuerySubmitted(sender, args);
 
 	private void OngoingTasksActions_ProgressBannerPosted(object? _, StatusCenterItem e)
