@@ -178,6 +178,7 @@
 				HorizontalContentAlignment="Stretch"
 				x:Load="False"
 				Loaded="NavToolbar_Loaded"
+                Commands="{x:Bind Commands}"
 				OngoingTasksViewModel="{x:Bind OngoingTasksViewModel}"
 				ShowOngoingTasks="True"
 				ShowSearchBox="True"

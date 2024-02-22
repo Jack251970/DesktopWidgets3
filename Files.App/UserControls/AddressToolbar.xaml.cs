@@ -16,7 +16,15 @@ public sealed partial class AddressToolbar : UserControl
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     private IUserSettingsService UserSettingsService { get; set; } = null!;
-    public ICommandManager Commands { get; set; } = null!;
+
+    // Using a DependencyProperty as the backing store for Commands.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty CommandsProperty =
+        DependencyProperty.Register(nameof(Commands), typeof(ICommandManager), typeof(AddressToolbar), new(null));
+    public ICommandManager Commands
+    {
+        get => (ICommandManager)GetValue(CommandsProperty);
+        set => SetValue(CommandsProperty, value);
+    }
 
     // Using a DependencyProperty as the backing store for ShowOngoingTasks.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty ShowOngoingTasksProperty =
@@ -68,7 +76,7 @@ public sealed partial class AddressToolbar : UserControl
         FolderViewViewModel = folderViewViewModel;
 
         UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-        Commands = folderViewViewModel.GetService<ICommandManager>();
+        //Commands = folderViewViewModel.GetService<ICommandManager>();
     }
 
     private void NavToolbar_Loading(FrameworkElement _, object e)
