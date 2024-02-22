@@ -75,13 +75,13 @@
 	<AutoSuggestBox
 		x:Name="SearchRegion"
 		BorderBrush="{ThemeResource ControlElevationBorderBrush}"
-		GotFocus="{x:Bind SearchBoxViewModel.SearchRegion_GotFocus}"
+		GotFocus="SearchRegion_GotFocus"
 		ItemTemplate="{StaticResource SuggestionTemplate}"
-		ItemsSource="{x:Bind SearchBoxViewModel.Suggestions, Mode=OneWay}"
+		ItemsSource="{x:Bind Suggestions, Mode=OneWay}"
 		KeyDown="SearchRegion_KeyDown"
 		PlaceholderText="{helpers:ResourceString Name=/FilesResources/Search}"
 		QuerySubmitted="SearchRegion_QuerySubmitted"
-		Text="{x:Bind SearchBoxViewModel.Query, Mode=TwoWay}"
+		Text="{x:Bind Query, Mode=TwoWay}"
 		TextBoxStyle="{StaticResource TextBoxStyle}"
 		TextChanged="SearchRegion_TextChanged"
 		UpdateTextOnSelect="False">

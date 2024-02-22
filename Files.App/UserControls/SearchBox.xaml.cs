@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using LiteDB;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -15,13 +16,27 @@ public sealed partial class SearchBox : UserControl
 	public SearchBoxViewModel SearchBoxViewModel
 	{
 		get => (SearchBoxViewModel)GetValue(SearchBoxViewModelProperty);
-		set => SetValue(SearchBoxViewModelProperty, value);
-	}
+        set => SetValue(SearchBoxViewModelProperty, value);
+    }
+
+    // CHANGE: Fix suggestions binding bug.
+    public ObservableCollection<SuggestionModel>? Suggestions => SearchBoxViewModel?.Suggestions;
+
+    // CHANGE: Fix query binding bug.
+    public string Query
+    {
+        get => SearchBoxViewModel?.Query ?? string.Empty;
+        set => SearchBoxViewModel.Query = value;
+    }
 
     public SearchBox()
     {
         InitializeComponent();
     }
+
+    // CHANGE: Fix got focus event binding bug.
+    private void SearchRegion_GotFocus(object sender, RoutedEventArgs e)
+        => SearchBoxViewModel?.SearchRegion_GotFocus(sender, e);
 
     private void SearchRegion_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs e)
 		=> SearchBoxViewModel.SearchRegion_TextChanged(sender, e);
