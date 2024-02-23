@@ -61,9 +61,9 @@ public class CommandLineParser
                     command.Type = ParsedCommandType.SelectItem;
                     break;
 
-                /*case string s when "Tag".Equals(s, StringComparison.OrdinalIgnoreCase):
+                case string s when "Tag".Equals(s, StringComparison.OrdinalIgnoreCase):
 					command.Type = ParsedCommandType.TagFiles;
-					break;*/
+					break;
 
                 default: //case "Cmdless":
                     try

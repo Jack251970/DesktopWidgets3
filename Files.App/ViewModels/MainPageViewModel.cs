@@ -1,12 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Services.Settings;
-using LibGit2Sharp;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
-using System.Windows.Input;
-using Windows.System;
 
 namespace Files.App.ViewModels;
 

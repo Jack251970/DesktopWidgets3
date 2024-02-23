@@ -1,18 +1,12 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.UserControls.TabBar;
-using Microsoft.UI;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using System.IO;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
-using IO = System.IO;
 
 namespace Files.App;
 
@@ -20,9 +14,9 @@ public sealed partial class MainWindow
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
-    private readonly IApplicationService ApplicationService;
+    /*private readonly IApplicationService ApplicationService;
 
-    /*private MainPageViewModel mainPageViewModel;
+    private MainPageViewModel mainPageViewModel;
 
     private static MainWindow? _Instance;
 	public static MainWindow Instance => _Instance ??= new();
@@ -33,9 +27,9 @@ public sealed partial class MainWindow
 	{
         FolderViewViewModel = folderViewViewModel;
 
-        ApplicationService = new ApplicationService();
+        /*ApplicationService = new ApplicationService();
 
-        /*WindowHandle = this.GetWindowHandle();
+        WindowHandle = this.GetWindowHandle();
 
 		InitializeComponent();
 
