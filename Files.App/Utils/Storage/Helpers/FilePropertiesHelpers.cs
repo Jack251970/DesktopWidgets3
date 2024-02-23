@@ -119,8 +119,8 @@ public static class FilePropertiesHelpers
 		propertiesWindow.MinHeight = 550;
 		propertiesWindow.Width = 800;
 		propertiesWindow.Height = 550;
-        /*propertiesWindow.Content = frame;
-		propertiesWindow.SystemBackdrop = new AppSystemBackdrop(folderViewViewModel, true);*/
+        propertiesWindow.Content ??= new Frame();
+		/*propertiesWindow.SystemBackdrop = new AppSystemBackdrop(folderViewViewModel, true);*/
 
         var appWindow = propertiesWindow.AppWindow;
 		appWindow.Title = "Properties".GetLocalizedResource();
@@ -131,7 +131,7 @@ public static class FilePropertiesHelpers
 		appWindow.SetIcon(applicationService.AppIcoPath);
 
         var frame = propertiesWindow.Content as Frame;
-		frame?.Navigate(
+        frame?.Navigate(
 			typeof(Views.Properties.MainPropertiesPage),
 			new PropertiesPageNavigationParameter
 			{
