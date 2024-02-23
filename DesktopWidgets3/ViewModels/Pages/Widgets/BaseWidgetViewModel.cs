@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -165,7 +164,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     private async void DeleteWidget()
     {
-        if (await _dialogService.ShowDeleteWidgetDialog(WidgetWindow) == WidgetDialogResult.Left)
+        if (await WidgetWindow.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
         {
             var widgetType = WidgetWindow.WidgetType;
             var indexTag = WidgetWindow.IndexTag;

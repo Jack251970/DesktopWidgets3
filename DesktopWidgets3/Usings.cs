@@ -23,6 +23,7 @@ global using DesktopWidgets3.Services.Widgets;
 
 // Helpers
 global using DesktopWidgets3.Helpers;
+global using DesktopWidgets3.Helpers.Widgets;
 
 // Models
 global using DesktopWidgets3.Models;

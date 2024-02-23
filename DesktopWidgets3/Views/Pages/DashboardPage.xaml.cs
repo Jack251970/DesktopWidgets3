@@ -54,7 +54,7 @@ public sealed partial class DashboardPage : Page
     {
         if (_indexTag != -1)
         {
-            if (await _dialogService.ShowDeleteWidgetDialog(App.MainWindow) == WidgetDialogResult.Left)
+            if (await App.MainWindow.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
             {
                 ViewModel.MenuFlyoutItemDeleteWidgetClick(_widgetType, _indexTag);
             }
