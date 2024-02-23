@@ -39,6 +39,9 @@
                 </labs:SettingsCard>
 
                 <labs:SettingsCard x:Uid="Settings_SilentStart_Card">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Height="20" Width="20" />
+                    </labs:SettingsCard.HeaderIcon>
                     <ToggleSwitch 
                         IsOn="{x:Bind ViewModel.SilentStart, Mode=TwoWay}" />
                 </labs:SettingsCard>
