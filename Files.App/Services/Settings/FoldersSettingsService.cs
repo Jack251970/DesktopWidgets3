@@ -34,7 +34,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double GitStatusColumnWidth
 	{
-		get => Get(80d);
+		get => Get(67d);
 		set
 		{
 			if (ShowGitStatusColumn)
@@ -46,7 +46,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double GitLastCommitDateColumnWidth
 	{
-		get => Get(140d);
+		get => Get(118d);
 		set
 		{
 			if (ShowGitLastCommitDateColumn)
@@ -58,7 +58,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double GitLastCommitMessageColumnWidth
 	{
-		get => Get(140d);
+		get => Get(118d);
 		set
 		{
 			if (ShowGitLastCommitMessageColumn)
@@ -70,7 +70,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double GitCommitAuthorColumnWidth
 	{
-		get => Get(140d);
+		get => Get(118d);
 		set
 		{
 			if (ShowGitCommitAuthorColumn)
@@ -82,7 +82,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double GitLastCommitShaColumnWidth
 	{
-		get => Get(80d);
+		get => Get(67d);
 		set
 		{
 			if (ShowGitLastCommitShaColumn)
@@ -94,7 +94,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double TagColumnWidth
 	{
-		get => Get(140d);
+		get => Get(118d);
 		set
 		{
 			if (ShowFileTagColumn)
@@ -106,13 +106,13 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double NameColumnWidth
 	{
-		get => Get(240d);
+		get => Get(201d);
 		set => Set(value);
 	}
 
 	public double DateModifiedColumnWidth
 	{
-		get => Get(200d);
+		get => Get(168d);
 		set
 		{
 			if (ShowDateColumn)
@@ -124,7 +124,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double TypeColumnWidth
 	{
-		get => Get(140d);
+		get => Get(118d);
 		set
 		{
 			if (ShowTypeColumn)
@@ -136,7 +136,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double DateCreatedColumnWidth
 	{
-		get => Get(200d);
+		get => Get(168d);
 		set
 		{
 			if (ShowDateCreatedColumn)
@@ -148,7 +148,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double SizeColumnWidth
 	{
-		get => Get(100d);
+		get => Get(84d);
 		set
 		{
 			if (ShowSizeColumn)
@@ -160,7 +160,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double DateDeletedColumnWidth
 	{
-		get => Get(200d);
+		get => Get(168d);
 		set
 		{
 			if (ShowDateDeletedColumn)
@@ -172,7 +172,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double PathColumnWidth
 	{
-		get => Get(200d);
+		get => Get(168d);
 		set
 		{
 			if (ShowPathColumn)
@@ -184,7 +184,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double OriginalPathColumnWidth
 	{
-		get => Get(200d);
+		get => Get(168d);
 		set
 		{
 			if (ShowOriginalPathColumn)
@@ -196,7 +196,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public double SyncStatusColumnWidth
 	{
-		get => Get(50d);
+		get => Get(42d);
 		set
 		{
 			if (ShowSyncStatusColumn)
@@ -208,7 +208,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public bool ShowDateColumn
 	{
-		get => Get(true);
+		get => Get(false);
 		set => Set(value);
 	}
 
@@ -262,7 +262,7 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 
 	public bool ShowFileTagColumn
 	{
-		get => Get(true);
+		get => Get(false);
 		set => Set(value);
 	}
 
