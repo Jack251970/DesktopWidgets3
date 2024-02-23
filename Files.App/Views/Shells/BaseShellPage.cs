@@ -834,8 +834,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected void SetLoadingIndicatorForTabs(bool isLoading)
 	{
-        // TODO: Set loading indicator here.
-		var multitaskingControls = ((FolderViewViewModel.MainWindowContent as Frame)!.Content as MainPage)!.ViewModel.MultitaskingControls;
+        var multitaskingControls = ((FolderViewViewModel.MainWindowContent as Frame)!.Content as MainPage)!.ViewModel.MultitaskingControls;
 
 		foreach (var x in multitaskingControls!)
         {

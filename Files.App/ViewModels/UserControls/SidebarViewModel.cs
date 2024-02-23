@@ -458,20 +458,19 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 			}
 		}
 
-        // TODO: Add support.
-        /*section.IsExpanded = FolderViewViewModel.GetService<SettingsViewModel>().Get(section.Text == "SidebarFavorites".GetLocalizedResource(), $"section:{section.Text.Replace('\\', '_')}");*/
+        // CHANGE: Remove expand seaction storage function.
         section.IsExpanded = section.Text == "SidebarFavorites".GetLocalizedResource();
-        section.PropertyChanged += Section_PropertyChanged;
-	}
+        /*section.IsExpanded = FolderViewViewModel.GetService<SettingsViewModel>().Get(section.Text == "SidebarFavorites".GetLocalizedResource(), $"section:{section.Text.Replace('\\', '_')}");
+        section.PropertyChanged += Section_PropertyChanged;*/
+    }
 
-	private void Section_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	/*private void Section_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (sender is LocationItem section && e.PropertyName == nameof(section.IsExpanded))
 		{
-            // TODO: Add support.
-            /*FolderViewViewModel.GetService<SettingsViewModel>().Set(section.IsExpanded, $"section:{section.Text.Replace('\\', '_')}");*/
+            FolderViewViewModel.GetService<SettingsViewModel>().Set(section.IsExpanded, $"section:{section.Text.Replace('\\', '_')}");
 		}
-	}
+	}*/
 
 	private async Task<LocationItem> GetOrCreateSectionAsync(SectionType sectionType)
 	{
@@ -636,8 +635,9 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 		if (show)
 		{
 			var generalSettingsService = UserSettingsService.GeneralSettingsService;
+            var ShowFavoritesSection = generalSettingsService.ShowFavoritesSection;
 
-			Func<Task> action = sectionType switch
+            Func<Task> action = sectionType switch
 			{
 				SectionType.CloudDrives when generalSettingsService.ShowCloudDrivesSection => CloudDrivesManager.UpdateDrivesAsync,
 				SectionType.Drives => drivesViewModel.UpdateDrivesAsync,
@@ -645,7 +645,7 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 				SectionType.WSL when generalSettingsService.ShowWslSection => WSLDistroManager.UpdateDrivesAsync,
 				SectionType.FileTag when generalSettingsService.ShowFileTagsSection => App.FileTagsManager.UpdateFileTagsAsync,
 				SectionType.Library => App.LibraryManager.UpdateLibrariesAsync,
-				SectionType.Favorites => App.QuickAccessManager.Model.AddAllItemsToSidebarAsync,
+				SectionType.Favorites => () => App.QuickAccessManager.Model.AddAllItemsToSidebarAsync(ShowFavoritesSection),
 				_ => () => Task.CompletedTask
 			};
 

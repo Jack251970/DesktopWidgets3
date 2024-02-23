@@ -35,17 +35,7 @@ public static class ResourceExtensions
         var resourcesTree = resourcesTrees[resourceFileName];
         value = resourcesTree.TryGetValue(resourceKey)?.ValueAsString;
 
-        // TODO: Check string here.
+        // Return empty string if the resource key is not found.
         return cachedResources[cachedResourceKey] = value ?? string.Empty;
-
-#if DEBUG
-        if (value is null)
-        {
-            throw new Exception($"Resource key '{cachedResourceKey}' not found.");
-        }
-        return cachedResources[cachedResourceKey] = value;
-#else
-            return cachedResources[cachedResourceKey] = value ?? string.Empty;
-#endif
     }
 }

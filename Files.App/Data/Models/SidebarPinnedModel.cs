@@ -47,7 +47,8 @@ public class SidebarPinnedModel
 				.Where(link => (bool?)link.Properties["System.Home.IsPinned"] ?? false)
 				.Select(link => link.FilePath).ToList();
 			RemoveStaleSidebarItems();
-			await AddAllItemsToSidebarAsync();
+            // CHANGE: Default set showFavoritesSection to true.
+			await AddAllItemsToSidebarAsync(true);
 		}
 		finally
 		{
@@ -176,10 +177,9 @@ public class SidebarPinnedModel
 	/// <summary>
 	/// Adds all items to the navigation sidebar
 	/// </summary>
-	public async Task AddAllItemsToSidebarAsync()
+	public async Task AddAllItemsToSidebarAsync(bool showFavoritesSection)
 	{
-        // TODO: Add userSettingsService.GeneralSettingsService.ShowFavoritesSection
-        if (true)
+        if (showFavoritesSection)
         {
             foreach (var path in FavoriteItems)
             {
