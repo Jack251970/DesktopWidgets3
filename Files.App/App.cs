@@ -83,7 +83,7 @@ public partial class App
         ApplicationExtensions.MainWindow_Closed_Widgets_Closed += MainWindow_Closed;
 
         // Register theme change handler
-        ThemeExtensions.ElementTheme_Changed += (sender, theme) => Files.App.Helpers.ThemeHelper.RootTheme = theme;
+        ThemeExtensions.ElementTheme_Changed += (sender, theme) => Helpers.ThemeHelper.RootTheme = theme;
 
         isInitialized = true;
     }
