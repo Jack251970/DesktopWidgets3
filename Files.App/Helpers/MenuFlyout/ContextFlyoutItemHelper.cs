@@ -479,8 +479,7 @@ public static class ContextFlyoutItemHelper
 				IsVisible = commands.OpenProperties.IsExecutable
 			}.Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(commands.OpenParentFolder).Build(),
-            // FIX: Fix loading bug here.
-			/*new ContextMenuFlyoutItemViewModelBuilder(commands.PinItemToFavorites)
+			new ContextMenuFlyoutItemViewModelBuilder(commands.PinItemToFavorites)
 			{
 				IsVisible = commands.PinItemToFavorites.IsExecutable && userSettingsService.GeneralSettingsService.ShowFavoritesSection,
 			}.Build(),
@@ -488,7 +487,8 @@ public static class ContextFlyoutItemHelper
 			{
 				IsVisible = commands.UnpinItemFromFavorites.IsExecutable && userSettingsService.GeneralSettingsService.ShowFavoritesSection,
 			}.Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(commands.PinToStart)
+            // CHANGE: Disable start menu pinning commands, which will cause context menu blank.
+			/*new ContextMenuFlyoutItemViewModelBuilder(commands.PinToStart)
 			{
 				IsVisible = selectedItems.All(x => !x.IsShortcut && (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable) && !x.IsArchive && !x.IsItemPinnedToStart),
 				ShowOnShift = true,
@@ -498,7 +498,7 @@ public static class ContextFlyoutItemHelper
 				IsVisible = selectedItems.All(x => !x.IsShortcut && (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable) && !x.IsArchive && x.IsItemPinnedToStart),
 				ShowOnShift = true,
 			}.Build(),*/
-            // FIX: Fix command bug here.
+            // FIX: Compress & Depress commands are not available.
 			new()
             {
 				Text = "Compress".GetLocalizedResource(),
