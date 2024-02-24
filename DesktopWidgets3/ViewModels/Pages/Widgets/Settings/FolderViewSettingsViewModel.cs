@@ -30,6 +30,9 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     [ObservableProperty]
     private bool _showThumbnail = true;
 
+    [ObservableProperty]
+    private bool _moveShellExtensionsToSubMenu = true;
+
     #endregion
 
     private readonly IWidgetManagerService _widgetManagerService;
@@ -48,8 +51,9 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     protected override void InitializeWidgetSettings()
     {
         FolderPath = Settings.FolderPath;
-        ShowHiddenFile = Settings.ShowHiddenFile;
         AllowNavigation = Settings.AllowNavigation;
+        MoveShellExtensionsToSubMenu = Settings.MoveShellExtensionsToSubMenu;
+        ShowHiddenFile = Settings.ShowHiddenFile;
         ShowExtension = Settings.ShowExtension;
         ShowThumbnail = Settings.ShowThumbnail;
     }
@@ -67,20 +71,29 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
         }
     }
 
-    partial void OnShowHiddenFileChanged(bool value)
-    {
-        if (IsInitialized)
-        {
-            Settings.ShowHiddenFile = value;
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
-        }
-    }
-
     partial void OnAllowNavigationChanged(bool value)
     {
         if (IsInitialized)
         {
             Settings.AllowNavigation = value;
+            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+        }
+    }
+
+    partial void OnMoveShellExtensionsToSubMenuChanged(bool value)
+    {
+        if (IsInitialized)
+        {
+            Settings.MoveShellExtensionsToSubMenu = value;
+            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+        }
+    }
+
+    partial void OnShowHiddenFileChanged(bool value)
+    {
+        if (IsInitialized)
+        {
+            Settings.ShowHiddenFile = value;
             _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
         }
     }

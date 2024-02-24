@@ -4,7 +4,7 @@ public interface IFileService
 {
     T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null!);
 
-    void Save<T>(string folderPath, string fileName, T content, bool indent);
+    Task Save<T>(string folderPath, string fileName, T content, bool indent);
 
-    void Delete(string folderPath, string fileName);
+    Task Delete(string folderPath, string fileName);
 }

@@ -112,14 +112,19 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         var _userSettingsService = App.GetService<IUserSettingsService>();
 
-        if (_userSettingsService.FoldersSettingsService.ShowHiddenItems != settings.ShowHiddenFile)
-        {
-            _userSettingsService.FoldersSettingsService.ShowHiddenItems = settings.ShowHiddenFile;
-        }
-
         if (AllowNavigation != settings.AllowNavigation)
         {
             AllowNavigation = settings.AllowNavigation;
+        }
+
+        if (_userSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu != settings.MoveShellExtensionsToSubMenu)
+        {
+            _userSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu = settings.MoveShellExtensionsToSubMenu;
+        }
+
+        if (_userSettingsService.FoldersSettingsService.ShowHiddenItems != settings.ShowHiddenFile)
+        {
+            _userSettingsService.FoldersSettingsService.ShowHiddenItems = settings.ShowHiddenFile;
         }
 
         if (_userSettingsService.FoldersSettingsService.ShowFileExtensions != settings.ShowExtension)
@@ -160,8 +165,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         return new FolderViewWidgetSettings()
         {
             FolderPath = FolderPath,
-            ShowHiddenFile = _userSettingsService.FoldersSettingsService.ShowHiddenItems,
             AllowNavigation = AllowNavigation,
+            MoveShellExtensionsToSubMenu = _userSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu,
+            ShowHiddenFile = _userSettingsService.FoldersSettingsService.ShowHiddenItems,
             ShowExtension = _userSettingsService.FoldersSettingsService.ShowFileExtensions,
             ShowThumbnail = _userSettingsService.FoldersSettingsService.ShowThumbnails,
             DeleteConfirmationPolicy = _userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy,
@@ -178,6 +184,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
         switch (e.SettingName)
 		{
+            case nameof(IGeneralSettingsService.MoveShellExtensionsToSubMenu):
+                Settings.MoveShellExtensionsToSubMenu = (bool)e.NewValue!;
+                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                break;
 			case nameof(IFoldersSettingsService.ShowHiddenItems):
                 Settings.ShowHiddenFile = (bool)e.NewValue!;
                 await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);

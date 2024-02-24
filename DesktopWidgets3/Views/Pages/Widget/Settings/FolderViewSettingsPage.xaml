@@ -7,6 +7,7 @@
     xmlns:settings="using:DesktopWidgets3.ViewModels.Pages.Widgets.Settings"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:helpers="using:Files.App.Helpers"
     d:DataContext="{d:DesignInstance Type=settings:FolderViewSettingsViewModel}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="FolderView"
     NavigationCacheMode="Required"
@@ -20,6 +21,9 @@
             VerticalScrollMode="Auto">
             <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
                 <labs:SettingsCard x:Uid="WidgetSettings_FolderPath_Card">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE838;" />
+                    </labs:SettingsCard.HeaderIcon>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock 
                             Text="{x:Bind ViewModel.FolderPath, Mode=OneWay}"
@@ -36,12 +40,22 @@
                     </StackPanel>
                 </labs:SettingsCard>
 
-                <labs:SettingsCard x:Uid="WidgetSettings_ShowHiddenFile_Card">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowHiddenFile, Mode=TwoWay}" />
+                <labs:SettingsCard x:Uid="WidgetSettings_AllowNavigation_Card">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE8DA;" />
+                    </labs:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.AllowNavigation, Mode=TwoWay}" />
                 </labs:SettingsCard>
 
-                <labs:SettingsCard x:Uid="WidgetSettings_AllowNavigation_Card">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.AllowNavigation, Mode=TwoWay}" />
+                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/SettingsContextMenuOverflow}">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE712;" />
+                    </labs:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.MoveShellExtensionsToSubMenu, Mode=TwoWay}" />
+                </labs:SettingsCard>
+
+                <labs:SettingsCard x:Uid="WidgetSettings_ShowHiddenFile_Card">
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowHiddenFile, Mode=TwoWay}" />
                 </labs:SettingsCard>
 
                 <labs:SettingsCard x:Uid="WidgetSettings_ShowExtension_Card">

@@ -35,9 +35,11 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
 {
     public string FolderPath { get; set; } = $"C:\\";
 
-    public bool ShowHiddenFile { get; set; } = false;
-
     public bool AllowNavigation { get; set; } = true;
+
+    public bool MoveShellExtensionsToSubMenu { get; set; } = true;
+
+    public bool ShowHiddenFile { get; set; } = false;
 
     public bool ShowExtension { get; set; } = false;
 
@@ -53,8 +55,9 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
     {
         var clone = (FolderViewWidgetSettings)base.Clone();
         clone.FolderPath = FolderPath;
-        clone.ShowHiddenFile = ShowHiddenFile;
         clone.AllowNavigation = AllowNavigation;
+        clone.MoveShellExtensionsToSubMenu = MoveShellExtensionsToSubMenu;
+        clone.ShowHiddenFile = ShowHiddenFile;
         clone.ShowExtension = ShowExtension;
         clone.DeleteConfirmationPolicy = DeleteConfirmationPolicy;
         clone.ShowThumbnail = ShowThumbnail;
