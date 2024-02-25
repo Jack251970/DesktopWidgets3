@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Files.App.ViewModels.Settings;
 using Files.Core.Data.Enums;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets.Settings;
@@ -54,6 +55,10 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
 
     [ObservableProperty]
     private bool _showFileExtensionWarning = true;
+
+    public TagsViewModel TagsViewModel { get; } = new();
+
+    public AboutViewModel AboutViewModel { get; } = new();
 
     #endregion
 

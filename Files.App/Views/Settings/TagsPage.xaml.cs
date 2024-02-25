@@ -25,8 +25,6 @@ public sealed partial class TagsPage : Page
     // Further reading: https://github.com/microsoft/terminal/issues/12017#issuecomment-1004129669
     public bool AllowItemsDrag => !ElevationHelpers.IsAppRunAsAdmin();
 
-#pragma warning disable CA1822 // Mark members as static
-
     public TagsPage()
 	{
 		InitializeComponent();

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
+using Windows.ApplicationModel;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
@@ -16,7 +17,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     private bool _batterySaver;
     [ObservableProperty]
-    private string _version = $"v{InfoHelper.GetVersion()}";
+    private string _version = $"v{Package.Current.GetVersion()}";
 
     #endregion
 

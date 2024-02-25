@@ -143,7 +143,7 @@ public class AboutViewModel : ObservableObject
     // CHECK: Update AppVersion and Commits properties.
     public string Version => string.Format($"{"SettingsAboutVersionTitle".GetLocalizedResource()} {AppVersion.Major}.{AppVersion.Minor}.{AppVersion.Build}.{AppVersion.Revision} ({Commits})");
 
-    public string AppName => InfoHelper.GetDisplayName();
+    public string AppName => "Files"; //InfoHelper.GetDisplayName();
 	public PackageVersion AppVersion => new(3, 0, 15, 0);
 
     // CHANGE: Add commits info here.

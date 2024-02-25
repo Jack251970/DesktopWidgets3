@@ -1,4 +1,11 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using CommunityToolkit.WinUI.UI;
+using Files.App.Helpers;
+using Files.Core.ViewModels.FileTags;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Windows.System;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace DesktopWidgets3.Views.Pages.Widgets.Settings;
 
@@ -13,5 +20,161 @@ public sealed partial class FolderViewSettingsPage : Page
     {
         ViewModel = App.GetService<FolderViewSettingsViewModel>();
         InitializeComponent();
+    }
+
+    private string oldTagName = string.Empty;
+
+    // Will be null unless the user has edited any tag
+    private ListedTagViewModel? editingTag;
+
+    private FlyoutBase? deleteItemFlyout;
+
+#pragma warning disable CA1822 // Mark members as static
+
+    // See issue #12390 on Github. Dragging makes the app crash when run as admin.
+    // Further reading: https://github.com/microsoft/terminal/issues/12017#issuecomment-1004129669
+    public bool AllowItemsDrag => !ElevationHelpers.IsAppRunAsAdmin();
+
+    private void RenameTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        var textBox = (TextBox)sender;
+        switch (e.Key)
+        {
+            case VirtualKey.Enter:
+                if (!editingTag!.CanCommit)
+                {
+                    return;
+                }
+
+                CommitChanges(textBox);
+                e.Handled = true;
+                break;
+        }
+    }
+
+    private void EditTag_Click(object sender, RoutedEventArgs e)
+    {
+        if (editingTag is not null)
+        {
+            editingTag.IsEditing = false;
+            editingTag.NewName = editingTag.Tag.Name;
+            editingTag.NewColor = editingTag.Tag.Color;
+        }
+
+        editingTag = (ListedTagViewModel)((Button)sender).DataContext;
+        editingTag.NewColor = editingTag.Tag.Color;
+        editingTag.NewName = editingTag.Tag.Name;
+        editingTag.IsEditing = true;
+
+        var item = (ListViewItem)TagsList.ContainerFromItem(editingTag);
+        var textBlock = item.FindDescendant("TagName") as TextBlock;
+        var textBox = item.FindDescendant("TagNameTextBox") as TextBox;
+
+        textBox!.TextChanged += RenameTextBox_TextChanged;
+
+        textBox!.Text = textBlock!.Text;
+        oldTagName = textBlock.Text;
+    }
+
+    private void CommitRenameTag_Click(object sender, RoutedEventArgs e)
+    {
+        var item = (ListViewItem)TagsList.ContainerFromItem(editingTag);
+
+        CommitChanges((item.FindDescendant("TagNameTextBox") as TextBox)!);
+    }
+
+    private void CancelRenameTag_Click(object sender, RoutedEventArgs e)
+    {
+        CloseEdit();
+    }
+
+    private void PreRemoveTag_Click(object sender, RoutedEventArgs e)
+    {
+        deleteItemFlyout = ((Button)sender).Flyout;
+    }
+
+    private void CancelRemoveTag_Click(object sender, RoutedEventArgs e)
+    {
+        deleteItemFlyout?.Hide();
+    }
+
+    private void RemoveTag_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel.TagsViewModel.DeleteExistingTag((ListedTagViewModel)((Button)sender).DataContext);
+    }
+
+    private void RenameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        var text = ((TextBox)sender).Text;
+        var isNullOrEmpty = string.IsNullOrEmpty(text);
+        editingTag!.IsNameValid = isNullOrEmpty || (IsNameValid(text) && !ViewModel.TagsViewModel.Tags.Any(tag => tag.Tag.Name == text && editingTag!.Tag.Name != text));
+        editingTag!.CanCommit = !isNullOrEmpty && editingTag!.IsNameValid && (
+            text != editingTag!.Tag.Name ||
+            editingTag!.NewColor != editingTag!.Tag.Color
+        );
+    }
+
+    private void EditColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
+    {
+        if (editingTag is null)
+        {
+            return;
+        }
+
+        editingTag!.CanCommit = editingTag!.IsNameValid && (
+            editingTag!.NewName != editingTag!.Tag.Name ||
+            CommunityToolkit.WinUI.Helpers.ColorHelper.ToHex(sender.Color) != editingTag!.Tag.Color
+        );
+    }
+
+    private void NewTagTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        var text = ((TextBox)sender).Text;
+        ViewModel.TagsViewModel.NewTag.Name = text;
+        ViewModel.TagsViewModel.NewTag.IsNameValid = string.IsNullOrEmpty(text) || (IsNameValid(text) && !ViewModel.TagsViewModel.Tags.Any(tag => text == tag.Tag.Name));
+    }
+
+    private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (args.KeyboardAccelerator.Key is VirtualKey.Escape && editingTag is not null)
+        {
+            CloseEdit();
+            args.Handled = true;
+        }
+    }
+
+    private void CommitChanges(TextBox textBox)
+    {
+        EndEditing(textBox);
+        var newTagName = textBox.Text.Trim().TrimEnd('.');
+        if (newTagName != oldTagName || editingTag!.NewColor != editingTag.Tag.Color)
+        {
+            ViewModel.TagsViewModel.EditExistingTag(editingTag!, newTagName, editingTag!.NewColor);
+        }
+    }
+
+    private void EndEditing(TextBox textBox)
+    {
+        textBox.TextChanged -= RenameTextBox_TextChanged;
+        editingTag!.IsEditing = false;
+    }
+
+    private void CloseEdit()
+    {
+        var item = (ListViewItem)TagsList.ContainerFromItem(editingTag);
+        editingTag!.NewColor = editingTag.Tag.Color;
+        editingTag!.IsNameValid = true;
+        editingTag!.CanCommit = false;
+
+        EndEditing((item.FindDescendant("TagNameTextBox") as TextBox)!);
+    }
+
+    private static bool IsNameValid(string name)
+    {
+        return !(
+            string.IsNullOrWhiteSpace(name) ||
+            name.StartsWith('.') ||
+            name.EndsWith('.')
+        );
     }
 }
