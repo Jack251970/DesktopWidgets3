@@ -19,6 +19,9 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
         get;
     }
 
+    public WidgetType WidgetType => WidgetWindow.WidgetType;
+    public int IndexTag => WidgetWindow.IndexTag;
+
     private readonly IWidgetDialogService _dialogService;
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;

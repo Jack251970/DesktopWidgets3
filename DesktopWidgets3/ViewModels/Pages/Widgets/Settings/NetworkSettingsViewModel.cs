@@ -32,7 +32,7 @@ public partial class NetworkSettingsViewModel : BaseWidgetSettingsViewModel
         if (IsInitialized)
         {
             Settings.ShowBps = value;
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+            NeedUpdate = true;
         }
     }
 }

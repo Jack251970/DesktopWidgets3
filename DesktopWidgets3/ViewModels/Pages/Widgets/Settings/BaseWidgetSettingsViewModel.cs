@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets.Settings;
 
@@ -30,6 +31,12 @@ public abstract partial class BaseWidgetSettingsViewModel : ObservableRecipient,
         private set;
     }
 
+    protected bool NeedUpdate
+    {
+        get;
+        set;
+    }
+
     protected bool IsEnabled => _widgetManagerService.IsWidgetEnabled(WidgetType, IndexTag);
 
     public BaseWidgetSettingsViewModel()
@@ -39,6 +46,16 @@ public abstract partial class BaseWidgetSettingsViewModel : ObservableRecipient,
 
         WidgetType = InitializeWidgetType();
         IndexTag = -1;
+
+        PropertyChanged += WidgetSettings_PropertyChanged;
+    }
+
+    private void WidgetSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (NeedUpdate)
+        {
+            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, WidgetSettings!);
+        }
     }
 
     public async void OnNavigatedTo(object parameter)

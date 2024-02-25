@@ -47,6 +47,7 @@
                     <ToggleSwitch IsOn="{x:Bind ViewModel.AllowNavigation, Mode=TwoWay}" />
                 </labs:SettingsCard>
 
+                <!--  Overflow Options  -->
                 <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/SettingsContextMenuOverflow}">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE712;" />
@@ -54,16 +55,84 @@
                     <ToggleSwitch IsOn="{x:Bind ViewModel.MoveShellExtensionsToSubMenu, Mode=TwoWay}" />
                 </labs:SettingsCard>
 
-                <labs:SettingsCard x:Uid="WidgetSettings_ShowHiddenFile_Card">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowHiddenFile, Mode=TwoWay}" />
+                <!--  Folder Overrides  -->
+                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/SyncFolderPreferencesAcrossDirectories}">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE621;" />
+                    </labs:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.SyncFolderPreferencesAcrossDirectories, Mode=TwoWay}" />
                 </labs:SettingsCard>
 
-                <labs:SettingsCard x:Uid="WidgetSettings_ShowExtension_Card">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowExtension, Mode=TwoWay}" />
+                <!--  Hidden Items  -->
+                <labs:SettingsExpander Header="{helpers:ResourceString Name=/FilesResources/HiddenItems}">
+                    <labs:SettingsExpander.HeaderIcon>
+                        <FontIcon Glyph="&#xED1A;" />
+                    </labs:SettingsExpander.HeaderIcon>
+                    <labs:SettingsExpander.Items>
+                        <!--  Hidden Files  -->
+                        <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/SettingsFilesAndFoldersShowHiddenItems}">
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowHiddenItems, Mode=TwoWay}" />
+                        </labs:SettingsCard>
+
+                        <!--  Dots Files  -->
+                        <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowDotFiles}">
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowDotFiles, Mode=TwoWay}" />
+                        </labs:SettingsCard>
+
+                        <!--  System Files  -->
+                        <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowProtectedSystemFiles}">
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowProtectedSystemFiles, Mode=TwoWay}" />
+                        </labs:SettingsCard>
+
+                        <!--  Alternate Data Streams  -->
+                        <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowAlternateStreams}">
+                            <ToggleSwitch IsOn="{x:Bind ViewModel.AreAlternateStreamsVisible, Mode=TwoWay}" />
+                        </labs:SettingsCard>
+                    </labs:SettingsExpander.Items>
+                </labs:SettingsExpander>
+
+                <!--  File Extensions  -->
+                <labs:SettingsCard x:Uid="WidgetSettings_ShowFileExtensions_Card">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE8F9;" />
+                    </labs:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowFileExtensions, Mode=TwoWay}" />
                 </labs:SettingsCard>
 
-                <labs:SettingsCard x:Uid="WidgetSettings_ShowThumbnail_Card">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowThumbnail, Mode=TwoWay}" />
+                <!--  Show Thumbnails  -->
+                <labs:SettingsCard x:Uid="WidgetSettings_ShowThumbnails_Card">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE91B;" />
+                    </labs:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowThumbnails, Mode=TwoWay}" />
+                </labs:SettingsCard>
+
+                <!--  Show Checkboxes When Selecting Items  -->
+                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowCheckboxesWhenSelectingItems}">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE73A;" />
+                    </labs:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowCheckboxesWhenSelectingItems, Mode=TwoWay}" />
+                </labs:SettingsCard>
+
+                <!--  Confirm Delete  -->
+                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowConfirmationWhenDeletingItems}">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE74D;" />
+                    </labs:SettingsCard.HeaderIcon>
+                    <ComboBox SelectedIndex="{x:Bind ViewModel.SelectedDeleteConfirmationPolicyIndex, Mode=TwoWay}">
+                        <ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/Always}" />
+                        <ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/PermanentDeletionOnly}" />
+                        <ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/Never}" />
+                    </ComboBox>
+                </labs:SettingsCard>
+
+                <!--  File Extension Warning  -->
+                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowFileExtensionWarning}">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE8AC;" />
+                    </labs:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowFileExtensionWarning, Mode=TwoWay}" />
                 </labs:SettingsCard>
             </StackPanel>
         </ScrollViewer>

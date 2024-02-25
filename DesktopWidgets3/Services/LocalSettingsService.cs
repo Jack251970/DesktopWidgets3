@@ -120,6 +120,7 @@ internal class LocalSettingsService : ILocalSettingsService
 
     public async Task SaveWidgetListAsync(List<JsonWidgetItem> value)
     {
-        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, value, true));
+        var valueCopy = new List<JsonWidgetItem>(value);
+        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, valueCopy, true, true));
     }
 }

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿                    using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets.Settings;
 
@@ -32,7 +32,7 @@ public partial class ClockSettingsViewModel : BaseWidgetSettingsViewModel
         if (IsInitialized)
         {
             Settings.ShowSeconds = value;
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+            NeedUpdate = true;
         }
     }
 }

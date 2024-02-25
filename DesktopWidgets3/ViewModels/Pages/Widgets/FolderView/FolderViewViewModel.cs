@@ -122,14 +122,44 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             _userSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu = settings.MoveShellExtensionsToSubMenu;
         }
 
-        if (_userSettingsService.FoldersSettingsService.ShowHiddenItems != settings.ShowHiddenFile)
+        if (_userSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories != settings.SyncFolderPreferencesAcrossDirectories)
         {
-            _userSettingsService.FoldersSettingsService.ShowHiddenItems = settings.ShowHiddenFile;
+            _userSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories = settings.SyncFolderPreferencesAcrossDirectories;
         }
 
-        if (_userSettingsService.FoldersSettingsService.ShowFileExtensions != settings.ShowExtension)
+        if (_userSettingsService.FoldersSettingsService.ShowHiddenItems != settings.ShowHiddenItems)
         {
-            _userSettingsService.FoldersSettingsService.ShowFileExtensions = settings.ShowExtension;
+            _userSettingsService.FoldersSettingsService.ShowHiddenItems = settings.ShowHiddenItems;
+        }
+
+        if (_userSettingsService.FoldersSettingsService.ShowDotFiles != settings.ShowDotFiles)
+        {
+            _userSettingsService.FoldersSettingsService.ShowDotFiles = settings.ShowDotFiles;
+        }
+
+        if (_userSettingsService.FoldersSettingsService.ShowProtectedSystemFiles != settings.ShowProtectedSystemFiles)
+        {
+            _userSettingsService.FoldersSettingsService.ShowProtectedSystemFiles = settings.ShowProtectedSystemFiles;
+        }
+
+        if (_userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible != settings.AreAlternateStreamsVisible)
+        {
+            _userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible = settings.AreAlternateStreamsVisible;
+        }
+
+        if (_userSettingsService.FoldersSettingsService.ShowFileExtensions != settings.ShowFileExtensions)
+        {
+            _userSettingsService.FoldersSettingsService.ShowFileExtensions = settings.ShowFileExtensions;
+        }
+
+        if (_userSettingsService.FoldersSettingsService.ShowThumbnails != settings.ShowThumbnails)
+        {
+            _userSettingsService.FoldersSettingsService.ShowThumbnails = settings.ShowThumbnails;
+        }
+
+        if (_userSettingsService.FoldersSettingsService.ShowCheckboxesWhenSelectingItems != settings.ShowCheckboxesWhenSelectingItems)
+        {
+            _userSettingsService.FoldersSettingsService.ShowCheckboxesWhenSelectingItems = settings.ShowCheckboxesWhenSelectingItems;
         }
 
         if (_userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy != settings.DeleteConfirmationPolicy)
@@ -137,9 +167,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             _userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy = settings.DeleteConfirmationPolicy;
         }
 
-        if (_userSettingsService.FoldersSettingsService.ShowThumbnails != settings.ShowThumbnail)
+        if (_userSettingsService.FoldersSettingsService.ShowFileExtensionWarning != settings.ShowFileExtensionWarning)
         {
-            _userSettingsService.FoldersSettingsService.ShowThumbnails = settings.ShowThumbnail;
+            _userSettingsService.FoldersSettingsService.ShowFileExtensionWarning = settings.ShowFileExtensionWarning;
         }
 
         if (_userSettingsService.GeneralSettingsService.ConflictsResolveOption != settings.ConflictsResolveOption)
@@ -167,10 +197,16 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             FolderPath = FolderPath,
             AllowNavigation = AllowNavigation,
             MoveShellExtensionsToSubMenu = _userSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu,
-            ShowHiddenFile = _userSettingsService.FoldersSettingsService.ShowHiddenItems,
-            ShowExtension = _userSettingsService.FoldersSettingsService.ShowFileExtensions,
-            ShowThumbnail = _userSettingsService.FoldersSettingsService.ShowThumbnails,
+            SyncFolderPreferencesAcrossDirectories = _userSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories,
+            ShowHiddenItems = _userSettingsService.FoldersSettingsService.ShowHiddenItems,
+            ShowDotFiles = _userSettingsService.FoldersSettingsService.ShowDotFiles,
+            ShowProtectedSystemFiles = _userSettingsService.FoldersSettingsService.ShowProtectedSystemFiles,
+            AreAlternateStreamsVisible = _userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible,
+            ShowFileExtensions = _userSettingsService.FoldersSettingsService.ShowFileExtensions,
+            ShowThumbnails = _userSettingsService.FoldersSettingsService.ShowThumbnails,
+            ShowCheckboxesWhenSelectingItems = _userSettingsService.FoldersSettingsService.ShowCheckboxesWhenSelectingItems,
             DeleteConfirmationPolicy = _userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy,
+            ShowFileExtensionWarning = _userSettingsService.FoldersSettingsService.ShowFileExtensionWarning,
             ConflictsResolveOption = _userSettingsService.GeneralSettingsService.ConflictsResolveOption,
             ShowRunningAsAdminPrompt = _userSettingsService.ApplicationSettingsService.ShowRunningAsAdminPrompt,
         };
@@ -178,41 +214,51 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     private async void UserSettingsService_OnSettingChangedEvent(object? sender, SettingChangedEventArgs e)
     {
-        var WidgetType = WidgetWindow.WidgetType;
-        var IndexTag = WidgetWindow.IndexTag;
         var Settings = GetSettings();
 
         switch (e.SettingName)
 		{
             case nameof(IGeneralSettingsService.MoveShellExtensionsToSubMenu):
                 Settings.MoveShellExtensionsToSubMenu = (bool)e.NewValue!;
-                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                break;
+            case nameof(IFoldersSettingsService.SyncFolderPreferencesAcrossDirectories):
+                Settings.SyncFolderPreferencesAcrossDirectories = (bool)e.NewValue!;
                 break;
 			case nameof(IFoldersSettingsService.ShowHiddenItems):
-                Settings.ShowHiddenFile = (bool)e.NewValue!;
-                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                Settings.ShowHiddenItems = (bool)e.NewValue!;
+                break;
+            case nameof(IFoldersSettingsService.ShowDotFiles):
+                Settings.ShowDotFiles = (bool)e.NewValue!;
+                break;
+            case nameof(IFoldersSettingsService.ShowProtectedSystemFiles):
+                Settings.ShowProtectedSystemFiles = (bool)e.NewValue!;
+                break;
+            case nameof(IFoldersSettingsService.AreAlternateStreamsVisible):
+                Settings.AreAlternateStreamsVisible = (bool)e.NewValue!;
                 break;
             case nameof(IFoldersSettingsService.ShowFileExtensions):
-                Settings.ShowExtension = (bool)e.NewValue!;
-                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                Settings.ShowFileExtensions = (bool)e.NewValue!;
                 break;
             case nameof(IFoldersSettingsService.ShowThumbnails):
-                Settings.ShowThumbnail = (bool)e.NewValue!;
-                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                Settings.ShowThumbnails = (bool)e.NewValue!;
                 break;
             case nameof(IFoldersSettingsService.DeleteConfirmationPolicy):
-                Settings.DeleteConfirmationPolicy = (DeleteConfirmationPolicies)e.NewValue!;
-                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                Settings.DeleteConfirmationPolicy = (DeleteConfirmationPolicies)Enum.Parse(typeof(DeleteConfirmationPolicies), e.NewValue!.ToString()!);
+                break;
+            case nameof(IFoldersSettingsService.ShowFileExtensionWarning):
+                Settings.ShowFileExtensionWarning = (bool)e.NewValue!;
                 break;
             case nameof(IGeneralSettingsService.ConflictsResolveOption):
                 Settings.ConflictsResolveOption = (FileNameConflictResolveOptionType)e.NewValue!;
-                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
                 break;
             case nameof(IApplicationSettingsService.ShowRunningAsAdminPrompt):
                 Settings.ShowRunningAsAdminPrompt = (bool)e.NewValue!;
-                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
                 break;
+            default:
+                return;
 		}
+
+        await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
     }
 
     #endregion

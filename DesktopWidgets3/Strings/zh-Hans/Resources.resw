@@ -261,28 +261,22 @@
   <data name="WidgetSettings_AllowNavigation_Card.Header" xml:space="preserve">
     <value>允许导航</value>
   </data>
-  <data name="WidgetSettings_ShowHiddenFile_Card.Description" xml:space="preserve">
-    <value>显示被系统隐藏的文件</value>
-  </data>
-  <data name="WidgetSettings_ShowHiddenFile_Card.Header" xml:space="preserve">
-    <value>显示隐藏文件</value>
-  </data>
   <data name="WidgetSettings_ShowBps_Card.Description" xml:space="preserve">
     <value>使用Bps而不是B/s作为网络速度单位</value>
   </data>
   <data name="WidgetSettings_ShowBps_Card.Header" xml:space="preserve">
     <value>显示Bps</value>
   </data>
-  <data name="WidgetSettings_ShowExtension_Card.Description" xml:space="preserve">
+  <data name="WidgetSettings_ShowFileExtensions_Card.Description" xml:space="preserve">
     <value>显示已知文件类型的扩展名</value>
   </data>
-  <data name="WidgetSettings_ShowExtension_Card.Header" xml:space="preserve">
+  <data name="WidgetSettings_ShowFileExtensions_Card.Header" xml:space="preserve">
     <value>显示扩展名</value>
   </data>
-  <data name="WidgetSettings_ShowThumbnail_Card.Description" xml:space="preserve">
+  <data name="WidgetSettings_ShowThumbnails_Card.Description" xml:space="preserve">
     <value>显示图像文件类型的缩略图</value>
   </data>
-  <data name="WidgetSettings_ShowThumbnail_Card.Header" xml:space="preserve">
+  <data name="WidgetSettings_ShowThumbnails_Card.Header" xml:space="preserve">
     <value>显示缩略图</value>
   </data>
 </root>

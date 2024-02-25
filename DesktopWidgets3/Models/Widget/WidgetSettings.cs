@@ -39,13 +39,25 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
 
     public bool MoveShellExtensionsToSubMenu { get; set; } = true;
 
-    public bool ShowHiddenFile { get; set; } = false;
+    public bool SyncFolderPreferencesAcrossDirectories { get; set; } = false;
 
-    public bool ShowExtension { get; set; } = false;
+    public bool ShowHiddenItems { get; set; } = false;
 
-    public bool ShowThumbnail { get; set; } = true;
+    public bool ShowDotFiles { get; set; } = true;
+
+    public bool ShowProtectedSystemFiles { get; set; } = false;
+
+    public bool AreAlternateStreamsVisible { get; set; } = false;
+
+    public bool ShowFileExtensions { get; set; } = true;
+
+    public bool ShowThumbnails { get; set; } = true;
+
+    public bool ShowCheckboxesWhenSelectingItems { get; set; } = true;
 
     public DeleteConfirmationPolicies DeleteConfirmationPolicy { get; set; } = DeleteConfirmationPolicies.Always;
+
+    public bool ShowFileExtensionWarning { get; set; } = true;
 
     public FileNameConflictResolveOptionType ConflictsResolveOption { get; set; } = FileNameConflictResolveOptionType.GenerateNewName;
 
@@ -57,10 +69,16 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
         clone.FolderPath = FolderPath;
         clone.AllowNavigation = AllowNavigation;
         clone.MoveShellExtensionsToSubMenu = MoveShellExtensionsToSubMenu;
-        clone.ShowHiddenFile = ShowHiddenFile;
-        clone.ShowExtension = ShowExtension;
+        clone.SyncFolderPreferencesAcrossDirectories = SyncFolderPreferencesAcrossDirectories;
+        clone.ShowHiddenItems = ShowHiddenItems;
+        clone.ShowDotFiles = ShowDotFiles;
+        clone.ShowProtectedSystemFiles = ShowProtectedSystemFiles;
+        clone.AreAlternateStreamsVisible = AreAlternateStreamsVisible;
+        clone.ShowFileExtensions = ShowFileExtensions;
+        clone.ShowThumbnails = ShowThumbnails;
+        clone.ShowCheckboxesWhenSelectingItems = ShowCheckboxesWhenSelectingItems;
         clone.DeleteConfirmationPolicy = DeleteConfirmationPolicy;
-        clone.ShowThumbnail = ShowThumbnail;
+        clone.ShowFileExtensionWarning = ShowFileExtensionWarning;
         clone.ConflictsResolveOption = ConflictsResolveOption;
         clone.ShowRunningAsAdminPrompt = ShowRunningAsAdminPrompt;
         return clone;

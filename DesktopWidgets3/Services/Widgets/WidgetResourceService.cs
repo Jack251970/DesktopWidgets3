@@ -54,7 +54,7 @@ internal class WidgetResourceService : IWidgetResourceService
             WidgetType.FolderView => new FolderViewWidgetSettings()
             {
                 FolderPath = "C:\\",
-                ShowHiddenFile = false,
+                ShowHiddenItems = false,
                 AllowNavigation = true,
             },
             WidgetType.Network => new NetworkWidgetSettings()

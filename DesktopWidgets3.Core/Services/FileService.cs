@@ -4,13 +4,12 @@ namespace DesktopWidgets3.Core.Services;
 
 public class FileService : IFileService
 {
-    private SaveTaskParameters lastSaveTaskParameter = new();
+    private readonly Dictionary<string, SaveTaskParameters> lastSaveTaskParameters = new() { };
 
     public T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null!)
     {
-        Check(folderPath, fileName);
+        var path = CheckPath(folderPath, fileName);
 
-        var path = Path.Combine(folderPath, fileName);
         if (File.Exists(path))
         {
             var json = File.ReadAllText(path);
@@ -20,49 +19,65 @@ public class FileService : IFileService
         return default!;
     }
 
-    public async Task Save<T>(string folderPath, string fileName, T content, bool indent)
+    public async Task<string?> Save<T>(string folderPath, string fileName, T content, bool indent, bool ignoreIfSameToLast = false)
     {
-        Check(folderPath, fileName);
-
-        // save only if input parameters is different from last time
-        var saveTaskParameter = new SaveTaskParameters
-        {
-            Type = typeof(T),
-            FolderPath = folderPath,
-            FileName = fileName,
-            Content = content!,
-            Indent = indent
-        };
-        if (lastSaveTaskParameter.Equals(saveTaskParameter))
-        {
-            return;
-        }
-        lastSaveTaskParameter = saveTaskParameter;
-
         await Task.Yield();
+
+        var path = CheckPath(folderPath, fileName);
+
+        var fileContent = JsonConvert.SerializeObject(content, indent ? Formatting.Indented : Formatting.None);
+        
+        if (ignoreIfSameToLast)
+        {
+            // save only if input parameters is different from last time
+            var saveTaskParameter = new SaveTaskParameters
+            {
+                Type = typeof(T),
+                FolderPath = folderPath,
+                FileName = fileName,
+                Content = fileContent,
+                Indent = indent
+            };
+            if (IsParametersSame<T>(path, saveTaskParameter))
+            {
+                return null;
+            }
+        }
 
         if (!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);
         }
 
-        var fileContent = JsonConvert.SerializeObject(content, indent ? Formatting.Indented : Formatting.None);
-        File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
+        try
+        {
+            File.WriteAllText(path, fileContent, Encoding.UTF8);
+        }
+        catch (Exception)
+        {
+            // Retry?
+            return null;
+        }
+
+        return fileContent;
     }
 
-    public async Task Delete(string folderPath, string fileName)
+    public async Task<bool> Delete(string folderPath, string fileName)
     {
-        Check(folderPath, fileName);
-
         await Task.Yield();
 
-        if (fileName != null && File.Exists(Path.Combine(folderPath, fileName)))
+        var path = CheckPath(folderPath, fileName);
+
+        if (fileName != null && File.Exists(path))
         {
-            File.Delete(Path.Combine(folderPath, fileName));
+            File.Delete(path);
+            return true;
         }
+
+        return false;
     }
 
-    private static void Check(string folderPath, string fileName)
+    private static string CheckPath(string folderPath, string fileName)
     {
         if (string.IsNullOrEmpty(folderPath))
         {
@@ -73,6 +88,20 @@ public class FileService : IFileService
         {
             throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
         }
+
+        return Path.Combine(folderPath, fileName);
+    }
+
+    private bool IsParametersSame<T>(string path, SaveTaskParameters saveTaskParameter)
+    {
+        if (lastSaveTaskParameters.TryGetValue(path, out var par))
+        {
+            lastSaveTaskParameters[path] = saveTaskParameter;
+            return par == saveTaskParameter;
+        }
+
+        lastSaveTaskParameters[path] = saveTaskParameter;
+        return false;
     }
 
     private class SaveTaskParameters
@@ -80,21 +109,46 @@ public class FileService : IFileService
         public Type Type { get; set; } = null!;
         public string FolderPath { get; set; } = null!;
         public string FileName { get; set; } = null!;
-        public object Content { get; set; } = default!;
+        public string Content { get; set; } = default!;
         public bool Indent { get; set; } = false;
+
+        public static bool operator ==(SaveTaskParameters obj1, SaveTaskParameters obj2)
+        {
+            if (obj1 is null && obj2 is null)
+            {
+                return true;
+            }
+
+            if (obj1 is null || obj2 is null)
+            {
+                return false;
+            }
+
+            return obj1.Type == obj2.Type
+                && obj1.FolderPath == obj2.FolderPath
+                && obj1.FileName == obj2.FileName
+                && obj1.Content == obj2.Content
+                && obj1.Indent == obj2.Indent;
+        }
+
+        public static bool operator !=(SaveTaskParameters obj1, SaveTaskParameters obj2)
+        {
+            return !(obj1 == obj2);
+        }
 
         public override bool Equals(object? obj)
         {
-            if (obj is SaveTaskParameters parameters)
+            if (obj is null)
             {
-                return Type == parameters.Type
-                    && FolderPath == parameters.FolderPath
-                    && FileName == parameters.FileName
-                    && Content == parameters.Content
-                    && Indent == parameters.Indent;
+                return false;
             }
 
-            return false;
+            if (obj is SaveTaskParameters arg)
+            {
+                return arg == this;
+            }
+
+            return base.Equals(obj);
         }
 
         public override int GetHashCode()

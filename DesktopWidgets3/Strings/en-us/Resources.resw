@@ -270,28 +270,22 @@
   <data name="WidgetSettings_AllowNavigation_Card.Header" xml:space="preserve">
     <value>Allow navigation</value>
   </data>
-  <data name="WidgetSettings_ShowHiddenFile_Card.Description" xml:space="preserve">
-    <value>Show files that are hidden by the system</value>
-  </data>
-  <data name="WidgetSettings_ShowHiddenFile_Card.Header" xml:space="preserve">
-    <value>Show hidden files</value>
-  </data>
   <data name="WidgetSettings_ShowBps_Card.Description" xml:space="preserve">
     <value>Use Bps instead of B/s as the unit of network speed</value>
   </data>
   <data name="WidgetSettings_ShowBps_Card.Header" xml:space="preserve">
     <value>Show Bps</value>
   </data>
-  <data name="WidgetSettings_ShowExtension_Card.Description" xml:space="preserve">
+  <data name="WidgetSettings_ShowFileExtensions_Card.Description" xml:space="preserve">
     <value>Show extensions for known file types</value>
   </data>
-  <data name="WidgetSettings_ShowExtension_Card.Header" xml:space="preserve">
+  <data name="WidgetSettings_ShowFileExtensions_Card.Header" xml:space="preserve">
     <value>Show extensions</value>
   </data>
-  <data name="WidgetSettings_ShowThumbnail_Card.Description" xml:space="preserve">
+  <data name="WidgetSettings_ShowThumbnails_Card.Description" xml:space="preserve">
     <value>Show thumbnails for image file types</value>
   </data>
-  <data name="WidgetSettings_ShowThumbnail_Card.Header" xml:space="preserve">
+  <data name="WidgetSettings_ShowThumbnails_Card.Header" xml:space="preserve">
     <value>Show thumbnails</value>
   </data>
 </root>

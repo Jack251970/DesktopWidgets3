@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Files.Core.Data.Enums;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets.Settings;
 
@@ -19,19 +20,40 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     private string _folderPath = $"C:\\";
 
     [ObservableProperty]
-    private bool _showHiddenFile;
-
-    [ObservableProperty]
     private bool _allowNavigation = true;
 
     [ObservableProperty]
-    private bool _showExtension = false;
-
-    [ObservableProperty]
-    private bool _showThumbnail = true;
-
-    [ObservableProperty]
     private bool _moveShellExtensionsToSubMenu = true;
+
+    [ObservableProperty]
+    private bool _syncFolderPreferencesAcrossDirectories;
+
+    [ObservableProperty]
+    private bool _showHiddenItems;
+
+    [ObservableProperty]
+    private bool _showDotFiles;
+
+    [ObservableProperty]
+    private bool _showProtectedSystemFiles;
+
+    [ObservableProperty]
+    private bool _areAlternateStreamsVisible;
+
+    [ObservableProperty]
+    private bool _showFileExtensions = false;
+
+    [ObservableProperty]
+    private bool _showThumbnails = true;
+
+    [ObservableProperty]
+    private bool _showCheckboxesWhenSelectingItems = true;
+
+    [ObservableProperty]
+    private int _selectedDeleteConfirmationPolicyIndex;
+
+    [ObservableProperty]
+    private bool _showFileExtensionWarning = true;
 
     #endregion
 
@@ -53,9 +75,16 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
         FolderPath = Settings.FolderPath;
         AllowNavigation = Settings.AllowNavigation;
         MoveShellExtensionsToSubMenu = Settings.MoveShellExtensionsToSubMenu;
-        ShowHiddenFile = Settings.ShowHiddenFile;
-        ShowExtension = Settings.ShowExtension;
-        ShowThumbnail = Settings.ShowThumbnail;
+        SyncFolderPreferencesAcrossDirectories = Settings.SyncFolderPreferencesAcrossDirectories;
+        ShowHiddenItems = Settings.ShowHiddenItems;
+        ShowDotFiles = Settings.ShowDotFiles;
+        ShowProtectedSystemFiles = Settings.ShowProtectedSystemFiles;
+        AreAlternateStreamsVisible = Settings.AreAlternateStreamsVisible;
+        ShowFileExtensions = Settings.ShowFileExtensions;
+        ShowThumbnails = Settings.ShowThumbnails;
+        ShowCheckboxesWhenSelectingItems = Settings.ShowCheckboxesWhenSelectingItems;
+        SelectedDeleteConfirmationPolicyIndex = (int)Settings.DeleteConfirmationPolicy;
+        ShowFileExtensionWarning = Settings.ShowFileExtensionWarning;
     }
 
     private async void SelectFoldePath()
@@ -66,7 +95,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
             if (!string.IsNullOrEmpty(newPath))
             {
                 Settings.FolderPath = FolderPath = newPath;
-                await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+                NeedUpdate = true;
             }
         }
     }
@@ -76,43 +105,106 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
         if (IsInitialized)
         {
             Settings.AllowNavigation = value;
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+            NeedUpdate = true;
         }
     }
 
     partial void OnMoveShellExtensionsToSubMenuChanged(bool value)
     {
-        if (IsInitialized && !IsEnabled)
+        if (IsInitialized)
         {
             Settings.MoveShellExtensionsToSubMenu = value;
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+            NeedUpdate = true;
         }
     }
 
-    partial void OnShowHiddenFileChanged(bool value)
+    partial void OnSyncFolderPreferencesAcrossDirectoriesChanged(bool value)
     {
-        if (IsInitialized && !IsEnabled)
+        if (IsInitialized)
         {
-            Settings.ShowHiddenFile = value;
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+            Settings.SyncFolderPreferencesAcrossDirectories = value;
+            NeedUpdate = true;
         }
     }
 
-    partial void OnShowExtensionChanged(bool value)
+    partial void OnShowHiddenItemsChanged(bool value)
     {
-        if (IsInitialized && !IsEnabled)
+        if (IsInitialized)
         {
-            Settings.ShowExtension = value;
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+            Settings.ShowHiddenItems = value;
+            NeedUpdate = true;
         }
     }
 
-    partial void OnShowThumbnailChanged(bool value)
+    partial void OnShowDotFilesChanged(bool value)
     {
-        if (IsInitialized && !IsEnabled)
+        if (IsInitialized)
         {
-            Settings.ShowThumbnail = value;
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
+            Settings.ShowDotFiles = value;
+            NeedUpdate = true;
+        }
+    }
+
+    partial void OnShowProtectedSystemFilesChanged(bool value)
+    {
+        if (IsInitialized)
+        {
+            Settings.ShowProtectedSystemFiles = value;
+            NeedUpdate = true;
+        }
+    }
+
+    partial void OnAreAlternateStreamsVisibleChanged(bool value)
+    {
+        if (IsInitialized)
+        { 
+            Settings.AreAlternateStreamsVisible = value;
+            NeedUpdate = true;
+        }
+    }
+
+    partial void OnShowFileExtensionsChanged(bool value)
+    {
+        if (IsInitialized)
+        {
+            Settings.ShowFileExtensions = value;
+            NeedUpdate = true;
+        }
+    }
+
+    partial void OnShowThumbnailsChanged(bool value)
+    {
+        if (IsInitialized)
+        {
+            Settings.ShowThumbnails = value;
+            NeedUpdate = true;
+        }
+    }
+
+    partial void OnShowCheckboxesWhenSelectingItemsChanged(bool value)
+    {
+        if (IsInitialized)
+        {
+            Settings.ShowCheckboxesWhenSelectingItems = value;
+            NeedUpdate = true;
+        }
+    }
+
+    partial void OnSelectedDeleteConfirmationPolicyIndexChanged(int value)
+    {
+        if (IsInitialized)
+        {
+            Settings.DeleteConfirmationPolicy = (DeleteConfirmationPolicies)value;
+            NeedUpdate = true;
+        }
+    }
+
+    partial void OnShowFileExtensionWarningChanged(bool value)
+    {
+        if (IsInitialized)
+        {
+            Settings.ShowFileExtensionWarning = value;
+            NeedUpdate = true;
         }
     }
 }
