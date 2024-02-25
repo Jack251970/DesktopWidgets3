@@ -16,6 +16,8 @@ public interface IWidgetManagerService
 
     WidgetWindow GetLastWidgetWindow();
 
+    bool IsWidgetEnabled(WidgetType widgetType, int indexTag);
+
     DashboardWidgetItem GetCurrentEnabledWidget();
 
     List<DashboardWidgetItem> GetAllWidgetItems();

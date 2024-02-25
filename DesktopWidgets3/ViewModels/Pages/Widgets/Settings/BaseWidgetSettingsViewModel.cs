@@ -30,6 +30,8 @@ public abstract partial class BaseWidgetSettingsViewModel : ObservableRecipient,
         private set;
     }
 
+    protected bool IsEnabled => _widgetManagerService.IsWidgetEnabled(WidgetType, IndexTag);
+
     public BaseWidgetSettingsViewModel()
     {
         _navigationService = App.GetService<INavigationService>();

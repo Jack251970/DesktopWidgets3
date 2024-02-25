@@ -167,6 +167,11 @@ internal class WidgetManagerService : IWidgetManagerService
         return WidgetsList.Last();
     }
 
+    public bool IsWidgetEnabled(WidgetType widgetType, int indexTag)
+    {
+        return GetWidgetWindow(widgetType, indexTag) != null;
+    }
+
     private async Task CreateWidgetWindow(JsonWidgetItem widget)
     {
         // load widget info

@@ -82,7 +82,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
 
     partial void OnMoveShellExtensionsToSubMenuChanged(bool value)
     {
-        if (IsInitialized)
+        if (IsInitialized && !IsEnabled)
         {
             Settings.MoveShellExtensionsToSubMenu = value;
             _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
@@ -91,7 +91,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
 
     partial void OnShowHiddenFileChanged(bool value)
     {
-        if (IsInitialized)
+        if (IsInitialized && !IsEnabled)
         {
             Settings.ShowHiddenFile = value;
             _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
@@ -100,7 +100,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
 
     partial void OnShowExtensionChanged(bool value)
     {
-        if (IsInitialized)
+        if (IsInitialized && !IsEnabled)
         {
             Settings.ShowExtension = value;
             _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
@@ -109,7 +109,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
 
     partial void OnShowThumbnailChanged(bool value)
     {
-        if (IsInitialized)
+        if (IsInitialized && !IsEnabled)
         {
             Settings.ShowThumbnail = value;
             _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, Settings);
