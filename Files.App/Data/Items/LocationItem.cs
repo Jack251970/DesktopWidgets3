@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
@@ -92,7 +93,7 @@ public class LocationItem : ObservableObject, INavigationControlItem
         set => SetProperty(ref toolTip, value);
     }
 
-    /*public FrameworkElement? ItemDecorator
+    public FrameworkElement? ItemDecorator
 	{
 		get
 		{
@@ -105,7 +106,7 @@ public class LocationItem : ObservableObject, INavigationControlItem
 			}
 			return null;
 		}
-	}*/
+	}
 
 	public int CompareTo(INavigationControlItem? other)
 		=> Text.CompareTo(other?.Text);

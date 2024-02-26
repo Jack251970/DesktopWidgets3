@@ -14,7 +14,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text;
-using Windows.Storage;
 using Windows.System;
 using Windows.UI.Notifications;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -67,7 +66,8 @@ public static class AppLifecycleHelper
 
 		FileTagsHelper.UpdateTagsDb();
 
-		await CheckAppUpdate();
+        // CHANGE: Don't check app updates.
+		/*await CheckAppUpdate(folderViewViewModel);*/
 
 		static Task OptionalTaskAsync(Task task, bool condition)
 		{
@@ -85,16 +85,14 @@ public static class AppLifecycleHelper
 	/// <summary>
 	/// Checks application updates and download if available.
 	/// </summary>
-	public static async Task CheckAppUpdate()
+	public static async Task CheckAppUpdate(IFolderViewViewModel folderViewViewModel)
 	{
-        /*var updateService = DependencyExtensions.GetService<IUpdateService>();
+        var updateService = DependencyExtensions.GetService<IUpdateService>();
 
-		await updateService.CheckForUpdatesAsync();
-		await updateService.DownloadMandatoryUpdatesAsync();
+		await updateService.CheckForUpdatesAsync(folderViewViewModel);
+		await updateService.DownloadMandatoryUpdatesAsync(folderViewViewModel);
 		await updateService.CheckAndUpdateFilesLauncherAsync();
-		await updateService.CheckLatestReleaseNotesAsync();*/
-
-        await Task.CompletedTask;
+		await updateService.CheckLatestReleaseNotesAsync();
 	}
 
 	/// <summary>
@@ -160,9 +158,9 @@ public static class AppLifecycleHelper
                 .AddSingleton<IFtpStorageService, FtpStorageService>()
                 .AddSingleton<IAddItemService, AddItemService>()
 #if STABLE || PREVIEW
-			    /*.AddSingleton<IUpdateService, SideloadUpdateService>()*/
+			    .AddSingleton<IUpdateService, SideloadUpdateService>()
 #else
-                /*.AddSingleton<IUpdateService, UpdateService>()*/
+                .AddSingleton<IUpdateService, SideloadUpdateService>()
 #endif
                 .AddSingleton<IPreviewPopupService, PreviewPopupService>()
                 .AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>()

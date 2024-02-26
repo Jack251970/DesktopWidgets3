@@ -69,7 +69,7 @@
         <PackageReference Include="Vanara.PInvoke.Mpr" Version="3.4.17" />
         <PackageReference Include="Vanara.Windows.Extensions" Version="3.4.17" />
         <PackageReference Include="Vanara.Windows.Shell" Version="3.4.17" />
-        <PackageReference Include="WinUIEx" Version="2.3.3" />
+        <PackageReference Include="WinUIEx" Version="2.3.4" />
     </ItemGroup>
   
     <ItemGroup>

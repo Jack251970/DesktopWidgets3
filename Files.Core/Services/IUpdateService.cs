@@ -25,11 +25,11 @@ public interface IUpdateService : INotifyPropertyChanged
 	/// </summary>
 	bool IsReleaseNotesAvailable { get; }
 
-	Task DownloadUpdatesAsync();
+	Task DownloadUpdatesAsync(IFolderViewViewModel folderViewViewModel);
 
-	Task DownloadMandatoryUpdatesAsync();
+	Task DownloadMandatoryUpdatesAsync(IFolderViewViewModel folderViewViewModel);
 
-	Task CheckForUpdatesAsync();
+	Task CheckForUpdatesAsync(IFolderViewViewModel folderViewViewModel);
 
 	Task CheckLatestReleaseNotesAsync(CancellationToken cancellationToken = default);
 

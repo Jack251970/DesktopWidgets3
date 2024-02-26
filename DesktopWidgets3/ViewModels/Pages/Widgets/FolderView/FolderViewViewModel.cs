@@ -97,8 +97,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         if (!isInitialized)
         {
+            var userSettingsService = App.GetService<IUserSettingsService>();
+
+            // No need to leave the app running in background
+            userSettingsService.GeneralSettingsService.LeaveAppRunning = false;
+
             // All callback of user settings service after setting initialization
-            App.GetService<IUserSettingsService>().OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
+            userSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
 
             App.OnLaunched(FolderPath);
         }

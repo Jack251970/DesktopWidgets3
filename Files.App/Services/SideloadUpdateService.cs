@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using CommunityToolkit.WinUI.Helpers;
+using CommunityToolkit.WinUI.Helpers;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Http;
@@ -12,6 +12,9 @@ using Windows.Management.Deployment;
 using Windows.Storage;
 
 namespace Files.App.Services;
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable IL2026 // Assembly reference for System.Runtime.InteropServices.RuntimeInformation not found
 
 public sealed class SideloadUpdateService : ObservableObject, IUpdateService, IDisposable
 {
@@ -65,12 +68,12 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 		get => _isReleaseNotesAvailable;
 		private set => SetProperty(ref _isReleaseNotesAvailable, value);
 	}
-	public async Task DownloadUpdatesAsync()
+	public async Task DownloadUpdatesAsync(IFolderViewViewModel _)
 	{
 		await ApplyPackageUpdateAsync();
 	}
 
-	public Task DownloadMandatoryUpdatesAsync()
+	public Task DownloadMandatoryUpdatesAsync(IFolderViewViewModel _)
 	{
 		return Task.CompletedTask;
 	}
@@ -107,7 +110,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
         }
     }
 
-	public async Task CheckForUpdatesAsync()
+	public async Task CheckForUpdatesAsync(IFolderViewViewModel _)
 	{
 		IsUpdateAvailable = false;
 		try
@@ -198,7 +201,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 	{
 		try
 		{
-			var tempDownloadPath = LocalSettingsExtensions.ApplicationDataFolder + "\\" + TEMPORARY_UPDATE_PACKAGE_NAME;
+			var tempDownloadPath = LocalSettingsExtensions.GetApplicationDataFolder("Files") + "\\" + TEMPORARY_UPDATE_PACKAGE_NAME;
 
 			var timer = Stopwatch.StartNew();
 
@@ -242,7 +245,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 
 			await Task.Run(async () =>
 			{
-				var bundlePath = new Uri(LocalSettingsExtensions.ApplicationDataFolder + "\\" + TEMPORARY_UPDATE_PACKAGE_NAME);
+				var bundlePath = new Uri(LocalSettingsExtensions.GetApplicationDataFolder("Files") + "\\" + TEMPORARY_UPDATE_PACKAGE_NAME);
 
 				var deployment = pm.RequestAddPackageAsync(
 					bundlePath,
@@ -305,4 +308,5 @@ public sealed class MainBundle
 
 	[XmlAttribute("Uri")]
 	public string Uri { get; set; }
-}*/
+}
+

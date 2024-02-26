@@ -1,0 +1,212 @@
+// Copyright (c) 2023 Files Community
+// Licensed under the MIT License. See the LICENSE.
+
+using Files.Shared.Helpers;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
+using System.IO;
+using Windows.ApplicationModel.Activation;
+using Windows.Storage;
+using static Files.App.Helpers.InteropHelpers;
+
+namespace Files.App;
+
+internal class Program
+{
+    public static Semaphore Pool;
+
+    static Program()
+    {
+        Pool = new(0, 1, $"Files-{ApplicationService.AppEnvironment}-Instance", out var isNew);
+        if (!isNew)
+        {
+            // Resume cached instance
+            Pool.Release();
+            var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+            var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
+            RedirectActivationTo(instance, AppInstance.GetCurrent().GetActivatedEventArgs());
+            Environment.Exit(0);
+        }
+        Pool.Dispose();
+    }
+
+    // Note:
+    //  We can't declare Main to be async because in a WinUI app
+    //  This prevents Narrator from reading XAML elements
+    //  https://github.com/microsoft/WindowsAppSDK-Samples/blob/main/Samples/AppLifecycle/Instancing/cs-winui-packaged/CsWinUiDesktopInstancing/CsWinUiDesktopInstancing/Program.cs
+    //  STAThread has no effect if main is async, needed for Clipboard
+    [STAThread]
+    private static void Main()
+    {
+        WinRT.ComWrappersSupport.InitializeComWrappers();
+
+        var proc = Process.GetCurrentProcess();
+        var OpenTabInExistingInstance = ApplicationData.Current.LocalSettings.Values.Get("OpenTabInExistingInstance", true);
+        var activatedArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
+
+        if (activatedArgs.Data is ICommandLineActivatedEventArgs cmdLineArgs)
+        {
+            var operation = cmdLineArgs.Operation;
+            var cmdLineString = operation.Arguments;
+            var parsedCommands = CommandLineParser.ParseUntrustedCommands(cmdLineString);
+
+            if (parsedCommands is not null)
+            {
+                foreach (var command in parsedCommands)
+                {
+                    switch (command.Type)
+                    {
+                        case ParsedCommandType.ExplorerShellCommand:
+                            if (!Constants.UserEnvironmentPaths.ShellPlaces.ContainsKey(command.Payload.ToUpperInvariant()))
+                            {
+                                OpenShellCommandInExplorer(command.Payload, proc.Id);
+
+                                // Exit
+                                return;
+                            }
+
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            // Always open a new instance for OpenDialog, never open new instance for "-Tag" command
+            if (parsedCommands is null || !parsedCommands.Any(x => x.Type == ParsedCommandType.OutputPath) &&
+                (OpenTabInExistingInstance || parsedCommands.Any(x => x.Type == ParsedCommandType.TagFiles)))
+            {
+                var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+                var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
+
+                if (!instance.IsCurrent)
+                {
+                    RedirectActivationTo(instance, activatedArgs);
+                    return;
+                }
+            }
+        }
+        else if (activatedArgs.Data is ILaunchActivatedEventArgs tileArgs)
+        {
+            if (tileArgs.Arguments is not null &&
+                !tileArgs.Arguments.Contains($"files.exe", StringComparison.OrdinalIgnoreCase) &&
+                FileExtensionHelpers.IsExecutableFile(tileArgs.Arguments))
+            {
+                if (File.Exists(tileArgs.Arguments))
+                {
+                    OpenFileFromTile(tileArgs.Arguments);
+                    return;
+                }
+            }
+        }
+
+        if (OpenTabInExistingInstance)
+        {
+            if (activatedArgs.Data is ILaunchActivatedEventArgs launchArgs)
+            {
+                var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+                var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
+                if (!instance.IsCurrent && !string.IsNullOrWhiteSpace(launchArgs.Arguments))
+                {
+                    RedirectActivationTo(instance, activatedArgs);
+                    return;
+                }
+            }
+            else if (activatedArgs.Data is IProtocolActivatedEventArgs protocolArgs)
+            {
+                var parsedArgs = protocolArgs.Uri.Query.TrimStart('?').Split('=');
+                if ((parsedArgs.Length == 2 && parsedArgs[0] == "cmd") ||
+                    parsedArgs.Length == 1) // Treat Win+E & Open file location as command line launch
+                {
+                    var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+                    var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
+                    if (!instance.IsCurrent)
+                    {
+                        RedirectActivationTo(instance, activatedArgs);
+                        return;
+                    }
+                }
+            }
+            else if (activatedArgs.Data is IFileActivatedEventArgs)
+            {
+                var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+                var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
+                if (!instance.IsCurrent)
+                {
+                    RedirectActivationTo(instance, activatedArgs);
+                    return;
+                }
+            }
+        }
+
+        var currentInstance = AppInstance.FindOrRegisterForKey((-proc.Id).ToString());
+        if (currentInstance.IsCurrent)
+        {
+            currentInstance.Activated += OnActivated;
+        }
+
+        ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = -proc.Id;
+
+        Application.Start((p) =>
+        {
+            var context = new DispatcherQueueSynchronizationContext(
+                DispatcherQueue.GetForCurrentThread());
+            SynchronizationContext.SetSynchronizationContext(context);
+            _ = new App(null!);
+        });
+    }
+
+    private static void OnActivated(object? sender, AppActivationArguments args)
+    {
+        /*if (App.Current is App thisApp)
+        {
+            // WINUI3: Verify if needed or OnLaunched is called
+            thisApp.OnActivated(args);
+        }*/
+    }
+
+    private const uint CWMO_DEFAULT = 0;
+    private const uint INFINITE = 0xFFFFFFFF;
+
+    // Do the redirection on another thread, and use a non-blocking wait method to wait for the redirection to complete
+    public static void RedirectActivationTo(AppInstance keyInstance, AppActivationArguments args)
+    {
+        var eventHandle = CreateEvent(IntPtr.Zero, true, false, null!);
+
+        Task.Run(() =>
+        {
+            keyInstance.RedirectActivationToAsync(args).AsTask().Wait();
+            SetEvent(eventHandle);
+        });
+
+        _ = CoWaitForMultipleObjects(
+           CWMO_DEFAULT,
+           INFINITE,
+           1,
+           new IntPtr[] { eventHandle },
+           out var handleIndex);
+    }
+
+    public static void OpenShellCommandInExplorer(string shellCommand, int pid)
+        => Win32API.OpenFolderInExistingShellWindow(shellCommand);
+
+    public static void OpenFileFromTile(string filePath)
+    {
+        var eventHandle = CreateEvent(IntPtr.Zero, true, false, null!);
+
+        Task.Run(() =>
+        {
+            LaunchHelper.LaunchAppAsync(filePath, null!, null!).Wait();
+            SetEvent(eventHandle);
+        });
+
+        _ = CoWaitForMultipleObjects(
+           CWMO_DEFAULT,
+           INFINITE,
+           1,
+           new IntPtr[] { eventHandle },
+           out var handleIndex);
+    }
+}

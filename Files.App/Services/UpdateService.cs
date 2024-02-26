@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-/*using CommunityToolkit.WinUI.Helpers;
+using CommunityToolkit.WinUI.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using System.IO;
@@ -48,7 +48,7 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 		_updatePackages = new List<StorePackageUpdate>();
 	}
 
-	public async Task DownloadUpdatesAsync()
+	public async Task DownloadUpdatesAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		OnUpdateInProgress();
 
@@ -61,7 +61,7 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 		if (IsMandatory)
 		{
 			// Show dialog
-			var dialog = await ShowDialogAsync();
+			var dialog = await ShowDialogAsync(folderViewViewModel);
 			if (!dialog)
 			{
 				// User rejected mandatory update.
@@ -74,13 +74,13 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 		OnUpdateCompleted();
 	}
 
-	public async Task DownloadMandatoryUpdatesAsync()
+	public async Task DownloadMandatoryUpdatesAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		// Prompt the user to download if the package list
 		// contains mandatory updates.
 		if (IsMandatory && HasUpdates())
 		{
-			if (await ShowDialogAsync())
+			if (await ShowDialogAsync(folderViewViewModel))
 			{
 				App.Logger?.LogInformation("STORE: Downloading updates...");
 				OnUpdateInProgress();
@@ -90,12 +90,12 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 		}
 	}
 
-	public async Task CheckForUpdatesAsync()
+	public async Task CheckForUpdatesAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		IsUpdateAvailable = false;
 		App.Logger?.LogInformation("STORE: Checking for updates...");
 
-		await GetUpdatePackagesAsync();
+		await GetUpdatePackagesAsync(folderViewViewModel);
 
 		if (_updatePackages is not null && _updatePackages.Count > 0)
 		{
@@ -117,13 +117,13 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
         }
     }
 
-	private async Task GetUpdatePackagesAsync()
+	private async Task GetUpdatePackagesAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		try
 		{
 			_storeContext ??= await Task.Run(StoreContext.GetDefault);
 
-			InitializeWithWindow.Initialize(_storeContext, MainWindow.Instance.WindowHandle);
+			InitializeWithWindow.Initialize(_storeContext, folderViewViewModel.WindowHandle);
 
 			var updateList = await _storeContext.GetAppAndOptionalStorePackageUpdatesAsync();
 			_updatePackages = updateList?.ToList();
@@ -135,7 +135,7 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 		}
 	}
 
-	private static async Task<bool> ShowDialogAsync()
+	private static async Task<bool> ShowDialogAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		// FILESTODO: Use IDialogService in future.
 		ContentDialog dialog = new()
@@ -148,10 +148,10 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 
 		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            dialog.XamlRoot = MainWindow.Instance.Content.XamlRoot;
+            dialog.XamlRoot = folderViewViewModel.XamlRoot;
         }
 
-        var result = await dialog.TryShowAsync();
+        var result = await dialog.TryShowAsync(folderViewViewModel);
 
 		return result == ContentDialogResult.Primary;
 	}
@@ -254,5 +254,6 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 	{
 		IsUpdating = false;
 	}
-}*/
+}
+
 

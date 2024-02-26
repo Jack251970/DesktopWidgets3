@@ -162,6 +162,7 @@ internal class CommandManager : ICommandManager
 	public IRichCommand NavigateForward => commands[CommandCodes.NavigateForward];
 	public IRichCommand NavigateUp => commands[CommandCodes.NavigateUp];
     public IRichCommand NewTab => commands[CommandCodes.NewTab];
+    // CHANGE: Remove commands related to tabs.
     /*public IRichCommand DuplicateCurrentTab => commands[CommandCodes.DuplicateCurrentTab];
 	public IRichCommand DuplicateSelectedTab => commands[CommandCodes.DuplicateSelectedTab];
 	public IRichCommand CloseTabsToTheLeftCurrent => commands[CommandCodes.CloseTabsToTheLeftCurrent];
@@ -173,7 +174,8 @@ internal class CommandManager : ICommandManager
     public IRichCommand OpenDirectoryInNewPaneAction => commands[CommandCodes.OpenDirectoryInNewPane];
 	public IRichCommand OpenDirectoryInNewTabAction => commands[CommandCodes.OpenDirectoryInNewTab];
 	public IRichCommand OpenInNewWindowItemAction => commands[CommandCodes.OpenInNewWindowItem];
-	/*public IRichCommand ReopenClosedTab => commands[CommandCodes.ReopenClosedTab];
+    // CHANGE: Remove commands related to tabs.
+    /*public IRichCommand ReopenClosedTab => commands[CommandCodes.ReopenClosedTab];
 	public IRichCommand PreviousTab => commands[CommandCodes.PreviousTab];
 	public IRichCommand NextTab => commands[CommandCodes.NextTab];
 	public IRichCommand CloseSelectedTab => commands[CommandCodes.CloseSelectedTab];*/
@@ -189,7 +191,7 @@ internal class CommandManager : ICommandManager
 	public IRichCommand OpenAllTaggedItems => commands[CommandCodes.OpenAllTaggedItems];
 
 	public CommandManager()
-	{
+    {
         /*commands = CreateActions()
                 .Select(action => new ActionCommand(this, action.Key, action.Value))
                 .Cast<IRichCommand>()
@@ -345,6 +347,7 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.NavigateForward] = new NavigateForwardAction(contentPageContext),
 		[CommandCodes.NavigateUp] = new NavigateUpAction(contentPageContext),
         [CommandCodes.NewTab] = new NewTabAction(folderViewViewModel),
+        // CHANGE: Remove commands related to tabs.
         /*[CommandCodes.DuplicateCurrentTab] = new DuplicateCurrentTabAction(),
 		[CommandCodes.DuplicateSelectedTab] = new DuplicateSelectedTabAction(),
 		[CommandCodes.CloseTabsToTheLeftCurrent] = new CloseTabsToTheLeftCurrentAction(),
@@ -353,10 +356,11 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.CloseTabsToTheRightSelected] = new CloseTabsToTheRightSelectedAction(),
 		[CommandCodes.CloseOtherTabsCurrent] = new CloseOtherTabsCurrentAction(),
         [CommandCodes.CloseOtherTabsSelected] = new CloseOtherTabsSelectedAction(),*/
-		[CommandCodes.OpenDirectoryInNewPane] = new OpenDirectoryInNewPaneAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenDirectoryInNewPane] = new OpenDirectoryInNewPaneAction(folderViewViewModel, contentPageContext),
 		[CommandCodes.OpenDirectoryInNewTab] = new OpenDirectoryInNewTabAction(folderViewViewModel, contentPageContext),
 		[CommandCodes.OpenInNewWindowItem] = new OpenInNewWindowItemAction(folderViewViewModel, contentPageContext),
-		/*[CommandCodes.ReopenClosedTab] = new ReopenClosedTabAction(),
+        // CHANGE: Remove commands related to tabs.
+        /*[CommandCodes.ReopenClosedTab] = new ReopenClosedTabAction(),
 		[CommandCodes.PreviousTab] = new PreviousTabAction(),
 		[CommandCodes.NextTab] = new NextTabAction(),
 		[CommandCodes.CloseSelectedTab] = new CloseSelectedTabAction(),*/

@@ -41,20 +41,23 @@ internal class MultitaskingContext : ObservableObject, IMultitaskingContext
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
+        // CHANGE: Remove event handlers related to app instances.
         /*MainPageViewModel.AppInstances.CollectionChanged += AppInstances_CollectionChanged;*/
         FolderViewViewModel.PropertyChanged += AppModel_PropertyChanged;
+        // CHANGE: Remove event handlers related to tab bar.
         /*BaseTabBar.OnLoaded += BaseMultitaskingControl_OnLoaded;
         TabBar.SelectedTabItemChanged += HorizontalMultitaskingControl_SelectedTabItemChanged;*/
         FocusManager.GotFocus += FocusManager_GotFocus;
         FocusManager.LosingFocus += FocusManager_LosingFocus;
     }
 
-	private void AppInstances_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    // CHANGE: Remove events related to app instances.
+    /*private void AppInstances_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		UpdateTabCount();
-	}
+	}*/
 
-	private void AppModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void AppModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName is nameof(FolderViewViewModel.TabStripSelectedIndex))
         {
@@ -62,7 +65,8 @@ internal class MultitaskingContext : ObservableObject, IMultitaskingContext
         }
     }
 
-	private void BaseMultitaskingControl_OnLoaded(object? sender, ITabBar control)
+    // CHANGE: Remove events related to tab bar.
+    /*private void BaseMultitaskingControl_OnLoaded(object? sender, ITabBar control)
 	{
 		SetProperty(ref this.control, control, nameof(Control));
 		UpdateTabCount();
@@ -74,9 +78,9 @@ internal class MultitaskingContext : ObservableObject, IMultitaskingContext
 		isPopupOpen = e is not null;
 		var newSelectedIndex = e is null ? currentTabIndex : MainPageViewModel.AppInstances[FolderViewViewModel].IndexOf(e);
 		UpdateSelectedTabIndex(newSelectedIndex);
-	}
+	}*/
 
-	private void FocusManager_GotFocus(object? sender, FocusManagerGotFocusEventArgs e)
+    private void FocusManager_GotFocus(object? sender, FocusManagerGotFocusEventArgs e)
 	{
 		if (isPopupOpen)
         {
@@ -103,10 +107,10 @@ internal class MultitaskingContext : ObservableObject, IMultitaskingContext
 		}
 	}
 
-	private void UpdateTabCount()
+	/*private void UpdateTabCount()
 	{
 		SetProperty(ref tabCount, (ushort)MainPageViewModel.AppInstances.Count, nameof(TabCount));
-	}
+	}*/
 
 	private void UpdateCurrentTabIndex()
 	{

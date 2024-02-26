@@ -6,6 +6,8 @@ using Files.Core.Services.SizeProvider;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.AppLifecycle;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 
@@ -127,7 +129,7 @@ public partial class App
 
 			// Hook events for the window
 			MainWindow.Closed += Window_Closed;
-			/*MainWindow.Activated += Window_Activated;*/
+			MainWindow.Activated += Window_Activated;
 
 			/*Logger?.LogInformation($"App launched. Launch args type: {appActivationArguments.Data.GetType().Name}");*/
 
@@ -140,22 +142,22 @@ public partial class App
 		}
 	}
 
-    /*/// <summary>
+    /// <summary>
 	/// Invoked when the application is activated.
 	/// </summary>
-	public static void OnActivated(AppActivationArguments activatedEventArgs)
+	public void OnActivated(AppActivationArguments activatedEventArgs)
 	{
 		Logger.LogInformation($"The app is being activated. Activation type: {activatedEventArgs.Data.GetType().Name}");
 
 		// InitializeApplication accesses UI, needs to be called on UI thread
 		_ = UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(()
-			=> MainWindow.Instance.InitializeApplicationAsync(activatedEventArgs.Data));
+			=> Instance.InitializeApplicationAsync(activatedEventArgs.Data));
 	}
 
-	/// <summary>
-	/// Invoked when the main window is activated.
-	/// </summary>
-	private void Window_Activated(object sender, WindowActivatedEventArgs args)
+    /// <summary>
+    /// Invoked when the main window is activated.
+    /// </summary>
+    private void Window_Activated(object sender, WindowActivatedEventArgs args)
 	{
 		// FILESTODO(s): Is this code still needed?
 		if (args.WindowActivationState != WindowActivationState.CodeActivated ||
@@ -165,7 +167,7 @@ public partial class App
         }
 
         ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = -Environment.ProcessId;
-	}*/
+	}
 
     /// <summary>
     /// Invoked when application execution is being closed. Save application state.
@@ -177,15 +179,15 @@ public partial class App
 		var statusCenterViewModel = FolderViewViewModel.GetService<StatusCenterViewModel>();
 
         // A Workaround for the crash (#10110)
-        /*if (LastOpenedFlyout?.IsOpen ?? false)
+        if (LastOpenedFlyout?.IsOpen ?? false)
 		{
 			args.Handled = true;
-			LastOpenedFlyout.Closed += (sender, e) => App.Current.Exit();
+			LastOpenedFlyout.Closed += (sender, e) => FolderViewViewModel.MainWindow.Close();
 			LastOpenedFlyout.Hide();
 			return;
-		}*/
+		}
 
-        /*if (userSettingsService.GeneralSettingsService.LeaveAppRunning &&
+        if (userSettingsService.GeneralSettingsService.LeaveAppRunning &&
 			!AppModel.ForceProcessTermination &&
 			!Process.GetProcessesByName("Files").Any(x => x.Id != Environment.ProcessId))
 		{
@@ -214,12 +216,13 @@ public partial class App
             {
                 // Resume the instance
                 Program.Pool.Dispose();
-
-                _ = AppLifecycleHelper.CheckAppUpdate();
+                
+                // CHANGE: Don't check app updates.
+                /*_ = AppLifecycleHelper.CheckAppUpdate();*/
             }
 
             return;
-        }*/
+        }
 
         // Method can take a long time, make sure the window is hidden
         await Task.Yield();

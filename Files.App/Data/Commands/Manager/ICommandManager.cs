@@ -161,6 +161,7 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand NavigateUp { get; }
 
     IRichCommand NewTab { get; }
+    // CHANGE: Remove commands related to tabs.
     /*IRichCommand DuplicateCurrentTab { get; }
 	IRichCommand DuplicateSelectedTab { get; }
 	IRichCommand CloseTabsToTheLeftCurrent { get; }
@@ -172,7 +173,8 @@ public interface ICommandManager : IEnumerable<IRichCommand>
     IRichCommand OpenDirectoryInNewPaneAction { get; }
 	IRichCommand OpenDirectoryInNewTabAction { get; }
 	IRichCommand OpenInNewWindowItemAction { get; }
-	/*IRichCommand ReopenClosedTab { get; }
+    // CHANGE: Remove commands related to tabs.
+    /*IRichCommand ReopenClosedTab { get; }
 	IRichCommand PreviousTab { get; }
 	IRichCommand NextTab { get; }
 	IRichCommand CloseSelectedTab { get; }*/
