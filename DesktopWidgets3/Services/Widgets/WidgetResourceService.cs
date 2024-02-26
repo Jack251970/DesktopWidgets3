@@ -31,6 +31,7 @@ internal class WidgetResourceService : IWidgetResourceService
     {
         return widgetType switch
         {
+            WidgetType.FolderView => new WidgetSize(516, 416),
             _ => new WidgetSize(318, 200),
         };
     }

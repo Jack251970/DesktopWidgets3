@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Core.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
@@ -14,47 +15,49 @@ public sealed partial class MainWindow
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
-    /*private readonly IApplicationService ApplicationService;
+    private readonly IApplicationService ApplicationService;
 
-    private MainPageViewModel mainPageViewModel;
+    /*private MainPageViewModel mainPageViewModel;
 
     private static MainWindow? _Instance;
-	public static MainWindow Instance => _Instance ??= new();
+	public static MainWindow Instance => _Instance ??= new();*/
 
-	public IntPtr WindowHandle { get; }*/
+    public IntPtr WindowHandle { get; }
 
     public MainWindow(IFolderViewViewModel folderViewViewModel)
 	{
         FolderViewViewModel = folderViewViewModel;
 
-        /*ApplicationService = new ApplicationService();
+        ApplicationService = new ApplicationService();
 
-        WindowHandle = this.GetWindowHandle();
+        WindowHandle = folderViewViewModel.WindowHandle;
 
-		InitializeComponent();
+        /*InitializeComponent();*/
 
-		EnsureEarlyWindow();*/
+        EnsureEarlyWindow(folderViewViewModel);
     }
 
-    /*private void EnsureEarlyWindow()
+    private void EnsureEarlyWindow(IFolderViewViewModel folderViewViewModel)
 	{
 		// Set PersistenceId
-		PersistenceId = "FilesMainWindow";
+		folderViewViewModel.MainWindow.PersistenceId = "FilesMainWindow";
 
-		// Set minimum sizes
-		MinHeight = 416;
-		MinWidth = 516;
+        // Set minimum sizes
+        folderViewViewModel.MainWindow.MinHeight = 416;
+        folderViewViewModel.MainWindow.MinWidth = 516;
 
-		AppWindow.Title = "Files";
-		AppWindow.SetIcon(Path.Combine(InfoHelper.GetInstalledLocation(), ApplicationService.AppIcoPath));
-		AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
-		AppWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
-		AppWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+        folderViewViewModel.MainWindow.AppWindow.Title = "Files";
+        folderViewViewModel.MainWindow.AppWindow.SetIcon(Path.Combine(InfoHelper.GetInstalledLocation(), ApplicationService.AppIcoPath));
+        
+        // CHANGE: Don't set title bar.
+        /*folderViewViewModel.MainWindow.AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
+        folderViewViewModel.MainWindow.AppWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
+        folderViewViewModel.MainWindow.AppWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;*/
 
 		// Workaround for full screen window messing up the taskbar
 		// https://github.com/microsoft/microsoft-ui-xaml/issues/8431
 		InteropHelpers.SetPropW(WindowHandle, "NonRudeHWND", new IntPtr(1));
-	}*/
+	}
 
     public void ShowSplashScreen()
 	{
@@ -65,6 +68,7 @@ public sealed partial class MainWindow
 
 	public async Task InitializeApplicationAsync(object activatedEventArgs)
 	{
+        // CHANGE: Don't set system backdrop.
 		/*// Set system backdrop
 		FolderViewViewModel.MainWindow.SystemBackdrop = new AppSystemBackdrop(FolderViewViewModel);*/
 
@@ -72,8 +76,8 @@ public sealed partial class MainWindow
 
         switch (activatedEventArgs)
 		{
+            // CHANGE: Use string & startup tabs function to navigate to specific path.
             case string folderPath:
-                // CHANGE: Use startup tabs function to navigate to specific path.
                 var _userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
                 _userSettingsService.GeneralSettingsService.OpenSpecificPageOnStartup = true;
                 _userSettingsService.GeneralSettingsService.TabsOnStartupList = new List<string>() { folderPath };

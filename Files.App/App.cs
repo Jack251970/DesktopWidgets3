@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppLifecycle;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 
@@ -113,25 +112,24 @@ public partial class App
 			SplashScreenLoadingTCS = new TaskCompletionSource();
 			Instance.ShowSplashScreen();
 
-            /*// Get AppActivationArguments
+            // Get AppActivationArguments
 			var appActivationArguments = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
 
-			// Start tracking app usage
+            // CHANGE: Don't track app usage.
+			/*// Start tracking app usage
 			if (appActivationArguments.Data is Windows.ApplicationModel.Activation.IActivatedEventArgs activationEventArgs)
             {
                 SystemInformation.Instance.TrackAppUse(activationEventArgs);
             }*/
 
             // Configure the DI (dependency injection) container
-            /*var host = AppLifecycleHelper.ConfigureHost();
-			Ioc.Default.ConfigureServices(host.Services);*/
             InitializeServices();
 
 			// Hook events for the window
 			MainWindow.Closed += Window_Closed;
 			MainWindow.Activated += Window_Activated;
 
-			/*Logger?.LogInformation($"App launched. Launch args type: {appActivationArguments.Data.GetType().Name}");*/
+			Logger?.LogInformation($"App launched. Launch args type: {appActivationArguments.Data.GetType().Name}");
 
 			// Wait for the UI to update
 			await SplashScreenLoadingTCS!.Task.WithTimeoutAsync(TimeSpan.FromMilliseconds(500));
