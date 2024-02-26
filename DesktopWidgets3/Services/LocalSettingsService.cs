@@ -35,7 +35,7 @@ internal class LocalSettingsService : ILocalSettingsService
 
         _localsettingsFile = _options.LocalSettingsFile ?? _defaultLocalSettingsFile;
         _widgetListFile = _options.WidgetListFile ?? _defaultWidgetListFile;
-        
+
         _applicationDataFolder = LocalSettingsExtensions.GetApplicationDataFolder();
 
         if (!Directory.Exists(_applicationDataFolder))
@@ -63,6 +63,11 @@ internal class LocalSettingsService : ILocalSettingsService
 
     public async Task<T?> ReadSettingAsync<T>(string key)
     {
+        return await ReadSettingAsync(key, default(T));
+    }
+
+    public async Task<T?> ReadSettingAsync<T>(string key, T value)
+    {
         if (RuntimeHelper.IsMSIX)
         {
             if (ApplicationData.Current.LocalSettings.Values.TryGetValue(key, out var obj))
@@ -80,7 +85,7 @@ internal class LocalSettingsService : ILocalSettingsService
             }
         }
 
-        return default;
+        return value;
     }
 
     public async Task SaveSettingAsync<T>(string key, T value)
@@ -111,16 +116,17 @@ internal class LocalSettingsService : ILocalSettingsService
         }
     }
 
-    public async Task<List<JsonWidgetItem>> ReadWidgetListAsync()
+    public async Task<object> ReadWidgetListAsync()
     {
         var _widgetList = await Task.Run(() => _fileService.Read<List<JsonWidgetItem>>(_applicationDataFolder, _widgetListFile, _widgetListJsonSerializerSettings)) ?? new List<JsonWidgetItem>();
 
         return _widgetList;
     }
 
-    public async Task SaveWidgetListAsync(List<JsonWidgetItem> value)
+    public async Task SaveWidgetListAsync(object value)
     {
-        var valueCopy = new List<JsonWidgetItem>(value);
+        var valueCopy = new List<JsonWidgetItem>((List<JsonWidgetItem>)value);
+
         await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, valueCopy, true, true));
     }
 }

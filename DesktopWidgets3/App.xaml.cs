@@ -55,7 +55,7 @@ public partial class App : Application
 #endif
         InitializeComponent();
 
-        // Initialize core extensions
+        // Initialize core extensions before injecting services
         LocalSettingsExtensions.Initialize();
         LocalSettingsExtensions.RegisterSubFolder("Files");
         ResourceExtensions.AddStringResource("FilesResources");
@@ -194,8 +194,9 @@ public partial class App : Application
         // Configure exception handlers
         UnhandledException += App_UnhandledException;
 
-        // Initialize core extensions
+        // Initialize core extensions after injecting services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
+        LocalSettingsExtensions.RegisterService(GetService<ILocalSettingsService>());
         UIElementExtensions.Initialize(GetService<IWindowService>());
         UIThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
     }

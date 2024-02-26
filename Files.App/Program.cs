@@ -23,7 +23,7 @@ internal class Program
         {
             // Resume cached instance
             Pool.Release();
-            var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+            var activePid = LocalSettingsExtensions.ReadLocalSettingAsync("INSTANCE_ACTIVE", -1);
             var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
             RedirectActivationTo(instance, AppInstance.GetCurrent().GetActivatedEventArgs());
             Environment.Exit(0);
@@ -42,7 +42,7 @@ internal class Program
         WinRT.ComWrappersSupport.InitializeComWrappers();
 
         var proc = Process.GetCurrentProcess();
-        var OpenTabInExistingInstance = ApplicationData.Current.LocalSettings.Values.Get("OpenTabInExistingInstance", true);
+        var OpenTabInExistingInstance = LocalSettingsExtensions.ReadLocalSetting("OpenTabInExistingInstance", true);
         var activatedArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
 
         if (activatedArgs.Data is ICommandLineActivatedEventArgs cmdLineArgs)
@@ -78,7 +78,7 @@ internal class Program
             if (parsedCommands is null || !parsedCommands.Any(x => x.Type == ParsedCommandType.OutputPath) &&
                 (OpenTabInExistingInstance || parsedCommands.Any(x => x.Type == ParsedCommandType.TagFiles)))
             {
-                var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+                var activePid = LocalSettingsExtensions.ReadLocalSettingAsync("INSTANCE_ACTIVE", -1);
                 var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
 
                 if (!instance.IsCurrent)
@@ -106,7 +106,7 @@ internal class Program
         {
             if (activatedArgs.Data is ILaunchActivatedEventArgs launchArgs)
             {
-                var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+                var activePid = LocalSettingsExtensions.ReadLocalSettingAsync("INSTANCE_ACTIVE", -1);
                 var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
                 if (!instance.IsCurrent && !string.IsNullOrWhiteSpace(launchArgs.Arguments))
                 {
@@ -120,7 +120,7 @@ internal class Program
                 if ((parsedArgs.Length == 2 && parsedArgs[0] == "cmd") ||
                     parsedArgs.Length == 1) // Treat Win+E & Open file location as command line launch
                 {
-                    var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+                    var activePid = LocalSettingsExtensions.ReadLocalSettingAsync("INSTANCE_ACTIVE", -1);
                     var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
                     if (!instance.IsCurrent)
                     {
@@ -131,7 +131,7 @@ internal class Program
             }
             else if (activatedArgs.Data is IFileActivatedEventArgs)
             {
-                var activePid = ApplicationData.Current.LocalSettings.Values.Get("INSTANCE_ACTIVE", -1);
+                var activePid = LocalSettingsExtensions.ReadLocalSettingAsync("INSTANCE_ACTIVE", -1);
                 var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
                 if (!instance.IsCurrent)
                 {
@@ -147,7 +147,7 @@ internal class Program
             currentInstance.Activated += OnActivated;
         }
 
-        ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = -proc.Id;
+        LocalSettingsExtensions.SaveLocalSettingAsync("INSTANCE_ACTIVE", -proc.Id);
 
         Application.Start((p) =>
         {

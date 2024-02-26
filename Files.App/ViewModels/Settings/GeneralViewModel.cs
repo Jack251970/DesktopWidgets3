@@ -282,7 +282,7 @@ public class GeneralViewModel : ObservableObject, IDisposable
 				UserSettingsService.GeneralSettingsService.OpenTabInExistingInstance = value;
 
 				// Needed in Program.cs
-				ApplicationData.Current.LocalSettings.Values["OpenTabInExistingInstance"] = value;
+				LocalSettingsExtensions.SaveLocalSettingAsync("OpenTabInExistingInstance", value);
 
 				OnPropertyChanged();
 			}

@@ -6,9 +6,11 @@ public interface ILocalSettingsService
 
     Task<T?> ReadSettingAsync<T>(string key);
 
+    Task<T?> ReadSettingAsync<T>(string key, T value);
+
     Task SaveSettingAsync<T>(string key, T value);
 
-    Task<List<JsonWidgetItem>> ReadWidgetListAsync();
+    Task<object> ReadWidgetListAsync();
 
-    Task SaveWidgetListAsync(List<JsonWidgetItem> value);
+    Task SaveWidgetListAsync(object value);
 }

@@ -166,7 +166,7 @@ public partial class App
             return;
         }
 
-        ApplicationData.Current.LocalSettings.Values["INSTANCE_ACTIVE"] = -Environment.ProcessId;
+        LocalSettingsExtensions.SaveLocalSettingAsync("INSTANCE_ACTIVE", -Environment.ProcessId);
 	}
 
     /// <summary>

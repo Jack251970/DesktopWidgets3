@@ -1,4 +1,5 @@
-﻿using Windows.Storage;
+﻿using DesktopWidgets3.Contracts.Services;
+using Windows.Storage;
 
 namespace DesktopWidgets3.Core.Extensions;
 
@@ -14,6 +15,8 @@ public static class LocalSettingsExtensions
 #endif
     private static string ApplicationDataFolder { get; set; } = null!;
     private static readonly List<string> SubFolders = new();
+
+    private static ILocalSettingsService? FallbackLocalSettingsService;
 
     public static void Initialize()
     {
@@ -39,6 +42,11 @@ public static class LocalSettingsExtensions
         return true;
     }
 
+    public static void RegisterService(ILocalSettingsService localSettingsService)
+    {
+        FallbackLocalSettingsService = localSettingsService;
+    }
+
     public static string GetApplicationDataFolder(string? subFolder = null)
     {
         if (subFolder is null)
@@ -59,5 +67,51 @@ public static class LocalSettingsExtensions
         {
             throw new ArgumentException($"Sub folder \"{subFolder}\" needs to be registered in App.xaml.cs.");
         }
+    }
+
+    public static T? ReadLocalSetting<T>(string key)
+    {
+        var task = ReadLocalSettingAsync<T>(key);
+        task.Wait();
+
+        return task.Result;
+    }
+
+    public static T? ReadLocalSetting<T>(string key, T value)
+    {
+        var task = ReadLocalSettingAsync(key, value);
+        task.Wait();
+
+        return task.Result;
+    }
+
+    public static Task<T?> ReadLocalSettingAsync<T>(string key)
+    {
+        if (FallbackLocalSettingsService is null)
+        {
+            throw new InvalidOperationException("Local settings service not initialized.");
+        }
+
+        return FallbackLocalSettingsService.ReadSettingAsync<T>(key);
+    }
+
+    public static Task<T?> ReadLocalSettingAsync<T>(string key, T value)
+    {
+        if (FallbackLocalSettingsService is null)
+        {
+            throw new InvalidOperationException("Local settings service not initialized.");
+        }
+
+        return FallbackLocalSettingsService.ReadSettingAsync(key, value);
+    }
+
+    public static Task SaveLocalSettingAsync<T>(string key, T value)
+    {
+        if (FallbackLocalSettingsService is null)
+        {
+            throw new InvalidOperationException("Local settings service not initialized.");
+        }
+
+        return FallbackLocalSettingsService.SaveSettingAsync(key, value);
     }
 }
