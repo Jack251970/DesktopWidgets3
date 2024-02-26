@@ -5,7 +5,7 @@ namespace Files.App.UserControls;
 
 public interface IAddressToolbar
 {
-	/*public bool IsSearchBoxVisible { get; set; }*/
+	public bool IsSearchBoxVisible { get; set; }
 
 	public bool IsEditModeEnabled { get; set; }
 
@@ -34,17 +34,17 @@ public interface IAddressToolbar
 
 	public delegate void ItemDraggedOverPathItemEventHandler(object sender, PathNavigationEventArgs e);
 
-	/*public event ToolbarQuerySubmittedEventHandler PathBoxQuerySubmitted;*/
+	public event ToolbarQuerySubmittedEventHandler PathBoxQuerySubmitted;
 
 	public event EventHandler EditModeEnabled;
 
-	/*public event ItemDraggedOverPathItemEventHandler ItemDraggedOverPathItem;*/
+	public event ItemDraggedOverPathItemEventHandler ItemDraggedOverPathItem;
 
 	public event EventHandler RefreshRequested;
 
-	/*public event EventHandler RefreshWidgetsRequested;*/
+	public event EventHandler RefreshWidgetsRequested;
 
-	/*public void SwitchSearchBoxVisibility();
+	public void SwitchSearchBoxVisibility();
 
-	public ISearchBox SearchBox { get; }*/
+	public ISearchBox SearchBox { get; }
 }

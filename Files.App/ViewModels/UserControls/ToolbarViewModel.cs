@@ -15,6 +15,8 @@ using Windows.UI.Text;
 
 namespace Files.App.ViewModels.UserControls;
 
+#pragma warning disable IDE0060 // Remove unused parameter
+
 public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
@@ -25,7 +27,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
     private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
-    /*public IUpdateService UpdateService { get; } = DependencyExtensions.GetService<IUpdateService>();*/
+    public IUpdateService UpdateService { get; } = DependencyExtensions.GetService<IUpdateService>();
 
     public ICommandManager Commands { get; set; } = null!;
 
@@ -214,8 +216,8 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		dragOverTimer = dispatcherQueue.CreateTimer();
 
 		SearchBox.Escaped += SearchRegion_Escaped;
-        /*UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
-		UpdateService.PropertyChanged += UpdateService_OnPropertyChanged;*/
+        /*UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;*/
+		UpdateService.PropertyChanged += UpdateService_OnPropertyChanged;
     }
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
@@ -233,7 +235,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
         InstanceViewModel = temp;
     }
 
-	/*private async void UpdateService_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+	private async void UpdateService_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		IsUpdateAvailable = UpdateService.IsUpdateAvailable;
 		IsUpdating = UpdateService.IsUpdating;
@@ -243,7 +245,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
         {
             await CheckForReleaseNotesAsync();
         }
-    }*/
+    }
 
 	private async Task ViewReleaseNotesAsync()
 	{
@@ -260,16 +262,14 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
     public async Task CheckForReleaseNotesAsync()
     {
-        /*var result = await UpdateService.GetLatestReleaseNotesAsync();
+        var result = await UpdateService.GetLatestReleaseNotesAsync();
         if (result is null)
         {
             return;
         }
 
         ReleaseNotes = result;
-        IsReleaseNotesVisible = true;*/
-
-        await Task.CompletedTask;
+        IsReleaseNotesVisible = true;
     }
 
     public void RefreshWidgets()
@@ -309,7 +309,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
     private string? dragOverPath = null;
 
-    public void PathBoxItem_DragLeave(object sender, DragEventArgs e)
+    public void PathBoxItem_DragLeave(object sender, DragEventArgs _)
 	{
 		if (((StackPanel)sender).DataContext is not PathBoxItem pathBoxItem ||
 			pathBoxItem.Path == "Home")
@@ -485,7 +485,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	public ICommand RefreshClickCommand { get; }
 	public ICommand ViewReleaseNotesAsyncCommand { get; }
 
-	public void PathItemSeparator_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+	public void PathItemSeparator_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs _)
 	{
         if (sender is not FontIcon pathSeparatorIcon || pathSeparatorIcon.DataContext is null)
         {
@@ -499,7 +499,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		});
 	}
 
-	public void PathboxItemFlyout_Opened(object sender, object e)
+	public void PathboxItemFlyout_Opened(object sender, object _)
 	{
 		ToolbarFlyoutOpened?.Invoke(this, new ToolbarFlyoutOpenedEventArgs() { OpenedFlyout = (MenuFlyout)sender });
 	}
@@ -512,14 +512,14 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
         }
     }
 
-	public void VisiblePath_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+	public void VisiblePath_QuerySubmitted(AutoSuggestBox _, AutoSuggestBoxQuerySubmittedEventArgs args)
 	{
 		PathBoxQuerySubmitted?.Invoke(this, new ToolbarQuerySubmittedEventArgs() { QueryText = args.QueryText });
 
 		(this as IAddressToolbar).IsEditModeEnabled = false;
 	}
 
-	public void PathBoxItem_PointerPressed(object sender, PointerRoutedEventArgs e)
+	public void PathBoxItem_PointerPressed(object _, PointerRoutedEventArgs e)
 	{
 		if (e.Pointer.PointerDeviceType != Microsoft.UI.Input.PointerDeviceType.Mouse)
         {

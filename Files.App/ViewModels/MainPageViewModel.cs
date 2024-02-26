@@ -1,7 +1,10 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
+using System.Windows.Input;
+using Windows.System;
 
 namespace Files.App.ViewModels;
 
@@ -37,15 +40,15 @@ public class MainPageViewModel : ObservableObject
 
 	// Commands
 
-	/*public ICommand NavigateToNumberedTabKeyboardAcceleratorCommand { get; }
-	public ICommand OpenNewWindowAcceleratorCommand { get; }*/
+	public ICommand NavigateToNumberedTabKeyboardAcceleratorCommand { get; }
+	public ICommand OpenNewWindowAcceleratorCommand { get; }
 
 	// Constructor
 
 	public MainPageViewModel()
 	{
-		/*NavigateToNumberedTabKeyboardAcceleratorCommand = new RelayCommand<KeyboardAcceleratorInvokedEventArgs>(ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand);
-		OpenNewWindowAcceleratorCommand = new AsyncRelayCommand<KeyboardAcceleratorInvokedEventArgs>(ExecuteOpenNewWindowAcceleratorCommand);*/
+		NavigateToNumberedTabKeyboardAcceleratorCommand = new RelayCommand<KeyboardAcceleratorInvokedEventArgs>(ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand);
+		OpenNewWindowAcceleratorCommand = new AsyncRelayCommand<KeyboardAcceleratorInvokedEventArgs>(ExecuteOpenNewWindowAcceleratorCommand);
 	}
 
 	// Methods
@@ -62,7 +65,7 @@ public class MainPageViewModel : ObservableObject
         {
             FolderViewViewModel = folderViewViewModel;
 
-            /*AppearanceSettingsService = folderViewViewModel.GetRequiredService<IAppearanceSettingsService>();*/
+            /*AppearanceSettingsService = folderViewViewModel.GetService<IAppearanceSettingsService>();*/
             UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
         }
 
@@ -91,7 +94,7 @@ public class MainPageViewModel : ObservableObject
                         items[i] = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, UserSettingsService.GeneralSettingsService.LastSessionTabList[i]);
                     }
 
-                    /*BaseTabBar.PushRecentTab(items);*/
+                    BaseTabBar.PushRecentTab(items);
 				}
 
 				if (UserSettingsService.AppSettingsService.RestoreTabsOnStartup)
@@ -189,10 +192,11 @@ public class MainPageViewModel : ObservableObject
 
         if (isInitialized)
 		{
-			// Load the app theme resources
-			/*ResourcesService.LoadAppResources(AppearanceSettingsService);*/
+            // CHANGE: Don't load app theme resources.
+            /*// Load the app theme resources
+			ResourcesService.LoadAppResources(AppearanceSettingsService);*/
 
-			await Task.WhenAll(
+            await Task.WhenAll(
 				DrivesViewModel.UpdateDrivesAsync(),
 				NetworkDrivesViewModel.UpdateDrivesAsync());
 		}
@@ -200,7 +204,7 @@ public class MainPageViewModel : ObservableObject
 
     // Command methods
 
-    /*private void ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand(KeyboardAcceleratorInvokedEventArgs? e)
+    private void ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand(KeyboardAcceleratorInvokedEventArgs? e)
 	{
 		var indexToSelect = e!.KeyboardAccelerator.Key switch
 		{
@@ -230,5 +234,5 @@ public class MainPageViewModel : ObservableObject
 		await Launcher.LaunchUriAsync(new Uri("files-uwp:"));
 
 		e!.Handled = true;
-	}*/
+	}
 }

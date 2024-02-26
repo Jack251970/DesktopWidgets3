@@ -41,8 +41,11 @@ public static class InteropHelpers
 
 		public int Y;
 
-		public POINT(int x, int y) => (X, Y) = (x, y);
-	}
+        public POINT(int x, int y)
+        {
+            (X, Y) = (x, y);
+        }
+    }
 
 	public static void ChangeCursor(this UIElement uiElement, InputCursor cursor)
 	{

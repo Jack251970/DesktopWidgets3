@@ -808,7 +808,7 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 			.Select(tb =>
 			{
 				var sampleTb = new TextBlock { Text = tb.Text, FontSize = tb.FontSize, FontFamily = tb.FontFamily };
-				sampleTb.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
+				sampleTb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
 				return sampleTb.DesiredSize.Width / Math.Max(1, tb.Text.Length);
 			});
@@ -988,8 +988,10 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
         }
 	}
 
-	// Workaround for https://github.com/microsoft/microsoft-ui-xaml/issues/170
-	private void TextBlock_IsTextTrimmedChanged(TextBlock sender, IsTextTrimmedChangedEventArgs e)
+#pragma warning disable CA1822 // Mark members as static
+
+    // Workaround for https://github.com/microsoft/microsoft-ui-xaml/issues/170
+    private void TextBlock_IsTextTrimmedChanged(TextBlock sender, IsTextTrimmedChangedEventArgs e)
 	{
 		SetToolTip(sender);
 	}
@@ -1002,7 +1004,9 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
         }
     }
 
-	private void SetToolTip(TextBlock textBlock)
+#pragma warning restore CA1822 // Mark members as static
+
+    private static void SetToolTip(TextBlock textBlock)
 	{
 		ToolTipService.SetToolTip(textBlock, textBlock.IsTextTrimmed ? textBlock.Text : null);
 	}

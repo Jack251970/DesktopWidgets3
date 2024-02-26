@@ -16,9 +16,9 @@ public interface ITabBar
 
 	public List<ITabBarItemContent> GetAllTabInstances();
 
-    /*public Task ReopenClosedTabAsync();
+    public Task ReopenClosedTabAsync();
 
-	public void CloseTab(TabBarItem tabItem);*/
+	public void CloseTab(TabBarItem tabItem);
 
     public void SetLoadingIndicatorStatus(ITabBarItem item, bool loading);
 }

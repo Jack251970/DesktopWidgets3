@@ -120,7 +120,8 @@ public sealed partial class InnerNavigationToolbar : UserControl
 		}
 	}
 
-	private void SortGroup_AccessKeyInvoked(UIElement sender, AccessKeyInvokedEventArgs args)
+#pragma warning disable CA1822 // Mark members as static
+    private void SortGroup_AccessKeyInvoked(UIElement sender, AccessKeyInvokedEventArgs args)
 	{
 		if (sender is MenuFlyoutSubItem menu)
 		{
@@ -136,6 +137,6 @@ public sealed partial class InnerNavigationToolbar : UserControl
 				items[index].AccessKey = (index+1).ToString(format);
 			}
 		}
-
 	}
+#pragma warning restore CA1822 // Mark members as static
 }

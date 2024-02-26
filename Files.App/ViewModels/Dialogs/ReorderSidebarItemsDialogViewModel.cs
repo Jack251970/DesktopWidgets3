@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Files.App.ViewModels.Dialogs;
 
+#pragma warning disable CA2254 // Template should be a static member
+
 public class ReorderSidebarItemsDialogViewModel : ObservableObject
 {
 	private readonly IQuickAccessService quickAccessService = DependencyExtensions.GetService<IQuickAccessService>();

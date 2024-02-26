@@ -18,23 +18,16 @@ public static class PackageHelper
 	{
 		try
 		{
-			bool appInstalled;
-			LaunchQuerySupportStatus result = await Launcher.QueryUriSupportAsync(dummyUri, LaunchQuerySupportType.Uri, packageName);
-			switch (result)
-			{
-				case LaunchQuerySupportStatus.Available:
-				case LaunchQuerySupportStatus.NotSupported:
-					appInstalled = true;
-					break;
-				//case LaunchQuerySupportStatus.AppNotInstalled:
-				//case LaunchQuerySupportStatus.AppUnavailable:
-				//case LaunchQuerySupportStatus.Unknown:
-				default:
-					appInstalled = false;
-					break;
-			}
-
-			Debug.WriteLine($"App {packageName}, query status: {result}, installed: {appInstalled}");
+            var result = await Launcher.QueryUriSupportAsync(dummyUri, LaunchQuerySupportType.Uri, packageName);
+            var appInstalled = result switch
+            {
+                LaunchQuerySupportStatus.Available or LaunchQuerySupportStatus.NotSupported => true,
+                //case LaunchQuerySupportStatus.AppNotInstalled:
+                //case LaunchQuerySupportStatus.AppUnavailable:
+                //case LaunchQuerySupportStatus.Unknown:
+                _ => false,
+            };
+            Debug.WriteLine($"App {packageName}, query status: {result}, installed: {appInstalled}");
 			return appInstalled;
 		}
 		catch (Exception ex)

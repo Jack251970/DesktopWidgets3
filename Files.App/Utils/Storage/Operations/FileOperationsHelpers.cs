@@ -16,6 +16,8 @@ using Windows.ApplicationModel.DataTransfer;
 
 namespace Files.App.Utils.Storage;
 
+#pragma warning disable CA2254 // Template should be a static or constant value
+
 public class FileOperationsHelpers
 {
 	private static readonly Ole32.PROPERTYKEY PKEY_FilePlaceholderStatus = new(new Guid("B2F9B9D6-FEC4-4DD5-94D7-8957488C807B"), 2);

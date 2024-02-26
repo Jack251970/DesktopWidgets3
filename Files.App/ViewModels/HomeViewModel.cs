@@ -7,6 +7,8 @@ using System.Windows.Input;
 
 namespace Files.App.ViewModels;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 public class HomeViewModel : ObservableObject, IDisposable
 {
 	public ObservableCollection<WidgetItem> WidgetItems { get; } = new();

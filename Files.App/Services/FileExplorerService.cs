@@ -41,7 +41,7 @@ internal sealed class FileExplorerService : IFileExplorerService
 	}
 
 	// WINUI3
-	private FileOpenPicker InitializeWithWindow(IFolderViewViewModel viewModel, FileOpenPicker obj)
+	private static FileOpenPicker InitializeWithWindow(IFolderViewViewModel viewModel, FileOpenPicker obj)
 	{
 		WinRT.Interop.InitializeWithWindow.Initialize(obj, viewModel.WindowHandle);
 		return obj;
@@ -61,7 +61,7 @@ internal sealed class FileExplorerService : IFileExplorerService
 	}
 
 	// WINUI3
-	private FolderPicker InitializeWithWindow(IFolderViewViewModel viewModel, FolderPicker obj)
+	private static FolderPicker InitializeWithWindow(IFolderViewViewModel viewModel, FolderPicker obj)
 	{
 		WinRT.Interop.InitializeWithWindow.Initialize(obj, viewModel.WindowHandle);
 

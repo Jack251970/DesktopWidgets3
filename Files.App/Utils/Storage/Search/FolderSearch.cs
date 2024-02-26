@@ -521,17 +521,16 @@ public class FolderSearch
 
 	private QueryOptions ToQueryOptions()
 	{
-		var query = new QueryOptions
-		{
-			FolderDepth = FolderDepth.Deep,
-			UserSearchFilter = AQSQuery ?? string.Empty,
-		};
+        var query = new QueryOptions
+        {
+            FolderDepth = FolderDepth.Deep,
+            UserSearchFilter = AQSQuery ?? string.Empty,
+            IndexerOption = SearchUnindexedItems
+            ? IndexerOption.DoNotUseIndexer
+            : IndexerOption.OnlyUseIndexerAndOptimizeForIndexedProperties
+        };
 
-		query.IndexerOption = SearchUnindexedItems
-			? IndexerOption.DoNotUseIndexer
-			: IndexerOption.OnlyUseIndexerAndOptimizeForIndexedProperties;
-
-		query.SortOrder.Clear();
+        query.SortOrder.Clear();
 		query.SortOrder.Add(new SortEntry { PropertyName = "System.Search.Rank", AscendingOrder = false });
 
 		query.SetPropertyPrefetch(PropertyPrefetchOptions.BasicProperties, null);

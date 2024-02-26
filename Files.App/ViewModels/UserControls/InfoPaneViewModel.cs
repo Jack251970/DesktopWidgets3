@@ -10,6 +10,8 @@ using Windows.Storage;
 
 namespace Files.App.ViewModels.UserControls;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 public class InfoPaneViewModel : ObservableObject, IDisposable
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;

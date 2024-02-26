@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
+using CommunityToolkit.WinUI.UI;
 using CommunityToolkit.WinUI.UI.Controls;
 using DesktopWidgets3.Core.Helpers;
 using Files.App.UserControls.Sidebar;
@@ -45,13 +46,13 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
     public static AppModel AppModel
 		=> App.AppModel;
 
-    /*private bool keyReleased = true;*/
+    private bool keyReleased = true;
 
 #pragma warning disable CA1822 // Mark members as static
 
     private bool IsAppRunningAsAdmin => ElevationHelpers.IsAppRunAsAdmin();
 
-#pragma warning disable CA1822 // Mark members as static
+#pragma warning restore CA1822 // Mark members as static
 
     private readonly DispatcherQueueTimer _updateDateDisplayTimer;
 
@@ -155,9 +156,10 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
     private void HorizontalMultitaskingControl_Loaded(object sender, RoutedEventArgs e)
 	{
-		/*TabControl.DragArea.SizeChanged += (_, _) => SetRectDragRegion();*/
+        // CHANGE: Remove drag zone change event.
+        /*TabControl.DragArea.SizeChanged += (_, _) => SetRectDragRegion();*/
 
-		if (ViewModel.MultitaskingControl is not TabBar)
+        if (ViewModel.MultitaskingControl is not TabBar)
 		{
 			ViewModel.MultitaskingControl = TabControl;
 			ViewModel.MultitaskingControls.Add(TabControl);
@@ -165,6 +167,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         }
     }
 
+    // CHANGE: Remove drag zone change event.
     /*private void SetRectDragRegion()
 	{
 		DragZoneHelper.SetDragZones(
@@ -276,8 +279,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         SidebarControl.IsPaneOpen = false;
     }
 
-    // CHANGE: Remove keyboard event handlers.
-	/*protected async override void OnPreviewKeyDown(KeyRoutedEventArgs e) => await OnPreviewKeyDownAsync(e);
+	protected async override void OnPreviewKeyDown(KeyRoutedEventArgs e) => await OnPreviewKeyDownAsync(e);
 
 	private async Task OnPreviewKeyDownAsync(KeyRoutedEventArgs e)
 	{
@@ -337,7 +339,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		base.OnLostFocus(e);
 
 		keyReleased = true;
-	}*/
+	}
 
 	private void Page_Loaded(object sender, RoutedEventArgs e)
 	{
@@ -499,8 +501,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
     public bool ShouldPreviewPaneBeActive => UserSettingsService.InfoPaneSettingsService.IsEnabled && ShouldPreviewPaneBeDisplayed;
 
-    // CHANGE: Disable preview pane.
-    /*public bool ShouldPreviewPaneBeDisplayed
+    public bool ShouldPreviewPaneBeDisplayed
 	{
 		get
 		{
@@ -511,8 +512,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 			return isEnabled;
 		}
-	}*/
-    public bool ShouldPreviewPaneBeDisplayed => false;
+	}
 
     private void LoadPaneChanged()
 	{

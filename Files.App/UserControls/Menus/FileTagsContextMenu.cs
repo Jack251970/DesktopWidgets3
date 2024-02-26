@@ -66,7 +66,7 @@ public class FileTagsContextMenu : MenuFlyout
 		commonFileTags.OfType<ToggleMenuFlyoutItem>().ForEach(x => x.IsChecked = true);
 	}
 
-	private void RemoveFileTag(IEnumerable<ListedItem> selectedListedItems, TagViewModel removed)
+	private static void RemoveFileTag(IEnumerable<ListedItem> selectedListedItems, TagViewModel removed)
 	{
 		foreach (var selectedItem in selectedListedItems)
 		{
@@ -79,7 +79,7 @@ public class FileTagsContextMenu : MenuFlyout
 		}
 	}
 
-	private void AddFileTag(IEnumerable<ListedItem> selectedListedItems, TagViewModel added)
+	private static void AddFileTag(IEnumerable<ListedItem> selectedListedItems, TagViewModel added)
 	{
 		foreach (var selectedItem in selectedListedItems)
 		{

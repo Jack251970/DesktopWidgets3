@@ -41,7 +41,7 @@ public static class ShellHelpers
 
 	public static string GetLibraryFullPathFromShell(string shPath)
 	{
-		var partialPath = shPath.Substring(shPath.IndexOf('\\') + 1);
+		var partialPath = shPath[(shPath.IndexOf('\\') + 1)..];
 		return Path.Combine(ShellLibraryItem.LibrariesPath, partialPath);
 	}
 }

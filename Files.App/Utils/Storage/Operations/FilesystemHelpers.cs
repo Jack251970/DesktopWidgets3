@@ -30,6 +30,8 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 	private ItemManipulationModel? ItemManipulationModel => associatedInstance.SlimContentPage?.ItemManipulationModel;
 
 	private readonly CancellationToken cancellationToken;
+
+    // CHANGE: Add support for user settings.
     /*private static char[] RestrictedCharacters
     {
         get
@@ -104,7 +106,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 		var returnStatus = ReturnResult.InProgress;
 
-		var deleteFromRecycleBin = source.Select(item => item.Path).Any(path => RecycleBinHelpers.IsPathUnderRecycleBin(path));
+		var deleteFromRecycleBin = source.Select(item => item.Path).Any(RecycleBinHelpers.IsPathUnderRecycleBin);
 		var canBeSentToBin = !deleteFromRecycleBin && await RecycleBinHelpers.HasRecycleBin(source.FirstOrDefault()?.Path);
 
 		if (showDialog is DeleteConfirmationPolicies.Always ||

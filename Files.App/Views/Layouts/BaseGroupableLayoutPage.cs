@@ -13,6 +13,8 @@ using Windows.UI.Core;
 
 namespace Files.App.Views.Layouts;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 /// <summary>
 /// Represents layout page that can be grouped by.
 /// </summary>
@@ -380,7 +382,7 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 		return false;
 	}
 
-	protected void SelectionCheckbox_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+	protected void SelectionCheckbox_DoubleTapped(object _, DoubleTappedRoutedEventArgs e)
 	{
 		e.Handled = true;
 	}

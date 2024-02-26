@@ -3,6 +3,8 @@
 
 namespace Files.App.ViewModels.Widgets;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 public class WidgetsListControlViewModel : ObservableObject, IDisposable
 {
 	public event EventHandler? WidgetListRefreshRequestedInvoked;

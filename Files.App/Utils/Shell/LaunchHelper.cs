@@ -11,6 +11,7 @@ using Vanara.Windows.Shell;
 namespace Files.App.Utils.Shell;
 
 #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CA2254 // Template should be a static expression
 
 /// <summary>
 /// Provides static helper for launching external executable files.

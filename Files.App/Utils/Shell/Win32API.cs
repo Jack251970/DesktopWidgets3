@@ -14,6 +14,8 @@ using Windows.System;
 
 namespace Files.App.Utils.Shell;
 
+#pragma warning disable CA2254 // Template should require documented exceptions
+
 /// <summary>
 /// Provides static helper for general Win32API.
 /// </summary>
@@ -446,7 +448,7 @@ public class Win32API
 			else
 			{
 				// This is merely to pass into the function and is unneeded otherwise
-				if (Shell32.SHDefExtractIcon(file, -1 * index, 0, out User32.SafeHICON icon, out User32.SafeHICON hIcon2, Convert.ToUInt32(iconSize)) == HRESULT.S_OK)
+				if (Shell32.SHDefExtractIcon(file, -1 * index, 0, out var icon, out var hIcon2, Convert.ToUInt32(iconSize)) == HRESULT.S_OK)
 				{
 					using var image = icon.ToBitmap();
 					var bitmapData = (byte[])(new ImageConverter().ConvertTo(image, typeof(byte[])) ?? Array.Empty<byte>());

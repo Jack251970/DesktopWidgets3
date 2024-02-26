@@ -11,6 +11,7 @@ using Vanara.Windows.Shell;
 namespace Files.App.Utils.RecentItem;
 
 #pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CA2254 // Template should be a static expression
 
 public class RecentItems : IDisposable
 {

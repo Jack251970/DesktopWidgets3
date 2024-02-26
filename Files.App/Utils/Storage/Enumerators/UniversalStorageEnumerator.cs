@@ -9,6 +9,9 @@ using Windows.Storage;
 
 namespace Files.App.Utils.Storage;
 
+#pragma warning disable CA1068 // CancellationToken parameters must come last
+#pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections
+
 public static class UniversalStorageEnumerator
 {
 	public static async Task<List<ListedItem>> ListEntries(
@@ -100,9 +103,9 @@ public static class UniversalStorageEnumerator
 								{
 									var lowercaseExtension = fileEntry.FileExtension.ToLowerInvariant();
 		
-									if (defaultIconPairs.ContainsKey(lowercaseExtension))
+									if (defaultIconPairs.TryGetValue(lowercaseExtension, out var value))
                                     {
-                                        fileEntry.FileImage = defaultIconPairs[lowercaseExtension];
+                                        fileEntry.FileImage = value;
                                     }
                                 }
 							}

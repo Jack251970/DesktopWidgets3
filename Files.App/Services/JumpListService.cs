@@ -101,7 +101,7 @@ public class JumpListService : IJumpListService
 		}
 	}
 
-	private void AddFolder(string path, string group, JumpList instance)
+	private static void AddFolder(string path, string group, JumpList instance)
 	{
 		if (instance is not null)
 		{
@@ -154,7 +154,7 @@ public class JumpListService : IJumpListService
                 {
                     displayName = "SidebarNetworkDrives".GetLocalizedResource();
                 }
-                else if (App.LibraryManager.TryGetLibrary(path, out LibraryLocationItem library))
+                else if (App.LibraryManager.TryGetLibrary(path, out var library))
 				{
 					var libName = Path.GetFileNameWithoutExtension(library.Path);
 					displayName = libName switch

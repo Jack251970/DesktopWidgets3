@@ -60,24 +60,38 @@ public class AccessControlEntry : ObservableObject
 			var accessMaskStrings = new List<string>();
 
 			if (AccessMaskFlags == AccessMaskFlags.NULL)
-				accessMaskStrings.Add("None".GetLocalizedResource());
+            {
+                accessMaskStrings.Add("None".GetLocalizedResource());
+            }
 
-			if (FullControlAccess)
-				accessMaskStrings.Add("SecurityFullControlLabel/Text".GetLocalizedResource());
-			else if (ModifyAccess)
-				accessMaskStrings.Add("SecurityModifyLabel/Text".GetLocalizedResource());
-			else if (ReadAndExecuteAccess)
-				accessMaskStrings.Add("SecurityReadAndExecuteLabel/Text".GetLocalizedResource());
-			else if (ReadAccess)
-				accessMaskStrings.Add("SecurityReadLabel/Text".GetLocalizedResource());
+            if (FullControlAccess)
+            {
+                accessMaskStrings.Add("SecurityFullControlLabel/Text".GetLocalizedResource());
+            }
+            else if (ModifyAccess)
+            {
+                accessMaskStrings.Add("SecurityModifyLabel/Text".GetLocalizedResource());
+            }
+            else if (ReadAndExecuteAccess)
+            {
+                accessMaskStrings.Add("SecurityReadAndExecuteLabel/Text".GetLocalizedResource());
+            }
+            else if (ReadAccess)
+            {
+                accessMaskStrings.Add("SecurityReadLabel/Text".GetLocalizedResource());
+            }
 
-			if (!FullControlAccess && !ModifyAccess && WriteAccess)
-				accessMaskStrings.Add("Write".GetLocalizedResource());
+            if (!FullControlAccess && !ModifyAccess && WriteAccess)
+            {
+                accessMaskStrings.Add("Write".GetLocalizedResource());
+            }
 
-			if (SpecialAccess)
-				accessMaskStrings.Add("SecuritySpecialLabel/Text".GetLocalizedResource());
+            if (SpecialAccess)
+            {
+                accessMaskStrings.Add("SecuritySpecialLabel/Text".GetLocalizedResource());
+            }
 
-			return string.Join(", ", accessMaskStrings);
+            return string.Join(", ", accessMaskStrings);
 		}
 	}
 
@@ -96,21 +110,29 @@ public class AccessControlEntry : ObservableObject
 		{
 			var inheritanceStrings = new List<string>();
 
-			if (AccessControlEntryFlags == AccessControlEntryFlags.None ||
+            if (AccessControlEntryFlags == AccessControlEntryFlags.None ||
 				AccessControlEntryFlags == AccessControlEntryFlags.NoPropagateInherit)
-				inheritanceStrings.Add("SecurityAdvancedFlagsFolderLabel".GetLocalizedResource());
+            {
+                inheritanceStrings.Add("SecurityAdvancedFlagsFolderLabel".GetLocalizedResource());
+            }
 
-			if (AccessControlEntryFlags.HasFlag(AccessControlEntryFlags.ContainerInherit))
-				inheritanceStrings.Add("SecurityAdvancedFlagsSubfoldersLabel".GetLocalizedResource());
+            if (AccessControlEntryFlags.HasFlag(AccessControlEntryFlags.ContainerInherit))
+            {
+                inheritanceStrings.Add("SecurityAdvancedFlagsSubfoldersLabel".GetLocalizedResource());
+            }
 
-			if (AccessControlEntryFlags.HasFlag(AccessControlEntryFlags.ObjectInherit))
-				inheritanceStrings.Add("SecurityAdvancedFlagsFilesLabel".GetLocalizedResource());
+            if (AccessControlEntryFlags.HasFlag(AccessControlEntryFlags.ObjectInherit))
+            {
+                inheritanceStrings.Add("SecurityAdvancedFlagsFilesLabel".GetLocalizedResource());
+            }
 
-			// Capitalize the first letter
-			if (inheritanceStrings.Any())
-				inheritanceStrings[0] = char.ToUpperInvariant(inheritanceStrings[0].First()) + inheritanceStrings[0][1..];
+            // Capitalize the first letter
+            if (inheritanceStrings.Any())
+            {
+                inheritanceStrings[0] = char.ToUpperInvariant(inheritanceStrings[0].First()) + inheritanceStrings[0][1..];
+            }
 
-			return string.Join(", ", inheritanceStrings);
+            return string.Join(", ", inheritanceStrings);
 		}
 	}
 
@@ -140,9 +162,11 @@ public class AccessControlEntry : ObservableObject
 		get => _AccessMaskFlags;
 		set
 		{
-			if (SetProperty(ref _AccessMaskFlags, value))
-				OnPropertyChanged(nameof(AccessMaskFlagsHumanized));
-		}
+            if (SetProperty(ref _AccessMaskFlags, value))
+            {
+                OnPropertyChanged(nameof(AccessMaskFlagsHumanized));
+            }
+        }
 	}
 
 	private AccessMaskFlags _AllowedAccessMaskFlags;
@@ -188,8 +212,10 @@ public class AccessControlEntry : ObservableObject
 		set
 		{
 			if (SetProperty(ref _InheritanceFlags, value))
-				OnPropertyChanged(nameof(InheritanceFlagsHumanized));
-		}
+            {
+                OnPropertyChanged(nameof(InheritanceFlagsHumanized));
+            }
+        }
 	}
 
 	public AccessMaskFlags InheritedAllowAccessMaskFlags { get; set; }

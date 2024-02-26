@@ -10,6 +10,7 @@ using Windows.Storage.Streams;
 
 namespace Files.App.Utils.Storage;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 public class InputStreamWithDisposeCallback : IInputStream

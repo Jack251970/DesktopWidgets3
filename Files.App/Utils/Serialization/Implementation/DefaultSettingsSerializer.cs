@@ -40,7 +40,7 @@ internal sealed class DefaultSettingsSerializer : ISettingsSerializer
 
 	public bool WriteToFile(string? text)
 	{
-		_ = _filePath ?? throw new ArgumentNullException(nameof(_filePath));
+		_ = _filePath ?? throw new ArgumentNullException(null, nameof(_filePath));
 
 		return WriteStringToFile(_filePath, text!);
 	}

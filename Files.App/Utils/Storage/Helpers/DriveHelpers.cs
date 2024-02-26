@@ -76,12 +76,12 @@ public static class DriveHelpers
 		{
 			// Check among already discovered drives
 			var matchingDrive = drivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(x =>
-                PathNormalization.NormalizePath(x.Path) == Helpers.PathNormalization.NormalizePath(rootPath!))?.Root;
+                PathNormalization.NormalizePath(x.Path) == PathNormalization.NormalizePath(rootPath!))?.Root;
 			if (matchingDrive is null)
 			{
 				// Check on all removable drives
 				var remDevices = await DeviceInformation.FindAllAsync(StorageDevice.GetDeviceSelector());
-				var normalizedRootPath = Helpers.PathNormalization.NormalizePath(rootPath!).Replace(@"\\?\", string.Empty, StringComparison.Ordinal);
+				var normalizedRootPath = PathNormalization.NormalizePath(rootPath!).Replace(@"\\?\", string.Empty, StringComparison.Ordinal);
 				foreach (var item in remDevices)
 				{
 					try

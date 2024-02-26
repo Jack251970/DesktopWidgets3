@@ -320,8 +320,8 @@ public static class StatusCenterHelper
 	{
 		// Currently not supported accurate progress report for emptying the recycle bin
 
-		var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()!);
-		var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
+		//var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()!);
+		//var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
 
         var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
@@ -393,8 +393,8 @@ public static class StatusCenterHelper
 	{
 		// Currently not supported accurate progress report for emptying the recycle bin
 
-		var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()!);
-		var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
+		//var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()!);
+		//var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
 
         var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)

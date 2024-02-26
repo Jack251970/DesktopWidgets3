@@ -118,7 +118,7 @@ public class RecentItem : WidgetCardItem, IEquatable<RecentItem>
 		*/
 	private static string NameOrPathWithoutExtension(string nameOrPath)
 	{
-		var strippedExtension = System.IO.Path.GetFileNameWithoutExtension(nameOrPath);
-		return string.IsNullOrEmpty(strippedExtension) ? System.IO.Path.GetFileName(nameOrPath) : strippedExtension;
+		var strippedExtension = SystemIO.Path.GetFileNameWithoutExtension(nameOrPath);
+		return string.IsNullOrEmpty(strippedExtension) ? SystemIO.Path.GetFileName(nameOrPath) : strippedExtension;
 	}
 }

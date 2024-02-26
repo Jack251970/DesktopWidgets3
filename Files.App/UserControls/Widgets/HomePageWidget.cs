@@ -77,7 +77,7 @@ public abstract class HomePageWidget : UserControl
 		await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, item!.Path);
 	}
 
-	public async Task OpenInNewWindowAsync(WidgetCardItem? item)
+	public static async Task OpenInNewWindowAsync(WidgetCardItem? item)
 	{
 		await NavigationHelpers.OpenPathInNewWindowAsync(item!.Path);
 	}

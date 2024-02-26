@@ -32,8 +32,8 @@ public sealed class PreviewHandler : IDisposable
 
 	public sealed class PreviewHandlerFrame : IPreviewHandlerFrame, IDisposable
 	{
-		bool disposed;
-        readonly nint hwnd;
+        private bool disposed;
+        private readonly nint hwnd;
 
 		public PreviewHandlerFrame(nint frame)
 		{
@@ -610,7 +610,7 @@ public sealed class PreviewHandler : IDisposable
 		Dispose(true);
 	}
 
-	void EnsureNotDisposed()
+    private void EnsureNotDisposed()
 	{
 		if (disposed)
         {
@@ -618,7 +618,7 @@ public sealed class PreviewHandler : IDisposable
         }
     }
 
-	void EnsureInitialized()
+    private void EnsureInitialized()
 	{
 		if (!init)
         {
@@ -626,7 +626,7 @@ public sealed class PreviewHandler : IDisposable
         }
     }
 
-	void EnsureNotInitialized()
+    private void EnsureNotInitialized()
 	{
 		if (init)
         {
@@ -634,7 +634,7 @@ public sealed class PreviewHandler : IDisposable
         }
     }
 
-	void EnsureShown()
+    private void EnsureShown()
 	{
 		if (!shown)
         {
@@ -642,7 +642,7 @@ public sealed class PreviewHandler : IDisposable
         }
     }
 
-	void EnsureNotShown()
+    private void EnsureNotShown()
 	{
 		if (shown)
         {
@@ -650,9 +650,9 @@ public sealed class PreviewHandler : IDisposable
         }
     }
 
-	#region IDisposable pattern
+    #region IDisposable pattern
 
-	void Dispose(bool disposing)
+    private void Dispose(bool disposing)
 	{
 		if (disposed)
         {

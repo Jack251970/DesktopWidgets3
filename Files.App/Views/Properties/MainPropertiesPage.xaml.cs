@@ -97,6 +97,7 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
         }
     }
 
+    // CHANGE: Remove theme mode change event.
 	/*private async void AppSettings_ThemeModeChanged(object? sender, EventArgs e)
 	{
 		if (Parent is null)

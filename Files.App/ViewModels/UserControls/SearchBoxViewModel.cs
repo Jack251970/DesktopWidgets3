@@ -136,49 +136,49 @@ public class SearchBoxViewModel : ObservableObject, ISearchBox
 
 	private class SuggestionComparer : IEqualityComparer<SuggestionModel>, IComparer<SuggestionModel>
 	{
-    public int Compare(SuggestionModel? x, SuggestionModel? y)
-    {
-        if (x is null && y is null)
+        public int Compare(SuggestionModel? x, SuggestionModel? y)
         {
-            return 0;
+            if (x is null && y is null)
+            {
+                return 0;
+            }
+
+            if (x is null)
+            {
+                return y!.ItemPath!.CompareTo(null);
+            }
+
+            if (y is null)
+            {
+                return -x!.ItemPath!.CompareTo(null);
+            }
+
+            return y.ItemPath!.CompareTo(x.ItemPath);
         }
 
-        if (x is null)
+        public bool Equals(SuggestionModel? x, SuggestionModel? y)
         {
-            return y!.ItemPath!.CompareTo(null);
+            if (x is null && y is null)
+            {
+                return true;
+            }
+
+            if (x is null || y is null)
+            {
+                return false;
+            }
+
+            return y.ItemPath!.Equals(x.ItemPath);
         }
 
-        if (y is null)
+        public int GetHashCode(SuggestionModel? o)
         {
-            return -x!.ItemPath!.CompareTo(null);
+            if (o is null)
+            {
+                return 0;
+            }
+
+            return o.ItemPath!.GetHashCode();
         }
-
-        return y.ItemPath!.CompareTo(x.ItemPath);
-    }
-
-    public bool Equals(SuggestionModel? x, SuggestionModel? y)
-    {
-        if (x is null && y is null)
-        {
-            return true;
-        }
-
-        if (x is null || y is null)
-        {
-            return false;
-        }
-
-        return y.ItemPath!.Equals(x.ItemPath);
-    }
-
-    public int GetHashCode(SuggestionModel? o)
-    {
-        if (o is null)
-        {
-            return 0;
-        }
-
-        return o.ItemPath!.GetHashCode();
-    }
 	}
 }

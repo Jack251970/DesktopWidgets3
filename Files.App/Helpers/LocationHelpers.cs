@@ -6,6 +6,8 @@ using Windows.Services.Maps;
 
 namespace Files.App.Helpers;
 
+#pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections. Instead use the collection directly
+
 public static class LocationHelpers
 {
     public static async Task<string> GetAddressFromCoordinatesAsync(double? Lat, double? Lon)

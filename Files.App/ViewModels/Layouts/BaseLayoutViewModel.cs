@@ -12,6 +12,8 @@ using Windows.System;
 
 namespace Files.App.ViewModels.Layouts;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 /// <summary>
 /// Represents ViewModel for <see cref="BaseLayoutPage"/>.
 /// </summary>

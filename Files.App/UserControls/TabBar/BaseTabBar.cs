@@ -17,7 +17,7 @@ public abstract class BaseTabBar : ITabBar
 
 	protected ITabBarItemContent CurrentSelectedAppInstance = null!;
 
-    /*public static event EventHandler<ITabBar>? OnLoaded;
+    public static event EventHandler<ITabBar>? OnLoaded;
 
     public static event PropertyChangedEventHandler? StaticPropertyChanged;
 
@@ -26,14 +26,14 @@ public abstract class BaseTabBar : ITabBar
 	public const string TabPathIdentifier = "FilesTabViewItemPath";
 
 	// RecentlyClosedTabs is shared between all multitasking controls
-	public static Stack<CustomTabViewItemParameter[]> RecentlyClosedTabs { get; private set; } = new();*/
+	public static Stack<CustomTabViewItemParameter[]> RecentlyClosedTabs { get; private set; } = new();
 
     public ObservableCollection<TabBarItem> Items
 		=> MainPageViewModel.AppInstances[FolderViewViewModel];
 
 	public event EventHandler<CurrentInstanceChangedEventArgs>? CurrentInstanceChanged;
 
-	/*private static bool _IsRestoringClosedTab;
+	private static bool _IsRestoringClosedTab;
 	public static bool IsRestoringClosedTab
 	{
 		get => _IsRestoringClosedTab;
@@ -42,7 +42,7 @@ public abstract class BaseTabBar : ITabBar
 			_IsRestoringClosedTab = value;
 			StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(IsRestoringClosedTab)));
 		}
-	}*/
+	}
 
 	public BaseTabBar()
 	{
@@ -103,10 +103,10 @@ public abstract class BaseTabBar : ITabBar
 		}
 	}
 
-	/*protected void TabView_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
+	protected void TabView_TabCloseRequested(TabView _, TabViewTabCloseRequestedEventArgs args)
 	{
 		CloseTab((TabBarItem)args.Item);
-	}*/
+	}
 
     protected void OnCurrentInstanceChanged(CurrentInstanceChangedEventArgs args)
 	{
@@ -116,7 +116,7 @@ public abstract class BaseTabBar : ITabBar
 	public void TabView_Loaded(object sender, RoutedEventArgs e)
 	{
 		CurrentInstanceChanged += TabView_CurrentInstanceChanged;
-		/*OnLoaded?.Invoke(null, this);*/
+		OnLoaded?.Invoke(null, this);
 	}
 
 	public ITabBarItemContent GetCurrentSelectedTabInstance()
@@ -124,7 +124,7 @@ public abstract class BaseTabBar : ITabBar
 		return MainPageViewModel.AppInstances[FolderViewViewModel][FolderViewViewModel.TabStripSelectedIndex].TabItemContent;
 	}
 
-    /*public void SelectionChanged()
+    public void SelectionChanged()
 	{
 		TabView_SelectionChanged(null!, null!);
 	}
@@ -133,14 +133,14 @@ public abstract class BaseTabBar : ITabBar
 	{
 		RecentlyClosedTabs.Push(tab);
 		StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(RecentlyClosedTabs)));
-	}*/
+	}
 
     public List<ITabBarItemContent> GetAllTabInstances()
 	{
 		return MainPageViewModel.AppInstances[FolderViewViewModel].Select(x => x.TabItemContent).ToList();
 	}
 
-    /*public async Task ReopenClosedTabAsync()
+    public async Task ReopenClosedTabAsync()
 	{
 		if (!IsRestoringClosedTab && RecentlyClosedTabs.Count > 0)
 		{
@@ -155,12 +155,13 @@ public abstract class BaseTabBar : ITabBar
 		}
 	}
 
-	public async void MoveTabToNewWindowAsync(object sender, RoutedEventArgs e)
+    // CHANGE: Remove MoveTabToNewWindowAsync method.
+    /*public async void MoveTabToNewWindowAsync(object sender, RoutedEventArgs e)
 	{
 		await MultitaskingTabsHelpers.MoveTabToNewWindow(((FrameworkElement)sender).DataContext as TabBarItem, this);
-	}
+	}*/
 
-	public void CloseTab(TabBarItem tabItem)
+    public void CloseTab(TabBarItem tabItem)
 	{
 		Items.Remove(tabItem);
 		tabItem?.Unload();
@@ -175,7 +176,7 @@ public abstract class BaseTabBar : ITabBar
         {
             FolderViewViewModel.MainWindow.Close();
         }
-    }*/
+    }
 
     public void SetLoadingIndicatorStatus(ITabBarItem item, bool loading)
 	{
@@ -184,7 +185,7 @@ public abstract class BaseTabBar : ITabBar
             return;
         }
 
-        var stateToGoName = (loading) ? "Loading" : "NotLoading";
+        var stateToGoName = loading ? "Loading" : "NotLoading";
 
 		VisualStateManager.GoToState(tabItem, stateToGoName, false);
 	}

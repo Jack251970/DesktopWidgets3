@@ -97,9 +97,9 @@ public class Principal : ObservableObject
 		{
 			// Group
 			var x when
-				(x == SID_NAME_USE.SidTypeAlias ||
+				x == SID_NAME_USE.SidTypeAlias ||
 				x == SID_NAME_USE.SidTypeGroup ||
-				x == SID_NAME_USE.SidTypeWellKnownGroup)
+				x == SID_NAME_USE.SidTypeWellKnownGroup
 				=> PrincipalType.Group,
 
 			// User

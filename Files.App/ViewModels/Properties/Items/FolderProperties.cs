@@ -210,12 +210,12 @@ internal class FolderProperties : BaseProperties
 				if (ViewModel.IsHidden)
 				{
 					NativeFileOperationsHelper.SetFileAttribute(
-						Item.ItemPath, System.IO.FileAttributes.Hidden);
+						Item.ItemPath, FileAttributes.Hidden);
 				}
 				else
 				{
 					NativeFileOperationsHelper.UnsetFileAttribute(
-						Item.ItemPath, System.IO.FileAttributes.Hidden);
+						Item.ItemPath, FileAttributes.Hidden);
 				}
 				break;
 

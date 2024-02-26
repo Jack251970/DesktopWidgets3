@@ -28,6 +28,8 @@ using VanaraWindowsShell = Vanara.Windows.Shell;
 
 namespace Files.App.Views.Layouts;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 /// <summary>
 /// Represents the base class which every layout page must derive from
 /// </summary>
@@ -90,6 +92,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
     // For more information, visit https://github.com/microsoft/terminal/issues/12017#issuecomment-1004129669
     public bool AllowItemDrag
         => !ElevationHelpers.IsAppRunAsAdmin();
+
+#pragma warning restore CA1822 // Mark members as static
 
 #pragma warning restore CA1822 // Mark members as static
 
@@ -1039,7 +1043,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		}
 	}
 
-	protected void FileList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+	protected void FileList_DragItemsStarting(object _, DragItemsStartingEventArgs e)
 	{
 		try
 		{
@@ -1197,7 +1201,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
         deferral.Complete();
 	}
 
-	protected void FileList_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+	protected void FileList_ContainerContentChanging(ListViewBase _, ContainerContentChangingEventArgs args)
 	{
 		RefreshContainer(args.ItemContainer, args.InRecycleQueue);
 		RefreshItem(args.ItemContainer, args.Item, args.InRecycleQueue, args);
@@ -1384,12 +1388,12 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		UnhookBaseEvents();
 	}
 
-	protected void ItemsLayout_DragOver(object sender, DragEventArgs e)
+	protected void ItemsLayout_DragOver(object _, DragEventArgs e)
 	{
 		CommandsViewModel?.DragOverCommand?.Execute(e);
 	}
 
-	protected void ItemsLayout_Drop(object sender, DragEventArgs e)
+	protected void ItemsLayout_Drop(object _, DragEventArgs e)
 	{
 		CommandsViewModel?.DropCommand?.Execute(e);
 	}
@@ -1419,7 +1423,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		}
 	}
 
-	protected void SemanticZoom_ViewChangeStarted(object sender, SemanticZoomViewChangedEventArgs e)
+	protected void SemanticZoom_ViewChangeStarted(object _, SemanticZoomViewChangedEventArgs e)
 	{
 		if (e.IsSourceZoomedInView)
         {
@@ -1432,7 +1436,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		e.DestinationItem.Item = destination?.FirstOrDefault();
 	}
 
-	protected void StackPanel_PointerEntered(object sender, PointerRoutedEventArgs e)
+	protected void StackPanel_PointerEntered(object sender, PointerRoutedEventArgs _)
 	{
 		var element = (sender as UIElement)?.FindAscendant<ListViewBaseHeaderItem>();
 		if (element is not null)
@@ -1441,7 +1445,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
         }
     }
 
-	protected void StackPanel_PointerCanceled(object sender, PointerRoutedEventArgs e)
+	protected void StackPanel_PointerCanceled(object sender, PointerRoutedEventArgs _)
 	{
 		var element = (sender as UIElement)?.FindAscendant<ListViewBaseHeaderItem>();
 		if (element is not null)
@@ -1450,7 +1454,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
         }
     }
 
-	protected void RootPanel_PointerPressed(object sender, PointerRoutedEventArgs e)
+	protected void RootPanel_PointerPressed(object sender, PointerRoutedEventArgs _)
 	{
 		var element = (sender as UIElement)?.FindAscendant<ListViewBaseHeaderItem>();
 		if (element is not null)

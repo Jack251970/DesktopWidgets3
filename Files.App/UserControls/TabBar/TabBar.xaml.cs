@@ -1,19 +1,20 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.UI;
+/*using CommunityToolkit.WinUI.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Shapes;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage;
+using Windows.Storage;*/
 
 namespace Files.App.UserControls.TabBar;
 
 public sealed partial class TabBar : BaseTabBar
 {
-   /*public event EventHandler<TabBarItem?>? SelectedTabItemChanged;
+    // CHANGE: Remove properties related to ui components.
+    /*public event EventHandler<TabBarItem?>? SelectedTabItemChanged;
 
     private ICommandManager Commands { get; set; } = DependencyExtensions.GetService<ICommandManager>();
 
@@ -56,10 +57,10 @@ public sealed partial class TabBar : BaseTabBar
     public bool AllowTabsDrag
 		=> !ElevationHelpers.IsAppRunAsAdmin();
 
+#pragma warning restore CA1822 // Mark members as static
+
 	public Rectangle DragArea
 		=> DragAreaRectangle;
-
-#pragma warning disable CA1822 // Mark members as static
 
     /// <summary> Starting position when dragging a tab.</summary>
     private InteropHelpers.POINT dragStartPoint;
@@ -75,6 +76,7 @@ public sealed partial class TabBar : BaseTabBar
 
     public TabBar()
 	{
+        // CHANGE: Remove the constructor related to ui components.
         /*InitializeComponent();
 
 		tabHoverTimer.Interval = TimeSpan.FromMilliseconds(500);
@@ -90,6 +92,7 @@ public sealed partial class TabBar : BaseTabBar
 		RightPaddingColumn.Width = new(rightPaddingColumnWidth >= 0 ? rightPaddingColumnWidth : 0);*/
     }
 
+    // CHANGE: Remove events related to ui compoments.
     /*private void TabView_TabItemsChanged(TabView sender, Windows.Foundation.Collections.IVectorChangedEventArgs args)
 	{
 		if (args.CollectionChange == Windows.Foundation.Collections.CollectionChange.ItemRemoved)

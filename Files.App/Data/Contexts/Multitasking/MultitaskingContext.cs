@@ -11,12 +11,12 @@ internal class MultitaskingContext : ObservableObject, IMultitaskingContext
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
-	private bool isPopupOpen = false;
+	private readonly bool isPopupOpen = false;
 
-	private ITabBar? control;
+	private readonly ITabBar? control = null;
 	public ITabBar? Control => control;
 
-	private ushort tabCount = 0;
+	private readonly ushort tabCount = 0;
 	public ushort TabCount => tabCount;
 
 	public TabBarItem CurrentTabItem => MainPageViewModel.AppInstances[FolderViewViewModel].ElementAtOrDefault(currentTabIndex)!;

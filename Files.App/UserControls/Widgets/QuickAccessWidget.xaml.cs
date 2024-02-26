@@ -95,7 +95,7 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 {
 	public IUserSettingsService userSettingsService;
 
-	public static ObservableCollection<FolderCardItem> ItemsAdded = new();
+	public static readonly ObservableCollection<FolderCardItem> ItemsAdded = new();
 
 	static QuickAccessWidget()
 	{
@@ -361,7 +361,7 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
         }
 	}
 
-	private void MenuFlyout_Opening(object sender)
+	private static void MenuFlyout_Opening(object sender)
 	{			
 		var pinToFavoritesItem = (sender as MenuFlyout)?.Items.SingleOrDefault(x => x.Name == "PinToFavorites");
 		if (pinToFavoritesItem is not null)

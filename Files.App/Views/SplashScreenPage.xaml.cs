@@ -15,6 +15,7 @@ public sealed partial class SplashScreenPage : Page
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
 #pragma warning disable CA1822 // Mark members as static
+
     private string BranchLabel =>
 		ApplicationService.AppEnvironment switch
 		{
@@ -22,7 +23,8 @@ public sealed partial class SplashScreenPage : Page
 			AppEnvironment.Preview => "Preview",
 			_ => string.Empty,
 		};
-#pragma warning disable CA1822 // Mark members as static
+
+#pragma warning restore CA1822 // Mark members as static
 
     public SplashScreenPage()
 	{

@@ -6,6 +6,8 @@ using Windows.Storage;
 
 namespace Files.App.Utils.Storage;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 public class StorageHistoryOperations : IStorageHistoryOperations
 {
     private readonly StorageHistoryWrapper HistoryWrapper = App.HistoryWrapper;

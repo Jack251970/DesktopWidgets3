@@ -17,6 +17,8 @@ using SortDirection = Files.Core.Data.Enums.SortDirection;
 
 namespace Files.App.Views.Shells;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 {
     protected IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
@@ -46,7 +48,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected IUserSettingsService UserSettingsService { get; set; } = null!;
 
-    /*protected readonly IUpdateService updateSettingsService = DependencyExtensions.GetService<IUpdateService>();*/
+    protected readonly IUpdateService updateSettingsService = DependencyExtensions.GetService<IUpdateService>();
 
     protected ICommandManager Commands { get; set; } = null!;
 
@@ -790,7 +792,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 	{
 		ToolbarViewModel.OpenNewWindowCommand = new AsyncRelayCommand(NavigationHelpers.LaunchNewWindowAsync);
 		ToolbarViewModel.CreateNewFileCommand = new RelayCommand<ShellNewEntry>(x => _ = UIFilesystemHelpers.CreateFileFromDialogResultTypeAsync(FolderViewViewModel, AddItemDialogItemType.File, x, this));
-		/*ToolbarViewModel.UpdateCommand = new AsyncRelayCommand(async () => await updateSettingsService.DownloadUpdatesAsync());*/
+		ToolbarViewModel.UpdateCommand = new AsyncRelayCommand(async () => await updateSettingsService.DownloadUpdatesAsync(FolderViewViewModel));
 	}
 
 	protected async Task<BaseLayoutPage> GetContentOrNullAsync()

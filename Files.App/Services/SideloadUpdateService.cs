@@ -2,17 +2,18 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
+using DesktopWidgets3.Core.Helpers;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
-using Windows.ApplicationModel;
 using Windows.Management.Deployment;
 using Windows.Storage;
 
 namespace Files.App.Services;
 
+#pragma warning disable CA2254 // Template should be a static expression
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning disable IL2026 // Assembly reference for System.Runtime.InteropServices.RuntimeInformation not found
 
@@ -36,13 +37,9 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 
 	private ILogger? Logger { get; } = App.Logger;
 
-	private string PackageName { get; } = Package.Current.Id.Name;
+	private string PackageName { get; } = InfoHelper.GetName();
 
-	private Version PackageVersion { get; } = new(
-		Package.Current.Id.Version.Major,
-		Package.Current.Id.Version.Minor,
-		Package.Current.Id.Version.Build,
-		Package.Current.Id.Version.Revision);
+	private Version PackageVersion { get; } = InfoHelper.GetVersion();
 
 	private Uri? DownloadUri { get; set; }
 
@@ -103,7 +100,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
             return;
         }
 
-        var result = await GetLatestReleaseNotesAsync();
+        var result = await GetLatestReleaseNotesAsync(cancellationToken);
 		if (result is not null)
         {
             IsReleaseNotesAvailable = true;
@@ -125,7 +122,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 
 			if (appInstaller is null)
             {
-                throw new ArgumentNullException(nameof(appInstaller));
+                throw new ArgumentNullException(null, nameof(appInstaller));
             }
 
             var remoteVersion = new Version(appInstaller.Version);
@@ -185,7 +182,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 			}
 		}
 
-		bool HashEqual(Stream a, Stream b)
+        static bool HashEqual(Stream a, Stream b)
 		{
 			Span<byte> bufferA = stackalloc byte[64];
 			Span<byte> bufferB = stackalloc byte[64];

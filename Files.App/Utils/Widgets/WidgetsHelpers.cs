@@ -17,6 +17,7 @@ public static class WidgetsHelpers
 		{
 			shouldReload = true;
             var widget = new TWidget();
+            // CHANGE: Initialize widget with folder view view model.
             widget.Initialize(folderViewViewModel);
             return widget;
 		}
