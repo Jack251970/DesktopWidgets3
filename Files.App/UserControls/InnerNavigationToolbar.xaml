@@ -591,7 +591,8 @@
 						<MenuFlyoutSeparator />
 						<ToggleMenuFlyoutItem
 							AccessKey="A"
-							IsChecked="{x:Bind Commands.ToggleSortDirectoriesAlongsideFiles.IsOn, Mode=TwoWay}"
+                            Command="{x:Bind Commands.ToggleSortDirectoriesAlongsideFiles}"
+							IsChecked="{x:Bind Commands.ToggleSortDirectoriesAlongsideFiles.IsOn, Mode=OneWay}"
 							Text="{x:Bind Commands.ToggleSortDirectoriesAlongsideFiles.Label}" />
 					</MenuFlyout>
 				</AppBarButton.Flyout>

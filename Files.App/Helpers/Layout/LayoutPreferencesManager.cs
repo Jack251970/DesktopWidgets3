@@ -12,18 +12,18 @@ namespace Files.App.Data.Models;
 /// </summary>
 public class LayoutPreferencesManager : ObservableObject
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     // Dependency injections
 
-    private readonly IUserSettingsService UserSettingsService;
+    private IUserSettingsService UserSettingsService { get; set; } = null!;
 
 	// Fields
 
 	private static readonly Lazy<LayoutPreferencesDatabaseManager> _databaseInstance =
 		new(() => new LayoutPreferencesDatabaseManager(LayoutSettingsDbPath, true));
 
-	private readonly FolderLayoutModes? _rootLayoutMode;
+	private FolderLayoutModes? _rootLayoutMode { get; set; }
 
 	// Properties
 
@@ -33,9 +33,10 @@ public class LayoutPreferencesManager : ObservableObject
 	public bool IsLayoutModeFixed
 		=> _rootLayoutMode is not null;
 
+    // CHANGE: Default set adaptive layout enabled.
 	public bool IsAdaptiveLayoutEnabled
 	{
-		get => !LayoutPreferencesItem.IsAdaptiveLayoutOverridden;
+		get => LayoutPreferencesItem is null || !LayoutPreferencesItem.IsAdaptiveLayoutOverridden;
 		set
 		{
 			if (SetProperty(ref LayoutPreferencesItem.IsAdaptiveLayoutOverridden, !value, nameof(IsAdaptiveLayoutEnabled)))
@@ -127,9 +128,10 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
+    // CHANGE: Default use details view.
 	public FolderLayoutModes LayoutMode
 	{
-		get => _rootLayoutMode ?? LayoutPreferencesItem.LayoutMode;
+		get => _rootLayoutMode ?? (LayoutPreferencesItem is null ? FolderLayoutModes.DetailsView : LayoutPreferencesItem.LayoutMode);
 		set
 		{
 			if (SetProperty(ref LayoutPreferencesItem.LayoutMode, value, nameof(LayoutMode)))
@@ -158,9 +160,10 @@ public class LayoutPreferencesManager : ObservableObject
         }
 	}
 
+    // CHANGE: Default sort by name.
 	public SortOption DirectorySortOption
 	{
-		get => LayoutPreferencesItem.DirectorySortOption;
+		get => LayoutPreferencesItem is null ? SortOption.Name : LayoutPreferencesItem.DirectorySortOption;
 		set
 		{
 			if (SetProperty(ref LayoutPreferencesItem.DirectorySortOption, value, nameof(DirectorySortOption)))
@@ -171,9 +174,10 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
+    // CHANGE: Default not group.
 	public GroupOption DirectoryGroupOption
 	{
-		get => LayoutPreferencesItem.DirectoryGroupOption;
+		get => LayoutPreferencesItem is null ? GroupOption.None : LayoutPreferencesItem.DirectoryGroupOption;
 		set
 		{
 			if (SetProperty(ref LayoutPreferencesItem.DirectoryGroupOption, value, nameof(DirectoryGroupOption)))
@@ -184,9 +188,10 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
+    // CHANGE: Default sort ascending.
 	public SortDirection DirectorySortDirection
 	{
-		get => LayoutPreferencesItem.DirectorySortDirection;
+		get => LayoutPreferencesItem is null ? SortDirection.Ascending : LayoutPreferencesItem.DirectorySortDirection;
 		set
 		{
 			if (SetProperty(ref LayoutPreferencesItem.DirectorySortDirection, value, nameof(DirectorySortDirection)))
@@ -197,9 +202,10 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
+    // CHANGE: Default group ascending.
 	public SortDirection DirectoryGroupDirection
 	{
-		get => LayoutPreferencesItem.DirectoryGroupDirection;
+		get => LayoutPreferencesItem is null ? SortDirection.Ascending : LayoutPreferencesItem.DirectoryGroupDirection;
 		set
 		{
 			if (SetProperty(ref LayoutPreferencesItem.DirectoryGroupDirection, value, nameof(DirectoryGroupDirection)))
@@ -210,9 +216,10 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
+    // CHANGE: Default group by year.
 	public GroupByDateUnit DirectoryGroupByDateUnit
 	{
-		get => LayoutPreferencesItem.DirectoryGroupByDateUnit;
+		get => LayoutPreferencesItem is null ? GroupByDateUnit.Year : LayoutPreferencesItem.DirectoryGroupByDateUnit;
 		set
 		{
 			if (SetProperty(ref LayoutPreferencesItem.DirectoryGroupByDateUnit, value, nameof(DirectoryGroupByDateUnit)))
@@ -223,9 +230,10 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
+    // CHANGE: Default not sort directories alongside files.
 	public bool SortDirectoriesAlongsideFiles
 	{
-		get => LayoutPreferencesItem.SortDirectoriesAlongsideFiles;
+		get => LayoutPreferencesItem is not null && LayoutPreferencesItem.SortDirectoriesAlongsideFiles;
 		set
 		{
 			if (SetProperty(ref LayoutPreferencesItem.SortDirectoriesAlongsideFiles, value, nameof(SortDirectoriesAlongsideFiles)))
@@ -288,22 +296,26 @@ public class LayoutPreferencesManager : ObservableObject
 	public event EventHandler<LayoutModeEventArgs>? LayoutModeChangeRequested;
 	public event EventHandler? GridViewSizeChangeRequested;
 
-	// Constructors
+    // Constructors
 
-	public LayoutPreferencesManager(IFolderViewViewModel folderViewViewModel)
-	{
+    public LayoutPreferencesManager()
+    {
+    
+    }
+
+	// Methods
+
+    public void Initialize(IFolderViewViewModel folderViewViewModel, FolderLayoutModes? modeOverride)
+    {
         FolderViewViewModel = folderViewViewModel;
         UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
         LayoutPreferencesItem = new LayoutPreferencesItem(folderViewViewModel);
-	}
-
-	public LayoutPreferencesManager(IFolderViewViewModel folderViewViewModel, FolderLayoutModes modeOverride) : this(folderViewViewModel)
-	{
-		_rootLayoutMode = modeOverride;
-		LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
-	}
-
-	// Methods
+        if (modeOverride is not null)
+        {
+            _rootLayoutMode = modeOverride;
+            LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
+        }
+    }
 
 	public uint GetIconSize()
 	{

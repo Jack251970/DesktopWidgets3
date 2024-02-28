@@ -146,13 +146,14 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
         Settings.PropertyChanged += Settings_PropertyChanged;
     }
 
-public void DecreaseLayoutSize()
+    public void DecreaseLayoutSize()
 	{
 		if (FolderSettings is LayoutPreferencesManager viewModel)
         {
             viewModel.GridViewSize -= GridViewIncrement;
         }
     }
+
 	public void IncreaseLayoutSize()
 	{
 		if (FolderSettings is LayoutPreferencesManager viewModel)
@@ -163,7 +164,7 @@ public void DecreaseLayoutSize()
 
 	private void Context_Changing(object? sender, EventArgs e)
 	{
-		var viewModel = FolderSettings;
+        var viewModel = FolderSettings;
 		if (viewModel is not null)
         {
             viewModel.PropertyChanged -= FolderSettings_PropertyChanged;
@@ -171,6 +172,7 @@ public void DecreaseLayoutSize()
 
         Update();
 	}
+
 	private void Context_Changed(object? sender, EventArgs e)
 	{
 		var viewModel = FolderSettings;

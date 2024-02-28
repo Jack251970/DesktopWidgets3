@@ -984,6 +984,11 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		{
 			case nameof(LayoutPreferencesManager.GridViewSize):
 			case nameof(LayoutPreferencesManager.LayoutMode):
+                // CHANGE: Ingore if commands is null.
+                if (Commands is null)
+                {
+                    return;
+                }
 				LayoutOpacityIcon = instanceViewModel.FolderSettings.LayoutMode switch
 				{
 					FolderLayoutModes.TilesView => Commands.LayoutTiles.OpacityStyle!,

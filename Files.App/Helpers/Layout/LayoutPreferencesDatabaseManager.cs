@@ -6,6 +6,8 @@ using System.Text;
 
 namespace Files.App.Helpers;
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+
 /// <summary>
 /// Represents manager for the database of layout preferences.
 /// </summary>

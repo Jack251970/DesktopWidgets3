@@ -16,24 +16,17 @@ public class CurrentInstanceViewModel : ObservableObject
 
 	public CurrentInstanceViewModel()
 	{
-
+        FolderSettings = new LayoutPreferencesManager();
 	}
 
-    public CurrentInstanceViewModel(FolderLayoutModes rootLayoutMode)
+    public CurrentInstanceViewModel(FolderLayoutModes rootLayoutMode) : this()
     {
         RootLayoutMode = rootLayoutMode;
     }
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        if (RootLayoutMode is null)
-        {
-            FolderSettings = new LayoutPreferencesManager(folderViewViewModel);
-        }
-        else
-        {
-            FolderSettings = new LayoutPreferencesManager(folderViewViewModel, (FolderLayoutModes)RootLayoutMode);
-        }
+        FolderSettings.Initialize(folderViewViewModel, RootLayoutMode);
     }
 
     private bool isPageTypeSearchResults = false;
