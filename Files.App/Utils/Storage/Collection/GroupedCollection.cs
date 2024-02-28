@@ -46,11 +46,15 @@ public class GroupedCollection<T> : BulkConcurrentObservableCollection<T>, IGrou
     {
         if (e.PropertyName == nameof(Count))
         {
-            Model.CountText = string.Format(
-                Count > 1
-                    ? "GroupItemsCount_Plural".GetLocalized()
-                    : "GroupItemsCount_Singular".GetLocalized(),
-                Count);
+            // CHANGE: Fix for null reference exception.
+            if (Model.CountText is not null)
+            {
+                Model.CountText = string.Format(
+                    Count > 1
+                        ? "GroupItemsCount_Plural".GetLocalized()
+                        : "GroupItemsCount_Singular".GetLocalized(),
+                    Count);
+            }
         }
     }
 
