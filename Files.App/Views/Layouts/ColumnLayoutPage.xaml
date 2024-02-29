@@ -232,7 +232,7 @@
 										Background="{ThemeResource SystemChromeHighColor}"
 										CornerRadius="4" />
 									<Image
-										x:Name="IconOverlay"
+										x:Name="_IconOverlay"
 										Width="16"
 										Height="16"
 										Margin="2"
