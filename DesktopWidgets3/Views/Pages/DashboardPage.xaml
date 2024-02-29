@@ -56,14 +56,14 @@
                                     </Grid.ColumnDefinitions>
                                     <Image Width="20">
                                         <Image.Source>
-                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneWay}" />
+                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneTime}" />
                                         </Image.Source>
                                     </Image>
                                     <TextBlock
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind Label, Mode=OneWay}"
+                                        Text="{x:Bind Label, Mode=OneTime}"
                                         TextTrimming="CharacterEllipsis" />
                                     <Button
                                         Grid.Column="2"
@@ -128,14 +128,14 @@
                                     </Grid.ColumnDefinitions>
                                     <Image Width="20">
                                         <Image.Source>
-                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneWay}" />
+                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneTime}" />
                                         </Image.Source>
                                     </Image>
                                     <TextBlock
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind Label, Mode=OneWay}"
+                                        Text="{x:Bind Label, Mode=OneTime}"
                                         TextTrimming="CharacterEllipsis" />
                                     <ToggleSwitch
                                         Grid.Column="2"
@@ -192,14 +192,14 @@
                                     </Grid.ColumnDefinitions>
                                     <Image Width="20">
                                         <Image.Source>
-                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneWay}" />
+                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneTime}" />
                                         </Image.Source>
                                     </Image>
                                     <TextBlock
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind Label, Mode=OneWay}"
+                                        Text="{x:Bind Label, Mode=OneTime}"
                                         TextTrimming="CharacterEllipsis" />
                                     <ToggleSwitch
                                         Grid.Column="2"

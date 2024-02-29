@@ -90,7 +90,7 @@
 					x:Name="PickDllFileButton"
 					Grid.Column="1"
 					Command="{x:Bind CustomizationViewModel.OpenFilePickerCommand, Mode=OneWay}"
-					CommandParameter="{x:Bind XamlRoot, Mode=OneWay}"
+					CommandParameter="{x:Bind XamlRoot, Mode=OneTime}"
 					Content="{helpers:ResourceString Name=/FilesResources/Browse}" />
 
 			</Grid>
