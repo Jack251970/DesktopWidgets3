@@ -101,14 +101,15 @@ public static class FilePropertiesHelpers
             return;
         }
 
-        /*var frame = new Frame
+        var frame = new Frame
 		{
 			RequestedTheme = ThemeHelper.RootTheme
-		};*/
+		};
 
 		WinUIEx.WindowEx propertiesWindow;
 		if (!WindowCache.TryTake(out propertiesWindow!))
 		{
+            // 
             propertiesWindow = UIElementExtensions.GetWindowEx();
             propertiesWindow.Closed += PropertiesWindow_Closed;
 		}
@@ -119,7 +120,7 @@ public static class FilePropertiesHelpers
 		propertiesWindow.MinHeight = 550;
 		propertiesWindow.Width = 800;
 		propertiesWindow.Height = 550;
-        propertiesWindow.Content ??= new Frame();
+        propertiesWindow.Content = frame;
 		/*propertiesWindow.SystemBackdrop = new AppSystemBackdrop(folderViewViewModel, true);*/
 
         var appWindow = propertiesWindow.AppWindow;
@@ -130,8 +131,7 @@ public static class FilePropertiesHelpers
 
 		appWindow.SetIcon(applicationService.AppIcoPath);
 
-        var frame = propertiesWindow.Content as Frame;
-        frame?.Navigate(
+        frame.Navigate(
 			typeof(Views.Properties.MainPropertiesPage),
 			new PropertiesPageNavigationParameter
 			{
