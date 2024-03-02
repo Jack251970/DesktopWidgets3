@@ -34,7 +34,7 @@
 				VerticalAlignment="Center"
 				FontSize="14"
 				Style="{StaticResource BodyStrongTextBlockStyle}"
-				Text="{helpers:ResourceString Name=/FilesResources/StatusCenter}" />
+				Text="{helpers:ResourceString Name=StatusCenter}" />
 
 			<!--  Remove All Cards Button  -->
 			<Button
@@ -43,7 +43,7 @@
 				Padding="8,0"
 				HorizontalAlignment="Right"
 				Click="CloseAllItemsButton_Click"
-				Content="{helpers:ResourceString Name=/FilesResources/ClearCompleted}"
+				Content="{helpers:ResourceString Name=ClearCompleted}"
 				FontSize="12"
 				IsEnabled="{x:Bind ViewModel.HasAnyItem, Mode=OneWay}" />
 
@@ -154,11 +154,11 @@
 									Height="32"
 									Padding="0"
 									x:Load="{x:Bind IsInProgress, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}"
-									AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/Clear}"
+									AutomationProperties.Name="{helpers:ResourceString Name=Clear}"
 									Background="Transparent"
 									BorderBrush="Transparent"
 									Click="CloseItemButton_Click"
-									ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/Clear}">
+									ToolTipService.ToolTip="{helpers:ResourceString Name=Clear}">
 									<Button.Content>
 										<FontIcon FontSize="16" Glyph="&#xE711;" />
 									</Button.Content>
@@ -271,7 +271,7 @@
 										FontSize="10"
 										Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 										Style="{StaticResource CaptionTextBlockStyle}"
-										Text="{helpers:ResourceString Name=/FilesResources/SpeedWithColon}" />
+										Text="{helpers:ResourceString Name=SpeedWithColon}" />
 
 									<TextBlock
 										x:Name="OperationSpeedPerSecTextBlock"
@@ -315,7 +315,7 @@
 										TextTrimming="CharacterEllipsis"
 										TextWrapping="NoWrap"
 										ToolTipService.ToolTip="{x:Bind CurrentProcessingItemName, Mode=OneWay}">
-										<Run Text="{helpers:ResourceString Name=/FilesResources/NameWithColon}" />
+										<Run Text="{helpers:ResourceString Name=NameWithColon}" />
 										<Run Text="{x:Bind CurrentProcessingItemName, Mode=OneWay}" />
 									</TextBlock>
 
@@ -344,13 +344,13 @@
 									Height="32"
 									Padding="0"
 									x:Load="{x:Bind IsCancelable, Mode=OneWay}"
-									AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/Cancel}"
+									AutomationProperties.Name="{helpers:ResourceString Name=Cancel}"
 									Background="Transparent"
 									BorderBrush="Transparent"
 									Command="{x:Bind CancelCommand}"
 									DataContext="{x:Bind}"
 									IsEnabled="{x:Bind IsCancelable, Mode=OneWay}"
-									ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/Cancel}"
+									ToolTipService.ToolTip="{helpers:ResourceString Name=Cancel}"
 									Visibility="{x:Bind IsInProgress, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
 									<Button.Content>
 										<FontIcon FontSize="16" Glyph="&#xE711;" />
@@ -374,7 +374,7 @@
 			HorizontalAlignment="Center"
 			VerticalAlignment="Center"
 			x:Load="{x:Bind ViewModel.HasAnyItem, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}"
-			Text="{helpers:ResourceString Name=/FilesResources/NoFileOperations}" />
+			Text="{helpers:ResourceString Name=NoFileOperations}" />
 
 	</Grid>
 </UserControl>

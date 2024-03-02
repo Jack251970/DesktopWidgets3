@@ -470,10 +470,10 @@
 							HorizontalAlignment="Right"
 							VerticalAlignment="Top"
 							x:Load="{x:Bind ShowMenuFlyout, Mode=OneWay}"
-							AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/MoreOptions}"
+							AutomationProperties.Name="{helpers:ResourceString Name=MoreOptions}"
 							Background="Transparent"
 							BorderBrush="Transparent"
-							ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/MoreOptions}">
+							ToolTipService.ToolTip="{helpers:ResourceString Name=MoreOptions}">
 
 							<FontIcon
 								HorizontalAlignment="Center"

@@ -79,7 +79,7 @@
 		ItemTemplate="{StaticResource SuggestionTemplate}"
 		ItemsSource="{x:Bind Suggestions, Mode=OneWay}"
 		KeyDown="SearchRegion_KeyDown"
-		PlaceholderText="{helpers:ResourceString Name=/FilesResources/Search}"
+		PlaceholderText="{helpers:ResourceString Name=Search}"
 		QuerySubmitted="SearchRegion_QuerySubmitted"
 		Text="{x:Bind Query, Mode=TwoWay}"
 		TextBoxStyle="{StaticResource TextBoxStyle}"

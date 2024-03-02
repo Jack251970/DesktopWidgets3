@@ -101,40 +101,40 @@
 				Padding="0,0,0,12"
 				FontSize="24"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/Appearance}" />
+				Text="{helpers:ResourceString Name=Appearance}" />
 
 			<!--  Theme  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/SettingsAppearanceTheme}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=SettingsAppearanceTheme}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE790;" />
 				</local:SettingsBlockControl.Icon>
 				<ComboBox
 					x:Name="ThemeChooser"
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/SettingsAppearanceTheme}"
+					AutomationProperties.Name="{helpers:ResourceString Name=SettingsAppearanceTheme}"
 					ItemsSource="{x:Bind ViewModel.Themes, Mode=OneWay}"
 					SelectedIndex="{x:Bind ViewModel.SelectedThemeIndex, Mode=TwoWay}" />
 			</local:SettingsBlockControl>
 
 			<!--  Backdrop Material  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/BackdropMaterial}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=BackdropMaterial}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xEF1F;" />
 				</local:SettingsBlockControl.Icon>
 				<ComboBox
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/BackdropMaterial}"
+					AutomationProperties.Name="{helpers:ResourceString Name=BackdropMaterial}"
 					ItemsSource="{x:Bind ViewModel.BackdropMaterialTypes.Values}"
 					SelectedItem="{x:Bind ViewModel.SelectedBackdropMaterial, Mode=TwoWay}" />
 			</local:SettingsBlockControl>
 
 			<!--  App Background  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/Background}"
+				Title="{helpers:ResourceString Name=Background}"
 				HorizontalAlignment="Stretch"
 				IsExpanded="True">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE771;" />
 				</local:SettingsBlockControl.Icon>
-				<Button Padding="0" AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/Background}">
+				<Button Padding="0" AutomationProperties.Name="{helpers:ResourceString Name=Background}">
 					<StackPanel Orientation="Horizontal">
 						<Border
 							Width="24"
@@ -172,12 +172,12 @@
 			</local:SettingsBlockControl>
 
 			<!--  Compact Spacing  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/UseCompactSpacing}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=UseCompactSpacing}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE62B;" />
 				</local:SettingsBlockControl.Icon>
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/UseCompactSpacing}"
+					AutomationProperties.Name="{helpers:ResourceString Name=UseCompactSpacing}"
 					IsOn="{x:Bind ViewModel.UseCompactStyles, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</local:SettingsBlockControl>

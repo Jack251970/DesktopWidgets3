@@ -555,9 +555,9 @@
 		<!--  Invalid Item Name Tip  -->
 		<TeachingTip
 			x:Name="FileNameTeachingTip"
-			CloseButtonContent="{helpers:ResourceString Name=/FilesResources/OK}"
+			CloseButtonContent="{helpers:ResourceString Name=OK}"
 			PreferredPlacement="Auto"
-			Subtitle="{helpers:ResourceString Name=/FilesResources/FileNameTeachingTip/Subtitle}"
+			Subtitle="{helpers:ResourceString Name=FileNameTeachingTip/Subtitle}"
 			Visibility="Collapsed" />
 
 		<!--  Grouping/Ungrouping  -->
@@ -661,7 +661,7 @@
 							HorizontalAlignment="Stretch"
 							x:Load="{x:Bind Commands.SearchUnindexedItems.IsExecutable, Mode=OneWay}"
 							Orientation="Vertical">
-							<TextBlock HorizontalTextAlignment="Center" Text="{helpers:ResourceString Name=/FilesResources/SearchUnindexedItemsLabel/Text}" />
+							<TextBlock HorizontalTextAlignment="Center" Text="{helpers:ResourceString Name=SearchUnindexedItemsLabel/Text}" />
 							<HyperlinkButton
 								x:Name="SearchUnindexedItemsButton"
 								HorizontalAlignment="Center"

@@ -31,7 +31,7 @@
 				Padding="0,0,0,12"
 				FontSize="24"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/About}" />
+				Text="{helpers:ResourceString Name=About}" />
 
 			<!--  App Info  -->
 			<local:SettingsBlockControl
@@ -41,11 +41,11 @@
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE946;" />
 				</local:SettingsBlockControl.Icon>
-				<Button x:Name="CopyVersionInfo" Content="{helpers:ResourceString Name=/FilesResources/Copy}">
+				<Button x:Name="CopyVersionInfo" Content="{helpers:ResourceString Name=Copy}">
 					<Button.Flyout>
 						<MenuFlyout>
-							<MenuFlyoutItem Command="{x:Bind ViewModel.CopyAppVersionCommand}" Text="{helpers:ResourceString Name=/FilesResources/AppVersion}" />
-							<MenuFlyoutItem Command="{x:Bind ViewModel.CopyWindowsVersionCommand}" Text="{helpers:ResourceString Name=/FilesResources/WindowsVersion}" />
+							<MenuFlyoutItem Command="{x:Bind ViewModel.CopyAppVersionCommand}" Text="{helpers:ResourceString Name=AppVersion}" />
+							<MenuFlyoutItem Command="{x:Bind ViewModel.CopyWindowsVersionCommand}" Text="{helpers:ResourceString Name=WindowsVersion}" />
 						</MenuFlyout>
 					</Button.Flyout>
 				</Button>
@@ -53,7 +53,7 @@
 
 			<!--  GitHub Sponsor  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/SponsorUsOnGitHub}"
+				Title="{helpers:ResourceString Name=SponsorUsOnGitHub}"
 				ButtonCommand="{x:Bind ViewModel.SupportUsCommand}"
 				IsClickable="True">
 				<local:SettingsBlockControl.Icon>
@@ -72,11 +72,11 @@
 				Padding="0,16,0,4"
 				FontSize="16"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/HelpAndSupport}" />
+				Text="{helpers:ResourceString Name=HelpAndSupport}" />
 
 			<!--  Documentation  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/Documentation}"
+				Title="{helpers:ResourceString Name=Documentation}"
 				HorizontalAlignment="Stretch"
 				ButtonCommand="{x:Bind ViewModel.OpenDocumentationCommand}"
 				IsClickable="True">
@@ -91,7 +91,7 @@
 			</local:SettingsBlockControl>
 
 			<!--  Feedback  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/Feedback}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=Feedback}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xED15;" />
 				</local:SettingsBlockControl.Icon>
@@ -99,7 +99,7 @@
 					<StackPanel>
 						<!--  Submit feature request  -->
 						<local:SettingsBlockControl
-							Title="{helpers:ResourceString Name=/FilesResources/SubmitFeatureRequest}"
+							Title="{helpers:ResourceString Name=SubmitFeatureRequest}"
 							HorizontalAlignment="Stretch"
 							ButtonCommand="{x:Bind ViewModel.SubmitFeatureRequestCommand}"
 							IsClickable="True">
@@ -111,7 +111,7 @@
 
 						<!--  Submit bug report  -->
 						<local:SettingsBlockControl
-							Title="{helpers:ResourceString Name=/FilesResources/SubmitBugReport}"
+							Title="{helpers:ResourceString Name=SubmitBugReport}"
 							HorizontalAlignment="Stretch"
 							ButtonCommand="{x:Bind ViewModel.SubmitBugReportCommand}"
 							IsClickable="True">
@@ -126,7 +126,7 @@
 
 			<!--  Open Log File Location  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/OpenLogLocation}"
+				Title="{helpers:ResourceString Name=OpenLogLocation}"
 				HorizontalAlignment="Stretch"
 				ButtonCommand="{x:Bind ViewModel.OpenLogLocationCommand}"
 				IsClickable="True">
@@ -146,11 +146,11 @@
 				Padding="0,16,0,4"
 				FontSize="16"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/OpenSource}" />
+				Text="{helpers:ResourceString Name=OpenSource}" />
 
 			<!--  Translate  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/ImproveTranslation}"
+				Title="{helpers:ResourceString Name=ImproveTranslation}"
 				HorizontalAlignment="Stretch"
 				ButtonCommand="{x:Bind ViewModel.OpenCrowdinCommand}"
 				IsClickable="True">
@@ -166,7 +166,7 @@
 
 			<!--  Third Party Licenses  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/ThirdPartyLicenses}"
+				Title="{helpers:ResourceString Name=ThirdPartyLicenses}"
 				HorizontalAlignment="Stretch"
 				Click="ThirdPartyLicenses_Click">
 				<local:SettingsBlockControl.Icon>
@@ -185,7 +185,7 @@
 
 			<!--  Open GitHub repo  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/OpenGitHubRepo}"
+				Title="{helpers:ResourceString Name=OpenGitHubRepo}"
 				HorizontalAlignment="Stretch"
 				ButtonCommand="{x:Bind ViewModel.OpenGitHubRepoCommand}"
 				IsClickable="True">
@@ -201,7 +201,7 @@
 
 			<!--  Privacy  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/Privacy}"
+				Title="{helpers:ResourceString Name=Privacy}"
 				HorizontalAlignment="Stretch"
 				ButtonCommand="{x:Bind ViewModel.OpenPrivacyPolicyCommand}"
 				IsClickable="True">

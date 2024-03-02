@@ -48,18 +48,18 @@
 				Padding="0,0,0,12"
 				FontSize="24"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/FileTags}" />
+				Text="{helpers:ResourceString Name=FileTags}" />
 
 			<!--  Edit Tags  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/FileTags}"
+				Title="{helpers:ResourceString Name=FileTags}"
 				HorizontalAlignment="Stretch"
 				IsExpanded="True">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE8EC;" />
 				</local:SettingsBlockControl.Icon>
 
-				<Button Command="{x:Bind ViewModel.AddTagCommand, Mode=OneWay}" Content="{helpers:ResourceString Name=/FilesResources/NewTag}" />
+				<Button Command="{x:Bind ViewModel.AddTagCommand, Mode=OneWay}" Content="{helpers:ResourceString Name=NewTag}" />
 				<local:SettingsBlockControl.ExpandableContent>
 					<StackPanel>
 						<!--  Create new tag  -->
@@ -79,19 +79,19 @@
 								Orientation="Horizontal"
 								Spacing="12">
 								<!--  Title  -->
-								<TextBlock VerticalAlignment="Center" Text="{helpers:ResourceString Name=/FilesResources/CreateNewTag}" />
+								<TextBlock VerticalAlignment="Center" Text="{helpers:ResourceString Name=CreateNewTag}" />
 
 								<!--  Tag Name  -->
 								<TextBox
 									Width="200"
-									PlaceholderText="{helpers:ResourceString Name=/FilesResources/Name}"
+									PlaceholderText="{helpers:ResourceString Name=Name}"
 									TextChanged="NewTagTextBox_TextChanged" />
 
 								<!--  Tag Color  -->
 								<Button
 									Margin="8,0"
 									Padding="0"
-									AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/TagColor}">
+									AutomationProperties.Name="{helpers:ResourceString Name=TagColor}">
 									<StackPanel Orientation="Horizontal">
 										<Border
 											Width="20"
@@ -126,7 +126,7 @@
 									BorderThickness="1"
 									ColumnSpacing="8"
 									CornerRadius="4"
-									ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/TagNameRules}"
+									ToolTipService.ToolTip="{helpers:ResourceString Name=TagNameRules}"
 									Visibility="{x:Bind ViewModel.NewTag.IsNameValid, Mode=OneWay, Converter={StaticResource InvertedBoolVisibilityConverter}}">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="Auto" />
@@ -149,16 +149,16 @@
 									<TextBlock
 										Grid.Column="1"
 										VerticalAlignment="Center"
-										Text="{helpers:ResourceString Name=/FilesResources/InvalidTagNameWarning}" />
+										Text="{helpers:ResourceString Name=InvalidTagNameWarning}" />
 								</Grid>
 
 								<!--  Cancel  -->
-								<Button Command="{x:Bind ViewModel.CancelNewTagCommand, Mode=OneWay}" Content="{helpers:ResourceString Name=/FilesResources/Cancel}" />
+								<Button Command="{x:Bind ViewModel.CancelNewTagCommand, Mode=OneWay}" Content="{helpers:ResourceString Name=Cancel}" />
 
 								<!--  Save Changes  -->
 								<Button
 									Command="{x:Bind ViewModel.SaveNewTagCommand, Mode=OneWay}"
-									Content="{helpers:ResourceString Name=/FilesResources/Create}"
+									Content="{helpers:ResourceString Name=Create}"
 									IsEnabled="{x:Bind ViewModel.NewTag.CanCommit, Mode=OneWay}"
 									Style="{StaticResource AccentButtonStyle}" />
 							</StackPanel>
@@ -226,7 +226,7 @@
 											<Button
 												Margin="8,0"
 												Padding="0"
-												AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/TagColor}">
+												AutomationProperties.Name="{helpers:ResourceString Name=TagColor}">
 												<StackPanel Orientation="Horizontal">
 													<Border
 														Width="20"
@@ -257,7 +257,7 @@
 												Background="Transparent"
 												BorderBrush="Transparent"
 												Click="EditTag_Click"
-												Content="{helpers:ResourceString Name=/FilesResources/Edit}" />
+												Content="{helpers:ResourceString Name=Edit}" />
 
 											<Button
 												x:Name="DeleteTagButton"
@@ -265,26 +265,26 @@
 												Background="Transparent"
 												BorderBrush="Transparent"
 												Click="PreRemoveTag_Click"
-												Content="{helpers:ResourceString Name=/FilesResources/Delete}">
+												Content="{helpers:ResourceString Name=Delete}">
 												<Button.Flyout>
 													<Flyout>
 														<StackPanel Spacing="12">
 															<TextBlock
 																MaxWidth="150"
-																Text="{helpers:ResourceString Name=/FilesResources/ConfirmDeleteTag}"
+																Text="{helpers:ResourceString Name=ConfirmDeleteTag}"
 																TextAlignment="Center"
 																TextWrapping="Wrap" />
 															<StackPanel
 																HorizontalAlignment="Center"
 																Orientation="Horizontal"
 																Spacing="8">
-																<Button Click="CancelRemoveTag_Click" Content="{helpers:ResourceString Name=/FilesResources/Cancel}" />
+																<Button Click="CancelRemoveTag_Click" Content="{helpers:ResourceString Name=Cancel}" />
 
 																<Button
 																	Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
 																	BorderBrush="Transparent"
 																	Click="RemoveTag_Click"
-																	Content="{helpers:ResourceString Name=/FilesResources/Delete}" />
+																	Content="{helpers:ResourceString Name=Delete}" />
 															</StackPanel>
 														</StackPanel>
 													</Flyout>
@@ -305,7 +305,7 @@
 												BorderThickness="1"
 												ColumnSpacing="8"
 												CornerRadius="4"
-												ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/TagNameRules}"
+												ToolTipService.ToolTip="{helpers:ResourceString Name=TagNameRules}"
 												Visibility="{x:Bind IsNameValid, Mode=OneWay, Converter={StaticResource InvertedBoolVisibilityConverter}}">
 												<Grid.ColumnDefinitions>
 													<ColumnDefinition Width="Auto" />
@@ -327,18 +327,18 @@
 												<TextBlock
 													Grid.Column="1"
 													VerticalAlignment="Center"
-													Text="{helpers:ResourceString Name=/FilesResources/InvalidTagNameWarning}" />
+													Text="{helpers:ResourceString Name=InvalidTagNameWarning}" />
 											</Grid>
 
 											<Button
 												x:Name="CancelChangesButton"
 												Click="CancelRenameTag_Click"
-												Content="{helpers:ResourceString Name=/FilesResources/Cancel}" />
+												Content="{helpers:ResourceString Name=Cancel}" />
 
 											<Button
 												x:Name="SaveChangesButton"
 												Click="CommitRenameTag_Click"
-												Content="{helpers:ResourceString Name=/FilesResources/Save}"
+												Content="{helpers:ResourceString Name=Save}"
 												IsEnabled="{x:Bind CanCommit, Mode=OneWay}"
 												Style="{StaticResource AccentButtonStyle}" />
 										</StackPanel>

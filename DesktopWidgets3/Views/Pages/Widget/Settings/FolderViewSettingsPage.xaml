@@ -66,7 +66,7 @@
                 </labs:SettingsCard>
 
                 <!--  Overflow Options  -->
-                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/SettingsContextMenuOverflow}">
+                <labs:SettingsCard Header="{helpers:ResourceString Name=SettingsContextMenuOverflow}">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE712;" />
                     </labs:SettingsCard.HeaderIcon>
@@ -74,7 +74,7 @@
                 </labs:SettingsCard>
 
                 <!--  Folder Overrides  -->
-                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/SyncFolderPreferencesAcrossDirectories}">
+                <labs:SettingsCard Header="{helpers:ResourceString Name=SyncFolderPreferencesAcrossDirectories}">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE621;" />
                     </labs:SettingsCard.HeaderIcon>
@@ -82,28 +82,28 @@
                 </labs:SettingsCard>
 
                 <!--  Hidden Items  -->
-                <labs:SettingsExpander Header="{helpers:ResourceString Name=/FilesResources/HiddenItems}">
+                <labs:SettingsExpander Header="{helpers:ResourceString Name=HiddenItems}">
                     <labs:SettingsExpander.HeaderIcon>
                         <FontIcon Glyph="&#xED1A;" />
                     </labs:SettingsExpander.HeaderIcon>
                     <labs:SettingsExpander.Items>
                         <!--  Hidden Files  -->
-                        <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/SettingsFilesAndFoldersShowHiddenItems}">
+                        <labs:SettingsCard Header="{helpers:ResourceString Name=SettingsFilesAndFoldersShowHiddenItems}">
                             <ToggleSwitch IsOn="{x:Bind ViewModel.ShowHiddenItems, Mode=TwoWay}" />
                         </labs:SettingsCard>
 
                         <!--  Dots Files  -->
-                        <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowDotFiles}">
+                        <labs:SettingsCard Header="{helpers:ResourceString Name=ShowDotFiles}">
                             <ToggleSwitch IsOn="{x:Bind ViewModel.ShowDotFiles, Mode=TwoWay}" />
                         </labs:SettingsCard>
 
                         <!--  System Files  -->
-                        <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowProtectedSystemFiles}">
+                        <labs:SettingsCard Header="{helpers:ResourceString Name=ShowProtectedSystemFiles}">
                             <ToggleSwitch IsOn="{x:Bind ViewModel.ShowProtectedSystemFiles, Mode=TwoWay}" />
                         </labs:SettingsCard>
 
                         <!--  Alternate Data Streams  -->
-                        <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowAlternateStreams}">
+                        <labs:SettingsCard Header="{helpers:ResourceString Name=ShowAlternateStreams}">
                             <ToggleSwitch IsOn="{x:Bind ViewModel.AreAlternateStreamsVisible, Mode=TwoWay}" />
                         </labs:SettingsCard>
                     </labs:SettingsExpander.Items>
@@ -126,7 +126,7 @@
                 </labs:SettingsCard>
 
                 <!--  Show Checkboxes When Selecting Items  -->
-                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowCheckboxesWhenSelectingItems}">
+                <labs:SettingsCard Header="{helpers:ResourceString Name=ShowCheckboxesWhenSelectingItems}">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE73A;" />
                     </labs:SettingsCard.HeaderIcon>
@@ -134,19 +134,19 @@
                 </labs:SettingsCard>
 
                 <!--  Confirm Delete  -->
-                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowConfirmationWhenDeletingItems}">
+                <labs:SettingsCard Header="{helpers:ResourceString Name=ShowConfirmationWhenDeletingItems}">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE74D;" />
                     </labs:SettingsCard.HeaderIcon>
                     <ComboBox SelectedIndex="{x:Bind ViewModel.SelectedDeleteConfirmationPolicyIndex, Mode=TwoWay}">
-                        <ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/Always}" />
-                        <ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/PermanentDeletionOnly}" />
-                        <ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/Never}" />
+                        <ComboBoxItem Content="{helpers:ResourceString Name=Always}" />
+                        <ComboBoxItem Content="{helpers:ResourceString Name=PermanentDeletionOnly}" />
+                        <ComboBoxItem Content="{helpers:ResourceString Name=Never}" />
                     </ComboBox>
                 </labs:SettingsCard>
 
                 <!--  File Extension Warning  -->
-                <labs:SettingsCard Header="{helpers:ResourceString Name=/FilesResources/ShowFileExtensionWarning}">
+                <labs:SettingsCard Header="{helpers:ResourceString Name=ShowFileExtensionWarning}">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE8AC;" />
                     </labs:SettingsCard.HeaderIcon>
@@ -154,12 +154,12 @@
                 </labs:SettingsCard>
 
                 <!--  Edit Tags  -->
-                <labs:SettingsExpander Header="{helpers:ResourceString Name=/FilesResources/FileTags}">
+                <labs:SettingsExpander Header="{helpers:ResourceString Name=FileTags}">
                     <labs:SettingsExpander.HeaderIcon>
                         <FontIcon Glyph="&#xE8EC;" />
                     </labs:SettingsExpander.HeaderIcon>
 
-                    <Button Command="{x:Bind ViewModel.TagsViewModel.AddTagCommand, Mode=OneWay}" Content="{helpers:ResourceString Name=/FilesResources/NewTag}" />
+                    <Button Command="{x:Bind ViewModel.TagsViewModel.AddTagCommand, Mode=OneWay}" Content="{helpers:ResourceString Name=NewTag}" />
                     <labs:SettingsExpander.Items>
                         <StackPanel>
                             <!--  Create new tag  -->
@@ -179,19 +179,19 @@
 					                Orientation="Horizontal"
 					                Spacing="12">
                                     <!--  Title  -->
-                                    <TextBlock VerticalAlignment="Center" Text="{helpers:ResourceString Name=/FilesResources/CreateNewTag}" />
+                                    <TextBlock VerticalAlignment="Center" Text="{helpers:ResourceString Name=CreateNewTag}" />
 
                                     <!--  Tag Name  -->
                                     <TextBox
 						                Width="200"
-						                PlaceholderText="{helpers:ResourceString Name=/FilesResources/Name}"
+						                PlaceholderText="{helpers:ResourceString Name=Name}"
 						                TextChanged="NewTagTextBox_TextChanged" />
 
                                     <!--  Tag Color  -->
                                     <Button
 						                Margin="8,0"
 						                Padding="0"
-						                AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/TagColor}">
+						                AutomationProperties.Name="{helpers:ResourceString Name=TagColor}">
                                         <StackPanel Orientation="Horizontal">
                                             <Border
 								                Width="20"
@@ -226,7 +226,7 @@
 						                BorderThickness="1"
 						                ColumnSpacing="8"
 						                CornerRadius="4"
-						                ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/TagNameRules}"
+						                ToolTipService.ToolTip="{helpers:ResourceString Name=TagNameRules}"
 						                Visibility="{x:Bind ViewModel.TagsViewModel.NewTag.IsNameValid, Mode=OneWay, Converter={StaticResource InvertedBoolVisibilityConverter}}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -249,16 +249,16 @@
                                         <TextBlock
 							                Grid.Column="1"
 							                VerticalAlignment="Center"
-							                Text="{helpers:ResourceString Name=/FilesResources/InvalidTagNameWarning}" />
+							                Text="{helpers:ResourceString Name=InvalidTagNameWarning}" />
                                     </Grid>
 
                                     <!--  Cancel  -->
-                                    <Button Command="{x:Bind ViewModel.TagsViewModel.CancelNewTagCommand, Mode=OneWay}" Content="{helpers:ResourceString Name=/FilesResources/Cancel}" />
+                                    <Button Command="{x:Bind ViewModel.TagsViewModel.CancelNewTagCommand, Mode=OneWay}" Content="{helpers:ResourceString Name=Cancel}" />
 
                                     <!--  Save Changes  -->
                                     <Button
 						                Command="{x:Bind ViewModel.TagsViewModel.SaveNewTagCommand, Mode=OneWay}"
-						                Content="{helpers:ResourceString Name=/FilesResources/Create}"
+						                Content="{helpers:ResourceString Name=Create}"
 						                IsEnabled="{x:Bind ViewModel.TagsViewModel.NewTag.CanCommit, Mode=OneWay}"
 						                Style="{StaticResource AccentButtonStyle}" />
                                 </StackPanel>
@@ -326,7 +326,7 @@
                                                 <Button
 									                Margin="8,0"
 									                Padding="0"
-									                AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/TagColor}">
+									                AutomationProperties.Name="{helpers:ResourceString Name=TagColor}">
                                                     <StackPanel Orientation="Horizontal">
                                                         <Border
 											                Width="20"
@@ -357,7 +357,7 @@
 									                Background="Transparent"
 									                BorderBrush="Transparent"
 									                Click="EditTag_Click"
-									                Content="{helpers:ResourceString Name=/FilesResources/Edit}" />
+									                Content="{helpers:ResourceString Name=Edit}" />
 
                                                 <Button
 									                x:Name="DeleteTagButton"
@@ -365,26 +365,26 @@
 									                Background="Transparent"
 									                BorderBrush="Transparent"
 									                Click="PreRemoveTag_Click"
-									                Content="{helpers:ResourceString Name=/FilesResources/Delete}">
+									                Content="{helpers:ResourceString Name=Delete}">
                                                     <Button.Flyout>
                                                         <Flyout>
                                                             <StackPanel Spacing="12">
                                                                 <TextBlock
 													                MaxWidth="150"
-													                Text="{helpers:ResourceString Name=/FilesResources/ConfirmDeleteTag}"
+													                Text="{helpers:ResourceString Name=ConfirmDeleteTag}"
 													                TextAlignment="Center"
 													                TextWrapping="Wrap" />
                                                                 <StackPanel
 													                HorizontalAlignment="Center"
 													                Orientation="Horizontal"
 													                Spacing="8">
-                                                                    <Button Click="CancelRemoveTag_Click" Content="{helpers:ResourceString Name=/FilesResources/Cancel}" />
+                                                                    <Button Click="CancelRemoveTag_Click" Content="{helpers:ResourceString Name=Cancel}" />
 
                                                                     <Button
 														                Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
 														                BorderBrush="Transparent"
 														                Click="RemoveTag_Click"
-														                Content="{helpers:ResourceString Name=/FilesResources/Delete}" />
+														                Content="{helpers:ResourceString Name=Delete}" />
                                                                 </StackPanel>
                                                             </StackPanel>
                                                         </Flyout>
@@ -405,7 +405,7 @@
 									                BorderThickness="1"
 									                ColumnSpacing="8"
 									                CornerRadius="4"
-									                ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/TagNameRules}"
+									                ToolTipService.ToolTip="{helpers:ResourceString Name=TagNameRules}"
 									                Visibility="{x:Bind IsNameValid, Mode=OneWay, Converter={StaticResource InvertedBoolVisibilityConverter}}">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto" />
@@ -427,18 +427,18 @@
                                                     <TextBlock
 										                Grid.Column="1"
 										                VerticalAlignment="Center"
-										                Text="{helpers:ResourceString Name=/FilesResources/InvalidTagNameWarning}" />
+										                Text="{helpers:ResourceString Name=InvalidTagNameWarning}" />
                                                 </Grid>
 
                                                 <Button
 									                x:Name="CancelChangesButton"
 									                Click="CancelRenameTag_Click"
-									                Content="{helpers:ResourceString Name=/FilesResources/Cancel}" />
+									                Content="{helpers:ResourceString Name=Cancel}" />
 
                                                 <Button
 									                x:Name="SaveChangesButton"
 									                Click="CommitRenameTag_Click"
-									                Content="{helpers:ResourceString Name=/FilesResources/Save}"
+									                Content="{helpers:ResourceString Name=Save}"
 									                IsEnabled="{x:Bind CanCommit, Mode=OneWay}"
 									                Style="{StaticResource AccentButtonStyle}" />
                                             </StackPanel>
@@ -457,11 +457,11 @@
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE946;" />
                     </labs:SettingsCard.HeaderIcon>
-                    <Button x:Name="CopyVersionInfo" Content="{helpers:ResourceString Name=/FilesResources/Copy}">
+                    <Button x:Name="CopyVersionInfo" Content="{helpers:ResourceString Name=Copy}">
                         <Button.Flyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Command="{x:Bind ViewModel.AboutViewModel.CopyAppVersionCommand}" Text="{helpers:ResourceString Name=/FilesResources/AppVersion}" />
-                                <MenuFlyoutItem Command="{x:Bind ViewModel.AboutViewModel.CopyWindowsVersionCommand}" Text="{helpers:ResourceString Name=/FilesResources/WindowsVersion}" />
+                                <MenuFlyoutItem Command="{x:Bind ViewModel.AboutViewModel.CopyAppVersionCommand}" Text="{helpers:ResourceString Name=AppVersion}" />
+                                <MenuFlyoutItem Command="{x:Bind ViewModel.AboutViewModel.CopyWindowsVersionCommand}" Text="{helpers:ResourceString Name=WindowsVersion}" />
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>

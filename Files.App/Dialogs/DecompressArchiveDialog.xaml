@@ -6,13 +6,13 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:helpers="using:Files.App.Helpers"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	Title="{helpers:ResourceString Name=/FilesResources/ExtractArchive}"
+	Title="{helpers:ResourceString Name=ExtractArchive}"
 	CornerRadius="{StaticResource OverlayCornerRadius}"
 	DefaultButton="Primary"
 	PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-	PrimaryButtonText="{helpers:ResourceString Name=/FilesResources/Extract}"
+	PrimaryButtonText="{helpers:ResourceString Name=Extract}"
 	RequestedTheme="{x:Bind helpers:ThemeHelper.RootTheme}"
-	SecondaryButtonText="{helpers:ResourceString Name=/FilesResources/Cancel}"
+	SecondaryButtonText="{helpers:ResourceString Name=Cancel}"
 	Style="{StaticResource DefaultContentDialogStyle}"
 	mc:Ignorable="d">
 
@@ -38,7 +38,7 @@
 				<TextBlock
 					Grid.Row="0"
 					Grid.ColumnSpan="2"
-					Text="{helpers:ResourceString Name=/FilesResources/ExtractToPath}" />
+					Text="{helpers:ResourceString Name=ExtractToPath}" />
 
 				<!--  Path Box  -->
 				<TextBox
@@ -54,7 +54,7 @@
 					Grid.Row="1"
 					Grid.Column="1"
 					Command="{x:Bind ViewModel.SelectDestinationCommand}"
-					Content="{helpers:ResourceString Name=/FilesResources/Browse}" />
+					Content="{helpers:ResourceString Name=Browse}" />
 
 			</Grid>
 
@@ -69,13 +69,13 @@
 					x:Name="PasswordHeader"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
-					Text="{helpers:ResourceString Name=/FilesResources/ArchivePassword}" />
+					Text="{helpers:ResourceString Name=ArchivePassword}" />
 
 				<PasswordBox
 					x:Name="Password"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
-					PlaceholderText="{helpers:ResourceString Name=/FilesResources/Password}" />
+					PlaceholderText="{helpers:ResourceString Name=Password}" />
 
 			</StackPanel>
 
@@ -84,7 +84,7 @@
 				x:Name="OpenDestination"
 				Grid.Row="3"
 				x:Load="{x:Bind ViewModel.ShowPathSelection}"
-				Content="{helpers:ResourceString Name=/FilesResources/DecompressArchiveDialogOpenDestinationWhenComplete/Content}"
+				Content="{helpers:ResourceString Name=DecompressArchiveDialogOpenDestinationWhenComplete/Content}"
 				IsChecked="{x:Bind ViewModel.OpenDestinationFolderOnCompletion, Mode=TwoWay}" />
 
 		</StackPanel>

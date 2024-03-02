@@ -14,7 +14,7 @@
 	<Border>
 		<TextBlock
 			x:Name="EmptyText"
-			Text="{helpers:ResourceString Name=/FilesResources/EmptyFolder/Text}"
+			Text="{helpers:ResourceString Name=EmptyFolder/Text}"
 			TextWrapping="Wrap"
 			Visibility="Collapsed" />
 

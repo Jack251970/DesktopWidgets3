@@ -39,7 +39,7 @@
 					FontSize="20"
 					FontWeight="SemiBold"
 					LineHeight="28"
-					Text="{helpers:ResourceString Name=/FilesResources/WhatsNew}" />
+					Text="{helpers:ResourceString Name=WhatsNew}" />
 			</StackPanel>
 
 			<Button
@@ -49,12 +49,12 @@
 				Margin="4"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Top"
-				AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/Close}"
+				AutomationProperties.Name="{helpers:ResourceString Name=Close}"
 				Background="Transparent"
 				BorderBrush="Transparent"
 				Click="CloseDialogButton_Click"
 				ToolTipService.Placement="Bottom"
-				ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/Close}">
+				ToolTipService.ToolTip="{helpers:ResourceString Name=Close}">
 				<FontIcon FontSize="12" Glyph="&#xE8BB;" />
 			</Button>
 		</Grid>
@@ -83,7 +83,7 @@
 			BorderThickness="0,1,0,0">
 			<HyperlinkButton
 				HorizontalAlignment="Left"
-				Content="{helpers:ResourceString Name=/FilesResources/SponsorUsOnGitHub}"
+				Content="{helpers:ResourceString Name=SponsorUsOnGitHub}"
 				NavigateUri="https://github.com/sponsors/yaira2" />
 		</Border>
 	</Grid>

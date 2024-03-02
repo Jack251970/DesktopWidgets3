@@ -21,7 +21,7 @@
 			IsClosable="False"
 			IsIconVisible="True"
 			IsOpen="True"
-			Message="{helpers:ResourceString Name=/FilesResources/RecentFilesDisabledOnWindowsWarning}"
+			Message="{helpers:ResourceString Name=RecentFilesDisabledOnWindowsWarning}"
 			Severity="Warning" />
 
 		<!--  Message when there are no recent files to display  -->
@@ -30,7 +30,7 @@
 			HorizontalAlignment="Stretch"
 			x:Load="{x:Bind IsEmptyRecentsTextVisible, Mode=OneWay}"
 			FontSize="14"
-			Text="{helpers:ResourceString Name=/FilesResources/RecentItemDescription/Text}"
+			Text="{helpers:ResourceString Name=RecentItemDescription/Text}"
 			TextAlignment="Center"
 			TextWrapping="WrapWholeWords" />
 

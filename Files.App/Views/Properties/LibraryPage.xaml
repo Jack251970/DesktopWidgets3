@@ -50,7 +50,7 @@
 				Padding="8,0,0,0"
 				HorizontalAlignment="Left"
 				VerticalAlignment="Center"
-				Text="{helpers:ResourceString Name=/FilesResources/LibraryLocations/Text}"
+				Text="{helpers:ResourceString Name=LibraryLocations/Text}"
 				TextTrimming="CharacterEllipsis" />
 
 			<!--  Commands  -->
@@ -64,18 +64,18 @@
 				<AppBarButton
 					Command="{x:Bind AddLocationCommand}"
 					Icon="Add"
-					Label="{helpers:ResourceString Name=/FilesResources/Add}" />
+					Label="{helpers:ResourceString Name=Add}" />
 				<AppBarButton
 					Command="{x:Bind SetDefaultLocationCommand}"
 					Icon="Accept"
 					IsEnabled="{x:Bind IsNotDefaultFolderSelected, Mode=OneWay}"
-					Label="{helpers:ResourceString Name=/FilesResources/Default}"
-					ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/SetAsDefaultSavePath}" />
+					Label="{helpers:ResourceString Name=Default}"
+					ToolTipService.ToolTip="{helpers:ResourceString Name=SetAsDefaultSavePath}" />
 				<AppBarButton
 					Command="{x:Bind RemoveLocationCommand}"
 					Icon="Delete"
 					IsEnabled="{x:Bind IsNotDefaultFolderSelected, Mode=OneWay}"
-					Label="{helpers:ResourceString Name=/FilesResources/Remove}" />
+					Label="{helpers:ResourceString Name=Remove}" />
 			</CommandBar>
 
 			<!--  (Divider)  -->
@@ -120,7 +120,7 @@
 
 				<ListView.Footer>
 					<TextBlock
-						Text="{helpers:ResourceString Name=/FilesResources/LibraryNoLocations/Text}"
+						Text="{helpers:ResourceString Name=LibraryNoLocations/Text}"
 						TextWrapping="WrapWholeWords"
 						Visibility="{x:Bind IsLibraryEmpty, Mode=OneWay}" />
 				</ListView.Footer>

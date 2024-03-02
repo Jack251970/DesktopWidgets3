@@ -114,9 +114,9 @@
 					Loaded="ConflictOptions_Loaded"
 					SelectedIndex="{x:Bind ConflictResolveOption, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Converter={StaticResource ConflictResolveOptionToIndexConverter}}">
 					<ComboBox.Items>
-						<ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/GenerateNewName}" />
-						<ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/ReplaceExisting}" />
-						<ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/Skip}" />
+						<ComboBoxItem Content="{helpers:ResourceString Name=GenerateNewName}" />
+						<ComboBoxItem Content="{helpers:ResourceString Name=ReplaceExisting}" />
+						<ComboBoxItem Content="{helpers:ResourceString Name=Skip}" />
 					</ComboBox.Items>
 				</ComboBox>
 			</Grid>
@@ -167,7 +167,7 @@
 					Grid.Column="0"
 					HorizontalAlignment="Left"
 					VerticalAlignment="Center"
-					Text="{helpers:ResourceString Name=/FilesResources/ApplyToAllConflictingItems}"
+					Text="{helpers:ResourceString Name=ApplyToAllConflictingItems}"
 					TextWrapping="Wrap" />
 
 				<ComboBox
@@ -177,10 +177,10 @@
 					VerticalAlignment="Center"
 					SelectedIndex="{x:Bind ViewModel.AggregatedResolveOption, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Converter={StaticResource GenericEnumConverter}, ConverterParameter='4-0,0-1,1-2,2-3'}">
 					<ComboBox.Items>
-						<ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/Custom}" />
-						<ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/GenerateNewName}" />
-						<ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/ReplaceExisting}" />
-						<ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/Skip}" />
+						<ComboBoxItem Content="{helpers:ResourceString Name=Custom}" />
+						<ComboBoxItem Content="{helpers:ResourceString Name=GenerateNewName}" />
+						<ComboBoxItem Content="{helpers:ResourceString Name=ReplaceExisting}" />
+						<ComboBoxItem Content="{helpers:ResourceString Name=Skip}" />
 					</ComboBox.Items>
 				</ComboBox>
 
@@ -203,7 +203,7 @@
 			<CheckBox
 				x:Name="chkPermanentlyDelete"
 				x:Load="{x:Bind ViewModel.FileSystemDialogMode.IsInDeleteMode, Mode=OneWay}"
-				Content="{helpers:ResourceString Name=/FilesResources/DeleteItemsDialogPermanentlyDeleteCheckBox/Content}"
+				Content="{helpers:ResourceString Name=DeleteItemsDialogPermanentlyDeleteCheckBox/Content}"
 				IsChecked="{x:Bind ViewModel.DeletePermanently, Mode=TwoWay}"
 				IsEnabled="{x:Bind ViewModel.IsDeletePermanentlyEnabled, Mode=OneWay}" />
 

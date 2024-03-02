@@ -30,7 +30,7 @@
 
 			<!--  Run Troubleshooter  -->
 			<settingsuc:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/RunCompatibilityTroubleShooter}"
+				Title="{helpers:ResourceString Name=RunCompatibilityTroubleShooter}"
 				ButtonCommand="{x:Bind CompatibilityProperties.RunTroubleshooterCommand}"
 				IsClickable="True">
 				<FontIcon
@@ -40,9 +40,9 @@
 			</settingsuc:SettingsBlockControl>
 
 			<!--  Compatibility Mode  -->
-			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/CompatibilityMode}" HorizontalAlignment="Stretch">
+			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=CompatibilityMode}" HorizontalAlignment="Stretch">
 				<ComboBox
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/CompatibilityMode}"
+					AutomationProperties.Name="{helpers:ResourceString Name=CompatibilityMode}"
 					DisplayMemberPath="Name"
 					IsEnabled="{x:Bind CompatibilityProperties.CompatibilityOptions, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
 					ItemsSource="{x:Bind CompatibilityProperties.OSCompatibilityList, Mode=OneWay}"
@@ -50,9 +50,9 @@
 			</settingsuc:SettingsBlockControl>
 
 			<!--  Reduce Color Mode  -->
-			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/ReducedColorMode}" HorizontalAlignment="Stretch">
+			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=ReducedColorMode}" HorizontalAlignment="Stretch">
 				<ComboBox
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/ReducedColorMode}"
+					AutomationProperties.Name="{helpers:ResourceString Name=ReducedColorMode}"
 					DisplayMemberPath="Name"
 					IsEnabled="{x:Bind CompatibilityProperties.CompatibilityOptions, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
 					ItemsSource="{x:Bind CompatibilityProperties.ReducedColorModeList, Mode=OneWay}"
@@ -60,45 +60,45 @@
 			</settingsuc:SettingsBlockControl>
 
 			<!--  Run Low Resolution  -->
-			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/ExecuteAt640X480}" HorizontalAlignment="Stretch">
+			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=ExecuteAt640X480}" HorizontalAlignment="Stretch">
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/ExecuteAt640X480}"
+					AutomationProperties.Name="{helpers:ResourceString Name=ExecuteAt640X480}"
 					IsEnabled="{x:Bind CompatibilityProperties.CompatibilityOptions, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
 					IsOn="{x:Bind CompatibilityProperties.ExecuteAt640X480, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</settingsuc:SettingsBlockControl>
 
 			<!--  Full Screen Optimizations  -->
-			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/DisableFullscreenOptimizations}" HorizontalAlignment="Stretch">
+			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=DisableFullscreenOptimizations}" HorizontalAlignment="Stretch">
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/DisableFullscreenOptimizations}"
+					AutomationProperties.Name="{helpers:ResourceString Name=DisableFullscreenOptimizations}"
 					IsEnabled="{x:Bind CompatibilityProperties.CompatibilityOptions, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
 					IsOn="{x:Bind CompatibilityProperties.DisableMaximized, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</settingsuc:SettingsBlockControl>
 
 			<!--  Run As  -->
-			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/RunAsAdministrator}" HorizontalAlignment="Stretch">
+			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=RunAsAdministrator}" HorizontalAlignment="Stretch">
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/DisableFullscreenOptimizations}"
+					AutomationProperties.Name="{helpers:ResourceString Name=DisableFullscreenOptimizations}"
 					IsEnabled="{x:Bind CompatibilityProperties.CompatibilityOptions, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
 					IsOn="{x:Bind CompatibilityProperties.RunAsAdministrator, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</settingsuc:SettingsBlockControl>
 
 			<!--  Register For Restart  -->
-			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/RegisterForRestart}" HorizontalAlignment="Stretch">
+			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=RegisterForRestart}" HorizontalAlignment="Stretch">
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/RegisterForRestart}"
+					AutomationProperties.Name="{helpers:ResourceString Name=RegisterForRestart}"
 					IsEnabled="{x:Bind CompatibilityProperties.CompatibilityOptions, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
 					IsOn="{x:Bind CompatibilityProperties.RegisterForRestart, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</settingsuc:SettingsBlockControl>
 
 			<!--  Use Main Monitor DPI Settings  -->
-			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/UseMainMonitorDPISettings}" HorizontalAlignment="Stretch">
+			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=UseMainMonitorDPISettings}" HorizontalAlignment="Stretch">
 				<ComboBox
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/UseMainMonitorDPISettings}"
+					AutomationProperties.Name="{helpers:ResourceString Name=UseMainMonitorDPISettings}"
 					DisplayMemberPath="Name"
 					IsEnabled="{x:Bind CompatibilityProperties.CompatibilityOptions, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
 					ItemsSource="{x:Bind CompatibilityProperties.HighDpiOptionList, Mode=OneWay}"
@@ -106,9 +106,9 @@
 			</settingsuc:SettingsBlockControl>
 
 			<!--  Override High DPI Scaling Behavior  -->
-			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/OverrideDPIScalingBehaviour}" HorizontalAlignment="Stretch">
+			<settingsuc:SettingsBlockControl Title="{helpers:ResourceString Name=OverrideDPIScalingBehaviour}" HorizontalAlignment="Stretch">
 				<ComboBox
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/OverrideDPIScalingBehaviour}"
+					AutomationProperties.Name="{helpers:ResourceString Name=OverrideDPIScalingBehaviour}"
 					DisplayMemberPath="Name"
 					IsEnabled="{x:Bind CompatibilityProperties.CompatibilityOptions, Mode=OneWay, Converter={StaticResource NullToFalseConverter}}"
 					ItemsSource="{x:Bind CompatibilityProperties.HighDpiOverrideList, Mode=OneWay}"

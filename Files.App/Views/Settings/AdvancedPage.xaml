@@ -43,11 +43,11 @@
 				Padding="0,0,0,12"
 				FontSize="24"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/Advanced}" />
+				Text="{helpers:ResourceString Name=Advanced}" />
 
 			<!--  Export  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/ExportSettings}"
+				Title="{helpers:ResourceString Name=ExportSettings}"
 				ButtonCommand="{x:Bind ViewModel.ExportSettingsCommand}"
 				IsClickable="True">
 				<local:SettingsBlockControl.Icon>
@@ -61,7 +61,7 @@
 
 			<!--  Import  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/ImportSettings}"
+				Title="{helpers:ResourceString Name=ImportSettings}"
 				ButtonCommand="{x:Bind ViewModel.ImportSettingsCommand}"
 				IsClickable="True">
 				<local:SettingsBlockControl.Icon>
@@ -75,7 +75,7 @@
 
 			<!--  Edit Settings File  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/EditSettingsFile}"
+				Title="{helpers:ResourceString Name=EditSettingsFile}"
 				ButtonCommand="{x:Bind ViewModel.OpenSettingsJsonCommand}"
 				IsClickable="True">
 				<local:SettingsBlockControl.Icon>
@@ -96,16 +96,16 @@
 					IsClosable="False"
 					IsIconVisible="True"
 					IsOpen="True"
-					Message="{helpers:ResourceString Name=/FilesResources/OpenOnStartupDisabled}"
+					Message="{helpers:ResourceString Name=OpenOnStartupDisabled}"
 					Severity="Warning" />
 
 				<!--  Setting block  -->
-				<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/SettingsOpenInLogin}" HorizontalAlignment="Stretch">
+				<local:SettingsBlockControl Title="{helpers:ResourceString Name=SettingsOpenInLogin}" HorizontalAlignment="Stretch">
 					<local:SettingsBlockControl.Icon>
 						<FontIcon Glyph="&#xE7E8;" />
 					</local:SettingsBlockControl.Icon>
 					<ToggleSwitch
-						AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/SettingsOpenInLogin}"
+						AutomationProperties.Name="{helpers:ResourceString Name=SettingsOpenInLogin}"
 						IsEnabled="{x:Bind ViewModel.CanOpenOnWindowsStartup, Mode=OneWay}"
 						IsOn="{x:Bind ViewModel.OpenOnWindowsStartup, Mode=TwoWay}"
 						Style="{StaticResource RightAlignedToggleSwitchStyle}">
@@ -119,12 +119,12 @@
 			</StackPanel>
 
 			<!--  Leave App Running  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/SettingsLeaveAppRunning}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=SettingsLeaveAppRunning}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE8E6;" />
 				</local:SettingsBlockControl.Icon>
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/SettingsLeaveAppRunning}"
+					AutomationProperties.Name="{helpers:ResourceString Name=SettingsLeaveAppRunning}"
 					IsOn="{x:Bind ViewModel.LeaveAppRunning, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</local:SettingsBlockControl>
@@ -134,20 +134,20 @@
 				Padding="0,16,0,4"
 				FontSize="16"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/ExperimentalFeatureFlags}" />
+				Text="{helpers:ResourceString Name=ExperimentalFeatureFlags}" />
 
 			<!--  Replace File Explorer  -->
 			<local:SettingsBlockControl
 				x:Name="SetAsDefaultSettingsBlockControl"
-				Title="{helpers:ResourceString Name=/FilesResources/SettingsSetAsDefaultFileManager}"
+				Title="{helpers:ResourceString Name=SettingsSetAsDefaultFileManager}"
 				HorizontalAlignment="Stretch"
-				Description="{helpers:ResourceString Name=/FilesResources/SettingsSetAsDefaultFileManagerDescription}"
+				Description="{helpers:ResourceString Name=SettingsSetAsDefaultFileManagerDescription}"
 				IsExpanded="True">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xEC50;" />
 				</local:SettingsBlockControl.Icon>
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/SettingsSetAsDefaultFileManager}"
+					AutomationProperties.Name="{helpers:ResourceString Name=SettingsSetAsDefaultFileManager}"
 					IsOn="{x:Bind ViewModel.IsSetAsDefaultFileManager, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}">
 					<i:Interaction.Behaviors>
@@ -161,7 +161,7 @@
 			<!--  Replace Open File Dialog  -->
 			<local:SettingsBlockControl
 				x:Name="ReplaceOpenFileDialogSetting"
-				Title="{helpers:ResourceString Name=/FilesResources/SettingsSetAsOpenDialog}"
+				Title="{helpers:ResourceString Name=SettingsSetAsOpenDialog}"
 				HorizontalAlignment="Stretch"
 				x:Load="False">
 				<local:SettingsBlockControl.Icon>

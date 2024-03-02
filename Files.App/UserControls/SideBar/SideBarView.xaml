@@ -118,7 +118,7 @@
 			Visibility="{Binding ElementName=PaneRoot, Path=Visibility, Mode=OneWay}">
 			<UserControl
 				x:Name="SidebarResizerControl"
-				AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/ResizeElementControl/AutomationProperties/Name}"
+				AutomationProperties.Name="{helpers:ResourceString Name=ResizeElementControl/AutomationProperties/Name}"
 				IsTabStop="True"
 				KeyDown="SidebarResizerControl_KeyDown"
 				UseSystemFocusVisuals="True" />

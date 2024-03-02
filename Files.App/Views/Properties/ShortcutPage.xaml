@@ -50,7 +50,7 @@
 					Grid.Column="0"
 					VerticalAlignment="Center"
 					Style="{StaticResource PropertyName}"
-					Text="{helpers:ResourceString Name=/FilesResources/PropertiesShortcutItemType/Text}"
+					Text="{helpers:ResourceString Name=PropertiesShortcutItemType/Text}"
 					Visibility="Visible" />
 
 				<TextBlock
@@ -66,7 +66,7 @@
 					Grid.Column="0"
 					VerticalAlignment="Center"
 					Style="{StaticResource PropertyName}"
-					Text="{helpers:ResourceString Name=/FilesResources/PropertiesShortcutItemPath/Text}"
+					Text="{helpers:ResourceString Name=PropertiesShortcutItemPath/Text}"
 					Visibility="Visible" />
 
 				<TextBox
@@ -109,7 +109,7 @@
 					VerticalAlignment="Center"
 					x:Load="{x:Bind ViewModel.ShortcutItemArgumentsVisibility, Mode=OneWay}"
 					Style="{StaticResource PropertyName}"
-					Text="{helpers:ResourceString Name=/FilesResources/PropertiesShortcutItemArgs/Text}" />
+					Text="{helpers:ResourceString Name=PropertiesShortcutItemArgs/Text}" />
 
 				<TextBox
 					x:Name="shortcutItemArgsValue"
@@ -126,7 +126,7 @@
 					VerticalAlignment="Center"
 					x:Load="{x:Bind ViewModel.ShortcutItemWorkingDirVisibility, Mode=OneWay}"
 					Style="{StaticResource PropertyName}"
-					Text="{helpers:ResourceString Name=/FilesResources/ShortcutItemWorkingDir}" />
+					Text="{helpers:ResourceString Name=ShortcutItemWorkingDir}" />
 
 				<TextBox
 					x:Name="shortcutItemWorkingDirValue"
@@ -139,18 +139,18 @@
 
 			<settingsuc:SettingsBlockControl
 				x:Name="RunAsAdminCheckbox"
-				Title="{helpers:ResourceString Name=/FilesResources/RunAsAdministrator}"
+				Title="{helpers:ResourceString Name=RunAsAdministrator}"
 				HorizontalAlignment="Stretch"
 				x:Load="{x:Bind ViewModel.RunAsAdminEnabled, Mode=OneWay}">
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/RunAsAdministrator}"
+					AutomationProperties.Name="{helpers:ResourceString Name=RunAsAdministrator}"
 					IsOn="{x:Bind ViewModel.RunAsAdmin, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</settingsuc:SettingsBlockControl>
 
 			<settingsuc:SettingsBlockControl
 				x:Name="OpenFileLocation"
-				Title="{helpers:ResourceString Name=/FilesResources/OpenFileLocation}"
+				Title="{helpers:ResourceString Name=OpenFileLocation}"
 				Grid.Row="2"
 				Grid.Column="0"
 				x:Load="{x:Bind ViewModel.IsSelectedItemShortcut, Mode=OneWay}"

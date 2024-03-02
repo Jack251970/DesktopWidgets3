@@ -37,17 +37,17 @@
 				Padding="0,0,0,12"
 				FontSize="24"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/General}" />
+				Text="{helpers:ResourceString Name=General}" />
 
 			<!--  Language settings  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/Language}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=Language}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xF2B7;" />
 				</local:SettingsBlockControl.Icon>
 				<ComboBox
 					x:Name="AppLanguagesComboBox"
 					HorizontalAlignment="Left"
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/Language}"
+					AutomationProperties.Name="{helpers:ResourceString Name=Language}"
 					ItemsSource="{x:Bind ViewModel.AppLanguages}"
 					SelectedIndex="{x:Bind ViewModel.SelectedAppLanguageIndex, Mode=TwoWay}">
 					<ComboBox.ItemTemplate>
@@ -60,7 +60,7 @@
 
 			<!--  Date settings  -->
 			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=/FilesResources/DateFormat}"
+				Title="{helpers:ResourceString Name=DateFormat}"
 				HorizontalAlignment="Stretch"
 				Description="{x:Bind ViewModel.DateFormatSample}">
 				<local:SettingsBlockControl.Icon>
@@ -69,7 +69,7 @@
 				<ComboBox
 					x:Name="DateFormatChooser"
 					Grid.Column="1"
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/DateFormat}"
+					AutomationProperties.Name="{helpers:ResourceString Name=DateFormat}"
 					ItemsSource="{x:Bind ViewModel.DateFormats}"
 					SelectedIndex="{x:Bind ViewModel.SelectedDateTimeFormatIndex, Mode=TwoWay}">
 					<ComboBox.ItemTemplate>
@@ -93,29 +93,29 @@
 			</local:SettingsBlockControl>
 
 			<!--  Search settings  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/SettingsSearchUnindexedItems}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=SettingsSearchUnindexedItems}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE721;" />
 				</local:SettingsBlockControl.Icon>
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/SettingsSearchUnindexedItems}"
+					AutomationProperties.Name="{helpers:ResourceString Name=SettingsSearchUnindexedItems}"
 					IsOn="{x:Bind ViewModel.SearchUnindexedItems, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</local:SettingsBlockControl>
 
 			<!--  Startup settings  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/StartupSettings}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=StartupSettings}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE7E8;" />
 				</local:SettingsBlockControl.Icon>
-				<ComboBox AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/StartupSettings}" SelectedIndex="{x:Bind ViewModel.SelectedStartupSettingIndex, Mode=OneWay}">
-					<ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/SettingsOnStartupOpenANewTab/Content}" IsSelected="{x:Bind ViewModel.OpenNewTabPageOnStartup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				<ComboBox AutomationProperties.Name="{helpers:ResourceString Name=StartupSettings}" SelectedIndex="{x:Bind ViewModel.SelectedStartupSettingIndex, Mode=OneWay}">
+					<ComboBoxItem Content="{helpers:ResourceString Name=SettingsOnStartupOpenANewTab/Content}" IsSelected="{x:Bind ViewModel.OpenNewTabPageOnStartup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-					<ComboBoxItem Content="{helpers:ResourceString Name=/FilesResources/SettingsOnStartupContinueWhereYouLeftOff/Content}" IsSelected="{x:Bind ViewModel.ContinueLastSessionOnStartUp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<ComboBoxItem Content="{helpers:ResourceString Name=SettingsOnStartupContinueWhereYouLeftOff/Content}" IsSelected="{x:Bind ViewModel.ContinueLastSessionOnStartUp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
 					<ComboBoxItem
 						x:Name="OpenSpecificPage"
-						Content="{helpers:ResourceString Name=/FilesResources/SettingsOnStartupOpenASpecificPage/Content}"
+						Content="{helpers:ResourceString Name=SettingsOnStartupOpenASpecificPage/Content}"
 						IsSelected="{x:Bind ViewModel.OpenASpecificPageOnStartup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				</ComboBox>
 				<local:SettingsBlockControl.ExpandableContent>
@@ -135,8 +135,8 @@
 										<MenuFlyoutItem
 											Command="{x:Bind ViewModel.AddPageCommand}"
 											CommandParameter="Home"
-											Text="{helpers:ResourceString Name=/FilesResources/Home}" />
-										<MenuFlyoutItem Command="{x:Bind ViewModel.AddPageCommand}" Text="{helpers:ResourceString Name=/FilesResources/Browse}" />
+											Text="{helpers:ResourceString Name=Home}" />
+										<MenuFlyoutItem Command="{x:Bind ViewModel.AddPageCommand}" Text="{helpers:ResourceString Name=Browse}" />
 									</MenuFlyout>
 								</Button.Flyout>
 								<StackPanel Orientation="Horizontal" Spacing="8">
@@ -144,7 +144,7 @@
 										VerticalAlignment="Center"
 										FontSize="14"
 										Glyph="&#xE710;" />
-									<TextBlock VerticalAlignment="Center" Text="{helpers:ResourceString Name=/FilesResources/AddPage}" />
+									<TextBlock VerticalAlignment="Center" Text="{helpers:ResourceString Name=AddPage}" />
 								</StackPanel>
 							</Button>
 
@@ -179,9 +179,9 @@
 												ToolTipService.ToolTip="{x:Bind Text}" />
 											<Button
 												HorizontalAlignment="Right"
-												AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/Remove}"
+												AutomationProperties.Name="{helpers:ResourceString Name=Remove}"
 												Click="RemoveStartupPage"
-												ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/Remove}">
+												ToolTipService.ToolTip="{helpers:ResourceString Name=Remove}">
 												<FontIcon FontSize="16" Glyph="&#xE74D;" />
 											</Button>
 										</Grid>
@@ -190,9 +190,9 @@
 							</ListView>
 						</Grid>
 
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/OpenTabInExistingInstance}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=OpenTabInExistingInstance}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/OpenTabInExistingInstance}"
+								AutomationProperties.Name="{helpers:ResourceString Name=OpenTabInExistingInstance}"
 								IsOn="{x:Bind ViewModel.OpenTabInExistingInstance, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
@@ -200,46 +200,46 @@
 				</local:SettingsBlockControl.ExpandableContent>
 			</local:SettingsBlockControl>
 
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/SettingsMultitaskingAlwaysOpenDualPane}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=SettingsMultitaskingAlwaysOpenDualPane}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE89F;" />
 				</local:SettingsBlockControl.Icon>
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/SettingsMultitaskingAlwaysOpenDualPane}"
+					AutomationProperties.Name="{helpers:ResourceString Name=SettingsMultitaskingAlwaysOpenDualPane}"
 					IsOn="{x:Bind ViewModel.AlwaysOpenDualPaneInNewTab, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</local:SettingsBlockControl>
 
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/Widgets}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=Widgets}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xF246;" />
 				</local:SettingsBlockControl.Icon>
 				<local:SettingsBlockControl.ExpandableContent>
 					<StackPanel>
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/QuickAccess}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=QuickAccess}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/QuickAccess}"
+								AutomationProperties.Name="{helpers:ResourceString Name=QuickAccess}"
 								IsOn="{x:Bind ViewModel.ShowQuickAccessWidget, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
 
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/Drives}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=Drives}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/Drives}"
+								AutomationProperties.Name="{helpers:ResourceString Name=Drives}"
 								IsOn="{x:Bind ViewModel.ShowDrivesWidget, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
 
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/FileTags}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=FileTags}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/FileTags}"
+								AutomationProperties.Name="{helpers:ResourceString Name=FileTags}"
 								IsOn="{x:Bind ViewModel.ShowFileTagsWidget, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
 
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/RecentFiles}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=RecentFiles}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/RecentFiles}"
+								AutomationProperties.Name="{helpers:ResourceString Name=RecentFiles}"
 								IsOn="{x:Bind ViewModel.ShowRecentFilesWidget, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
@@ -253,51 +253,51 @@
 				Padding="0,16,0,4"
 				FontSize="16"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/SettingsContextMenu/Text}" />
+				Text="{helpers:ResourceString Name=SettingsContextMenu/Text}" />
 
 			<!--  Context menu options  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/ContextMenuOptions}">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=ContextMenuOptions}">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE74C;" />
 				</local:SettingsBlockControl.Icon>
 				<local:SettingsBlockControl.ExpandableContent>
 					<StackPanel>
 						<!--  Open in new tab  -->
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/ShowOpenInNewTab}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowOpenInNewTab}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/ShowOpenInNewTab}"
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowOpenInNewTab}"
 								IsOn="{x:Bind ViewModel.ShowOpenInNewTab, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
 
 						<!--  Open in new window  -->
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/ShowOpenInNewWindow}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowOpenInNewWindow}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/ShowOpenInNewWindow}"
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowOpenInNewWindow}"
 								IsOn="{x:Bind ViewModel.ShowOpenInNewWindow, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
 
 						<!--  Open in new pane  -->
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/ShowOpenInNewPane}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowOpenInNewPane}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/ShowOpenInNewPane}"
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowOpenInNewPane}"
 								IsOn="{x:Bind ViewModel.ShowOpenInNewPane, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
 
 						<!--  Edit tags  -->
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/ShowEditTagsMenu}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowEditTagsMenu}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/ShowEditTagsMenu}"
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowEditTagsMenu}"
 								IsOn="{x:Bind ViewModel.ShowEditTagsMenu, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
 
 						<!--  Send To  -->
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/ShowSendToMenu}" HorizontalAlignment="Stretch">
+						<local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowSendToMenu}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/ShowSendToMenu}"
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowSendToMenu}"
 								IsOn="{x:Bind ViewModel.ShowSendToMenu, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
@@ -307,12 +307,12 @@
 
 
 			<!--  Overflow Options  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=/FilesResources/SettingsContextMenuOverflow}" HorizontalAlignment="Stretch">
+			<local:SettingsBlockControl Title="{helpers:ResourceString Name=SettingsContextMenuOverflow}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE712;" />
 				</local:SettingsBlockControl.Icon>
 				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/SettingsContextMenuOverflow}"
+					AutomationProperties.Name="{helpers:ResourceString Name=SettingsContextMenuOverflow}"
 					IsOn="{x:Bind ViewModel.MoveShellExtensionsToSubMenu, Mode=TwoWay}"
 					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 			</local:SettingsBlockControl>
@@ -322,7 +322,7 @@
 		<TeachingTip
 			IsLightDismissEnabled="True"
 			IsOpen="{x:Bind ViewModel.ShowRestartControl, Mode=TwoWay}"
-			Subtitle="{helpers:ResourceString Name=/FilesResources/RestartNotificationText/Text}"
+			Subtitle="{helpers:ResourceString Name=RestartNotificationText/Text}"
 			Target="{x:Bind AppLanguagesComboBox}">
 			<StackPanel
 				x:Name="ButtonsStackPanel"
@@ -335,14 +335,14 @@
 					x:Name="YesButton"
 					MinWidth="140"
 					Command="{x:Bind ViewModel.RestartCommand, Mode=OneWay}"
-					Content="{helpers:ResourceString Name=/FilesResources/Yes}"
+					Content="{helpers:ResourceString Name=Yes}"
 					Style="{ThemeResource AccentButtonStyle}" />
 
 				<Button
 					x:Name="NoButton"
 					MinWidth="140"
 					Command="{x:Bind ViewModel.CancelRestartCommand, Mode=OneWay}"
-					Content="{helpers:ResourceString Name=/FilesResources/No}" />
+					Content="{helpers:ResourceString Name=No}" />
 			</StackPanel>
 		</TeachingTip>
 	</Grid>

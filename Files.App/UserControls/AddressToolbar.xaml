@@ -289,7 +289,7 @@
 				ItemsSource="{x:Bind ViewModel.NavigationBarSuggestions, Mode=OneWay}"
 				Loaded="VisiblePath_Loaded"
 				LostFocus="VisiblePath_LostFocus"
-				PlaceholderText="{helpers:ResourceString Name=/FilesResources/NavigationToolbarVisiblePath/PlaceholderText}"
+				PlaceholderText="{helpers:ResourceString Name=NavigationToolbarVisiblePath/PlaceholderText}"
 				PreviewKeyDown="VisiblePath_KeyDown"
 				QuerySubmitted="VisiblePath_QuerySubmitted"
 				ScrollViewer.HorizontalScrollBarVisibility="Auto"
@@ -404,9 +404,9 @@
 					x:Name="ShowStatusCenterButton"
 					Padding="0"
 					AccessKey="T"
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/StatusCenter}"
+					AutomationProperties.Name="{helpers:ResourceString Name=StatusCenter}"
 					Style="{StaticResource AddressToolbarButtonStyle}"
-					ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/StatusCenter}"
+					ToolTipService.ToolTip="{helpers:ResourceString Name=StatusCenter}"
 					Visibility="{x:Bind OngoingTasksViewModel.HasAnyItem, Mode=OneWay}">
 
 					<Grid Margin="-16">
@@ -439,7 +439,7 @@
 					<Button.Flyout>
 						<Flyout
 							contract8Present:ShouldConstrainToRootBounds="False"
-							AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/StatusCenter}"
+							AutomationProperties.Name="{helpers:ResourceString Name=StatusCenter}"
 							Placement="BottomEdgeAlignedRight">
 							<Flyout.FlyoutPresenterStyle>
 								<Style TargetType="FlyoutPresenter">
@@ -467,11 +467,11 @@
 					VerticalContentAlignment="Stretch"
 					x:Load="{x:Bind ViewModel.IsUpdateAvailable, Mode=OneWay}"
 					AccessKey="1"
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/UpdateFiles}"
+					AutomationProperties.Name="{helpers:ResourceString Name=UpdateFiles}"
 					Command="{x:Bind ViewModel.UpdateCommand, Mode=OneWay}"
 					IsEnabled="{x:Bind ViewModel.IsUpdating, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
 					Style="{StaticResource AddressToolbarButtonStyle}"
-					ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/UpdateFiles}">
+					ToolTipService.ToolTip="{helpers:ResourceString Name=UpdateFiles}">
 					<Grid>
 						<!--  Icon  -->
 						<FontIcon
@@ -498,10 +498,10 @@
 					VerticalContentAlignment="Stretch"
 					x:Load="{x:Bind ViewModel.IsReleaseNotesVisible, Mode=OneWay}"
 					AccessKey="2"
-					AutomationProperties.Name="{helpers:ResourceString Name=/FilesResources/WhatsNew}"
+					AutomationProperties.Name="{helpers:ResourceString Name=WhatsNew}"
 					Command="{x:Bind ViewModel.ViewReleaseNotesAsyncCommand, Mode=OneWay}"
 					Style="{StaticResource AddressToolbarButtonStyle}"
-					ToolTipService.ToolTip="{helpers:ResourceString Name=/FilesResources/WhatsNew}">
+					ToolTipService.ToolTip="{helpers:ResourceString Name=WhatsNew}">
 					<FontIcon
 						FontSize="14"
 						Foreground="{ThemeResource SystemAccentColor}"
@@ -534,9 +534,9 @@
 			<!--  Status Center TeachingTip  -->
 			<TeachingTip
 				x:Name="StatusCenterTeachingTip"
-				Title="{helpers:ResourceString Name=/FilesResources/OngoingTasksTeachingTip/Title}"
+				Title="{helpers:ResourceString Name=OngoingTasksTeachingTip/Title}"
 				IsOpen="False"
-				Subtitle="{helpers:ResourceString Name=/FilesResources/OngoingTasksTeachingTip/Subtitle}"
+				Subtitle="{helpers:ResourceString Name=OngoingTasksTeachingTip/Subtitle}"
 				Target="{x:Bind ShowStatusCenterButton}" />
 		</Grid>
 

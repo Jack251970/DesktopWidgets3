@@ -43,30 +43,30 @@
 				Padding="0,0,0,12"
 				FontSize="24"
 				FontWeight="Medium"
-				Text="{helpers:ResourceString Name=/FilesResources/Git}" />
+				Text="{helpers:ResourceString Name=Git}" />
 
 			<!--  Connect to GitHub  -->
 			<local:SettingsBlockControl
 				x:Name="ConnectToGitHubSection"
-				Title="{helpers:ResourceString Name=/FilesResources/ConnectToGitHub}"
+				Title="{helpers:ResourceString Name=ConnectToGitHub}"
 				HorizontalAlignment="Stretch"
 				x:Load="{x:Bind ViewModel.IsLogoutEnabled, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xF0B9;" />
 				</local:SettingsBlockControl.Icon>
-				<Button Command="{x:Bind ViewModel.ConnectToGitHubCommand}" Content="{helpers:ResourceString Name=/FilesResources/Login}" />
+				<Button Command="{x:Bind ViewModel.ConnectToGitHubCommand}" Content="{helpers:ResourceString Name=Login}" />
 			</local:SettingsBlockControl>
 
 			<!--  Remove credentials  -->
 			<local:SettingsBlockControl
 				x:Name="RemoveCredentialsSection"
-				Title="{helpers:ResourceString Name=/FilesResources/ConnectedToGitHub}"
+				Title="{helpers:ResourceString Name=ConnectedToGitHub}"
 				HorizontalAlignment="Stretch"
 				x:Load="{x:Bind ViewModel.IsLogoutEnabled, Mode=OneWay}">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xF0B9;" />
 				</local:SettingsBlockControl.Icon>
-				<Button Command="{x:Bind ViewModel.RemoveCredentialsCommand}" Content="{helpers:ResourceString Name=/FilesResources/Logout}" />
+				<Button Command="{x:Bind ViewModel.RemoveCredentialsCommand}" Content="{helpers:ResourceString Name=Logout}" />
 			</local:SettingsBlockControl>
 		</StackPanel>
 	</Grid>
