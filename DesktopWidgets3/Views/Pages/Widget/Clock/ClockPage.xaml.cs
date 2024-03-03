@@ -1,7 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-using Microsoft.UI.Xaml.Input;
-
 namespace DesktopWidgets3.Views.Pages.Widgets;
 
 public sealed partial class ClockPage : Page

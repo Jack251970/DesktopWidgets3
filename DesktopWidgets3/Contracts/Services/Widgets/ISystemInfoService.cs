@@ -14,7 +14,13 @@ public interface ISystemInfoService
 
     (string CpuLoad, string CpuTempreture) GetCpuInfo(bool useCelsius);
 
+    (string CpuLoad, string CpuTempreture) GetInitCpuInfo(bool useCelsius);
+
     (string GpuLoad, string GpuTempreture) GetGpuInfo(bool useCelsius);
 
-    public (string MemoryLoad, string MemoryUsedInfo) GetMemoryInfo();
+    (string GpuLoad, string GpuTempreture) GetInitGpuInfo(bool useCelsius);
+
+    (string MemoryLoad, string MemoryUsedInfo) GetMemoryInfo();
+
+    (string MemoryLoad, string MemoryUsedInfo) GetInitMemoryInfo();
 }

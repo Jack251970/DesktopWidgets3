@@ -99,9 +99,12 @@ public class NetworkWidgetSettings : BaseWidgetSettings
 
 public class PerformanceWidgetSettings : BaseWidgetSettings
 {
+    public bool UseCelsius { get; set; } = true;
+
     public override BaseWidgetSettings Clone()
     {
         var clone = (PerformanceWidgetSettings)base.Clone();
+        clone.UseCelsius = UseCelsius;
         return clone;
     }
 }

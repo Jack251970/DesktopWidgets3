@@ -53,6 +53,7 @@ internal class TimersService : ITimersService
             {
                 WidgetType.Clock => new Timer(1000),
                 WidgetType.Network => new Timer(1000),
+                WidgetType.Performance => new Timer(1000),
                 _ => null,
             };
             if (timer != null)

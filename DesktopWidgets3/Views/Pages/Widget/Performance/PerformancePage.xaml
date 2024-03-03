@@ -14,10 +14,27 @@
     <Grid
         x:Name="ContentArea"
         Background="Transparent">
-        <TextBlock 
-            Text="Performance"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Style="{ThemeResource PageTitleStyle}" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                Text="{x:Bind ViewModel.CpuInfo, Mode=OneWay}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center" />
+            <TextBlock
+                Grid.Column="1"
+                Text="{x:Bind ViewModel.GpuInfo, Mode=OneWay}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center" />
+            <TextBlock
+                Grid.Column="2"
+                Text="{x:Bind ViewModel.MemoryInfo, Mode=OneWay}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center" />
+        </Grid>
     </Grid>
 </Page>

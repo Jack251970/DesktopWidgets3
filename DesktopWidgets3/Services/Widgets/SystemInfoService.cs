@@ -167,13 +167,23 @@ internal class SystemInfoService : ISystemInfoService
         }
     }
 
-    private static string FormatPercentage(float percentage)
+    private static string FormatPercentage(float? percentage)
     {
+        if (percentage == null)
+        {
+            return string.Empty;
+        }
+
         return $"{percentage:F2} %";
     }
 
-    private static string FormatTemperature(float temperature, bool useCelsius)
+    private static string FormatTemperature(float? temperature, bool useCelsius)
     {
+        if (temperature is null)
+        {
+            return string.Empty;
+        }
+
         if (useCelsius)
         {
             return $"{temperature:F2} °C";
@@ -185,11 +195,17 @@ internal class SystemInfoService : ISystemInfoService
         }
     }
 
-    private static string FormatMemoryUsedInfo(float used, float total)
+    private static string FormatMemoryUsedInfo(float? used, float? available)
     {
+        if (used is null || available is null)
+        {
+            return string.Empty;
+        }
+
         const ulong kilo = 1024;
 
-        if (total < 1)
+        var total = used + available;
+        if (total < 1 && total > 1 / 1024)
         {
             return $"{used * kilo:F2} / {total * kilo:F2} MB";
 
@@ -209,21 +225,36 @@ internal class SystemInfoService : ISystemInfoService
     {
         var (cpuLoad, cpuTemperature) = hardwareMonitor.GetCpuInfo();
 
-        return (FormatPercentage(cpuLoad ?? 0), FormatTemperature(cpuTemperature ?? 0, useCelsius));
+        return (FormatPercentage(cpuLoad), FormatTemperature(cpuTemperature, useCelsius));
+    }
+
+    public (string CpuLoad, string CpuTempreture) GetInitCpuInfo(bool useCelsius)
+    {
+        return (FormatPercentage(0), FormatTemperature(0, useCelsius));
     }
 
     public (string GpuLoad, string GpuTempreture) GetGpuInfo(bool useCelsius)
     {
         var (_, gpuLoad, gpuTemperature) = hardwareMonitor.GetGpuInfo();
 
-        return (FormatPercentage(gpuLoad ?? 0), FormatTemperature(gpuTemperature ?? 0, useCelsius));
+        return (FormatPercentage(gpuLoad), FormatTemperature(gpuTemperature, useCelsius));
+    }
+
+    public (string GpuLoad, string GpuTempreture) GetInitGpuInfo(bool useCelsius)
+    {
+        return (FormatPercentage(0), FormatTemperature(0, useCelsius));
     }
 
     public (string MemoryLoad, string MemoryUsedInfo) GetMemoryInfo()
     {
         var (memoryLoad, memoryUsed, memoryAvailable) = hardwareMonitor.GetMemoryInfo();
 
-        return (FormatPercentage(memoryLoad ?? 0), FormatMemoryUsedInfo(memoryUsed ?? 0, memoryUsed ?? 0 + memoryAvailable ?? 0));
+        return (FormatPercentage(memoryLoad), FormatMemoryUsedInfo(memoryUsed, memoryAvailable));
+    }
+
+    public (string MemoryLoad, string MemoryUsedInfo) GetInitMemoryInfo()
+    {
+        return (FormatPercentage(0), FormatMemoryUsedInfo(0, 0));
     }
 
     #endregion
