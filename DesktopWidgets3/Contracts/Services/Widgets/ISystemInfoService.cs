@@ -11,4 +11,10 @@ public interface ISystemInfoService
     (string UploadSpeed, string DownloadSpeed) GetNetworkSpeed(bool showBps);
 
     (string UploadSpeed, string DownloadSpeed) GetInitNetworkSpeed(bool showBps);
+
+    (string CpuLoad, string CpuTempreture) GetCpuInfo(bool useCelsius);
+
+    (string GpuLoad, string GpuTempreture) GetGpuInfo(bool useCelsius);
+
+    public (string MemoryLoad, string MemoryUsedInfo) GetMemoryInfo();
 }

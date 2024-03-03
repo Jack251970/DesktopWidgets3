@@ -95,7 +95,7 @@ public class HardwareMonitor
     /// <summary>
     /// Get gpu infomation.
     /// </summary>
-    public (HardwareType? GpuType, float? GpuLoad, float? GpuTemperature) GetGPUInfo()
+    public (HardwareType? GpuType, float? GpuLoad, float? GpuTemperature) GetGpuInfo()
     {
         HardwareType? gpuType = null;
         float? gpuLoad = null;
