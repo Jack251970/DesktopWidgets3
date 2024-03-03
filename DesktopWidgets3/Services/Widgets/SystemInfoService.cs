@@ -59,8 +59,14 @@ internal class SystemInfoService : ISystemInfoService
         }
     }
 
-    private void SetMonitorTimer(bool enabled)
+    private void SetMonitorTimer(bool lastIsMonitorOpen, bool enabled)
     {
+        // Check if need to change monitor status
+        if (lastIsMonitorOpen == IsMonitorOpen)
+        {
+            return;
+        }
+
         if (enabled)
         {
             hardwareMonitor.Open();
@@ -70,12 +76,9 @@ internal class SystemInfoService : ISystemInfoService
         }
         else
         {
-            if (!IsMonitorOpen)
-            {
-                hardwareMonitor.Close();
-                sampleTimer.Stop();
-                sampleTimer.Elapsed -= UpdateMonitor;
-            }
+            hardwareMonitor.Close();
+            sampleTimer.Stop();
+            sampleTimer.Elapsed -= UpdateMonitor;
         }
     }
     
@@ -93,10 +96,12 @@ internal class SystemInfoService : ISystemInfoService
     {
         if (enabled != _isNetworkMonitorOpen)
         {
+            var lastMonitorEnabled = IsMonitorOpen;
+
             _isNetworkMonitorOpen = enabled;
             hardwareMonitor.NetworkEnabled = enabled;
 
-            SetMonitorTimer(enabled);
+            SetMonitorTimer(lastMonitorEnabled, enabled);
         }
     }
 
@@ -151,12 +156,14 @@ internal class SystemInfoService : ISystemInfoService
     {
         if (enabled != _isCpuGpuMemoryMonitorOpen)
         {
+            var lastMonitorEnabled = IsMonitorOpen;
+
             _isCpuGpuMemoryMonitorOpen = enabled;
             hardwareMonitor.CpuEnabled = enabled;
             hardwareMonitor.GpuEnabled = enabled;
             hardwareMonitor.MemoryEnabled = enabled;
 
-            SetMonitorTimer(enabled);
+            SetMonitorTimer(lastMonitorEnabled, enabled);
         }
     }
 
