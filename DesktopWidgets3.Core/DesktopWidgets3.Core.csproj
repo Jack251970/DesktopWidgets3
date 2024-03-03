@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  
   <PropertyGroup>
     <TargetFramework>net7.0-windows10.0.22621.0</TargetFramework>
     <RootNamespace>DesktopWidgets3.Core</RootNamespace>
@@ -8,6 +9,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  
   <ItemGroup>
     <None Remove="Views\Windows\BlankWindow.xaml" />
   </ItemGroup>
@@ -24,4 +26,5 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
+  
 </Project>

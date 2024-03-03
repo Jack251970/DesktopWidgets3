@@ -1,4 +1,6 @@
-﻿using Timer = System.Timers.Timer;
+﻿using HardwareInfo.Helpers;
+
+using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Services.Widgets;
 
@@ -7,6 +9,7 @@ internal class SystemInfoService : ISystemInfoService
     private readonly IAppSettingsService _appSettingsService;
 
     private readonly HardwareMonitor hardwareMonitor = new();
+
     private readonly Timer sampleTimer = new();
 
     private bool IsMonitorOpen => _isNetworkMonitorOpen;
