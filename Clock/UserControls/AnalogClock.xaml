@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Clock.UserControls.AnalogClock"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Clock.UserControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    mc:Ignorable="d">
+
+    <Grid>
+        <!-- Hour -->
+        <controls:RadialGauge
+            Value="{x:Bind HourValue, Mode=OneWay}"
+            Minimum="0"
+            Maximum="216000"
+    
+            NeedleWidth="5"
+            NeedleLength="40"
+    
+            IsInteractive="False"
+            StepSize="1"
+            Foreground="Transparent"
+            ScaleWidth="0"
+            MinAngle="0"
+            MaxAngle="360"
+            TickLength="0"
+            TickWidth="0"/>
+        <!-- Minute -->
+        <controls:RadialGauge
+            Value="{x:Bind MinuteValue, Mode=OneWay}"
+            Minimum="0"
+            Maximum="3600"
+    
+            NeedleWidth="4"
+            NeedleLength="50"
+    
+            IsInteractive="False"
+            StepSize="1"
+            Foreground="Transparent"
+            ScaleWidth="0"
+            MinAngle="0"
+            MaxAngle="360"
+            TickLength="0"
+            TickWidth="0"/>
+        <!-- Second -->
+        <controls:RadialGauge
+            Value="{x:Bind SecondValue, Mode=OneWay}"
+            Minimum="0"
+            Maximum="60"
+    
+            NeedleWidth="3"
+            NeedleLength="70"
+    
+            IsInteractive="False"
+            StepSize="1"
+            Foreground="Transparent"
+            ScaleWidth="0"
+            MinAngle="0"
+            MaxAngle="360"
+            TickLength="0"
+            TickWidth="0"/>
+        <!-- Foreground 1: Hour interval step & Outside circle -->
+        <controls:RadialGauge
+            TickLength="9"
+            TickWidth="2"
+            TickSpacing="5"
+    
+            ScaleWidth="3"
+            ScalePadding="0"
+            ScaleTickWidth="0"
+    
+            Foreground="Transparent"
+            IsInteractive="False"
+            Value="0"
+            Minimum="0"
+            Maximum="60"
+            MinAngle="0"
+            MaxAngle="360"
+            NeedleWidth="0"
+            NeedleLength="0"/>
+        <!-- Foreground 2: Minute interval step -->
+        <controls:RadialGauge
+            TickLength="6"
+            TickWidth="2"
+            TickSpacing="1"
+    
+            ScaleWidth="0"
+            ScalePadding="0"
+            ScaleTickWidth="0"
+    
+            Foreground="Transparent"
+            IsInteractive="False"
+            Value="0"
+            Minimum="0"
+            Maximum="60"
+            MinAngle="0"
+            MaxAngle="360"
+            NeedleWidth="0"
+            NeedleLength="0"/>
+        <Ellipse 
+            Height="6" 
+            Width="6" 
+            Fill="Black" 
+    
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Center"/>
+    </Grid>
+</UserControl>

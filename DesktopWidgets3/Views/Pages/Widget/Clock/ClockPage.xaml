@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:widget="using:DesktopWidgets3.ViewModels.Pages.Widgets"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
+    xmlns:clock="using:Clock.UserControls"
     d:DataContext="{d:DesignInstance Type=widget:ClockViewModel}"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     NavigationCacheMode="Required"
@@ -14,7 +15,10 @@
     <Grid
         x:Name="ContentArea"
         Background="Transparent">
-        <TextBlock 
+        <clock:AnalogClock
+            DateTime="{x:Bind ViewModel.DateTime, Mode=OneWay}" />
+        <TextBlock
+            Visibility="Collapsed"
             Text="{x:Bind ViewModel.SystemTime, Mode=OneWay}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"

@@ -1,27 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  
   <PropertyGroup>
     <TargetFramework>net7.0-windows10.0.22621.0</TargetFramework>
-    <RootNamespace>DesktopWidgets3.Core</RootNamespace>
+    <RootNamespace>Clock</RootNamespace>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Platforms>x86;x64;arm64;AnyCPU</Platforms>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  
   <ItemGroup>
-    <None Remove="Views\Windows\BlankWindow.xaml" />
+    <None Remove="UserControls\AnalogClock.xaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="WinUIEx" Version="2.3.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Views\Windows\BlankWindow.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    <Page Update="UserControls\AnalogClock.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+
 </Project>

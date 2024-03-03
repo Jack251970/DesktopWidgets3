@@ -9,6 +9,9 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
     [ObservableProperty]
     private string _systemTime = string.Empty;
 
+    [ObservableProperty]
+    private DateTime _dateTime = DateTime.Now;
+
     #endregion
 
     #region settings
@@ -28,9 +31,13 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
 
     private async void UpdateTime()
     {
-        var systemTime = await Task.Run(() => DateTime.Now.ToString(timingFormat));
+        var nowTime = DateTime.Now;
+        var systemTime = await Task.Run(() => nowTime.ToString(timingFormat));
 
-        RunOnDispatcherQueue(() => SystemTime = systemTime);
+        RunOnDispatcherQueue(() => {
+            DateTime = nowTime;
+            SystemTime = systemTime; 
+        });
     }
 
     #region abstract methods
