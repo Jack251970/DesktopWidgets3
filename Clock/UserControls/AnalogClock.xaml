@@ -16,11 +16,12 @@
             <Setter Property="ScaleWidth" Value="0"/>
         </Style>
         <Style x:Key="RadialGaugeForegroundStyle" TargetType="controls:RadialGauge" BasedOn="{StaticResource BaseRadialGaugeStyle}">
+            <Setter Property="Value" Value="0"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="60"/>
             <Setter Property="TickPadding" Value="9"/>
             <Setter Property="ScalePadding" Value="0"/>
             <Setter Property="ScaleTickWidth" Value="0"/>
-            <Setter Property="Minimum" Value="0"/>
-            <Setter Property="Maximum" Value="60"/>
             <Setter Property="NeedleWidth" Value="0"/>
             <Setter Property="NeedleLength" Value="0"/>
         </Style>
@@ -29,12 +30,12 @@
             <Setter Property="Foreground" Value="Transparent"/>
             <Setter Property="MinAngle" Value="0"/>
             <Setter Property="MaxAngle" Value="360"/>
-            <Setter Property="Value" Value="0"/>
         </Style>
     </UserControl.Resources>
 
     <Grid Width="{x:Bind Size, Mode=OneWay}" Height="{x:Bind Size, Mode=OneWay}">
-        <!-- Hour -->
+        
+        <!-- Hour Hand -->
         <controls:RadialGauge
             Value="{x:Bind HourValue, Mode=OneWay}"
             Minimum="0"
@@ -42,7 +43,8 @@
             NeedleWidth="5"
             NeedleLength="40"
             Style="{StaticResource RadialGaugeNeedleStyle}"/>
-        <!-- Minute -->
+        
+        <!-- Minute Hand -->
         <controls:RadialGauge
             Value="{x:Bind MinuteValue, Mode=OneWay}"
             Minimum="0"
@@ -50,7 +52,8 @@
             NeedleWidth="4"
             NeedleLength="50"
             Style="{StaticResource RadialGaugeNeedleStyle}"/>
-        <!-- Second -->
+
+        <!-- Second Hand -->
         <controls:RadialGauge
             Value="{x:Bind SecondValue, Mode=OneWay}"
             Minimum="0"
@@ -58,26 +61,31 @@
             NeedleWidth="3"
             NeedleLength="70"
             Style="{StaticResource RadialGaugeNeedleStyle}"/>
-        <!-- Foreground 1: Hour interval tick & Outside circle -->
+        
+        <!-- Foreground 1: Hour Interval Tick & Outside Circle -->
         <controls:RadialGauge
             TickLength="9"
             TickWidth="2"
             TickSpacing="5"
             ScaleWidth="3"
             Style="{StaticResource RadialGaugeForegroundStyle}"/>
-        <!-- Foreground 2: Minute interval tick -->
+        
+        <!-- Foreground 2: Minute Interval Tick -->
         <controls:RadialGauge
             TickLength="6"
             TickWidth="2"
             TickSpacing="1"
             ScaleWidth="0"
             Style="{StaticResource RadialGaugeForegroundStyle}"/>
-        <!-- Foreground 3: Needle central bracket  -->
+
+        <!-- Foreground 3: Hand Central Bracket  -->
         <Ellipse 
             Height="6" 
             Width="6"
             VerticalAlignment="Center" 
             HorizontalAlignment="Center"
             Fill="{ThemeResource RadialGaugeNeedleBackground}"/>
+        
     </Grid>
+    
 </UserControl>
