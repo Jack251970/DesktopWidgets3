@@ -8,7 +8,8 @@
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
-    <UserControl.Resources>
+    <!-- Don't use style resources, which will cause unknown issues. -->
+    <!--<UserControl.Resources>
         <Style x:Key="RadialGaugeNeedleStyle" TargetType="controls:RadialGauge" BasedOn="{StaticResource BaseRadialGaugeStyle}">
             <Setter Property="StepSize" Value="1"/>
             <Setter Property="TickWidth" Value="0"/>
@@ -31,7 +32,7 @@
             <Setter Property="MinAngle" Value="0"/>
             <Setter Property="MaxAngle" Value="360"/>
         </Style>
-    </UserControl.Resources>
+    </UserControl.Resources>-->
 
     <Grid Width="{x:Bind Size, Mode=OneWay}" Height="{x:Bind Size, Mode=OneWay}">
         
@@ -42,7 +43,14 @@
             Maximum="216000"
             NeedleWidth="5"
             NeedleLength="40"
-            Style="{StaticResource RadialGaugeNeedleStyle}"/>
+            IsInteractive="False"
+            StepSize="1"
+            Foreground="Transparent"
+            ScaleWidth="0"
+            MinAngle="0"
+            MaxAngle="360"
+            TickLength="0"
+            TickWidth="0"/>
         
         <!-- Minute Hand -->
         <controls:RadialGauge
@@ -51,7 +59,14 @@
             Maximum="3600"
             NeedleWidth="4"
             NeedleLength="50"
-            Style="{StaticResource RadialGaugeNeedleStyle}"/>
+            IsInteractive="False"
+            StepSize="1"
+            Foreground="Transparent"
+            ScaleWidth="0"
+            MinAngle="0"
+            MaxAngle="360"
+            TickLength="0"
+            TickWidth="0"/>
 
         <!-- Second Hand -->
         <controls:RadialGauge
@@ -60,23 +75,52 @@
             Maximum="60"
             NeedleWidth="3"
             NeedleLength="70"
-            Style="{StaticResource RadialGaugeNeedleStyle}"/>
+            IsInteractive="False"
+            StepSize="1"
+            Foreground="Transparent"
+            ScaleWidth="0"
+            MinAngle="0"
+            MaxAngle="360"
+            TickLength="0"
+            TickWidth="0"/>
         
         <!-- Foreground 1: Hour Interval Tick & Outside Circle -->
         <controls:RadialGauge
             TickLength="9"
             TickWidth="2"
             TickSpacing="5"
+            TickPadding="9"
             ScaleWidth="3"
-            Style="{StaticResource RadialGaugeForegroundStyle}"/>
+            ScalePadding="0"
+            ScaleTickWidth="0"
+            Foreground="Transparent"
+            IsInteractive="False"
+            Value="0"
+            Minimum="0"
+            Maximum="60"
+            MinAngle="0"
+            MaxAngle="360"
+            NeedleWidth="0"
+            NeedleLength="0"/>
         
         <!-- Foreground 2: Minute Interval Tick -->
         <controls:RadialGauge
             TickLength="6"
             TickWidth="2"
             TickSpacing="1"
+            TickPadding="9"
             ScaleWidth="0"
-            Style="{StaticResource RadialGaugeForegroundStyle}"/>
+            ScalePadding="0"
+            ScaleTickWidth="0"
+            Foreground="Transparent"
+            IsInteractive="False"
+            Value="0"
+            Minimum="0"
+            Maximum="60"
+            MinAngle="0"
+            MaxAngle="360"
+            NeedleWidth="0"
+            NeedleLength="0"/>
 
         <!-- Foreground 3: Hand Central Bracket  -->
         <Ellipse 
