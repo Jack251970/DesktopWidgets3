@@ -7,13 +7,31 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
     #region view properties
 
     [ObservableProperty]
-    private string _cpuInfo = string.Empty;
+    private string _cpuLeftInfo = string.Empty;
 
     [ObservableProperty]
-    private string _gpuInfo = string.Empty;
+    private string _cpuRightInfo = string.Empty;
 
     [ObservableProperty]
-    private string _memoryInfo = string.Empty;
+    private double _cpuLoadValue = 0;
+
+    [ObservableProperty]
+    private string _gpuLeftInfo = string.Empty;
+
+    [ObservableProperty]
+    private string _gpuRightInfo = string.Empty;
+
+    [ObservableProperty]
+    private double _gpuLoadValue = 0;
+
+    [ObservableProperty]
+    private string _memoryLeftInfo = string.Empty;
+
+    [ObservableProperty]
+    private string _memoryRightInfo = string.Empty;
+
+    [ObservableProperty]
+    private double _memoryLoadValue = 0;
 
     #endregion
 
@@ -36,20 +54,45 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
 
     private async void UpdatePerformance()
     {
-        var (CpuLoad, CpuTempreture) = await Task.Run(() => _systemInfoService.GetCpuInfo(useCelsius));
-        var (GpuLoad, GpuTempreture) = await Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
-        var (MemoryLoad, MemoryUsedInfo) = await Task.Run(_systemInfoService.GetMemoryInfo);
-
-        RunOnDispatcherQueue(() => {
-            CpuInfo = JoinStrings(new List<string> { "cpu", CpuLoad, CpuTempreture }, "\n");
-            GpuInfo = JoinStrings(new List<string> { "gpu", GpuLoad, GpuTempreture }, "\n");
-            MemoryInfo = JoinStrings(new List<string> { "memory", MemoryLoad, MemoryUsedInfo }, "\n");
-        });
+        await UpdateCard(false);
     }
 
-    private static string JoinStrings(List<string> strings, string divider)
+    private async Task UpdateCard(bool isInit)
     {
-        return string.Join(divider, strings.Where(s => !string.IsNullOrEmpty(s)));
+        var cpuLoad = string.Empty;
+        var cpuTempreture = string.Empty;
+        double cpuLoadValue = 0;
+        var gpuLoad = string.Empty;
+        var gpuTempreture = string.Empty;
+        double gpuLoadValue = 0;
+        var memoryLoad = string.Empty;
+        var memoryUsedInfo = string.Empty;
+        double memoryLoadValue = 0;
+
+        if (isInit)
+        {
+            (cpuLoad, cpuLoadValue, cpuTempreture) = await Task.Run(() => _systemInfoService.GetInitCpuInfo(useCelsius));
+            (gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetInitGpuInfo(useCelsius));
+            (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetInitMemoryInfo);
+        }
+        else
+        {
+            (cpuLoad, cpuLoadValue, cpuTempreture) = await Task.Run(() => _systemInfoService.GetCpuInfo(useCelsius));
+            (gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
+            (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetMemoryInfo);
+        }
+
+        RunOnDispatcherQueue(() => {
+            CpuLeftInfo = "Cpu".GetLocalized();
+            CpuRightInfo = string.IsNullOrEmpty(cpuTempreture) ? cpuLoad : cpuTempreture;
+            CpuLoadValue = cpuLoadValue;
+            GpuLeftInfo = "Gpu".GetLocalized();
+            GpuRightInfo = string.IsNullOrEmpty(gpuTempreture) ? gpuLoad : gpuTempreture;
+            GpuLoadValue = gpuLoadValue;
+            MemoryLeftInfo = "Memory".GetLocalized();
+            MemoryRightInfo = string.IsNullOrEmpty(memoryUsedInfo) ? memoryLoad : memoryUsedInfo;
+            MemoryLoadValue = memoryLoadValue;
+        });
     }
 
     #region abstract methods
@@ -61,15 +104,9 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
             useCelsius = settings.UseCelsius;
         }
 
-        if (CpuInfo == string.Empty && GpuInfo == string.Empty && MemoryInfo == string.Empty)
+        if (CpuLeftInfo == string.Empty)
         {
-            var (CpuLoad, CpuTempreture) = await Task.Run(() => _systemInfoService.GetInitCpuInfo(useCelsius));
-            var (GpuLoad, GpuTempreture) = await Task.Run(() => _systemInfoService.GetInitGpuInfo(useCelsius));
-            var (MemoryLoad, MemoryUsedInfo) = await Task.Run(_systemInfoService.GetInitMemoryInfo);
-
-            CpuInfo = JoinStrings(new List<string> { "cpu", CpuLoad, CpuTempreture }, "\n");
-            GpuInfo = JoinStrings(new List<string> { "gpu", GpuLoad, GpuTempreture }, "\n");
-            MemoryInfo = JoinStrings(new List<string> { "memory", MemoryLoad, MemoryUsedInfo }, "\n");
+            await UpdateCard(true);
         }
     }
 

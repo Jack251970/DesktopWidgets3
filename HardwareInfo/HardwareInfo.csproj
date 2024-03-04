@@ -8,9 +8,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="UserControls\HardwareInfoCard.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.3" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="UserControls\HardwareInfoCard.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
   
 </Project>

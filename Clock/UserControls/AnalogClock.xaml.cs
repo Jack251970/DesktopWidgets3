@@ -1,4 +1,4 @@
-using Clock.Extensions;
+﻿using Clock.Extensions;
 
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -129,7 +129,7 @@ public sealed partial class AnalogClock : UserControl, INotifyPropertyChanged
         set
         {
             if (value != secondValue)
-            {     
+            {
                 secondValue = value;
                 NotifyPropertyChanged(nameof(SecondValue));
             }

@@ -276,4 +276,7 @@
   <data name="WidgetSettings_ShowThumbnails_Card.Header" xml:space="preserve">
     <value>显示缩略图</value>
   </data>
+  <data name="Memory" xml:space="preserve">
+    <value>内存</value>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
     x:Class="Clock.UserControls.AnalogClock"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -35,7 +35,7 @@
     </UserControl.Resources>-->
 
     <Grid Width="{x:Bind Size, Mode=OneWay}" Height="{x:Bind Size, Mode=OneWay}">
-        
+
         <!-- Hour Hand -->
         <controls:RadialGauge
             Value="{x:Bind HourValue, Mode=OneWay}"
@@ -51,7 +51,7 @@
             MaxAngle="360"
             TickLength="0"
             TickWidth="0"/>
-        
+
         <!-- Minute Hand -->
         <controls:RadialGauge
             Value="{x:Bind MinuteValue, Mode=OneWay}"
@@ -83,7 +83,7 @@
             MaxAngle="360"
             TickLength="0"
             TickWidth="0"/>
-        
+
         <!-- Foreground 1: Hour Interval Tick & Outside Circle -->
         <controls:RadialGauge
             TickLength="9"
@@ -102,7 +102,7 @@
             MaxAngle="360"
             NeedleWidth="0"
             NeedleLength="0"/>
-        
+
         <!-- Foreground 2: Minute Interval Tick -->
         <controls:RadialGauge
             TickLength="6"
@@ -129,7 +129,5 @@
             VerticalAlignment="Center" 
             HorizontalAlignment="Center"
             Fill="{ThemeResource RadialGaugeNeedleBackground}"/>
-        
     </Grid>
-    
 </UserControl>

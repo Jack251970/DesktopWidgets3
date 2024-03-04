@@ -16,8 +16,8 @@
   <Import Project="CommunityToolkit\tooling\MultiTarget\DefinedConstants.props" />
   
   <ItemGroup>
+    <None Remove="AnalogClock.xaml" />
     <None Remove="ResourceDictionary.xaml" />
-    <None Remove="UserControls\AnalogClock.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,15 +25,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="AnalogClock.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="ResourceDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="UserControls\AnalogClock.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Folder Include="UserControls\" />
   </ItemGroup>
   
 </Project>

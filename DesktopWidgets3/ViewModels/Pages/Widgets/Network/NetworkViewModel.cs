@@ -47,7 +47,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
             showBps = settings.ShowBps;
         }
 
-        if (UploadSpeed == string.Empty && DownloadSpeed == string.Empty)
+        if (UploadSpeed == string.Empty)
         {
             var networkSpeed = await Task.Run(() => _systemInfoService.GetInitNetworkSpeed(showBps));
 

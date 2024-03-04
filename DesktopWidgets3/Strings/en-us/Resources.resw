@@ -288,4 +288,13 @@
   <data name="WidgetSettings_ShowThumbnails_Card.Header" xml:space="preserve">
     <value>Show thumbnails</value>
   </data>
+  <data name="Cpu" xml:space="preserve">
+    <value>Cpu</value>
+  </data>
+  <data name="Gpu" xml:space="preserve">
+    <value>Gpu</value>
+  </data>
+  <data name="Memory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
 </root>

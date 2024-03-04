@@ -26,6 +26,7 @@ internal class WidgetResourceService : IWidgetResourceService
         {
             WidgetType.Clock => new WidgetSize(240, 240),
             WidgetType.FolderView => new WidgetSize(575, 480),
+            WidgetType.Performance => new WidgetSize(345, 200),
             _ => new WidgetSize(318, 200),
         }; ;
     }

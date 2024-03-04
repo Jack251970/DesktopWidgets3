@@ -220,40 +220,40 @@ internal class SystemInfoService : ISystemInfoService
         return $"{used:F2} / {total:F2} GB";
     }
 
-    public (string CpuLoad, string CpuTempreture) GetCpuInfo(bool useCelsius)
+    public (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetCpuInfo(bool useCelsius)
     {
         var (cpuLoad, cpuTemperature) = hardwareMonitor.GetCpuInfo();
 
-        return (FormatPercentage(cpuLoad), FormatTemperature(cpuTemperature, useCelsius));
+        return (FormatPercentage(cpuLoad), cpuLoad ?? 0, FormatTemperature(cpuTemperature, useCelsius));
     }
 
-    public (string CpuLoad, string CpuTempreture) GetInitCpuInfo(bool useCelsius)
+    public (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetInitCpuInfo(bool useCelsius)
     {
-        return (FormatPercentage(0), FormatTemperature(0, useCelsius));
+        return (FormatPercentage(0), 0, FormatTemperature(0, useCelsius));
     }
 
-    public (string GpuLoad, string GpuTempreture) GetGpuInfo(bool useCelsius)
+    public (string GpuLoad, float GpuLoadValue, string GpuTempreture) GetGpuInfo(bool useCelsius)
     {
         var (_, gpuLoad, gpuTemperature) = hardwareMonitor.GetGpuInfo();
 
-        return (FormatPercentage(gpuLoad), FormatTemperature(gpuTemperature, useCelsius));
+        return (FormatPercentage(gpuLoad), gpuLoad ?? 0, FormatTemperature(gpuTemperature, useCelsius));
     }
 
-    public (string GpuLoad, string GpuTempreture) GetInitGpuInfo(bool useCelsius)
+    public (string GpuLoad, float GpuLoadValue, string GpuTempreture) GetInitGpuInfo(bool useCelsius)
     {
-        return (FormatPercentage(0), FormatTemperature(0, useCelsius));
+        return (FormatPercentage(0), 0, FormatTemperature(0, useCelsius));
     }
 
-    public (string MemoryLoad, string MemoryUsedInfo) GetMemoryInfo()
+    public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetMemoryInfo()
     {
         var (memoryLoad, memoryUsed, memoryAvailable) = hardwareMonitor.GetMemoryInfo();
 
-        return (FormatPercentage(memoryLoad), FormatMemoryUsedInfo(memoryUsed, memoryAvailable));
+        return (FormatPercentage(memoryLoad), memoryLoad ?? 0, FormatMemoryUsedInfo(memoryUsed, memoryAvailable));
     }
 
-    public (string MemoryLoad, string MemoryUsedInfo) GetInitMemoryInfo()
+    public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetInitMemoryInfo()
     {
-        return (FormatPercentage(0), FormatMemoryUsedInfo(0, 0));
+        return (FormatPercentage(0), 0, FormatMemoryUsedInfo(0, 0));
     }
 
     #endregion
