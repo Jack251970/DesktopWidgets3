@@ -141,7 +141,7 @@ public sealed partial class AnalogClock : UserControl, INotifyPropertyChanged
     #region mode
 
     public static readonly DependencyProperty HandsModeProperty =
-        DependencyProperty.Register("HandsMode", typeof(HandsMode), typeof(AnalogClock), new PropertyMetadata(null));
+        DependencyProperty.Register("HandsMode", typeof(HandsMode), typeof(AnalogClock), new PropertyMetadata(HandsMode.Precise));
 
     public HandsMode HandsMode
     {

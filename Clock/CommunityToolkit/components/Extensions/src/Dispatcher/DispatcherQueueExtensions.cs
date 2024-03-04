@@ -4,14 +4,14 @@
 
 using System.Runtime.CompilerServices;
 
-/*#if WINAPPSDK*/
+#if WINAPPSDK
 using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 using DispatcherQueuePriority = Microsoft.UI.Dispatching.DispatcherQueuePriority;
-/*#else
+#else
 using Windows.Foundation.Metadata;
 using DispatcherQueue = Windows.System.DispatcherQueue;
 using DispatcherQueuePriority = Windows.System.DispatcherQueuePriority;
-#endif*/
+#endif
 
 namespace CommunityToolkit.WinUI;
 

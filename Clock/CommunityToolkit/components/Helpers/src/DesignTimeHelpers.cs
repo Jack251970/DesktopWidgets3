@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-/*#if WINAPPSDK*/
+#if WINAPPSDK
 using Windows.ApplicationModel;
-/*#endif*/
+#endif
 
 namespace CommunityToolkit.WinUI.Helpers;
 
@@ -13,9 +13,9 @@ namespace CommunityToolkit.WinUI.Helpers;
 /// </summary>
 public static class DesignTimeHelpers
 {
-    private static Lazy<bool> designModeEnabled = new Lazy<bool>(InitializeDesignerMode);
+    private static readonly Lazy<bool> designModeEnabled = new(InitializeDesignerMode);
 
-    private static Lazy<bool> designMode2Enabled = new Lazy<bool>(InitializeDesignMode2);
+    private static readonly Lazy<bool> designMode2Enabled = new(InitializeDesignMode2);
 
     /// <summary>
     /// Gets a value indicating whether app is running in the Legacy Designer

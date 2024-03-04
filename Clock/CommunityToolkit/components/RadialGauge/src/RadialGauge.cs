@@ -44,7 +44,7 @@ public partial class RadialGauge : RangeBase
     private const double Degrees2Radians = Math.PI / 180;
 
     // High-contrast accessibility
-    private static readonly ThemeListener ThemeListener = new ThemeListener();
+    private static readonly ThemeListener ThemeListener = new();
     private SolidColorBrush? _needleBrush;
     private SolidColorBrush? _needleBorderBrush;
     private Brush? _trailBrush;
@@ -172,12 +172,12 @@ public partial class RadialGauge : RangeBase
 
     private static void OnValueChanged(DependencyObject d)
     {
-        RadialGauge radialGauge = (RadialGauge)d;
+        var radialGauge = (RadialGauge)d;
         if (!double.IsNaN(radialGauge.Value))
         {
             if (radialGauge.StepSize != 0)
             {
-                radialGauge.Value = radialGauge.RoundToMultiple(radialGauge.Value, radialGauge.StepSize);
+                radialGauge.Value = RoundToMultiple(radialGauge.Value, radialGauge.StepSize);
             }
 
             var middleOfScale = 100 - radialGauge.ScalePadding - (radialGauge.ScaleWidth / 2);
@@ -218,14 +218,14 @@ public partial class RadialGauge : RangeBase
                             var pf = new PathFigure
                             {
                                 IsClosed = false,
-                                StartPoint = radialGauge.ScalePoint(radialGauge.NormalizedMinAngle, middleOfScale)
+                                StartPoint = ScalePoint(radialGauge.NormalizedMinAngle, middleOfScale)
                             };
                             var seg = new ArcSegment
                             {
                                 SweepDirection = SweepDirection.Clockwise,
                                 IsLargeArc = radialGauge.ValueAngle > (180 + radialGauge.NormalizedMinAngle),
                                 Size = new Size(middleOfScale, middleOfScale),
-                                Point = radialGauge.ScalePoint(Math.Min(radialGauge.ValueAngle, radialGauge.NormalizedMaxAngle), middleOfScale)  // On overflow, stop trail at MaxAngle.
+                                Point = ScalePoint(Math.Min(radialGauge.ValueAngle, radialGauge.NormalizedMaxAngle), middleOfScale)  // On overflow, stop trail at MaxAngle.
                             };
                             pf.Segments.Add(seg);
                             pg.Figures.Add(pf);
@@ -256,7 +256,7 @@ public partial class RadialGauge : RangeBase
 
     private static void OnInteractivityChanged(DependencyObject d)
     {
-        RadialGauge radialGauge = (RadialGauge)d;
+        var radialGauge = (RadialGauge)d;
 
         if (radialGauge.IsInteractive)
         {
@@ -274,7 +274,7 @@ public partial class RadialGauge : RangeBase
 
     private static void OnScaleChanged(DependencyObject d)
     {
-        RadialGauge radialGauge = (RadialGauge)d;
+        var radialGauge = (RadialGauge)d;
 
         radialGauge.UpdateNormalizedAngles();
 
@@ -300,13 +300,13 @@ public partial class RadialGauge : RangeBase
                     IsClosed = false
                 };
                 var middleOfScale = 100 - radialGauge.ScalePadding - (radialGauge.ScaleWidth / 2);
-                pf.StartPoint = radialGauge.ScalePoint(radialGauge.NormalizedMinAngle, middleOfScale);
+                pf.StartPoint = ScalePoint(radialGauge.NormalizedMinAngle, middleOfScale);
                 var seg = new ArcSegment
                 {
                     SweepDirection = SweepDirection.Clockwise,
                     IsLargeArc = radialGauge.NormalizedMaxAngle > (radialGauge.NormalizedMinAngle + 180),
                     Size = new Size(middleOfScale, middleOfScale),
-                    Point = radialGauge.ScalePoint(radialGauge.NormalizedMaxAngle, middleOfScale)
+                    Point = ScalePoint(radialGauge.NormalizedMaxAngle, middleOfScale)
                 };
                 pf.Segments.Add(seg);
                 pg.Figures.Add(pf);
@@ -322,7 +322,7 @@ public partial class RadialGauge : RangeBase
 
     private static void OnFaceChanged(DependencyObject d)
     {
-        RadialGauge radialGauge = (RadialGauge)d;
+        var radialGauge = (RadialGauge)d;
 
         var container = radialGauge.GetTemplateChild(ContainerPartName) as Grid;
 
@@ -354,7 +354,7 @@ public partial class RadialGauge : RangeBase
             roundedTickRectangle.Size = new Vector2((float)radialGauge.TickWidth, (float)radialGauge.TickLength);
             roundedTickRectangle.CornerRadius = new Vector2((float)radialGauge.TickCornerRadius, (float)radialGauge.TickCornerRadius);
 
-            for (double i = radialGauge.Minimum; i <= radialGauge.Maximum; i += radialGauge.TickSpacing)
+            for (var i = radialGauge.Minimum; i <= radialGauge.Maximum; i += radialGauge.TickSpacing)
             {
                 var tickSpriteShape = radialGauge._compositor.CreateSpriteShape(roundedTickRectangle);
                 tickSpriteShape.FillBrush = radialGauge._compositor.CreateColorBrush(radialGauge.TickBrush.Color);
@@ -376,7 +376,7 @@ public partial class RadialGauge : RangeBase
             roundedScaleTickRectangle.Size = new Vector2((float)radialGauge.ScaleTickWidth, (float)radialGauge.ScaleTickLength);
             roundedScaleTickRectangle.CornerRadius = new Vector2((float)radialGauge.ScaleTickCornerRadius, (float)radialGauge.ScaleTickCornerRadius);
 
-            for (double i = radialGauge.Minimum; i <= radialGauge.Maximum; i += radialGauge.TickSpacing)
+            for (var i = radialGauge.Minimum; i <= radialGauge.Maximum; i += radialGauge.TickSpacing)
             {
                 var scaleTickSpriteShape = radialGauge._compositor.CreateSpriteShape(roundedScaleTickRectangle);
                 scaleTickSpriteShape.FillBrush = radialGauge._compositor.CreateColorBrush(radialGauge.ScaleTickBrush.Color);
@@ -445,7 +445,7 @@ public partial class RadialGauge : RangeBase
 
     private static void OnUnitChanged(DependencyObject d)
     {
-        RadialGauge radialGauge = (RadialGauge)d;
+        var radialGauge = (RadialGauge)d;
         if (radialGauge.GetTemplateChild(UnitTextPartName) is TextBlock unitTextBlock)
         {
             if (string.IsNullOrEmpty(radialGauge.Unit))
@@ -481,7 +481,7 @@ public partial class RadialGauge : RangeBase
 
         if (result >= 180)
         {
-            result = result - 360;
+            result -= 360;
         }
 
         _normalizedMinAngle = result;
@@ -490,12 +490,12 @@ public partial class RadialGauge : RangeBase
 
         if (result < 180)
         {
-            result = result + 360;
+            result += 360;
         }
 
         if (result > NormalizedMinAngle + 360)
         {
-            result = result - 360;
+            result -= 360;
         }
 
         _normalizedMaxAngle = result;
@@ -522,7 +522,7 @@ public partial class RadialGauge : RangeBase
         Value = RoundToMultiple(value, StepSize);
     }
 
-    private Point ScalePoint(double angle, double middleOfScale)
+    private static Point ScalePoint(double angle, double middleOfScale)
     {
         return new Point(100 + (Math.Sin(Degrees2Radians * angle) * middleOfScale), 100 - (Math.Cos(Degrees2Radians * angle) * middleOfScale));
     }
@@ -544,16 +544,16 @@ public partial class RadialGauge : RangeBase
         return ((value - Minimum) / (Maximum - Minimum) * (NormalizedMaxAngle - NormalizedMinAngle)) + NormalizedMinAngle;
     }
 
-    private double Mod(double number, double divider)
+    private static double Mod(double number, double divider)
     {
         var result = number % divider;
         result = result < 0 ? result + divider : result;
         return result;
     }
 
-    private double RoundToMultiple(double number, double multiple)
+    private static double RoundToMultiple(double number, double multiple)
     {
-        double modulo = number % multiple;
+        var modulo = number % multiple;
         if (double.IsNaN(modulo))
         {
             return number;

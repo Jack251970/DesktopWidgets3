@@ -2,12 +2,6 @@
 
 internal static class DateTimeExtensions
 {
-    public static DateTime GenerateTime(int hour, int minute, int second)
-    {
-        var now = DateTime.Now;
-        return new DateTime(now.Year, now.Month, now.Second, hour, minute, second);
-    }
-
     public static bool Equals(this DateTime dateTime1, DateTime dateTime2, EqualsMode equalsMode)
     {
         var result = true;

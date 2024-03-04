@@ -169,8 +169,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double StepSize
     {
-        get { return (double)GetValue(StepSizeProperty); }
-        set { SetValue(StepSizeProperty, value); }
+        get => (double)GetValue(StepSizeProperty);
+        set => SetValue(StepSizeProperty, value);
     }
 
     /// <summary>
@@ -178,8 +178,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public bool IsInteractive
     {
-        get { return (bool)GetValue(IsInteractiveProperty); }
-        set { SetValue(IsInteractiveProperty, value); }
+        get => (bool)GetValue(IsInteractiveProperty);
+        set => SetValue(IsInteractiveProperty, value);
     }
 
     /// <summary>
@@ -187,8 +187,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double ScaleWidth
     {
-        get { return (double)GetValue(ScaleWidthProperty); }
-        set { SetValue(ScaleWidthProperty, value); }
+        get => (double)GetValue(ScaleWidthProperty);
+        set => SetValue(ScaleWidthProperty, value);
     }
 
     /// <summary>
@@ -196,8 +196,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public string Unit
     {
-        get { return (string)GetValue(UnitProperty); }
-        set { SetValue(UnitProperty, value); }
+        get => (string)GetValue(UnitProperty);
+        set => SetValue(UnitProperty, value);
     }
 
     /// <summary>
@@ -205,8 +205,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public SolidColorBrush NeedleBrush
     {
-        get { return (SolidColorBrush)GetValue(NeedleBrushProperty); }
-        set { SetValue(NeedleBrushProperty, value); }
+        get => (SolidColorBrush)GetValue(NeedleBrushProperty);
+        set => SetValue(NeedleBrushProperty, value);
     }
 
     /// <summary>
@@ -214,8 +214,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public SolidColorBrush NeedleBorderBrush
     {
-        get { return (SolidColorBrush)GetValue(NeedleBorderBrushProperty); }
-        set { SetValue(NeedleBorderBrushProperty, value); }
+        get => (SolidColorBrush)GetValue(NeedleBorderBrushProperty);
+        set => SetValue(NeedleBorderBrushProperty, value);
     }
 
     /// <summary>
@@ -223,8 +223,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public Brush TrailBrush
     {
-        get { return (Brush)GetValue(TrailBrushProperty); }
-        set { SetValue(TrailBrushProperty, value); }
+        get => (Brush)GetValue(TrailBrushProperty);
+        set => SetValue(TrailBrushProperty, value);
     }
 
     /// <summary>
@@ -232,8 +232,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public Brush ScaleBrush
     {
-        get { return (Brush)GetValue(ScaleBrushProperty); }
-        set { SetValue(ScaleBrushProperty, value); }
+        get => (Brush)GetValue(ScaleBrushProperty);
+        set => SetValue(ScaleBrushProperty, value);
     }
 
     /// <summary>
@@ -241,8 +241,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public SolidColorBrush ScaleTickBrush
     {
-        get { return (SolidColorBrush)GetValue(ScaleTickBrushProperty); }
-        set { SetValue(ScaleTickBrushProperty, value); }
+        get => (SolidColorBrush)GetValue(ScaleTickBrushProperty);
+        set => SetValue(ScaleTickBrushProperty, value);
     }
 
     /// <summary>
@@ -250,18 +250,18 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double ScaleTickCornerRadius
     {
-        get { return (double)GetValue(ScaleTickCornerRadiusProperty); }
-        set { SetValue(ScaleTickCornerRadiusProperty, value); }
+        get => (double)GetValue(ScaleTickCornerRadiusProperty);
+        set => SetValue(ScaleTickCornerRadiusProperty, value);
     }
 
-    
+
     /// <summary>
     /// Gets or sets the outer tick brush.
     /// </summary>
     public SolidColorBrush TickBrush
     {
-        get { return (SolidColorBrush)GetValue(TickBrushProperty); }
-        set { SetValue(TickBrushProperty, value); }
+        get => (SolidColorBrush)GetValue(TickBrushProperty);
+        set => SetValue(TickBrushProperty, value);
     }
 
     /// <summary>
@@ -269,8 +269,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public string ValueStringFormat
     {
-        get { return (string)GetValue(ValueStringFormatProperty); }
-        set { SetValue(ValueStringFormatProperty, value); }
+        get => (string)GetValue(ValueStringFormatProperty);
+        set => SetValue(ValueStringFormatProperty, value);
     }
 
     /// <summary>
@@ -278,8 +278,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public int TickSpacing
     {
-        get { return (int)GetValue(TickSpacingProperty); }
-        set { SetValue(TickSpacingProperty, value); }
+        get => (int)GetValue(TickSpacingProperty);
+        set => SetValue(TickSpacingProperty, value);
     }
 
     /// <summary>
@@ -287,8 +287,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double NeedleLength
     {
-        get { return (double)GetValue(NeedleLengthProperty); }
-        set { SetValue(NeedleLengthProperty, value); }
+        get => (double)GetValue(NeedleLengthProperty);
+        set => SetValue(NeedleLengthProperty, value);
     }
 
 
@@ -297,8 +297,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double NeedleBorderThickness
     {
-        get { return (double)GetValue(NeedleBorderThicknessProperty); }
-        set { SetValue(NeedleBorderThicknessProperty, value); }
+        get => (double)GetValue(NeedleBorderThicknessProperty);
+        set => SetValue(NeedleBorderThicknessProperty, value);
     }
 
     /// <summary>
@@ -306,8 +306,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double NeedleWidth
     {
-        get { return (double)GetValue(NeedleWidthProperty); }
-        set { SetValue(NeedleWidthProperty, value); }
+        get => (double)GetValue(NeedleWidthProperty);
+        set => SetValue(NeedleWidthProperty, value);
     }
 
     /// <summary>
@@ -315,8 +315,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double ScalePadding
     {
-        get { return (double)GetValue(ScalePaddingProperty); }
-        set { SetValue(ScalePaddingProperty, value); }
+        get => (double)GetValue(ScalePaddingProperty);
+        set => SetValue(ScalePaddingProperty, value);
     }
 
     /// <summary>
@@ -324,8 +324,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double TickPadding
     {
-        get { return (double)GetValue(TickPaddingProperty); }
-        set { SetValue(TickPaddingProperty, value); }
+        get => (double)GetValue(TickPaddingProperty);
+        set => SetValue(TickPaddingProperty, value);
     }
 
     /// <summary>
@@ -333,8 +333,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double ScaleTickWidth
     {
-        get { return (double)GetValue(ScaleTickWidthProperty); }
-        set { SetValue(ScaleTickWidthProperty, value); }
+        get => (double)GetValue(ScaleTickWidthProperty);
+        set => SetValue(ScaleTickWidthProperty, value);
     }
 
     /// <summary>
@@ -342,8 +342,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double ScaleTickLength
     {
-        get { return (double)GetValue(ScaleTickLengthProperty); }
-        set { SetValue(ScaleTickLengthProperty, value); }
+        get => (double)GetValue(ScaleTickLengthProperty);
+        set => SetValue(ScaleTickLengthProperty, value);
     }
 
     /// <summary>
@@ -351,8 +351,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double TickLength
     {
-        get { return (double)GetValue(TickLengthProperty); }
-        set { SetValue(TickLengthProperty, value); }
+        get => (double)GetValue(TickLengthProperty);
+        set => SetValue(TickLengthProperty, value);
     }
 
     /// <summary>
@@ -360,8 +360,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double TickWidth
     {
-        get { return (double)GetValue(TickWidthProperty); }
-        set { SetValue(TickWidthProperty, value); }
+        get => (double)GetValue(TickWidthProperty);
+        set => SetValue(TickWidthProperty, value);
     }
 
     /// <summary>
@@ -369,8 +369,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     public double TickCornerRadius
     {
-        get { return (double)GetValue(TickCornerRadiusProperty); }
-        set { SetValue(TickCornerRadiusProperty, value); }
+        get => (double)GetValue(TickCornerRadiusProperty);
+        set => SetValue(TickCornerRadiusProperty, value);
     }
 
     /// <summary>
@@ -379,8 +379,8 @@ public partial class RadialGauge : RangeBase
     /// <remarks>Changing MinAngle may require retemplating the control.</remarks>
     public int MinAngle
     {
-        get { return (int)GetValue(MinAngleProperty); }
-        set { SetValue(MinAngleProperty, value); }
+        get => (int)GetValue(MinAngleProperty);
+        set => SetValue(MinAngleProperty, value);
     }
 
     /// <summary>
@@ -389,8 +389,8 @@ public partial class RadialGauge : RangeBase
     /// <remarks>Changing MaxAngle may require retemplating the control.</remarks>
     public int MaxAngle
     {
-        get { return (int)GetValue(MaxAngleProperty); }
-        set { SetValue(MaxAngleProperty, value); }
+        get => (int)GetValue(MaxAngleProperty);
+        set => SetValue(MaxAngleProperty, value);
     }
 
     /// <summary>
@@ -398,8 +398,8 @@ public partial class RadialGauge : RangeBase
     /// </summary>
     protected double ValueAngle
     {
-        get { return (double)GetValue(ValueAngleProperty); }
-        set { SetValue(ValueAngleProperty, value); }
+        get => (double)GetValue(ValueAngleProperty);
+        set => SetValue(ValueAngleProperty, value);
     }
 
     private static void OnUnitChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

@@ -5,11 +5,11 @@
 using Windows.Foundation.Metadata;
 using Windows.UI.ViewManagement;
 
-/*#if !WINAPPSDK
+#if !WINAPPSDK
 using Windows.System;
-#else*/
+#else
 using Microsoft.UI.Dispatching;
-/*#endif*/
+#endif
 
 // TODO: Fix tests for WinUI3
 // [assembly: InternalsVisibleTo("UnitTests.XamlIslands.UWPApp")]
@@ -31,10 +31,7 @@ public sealed class ThemeListener : IDisposable
     /// <summary>
     /// Gets the Name of the Current Theme.
     /// </summary>
-    public string CurrentThemeName
-    {
-        get { return this.CurrentTheme.ToString(); }
-    }
+    public string CurrentThemeName => CurrentTheme.ToString();
 
     /// <summary>
     /// Gets or sets the Current Theme.
@@ -56,8 +53,8 @@ public sealed class ThemeListener : IDisposable
     /// </summary>
     public event ThemeChangedEvent ThemeChanged;
 
-    private AccessibilitySettings _accessible = new AccessibilitySettings();
-    private UISettings _settings = new UISettings();
+    private readonly AccessibilitySettings _accessible = new();
+    private readonly UISettings _settings = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ThemeListener"/> class.
@@ -142,7 +139,7 @@ public sealed class ThemeListener : IDisposable
     private void UpdateProperties()
     {
         // TODO: Not sure if HighContrastScheme names are localized?
-        if (_accessible.HighContrast && _accessible.HighContrastScheme.IndexOf("white", StringComparison.OrdinalIgnoreCase) != -1)
+        if (_accessible.HighContrast && _accessible.HighContrastScheme.Contains("white", StringComparison.OrdinalIgnoreCase))
         {
             // If our HighContrastScheme is ON & a lighter one, then we should remain in 'Light' theme mode for Monaco Themes Perspective
             IsHighContrast = false;

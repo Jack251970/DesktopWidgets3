@@ -4,11 +4,11 @@
 
 using System.Collections.Concurrent;
 
-/*#if WINAPPSDK*/
+#if WINAPPSDK
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
-/*#else
+#else
 using DispatcherQueueTimer = Windows.System.DispatcherQueueTimer;
-#endif*/
+#endif
 
 namespace CommunityToolkit.WinUI;
 
@@ -17,7 +17,7 @@ namespace CommunityToolkit.WinUI;
 /// </summary>
 public static class DispatcherQueueTimerExtensions
 {
-    private static ConcurrentDictionary<DispatcherQueueTimer, Action> _debounceInstances = new ConcurrentDictionary<DispatcherQueueTimer, Action>();
+    private static readonly ConcurrentDictionary<DispatcherQueueTimer, Action> _debounceInstances = new();
 
     /// <summary>
     /// <para>Used to debounce (rate-limit) an event.  The action will be postponed and executed after the interval has elapsed.  At the end of the interval, the function will be called with the arguments that were passed most recently to the debounced function.</para>

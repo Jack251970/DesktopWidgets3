@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Clock.UserControls;
+
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
@@ -7,10 +9,13 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
     #region view properties
 
     [ObservableProperty]
-    private string _systemTime = string.Empty;
+    private HandsMode _handsMode = HandsMode.Precise;
 
     [ObservableProperty]
     private DateTime _dateTime = DateTime.Now;
+
+    [ObservableProperty]
+    private string _systemTime = string.Empty;
 
     #endregion
 
@@ -20,13 +25,28 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
 
     #endregion
 
+    private readonly IAppSettingsService _appSettingsService;
     private readonly ITimersService _timersService;
 
-    public ClockViewModel(ITimersService timersService)
+    public ClockViewModel(IAppSettingsService appSettingsService, ITimersService timersService)
     {
+        _appSettingsService = appSettingsService;
         _timersService = timersService;
 
-        timersService.AddTimerAction(WidgetType.Clock, UpdateTime);
+        _appSettingsService.OnBatterySaverChanged += AppSettingsService_OnBatterySaverChanged;
+        _timersService.AddTimerAction(WidgetType.Clock, UpdateTime);
+    }
+
+    private void AppSettingsService_OnBatterySaverChanged(object? _, bool batterySaver)
+    {
+        if (batterySaver)
+        {
+            HandsMode = HandsMode.Normal;
+        }
+        else
+        {
+            HandsMode = HandsMode.Precise;
+        }
     }
 
     private async void UpdateTime()
