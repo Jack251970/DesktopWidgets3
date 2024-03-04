@@ -7,6 +7,7 @@
         <ResourceDictionary>
 
             <ResourceDictionary.MergedDictionaries>
+                <!-- Remeber: Don't include this in other resource dictionaries! -->
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
 
                 <ResourceDictionary Source="/Styles/Controls.xaml" />
@@ -16,6 +17,9 @@
                 <!-- Files -->
                 <ResourceDictionary Source="../Files.App/App.xaml" />
                 
+                <!-- Clock -->
+                <ResourceDictionary Source="../Clock/ResourceDictionary.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
             
         </ResourceDictionary>

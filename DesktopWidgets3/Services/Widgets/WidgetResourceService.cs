@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Services.Widgets;
+﻿using Files.Core.Data.Enums;
+
+namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetResourceService : IWidgetResourceService
 {
@@ -22,15 +24,17 @@ internal class WidgetResourceService : IWidgetResourceService
     {
         return widgetType switch
         {
+            WidgetType.Clock => new WidgetSize(240, 240),
             WidgetType.FolderView => new WidgetSize(575, 480),
             _ => new WidgetSize(318, 200),
-        };
+        }; ;
     }
 
     public WidgetSize GetMinSize(WidgetType widgetType)
     {
         return widgetType switch
         {
+            WidgetType.Clock => new WidgetSize(240, 240),
             WidgetType.FolderView => new WidgetSize(516, 416),
             _ => new WidgetSize(318, 200),
         };
@@ -44,10 +48,6 @@ internal class WidgetResourceService : IWidgetResourceService
             {
                 ShowSeconds = true,
             },
-            WidgetType.Performance => new PerformanceWidgetSettings()
-            {
-
-            },
             WidgetType.Disk => new DiskWidgetSettings()
             {
 
@@ -55,12 +55,28 @@ internal class WidgetResourceService : IWidgetResourceService
             WidgetType.FolderView => new FolderViewWidgetSettings()
             {
                 FolderPath = "C:\\",
-                ShowHiddenItems = false,
                 AllowNavigation = true,
+                MoveShellExtensionsToSubMenu = true,
+                SyncFolderPreferencesAcrossDirectories = false,
+                ShowHiddenItems = false,
+                ShowDotFiles = true,
+                ShowProtectedSystemFiles = false,
+                AreAlternateStreamsVisible = false,
+                ShowFileExtensions = true,
+                ShowThumbnails = true,
+                ShowCheckboxesWhenSelectingItems = true,
+                DeleteConfirmationPolicy = DeleteConfirmationPolicies.Always,
+                ShowFileExtensionWarning = true,
+                ConflictsResolveOption = FileNameConflictResolveOptionType.GenerateNewName,
+                ShowRunningAsAdminPrompt = true,
             },
             WidgetType.Network => new NetworkWidgetSettings()
             {
                 ShowBps = false,
+            },
+            WidgetType.Performance => new PerformanceWidgetSettings()
+            {
+                UseCelsius = true,
             },
             _ => throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null),
         };

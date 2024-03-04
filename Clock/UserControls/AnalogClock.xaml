@@ -3,10 +3,9 @@
     x:Class="Clock.UserControls.AnalogClock"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Clock.UserControls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
     <Grid>
@@ -66,6 +65,7 @@
             TickLength="9"
             TickWidth="2"
             TickSpacing="5"
+            TickPadding="9"
     
             ScaleWidth="3"
             ScalePadding="0"
@@ -85,6 +85,7 @@
             TickLength="6"
             TickWidth="2"
             TickSpacing="1"
+            TickPadding="9"
     
             ScaleWidth="0"
             ScalePadding="0"
@@ -101,8 +102,8 @@
             NeedleLength="0"/>
         <Ellipse 
             Height="6" 
-            Width="6" 
-            Fill="Black" 
+            Width="6"
+            Fill="{ThemeResource RadialGaugeNeedleBackground}"
     
             VerticalAlignment="Center" 
             HorizontalAlignment="Center"/>
