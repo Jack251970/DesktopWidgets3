@@ -8,104 +8,76 @@
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
-    <Grid>
+    <UserControl.Resources>
+        <Style x:Key="RadialGaugeNeedleStyle" TargetType="controls:RadialGauge" BasedOn="{StaticResource BaseRadialGaugeStyle}">
+            <Setter Property="StepSize" Value="1"/>
+            <Setter Property="TickWidth" Value="0"/>
+            <Setter Property="TickLength" Value="0"/>
+            <Setter Property="ScaleWidth" Value="0"/>
+        </Style>
+        <Style x:Key="RadialGaugeForegroundStyle" TargetType="controls:RadialGauge" BasedOn="{StaticResource BaseRadialGaugeStyle}">
+            <Setter Property="TickPadding" Value="9"/>
+            <Setter Property="ScalePadding" Value="0"/>
+            <Setter Property="ScaleTickWidth" Value="0"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="60"/>
+            <Setter Property="NeedleWidth" Value="0"/>
+            <Setter Property="NeedleLength" Value="0"/>
+        </Style>
+        <Style x:Key="BaseRadialGaugeStyle" TargetType="controls:RadialGauge">
+            <Setter Property="IsInteractive" Value="False"/>
+            <Setter Property="Foreground" Value="Transparent"/>
+            <Setter Property="MinAngle" Value="0"/>
+            <Setter Property="MaxAngle" Value="360"/>
+            <Setter Property="Value" Value="0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Width="{x:Bind Size, Mode=OneWay}" Height="{x:Bind Size, Mode=OneWay}">
         <!-- Hour -->
         <controls:RadialGauge
             Value="{x:Bind HourValue, Mode=OneWay}"
             Minimum="0"
             Maximum="216000"
-    
             NeedleWidth="5"
             NeedleLength="40"
-    
-            IsInteractive="False"
-            StepSize="1"
-            Foreground="Transparent"
-            ScaleWidth="0"
-            MinAngle="0"
-            MaxAngle="360"
-            TickLength="0"
-            TickWidth="0"/>
+            Style="{StaticResource RadialGaugeNeedleStyle}"/>
         <!-- Minute -->
         <controls:RadialGauge
             Value="{x:Bind MinuteValue, Mode=OneWay}"
             Minimum="0"
             Maximum="3600"
-    
             NeedleWidth="4"
             NeedleLength="50"
-    
-            IsInteractive="False"
-            StepSize="1"
-            Foreground="Transparent"
-            ScaleWidth="0"
-            MinAngle="0"
-            MaxAngle="360"
-            TickLength="0"
-            TickWidth="0"/>
+            Style="{StaticResource RadialGaugeNeedleStyle}"/>
         <!-- Second -->
         <controls:RadialGauge
             Value="{x:Bind SecondValue, Mode=OneWay}"
             Minimum="0"
             Maximum="60"
-    
             NeedleWidth="3"
             NeedleLength="70"
-    
-            IsInteractive="False"
-            StepSize="1"
-            Foreground="Transparent"
-            ScaleWidth="0"
-            MinAngle="0"
-            MaxAngle="360"
-            TickLength="0"
-            TickWidth="0"/>
-        <!-- Foreground 1: Hour interval step & Outside circle -->
+            Style="{StaticResource RadialGaugeNeedleStyle}"/>
+        <!-- Foreground 1: Hour interval tick & Outside circle -->
         <controls:RadialGauge
             TickLength="9"
             TickWidth="2"
             TickSpacing="5"
-            TickPadding="9"
-    
             ScaleWidth="3"
-            ScalePadding="0"
-            ScaleTickWidth="0"
-    
-            Foreground="Transparent"
-            IsInteractive="False"
-            Value="0"
-            Minimum="0"
-            Maximum="60"
-            MinAngle="0"
-            MaxAngle="360"
-            NeedleWidth="0"
-            NeedleLength="0"/>
-        <!-- Foreground 2: Minute interval step -->
+            Style="{StaticResource RadialGaugeForegroundStyle}"/>
+        <!-- Foreground 2: Minute interval tick -->
         <controls:RadialGauge
             TickLength="6"
             TickWidth="2"
             TickSpacing="1"
-            TickPadding="9"
-    
             ScaleWidth="0"
-            ScalePadding="0"
-            ScaleTickWidth="0"
-    
-            Foreground="Transparent"
-            IsInteractive="False"
-            Value="0"
-            Minimum="0"
-            Maximum="60"
-            MinAngle="0"
-            MaxAngle="360"
-            NeedleWidth="0"
-            NeedleLength="0"/>
+            Style="{StaticResource RadialGaugeForegroundStyle}"/>
+        <!-- Foreground 3: Needle central bracket  -->
         <Ellipse 
             Height="6" 
             Width="6"
-            Fill="{ThemeResource RadialGaugeNeedleBackground}"
-    
             VerticalAlignment="Center" 
-            HorizontalAlignment="Center"/>
+            HorizontalAlignment="Center"
+            Fill="{ThemeResource RadialGaugeNeedleBackground}"/>
     </Grid>
 </UserControl>

@@ -2,8 +2,6 @@
 
 public interface ISystemInfoService
 {
-    bool OnBatterySaverChanged(bool batterySaver);
-
     void StartMonitor(WidgetType type);
 
     void StopMonitor(WidgetType type);

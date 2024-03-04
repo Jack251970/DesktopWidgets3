@@ -28,23 +28,33 @@ internal class AppSettingsService : IAppSettingsService
 
     #region Runtime Application Data
 
+    private bool silentStart;
     public bool SilentStart
     {
-        get; set;
-    }
-
-    private bool _batterySaver;
-    public bool BatterySaver
-    {
-        get => _batterySaver;
+        get => silentStart;
         set
         {
-            if (_batterySaver != value)
+            if (silentStart != value)
             {
-                _batterySaver = value;
+                silentStart = value;
+            }
+        }
+    }
+
+    public event EventHandler<bool>? OnBatterySaverChanged;
+
+    private bool batterySaver;
+    public bool BatterySaver
+    {
+        get => batterySaver;
+        set
+        {
+            if (batterySaver != value)
+            {
+                batterySaver = value;
                 if (_isInitialized)
                 {
-                    App.GetService<ISystemInfoService>().OnBatterySaverChanged(value);
+                    OnBatterySaverChanged?.Invoke(this, value);
                 }
             }
         }

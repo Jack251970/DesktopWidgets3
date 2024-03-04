@@ -14,15 +14,14 @@ internal class SystemInfoService : ISystemInfoService
 
         sampleTimer.AutoReset = true;
         sampleTimer.Enabled = false;
+        sampleTimer.Interval = _appSettingsService.BatterySaver ? 1000 : 100;
 
-        OnBatterySaverChanged(_appSettingsService.BatterySaver);
+        _appSettingsService.OnBatterySaverChanged += AppSettingsService_OnBatterySaverChanged;
     }
 
-    // Callback for app settings when BatterySaver property changed.
-    public bool OnBatterySaverChanged(bool batterySaver)
+    private void AppSettingsService_OnBatterySaverChanged(object? _, bool batterySaver)
     {
         sampleTimer.Interval = batterySaver ? 1000 : 100;
-        return true;
     }
 
     #region monitor & sample timer
