@@ -9,26 +9,27 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="auto"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock
-            Grid.Row="0"
-            Grid.Column="0"
-            Text="{x:Bind LeftTitle, Mode=OneWay}"/>
-        <TextBlock
-            Grid.Row="0"
-            Grid.Column="2"
-            Text="{x:Bind RightTitle, Mode=OneWay}"/>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Text="{x:Bind LeftTitle, Mode=OneWay}"/>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="2"
+                Text="{x:Bind RightTitle, Mode=OneWay}"/>
+        </Grid>
         <ProgressBar
-            Grid.Row="1"
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
+            Grid.Row="2"
             Value="{x:Bind ProgressValue, Mode=OneWay}"
             Minimum="0"
             Maximum="100"/>

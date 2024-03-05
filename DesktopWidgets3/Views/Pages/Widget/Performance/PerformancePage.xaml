@@ -26,19 +26,22 @@
                 LeftTitle="{x:Bind ViewModel.CpuLeftInfo, Mode=OneWay}"
                 RightTitle="{x:Bind ViewModel.CpuRightInfo, Mode=OneWay}"
                 ProgressValue="{x:Bind ViewModel.CpuLoadValue, Mode=OneWay}"
-                HorizontalAlignment="Stretch"/>
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"/>
             <hardware:HardwareInfoCard
                 Grid.Row="1"
                 LeftTitle="{x:Bind ViewModel.GpuLeftInfo, Mode=OneWay}"
                 RightTitle="{x:Bind ViewModel.GpuRightInfo, Mode=OneWay}"
                 ProgressValue="{x:Bind ViewModel.GpuLoadValue, Mode=OneWay}"
-                HorizontalAlignment="Stretch"/>
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"/>
             <hardware:HardwareInfoCard
-                Grid.Row="2"
+                Grid.Row="3"
                 LeftTitle="{x:Bind ViewModel.MemoryLeftInfo, Mode=OneWay}"
                 RightTitle="{x:Bind ViewModel.MemoryRightInfo, Mode=OneWay}"
                 ProgressValue="{x:Bind ViewModel.MemoryLoadValue, Mode=OneWay}"
-                HorizontalAlignment="Stretch"/>
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"/>
         </Grid>
     </Grid>
 </Page>
