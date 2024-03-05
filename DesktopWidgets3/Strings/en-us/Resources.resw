@@ -297,4 +297,16 @@
   <data name="Memory" xml:space="preserve">
     <value>Memory</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Widget_Network_Title.Text" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="Widget_Network_DownloadSpeed_Title.Text" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Widget_Network_UploadSpeed_Title.Text" xml:space="preserve">
+    <value>Upload</value>
+  </data>
 </root>

@@ -6,10 +6,10 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace HardwareInfo.UserControls;
 
-public sealed partial class HardwareInfoCard : UserControl
+public sealed partial class ProgressCard : UserControl
 {
     public static readonly DependencyProperty LeftTitleProperty =
-        DependencyProperty.Register("LeftTitle", typeof(string), typeof(HardwareInfoCard), new PropertyMetadata(null));
+        DependencyProperty.Register("LeftTitle", typeof(string), typeof(ProgressCard), new PropertyMetadata(null));
 
     public string LeftTitle
     {
@@ -18,7 +18,7 @@ public sealed partial class HardwareInfoCard : UserControl
     }
 
     public static readonly DependencyProperty RightTitleProperty =
-        DependencyProperty.Register("RightTitle", typeof(string), typeof(HardwareInfoCard), new PropertyMetadata(null));
+        DependencyProperty.Register("RightTitle", typeof(string), typeof(ProgressCard), new PropertyMetadata(null));
 
     public string RightTitle
     {
@@ -27,7 +27,7 @@ public sealed partial class HardwareInfoCard : UserControl
     }
 
     public static readonly DependencyProperty ProgressValueProperty =
-        DependencyProperty.Register("ProgressValue", typeof(double), typeof(HardwareInfoCard), new PropertyMetadata(null));
+        DependencyProperty.Register("ProgressValue", typeof(double), typeof(ProgressCard), new PropertyMetadata(null));
 
     public double ProgressValue
     {
@@ -35,7 +35,7 @@ public sealed partial class HardwareInfoCard : UserControl
         set => SetValue(ProgressValueProperty, value);
     }
 
-    public HardwareInfoCard()
+    public ProgressCard()
     {
         InitializeComponent();
     }

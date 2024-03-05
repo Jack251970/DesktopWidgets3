@@ -54,10 +54,10 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
 
     private async void UpdatePerformance()
     {
-        await UpdateCard(false);
+        await UpdateCards(false);
     }
 
-    private async Task UpdateCard(bool isInit)
+    private async Task UpdateCards(bool isInit)
     {
         var cpuLoad = string.Empty;
         var cpuTempreture = string.Empty;
@@ -106,7 +106,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
 
         if (CpuLeftInfo == string.Empty)
         {
-            await UpdateCard(true);
+            await UpdateCards(true);
         }
     }
 

@@ -279,4 +279,16 @@
   <data name="Memory" xml:space="preserve">
     <value>内存</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="Widget_Network_Title.Text" xml:space="preserve">
+    <value>网络</value>
+  </data>
+  <data name="Widget_Network_DownloadSpeed_Title.Text" xml:space="preserve">
+    <value>下载</value>
+  </data>
+  <data name="Widget_Network_UploadSpeed_Title.Text" xml:space="preserve">
+    <value>上传</value>
+  </data>
 </root>

@@ -104,8 +104,15 @@ internal class SystemInfoService : ISystemInfoService
         }
     }
 
-    private static string FormatSpeed(float bytes, bool showBps)
+    private readonly NetworkSpeedInfo NetworkSpeedInfo = new();
+
+    private static string FormatSpeed(float? bytes, bool showBps)
     {
+        if (bytes is null)
+        {
+            return string.Empty;
+        }
+
         var unit = showBps ? "bps" : "B/s";
         if (showBps)
         {
@@ -134,16 +141,30 @@ internal class SystemInfoService : ISystemInfoService
         }
     }
 
-    public (string UploadSpeed, string DownloadSpeed) GetNetworkSpeed(bool showBps)
+    public NetworkSpeedInfo GetNetworkSpeed(bool showBps)
     {
-        var (uploadSpeed, downloadSpeed) = hardwareMonitor.GetNetworkInfo();
+        NetworkSpeedInfo.ClearItems();
 
-        return (FormatSpeed(uploadSpeed, showBps), FormatSpeed(downloadSpeed, showBps));
+        var networkInfoItems = hardwareMonitor.GetNetworkInfo();
+        foreach (var networkInfoItem in networkInfoItems)
+        {
+            var hardwareName = networkInfoItem.HardwareIdentifier == HardwareMonitor.TotalSpeedHardwareIdentifier
+                ? "Total".GetLocalized()
+                : networkInfoItem.HardwareName;
+
+            NetworkSpeedInfo.AddItem(hardwareName, networkInfoItem.HardwareIdentifier, FormatSpeed(networkInfoItem.UploadSpeed, showBps), FormatSpeed(networkInfoItem.DownloadSpeed, showBps));
+        }
+
+        return NetworkSpeedInfo;
     }
 
-    public (string UploadSpeed, string DownloadSpeed) GetInitNetworkSpeed(bool showBps)
+    public NetworkSpeedInfo GetInitNetworkSpeed(bool showBps)
     {
-        return (FormatSpeed(0, showBps), FormatSpeed(0, showBps));
+        NetworkSpeedInfo.ClearItems();
+
+        NetworkSpeedInfo.AddItem("Total".GetLocalized(), HardwareMonitor.TotalSpeedHardwareIdentifier, FormatSpeed(0, showBps), FormatSpeed(0, showBps));
+
+        return NetworkSpeedInfo;
     }
 
     #endregion

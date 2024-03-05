@@ -11,13 +11,11 @@ public partial class ClockSettingsViewModel : BaseWidgetSettingsViewModel
 
     #endregion
 
-    private readonly IWidgetManagerService _widgetManagerService;
-
     private ClockWidgetSettings Settings => (ClockWidgetSettings)WidgetSettings!;
 
-    public ClockSettingsViewModel(IWidgetManagerService widgetManagerService)
+    public ClockSettingsViewModel()
     {
-        _widgetManagerService = widgetManagerService;
+
     }
 
     protected override WidgetType InitializeWidgetType() => WidgetType.Clock;

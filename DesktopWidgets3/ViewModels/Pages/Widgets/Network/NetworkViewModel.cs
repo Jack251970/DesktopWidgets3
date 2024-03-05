@@ -1,10 +1,17 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using HardwareInfo.Helpers;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
 public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
     #region view properties
+
+    public ObservableCollection<Tuple<string, string>> NetworkNames { get; set; } = new();
+
+    [ObservableProperty]
+    private int _selectedIndex = 0;
 
     [ObservableProperty]
     private string _uploadSpeed = string.Empty;
@@ -18,7 +25,14 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     private bool showBps = false;
 
+    private string hardwareIdentifier = HardwareMonitor.TotalSpeedHardwareIdentifier;
+
     #endregion
+
+    private NetworkSpeedInfo networkSpeedInfo = null!;
+
+    private List<Tuple<string, string>> lastNetworkNamesIdentifiers = new();
+    private List<Tuple<string, string>> networkNamesIdentifiers = new();
 
     private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;
@@ -33,9 +47,66 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     private async void UpdateNetwork()
     {
-        var networkSpeed = await Task.Run(() => _systemInfoService.GetNetworkSpeed(showBps));
+        await UpdateCard(false);
+    }
 
-        RunOnDispatcherQueue(() => (UploadSpeed, DownloadSpeed) = networkSpeed);
+    private async Task UpdateCard(bool init)
+    {
+        (int, string, string, string, string)? networkSpeedInfoItem;
+
+        if (init)
+        {
+            networkSpeedInfo = await Task.Run(() => _systemInfoService.GetInitNetworkSpeed(showBps));
+            lastNetworkNamesIdentifiers = networkNamesIdentifiers;
+            networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
+            networkSpeedInfoItem = networkSpeedInfo.GetItem(0);
+        }
+        else
+        {
+            networkSpeedInfo = await Task.Run(() => _systemInfoService.GetNetworkSpeed(showBps));
+            lastNetworkNamesIdentifiers = networkNamesIdentifiers;
+            networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
+            networkSpeedInfoItem = networkSpeedInfo.SearchItemByIdentifier(hardwareIdentifier);
+        }
+
+        if (lastNetworkNamesIdentifiers.Count != networkNamesIdentifiers.Count || 
+            !lastNetworkNamesIdentifiers.SequenceEqual(networkNamesIdentifiers))
+        {
+            RunOnDispatcherQueue(() =>
+            {
+                NetworkNames.Clear();
+                foreach (var item in networkNamesIdentifiers)
+                {
+                    NetworkNames.Add(item);
+                }
+            });
+        }
+
+        var selectedIndex = 0;
+        var uploadSpeed = string.Empty;
+        var downloadSpeed = string.Empty;
+        if (networkSpeedInfoItem != null)
+        {
+            (selectedIndex, _, _, uploadSpeed, downloadSpeed) = networkSpeedInfoItem.Value;
+        }
+
+        RunOnDispatcherQueue(() => {
+            SelectedIndex = selectedIndex;
+            UploadSpeed = uploadSpeed;
+            DownloadSpeed = downloadSpeed;
+        });
+    }
+
+    partial void OnSelectedIndexChanged(int value)
+    {
+        if (value < 0)
+        {
+            return;
+        }
+
+        hardwareIdentifier = NetworkNames[value].Item2;
+
+        UpdateWidgetSettings(GetSettings());
     }
 
     #region abstract methods
@@ -47,11 +118,14 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
             showBps = settings.ShowBps;
         }
 
+        if (settings.HardwareIdentifier != hardwareIdentifier)
+        {
+            hardwareIdentifier = settings.HardwareIdentifier;
+        }
+
         if (UploadSpeed == string.Empty)
         {
-            var networkSpeed = await Task.Run(() => _systemInfoService.GetInitNetworkSpeed(showBps));
-
-            (UploadSpeed, DownloadSpeed) = networkSpeed;
+            await UpdateCard(true);
         }
     }
 
@@ -59,7 +133,8 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
     {
         return new NetworkWidgetSettings
         {
-            ShowBps = showBps
+            ShowBps = showBps,
+            HardwareIdentifier = hardwareIdentifier
         };
     }
 

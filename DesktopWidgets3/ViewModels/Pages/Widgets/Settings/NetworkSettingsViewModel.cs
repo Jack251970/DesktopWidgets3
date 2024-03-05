@@ -11,13 +11,11 @@ public partial class NetworkSettingsViewModel : BaseWidgetSettingsViewModel
 
     #endregion
 
-    private readonly IWidgetManagerService _widgetManagerService;
-
     private NetworkWidgetSettings Settings => (NetworkWidgetSettings)WidgetSettings!;
 
-    public NetworkSettingsViewModel(IWidgetManagerService widgetManagerService)
+    public NetworkSettingsViewModel()
     {
-        _widgetManagerService = widgetManagerService;
+
     }
 
     protected override WidgetType InitializeWidgetType() => WidgetType.Network;

@@ -6,13 +6,11 @@ public partial class DiskSettingsViewModel : BaseWidgetSettingsViewModel
 
     #endregion
 
-    private readonly IWidgetManagerService _widgetManagerService;
-
     private DiskWidgetSettings Settings => (DiskWidgetSettings)WidgetSettings!;
 
-    public DiskSettingsViewModel(IWidgetManagerService widgetManagerService)
+    public DiskSettingsViewModel()
     {
-        _widgetManagerService = widgetManagerService;
+
     }
 
     protected override WidgetType InitializeWidgetType() => WidgetType.Disk;

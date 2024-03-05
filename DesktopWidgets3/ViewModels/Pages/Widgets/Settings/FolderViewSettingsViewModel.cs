@@ -62,14 +62,10 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
 
     #endregion
 
-    private readonly IWidgetManagerService _widgetManagerService;
-
     private FolderViewWidgetSettings Settings => (FolderViewWidgetSettings)WidgetSettings!;
 
-    public FolderViewSettingsViewModel(IWidgetManagerService widgetManagerService)
+    public FolderViewSettingsViewModel()
     {
-        _widgetManagerService = widgetManagerService;
-
         SelectFolderPathCommand = new ClickCommand(SelectFoldePath);
     }
 

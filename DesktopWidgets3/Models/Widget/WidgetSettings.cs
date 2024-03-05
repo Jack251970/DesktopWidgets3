@@ -1,4 +1,5 @@
 ﻿using Files.Core.Data.Enums;
+using HardwareInfo.Helpers;
 
 namespace DesktopWidgets3.Models.Widget;
 
@@ -89,10 +90,13 @@ public class NetworkWidgetSettings : BaseWidgetSettings
 {
     public bool ShowBps { get; set; } = false;
 
+    public string HardwareIdentifier { get; set; } = HardwareMonitor.TotalSpeedHardwareIdentifier;
+
     public override BaseWidgetSettings Clone()
     {
         var clone = (NetworkWidgetSettings)base.Clone();
         clone.ShowBps = ShowBps;
+        clone.HardwareIdentifier = HardwareIdentifier;
         return clone;
     }
 }

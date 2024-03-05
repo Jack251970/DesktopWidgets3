@@ -1,6 +1,4 @@
-﻿using LibreHardwareMonitor.Hardware;
-
-namespace HardwareInfo.Helpers;
+﻿namespace HardwareInfo.Helpers;
 
 public class HardwareMonitor
 {
@@ -10,6 +8,12 @@ public class HardwareMonitor
     {
         get => _computer.IsCpuEnabled;
         set => _computer.IsCpuEnabled = value;
+    }
+
+    public bool DiskEnabled
+    {
+        get => _computer.IsStorageEnabled;
+        set => _computer.IsStorageEnabled = value;
     }
 
     public bool GpuEnabled
@@ -57,7 +61,7 @@ public class HardwareMonitor
     #region cpu info
 
     /// <summary>
-    /// Get cpu infomation.
+    /// Get cpu infomation in celsius unit.
     /// </summary>
     public (float? CpuLoad, float? CpuTemperature) GetCpuInfo()
     {
@@ -93,7 +97,7 @@ public class HardwareMonitor
     #region gpu info
 
     /// <summary>
-    /// Get gpu infomation.
+    /// Get gpu infomation in celsius unit.
     /// </summary>
     public (HardwareType? GpuType, float? GpuLoad, float? GpuTemperature) GetGpuInfo()
     {
@@ -139,7 +143,7 @@ public class HardwareMonitor
     private readonly string MemoryAvailableSensorName = "Memory Available";
 
     /// <summary>
-    /// Get memory infomation.
+    /// Get memory infomation in GB & celsius unit.
     /// </summary>
     public (float? MemoryLoad, float? MemoryUsed, float? MemoryAvailable) GetMemoryInfo()
     {
@@ -179,24 +183,99 @@ public class HardwareMonitor
 
     #region network info
 
+    public static readonly string TotalSpeedHardwareIdentifier = "Total";
+
     private readonly string UploadSpeedSensorName = "Upload Speed";
     private readonly string DownloadSpeedSensorName = "Download Speed";
 
     /// <summary>
     /// Get network infomation in K/s unit.
     /// </summary>
-    public (float TotalUploadSpeed, float TotalDownloadSpeed) GetNetworkInfo()
+    public List<NetworkInfoItem> GetNetworkInfo()
     {
-        float totalUploadSpeed = 0;
-        float totalDownloadSpeed = 0;
+        List<NetworkInfoItem> networkInfoItems = new();
 
         if (NetworkEnabled)
         {
+            float totalUploadSpeed = 0;
+            float totalDownloadSpeed = 0;
+
+            string hardwareName;
+            Identifier hardwareIdentifier;
+            float? uploadSpeed = null;
+            float? downloadSpeed = null;
+
             foreach (var hardware in Hardware)
             {
                 if (hardware.HardwareType == HardwareType.Network)
                 {
+                    hardwareName = hardware.Name;
+                    hardwareIdentifier = hardware.Identifier;
+
                     foreach (var sensor in hardware.Sensors)
+                    {
+                        if (sensor.Name == UploadSpeedSensorName)
+                        {
+                            uploadSpeed = sensor.Value;
+                            if (sensor.Value != null)
+                            {
+                                totalUploadSpeed += (float)sensor.Value;
+                            }
+                        }
+                        else if (sensor.Name == DownloadSpeedSensorName)
+                        {
+                            downloadSpeed = sensor.Value;
+                            if (sensor.Value != null)
+                            {
+                                totalDownloadSpeed += (float)sensor.Value;
+                            }
+                        }
+                    }
+
+                    networkInfoItems.Add(new NetworkInfoItem
+                    {
+                        HardwareName = hardwareName,
+                        HardwareIdentifier = hardwareIdentifier.ToString(),
+                        UploadSpeed = uploadSpeed,
+                        DownloadSpeed = downloadSpeed
+                    });
+                }
+            }
+
+            // insert total network info at the beginning
+            networkInfoItems.Insert(0, new NetworkInfoItem
+            {
+                HardwareName = string.Empty,
+                HardwareIdentifier = TotalSpeedHardwareIdentifier,
+                UploadSpeed = totalUploadSpeed,
+                DownloadSpeed = totalDownloadSpeed
+            });
+        }
+
+        return networkInfoItems;
+    }
+
+    #endregion
+
+    #region disk info
+
+    /// <summary>
+    /// Get disk infomation in GB & celsius unit.
+    /// </summary>
+    public (float? DiskLoad, float? DiskUsed, float? DiskAvailable) GetDiskInfo()
+    {
+        float? diskLoad = null;
+        float? diskUsed = null;
+        float? diskAvailable = null;
+
+        if (DiskEnabled)
+        {
+            foreach (var hardware in Hardware)
+            {
+                if (hardware.HardwareType == HardwareType.Storage)
+                {
+                    var sensors = hardware.Sensors;
+                    /*foreach (var sensor in hardware.Sensors)
                     {
                         if (sensor.Name == UploadSpeedSensorName && sensor.Value != null)
                         {
@@ -206,12 +285,12 @@ public class HardwareMonitor
                         {
                             totalDownloadSpeed += (float)sensor.Value;
                         }
-                    }
+                    }*/
                 }
             }
         }
 
-        return (totalUploadSpeed, totalDownloadSpeed);
+        return (diskLoad, diskUsed, diskAvailable);
     }
 
     #endregion

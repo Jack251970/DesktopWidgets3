@@ -95,6 +95,11 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     public BaseWidgetSettings GetWidgetSettings() => (GetSettings() as BaseWidgetSettings)!;
 
+    protected void UpdateWidgetSettings(BaseWidgetSettings settings)
+    {
+        _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, settings);
+    }
+
     #endregion
 
     #region right tapped menu

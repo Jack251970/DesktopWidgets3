@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UserControl
-    x:Class="HardwareInfo.UserControls.HardwareInfoCard"
+    x:Class="HardwareInfo.UserControls.ProgressCard"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -21,11 +21,9 @@
             </Grid.ColumnDefinitions>
             <TextBlock
                 Grid.Row="0"
-                Grid.Column="0"
                 Text="{x:Bind LeftTitle, Mode=OneWay}"/>
             <TextBlock
                 Grid.Row="0"
-                Grid.Column="2"
                 Text="{x:Bind RightTitle, Mode=OneWay}"/>
         </Grid>
         <ProgressBar

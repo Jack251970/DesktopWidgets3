@@ -6,13 +6,11 @@ public partial class PerformanceSettingsViewModel : BaseWidgetSettingsViewModel
 
     #endregion
 
-    private readonly IWidgetManagerService _widgetManagerService;
-
     private PerformanceWidgetSettings Settings => (PerformanceWidgetSettings)WidgetSettings!;
 
-    public PerformanceSettingsViewModel(IWidgetManagerService widgetManagerService)
+    public PerformanceSettingsViewModel()
     {
-        _widgetManagerService = widgetManagerService;
+
     }
 
     protected override WidgetType InitializeWidgetType() => WidgetType.Performance;
