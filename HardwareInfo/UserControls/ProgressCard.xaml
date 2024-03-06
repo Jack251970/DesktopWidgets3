@@ -20,10 +20,10 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock
-                Grid.Row="0"
+                Grid.Column="0"
                 Text="{x:Bind LeftTitle, Mode=OneWay}"/>
             <TextBlock
-                Grid.Row="0"
+                Grid.Column="2"
                 Text="{x:Bind RightTitle, Mode=OneWay}"/>
         </Grid>
         <ProgressBar
