@@ -8,7 +8,7 @@
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     d:DataContext="{d:DesignInstance Type=settings:NetworkSettingsViewModel}"
-    behaviors:NavigationViewHeaderBehavior.HeaderContext="Network"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="Widget_Network_Label"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 

@@ -8,7 +8,7 @@
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     d:DataContext="{d:DesignInstance Type=settings:DiskSettingsViewModel}"
-    behaviors:NavigationViewHeaderBehavior.HeaderContext="Disk"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="Widget_Disk_Label"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 

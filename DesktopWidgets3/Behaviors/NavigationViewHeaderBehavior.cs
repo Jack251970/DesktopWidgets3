@@ -88,9 +88,9 @@ public class NavigationViewHeaderBehavior : Behavior<NavigationView>
             else
             {
                 var headerFromPage = GetHeaderContext(_currentPage);
-                if (headerFromPage != null)
+                if (headerFromPage != null && headerFromPage.ToString() is string header)
                 {
-                    AssociatedObject.Header = headerFromPage;
+                    AssociatedObject.Header = header.GetLocalized();
                 }
                 else
                 {

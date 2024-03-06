@@ -6,9 +6,7 @@
     xmlns:local="using:DesktopWidgets3.ViewModels.Pages.Widgets"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:widget="using:DesktopWidgets3.ViewModels.Pages.Widgets"
-    xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     d:DataContext="{d:DesignInstance Type=widget:DiskViewModel}"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 

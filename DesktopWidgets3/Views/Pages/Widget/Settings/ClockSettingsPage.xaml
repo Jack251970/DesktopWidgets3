@@ -8,7 +8,7 @@
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     d:DataContext="{d:DesignInstance Type=settings:ClockSettingsViewModel}"
-    behaviors:NavigationViewHeaderBehavior.HeaderContext="Clock"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="Widget_Clock_Label"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 

@@ -179,7 +179,8 @@ internal class WidgetManagerService : IWidgetManagerService
         currentIndexTag = widget.IndexTag;
 
         // create widget window
-        var widgetWindow = await UIElementExtensions.CreateWindow<WidgetWindow>(false);
+        var newThread = _widgetResourceService.GetWidgetIsNewThread(currentWidgetType);
+        var widgetWindow = await UIElementExtensions.CreateWindow<WidgetWindow>(newThread);
 
         // initialize widget
         widgetWindow.Initialize(widget);
@@ -188,7 +189,10 @@ internal class WidgetManagerService : IWidgetManagerService
         WidgetsList.Add(widgetWindow);
 
         // handle widget settings
-        await _activationService.ActivateWidgetWindowAsync(widgetWindow, widget.Settings);
+        await widgetWindow.DispatcherQueue.EnqueueOrInvokeAsync(newThread, async () =>
+        {
+            await _activationService.ActivateWidgetWindowAsync(widgetWindow, widget.Settings);
+        });
 
         // set window style, size and position
         widgetWindow.IsResizable = false;

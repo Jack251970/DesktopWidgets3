@@ -12,7 +12,7 @@
     xmlns:helpers="using:Files.App.Helpers"
     xmlns:wctconverters="using:CommunityToolkit.WinUI.UI.Converters"
     d:DataContext="{d:DesignInstance Type=settings:FolderViewSettingsViewModel}"
-    behaviors:NavigationViewHeaderBehavior.HeaderContext="FolderView"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="Widget_FolderView_Label"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 

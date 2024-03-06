@@ -5,10 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:widget="using:DesktopWidgets3.ViewModels.Pages.Widgets"
-    xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:clock="using:Clock.UserControls"
     d:DataContext="{d:DesignInstance Type=widget:ClockViewModel}"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 

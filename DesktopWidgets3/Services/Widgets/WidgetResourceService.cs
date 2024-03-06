@@ -84,4 +84,13 @@ internal class WidgetResourceService : IWidgetResourceService
             _ => throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null),
         };
     }
+
+    public bool GetWidgetIsNewThread(WidgetType widgetType)
+    {
+        return widgetType switch
+        {
+            WidgetType.Clock => false,
+            _ => false,
+        };
+    }
 }

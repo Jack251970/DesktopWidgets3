@@ -11,4 +11,6 @@ public interface IWidgetResourceService
     WidgetSize GetMinSize(WidgetType widgetType);
 
     BaseWidgetSettings GetDefaultSettings(WidgetType widgetType);
+
+    bool GetWidgetIsNewThread(WidgetType widgetType);
 }

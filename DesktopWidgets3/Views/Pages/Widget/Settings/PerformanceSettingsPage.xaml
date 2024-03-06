@@ -8,7 +8,7 @@
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     d:DataContext="{d:DesignInstance Type=settings:PerformanceSettingsViewModel}"
-    behaviors:NavigationViewHeaderBehavior.HeaderContext="Performance"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="Widget_Performance_Label"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
