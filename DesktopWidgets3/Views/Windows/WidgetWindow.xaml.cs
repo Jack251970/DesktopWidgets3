@@ -41,9 +41,9 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region type & index
 
-    public WidgetType WidgetType { get; }
+    public WidgetType WidgetType { get; private set; }
 
-    public int IndexTag { get; }
+    public int IndexTag { get; private set; }
 
     #endregion
 
@@ -73,21 +73,24 @@ public sealed partial class WidgetWindow : WindowEx
 
     private readonly UISettings settings;
 
-    public WidgetWindow(BaseWidgetItem widgetItem)
+    public WidgetWindow()
     {
         InitializeComponent();
 
         _manager = WindowManager.Get(this);
         _handle = this.GetWindowHandle();
 
-        WidgetType = widgetItem.Type;
-        IndexTag = widgetItem.IndexTag;
-
         Content = null;
         Title = string.Empty;
 
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
+    }
+
+    public void Initialize(BaseWidgetItem widgetItem)
+    {
+        WidgetType = widgetItem.Type;
+        IndexTag = widgetItem.IndexTag;
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open

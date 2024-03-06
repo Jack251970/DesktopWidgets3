@@ -93,7 +93,7 @@ public static class FilePropertiesHelpers
 	/// </summary>
 	/// <param name="item">An item to view properties</param>
 	/// <param name="associatedInstance">Associated main window instance</param>
-	public static void OpenPropertiesWindow(IFolderViewViewModel folderViewViewModel, object item, IShellPage associatedInstance)
+	public static async void OpenPropertiesWindow(IFolderViewViewModel folderViewViewModel, object item, IShellPage associatedInstance)
 	{
 		var applicationService = DependencyExtensions.GetService<IApplicationService>();
 
@@ -110,7 +110,7 @@ public static class FilePropertiesHelpers
 		WinUIEx.WindowEx propertiesWindow;
 		if (!WindowCache.TryTake(out propertiesWindow!))
 		{
-            propertiesWindow = UIElementExtensions.GetWindow<BlankWindow>(false);
+            propertiesWindow = await UIElementExtensions.CreateWindow<BlankWindow>(false);
             propertiesWindow.Closed += PropertiesWindow_Closed;
 		}
 

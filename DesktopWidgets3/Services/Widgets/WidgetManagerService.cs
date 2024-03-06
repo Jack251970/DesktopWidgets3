@@ -179,11 +179,13 @@ internal class WidgetManagerService : IWidgetManagerService
         currentIndexTag = widget.IndexTag;
 
         // create widget window
-        var widgetWindow = new WidgetWindow(widget);
-        WidgetsList.Add(widgetWindow);
+        var widgetWindow = await UIElementExtensions.CreateWindow<WidgetWindow>(false);
 
-        // register window
-        UIElementExtensions.RegisterWindow(widgetWindow);
+        // initialize widget
+        widgetWindow.Initialize(widget);
+
+        // add to widget list
+        WidgetsList.Add(widgetWindow);
 
         // handle widget settings
         await _activationService.ActivateWidgetWindowAsync(widgetWindow, widget.Settings);
@@ -367,10 +369,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         if (EditModeOverlayWindow == null)
         {
-            EditModeOverlayWindow = new OverlayWindow();
-
-            // register window
-            UIElementExtensions.RegisterWindow(EditModeOverlayWindow);
+            EditModeOverlayWindow = await UIElementExtensions.CreateWindow<OverlayWindow>(false);
 
             await _activationService.ActivateOverlayWindowAsync(EditModeOverlayWindow);
             var _shell = EditModeOverlayWindow.Content as Frame;

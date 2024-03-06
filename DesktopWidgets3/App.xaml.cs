@@ -210,7 +210,7 @@ public partial class App : Application
     {
         base.OnLaunched(args);
 
-        if (!IsExistWindow)
+        if (!IsExistWindow && MainWindow is null)
         {
             MainWindow = new MainWindow();
             await GetService<IActivationService>().ActivateMainWindowAsync(args);

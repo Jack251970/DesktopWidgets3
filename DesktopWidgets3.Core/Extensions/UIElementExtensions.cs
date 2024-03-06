@@ -18,11 +18,13 @@ public static class UIElementExtensions
         FallbackWindowService = windowService;
     }
 
-    public static T GetWindow<T>(bool newThread) where T : Window, new()
+    public static async Task<T> CreateWindow<T>(bool newThread) where T : Window, new()
     {
         if (newThread)
         {
             T window = null!;
+
+            var tcs = new TaskCompletionSource<T>();
 
             var thread = new Thread(state =>
             {
@@ -35,6 +37,9 @@ public static class UIElementExtensions
                 // create a new window
                 window = CreateWindow<T>();
 
+                // complete the task with the window object
+                tcs.SetResult(window);
+
                 // run message pump
                 dq.DispatcherQueue.RunEventLoop();
             })
@@ -45,10 +50,7 @@ public static class UIElementExtensions
 
             thread.Start();
 
-            // wait for the thread to finish
-            thread.Join();
-
-            return window;
+            return await tcs.Task;
         }
         else
         {
