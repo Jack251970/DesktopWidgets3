@@ -2,5 +2,5 @@
 
 public interface IWindowService
 {
-    Task ActivateWindow(BlankWindow window);
+    Task ActivateBlankWindow(BlankWindow window, bool setContent);
 }

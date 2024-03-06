@@ -8,5 +8,5 @@ public interface IActivationService
 
     Task ActivateOverlayWindowAsync(OverlayWindow window);
 
-    Task ActivateBlankWindowAsync(BlankWindow window);
+    Task ActivateBlankWindowAsync(BlankWindow window, bool setContent);
 }

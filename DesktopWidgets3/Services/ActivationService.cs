@@ -77,13 +77,13 @@ internal class ActivationService : IActivationService
         await StartupAsync(window);
     }
 
-    public async Task ActivateBlankWindowAsync(BlankWindow window)
+    public async Task ActivateBlankWindowAsync(BlankWindow window, bool setContent)
     {
         // Execute tasks before activation.
         await InitializeAsync();
 
         // Set the Window Content.
-        if (window.Content == null)
+        if (setContent && window.Content == null)
         {
             window.Content = new Frame();
         }

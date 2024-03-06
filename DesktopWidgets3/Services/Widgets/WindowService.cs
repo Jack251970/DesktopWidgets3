@@ -2,8 +2,8 @@
 
 internal class WindowService : IWindowService
 {
-    public async Task ActivateWindow(BlankWindow window)
+    public async Task ActivateBlankWindow(BlankWindow window, bool setContent)
     {
-        await App.GetService<IActivationService>().ActivateBlankWindowAsync(window);
+        await App.GetService<IActivationService>().ActivateBlankWindowAsync(window, setContent);
     }
 }

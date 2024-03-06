@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using DesktopWidgets3.Core.Views.Windows;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -109,8 +110,7 @@ public static class FilePropertiesHelpers
 		WinUIEx.WindowEx propertiesWindow;
 		if (!WindowCache.TryTake(out propertiesWindow!))
 		{
-            // 
-            propertiesWindow = UIElementExtensions.GetWindowEx();
+            propertiesWindow = UIElementExtensions.GetWindow<BlankWindow>(false);
             propertiesWindow.Closed += PropertiesWindow_Closed;
 		}
 

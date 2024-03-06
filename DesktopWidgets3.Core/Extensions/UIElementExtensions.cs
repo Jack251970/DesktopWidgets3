@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Hosting;
 
 namespace DesktopWidgets3.Core.Extensions;
 
@@ -16,20 +18,65 @@ public static class UIElementExtensions
         FallbackWindowService = windowService;
     }
 
-    public static BlankWindow GetWindowEx()
+    public static T GetWindow<T>(bool newThread) where T : Window, new()
+    {
+        if (newThread)
+        {
+            T window = null!;
+
+            var thread = new Thread(state =>
+            {
+                // create a DispatcherQueue on this new thread
+                var dq = DispatcherQueueController.CreateOnCurrentThread();
+
+                // initialize xaml in it
+                WindowsXamlManager.InitializeForCurrentThread();
+
+                // create a new window
+                window = CreateWindow<T>();
+
+                // run message pump
+                dq.DispatcherQueue.RunEventLoop();
+            })
+            {
+                // will be destroyed when main is closed
+                IsBackground = true
+            };
+
+            thread.Start();
+
+            // wait for the thread to finish
+            thread.Join();
+
+            return window;
+        }
+        else
+        {
+            // create a new window
+            var window = CreateWindow<T>();
+
+            return window;
+        }
+    }
+
+    private static T CreateWindow<T>() where T : Window, new()
     {
         if (FallbackWindowService is null)
         {
             throw new InvalidOperationException("Window service is not initialized.");
         }
 
-        var window = new BlankWindow();
+        // create a new window
+        var window = new T();
 
-        // Handle window registration and unregistration
+        // register window
         RegisterWindow(window);
 
-        // Activate window using fallback service
-        FallbackWindowService.ActivateWindow(window);
+        if (window is BlankWindow blankWindow)
+        {
+            // activate window using fallback service
+            FallbackWindowService.ActivateBlankWindow(blankWindow, false);
+        }
 
         return window;
     }
