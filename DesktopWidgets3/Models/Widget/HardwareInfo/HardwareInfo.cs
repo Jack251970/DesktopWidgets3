@@ -10,8 +10,8 @@ public class NetworkSpeedInfo
     {
         networkSpeedInfoItems.Add(new NetworkSpeedInfoItem()
         {
-            HardwareName = hardwareName,
-            HardwareIdentifier = hardwareIdentifier,
+            Name = hardwareName,
+            Identifier = hardwareIdentifier,
             UploadSpeed = uploadSpeed,
             DownloadSpeed = downloadSpeed
         });
@@ -21,9 +21,9 @@ public class NetworkSpeedInfo
     {
         for (var i = 0; i < networkSpeedInfoItems.Count; i++)
         {
-            if (networkSpeedInfoItems[i].HardwareIdentifier == hardwareIdentifier)
+            if (networkSpeedInfoItems[i].Identifier == hardwareIdentifier)
             {
-                return (i, networkSpeedInfoItems[i].HardwareName, networkSpeedInfoItems[i].HardwareIdentifier, networkSpeedInfoItems[i].UploadSpeed, networkSpeedInfoItems[i].DownloadSpeed);
+                return (i, networkSpeedInfoItems[i].Name, networkSpeedInfoItems[i].Identifier, networkSpeedInfoItems[i].UploadSpeed, networkSpeedInfoItems[i].DownloadSpeed);
             }
         }
 
@@ -34,9 +34,9 @@ public class NetworkSpeedInfo
     {
         for (var i = 0; i < networkSpeedInfoItems.Count; i++)
         {
-            if (networkSpeedInfoItems[i].HardwareName == hardwareName)
+            if (networkSpeedInfoItems[i].Name == hardwareName)
             {
-                return (i, networkSpeedInfoItems[i].HardwareName, networkSpeedInfoItems[i].HardwareIdentifier, networkSpeedInfoItems[i].UploadSpeed, networkSpeedInfoItems[i].DownloadSpeed);
+                return (i, networkSpeedInfoItems[i].Name, networkSpeedInfoItems[i].Identifier, networkSpeedInfoItems[i].UploadSpeed, networkSpeedInfoItems[i].DownloadSpeed);
             }
         }
 
@@ -47,7 +47,7 @@ public class NetworkSpeedInfo
     {
         if (index >= 0 && index < networkSpeedInfoItems.Count)
         {
-            return (index, networkSpeedInfoItems[index].HardwareName, networkSpeedInfoItems[index].HardwareIdentifier, networkSpeedInfoItems[index].UploadSpeed, networkSpeedInfoItems[index].DownloadSpeed);
+            return (index, networkSpeedInfoItems[index].Name, networkSpeedInfoItems[index].Identifier, networkSpeedInfoItems[index].UploadSpeed, networkSpeedInfoItems[index].DownloadSpeed);
         }
 
         return null;
@@ -55,7 +55,7 @@ public class NetworkSpeedInfo
 
     public List<Tuple<string, string>> GetHardwareNamesIdentifiers()
     {
-        return networkSpeedInfoItems.Select(x => new Tuple<string, string>(x.HardwareName, x.HardwareIdentifier)).ToList();
+        return networkSpeedInfoItems.Select(x => new Tuple<string, string>(x.Name, x.Identifier)).ToList();
     }
 
     public void ClearItems()
@@ -68,5 +68,20 @@ public class NetworkSpeedInfo
         public string UploadSpeed { get; set; } = null!;
 
         public string DownloadSpeed { get; set; } = null!;
+    }
+}
+
+public class DiskInfo
+{
+    private readonly List<PartitionSpaceInfoItem> diskSpaceInfoItems = new();
+
+    public void ClearItems()
+    {
+        diskSpaceInfoItems.Clear();
+    }
+
+    private class PartitionSpaceInfoItem : PartitionInfoItem
+    {
+
     }
 }

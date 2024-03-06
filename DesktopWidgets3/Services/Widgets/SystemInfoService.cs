@@ -30,7 +30,33 @@ internal class SystemInfoService : ISystemInfoService
 
     private readonly Timer sampleTimer = new();
 
-    private bool IsMonitorOpen => _isNetworkMonitorOpen || _isCpuGpuMemoryMonitorOpen;
+    private bool isMonitorOpen = false;
+    private void UpdateMonitorStatus()
+    {
+        var lastIsMonitorOpen = isMonitorOpen;
+
+        isMonitorOpen = _isNetworkMonitorOpen || _isCpuGpuMemoryMonitorOpen || _isDiskMonitorOpen;
+
+        // Check if need to change monitor status
+        if (lastIsMonitorOpen == isMonitorOpen)
+        {
+            return;
+        }
+
+        if (isMonitorOpen)
+        {
+            hardwareMonitor.Open();
+            sampleTimer.Start();
+            sampleTimer.Elapsed -= UpdateMonitor;
+            sampleTimer.Elapsed += UpdateMonitor;
+        }
+        else
+        {
+            hardwareMonitor.Close();
+            sampleTimer.Stop();
+            sampleTimer.Elapsed -= UpdateMonitor;
+        }
+    }
 
     public void StartMonitor(WidgetType type)
     {
@@ -41,6 +67,9 @@ internal class SystemInfoService : ISystemInfoService
                 break;
             case WidgetType.Performance:
                 SetCpuGpuMemoryMonitor(true);
+                break;
+            case WidgetType.Disk:
+                SetDiskMonitor(true);
                 break;
         }
     }
@@ -55,29 +84,9 @@ internal class SystemInfoService : ISystemInfoService
             case WidgetType.Performance:
                 SetCpuGpuMemoryMonitor(false);
                 break;
-        }
-    }
-
-    private void SetMonitorTimer(bool lastIsMonitorOpen, bool enabled)
-    {
-        // Check if need to change monitor status
-        if (lastIsMonitorOpen == IsMonitorOpen)
-        {
-            return;
-        }
-
-        if (enabled)
-        {
-            hardwareMonitor.Open();
-            sampleTimer.Start();
-            sampleTimer.Elapsed -= UpdateMonitor;
-            sampleTimer.Elapsed += UpdateMonitor;
-        }
-        else
-        {
-            hardwareMonitor.Close();
-            sampleTimer.Stop();
-            sampleTimer.Elapsed -= UpdateMonitor;
+            case WidgetType.Disk:
+                SetDiskMonitor(false);
+                break;
         }
     }
     
@@ -95,12 +104,10 @@ internal class SystemInfoService : ISystemInfoService
     {
         if (enabled != _isNetworkMonitorOpen)
         {
-            var lastMonitorEnabled = IsMonitorOpen;
-
             _isNetworkMonitorOpen = enabled;
             hardwareMonitor.NetworkEnabled = enabled;
 
-            SetMonitorTimer(lastMonitorEnabled, enabled);
+            UpdateMonitorStatus();
         }
     }
 
@@ -148,11 +155,11 @@ internal class SystemInfoService : ISystemInfoService
         var networkInfoItems = hardwareMonitor.GetNetworkInfo();
         foreach (var networkInfoItem in networkInfoItems)
         {
-            var hardwareName = networkInfoItem.HardwareIdentifier == HardwareMonitor.TotalSpeedHardwareIdentifier
+            var hardwareName = networkInfoItem.Identifier == HardwareMonitor.TotalSpeedHardwareIdentifier
                 ? "Total".GetLocalized()
-                : networkInfoItem.HardwareName;
+                : networkInfoItem.Name;
 
-            NetworkSpeedInfo.AddItem(hardwareName, networkInfoItem.HardwareIdentifier, FormatSpeed(networkInfoItem.UploadSpeed, showBps), FormatSpeed(networkInfoItem.DownloadSpeed, showBps));
+            NetworkSpeedInfo.AddItem(hardwareName, networkInfoItem.Identifier, FormatSpeed(networkInfoItem.UploadSpeed, showBps), FormatSpeed(networkInfoItem.DownloadSpeed, showBps));
         }
 
         return NetworkSpeedInfo;
@@ -176,14 +183,12 @@ internal class SystemInfoService : ISystemInfoService
     {
         if (enabled != _isCpuGpuMemoryMonitorOpen)
         {
-            var lastMonitorEnabled = IsMonitorOpen;
-
             _isCpuGpuMemoryMonitorOpen = enabled;
             hardwareMonitor.CpuEnabled = enabled;
             hardwareMonitor.GpuEnabled = enabled;
             hardwareMonitor.MemoryEnabled = enabled;
 
-            SetMonitorTimer(lastMonitorEnabled, enabled);
+            UpdateMonitorStatus();
         }
     }
 
@@ -275,6 +280,40 @@ internal class SystemInfoService : ISystemInfoService
     public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetInitMemoryInfo()
     {
         return (FormatPercentage(0), 0, FormatMemoryUsedInfo(0, 0));
+    }
+
+    #endregion
+
+    #region disk
+
+    private bool _isDiskMonitorOpen;
+    private void SetDiskMonitor(bool enabled)
+    {
+        if (enabled != _isDiskMonitorOpen)
+        {
+            _isDiskMonitorOpen = enabled;
+            hardwareMonitor.DiskEnabled = enabled;
+
+            UpdateMonitorStatus();
+        }
+    }
+
+    private readonly DiskInfo DiskInfo = new();
+
+    public DiskInfo GetDiskInfo()
+    {
+        DiskInfo.ClearItems();
+
+        var diskInfoItems = hardwareMonitor.GetDiskInfo();
+
+        return DiskInfo;
+    }
+
+    public DiskInfo GetInitDiskInfo()
+    {
+        DiskInfo.ClearItems();
+
+        return DiskInfo;
     }
 
     #endregion

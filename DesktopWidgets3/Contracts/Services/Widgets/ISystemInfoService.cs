@@ -21,4 +21,8 @@ public interface ISystemInfoService
     (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetMemoryInfo();
 
     (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetInitMemoryInfo();
+
+    DiskInfo GetDiskInfo();
+
+    DiskInfo GetInitDiskInfo();
 }

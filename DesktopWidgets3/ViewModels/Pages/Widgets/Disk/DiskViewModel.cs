@@ -10,10 +10,12 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     #endregion
 
+    private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;
 
-    public DiskViewModel(ITimersService timersService)
+    public DiskViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
     {
+        _systemInfoService = systemInfoService;
         _timersService = timersService;
 
         timersService.AddTimerAction(WidgetType.Disk, UpdateDisk);
@@ -21,6 +23,8 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     private void UpdateDisk()
     {
+        _systemInfoService.GetDiskInfo();
+
         RunOnDispatcherQueue(() => { });
     }
 

@@ -52,6 +52,7 @@ internal class TimersService : ITimersService
             timer = type switch
             {
                 WidgetType.Clock => new Timer(1000),
+                WidgetType.Disk => new Timer(2000),
                 WidgetType.Network => new Timer(1000),
                 WidgetType.Performance => new Timer(1000),
                 _ => null,

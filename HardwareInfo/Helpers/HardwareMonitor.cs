@@ -1,4 +1,6 @@
-﻿namespace HardwareInfo.Helpers;
+﻿using System.Management;
+
+namespace HardwareInfo.Helpers;
 
 public class HardwareMonitor
 {
@@ -201,7 +203,7 @@ public class HardwareMonitor
             float totalDownloadSpeed = 0;
 
             string hardwareName;
-            Identifier hardwareIdentifier;
+            string hardwareIdentifier;
             float? uploadSpeed = null;
             float? downloadSpeed = null;
 
@@ -210,7 +212,7 @@ public class HardwareMonitor
                 if (hardware.HardwareType == HardwareType.Network)
                 {
                     hardwareName = hardware.Name;
-                    hardwareIdentifier = hardware.Identifier;
+                    hardwareIdentifier = hardware.Identifier.ToString();
 
                     foreach (var sensor in hardware.Sensors)
                     {
@@ -234,8 +236,8 @@ public class HardwareMonitor
 
                     networkInfoItems.Add(new NetworkInfoItem
                     {
-                        HardwareName = hardwareName,
-                        HardwareIdentifier = hardwareIdentifier.ToString(),
+                        Name = hardwareName,
+                        Identifier = hardwareIdentifier,
                         UploadSpeed = uploadSpeed,
                         DownloadSpeed = downloadSpeed
                     });
@@ -245,8 +247,8 @@ public class HardwareMonitor
             // insert total network info at the beginning
             networkInfoItems.Insert(0, new NetworkInfoItem
             {
-                HardwareName = string.Empty,
-                HardwareIdentifier = TotalSpeedHardwareIdentifier,
+                Name = string.Empty,
+                Identifier = TotalSpeedHardwareIdentifier,
                 UploadSpeed = totalUploadSpeed,
                 DownloadSpeed = totalDownloadSpeed
             });
@@ -259,38 +261,119 @@ public class HardwareMonitor
 
     #region disk info
 
+    private readonly string PartitionUsedSensorName = "Used Space";
+    private readonly string PartitionAvailableSensorName = "Available Space";
+
     /// <summary>
-    /// Get disk infomation in GB & celsius unit.
+    /// Get disk infomation in byte unit.
     /// </summary>
-    public (float? DiskLoad, float? DiskUsed, float? DiskAvailable) GetDiskInfo()
+    public List<DiskInfoItem> GetDiskInfo()
     {
-        float? diskLoad = null;
-        float? diskUsed = null;
-        float? diskAvailable = null;
+        List<DiskInfoItem> diskInfoItems = new();
 
         if (DiskEnabled)
         {
+            string hardwareName;
+            string hardwareIdentifier;
+
+            float? diskUsed;
+            float? diskAvailable;
+
             foreach (var hardware in Hardware)
             {
                 if (hardware.HardwareType == HardwareType.Storage)
                 {
-                    var sensors = hardware.Sensors;
-                    /*foreach (var sensor in hardware.Sensors)
+                    hardwareName = hardware.Name;
+                    hardwareIdentifier = hardware.Identifier.ToString();
+
+                    List<PartitionInfoItem> partitionInfoItems = new();
+
+                    float? partitionUsed = null;
+                    float? partitionAvailable = null;
+
+                    foreach (var sensor in hardware.Sensors)
                     {
-                        if (sensor.Name == UploadSpeedSensorName && sensor.Value != null)
+                        // TODO: Fix here if needed.
+                        if (sensor.Name == PartitionUsedSensorName)
                         {
-                            totalUploadSpeed += (float)sensor.Value;
+                            partitionUsed = sensor.Value;
                         }
-                        else if (sensor.Name == DownloadSpeedSensorName && sensor.Value != null)
+                        else if (sensor.Name == PartitionAvailableSensorName)
                         {
-                            totalDownloadSpeed += (float)sensor.Value;
+                            partitionAvailable = sensor.Value;
                         }
-                    }*/
+                        // Remember in bytes unit.
+
+                        partitionInfoItems.Add(new PartitionInfoItem
+                        {
+                            Name = sensor.Name,
+                            Identifier = sensor.Identifier.ToString(),
+                            PartitionUsed = partitionUsed,
+                            PartitionAvailable = partitionAvailable
+                        });
+                    }
+
+                    diskInfoItems.Add(new DiskInfoItem
+                    {
+                        Name = hardwareName,
+                        Identifier = hardwareIdentifier,
+                        DiskUsed = null,
+                        DiskAvailable = null,
+                        PartitionInfoItems = partitionInfoItems
+                    });
+                }
+            }
+
+            if (diskInfoItems.Count == 0)
+            {
+                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
+                foreach (var disk in searcher.Get().Cast<ManagementObject>())
+                {
+                    hardwareName = disk["Model"].ToString()!;
+                    hardwareIdentifier = disk["DeviceID"].ToString()!;
+
+                    List<PartitionInfoItem> partitionInfoItems = new();
+
+                    var partitionSearcher = new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" + hardwareIdentifier + "'} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
+                    foreach (var partition in partitionSearcher.Get().Cast<ManagementObject>())
+                    {
+                        string partitionName = null!;
+                        string partitionIdentifier;
+                        float? partitionUsed = null;
+                        float? partitionAvailable = null;
+
+                        partitionIdentifier = partition["DeviceID"].ToString()!;
+
+                        var logicalDiskSearcher = new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionIdentifier + "'} WHERE AssocClass = Win32_LogicalDiskToPartition");
+                        foreach (var logicalDisk in logicalDiskSearcher.Get().Cast<ManagementObject>())
+                        {
+                            partitionName = logicalDisk["Name"].ToString()!;
+                            partitionAvailable = Convert.ToSingle(logicalDisk["FreeSpace"]);
+                            partitionUsed = Convert.ToSingle(logicalDisk["Size"]) - Convert.ToSingle(logicalDisk["FreeSpace"]);
+                        }
+
+                        partitionInfoItems.Add(new PartitionInfoItem
+                        {
+                            Name = partitionName,
+                            Identifier = partitionIdentifier,
+                            PartitionUsed = partitionUsed,
+                            PartitionAvailable = partitionAvailable
+                        });
+                    }
+
+                    diskInfoItems.Add(new DiskInfoItem
+                    {
+                        Name = hardwareName,
+                        Identifier = hardwareIdentifier,
+                        DiskUsed = null,
+                        DiskAvailable = null,
+                        PartitionInfoItems = partitionInfoItems
+                    });
                 }
             }
         }
 
-        return (diskLoad, diskUsed, diskAvailable);
+        return diskInfoItems;
     }
 
     #endregion
