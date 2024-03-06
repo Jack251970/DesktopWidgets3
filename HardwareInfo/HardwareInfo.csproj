@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <Page Update="UserControls\ProgressCard.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   
