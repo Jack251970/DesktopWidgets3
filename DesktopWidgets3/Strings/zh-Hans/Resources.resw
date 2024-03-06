@@ -291,4 +291,7 @@
   <data name="Widget_Network_UploadSpeed_Title.Text" xml:space="preserve">
     <value>上传</value>
   </data>
+  <data name="Widget_Disk_Title.Text" xml:space="preserve">
+    <value>磁盘</value>
+  </data>
 </root>

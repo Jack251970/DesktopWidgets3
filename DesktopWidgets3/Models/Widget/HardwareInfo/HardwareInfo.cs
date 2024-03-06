@@ -87,6 +87,16 @@ public class DiskInfo
         });
     }
 
+    public List<ProgressCardData> GetProgressCardData()
+    {
+        return diskSpaceInfoItems.Select(x => new ProgressCardData()
+        {
+            LeftTitle = x.Name,
+            RightTitle = x.PartitionUsedInfo,
+            ProgressValue = x.PartitionLoadValue
+        }).ToList();
+    }
+
     public void ClearItems()
     {
         diskSpaceInfoItems.Clear();

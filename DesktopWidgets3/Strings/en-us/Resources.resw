@@ -309,4 +309,7 @@
   <data name="Widget_Network_UploadSpeed_Title.Text" xml:space="preserve">
     <value>Upload</value>
   </data>
+  <data name="Widget_Disk_Title.Text" xml:space="preserve">
+    <value>Disk</value>
+  </data>
 </root>
