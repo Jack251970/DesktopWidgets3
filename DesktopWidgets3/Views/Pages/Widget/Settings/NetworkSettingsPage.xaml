@@ -19,8 +19,8 @@
             VerticalScrollBarVisibility="Hidden"
             VerticalScrollMode="Auto">
             <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                <labs:SettingsCard x:Uid="WidgetSettings_ShowBps_Card">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.ShowBps, Mode=TwoWay}" />
+                <labs:SettingsCard x:Uid="WidgetSettings_UseBps_Card">
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.UseBps, Mode=TwoWay}" />
                 </labs:SettingsCard>
             </StackPanel>
         </ScrollViewer>

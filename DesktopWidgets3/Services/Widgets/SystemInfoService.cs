@@ -113,42 +113,7 @@ internal class SystemInfoService : ISystemInfoService
 
     private readonly NetworkSpeedInfo NetworkSpeedInfo = new();
 
-    private static string FormatSpeed(float? bytes, bool showBps)
-    {
-        if (bytes is null)
-        {
-            return string.Empty;
-        }
-
-        var unit = showBps ? "bps" : "B/s";
-        if (showBps)
-        {
-            bytes *= 8;
-        }
-
-        const ulong kilobyte = 1024;
-        const ulong megabyte = 1024 * kilobyte;
-        const ulong gigabyte = 1024 * megabyte;
-
-        if (bytes < kilobyte)
-        {
-            return $"{bytes:F2} {unit}";
-        }
-        else if (bytes < megabyte)
-        {
-            return $"{bytes / kilobyte:F2} K{unit}";
-        }
-        else if (bytes < gigabyte)
-        {
-            return $"{bytes / megabyte:F2} M{unit}";
-        }
-        else
-        {
-            return $"{bytes / gigabyte:F2} G{unit}";
-        }
-    }
-
-    public NetworkSpeedInfo GetNetworkSpeed(bool showBps)
+    public NetworkSpeedInfo GetNetworkSpeed(bool useBps)
     {
         NetworkSpeedInfo.ClearItems();
 
@@ -159,19 +124,35 @@ internal class SystemInfoService : ISystemInfoService
                 ? "Total".GetLocalized()
                 : networkInfoItem.Name;
 
-            NetworkSpeedInfo.AddItem(hardwareName, networkInfoItem.Identifier, FormatSpeed(networkInfoItem.UploadSpeed, showBps), FormatSpeed(networkInfoItem.DownloadSpeed, showBps));
+            NetworkSpeedInfo.AddItem(hardwareName, networkInfoItem.Identifier, FormatNetworkSpeed(networkInfoItem.UploadSpeed, useBps), FormatNetworkSpeed(networkInfoItem.DownloadSpeed, useBps));
         }
 
         return NetworkSpeedInfo;
     }
 
-    public NetworkSpeedInfo GetInitNetworkSpeed(bool showBps)
+    public NetworkSpeedInfo GetInitNetworkSpeed(bool useBps)
     {
         NetworkSpeedInfo.ClearItems();
 
-        NetworkSpeedInfo.AddItem("Total".GetLocalized(), HardwareMonitor.TotalSpeedHardwareIdentifier, FormatSpeed(0, showBps), FormatSpeed(0, showBps));
+        NetworkSpeedInfo.AddItem("Total".GetLocalized(), HardwareMonitor.TotalSpeedHardwareIdentifier, FormatNetworkSpeed(0, useBps), FormatNetworkSpeed(0, useBps));
 
         return NetworkSpeedInfo;
+    }
+
+    private static string FormatNetworkSpeed(float? bytes, bool useBps)
+    {
+        if (bytes is null)
+        {
+            return string.Empty;
+        }
+
+        var unit = useBps ? "bps" : "B/s";
+        if (useBps)
+        {
+            bytes *= 8;
+        }
+
+        return FormatBytes(bytes.Value, unit);
     }
 
     #endregion
@@ -190,60 +171,6 @@ internal class SystemInfoService : ISystemInfoService
 
             UpdateMonitorStatus();
         }
-    }
-
-    private static string FormatPercentage(float? percentage)
-    {
-        if (percentage == null)
-        {
-            return string.Empty;
-        }
-
-        return $"{percentage:F2} %";
-    }
-
-    private static string FormatTemperature(float? temperature, bool useCelsius)
-    {
-        if (temperature is null)
-        {
-            return string.Empty;
-        }
-
-        if (useCelsius)
-        {
-            return $"{temperature:F2} °C";
-        }
-        else
-        {
-            temperature = temperature * 9 / 5 + 32;
-            return $"{temperature:F2} °F";
-        }
-    }
-
-    private static string FormatMemoryUsedInfo(float? used, float? available)
-    {
-        if (used is null || available is null)
-        {
-            return string.Empty;
-        }
-
-        const ulong kilo = 1024;
-
-        var total = used + available;
-        if (total < 1 && total > 1 / 1024)
-        {
-            return $"{used * kilo:F2} / {total * kilo:F2} MB";
-
-            // Don't support if memory is smaller than 1 MB. It's too small nowadays. :(
-        }
-        else if (total > 1024)
-        {
-            return $"{used / kilo:F2} / {total / kilo:F2} TB";
-
-            // Don't support if memory is larger than 1 TB. It's too large nowadays. :(
-        }
-
-        return $"{used:F2} / {total:F2} GB";
     }
 
     public (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetCpuInfo(bool useCelsius)
@@ -282,6 +209,16 @@ internal class SystemInfoService : ISystemInfoService
         return (FormatPercentage(0), 0, FormatMemoryUsedInfo(0, 0));
     }
 
+    private static string FormatMemoryUsedInfo(float? used, float? available)
+    {
+        if (used is null || available is null)
+        {
+            return string.Empty;
+        }
+
+        return FormateUsedInfoGB(used, used + available);
+    }
+
     #endregion
 
     #region disk
@@ -305,7 +242,17 @@ internal class SystemInfoService : ISystemInfoService
         DiskInfo.ClearItems();
 
         var diskInfoItems = hardwareMonitor.GetDiskInfo();
-
+        foreach (var diskInfoItem in diskInfoItems)
+        {
+            foreach (var partitionInfoItem in diskInfoItem.PartitionInfoItems)
+            {
+                if (partitionInfoItem.Name != null)
+                {
+                    var loadValue = partitionInfoItem.PartitionUsed / partitionInfoItem.PartitionTotal * 100f;
+                    DiskInfo.AddItem(partitionInfoItem.Name, partitionInfoItem.Identifier, FormatPercentage(loadValue), loadValue ?? 0, FormatDiskUsedInfo(partitionInfoItem.PartitionUsed, partitionInfoItem.PartitionTotal));
+                }
+            }
+        }
         return DiskInfo;
     }
 
@@ -313,7 +260,157 @@ internal class SystemInfoService : ISystemInfoService
     {
         DiskInfo.ClearItems();
 
+        DiskInfo.AddItem("C:", null!, FormatPercentage(0), 0, FormatDiskUsedInfo(0, 0));
+
         return DiskInfo;
+    }
+
+    private static string FormatDiskUsedInfo(float? used, float? total)
+    {
+        if (used is null || total is null)
+        {
+            return string.Empty;
+        }
+
+        return FormateUsedInfoB(used, total);
+    }
+
+    #endregion
+
+    #region format methods
+
+    private const ulong kilo = 1024;
+    private const ulong mega = 1024 * kilo;
+    private const ulong giga = 1024 * mega;
+    private const ulong kiloGiga = 1024 * giga;
+    private const float recKilo = 1f / kilo;
+    private const float recMega = 1f / mega;
+    private const float recGiga = 1f / giga;
+    private const float recKiloGiga = 1f / kiloGiga;
+
+    private static readonly string PercentageFormat = "{0:F2} %";
+    private static readonly string BytesFormat = "{0:F2} {1}";
+    private static readonly string CelsiusTemperatureFormat = "{0:F2} °C";
+    private static readonly string FahrenheitTemperatureFormat = "{0:F2} °C";
+    private static readonly string UsedInfoFormat = "{0:F2} / {1:F2} {2}";
+
+    private static string FormatPercentage(float? percentage)
+    {
+        if (percentage == null)
+        {
+            return string.Empty;
+        }
+
+        return string.Format(PercentageFormat, percentage);
+    }
+
+    private static string FormatBytes(float? bytes, string unit)
+    {
+        if (bytes is null)
+        {
+            return string.Empty;
+        }
+
+        if (bytes < kilo)
+        {
+            return string.Format(BytesFormat, bytes, unit);
+        }
+        else if (bytes < mega)
+        {
+            return string.Format(BytesFormat, bytes / kilo, $"K{unit}");
+        }
+        else if (bytes < giga)
+        {
+            return string.Format(BytesFormat, bytes / mega, $"M{unit}");
+        }
+        else
+        {
+            return string.Format(BytesFormat, bytes / giga, $"G{unit}");
+        }
+    }
+
+    private static string FormatTemperature(float? celsiusDegree, bool useCelsius)
+    {
+        if (celsiusDegree is null)
+        {
+            return string.Empty;
+        }
+
+        if (useCelsius)
+        {
+            return string.Format(CelsiusTemperatureFormat, celsiusDegree);
+        }
+        else
+        {
+            var fahrenheitDegree = celsiusDegree * 9 / 5 + 32;
+            return string.Format(FahrenheitTemperatureFormat, fahrenheitDegree);
+        }
+    }
+
+    private static string FormateUsedInfoGB(float? used, float? total)
+    {
+        if (used is null || total is null)
+        {
+            return string.Empty;
+        }
+
+        if (total > 1024)
+        {
+            return string.Format(UsedInfoFormat, used * recKilo, total * recKilo, "TB");
+        }
+        else if (total > 1)
+        {
+            return string.Format(UsedInfoFormat, used, total, "GB");
+        }
+        else if (total > recKilo)
+        {
+            return string.Format(UsedInfoFormat, used * kilo, total * kilo, "MB");
+        }
+        else if (total > recMega)
+        {
+            return string.Format(UsedInfoFormat, used * mega, total * mega, "KB");
+        }
+        else if (total > recGiga)
+        {
+            return string.Format(UsedInfoFormat, used * giga, total * giga, "B");
+        }
+        else
+        {
+            return string.Format(UsedInfoFormat, used * giga * 8, total * giga * 8, "b");
+        }
+    }
+
+    private static string FormateUsedInfoB(float? used, float? total)
+    {
+        if (used is null || total is null)
+        {
+            return string.Empty;
+        }
+
+        if (total > kiloGiga)
+        {
+            return string.Format(UsedInfoFormat, used * recKiloGiga, total * recKiloGiga, "TB");
+        }
+        else if (total > giga)
+        {
+            return string.Format(UsedInfoFormat, used * recGiga, total * recGiga, "GB");
+        }
+        else if (total > mega)
+        {
+            return string.Format(UsedInfoFormat, used * recMega, total * recMega, "MB");
+        }
+        else if (total > kilo)
+        {
+            return string.Format(UsedInfoFormat, used * recKilo, total * recKilo, "KB");
+        }
+        else if (total > 1)
+        {
+            return string.Format(UsedInfoFormat, used, total, "B");
+        }
+        else
+        {
+            return string.Format(UsedInfoFormat, used * 8, total * 8, "b");
+        }
     }
 
     #endregion

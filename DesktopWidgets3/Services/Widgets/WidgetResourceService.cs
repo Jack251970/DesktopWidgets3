@@ -75,7 +75,7 @@ internal class WidgetResourceService : IWidgetResourceService
             },
             WidgetType.Network => new NetworkWidgetSettings()
             {
-                ShowBps = false,
+                UseBps = false,
             },
             WidgetType.Performance => new PerformanceWidgetSettings()
             {

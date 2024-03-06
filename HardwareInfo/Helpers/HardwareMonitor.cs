@@ -265,7 +265,7 @@ public class HardwareMonitor
     private readonly string PartitionAvailableSensorName = "Available Space";
 
     /// <summary>
-    /// Get disk infomation in byte unit.
+    /// Get disk infomation in byte/B unit.
     /// </summary>
     public List<DiskInfoItem> GetDiskInfo()
     {
@@ -276,8 +276,8 @@ public class HardwareMonitor
             string hardwareName;
             string hardwareIdentifier;
 
-            float? diskUsed;
-            float? diskAvailable;
+            float? diskUsed = null;
+            float? diskTotal = null;
 
             foreach (var hardware in Hardware)
             {
@@ -309,7 +309,7 @@ public class HardwareMonitor
                             Name = sensor.Name,
                             Identifier = sensor.Identifier.ToString(),
                             PartitionUsed = partitionUsed,
-                            PartitionAvailable = partitionAvailable
+                            PartitionTotal = partitionUsed + partitionAvailable
                         });
                     }
 
@@ -317,8 +317,8 @@ public class HardwareMonitor
                     {
                         Name = hardwareName,
                         Identifier = hardwareIdentifier,
-                        DiskUsed = null,
-                        DiskAvailable = null,
+                        DiskUsed = diskUsed,
+                        DiskTotal = diskTotal,
                         PartitionInfoItems = partitionInfoItems
                     });
                 }
@@ -331,6 +331,7 @@ public class HardwareMonitor
                 {
                     hardwareName = disk["Model"].ToString()!;
                     hardwareIdentifier = disk["DeviceID"].ToString()!;
+                    diskTotal = Convert.ToSingle(disk["Size"]);
 
                     List<PartitionInfoItem> partitionInfoItems = new();
 
@@ -338,18 +339,16 @@ public class HardwareMonitor
                     foreach (var partition in partitionSearcher.Get().Cast<ManagementObject>())
                     {
                         string partitionName = null!;
-                        string partitionIdentifier;
+                        var partitionIdentifier = partition["DeviceID"].ToString()!;
                         float? partitionUsed = null;
-                        float? partitionAvailable = null;
-
-                        partitionIdentifier = partition["DeviceID"].ToString()!;
+                        float? partitionTotal = null;
 
                         var logicalDiskSearcher = new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionIdentifier + "'} WHERE AssocClass = Win32_LogicalDiskToPartition");
                         foreach (var logicalDisk in logicalDiskSearcher.Get().Cast<ManagementObject>())
                         {
                             partitionName = logicalDisk["Name"].ToString()!;
-                            partitionAvailable = Convert.ToSingle(logicalDisk["FreeSpace"]);
-                            partitionUsed = Convert.ToSingle(logicalDisk["Size"]) - Convert.ToSingle(logicalDisk["FreeSpace"]);
+                            partitionTotal = Convert.ToSingle(logicalDisk["Size"]);
+                            partitionUsed = partitionTotal - Convert.ToSingle(logicalDisk["FreeSpace"]);
                         }
 
                         partitionInfoItems.Add(new PartitionInfoItem
@@ -357,7 +356,7 @@ public class HardwareMonitor
                             Name = partitionName,
                             Identifier = partitionIdentifier,
                             PartitionUsed = partitionUsed,
-                            PartitionAvailable = partitionAvailable
+                            PartitionTotal = partitionTotal
                         });
                     }
 
@@ -365,8 +364,8 @@ public class HardwareMonitor
                     {
                         Name = hardwareName,
                         Identifier = hardwareIdentifier,
-                        DiskUsed = null,
-                        DiskAvailable = null,
+                        DiskUsed = diskUsed,
+                        DiskTotal = diskTotal,
                         PartitionInfoItems = partitionInfoItems
                     });
                 }

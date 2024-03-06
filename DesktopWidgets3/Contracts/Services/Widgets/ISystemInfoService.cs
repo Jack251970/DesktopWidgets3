@@ -6,9 +6,9 @@ public interface ISystemInfoService
 
     void StopMonitor(WidgetType type);
 
-    NetworkSpeedInfo GetNetworkSpeed(bool showBps);
+    NetworkSpeedInfo GetNetworkSpeed(bool useBps);
 
-    NetworkSpeedInfo GetInitNetworkSpeed(bool showBps);
+    NetworkSpeedInfo GetInitNetworkSpeed(bool useBps);
 
     (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetCpuInfo(bool useCelsius);
 

@@ -7,7 +7,7 @@ public partial class NetworkSettingsViewModel : BaseWidgetSettingsViewModel
     #region view properties
 
     [ObservableProperty]
-    private bool _showBps = false;
+    private bool _useBps = false;
 
     #endregion
 
@@ -22,14 +22,14 @@ public partial class NetworkSettingsViewModel : BaseWidgetSettingsViewModel
 
     protected override void InitializeWidgetSettings()
     {
-        ShowBps = Settings.ShowBps;
+        UseBps = Settings.UseBps;
     }
 
-    partial void OnShowBpsChanged(bool value)
+    partial void OnUseBpsChanged(bool value)
     {
         if (IsInitialized)
         {
-            Settings.ShowBps = value;
+            Settings.UseBps = value;
             NeedUpdate = true;
         }
     }

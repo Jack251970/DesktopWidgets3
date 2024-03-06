@@ -23,7 +23,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     private void UpdateDisk()
     {
-        _systemInfoService.GetDiskInfo();
+        var a = _systemInfoService.GetDiskInfo();
 
         RunOnDispatcherQueue(() => { });
     }

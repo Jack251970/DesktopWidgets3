@@ -20,12 +20,12 @@ public class DiskInfoItem : HardwareInfoItem
 
     public float? DiskUsed { get; set; }
 
-    public float? DiskAvailable { get; set; }
+    public float? DiskTotal { get; set; }
 }
 
 public class PartitionInfoItem : HardwareInfoItem
 {
     public float? PartitionUsed { get; set; }
 
-    public float? PartitionAvailable { get; set; }
+    public float? PartitionTotal { get; set; }
 }

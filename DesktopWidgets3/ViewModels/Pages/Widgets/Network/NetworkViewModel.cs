@@ -23,7 +23,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     #region settings
 
-    private bool showBps = false;
+    private bool useBps = false;
 
     private string hardwareIdentifier = HardwareMonitor.TotalSpeedHardwareIdentifier;
 
@@ -56,14 +56,14 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
         if (init)
         {
-            networkSpeedInfo = await Task.Run(() => _systemInfoService.GetInitNetworkSpeed(showBps));
+            networkSpeedInfo = await Task.Run(() => _systemInfoService.GetInitNetworkSpeed(useBps));
             lastNetworkNamesIdentifiers = networkNamesIdentifiers;
             networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
             networkSpeedInfoItem = networkSpeedInfo.GetItem(0);
         }
         else
         {
-            networkSpeedInfo = await Task.Run(() => _systemInfoService.GetNetworkSpeed(showBps));
+            networkSpeedInfo = await Task.Run(() => _systemInfoService.GetNetworkSpeed(useBps));
             lastNetworkNamesIdentifiers = networkNamesIdentifiers;
             networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
             networkSpeedInfoItem = networkSpeedInfo.SearchItemByIdentifier(hardwareIdentifier);
@@ -113,9 +113,9 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     protected async override void LoadSettings(NetworkWidgetSettings settings)
     {
-        if (settings.ShowBps != showBps)
+        if (settings.UseBps != useBps)
         {
-            showBps = settings.ShowBps;
+            useBps = settings.UseBps;
         }
 
         if (settings.HardwareIdentifier != hardwareIdentifier)
@@ -133,7 +133,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
     {
         return new NetworkWidgetSettings
         {
-            ShowBps = showBps,
+            UseBps = useBps,
             HardwareIdentifier = hardwareIdentifier
         };
     }

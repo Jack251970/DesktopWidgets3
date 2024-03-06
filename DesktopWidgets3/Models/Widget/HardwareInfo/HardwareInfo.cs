@@ -75,6 +75,18 @@ public class DiskInfo
 {
     private readonly List<PartitionSpaceInfoItem> diskSpaceInfoItems = new();
 
+    public void AddItem(string partitionName, string partitionIdentifier, string partitionLoad, float partitionLoadValue, string partitionUsedInfo)
+    {
+        diskSpaceInfoItems.Add(new PartitionSpaceInfoItem()
+        {
+            Name = partitionName,
+            Identifier = partitionIdentifier,
+            PartitionLoad = partitionLoad,
+            PartitionLoadValue = partitionLoadValue,
+            PartitionUsedInfo = partitionUsedInfo
+        });
+    }
+
     public void ClearItems()
     {
         diskSpaceInfoItems.Clear();
@@ -82,6 +94,10 @@ public class DiskInfo
 
     private class PartitionSpaceInfoItem : PartitionInfoItem
     {
+        public string PartitionLoad { get; set; } = null!;
 
+        public float PartitionLoadValue { get; set; } = 0;
+
+        public string PartitionUsedInfo { get; set; } = null!;
     }
 }

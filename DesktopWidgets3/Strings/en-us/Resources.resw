@@ -270,10 +270,10 @@
   <data name="WidgetSettings_AllowNavigation_Card.Header" xml:space="preserve">
     <value>Allow navigation</value>
   </data>
-  <data name="WidgetSettings_ShowBps_Card.Description" xml:space="preserve">
+  <data name="WidgetSettings_UseBps_Card.Description" xml:space="preserve">
     <value>Use Bps instead of B/s as the unit of network speed</value>
   </data>
-  <data name="WidgetSettings_ShowBps_Card.Header" xml:space="preserve">
+  <data name="WidgetSettings_UseBps_Card.Header" xml:space="preserve">
     <value>Show Bps</value>
   </data>
   <data name="WidgetSettings_ShowFileExtensions_Card.Description" xml:space="preserve">

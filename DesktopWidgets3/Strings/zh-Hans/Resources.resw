@@ -258,10 +258,10 @@
   <data name="WidgetSettings_AllowNavigation_Card.Header" xml:space="preserve">
     <value>允许导航</value>
   </data>
-  <data name="WidgetSettings_ShowBps_Card.Description" xml:space="preserve">
+  <data name="WidgetSettings_UseBps_Card.Description" xml:space="preserve">
     <value>使用Bps而不是B/s作为网络速度单位</value>
   </data>
-  <data name="WidgetSettings_ShowBps_Card.Header" xml:space="preserve">
+  <data name="WidgetSettings_UseBps_Card.Header" xml:space="preserve">
     <value>显示Bps</value>
   </data>
   <data name="WidgetSettings_ShowFileExtensions_Card.Description" xml:space="preserve">
