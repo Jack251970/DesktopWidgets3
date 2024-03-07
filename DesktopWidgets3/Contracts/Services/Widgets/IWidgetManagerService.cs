@@ -2,7 +2,7 @@
 
 public interface IWidgetManagerService
 {
-    Task EnableAllEnabledWidgets();
+    Task Initialize();
 
     Task AddWidget(WidgetType widgetType);
 

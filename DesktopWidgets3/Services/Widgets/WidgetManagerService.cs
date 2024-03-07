@@ -27,8 +27,9 @@ internal class WidgetManagerService : IWidgetManagerService
 
     #region widget window
 
-    public async Task EnableAllEnabledWidgets()
+    public async Task Initialize()
     {
+        // enable all enabled widgets
         var widgetList = await _appSettingsService.GetWidgetsList();
         foreach (var widget in widgetList)
         {
@@ -37,6 +38,10 @@ internal class WidgetManagerService : IWidgetManagerService
                 await CreateWidgetWindow(widget);
             }
         }
+
+        // initialize edit mode overlay window
+        EditModeOverlayWindow ??= await WindowsExtensions.GetWindow<OverlayWindow>(ActivationType.Overlay);
+        (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
     }
 
     public async Task AddWidget(WidgetType widgetType)
@@ -353,11 +358,10 @@ internal class WidgetManagerService : IWidgetManagerService
 
     #region edit mode
 
-    private OverlayWindow? EditModeOverlayWindow
-    {
-        get; set;
-    }
+    private const int EditModeOverlayWindowXamlWidth = 136;
+    private const int EditModeOverlayWindowXamlHeight = 48;
 
+    private OverlayWindow EditModeOverlayWindow = null!;
     private readonly List<JsonWidgetItem> originalWidgetList = new();
     private bool restoreMainWindow = false;
 
@@ -377,33 +381,28 @@ internal class WidgetManagerService : IWidgetManagerService
             };
             originalWidgetList.Add(widget);
 
-            await SetEditMode(widgetWindow, true);
+            await widgetWindow.EnqueueOrInvokeAsync(async () => await SetEditMode(widgetWindow, true));
         }
 
-        if (EditModeOverlayWindow == null)
-        {
-            EditModeOverlayWindow = await WindowsExtensions.GetWindow<OverlayWindow>(ActivationType.Overlay);
-
-            var _shell = EditModeOverlayWindow.Content as Frame;
-            _shell?.Navigate(typeof(EditModeOverlayPage));
-        }
-
-        // set window size according to xaml, rember larger than 136 x 39
-        var xamlWidth = 136;
-        var xamlHeight = 48;
-        EditModeOverlayWindow.Size = new SizeInt32(xamlWidth, xamlHeight);
-
-        // move to center top
+        // get primary monitor info
         var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
         var screenWidth = primaryMonitorInfo.RectWork.Width;
-        var windowWidth = EditModeOverlayWindow.AppWindow.Size.Width;
-        EditModeOverlayWindow.Position = new PointInt32((int)((screenWidth - windowWidth) / 2), 0);
+
+        await EditModeOverlayWindow.EnqueueOrInvokeAsync(() =>
+        {
+            // set window size according to xaml, rember larger than 136 x 39
+            EditModeOverlayWindow.Size = new SizeInt32(EditModeOverlayWindowXamlWidth, EditModeOverlayWindowXamlHeight);
+
+            // move to center top
+            var windowWidth = EditModeOverlayWindow.AppWindow.Size.Width;
+            EditModeOverlayWindow.Position = new PointInt32((int)((screenWidth - windowWidth) / 2), 0);
+        });
 
         EditModeOverlayWindow.Show(true);
 
         if (App.MainWindow.Visible)
         {
-            await WindowsExtensions.CloseWindow(App.MainWindow);
+            await App.MainWindow.EnqueueOrInvokeAsync(async () => await WindowsExtensions.CloseWindow(App.MainWindow));
             restoreMainWindow = true;
         }
     }
@@ -414,7 +413,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         foreach (var widgetWindow in WidgetsList)
         {
-            await SetEditMode(widgetWindow, false);
+            await widgetWindow.EnqueueOrInvokeAsync(async () => await SetEditMode(widgetWindow, false));
 
             var widget = new JsonWidgetItem()
             {
@@ -443,17 +442,19 @@ internal class WidgetManagerService : IWidgetManagerService
     {
         foreach (var widgetWindow in WidgetsList)
         {
-            await SetEditMode(widgetWindow, false);
+            await widgetWindow.EnqueueOrInvokeAsync(async () => {
+                await SetEditMode(widgetWindow, false);
 
-            var originalWidget = originalWidgetList.First(x => x.Type == widgetWindow.WidgetType && x.IndexTag == widgetWindow.IndexTag);
+                var originalWidget = originalWidgetList.First(x => x.Type == widgetWindow.WidgetType && x.IndexTag == widgetWindow.IndexTag);
 
-            if (originalWidget != null)
-            {
-                widgetWindow.Position = originalWidget.Position;
-                widgetWindow.Size = originalWidget.Size;
+                if (originalWidget != null)
+                {
+                    widgetWindow.Position = originalWidget.Position;
+                    widgetWindow.Size = originalWidget.Size;
 
-                widgetWindow.Show(true);
-            }
+                    widgetWindow.Show(true);
+                };
+            });
         }
 
         EditModeOverlayWindow?.Hide(true);

@@ -19,6 +19,8 @@ public sealed partial class MainWindow : WindowEx
 
     public UIElement? TitleBarText { get; set; }
 
+    public new bool Visible { get; set; }
+
     #endregion
 
     #region manager & handle
@@ -48,9 +50,10 @@ public sealed partial class MainWindow : WindowEx
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
         Closed += (s, a) => WindowEx_Closed(a);
+        VisibilityChanged += (s, a) => Visible = a.Visible;
     }
 
-    // this handles updating the caption button colors correctly when windows system theme is changed while the app is open
+    // This handles updating the caption button colors correctly when windows system theme is changed while the app is open
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread

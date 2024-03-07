@@ -8,6 +8,8 @@ using Windows.UI.ViewManagement;
 using Windows.Graphics;
 
 using WinUIEx.Messaging;
+using Windows.Foundation;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -15,16 +17,34 @@ public sealed partial class WidgetWindow : WindowEx
 {
     #region position & size
 
+    private PointInt32 position;
     public PointInt32 Position
     {
-        get => AppWindow.Position;
-        set => WindowExtensions.Move(this, value.X, value.Y);
+        get => position;
+        set
+        {
+            if (position != value)
+            {
+                position = value;
+                WindowExtensions.Move(this, value.X, value.Y);
+            }
+        }
     }
 
+    private Size size;
     public WidgetSize Size
     {
-        get => new(AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this), AppWindow.Size.Height * 96f / WindowExtensions.GetDpiForWindow(this));
-        set => WindowExtensions.SetWindowSize(this, value.Width, value.Height);
+        get => new(size.Width, size.Height);
+        set
+        {
+            var width = value.Width;
+            var height = value.Height;
+            if (size.Width != width || size.Height != height)
+            {
+                size = new(width, height);
+                WindowExtensions.SetWindowSize(this, width, height);
+            }
+        }
     }
 
     public WidgetSize MinSize
@@ -85,14 +105,40 @@ public sealed partial class WidgetWindow : WindowEx
 
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
+
+        position = AppWindow.Position;
+        PositionChanged += WidgetWindow_PositionChanged;
+
+        size = new(AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this), AppWindow.Size.Height * 96f / WindowExtensions.GetDpiForWindow(this));
+        SizeChanged += WidgetWindow_SizeChanged;
     }
 
-    // this handles updating the caption button colors correctly when indows system theme is changed while the app is open
+    // This handles updating the caption button colors correctly when indows system theme is changed while the app is open
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
         DispatcherQueue.GetForCurrentThread().TryEnqueue(DispatcherQueuePriority.High, () => TitleBarHelper.ApplySystemThemeToCaptionButtons(this, null));
     }
+
+    #region position & size changed
+
+    private void WidgetWindow_PositionChanged(object? sender, PointInt32 e)
+    {
+        Position = e;
+    }
+
+    private void WidgetWindow_SizeChanged(object sender, WindowSizeChangedEventArgs args)
+    {
+        // Only if window size equal to app window size, the window is under custom title bar
+        if (args.Size.Width == AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this))
+        {
+            size = new(args.Size.Width, args.Size.Height);
+        }
+    }
+
+    #endregion
+
+    #region initialize
 
     public void InitializeSettings(BaseWidgetItem widgetItem)
     {
@@ -125,6 +171,10 @@ public sealed partial class WidgetWindow : WindowEx
         _manager.WindowMessageReceived += OnWindowMessageReceived;
     }
 
+    #endregion
+
+    #region bottom window
+
     private void OnWindowMessageReceived(object? sender, WindowMessageEventArgs e)
     {
         if (e.Message.MessageId == WM_WINDOWPOSCHANGING)
@@ -137,8 +187,6 @@ public sealed partial class WidgetWindow : WindowEx
             e.Handled = true;
         }
     }
-
-    #region windows api
 
     private const int WM_WINDOWPOSCHANGING = 0x0046;
     private const int SWP_NOZORDER = 0x0004;
