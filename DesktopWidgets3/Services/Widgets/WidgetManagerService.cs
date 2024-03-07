@@ -111,7 +111,7 @@ internal class WidgetManagerService : IWidgetManagerService
                 await _appSettingsService.UpdateWidgetsList(widget);
 
                 // close widget window
-                await CloseWidgetWindow(widgetWindow);
+                CloseWidgetWindow(widgetWindow);
 
                 // stop monitor and timer if no more widgets of this type
                 CheckMonitorAndTimer(widgetType);
@@ -141,20 +141,20 @@ internal class WidgetManagerService : IWidgetManagerService
         if (widgetWindow != null)
         {
             // close widget window
-            await CloseWidgetWindow(widgetWindow);
+            CloseWidgetWindow(widgetWindow);
 
             // stop monitor and timer if no more widgets of this type
             CheckMonitorAndTimer(widgetType);
         }
     }
 
-    public async void DisableAllWidgets()
+    public void DisableAllWidgets()
     {
         var widgetsList = new List<WidgetWindow>(WidgetsList);
         foreach (var widgetWindow in widgetsList)
         {
             // close widget window
-            await CloseWidgetWindow(widgetWindow);
+            CloseWidgetWindow(widgetWindow);
         }
 
         // stop all monitors and timers
@@ -178,9 +178,10 @@ internal class WidgetManagerService : IWidgetManagerService
 
         // configure widget window lifecycle actions
         var minSize = _widgetResourceService.GetMinSize(currentWidgetType);
-        var liftcycleActions = new WindowLifecycleHandler()
+        var liftcycleActions = new WindowLifecycleActions()
         {
-            Window_Created = (window) => WidgetWindow_Created(window, widget, minSize)
+            Window_Created = (window) => WidgetWindow_Created(window, widget, minSize),
+            Window_Closing = WidgetWindow_Closing
         };
 
         // create widget window
@@ -197,6 +198,7 @@ internal class WidgetManagerService : IWidgetManagerService
         WidgetsList.Add(widgetWindow);
     }
 
+    // created action for widget window lifecycle
     private static void WidgetWindow_Created(Window window, JsonWidgetItem widget, WidgetSize minSize)
     {
         if (window is WidgetWindow widgetWindow)
@@ -221,10 +223,19 @@ internal class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
+    private void CloseWidgetWindow(WidgetWindow widgetWindow)
     {
-        // check if window is closed
-        if (!UIElementExtensions.CheckWindowClosed(widgetWindow))
+        // close window
+        UIElementExtensions.CloseWindow(widgetWindow);
+
+        // remove from widget list
+        WidgetsList.Remove(widgetWindow);
+    }
+
+    // closing action for widget window lifecycle
+    private static async void WidgetWindow_Closing(Window window)
+    {
+        if (window is WidgetWindow widgetWindow)
         {
             // set edit mode
             await SetEditMode(widgetWindow, false);
@@ -234,13 +245,7 @@ internal class WidgetManagerService : IWidgetManagerService
             {
                 viewModel.WidgetWindow_Closing();
             }
-
-            // close window
-            UIElementExtensions.CloseWindow(widgetWindow);
         }
-
-        // remove from widget list
-        WidgetsList.Remove(widgetWindow);
     }
 
     private void CheckMonitorAndTimer(WidgetType widgetType)
@@ -464,17 +469,14 @@ internal class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    private async Task SetEditMode(WidgetWindow window, bool isEditMode)
+    private static async Task SetEditMode(WidgetWindow window, bool isEditMode)
     {
         // set window style
         window.IsResizable = isEditMode;
 
         // set title bar
-        var isNewThread = _widgetResourceService.GetWidgetInNewThread(window.WidgetType);
-        await window.DispatcherQueue.EnqueueOrInvokeAsync(isNewThread, () => {
-            var frameShellPage = window.Content as FrameShellPage;
-            frameShellPage!.SetCustomTitleBar(isEditMode);
-        });
+        var frameShellPage = window.Content as FrameShellPage;
+        frameShellPage!.SetCustomTitleBar(isEditMode);
 
         // set page update status
         if (window.PageViewModel is IWidgetUpdate viewModel)
