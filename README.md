@@ -20,6 +20,7 @@ Build the solution in Visual Studio or run `dotnet build` from the command line.
 * Template Studio for WinUI (C#): https://github.com/microsoft/TemplateStudio
 * TimeManager3: https://github.com/Jack251970/TimeManager3
 * Vanara: https://github.com/dahall/vanara
+* WinUI3Windows: https://github.com/smourier/WinUI3Windows
 * Windows Community Toolkit: https://github.com/CommunityToolkit/WindowsCommunityToolkit
 * Windows Community Toolkit Labs: https://github.com/CommunityToolkit/Labs-Windows
 * WinUIEx: https://github.com/dotMorten/WinUIEx
