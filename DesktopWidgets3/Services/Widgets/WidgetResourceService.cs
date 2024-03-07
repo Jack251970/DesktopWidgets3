@@ -89,7 +89,7 @@ internal class WidgetResourceService : IWidgetResourceService
     {
         return widgetType switch
         {
-            WidgetType.Clock => false,
+            WidgetType.Clock => true,
             _ => false,
         };
     }

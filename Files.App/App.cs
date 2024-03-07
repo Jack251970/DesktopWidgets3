@@ -62,7 +62,7 @@ public partial class App
         }
 
         // Configure exception handlers
-        ApplicationExtensions.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
+        ApplicationLifecycleExtensions.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
         AppDomain.CurrentDomain.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.ExceptionObject as Exception, false);
         TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);
 
@@ -81,7 +81,7 @@ public partial class App
         AppModel = DependencyExtensions.GetService<AppModel>();
 
         // Configure resouces dispose handler
-        ApplicationExtensions.MainWindow_Closed_Widgets_Closed += MainWindow_Closed;
+        ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closed += MainWindow_Closed;
 
         // Register theme change handler
         ThemeExtensions.ElementTheme_Changed += (sender, theme) => Helpers.ThemeHelper.RootTheme = theme;

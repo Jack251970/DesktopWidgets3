@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Services.Widgets;
 
 internal class WindowService : IWindowService
 {
-    public async Task ActivateWidgetWindowAsync(object window)
+    public async Task ActivateWidgetWindowAsync(Window window)
     {
         if (window is WidgetWindow widgetWindow)
         {
@@ -12,7 +12,7 @@ internal class WindowService : IWindowService
         }
     }
 
-    public async Task ActivateOverlayWindowAsync(object window)
+    public async Task ActivateOverlayWindowAsync(Window window)
     {
         if (window is OverlayWindow overlayWindow)
         {

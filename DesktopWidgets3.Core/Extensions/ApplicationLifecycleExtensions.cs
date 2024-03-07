@@ -7,7 +7,7 @@ namespace DesktopWidgets3.Core.Extensions;
 /// <summary>
 /// Provides static extension for application process.
 /// </summary>
-public static class ApplicationExtensions
+public static class ApplicationLifecycleExtensions
 {
     public static Action<object, UnhandledExceptionEventArgs>? UnhandledException { get; set; }
 

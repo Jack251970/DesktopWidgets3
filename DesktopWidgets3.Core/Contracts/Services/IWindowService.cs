@@ -4,9 +4,9 @@ namespace DesktopWidgets3.Core.Contracts.Services;
 
 public interface IWindowService
 {
-    Task ActivateWidgetWindowAsync(object window);
+    Task ActivateWidgetWindowAsync(Window window);
 
-    Task ActivateOverlayWindowAsync(object window);
+    Task ActivateOverlayWindowAsync(Window window);
 
     Task ActivateBlankWindowAsync(Window window, object? setContent);
 }

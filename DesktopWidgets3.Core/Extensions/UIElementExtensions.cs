@@ -11,9 +11,9 @@ namespace DesktopWidgets3.Core.Extensions;
 /// </summary>
 public static class UIElementExtensions
 {
-    private static IWindowService? FallbackWindowService;
+    private static readonly Dictionary<Window, DispatcherExitDeferral?> WindowInstances = new();
 
-    private static readonly Dictionary<Window, Thread?> WindowInstances = new();
+    private static IWindowService? FallbackWindowService;
 
     public static void Initialize(IWindowService windowService)
     {
@@ -25,11 +25,14 @@ public static class UIElementExtensions
         return WindowInstances.Keys.ToList();
     }
 
-    public static async Task<T> CreateWindow<T>(ActivationType type, object? parameter = null, bool isNewThread = false, Action<T>? action = null) where T : Window, new()
+    public static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null, bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null) where T : Window, new()
     {
+        T window = null!;
+        DispatcherExitDeferral? deferral = null;
+
         if (isNewThread)
         {
-            T window = null!;
+            deferral = new DispatcherExitDeferral();
 
             var signal = new ManualResetEvent(false);
 
@@ -41,14 +44,29 @@ public static class UIElementExtensions
                 // initialize xaml in it
                 WindowsXamlManager.InitializeForCurrentThread();
 
+                // invoke action before window creation
+                lifecycleActions?.Window_Creating?.Invoke();
+
                 // create a new window
-                window = await GetWindow(type, parameter, action);
+                window = await GetWindow<T>(type, parameter);
+
+                // invoke action after window creation
+                lifecycleActions?.Window_Created?.Invoke(window);
 
                 // signal that window creation is complete
                 signal.Set();
 
                 // run message pump
-                dq.DispatcherQueue.RunEventLoop();
+                dq.DispatcherQueue.RunEventLoop(DispatcherRunOptions.None, deferral);
+
+                // invoke action before window closing
+                lifecycleActions?.Window_Closing?.Invoke(window);
+
+                // close window
+                window.Close();
+
+                // invoke action after window closing
+                lifecycleActions?.Window_Closed?.Invoke();
             })
             {
                 // will be destroyed when main is closed
@@ -59,25 +77,29 @@ public static class UIElementExtensions
 
             // wait for the signal
             signal.WaitOne();
-
-            // register window
-            RegisterWindow(window, thread);
-
-            return window;
         }
         else
         {
+            // invoke action before window creation
+            lifecycleActions?.Window_Creating?.Invoke();
+
             // create a new window
-            var window = await GetWindow(type, parameter, action);
+            window = await GetWindow<T>(type, parameter);
 
-            // register window
-            RegisterWindow(window, null);
-
-            return window;
+            // invoke action after window creation
+            lifecycleActions?.Window_Created?.Invoke(window);
         }
+
+        // register non-main window
+        if (type != ActivationType.Main)
+        {
+            RegisterWindow(window, deferral);
+        }
+
+        return window;
     }
 
-    private static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null, Action<T>? action = null) where T : Window, new()
+    private static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null) where T : Window, new()
     {
         if (FallbackWindowService is null)
         {
@@ -90,6 +112,7 @@ public static class UIElementExtensions
         switch (type)
         {
             case ActivationType.None:
+            case ActivationType.Main:
                 break;
             case ActivationType.Widget:
                 await FallbackWindowService.ActivateWidgetWindowAsync(window);
@@ -102,17 +125,14 @@ public static class UIElementExtensions
                 break;
         }
 
-        // invoke action
-        action?.Invoke(window);
-
         return window;
     }
 
-    public static void RegisterWindow(Window window, Thread? newThread)
+    public static void RegisterWindow(Window window, DispatcherExitDeferral? deferral)
     {
         if (!WindowInstances.ContainsKey(window))
         {
-            WindowInstances.Add(window, newThread);
+            WindowInstances.Add(window, deferral);
             window.Closed += (sender, args) => UnregisterWindow(window);
         }
     }
@@ -132,14 +152,14 @@ public static class UIElementExtensions
 
     public static void CloseWindow(Window window)
     {
-        var newThread = WindowInstances[window];
-        if (newThread is null)
+        var exitDeferral = WindowInstances[window];
+        if (exitDeferral is null)
         {
             window.Close();
         }
         else
         {
-            // TODO
+            exitDeferral.Complete();
         }
     }
 
@@ -208,6 +228,7 @@ public static class UIElementExtensions
 public enum ActivationType
 {
     None,
+    Main,
     Widget,
     Overlay,
     Blank

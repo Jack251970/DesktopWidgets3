@@ -16,7 +16,7 @@ public sealed partial class TrayMenuControl : UserControl
     private void ShowWindow(XamlUICommand sender, ExecuteRequestedEventArgs args)
     {
         App.ShowMainWindow(false);
-        ApplicationExtensions.MainWindow_Closing?.Invoke(App.MainWindow, WindowEventArgs.FromAbi(App.MainWindow.GetWindowHandle()));
+        ApplicationLifecycleExtensions.MainWindow_Closing?.Invoke(App.MainWindow, WindowEventArgs.FromAbi(App.MainWindow.GetWindowHandle()));
     }
 
     private void ExitApp(XamlUICommand sender, ExecuteRequestedEventArgs args)

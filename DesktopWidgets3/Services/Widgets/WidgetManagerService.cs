@@ -1,6 +1,9 @@
-﻿using H.NotifyIcon;
+﻿using DesktopWidgets3.Views.Windows;
+using H.NotifyIcon;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
+using static Files.App.Constants;
 
 namespace DesktopWidgets3.Services.Widgets;
 
@@ -173,28 +176,16 @@ internal class WidgetManagerService : IWidgetManagerService
         currentWidgetType = widget.Type;
         currentIndexTag = widget.IndexTag;
 
+        // configure widget window lifecycle actions
+        var minSize = _widgetResourceService.GetMinSize(currentWidgetType);
+        var liftcycleActions = new WindowLifecycleActions()
+        {
+            Window_Created = (window) => WidgetWindow_Created(window, widget, minSize)
+        };
+
         // create widget window
         var newThread = _widgetResourceService.GetWidgetInNewThread(currentWidgetType);
-        var widgetWindow = await UIElementExtensions.CreateWindow<WidgetWindow>(ActivationType.Widget, widget.Settings, newThread,
-            (widgetWindow) => {
-                // initialize widget settings
-                widgetWindow.InitializeSettings(widget);
-
-                // set window style, size and position
-                widgetWindow.IsResizable = false;
-                widgetWindow.MinSize = _widgetResourceService.GetMinSize(currentWidgetType);
-                widgetWindow.Size = widget.Size;
-                if (widget.Position.X != -1 && widget.Position.Y != -1)
-                {
-                    widgetWindow.Position = widget.Position;
-                }
-
-                // initialize window
-                widgetWindow.InitializeWindow();
-
-                // show window
-                widgetWindow.Show(true);
-            });
+        var widgetWindow = await UIElementExtensions.GetWindow<WidgetWindow>(ActivationType.Widget, widget.Settings, newThread, liftcycleActions);
 
         // handle monitor
         _systemInfoService.StartMonitor(widget.Type);
@@ -204,6 +195,30 @@ internal class WidgetManagerService : IWidgetManagerService
 
         // add to widget list
         WidgetsList.Add(widgetWindow);
+    }
+
+    private static void WidgetWindow_Created(Window window, JsonWidgetItem widget, WidgetSize minSize)
+    {
+        if (window is WidgetWindow widgetWindow)
+        {
+            // initialize widget settings
+            widgetWindow.InitializeSettings(widget);
+
+            // set window style, size and position
+            widgetWindow.IsResizable = false;
+            widgetWindow.MinSize = minSize;
+            widgetWindow.Size = widget.Size;
+            if (widget.Position.X != -1 && widget.Position.Y != -1)
+            {
+                widgetWindow.Position = widget.Position;
+            }
+
+            // initialize window
+            widgetWindow.InitializeWindow();
+
+            // show window
+            widgetWindow.Show(true);
+        }
     }
 
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
@@ -366,7 +381,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         if (EditModeOverlayWindow == null)
         {
-            EditModeOverlayWindow = await UIElementExtensions.CreateWindow<OverlayWindow>(ActivationType.Overlay);
+            EditModeOverlayWindow = await UIElementExtensions.GetWindow<OverlayWindow>(ActivationType.Overlay);
 
             var _shell = EditModeOverlayWindow.Content as Frame;
             _shell?.Navigate(typeof(EditModeOverlayPage));

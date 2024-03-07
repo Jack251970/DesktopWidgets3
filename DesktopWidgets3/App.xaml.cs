@@ -203,7 +203,7 @@ public partial class App : Application
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        ApplicationExtensions.UnhandledException?.Invoke(sender, e);
+        ApplicationLifecycleExtensions.UnhandledException?.Invoke(sender, e);
     }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
@@ -212,7 +212,7 @@ public partial class App : Application
 
         if (!IsExistWindow && MainWindow is null)
         {
-            MainWindow = new MainWindow();
+            MainWindow = await UIElementExtensions.GetWindow<MainWindow>(ActivationType.Main, args);
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
         }
     }
