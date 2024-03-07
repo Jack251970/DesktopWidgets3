@@ -4,6 +4,13 @@ namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetResourceService : IWidgetResourceService
 {
+    private readonly IAppSettingsService _appSettingsService;
+
+    public WidgetResourceService(IAppSettingsService appSettingsService)
+    {
+        _appSettingsService = appSettingsService;
+    }
+
     public string GetWidgetLabel(WidgetType widgetType)
     {
         return widgetType switch
@@ -87,9 +94,17 @@ internal class WidgetResourceService : IWidgetResourceService
 
     public bool GetWidgetInNewThread(WidgetType widgetType)
     {
+        if (!_appSettingsService.MultiThread)
+        {
+            return false;
+        }
+
         return widgetType switch
         {
             WidgetType.Clock => true,
+            WidgetType.Disk => true,
+            WidgetType.Network => true,
+            WidgetType.Performance => true,
             _ => false,
         };
     }

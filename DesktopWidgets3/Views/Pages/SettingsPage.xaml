@@ -53,6 +53,13 @@
                     <ToggleSwitch IsOn="{x:Bind ViewModel.BatterySaver, Mode=TwoWay}" />
                 </labs:SettingsCard>
 
+                <labs:SettingsCard x:Uid="Settings_MultiThread_Card">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE81E;" />
+                    </labs:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.MultiThread, Mode=TwoWay}" />
+                </labs:SettingsCard>
+
                 <!--  About  -->
                 <TextBlock x:Uid="Settings_About" 
                            Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />

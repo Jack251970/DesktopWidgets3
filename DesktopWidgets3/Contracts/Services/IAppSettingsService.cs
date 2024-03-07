@@ -4,15 +4,19 @@ public interface IAppSettingsService
 {
     Task InitializeAsync();
 
-    bool SilentStart { get; set; }
+    bool SilentStart { get; }
 
     Task SetSilentStartAsync(bool value);
 
     event EventHandler<bool>? OnBatterySaverChanged;
 
-    bool BatterySaver { get; set; }
+    bool BatterySaver { get; }
 
     Task SetBatterySaverAsync(bool value);
+
+    bool MultiThread { get; }
+
+    Task SetMultiThreadAsync(bool value);
 
     Task<List<JsonWidgetItem>> GetWidgetsList();
 

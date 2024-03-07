@@ -312,4 +312,10 @@
   <data name="Widget_Disk_Title.Text" xml:space="preserve">
     <value>Disk</value>
   </data>
+  <data name="Settings_MultiThread_Card.Description" xml:space="preserve">
+    <value>Use multiple threads to load widget windows</value>
+  </data>
+  <data name="Settings_MultiThread_Card.Header" xml:space="preserve">
+    <value>Multi-thread acceleration</value>
+  </data>
 </root>

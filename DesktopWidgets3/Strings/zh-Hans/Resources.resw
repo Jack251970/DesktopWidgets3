@@ -154,7 +154,7 @@
     <value>显示</value>
   </data>
   <data name="AppDescription" xml:space="preserve">
-    <value>一个包含许多实用桌面组件的WinUI3应用。</value>
+    <value>一个包含多个实用桌面组件的WinUI3应用。</value>
   </data>
   <data name="Settings_BatterySaver_Card.Description" xml:space="preserve">
     <value>限制与显示相关的后台活动</value>
@@ -293,5 +293,11 @@
   </data>
   <data name="Widget_Disk_Title.Text" xml:space="preserve">
     <value>磁盘</value>
+  </data>
+  <data name="Settings_MultiThread_Card.Description" xml:space="preserve">
+    <value>使用多个线程加载组件</value>
+  </data>
+  <data name="Settings_MultiThread_Card.Header" xml:space="preserve">
+    <value>多线程加速</value>
   </data>
 </root>

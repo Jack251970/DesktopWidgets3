@@ -7,4 +7,6 @@ internal class LocalSettingsKeys
     public readonly string SilentStartKey = "SilentStart";
 
     public readonly string BatterySaverKey = "BatterySaver";
+
+    public readonly string MultiThreadKey = "MultiThread";
 }

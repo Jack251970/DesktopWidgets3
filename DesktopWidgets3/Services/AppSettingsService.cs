@@ -21,6 +21,7 @@ internal class AppSettingsService : IAppSettingsService
         {
             SilentStart = await GetSilentStartAsync();
             BatterySaver = await GetBatterySaverAsync();
+            MultiThread = await GetMultiThreadAsync();
 
             _isInitialized = true;
         }
@@ -32,7 +33,7 @@ internal class AppSettingsService : IAppSettingsService
     public bool SilentStart
     {
         get => silentStart;
-        set
+        private set
         {
             if (silentStart != value)
             {
@@ -47,7 +48,7 @@ internal class AppSettingsService : IAppSettingsService
     public bool BatterySaver
     {
         get => batterySaver;
-        set
+        private set
         {
             if (batterySaver != value)
             {
@@ -56,6 +57,19 @@ internal class AppSettingsService : IAppSettingsService
                 {
                     OnBatterySaverChanged?.Invoke(this, value);
                 }
+            }
+        }
+    }
+
+    private bool multiThread;
+    public bool MultiThread
+    {
+        get => multiThread;
+        private set
+        {
+            if (multiThread != value)
+            {
+                multiThread = value;
             }
         }
     }
@@ -90,6 +104,20 @@ internal class AppSettingsService : IAppSettingsService
     {
         await SaveDataInSettingsAsync(_localSettingsKeys.BatterySaverKey, value);
         BatterySaver = value;
+    }
+
+    private const bool DefaultMultiThread = false;
+
+    private async Task<bool> GetMultiThreadAsync()
+    {
+        var data = await GetDataFromSettingsAsync(_localSettingsKeys.MultiThreadKey, DefaultMultiThread);
+        return data;
+    }
+
+    public async Task SetMultiThreadAsync(bool value)
+    {
+        await SaveDataInSettingsAsync(_localSettingsKeys.MultiThreadKey, value);
+        MultiThread = value;
     }
 
     #endregion

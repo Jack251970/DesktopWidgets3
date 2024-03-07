@@ -9,12 +9,19 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     [ObservableProperty]
     private int _themeIndex;
+
     [ObservableProperty]
     private bool _runStartup;
+
     [ObservableProperty]
     private bool _silentStart;
+
     [ObservableProperty]
     private bool _batterySaver;
+
+    [ObservableProperty]
+    private bool _multiThread;
+
     [ObservableProperty]
     private string _version = $"v{InfoHelper.GetVersion()}";
 
@@ -22,15 +29,13 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     private readonly IAppSettingsService _appSettingsService;
     private readonly IThemeSelectorService _themeSelectorService;
-    private readonly IWidgetManagerService _widgetManagerService;
 
     private bool _isInitialized;
 
-    public SettingsViewModel(IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService, IWidgetManagerService widgetManagerService)
+    public SettingsViewModel(IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService)
     {
         _appSettingsService = appSettingsService;
         _themeSelectorService = themeSelectorService;
-        _widgetManagerService = widgetManagerService;
 
         InitializeSettings();
     }
@@ -41,6 +46,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         RunStartup = await StartupHelper.GetStartup();
         SilentStart = _appSettingsService.SilentStart;
         BatterySaver = _appSettingsService.BatterySaver;
+        MultiThread = _appSettingsService.MultiThread;
 
         _isInitialized = true;
     }
@@ -86,6 +92,14 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         if (_isInitialized)
         {
             _appSettingsService.SetBatterySaverAsync(value);
+        }
+    }
+
+    partial void OnMultiThreadChanged(bool value)
+    {
+        if (_isInitialized)
+        {
+            _appSettingsService.SetMultiThreadAsync(value);
         }
     }
 }
