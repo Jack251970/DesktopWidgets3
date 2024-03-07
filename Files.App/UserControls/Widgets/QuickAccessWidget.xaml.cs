@@ -86,7 +86,7 @@ public class FolderCardItem : WidgetCardItem, IWidgetCardItem<LocationItem>
 		}
 		if (thumbnailData is not null && thumbnailData.Length > 0)
 		{
-			Thumbnail = (await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() => thumbnailData.ToBitmapAsync(Constants.Widgets.WidgetIconSize)))!;
+			Thumbnail = (await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => thumbnailData.ToBitmapAsync(Constants.Widgets.WidgetIconSize)))!;
 		}
 	}
 }

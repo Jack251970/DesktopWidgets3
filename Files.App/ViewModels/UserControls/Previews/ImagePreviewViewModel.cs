@@ -30,7 +30,7 @@ public class ImagePreviewViewModel : BasePreviewModel
 	{
 		using var stream = await Item.ItemFile.OpenAsync(FileAccessMode.Read);
 
-		await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+		await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () =>
 		{
 			BitmapImage bitmap = new();
 			await bitmap.SetSourceAsync(stream);

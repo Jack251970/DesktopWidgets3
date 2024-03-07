@@ -491,7 +491,7 @@ public static class UIFilesystemHelpers
 
 		var credentialDialogViewModel = new CredentialDialogViewModel() { CanBeAnonymous = isFtp, PasswordOnly = !isFtp };
 		var dialogService = folderViewViewModel.GetService<IDialogService>();
-		var dialogResult = await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() =>
+		var dialogResult = await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 			dialogService.ShowDialogAsync(credentialDialogViewModel));
 
 		if (dialogResult != DialogResult.Primary || credentialDialogViewModel.IsAnonymous)

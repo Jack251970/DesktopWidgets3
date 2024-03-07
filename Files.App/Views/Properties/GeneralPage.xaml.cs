@@ -104,7 +104,7 @@ public sealed partial class GeneralPage : BasePropertiesPage
                 Win32API.SetVolumeLabel(drive.Path, newName);
             }
 
-            _ = UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+            _ = UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{
 				await drive.UpdateLabelAsync();
 				await fsVM.SetWorkingDirectoryAsync(drive.Path);
@@ -127,7 +127,7 @@ public sealed partial class GeneralPage : BasePropertiesPage
 			if (renamed is ReturnResult.Success)
 			{
 				var newPath = Path.Combine(Path.GetDirectoryName(library.ItemPath)!, newName);
-				_ = UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+				_ = UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () =>
 				{
 					await fsVM!.SetWorkingDirectoryAsync(newPath);
 				});
@@ -145,7 +145,7 @@ public sealed partial class GeneralPage : BasePropertiesPage
 			{
 				foreach (var fileOrFolder in fileOrFolders)
 				{
-					await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() =>
+					await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 						UIFilesystemHelpers.SetHiddenAttributeItem(fileOrFolder, ViewModel.IsHidden, itemMM)
 					);
 				}
@@ -159,7 +159,7 @@ public sealed partial class GeneralPage : BasePropertiesPage
 			var itemMM = AppInstance?.SlimContentPage?.ItemManipulationModel;
 			if (itemMM is not null) // null on homepage
 			{
-                await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() =>
+                await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 					UIFilesystemHelpers.SetHiddenAttributeItem(item, ViewModel.IsHidden, itemMM)
 				);
 			}
@@ -174,7 +174,7 @@ public sealed partial class GeneralPage : BasePropertiesPage
                 return true;
             }
 
-            return await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() =>
+            return await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 				UIFilesystemHelpers.RenameFileItemAsync(item, ViewModel.ItemName, AppInstance!, false)
 			);
 		}

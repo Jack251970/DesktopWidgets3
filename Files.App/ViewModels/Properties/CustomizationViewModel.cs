@@ -139,7 +139,7 @@ public class CustomizationViewModel : ObservableObject
             return false;
         }
 
-        await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() =>
+        await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 		{
 			_appInstance?.FilesystemViewModel?.RefreshItems(null);
 		});

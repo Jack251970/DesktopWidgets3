@@ -64,7 +64,7 @@ internal class FolderProperties : BaseProperties
 				ViewModel.ShortcutItemArgumentsVisibility = false;
 				ViewModel.ShortcutItemOpenLinkCommand = new RelayCommand(async () =>
 				{
-					await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(
+					await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(
 						() => NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(ViewModel.ShortcutItemPath))));
 				},
 				() =>

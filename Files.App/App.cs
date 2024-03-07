@@ -148,7 +148,7 @@ public partial class App
 		Logger.LogInformation($"The app is being activated. Activation type: {activatedEventArgs.Data.GetType().Name}");
 
 		// InitializeApplication accesses UI, needs to be called on UI thread
-		_ = UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(()
+		_ = UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(()
 			=> Instance.InitializeApplicationAsync(activatedEventArgs.Data));
 	}
 

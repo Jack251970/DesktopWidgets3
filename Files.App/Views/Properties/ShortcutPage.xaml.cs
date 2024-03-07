@@ -24,7 +24,7 @@ public sealed partial class ShortcutPage : BasePropertiesPage
             return true;
         }
 
-        await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(() =>
+        await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 			UIFilesystemHelpers.UpdateShortcutItemProperties(shortcutItem,
 			ViewModel.ShortcutItemPath,
 			ViewModel.ShortcutItemArguments,

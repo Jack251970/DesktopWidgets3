@@ -121,7 +121,7 @@ public class RecycleBinLocationItem : LocationItem
 {
 	public void RefreshSpaceUsed(object sender, FileSystemEventArgs e)
 	{
-        UIThreadExtensions.DispatcherQueue!.TryEnqueue(() =>
+        UIThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
 		{
 			SpaceUsed = RecycleBinHelpers.GetSize();
 		});

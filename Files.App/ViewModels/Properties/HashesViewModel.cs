@@ -83,7 +83,7 @@ public class HashesViewModel : ObservableObject, IDisposable
 		{
 			hashInfoItem.IsCalculating = true;
 
-			UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+			UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{
 				try
 				{

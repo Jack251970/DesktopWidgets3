@@ -7,19 +7,10 @@ namespace DesktopWidgets3.Core.Extensions;
 /// </summary>
 public static class UIThreadExtensions
 {
-    private static DispatcherQueue? FallbackDispatcherQueue;
-
-    private static bool _isInitialized;
-
-    public static DispatcherQueue? DispatcherQueue => FallbackDispatcherQueue;
+    public static DispatcherQueue? MainDispatcherQueue { get; private set; }
 
     public static void Initialize(DispatcherQueue dispatcherQueue)
     {
-        if (!_isInitialized)
-        {
-            FallbackDispatcherQueue = dispatcherQueue;
-
-            _isInitialized = true;
-        }
+        MainDispatcherQueue = dispatcherQueue;
     }
 }

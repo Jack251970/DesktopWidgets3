@@ -540,7 +540,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
         if (pointerRoutedEventArgs is not null)
 		{
-			await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+			await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{
 				await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), itemTappedPath);
 			}, DispatcherQueuePriority.Low);

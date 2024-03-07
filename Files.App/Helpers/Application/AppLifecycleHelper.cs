@@ -344,7 +344,7 @@ public static class AppLifecycleHelper
 			userSettingsService.GeneralSettingsService.LastCrashedTabList = lastSessionTabList;
 
 			// Try to re-launch and start over
-			UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
+			UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{
 				await Launcher.LaunchUriAsync(new Uri("files-uwp:"));
 			})
