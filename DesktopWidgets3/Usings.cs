@@ -30,6 +30,7 @@ global using DesktopWidgets3.Models;
 global using DesktopWidgets3.Models.Component;
 global using DesktopWidgets3.Models.Widget;
 global using DesktopWidgets3.Models.Widget.HardwareInfo;
+global using DesktopWidgets3.Models.Widget.Parameters;
 
 // ViewModels
 global using DesktopWidgets3.ViewModels.Commands;

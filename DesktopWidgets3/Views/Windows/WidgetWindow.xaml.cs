@@ -8,6 +8,7 @@ using Windows.UI.ViewManagement;
 using Windows.Graphics;
 
 using WinUIEx.Messaging;
+using DesktopWidgets3.Contracts.ViewModels;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -87,17 +88,22 @@ public sealed partial class WidgetWindow : WindowEx
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
     }
 
-    public void Initialize(BaseWidgetItem widgetItem)
-    {
-        WidgetType = widgetItem.Type;
-        IndexTag = widgetItem.IndexTag;
-    }
-
     // this handles updating the caption button colors correctly when indows system theme is changed while the app is open
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
         UIThreadExtensions.DispatcherQueue!.TryEnqueue(DispatcherQueuePriority.High, () => TitleBarHelper.ApplySystemThemeToCaptionButtons(this, null));
+    }
+
+    public void InitializeSettings(BaseWidgetItem widgetItem)
+    {
+        WidgetType = widgetItem.Type;
+        IndexTag = widgetItem.IndexTag;
+        ShellPage.ViewModel.WidgetNavigationService.NavigateTo(WidgetType, new WidgetNavigationParameter()
+        {
+            Window = this,
+            Settings = widgetItem.Settings
+        });
     }
 
     public void InitializeTitleBar()

@@ -162,11 +162,6 @@ internal class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    public WidgetWindow GetLastWidgetWindow()
-    {
-        return WidgetsList.Last();
-    }
-
     public bool IsWidgetEnabled(WidgetType widgetType, int indexTag)
     {
         return GetWidgetWindow(widgetType, indexTag) != null;
@@ -180,19 +175,10 @@ internal class WidgetManagerService : IWidgetManagerService
 
         // create widget window
         var newThread = _widgetResourceService.GetWidgetIsNewThread(currentWidgetType);
-        var widgetWindow = await UIElementExtensions.CreateWindow<WidgetWindow>(newThread);
+        var widgetWindow = await UIElementExtensions.CreateWindow<WidgetWindow>(ActivationType.Widget, widget.Settings, newThread);
 
-        // initialize widget
-        widgetWindow.Initialize(widget);
-
-        // add to widget list
-        WidgetsList.Add(widgetWindow);
-
-        // handle widget settings
-        await widgetWindow.DispatcherQueue.EnqueueOrInvokeAsync(newThread, async () =>
-        {
-            await _activationService.ActivateWidgetWindowAsync(widgetWindow, widget.Settings);
-        });
+        // initialize widget settings
+        widgetWindow.InitializeSettings(widget);
 
         // set window style, size and position
         widgetWindow.IsResizable = false;
@@ -214,6 +200,9 @@ internal class WidgetManagerService : IWidgetManagerService
 
         // handle timer
         _timersService.StartTimer(widget.Type);
+
+        // add to widget list
+        WidgetsList.Add(widgetWindow);
     }
 
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
@@ -274,7 +263,10 @@ internal class WidgetManagerService : IWidgetManagerService
     public async Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings)
     {
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
-        widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, settings.Clone());
+        widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, new WidgetNavigationParameter()
+        {
+            Settings = settings.Clone()
+        });
 
         var widgetList = await _appSettingsService.GetWidgetsList();
         var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
@@ -373,9 +365,8 @@ internal class WidgetManagerService : IWidgetManagerService
 
         if (EditModeOverlayWindow == null)
         {
-            EditModeOverlayWindow = await UIElementExtensions.CreateWindow<OverlayWindow>(false);
+            EditModeOverlayWindow = await UIElementExtensions.CreateWindow<OverlayWindow>(ActivationType.Overlay);
 
-            await _activationService.ActivateOverlayWindowAsync(EditModeOverlayWindow);
             var _shell = EditModeOverlayWindow.Content as Frame;
             _shell?.Navigate(typeof(EditModeOverlayPage));
         }

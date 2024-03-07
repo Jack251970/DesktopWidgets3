@@ -16,27 +16,23 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     public WidgetWindow WidgetWindow
     {
-        get;
-    }
+        get; private set;
+    } = null!;
 
     public WidgetType WidgetType => WidgetWindow.WidgetType;
     public int IndexTag => WidgetWindow.IndexTag;
 
-    private readonly IWidgetDialogService _dialogService;
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;
 
-    protected readonly DispatcherQueue _dispatcherQueue = UIThreadExtensions.DispatcherQueue!;
+    protected readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
     private bool _isInitialized;
 
     public BaseWidgetViewModel()
     {
-        _dialogService = App.GetService<IWidgetDialogService>();
         _navigationService = App.GetService<INavigationService>();
         _widgetManagerService = App.GetService<IWidgetManagerService>();
-
-        WidgetWindow = _widgetManagerService.GetLastWidgetWindow();
 
         RightTappedMenu = GetRightTappedMenu();
     }
@@ -68,10 +64,14 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
         var isInitialized = _isInitialized;
 
         // Load settings
-        if (parameter is T settings)
+        if (parameter is WidgetNavigationParameter navigationParameter)
         {
-            LoadSettings(settings);
-            _isInitialized = true;
+            WidgetWindow ??= navigationParameter.Window!;
+            if (navigationParameter.Settings is T settings)
+            {
+                LoadSettings(settings);
+                _isInitialized = true;
+            }
         }
 
         // Make sure we have loaded settings

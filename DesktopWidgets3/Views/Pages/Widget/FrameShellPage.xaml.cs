@@ -1,5 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Views.Pages.Widgets;
 
@@ -17,18 +16,24 @@ public sealed partial class FrameShellPage : Page
 
     private WidgetWindow WidgetWindow
     {
-        get;
-    }
+        get; set;
+    } = null!;
 
-    public FrameShellPage(FrameShellViewModel viewModel, IWidgetManagerService widgetManagerService)
+    public FrameShellPage(FrameShellViewModel viewModel)
     {
         ViewModel = viewModel;
         InitializeComponent();
 
         NavigationFrame = WidgetNavigationFrame;
         ViewModel.WidgetNavigationService.Frame = WidgetNavigationFrame;
-        WidgetWindow = widgetManagerService.GetLastWidgetWindow();
+    }
 
+    public void InitializeWindow(WidgetWindow window)
+    {
+        WidgetWindow = window;
+
+        // initialize title bar
+        TitleBarHelper.UpdateTitleBar(WidgetWindow, RequestedTheme);
         SetCustomTitleBar(false);
     }
 
@@ -37,10 +42,5 @@ public sealed partial class FrameShellPage : Page
         WidgetWindow.ExtendsContentIntoTitleBar = customTitleBar;
         WidgetWindow.SetTitleBar(customTitleBar ? WidgetTitleBar : null);
         WidgetWindow.InitializeTitleBar();
-    }
-
-    private void OnLoaded(object sender, RoutedEventArgs e)
-    {
-        TitleBarHelper.UpdateTitleBar(WidgetWindow, RequestedTheme);
     }
 }

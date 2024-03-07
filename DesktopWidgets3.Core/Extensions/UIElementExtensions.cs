@@ -20,7 +20,7 @@ public static class UIElementExtensions
         FallbackWindowService = windowService;
     }
 
-    public static async Task<T> CreateWindow<T>(bool newThread) where T : Window, new()
+    public static async Task<T> CreateWindow<T>(ActivationType type, object? parameter = null, bool newThread = false) where T : Window, new()
     {
         if (newThread)
         {
@@ -28,7 +28,7 @@ public static class UIElementExtensions
 
             var tcs = new TaskCompletionSource<T>();
 
-            var thread = new Thread(state =>
+            var thread = new Thread(async () =>
             {
                 // create a DispatcherQueue on this new thread
                 var dq = DispatcherQueueController.CreateOnCurrentThread();
@@ -37,7 +37,7 @@ public static class UIElementExtensions
                 WindowsXamlManager.InitializeForCurrentThread();
 
                 // create a new window
-                window = CreateWindow<T>();
+                window = await CreateWindow<T>(type, parameter);
 
                 // complete the task with the window object
                 tcs.SetResult(window);
@@ -57,13 +57,13 @@ public static class UIElementExtensions
         else
         {
             // create a new window
-            var window = CreateWindow<T>();
+            var window = await CreateWindow<T>(type, parameter);
 
             return window;
         }
     }
 
-    private static T CreateWindow<T>() where T : Window, new()
+    private static async Task<T> CreateWindow<T>(ActivationType type, object? parameter = null) where T : Window, new()
     {
         if (FallbackWindowService is null)
         {
@@ -76,11 +76,20 @@ public static class UIElementExtensions
         // register window
         RegisterWindow(window);
 
-        if (window is BlankWindow blankWindow)
+        switch (type)
         {
-            // activate window using fallback service
-            FallbackWindowService.ActivateBlankWindow(blankWindow, false);
-        }
+            case ActivationType.None:
+                break;
+            case ActivationType.Widget:
+                await FallbackWindowService.ActivateWidgetWindowAsync(window);
+                break;
+            case ActivationType.Overlay:
+                await FallbackWindowService.ActivateOverlayWindowAsync(window);
+                break;
+            default:
+                await FallbackWindowService.ActivateBlankWindowAsync(window, parameter);
+                break;
+        } 
 
         return window;
     }
@@ -168,4 +177,12 @@ public static class UIElementExtensions
     }
 
     #endregion
+}
+
+public enum ActivationType
+{
+    None,
+    Widget,
+    Overlay,
+    Blank
 }

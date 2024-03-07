@@ -14,8 +14,6 @@ public interface IWidgetManagerService
 
     void DisableAllWidgets();
 
-    WidgetWindow GetLastWidgetWindow();
-
     bool IsWidgetEnabled(WidgetType widgetType, int indexTag);
 
     DashboardWidgetItem GetCurrentEnabledWidget();

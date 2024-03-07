@@ -45,7 +45,7 @@ internal class ActivationService : IActivationService
         await StartupAsync(App.MainWindow);
     }
 
-    public async Task ActivateWidgetWindowAsync(WidgetWindow window, object widgetSettings)
+    public async Task ActivateWidgetWindowAsync(WidgetWindow window)
     {
         // Execute tasks before activation.
         await InitializeAsync();
@@ -54,8 +54,15 @@ internal class ActivationService : IActivationService
         if (window.Content == null)
         {
             var shell = App.GetService<FrameShellPage>();
-            window.Content = shell is null ? new Frame() : shell;
-            shell?.ViewModel.WidgetNavigationService.NavigateTo(window.WidgetType, widgetSettings);
+            if (shell == null)
+            {
+                window.Content = new Frame();
+            }
+            else
+            {
+                shell.InitializeWindow(window);
+                window.Content = shell;
+            }
         }
 
         // Execute tasks after activation.
@@ -77,7 +84,7 @@ internal class ActivationService : IActivationService
         await StartupAsync(window);
     }
 
-    public async Task ActivateBlankWindowAsync(BlankWindow window, bool setContent)
+    public async Task ActivateWindowAsync(Window window, bool setContent = false)
     {
         // Execute tasks before activation.
         await InitializeAsync();
