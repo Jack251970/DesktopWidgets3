@@ -85,7 +85,7 @@ internal class WidgetResourceService : IWidgetResourceService
         };
     }
 
-    public bool GetWidgetIsNewThread(WidgetType widgetType)
+    public bool GetWidgetInNewThread(WidgetType widgetType)
     {
         return widgetType switch
         {

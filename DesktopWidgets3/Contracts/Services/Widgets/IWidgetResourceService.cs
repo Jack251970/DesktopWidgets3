@@ -12,5 +12,5 @@ public interface IWidgetResourceService
 
     BaseWidgetSettings GetDefaultSettings(WidgetType widgetType);
 
-    bool GetWidgetIsNewThread(WidgetType widgetType);
+    bool GetWidgetInNewThread(WidgetType widgetType);
 }

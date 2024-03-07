@@ -196,8 +196,8 @@ public static class FilePropertiesHelpers
 		while (WindowCache.TryTake(out var window))
 		{
 			window.Closed -= PropertiesWindow_Closed;
-			window.Close();
-		}
+            UIElementExtensions.CloseWindow(window);
+        }
 	}
 
 	/// <summary>

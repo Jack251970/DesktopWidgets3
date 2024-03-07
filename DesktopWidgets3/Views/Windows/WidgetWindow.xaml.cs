@@ -8,7 +8,6 @@ using Windows.UI.ViewManagement;
 using Windows.Graphics;
 
 using WinUIEx.Messaging;
-using DesktopWidgets3.Contracts.ViewModels;
 
 namespace DesktopWidgets3.Views.Windows;
 

@@ -13,20 +13,25 @@ public static class UIElementExtensions
 {
     private static IWindowService? FallbackWindowService;
 
-    public static readonly List<Window> WindowInstances = new();
+    private static readonly Dictionary<Window, Thread?> WindowInstances = new();
 
     public static void Initialize(IWindowService windowService)
     {
         FallbackWindowService = windowService;
     }
 
-    public static async Task<T> CreateWindow<T>(ActivationType type, object? parameter = null, bool newThread = false) where T : Window, new()
+    public static List<Window> GetAllWindows()
     {
-        if (newThread)
+        return WindowInstances.Keys.ToList();
+    }
+
+    public static async Task<T> CreateWindow<T>(ActivationType type, object? parameter = null, bool isNewThread = false, Action<T>? action = null) where T : Window, new()
+    {
+        if (isNewThread)
         {
             T window = null!;
 
-            var tcs = new TaskCompletionSource<T>();
+            var signal = new ManualResetEvent(false);
 
             var thread = new Thread(async () =>
             {
@@ -37,10 +42,10 @@ public static class UIElementExtensions
                 WindowsXamlManager.InitializeForCurrentThread();
 
                 // create a new window
-                window = await CreateWindow<T>(type, parameter);
+                window = await GetWindow(type, parameter, action);
 
-                // complete the task with the window object
-                tcs.SetResult(window);
+                // signal that window creation is complete
+                signal.Set();
 
                 // run message pump
                 dq.DispatcherQueue.RunEventLoop();
@@ -52,18 +57,27 @@ public static class UIElementExtensions
 
             thread.Start();
 
-            return await tcs.Task;
+            // wait for the signal
+            signal.WaitOne();
+
+            // register window
+            RegisterWindow(window, thread);
+
+            return window;
         }
         else
         {
             // create a new window
-            var window = await CreateWindow<T>(type, parameter);
+            var window = await GetWindow(type, parameter, action);
+
+            // register window
+            RegisterWindow(window, null);
 
             return window;
         }
     }
 
-    private static async Task<T> CreateWindow<T>(ActivationType type, object? parameter = null) where T : Window, new()
+    private static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null, Action<T>? action = null) where T : Window, new()
     {
         if (FallbackWindowService is null)
         {
@@ -72,9 +86,6 @@ public static class UIElementExtensions
 
         // create a new window
         var window = new T();
-
-        // register window
-        RegisterWindow(window);
 
         switch (type)
         {
@@ -89,23 +100,26 @@ public static class UIElementExtensions
             default:
                 await FallbackWindowService.ActivateBlankWindowAsync(window, parameter);
                 break;
-        } 
+        }
+
+        // invoke action
+        action?.Invoke(window);
 
         return window;
     }
 
-    public static void RegisterWindow(Window window)
+    public static void RegisterWindow(Window window, Thread? newThread)
     {
-        if (!WindowInstances.Contains(window))
+        if (!WindowInstances.ContainsKey(window))
         {
-            WindowInstances.Add(window);
+            WindowInstances.Add(window, newThread);
             window.Closed += (sender, args) => UnregisterWindow(window);
         }
     }
 
     public static void UnregisterWindow(Window window)
     {
-        if (WindowInstances.Contains(window))
+        if (WindowInstances.ContainsKey(window))
         {
             WindowInstances.Remove(window);
         }
@@ -113,15 +127,27 @@ public static class UIElementExtensions
 
     public static bool CheckWindowClosed(Window window)
     {
-        return !WindowInstances.Contains(window);
+        return !WindowInstances.ContainsKey(window);
+    }
+
+    public static void CloseWindow(Window window)
+    {
+        var newThread = WindowInstances[window];
+        if (newThread is null)
+        {
+            window.Close();
+        }
+        else
+        {
+            // TODO
+        }
     }
 
     public static void CloseAllWindows()
     {
-        var windowInstances = WindowInstances.ToList();
-        foreach (var window in windowInstances)
+        foreach (var window in WindowInstances.Keys)
         {
-            window.Close();
+            CloseWindow(window);
         }
     }
 

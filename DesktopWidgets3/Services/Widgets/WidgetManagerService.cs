@@ -174,26 +174,27 @@ internal class WidgetManagerService : IWidgetManagerService
         currentIndexTag = widget.IndexTag;
 
         // create widget window
-        var newThread = _widgetResourceService.GetWidgetIsNewThread(currentWidgetType);
-        var widgetWindow = await UIElementExtensions.CreateWindow<WidgetWindow>(ActivationType.Widget, widget.Settings, newThread);
+        var newThread = _widgetResourceService.GetWidgetInNewThread(currentWidgetType);
+        var widgetWindow = await UIElementExtensions.CreateWindow<WidgetWindow>(ActivationType.Widget, widget.Settings, newThread,
+            (widgetWindow) => {
+                // initialize widget settings
+                widgetWindow.InitializeSettings(widget);
 
-        // initialize widget settings
-        widgetWindow.InitializeSettings(widget);
+                // set window style, size and position
+                widgetWindow.IsResizable = false;
+                widgetWindow.MinSize = _widgetResourceService.GetMinSize(currentWidgetType);
+                widgetWindow.Size = widget.Size;
+                if (widget.Position.X != -1 && widget.Position.Y != -1)
+                {
+                    widgetWindow.Position = widget.Position;
+                }
 
-        // set window style, size and position
-        widgetWindow.IsResizable = false;
-        widgetWindow.MinSize = _widgetResourceService.GetMinSize(currentWidgetType);
-        widgetWindow.Size = widget.Size;
-        if (widget.Position.X != -1 && widget.Position.Y != -1)
-        {
-            widgetWindow.Position = widget.Position;
-        }
+                // initialize window
+                widgetWindow.InitializeWindow();
 
-        // initialize window
-        widgetWindow.InitializeWindow();
-
-        // show window
-        widgetWindow.Show(true);
+                // show window
+                widgetWindow.Show(true);
+            });
 
         // handle monitor
         _systemInfoService.StartMonitor(widget.Type);
@@ -219,8 +220,8 @@ internal class WidgetManagerService : IWidgetManagerService
                 viewModel.WidgetWindow_Closing();
             }
 
-            // close windows
-            widgetWindow.Close();
+            // close window
+            UIElementExtensions.CloseWindow(widgetWindow);
         }
 
         // remove from widget list
@@ -448,14 +449,17 @@ internal class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    private static async Task SetEditMode(WidgetWindow window, bool isEditMode)
+    private async Task SetEditMode(WidgetWindow window, bool isEditMode)
     {
         // set window style
         window.IsResizable = isEditMode;
 
         // set title bar
-        var frameShellPage = window.Content as FrameShellPage;
-        frameShellPage!.SetCustomTitleBar(isEditMode);
+        var isNewThread = _widgetResourceService.GetWidgetInNewThread(window.WidgetType);
+        await window.DispatcherQueue.EnqueueOrInvokeAsync(isNewThread, () => {
+            var frameShellPage = window.Content as FrameShellPage;
+            frameShellPage!.SetCustomTitleBar(isEditMode);
+        });
 
         // set page update status
         if (window.PageViewModel is IWidgetUpdate viewModel)
