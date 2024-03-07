@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.WinUI;
-
-using Microsoft.UI.Dispatching;
+﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
 
@@ -186,59 +184,6 @@ public static class UIElementExtensions
             WindowInstances.Remove(window);
         }
     }
-
-    #region extensions
-
-    public static Task EnqueueOrInvokeAsync(this DispatcherQueue? dispatcher, bool newThread, Func<Task> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
-    {
-        if (newThread && dispatcher is not null)
-        {
-            return dispatcher.EnqueueAsync(function, priority);
-        }
-        else
-        {
-            return function();
-        }
-    }
-
-    public static Task<T> EnqueueOrInvokeAsync<T>(this DispatcherQueue? dispatcher, bool newThread, Func<Task<T>> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
-    {
-        if (newThread && dispatcher is not null)
-        {
-            return dispatcher.EnqueueAsync(function, priority);
-        }
-        else
-        {
-            return function();
-        }
-    }
-
-    public static Task EnqueueOrInvokeAsync(this DispatcherQueue? dispatcher, bool newThread, Action function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
-    {
-        if (newThread && dispatcher is not null)
-        {
-            return dispatcher.EnqueueAsync(function, priority);
-        }
-        else
-        {
-            function();
-            return Task.CompletedTask;
-        }
-    }
-
-    public static Task<T> EnqueueOrInvokeAsync<T>(this DispatcherQueue? dispatcher, bool newThread, Func<T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
-    {
-        if (newThread && dispatcher is not null)
-        {
-            return dispatcher.EnqueueAsync(function, priority);
-        }
-        else
-        {
-            return Task.FromResult(function());
-        }
-    }
-
-    #endregion
 }
 
 public enum ActivationType
