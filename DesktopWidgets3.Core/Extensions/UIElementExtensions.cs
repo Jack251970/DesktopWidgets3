@@ -11,7 +11,7 @@ namespace DesktopWidgets3.Core.Extensions;
 /// </summary>
 public static class UIElementExtensions
 {
-    private static readonly Dictionary<Window, DispatcherExitDeferral?> WindowInstances = new();
+    private static readonly Dictionary<Window, WindowLifecycleHandler?> WindowInstances = new();
 
     private static IWindowService? FallbackWindowService;
 
@@ -25,7 +25,7 @@ public static class UIElementExtensions
         return WindowInstances.Keys.ToList();
     }
 
-    public static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null, bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null) where T : Window, new()
+    public static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null, bool isNewThread = false, WindowLifecycleHandler? lifecycleHandler = null) where T : Window, new()
     {
         T window = null!;
         DispatcherExitDeferral? deferral = null;
@@ -45,13 +45,13 @@ public static class UIElementExtensions
                 WindowsXamlManager.InitializeForCurrentThread();
 
                 // invoke action before window creation
-                lifecycleActions?.Window_Creating?.Invoke();
+                lifecycleHandler?.Window_Creating?.Invoke();
 
                 // create a new window
                 window = await GetWindow<T>(type, parameter);
 
                 // invoke action after window creation
-                lifecycleActions?.Window_Created?.Invoke(window);
+                lifecycleHandler?.Window_Created?.Invoke(window);
 
                 // signal that window creation is complete
                 signal.Set();
@@ -60,13 +60,13 @@ public static class UIElementExtensions
                 dq.DispatcherQueue.RunEventLoop(DispatcherRunOptions.None, deferral);
 
                 // invoke action before window closing
-                lifecycleActions?.Window_Closing?.Invoke(window);
+                lifecycleHandler?.Window_Closing?.Invoke(window);
 
                 // close window
                 window.Close();
 
                 // invoke action after window closing
-                lifecycleActions?.Window_Closed?.Invoke();
+                lifecycleHandler?.Window_Closed?.Invoke();
             })
             {
                 // will be destroyed when main is closed
@@ -81,19 +81,19 @@ public static class UIElementExtensions
         else
         {
             // invoke action before window creation
-            lifecycleActions?.Window_Creating?.Invoke();
+            lifecycleHandler?.Window_Creating?.Invoke();
 
             // create a new window
             window = await GetWindow<T>(type, parameter);
 
             // invoke action after window creation
-            lifecycleActions?.Window_Created?.Invoke(window);
+            lifecycleHandler?.Window_Created?.Invoke(window);
         }
 
         // register non-main window
         if (type != ActivationType.Main)
         {
-            RegisterWindow(window, deferral);
+            RegisterWindow(window, lifecycleHandler);
         }
 
         return window;
@@ -128,11 +128,11 @@ public static class UIElementExtensions
         return window;
     }
 
-    public static void RegisterWindow(Window window, DispatcherExitDeferral? deferral)
+    public static void RegisterWindow(Window window, WindowLifecycleHandler? lifecycleHandler)
     {
         if (!WindowInstances.ContainsKey(window))
         {
-            WindowInstances.Add(window, deferral);
+            WindowInstances.Add(window, lifecycleHandler);
             window.Closed += (sender, args) => UnregisterWindow(window);
         }
     }
@@ -152,14 +152,20 @@ public static class UIElementExtensions
 
     public static void CloseWindow(Window window)
     {
-        var exitDeferral = WindowInstances[window];
-        if (exitDeferral is null)
+        var lifecycleHandler = WindowInstances.TryGetValue(window, out var value) ? value : null;
+        if (lifecycleHandler?.ExitDeferral is not null)
         {
-            window.Close();
+            lifecycleHandler.ExitDeferral.Complete();
         }
         else
         {
-            exitDeferral.Complete();
+            // invoke action before window closing
+            lifecycleHandler?.Window_Closing?.Invoke(window);
+
+            window.Close();
+
+            // invoke action after window closing
+            lifecycleHandler?.Window_Closed?.Invoke();
         }
     }
 

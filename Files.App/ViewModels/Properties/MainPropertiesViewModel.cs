@@ -143,13 +143,13 @@ public class MainPropertiesViewModel : ObservableObject
 	private async Task ExecuteSaveChangedPropertiesCommandAsync()
 	{
 		await ApplyChangesAsync();
-		Window.Close();
-	}
+        UIElementExtensions.CloseWindow(Window);
+    }
 
 	private void ExecuteCancelChangedPropertiesCommand()
 	{
-		Window.Close();
-	}
+        UIElementExtensions.CloseWindow(Window);
+    }
 
 	private async Task ApplyChangesAsync()
 	{

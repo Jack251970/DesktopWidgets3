@@ -34,8 +34,8 @@ public partial class App : Application
 
     public static MainWindow MainWindow { get; set; } = null!;
 
-    public static bool CanCloseWindow { get; set; }
-    private static bool IsExistWindow { get; set; }
+    private static bool IsExistWindow { get; set; } = false;
+    public static bool CanCloseWindow { get; set; } = false;
 
     public App()
     {

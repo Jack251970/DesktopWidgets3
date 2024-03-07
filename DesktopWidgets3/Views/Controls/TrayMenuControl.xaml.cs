@@ -23,6 +23,6 @@ public sealed partial class TrayMenuControl : UserControl
     {
         TrayIcon.Dispose();
         App.CanCloseWindow = true;
-        App.MainWindow.Close();
+        UIElementExtensions.CloseWindow(App.MainWindow);
     }
 }

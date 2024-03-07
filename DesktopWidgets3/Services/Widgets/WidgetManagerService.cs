@@ -178,7 +178,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         // configure widget window lifecycle actions
         var minSize = _widgetResourceService.GetMinSize(currentWidgetType);
-        var liftcycleActions = new WindowLifecycleActions()
+        var liftcycleActions = new WindowLifecycleHandler()
         {
             Window_Created = (window) => WidgetWindow_Created(window, widget, minSize)
         };
@@ -402,7 +402,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         if (App.MainWindow.Visible)
         {
-            App.MainWindow.Close();
+            UIElementExtensions.CloseWindow(App.MainWindow);
             restoreMainWindow = true;
         }
     }
