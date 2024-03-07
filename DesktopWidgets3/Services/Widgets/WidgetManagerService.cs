@@ -1,9 +1,7 @@
-﻿using DesktopWidgets3.Views.Windows;
-using H.NotifyIcon;
+﻿using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
-using static Files.App.Constants;
 
 namespace DesktopWidgets3.Services.Widgets;
 
@@ -11,7 +9,6 @@ internal class WidgetManagerService : IWidgetManagerService
 {
     private readonly List<WidgetWindow> WidgetsList = new();
 
-    private readonly IActivationService _activationService;
     private readonly IAppSettingsService _appSettingsService;
     private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;
@@ -20,9 +17,8 @@ internal class WidgetManagerService : IWidgetManagerService
     private WidgetType currentWidgetType;
     private int currentIndexTag = -1;
 
-    public WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, ITimersService timersService, IWidgetResourceService widgetResourceService)
+    public WidgetManagerService(IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, ITimersService timersService, IWidgetResourceService widgetResourceService)
     {
-        _activationService = activationService;
         _appSettingsService = appSettingsService;
         _systemInfoService = systemInfoService;
         _timersService = timersService;
@@ -111,7 +107,7 @@ internal class WidgetManagerService : IWidgetManagerService
                 await _appSettingsService.UpdateWidgetsList(widget);
 
                 // close widget window
-                CloseWidgetWindow(widgetWindow);
+                await CloseWidgetWindow(widgetWindow);
 
                 // stop monitor and timer if no more widgets of this type
                 CheckMonitorAndTimer(widgetType);
@@ -141,20 +137,20 @@ internal class WidgetManagerService : IWidgetManagerService
         if (widgetWindow != null)
         {
             // close widget window
-            CloseWidgetWindow(widgetWindow);
+            await CloseWidgetWindow(widgetWindow);
 
             // stop monitor and timer if no more widgets of this type
             CheckMonitorAndTimer(widgetType);
         }
     }
 
-    public void DisableAllWidgets()
+    public async Task DisableAllWidgets()
     {
         var widgetsList = new List<WidgetWindow>(WidgetsList);
         foreach (var widgetWindow in widgetsList)
         {
             // close widget window
-            CloseWidgetWindow(widgetWindow);
+            await CloseWidgetWindow(widgetWindow);
         }
 
         // stop all monitors and timers
@@ -223,10 +219,10 @@ internal class WidgetManagerService : IWidgetManagerService
         }
     }
 
-    private void CloseWidgetWindow(WidgetWindow widgetWindow)
+    private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
     {
         // close window
-        UIElementExtensions.CloseWindow(widgetWindow);
+        await UIElementExtensions.CloseWindow(widgetWindow);
 
         // remove from widget list
         WidgetsList.Remove(widgetWindow);
@@ -407,7 +403,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         if (App.MainWindow.Visible)
         {
-            UIElementExtensions.CloseWindow(App.MainWindow);
+            await UIElementExtensions.CloseWindow(App.MainWindow);
             restoreMainWindow = true;
         }
     }

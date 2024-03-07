@@ -58,13 +58,13 @@ public sealed partial class MainWindow : WindowEx
     }
 
     // this enables the app to continue running in background after clicking close button
-    private void WindowEx_Closed(WindowEventArgs args)
+    private async void WindowEx_Closed(WindowEventArgs args)
     {
         if (App.CanCloseWindow)
         {
             ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closing?.Invoke(this, args);
-            App.GetService<IWidgetManagerService>().DisableAllWidgets();
-            UIElementExtensions.CloseAllWindows();
+            await App.GetService<IWidgetManagerService>().DisableAllWidgets();
+            await UIElementExtensions.CloseAllWindows();
             ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closed?.Invoke(this, args);
             Application.Current.Exit();
         }

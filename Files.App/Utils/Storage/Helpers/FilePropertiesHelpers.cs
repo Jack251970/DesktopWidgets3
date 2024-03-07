@@ -191,12 +191,12 @@ public static class FilePropertiesHelpers
 	/// Destroy all cached properties windows
 	/// </summary>
 	/// <returns></returns>
-	public static void DestroyCachedWindows()
+	public static async void DestroyCachedWindows()
 	{
 		while (WindowCache.TryTake(out var window))
 		{
 			window.Closed -= PropertiesWindow_Closed;
-            UIElementExtensions.CloseWindow(window);
+            await UIElementExtensions.CloseWindow(window);
         }
 	}
 

@@ -60,11 +60,11 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 	private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
 		=> UpdatePageLayout();
 
-	private void Page_KeyDown(object sender, KeyRoutedEventArgs e)
+	private async void Page_KeyDown(object sender, KeyRoutedEventArgs e)
 	{
 		if (e.Key.Equals(VirtualKey.Escape))
         {
-            UIElementExtensions.CloseWindow(Window);
+            await UIElementExtensions.CloseWindow(Window);
         }
     }
 

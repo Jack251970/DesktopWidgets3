@@ -5,6 +5,8 @@ namespace DesktopWidgets3.Core.Models;
 
 public class WindowLifecycleActions
 {
+    public TaskCompletionSource? CompletionSource { get; set; }
+
     public Action? Window_Creating { get; set; }
 
     public Action<Window>? Window_Created { get; set; }
@@ -18,5 +20,5 @@ internal class WindowLifecycleHandler
 {
     public DispatcherExitDeferral? ExitDeferral { get; set; }
 
-    public WindowLifecycleActions? LifecycleActions { get; set; }
+    public WindowLifecycleActions LifecycleActions { get; set; } = null!;
 }

@@ -12,7 +12,7 @@ public interface IWidgetManagerService
 
     Task DeleteWidget(WidgetType widgetType, int indexTag);
 
-    void DisableAllWidgets();
+    Task DisableAllWidgets();
 
     bool IsWidgetEnabled(WidgetType widgetType, int indexTag);
 

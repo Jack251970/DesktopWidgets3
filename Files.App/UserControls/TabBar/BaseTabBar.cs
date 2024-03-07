@@ -161,7 +161,7 @@ public abstract class BaseTabBar : ITabBar
 		await MultitaskingTabsHelpers.MoveTabToNewWindow(((FrameworkElement)sender).DataContext as TabBarItem, this);
 	}*/
 
-    public void CloseTab(TabBarItem tabItem)
+    public async void CloseTab(TabBarItem tabItem)
 	{
 		Items.Remove(tabItem);
 		tabItem?.Unload();
@@ -174,7 +174,7 @@ public abstract class BaseTabBar : ITabBar
 
 		if (Items.Count == 0)
         {
-            UIElementExtensions.CloseWindow(FolderViewViewModel.MainWindow);
+            await UIElementExtensions.CloseWindow(FolderViewViewModel.MainWindow);
         }
     }
 

@@ -180,7 +180,7 @@ public partial class App
         if (LastOpenedFlyout?.IsOpen ?? false)
 		{
 			args.Handled = true;
-			LastOpenedFlyout.Closed += (sender, e) => UIElementExtensions.CloseWindow(FolderViewViewModel.MainWindow);
+			LastOpenedFlyout.Closed += async (sender, e) => await UIElementExtensions.CloseWindow(FolderViewViewModel.MainWindow);
 			LastOpenedFlyout.Hide();
 			return;
 		}

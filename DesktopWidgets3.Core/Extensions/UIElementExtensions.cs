@@ -67,6 +67,9 @@ public static class UIElementExtensions
 
                 // invoke action after window closing
                 lifecycleActions?.Window_Closed?.Invoke();
+
+                // signal that window closing is complete
+                lifecycleActions?.CompletionSource?.SetResult();
             })
             {
                 // will be destroyed when main is closed
@@ -96,7 +99,7 @@ public static class UIElementExtensions
             var lifecycleHandler = new WindowLifecycleHandler
             {
                 ExitDeferral = deferral,
-                LifecycleActions = lifecycleActions
+                LifecycleActions = lifecycleActions ?? new()
             };
             RegisterWindow(window, lifecycleHandler);
         }
@@ -133,30 +136,37 @@ public static class UIElementExtensions
         return window;
     }
 
-    public static void CloseWindow(Window window)
+    public static async Task CloseWindow(Window window)
     {
         var lifecycleHandler = WindowInstances.TryGetValue(window, out var value) ? value : null;
         if (lifecycleHandler?.ExitDeferral is not null)
         {
+            // initialize task completion source
+            lifecycleHandler.LifecycleActions.CompletionSource ??= new();
+
+            // start dispatch complete deferral
             lifecycleHandler.ExitDeferral.Complete();
+
+            // wait for task completion source to complete
+            await lifecycleHandler.LifecycleActions.CompletionSource.Task;
         }
         else
         {
             // invoke action before window closing
-            lifecycleHandler?.LifecycleActions?.Window_Closing?.Invoke(window);
+            lifecycleHandler?.LifecycleActions.Window_Closing?.Invoke(window);
 
             window.Close();
 
             // invoke action after window closing
-            lifecycleHandler?.LifecycleActions?.Window_Closed?.Invoke();
+            lifecycleHandler?.LifecycleActions.Window_Closed?.Invoke();
         }
     }
 
-    public static void CloseAllWindows()
+    public static async Task CloseAllWindows()
     {
         foreach (var window in WindowInstances.Keys)
         {
-            CloseWindow(window);
+            await CloseWindow(window);
         }
     }
 

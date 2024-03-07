@@ -143,12 +143,12 @@ public class MainPropertiesViewModel : ObservableObject
 	private async Task ExecuteSaveChangedPropertiesCommandAsync()
 	{
 		await ApplyChangesAsync();
-        UIElementExtensions.CloseWindow(Window);
+        await UIElementExtensions.CloseWindow(Window);
     }
 
-	private void ExecuteCancelChangedPropertiesCommand()
+	private async void ExecuteCancelChangedPropertiesCommand()
 	{
-        UIElementExtensions.CloseWindow(Window);
+        await UIElementExtensions.CloseWindow(Window);
     }
 
 	private async Task ApplyChangesAsync()
