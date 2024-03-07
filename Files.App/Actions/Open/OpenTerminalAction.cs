@@ -37,7 +37,7 @@ internal class OpenTerminalAction : ObservableObject, IAction
 		var terminalStartInfo = GetProcessStartInfo();
 		if (terminalStartInfo is not null)
 		{
-			UIThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
+			ThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
 			{
 				try
 				{

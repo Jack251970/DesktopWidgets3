@@ -174,7 +174,7 @@ public abstract class BaseTabBar : ITabBar
 
 		if (Items.Count == 0)
         {
-            await UIElementExtensions.CloseWindow(FolderViewViewModel.MainWindow);
+            await WindowsExtensions.CloseWindow(FolderViewViewModel.MainWindow);
         }
     }
 

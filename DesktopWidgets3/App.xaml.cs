@@ -197,8 +197,8 @@ public partial class App : Application
         // Initialize core extensions after injecting services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
         LocalSettingsExtensions.RegisterService(GetService<ILocalSettingsService>());
-        UIElementExtensions.Initialize(GetService<IWindowService>());
-        UIThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
+        ThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
+        WindowsExtensions.Initialize(GetService<IWindowService>());
     }
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -212,7 +212,7 @@ public partial class App : Application
 
         if (!IsExistWindow && MainWindow is null)
         {
-            MainWindow = await UIElementExtensions.GetWindow<MainWindow>(ActivationType.Main, args);
+            MainWindow = await WindowsExtensions.GetWindow<MainWindow>(ActivationType.Main, args);
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
         }
     }

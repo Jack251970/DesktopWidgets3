@@ -5,11 +5,11 @@ using Microsoft.UI.Xaml.Hosting;
 namespace DesktopWidgets3.Core.Extensions;
 
 /// <summary>
-/// Provides static extension for UI elements.
+/// Provides static extension for UI elements, e.g. Windows.
 /// </summary>
-public static class UIElementExtensions
+public static class WindowsExtensions
 {
-    private static readonly Dictionary<Window, WindowLifecycleHandler> WindowInstances = new();
+    private static readonly Dictionary<Window, WindowLifecycleHandler> WindowsAndLifecycle = new();
 
     private static IWindowService? FallbackWindowService;
 
@@ -20,7 +20,7 @@ public static class UIElementExtensions
 
     public static List<Window> GetAllWindows()
     {
-        return WindowInstances.Keys.ToList();
+        return WindowsAndLifecycle.Keys.ToList();
     }
 
     public static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null, bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null) where T : Window, new()
@@ -91,7 +91,7 @@ public static class UIElementExtensions
             lifecycleActions?.Window_Created?.Invoke(window);
         }
 
-        // register non-main window
+        // register non-main window in ui element extension
         if (type != ActivationType.Main)
         {
             var lifecycleHandler = new WindowLifecycleHandler
@@ -131,12 +131,15 @@ public static class UIElementExtensions
                 break;
         }
 
+        // register window in ui thread extension
+        ThreadExtensions.RegisterWindow(window);
+
         return window;
     }
 
     public static async Task CloseWindow(Window window)
     {
-        var lifecycleHandler = WindowInstances.TryGetValue(window, out var value) ? value : null;
+        var lifecycleHandler = WindowsAndLifecycle.TryGetValue(window, out var value) ? value : null;
         if (lifecycleHandler?.ExitDeferral is not null)
         {
             // initialize task completion source
@@ -162,7 +165,7 @@ public static class UIElementExtensions
 
     public static async Task CloseAllWindows()
     {
-        foreach (var window in WindowInstances.Keys)
+        foreach (var window in WindowsAndLifecycle.Keys)
         {
             await CloseWindow(window);
         }
@@ -170,19 +173,16 @@ public static class UIElementExtensions
 
     private static void RegisterWindow(Window window, WindowLifecycleHandler lifecycleHandler)
     {
-        if (!WindowInstances.ContainsKey(window))
+        if (!WindowsAndLifecycle.ContainsKey(window))
         {
-            WindowInstances.Add(window, lifecycleHandler);
+            WindowsAndLifecycle.Add(window, lifecycleHandler);
             window.Closed += (sender, args) => UnregisterWindow(window);
         }
     }
 
     private static void UnregisterWindow(Window window)
     {
-        if (WindowInstances.ContainsKey(window))
-        {
-            WindowInstances.Remove(window);
-        }
+        WindowsAndLifecycle.Remove(window);
     }
 }
 

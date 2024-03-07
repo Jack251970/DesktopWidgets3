@@ -53,7 +53,7 @@ internal class ThemeSelectorService : IThemeSelectorService
 
         await SetRequestedThemeAsync(App.MainWindow);
 
-        foreach (var window in UIElementExtensions.GetAllWindows())
+        foreach (var window in WindowsExtensions.GetAllWindows())
         {
             await SetRequestedThemeAsync(window);
         }

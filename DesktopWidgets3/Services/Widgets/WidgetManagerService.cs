@@ -182,7 +182,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         // create widget window
         var newThread = _widgetResourceService.GetWidgetInNewThread(currentWidgetType);
-        var widgetWindow = await UIElementExtensions.GetWindow<WidgetWindow>(ActivationType.Widget, widget.Settings, newThread, liftcycleActions);
+        var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(ActivationType.Widget, widget.Settings, newThread, liftcycleActions);
 
         // handle monitor
         _systemInfoService.StartMonitor(widget.Type);
@@ -222,7 +222,7 @@ internal class WidgetManagerService : IWidgetManagerService
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
     {
         // close window
-        await UIElementExtensions.CloseWindow(widgetWindow);
+        await WindowsExtensions.CloseWindow(widgetWindow);
 
         // remove from widget list
         WidgetsList.Remove(widgetWindow);
@@ -382,7 +382,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         if (EditModeOverlayWindow == null)
         {
-            EditModeOverlayWindow = await UIElementExtensions.GetWindow<OverlayWindow>(ActivationType.Overlay);
+            EditModeOverlayWindow = await WindowsExtensions.GetWindow<OverlayWindow>(ActivationType.Overlay);
 
             var _shell = EditModeOverlayWindow.Content as Frame;
             _shell?.Navigate(typeof(EditModeOverlayPage));
@@ -403,7 +403,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         if (App.MainWindow.Visible)
         {
-            await UIElementExtensions.CloseWindow(App.MainWindow);
+            await WindowsExtensions.CloseWindow(App.MainWindow);
             restoreMainWindow = true;
         }
     }

@@ -110,7 +110,7 @@ public static class FilePropertiesHelpers
 		WinUIEx.WindowEx propertiesWindow;
 		if (!WindowCache.TryTake(out propertiesWindow!))
 		{
-            propertiesWindow = await UIElementExtensions.GetWindow<BlankWindow>(ActivationType.Blank);
+            propertiesWindow = await WindowsExtensions.GetWindow<BlankWindow>(ActivationType.Blank);
             propertiesWindow.Closed += PropertiesWindow_Closed;
 		}
 
@@ -196,7 +196,7 @@ public static class FilePropertiesHelpers
 		while (WindowCache.TryTake(out var window))
 		{
 			window.Closed -= PropertiesWindow_Closed;
-            await UIElementExtensions.CloseWindow(window);
+            await WindowsExtensions.CloseWindow(window);
         }
 	}
 

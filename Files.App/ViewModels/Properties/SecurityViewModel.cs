@@ -120,7 +120,7 @@ public class SecurityViewModel : ObservableObject
             return;
         }
 
-        await UIThreadExtensions.MainDispatcherQueue!.EnqueueAsync(() =>
+        await ThreadExtensions.MainDispatcherQueue!.EnqueueAsync(() =>
 		{
 			// Run Win32API
 			var win32Result = FileSecurityHelpers.AddAccessControlEntry(_path, sid);
@@ -133,7 +133,7 @@ public class SecurityViewModel : ObservableObject
 
 	private async Task ExecuteRemoveAccessControlEntryCommandAsync()
 	{
-		await UIThreadExtensions.MainDispatcherQueue!.EnqueueAsync(() =>
+		await ThreadExtensions.MainDispatcherQueue!.EnqueueAsync(() =>
 		{
 			// Get index of the ACE
 			var index = AccessControlList.AccessControlEntries.IndexOf(SelectedAccessControlEntry!);

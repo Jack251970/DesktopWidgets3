@@ -64,7 +64,7 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 	{
 		if (e.Key.Equals(VirtualKey.Escape))
         {
-            await UIElementExtensions.CloseWindow(Window);
+            await WindowsExtensions.CloseWindow(Window);
         }
     }
 

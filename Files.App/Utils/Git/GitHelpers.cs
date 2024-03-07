@@ -398,7 +398,7 @@ internal static partial class GitHelpers
 				};
 		}
 
-        UIThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
+        ThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = true;
 		});
@@ -428,7 +428,7 @@ internal static partial class GitHelpers
 			return result;
 		});
 
-        UIThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
+        ThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = false;
 			GitFetchCompleted?.Invoke(null, EventArgs.Empty);
@@ -461,7 +461,7 @@ internal static partial class GitHelpers
 				};
 		}
 
-        UIThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
+        ThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = true;
 		});
@@ -502,7 +502,7 @@ internal static partial class GitHelpers
 			await dialog.TryShowAsync(folderViewViewModel);
 		}
 
-        UIThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
+        ThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = false;
 		});
@@ -539,7 +539,7 @@ internal static partial class GitHelpers
 				}
 		};
 
-        UIThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
+        ThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = true;
 		});
@@ -582,7 +582,7 @@ internal static partial class GitHelpers
 			_logger?.LogWarning(ex.Message);
 		}
 
-        UIThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
+        ThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
 		{
 			IsExecutingGitAction = false;
 		});

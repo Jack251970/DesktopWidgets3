@@ -403,7 +403,7 @@ public class FolderSearch
 				{
 					if (t.IsCompletedSuccessfully && t.Result is not null)
 					{
-						_ = FilesystemTasks.Wrap(() => UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () =>
+						_ = FilesystemTasks.Wrap(() => ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () =>
 						{
 							listedItem.FileImage = (await t.Result.ToBitmapAsync())!;
 						}, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low));

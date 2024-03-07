@@ -202,7 +202,7 @@ public class SecurityAdvancedViewModel : ObservableObject
             return;
         }
 
-        await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
+        await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 		{
 			// Set owner
 			FileSecurityHelpers.SetOwner(_path, sid);
@@ -221,7 +221,7 @@ public class SecurityAdvancedViewModel : ObservableObject
             return;
         }
 
-        await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
+        await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 		{
 			// Run Win32API
 			var win32Result = FileSecurityHelpers.AddAccessControlEntry(_path, sid);
@@ -239,7 +239,7 @@ public class SecurityAdvancedViewModel : ObservableObject
             return;
         }
 
-        await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
+        await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 		{
 			// Get index of the ACE
 			var index = AccessControlList.AccessControlEntries.IndexOf(SelectedAccessControlEntry);

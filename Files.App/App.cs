@@ -148,7 +148,7 @@ public partial class App
 		Logger.LogInformation($"The app is being activated. Activation type: {activatedEventArgs.Data.GetType().Name}");
 
 		// InitializeApplication accesses UI, needs to be called on UI thread
-		_ = UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(()
+		_ = ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(()
 			=> Instance.InitializeApplicationAsync(activatedEventArgs.Data));
 	}
 
@@ -180,7 +180,7 @@ public partial class App
         if (LastOpenedFlyout?.IsOpen ?? false)
 		{
 			args.Handled = true;
-			LastOpenedFlyout.Closed += async (sender, e) => await UIElementExtensions.CloseWindow(FolderViewViewModel.MainWindow);
+			LastOpenedFlyout.Closed += async (sender, e) => await WindowsExtensions.CloseWindow(FolderViewViewModel.MainWindow);
 			LastOpenedFlyout.Hide();
 			return;
 		}

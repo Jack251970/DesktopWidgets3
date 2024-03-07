@@ -43,7 +43,7 @@ public sealed partial class MainWindow : WindowEx
         Title = "AppDisplayName".GetLocalized();
 
         // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
-        dispatcherQueue = UIThreadExtensions.MainDispatcherQueue!;
+        dispatcherQueue = ThreadExtensions.MainDispatcherQueue!;
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
@@ -64,7 +64,7 @@ public sealed partial class MainWindow : WindowEx
         {
             ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closing?.Invoke(this, args);
             await App.GetService<IWidgetManagerService>().DisableAllWidgets();
-            await UIElementExtensions.CloseAllWindows();
+            await WindowsExtensions.CloseAllWindows();
             ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closed?.Invoke(this, args);
             Application.Current.Exit();
         }

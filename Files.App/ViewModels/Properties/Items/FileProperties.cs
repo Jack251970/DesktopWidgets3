@@ -88,7 +88,7 @@ public class FileProperties : BaseProperties, IFileProperties
 			}
 			else
 			{
-				await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(
+				await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(
 					() => NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, Path.GetDirectoryName(ViewModel.ShortcutItemPath)));
 			}
 		},

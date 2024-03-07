@@ -52,7 +52,7 @@ public class DriveCardItem : WidgetCardItem, IWidgetCardItem<DriveItem>, ICompar
 		// Thumbnail data is valid, set the item icon
 		if (thumbnailData is not null && thumbnailData.Length > 0)
         {
-            Thumbnail = (await UIThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => thumbnailData.ToBitmapAsync(Constants.Widgets.WidgetIconSize)))!;
+            Thumbnail = (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => thumbnailData.ToBitmapAsync(Constants.Widgets.WidgetIconSize)))!;
         }
     }
 
