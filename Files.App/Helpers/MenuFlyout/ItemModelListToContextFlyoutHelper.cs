@@ -231,7 +231,7 @@ public static class ItemModelListToContextFlyoutHelper
 		if ((item.Items is not null && item.Items.Count > 0) || item.ID == "ItemOverflow")
 		{
 			ctxFlyout = new MenuFlyout();
-			GetMenuFlyoutItemsFromModel(item.Items)?.ForEach(i => ctxFlyout.Items.Add(i));
+			GetMenuFlyoutItemsFromModel(item.Items)?.ForEach(ctxFlyout.Items.Add);
 		}
 
 		UIElement? content = null;
@@ -257,7 +257,7 @@ public static class ItemModelListToContextFlyoutHelper
 
         if (item.ItemType is ContextMenuFlyoutItemType.Toggle)
 		{
-			element = new AppBarToggleButton()
+            element = new AppBarToggleButton()
 			{
 				Label = item.Text,
 				Tag = item.Tag,
@@ -265,7 +265,8 @@ public static class ItemModelListToContextFlyoutHelper
 				CommandParameter = item.CommandParameter,
 				IsChecked = item.IsChecked,
 				Content = content,
-				LabelPosition = item.CollapseLabel ? CommandBarLabelPosition.Collapsed : CommandBarLabelPosition.Default,
+                // CHANGE: Set primary items label position to collapsed
+				LabelPosition = (item.IsPrimary || item.CollapseLabel) ? CommandBarLabelPosition.Collapsed : CommandBarLabelPosition.Default,
 				IsEnabled = item.IsEnabled,
 				Visibility = item.IsHidden ? Visibility.Collapsed : Visibility.Visible,
 			};
@@ -290,15 +291,16 @@ public static class ItemModelListToContextFlyoutHelper
 			}
 		}
 		else
-		{
-			element = new AppBarButton()
+		{   
+            element = new AppBarButton()
 			{
 				Label = item.Text,
 				Tag = item.Tag,
 				Command = item.Command,
 				CommandParameter = item.CommandParameter,
 				Flyout = ctxFlyout,
-				LabelPosition = item.CollapseLabel ? CommandBarLabelPosition.Collapsed : CommandBarLabelPosition.Default,
+                // CHANGE: Set primary items label position to collapsed
+                LabelPosition = (item.IsPrimary || item.CollapseLabel) ? CommandBarLabelPosition.Collapsed : CommandBarLabelPosition.Default,
 				Content = content,
 				IsEnabled = item.IsEnabled,
 				Visibility = item.IsHidden ? Visibility.Collapsed : Visibility.Visible,
