@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.WinUI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using Windows.Media.Core;
 
 namespace DesktopWidgets3.Core.Extensions;
 
