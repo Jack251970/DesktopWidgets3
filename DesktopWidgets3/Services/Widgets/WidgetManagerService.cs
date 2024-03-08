@@ -381,14 +381,14 @@ internal class WidgetManagerService : IWidgetManagerService
             };
             originalWidgetList.Add(widget);
 
-            await widgetWindow.EnqueueOrInvokeAsync(async () => await SetEditMode(widgetWindow, true));
+            await widgetWindow.EnqueueOrInvokeAsync(async (window) => await SetEditMode(widgetWindow, true));
         }
 
         // get primary monitor info
         var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
         var screenWidth = primaryMonitorInfo.RectWork.Width;
 
-        await EditModeOverlayWindow.EnqueueOrInvokeAsync(() =>
+        await EditModeOverlayWindow.EnqueueOrInvokeAsync((window) =>
         {
             // set window size according to xaml, rember larger than 136 x 39
             EditModeOverlayWindow.Size = new SizeInt32(EditModeOverlayWindowXamlWidth, EditModeOverlayWindowXamlHeight);
@@ -402,7 +402,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
         if (App.MainWindow.Visible)
         {
-            await App.MainWindow.EnqueueOrInvokeAsync(async () => await WindowsExtensions.CloseWindow(App.MainWindow));
+            await App.MainWindow.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindow);
             restoreMainWindow = true;
         }
     }
@@ -413,18 +413,21 @@ internal class WidgetManagerService : IWidgetManagerService
 
         foreach (var widgetWindow in WidgetsList)
         {
-            await widgetWindow.EnqueueOrInvokeAsync(async () => await SetEditMode(widgetWindow, false));
-
-            var widget = new JsonWidgetItem()
+            await widgetWindow.EnqueueOrInvokeAsync(async (window) => 
             {
-                Type = widgetWindow.WidgetType,
-                IndexTag = widgetWindow.IndexTag,
-                IsEnabled = true,
-                Position = widgetWindow.Position,
-                Size = widgetWindow.Size,
-                Settings = widgetWindow.Settings,
-            };
-            widgetList.Add(widget);
+                await SetEditMode(widgetWindow, false);
+
+                var widget = new JsonWidgetItem()
+                {
+                    Type = widgetWindow.WidgetType,
+                    IndexTag = widgetWindow.IndexTag,
+                    IsEnabled = true,
+                    Position = widgetWindow.Position,
+                    Size = widgetWindow.Size,
+                    Settings = widgetWindow.Settings,
+                };
+                widgetList.Add(widget);
+            });
         }
 
         EditModeOverlayWindow?.Hide(true);
@@ -442,7 +445,7 @@ internal class WidgetManagerService : IWidgetManagerService
     {
         foreach (var widgetWindow in WidgetsList)
         {
-            await widgetWindow.EnqueueOrInvokeAsync(async () => {
+            await widgetWindow.EnqueueOrInvokeAsync(async (window) => {
                 await SetEditMode(widgetWindow, false);
 
                 var originalWidget = originalWidgetList.First(x => x.Type == widgetWindow.WidgetType && x.IndexTag == widgetWindow.IndexTag);
