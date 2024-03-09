@@ -109,7 +109,7 @@ public sealed partial class WidgetWindow : WindowEx
         position = AppWindow.Position;
         PositionChanged += WidgetWindow_PositionChanged;
 
-        size = new(AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this), AppWindow.Size.Height * 96f / WindowExtensions.GetDpiForWindow(this));
+        size = GetAppWindowSize();
         SizeChanged += WidgetWindow_SizeChanged;
     }
 
@@ -120,7 +120,13 @@ public sealed partial class WidgetWindow : WindowEx
         DispatcherQueue.GetForCurrentThread().TryEnqueue(DispatcherQueuePriority.High, () => TitleBarHelper.ApplySystemThemeToCaptionButtons(this, null));
     }
 
-    #region position & size changed
+    #region position & size
+
+    private Size GetAppWindowSize()
+    {
+        var windowDpi = WindowExtensions.GetDpiForWindow(this);
+        return new(AppWindow.Size.Width * 96f / windowDpi, AppWindow.Size.Height * 96f / windowDpi);
+    }
 
     private void WidgetWindow_PositionChanged(object? sender, PointInt32 e)
     {
@@ -129,10 +135,54 @@ public sealed partial class WidgetWindow : WindowEx
 
     private void WidgetWindow_SizeChanged(object sender, WindowSizeChangedEventArgs args)
     {
-        // Only if window size equal to app window size, the window is under custom title bar
-        if (args.Size.Width == AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this))
+        if (!IsResizable)
         {
-            size = new(args.Size.Width, args.Size.Height);
+            size = args.Size;
+        }
+        else if (enterEditMode)
+        {
+            var size = GetAppWindowSize();
+            divSize.Width = Math.Ceiling(size.Width - args.Size.Width);
+            divSize.Height = Math.Ceiling(size.Height - args.Size.Height);
+            enterEditMode = false;
+            exitEditMode = true;
+        }
+    }
+
+    #endregion
+
+    #region edit mode
+
+    private WidgetSize divSize = new(0,0);
+    private bool enterEditMode;
+    private bool exitEditMode;
+
+    public async Task SetEditMode(bool isEditMode)
+    {
+        // set flag
+        enterEditMode = isEditMode;
+
+        // set window style
+        IsResizable = isEditMode;
+
+        // set title bar
+        ShellPage.SetCustomTitleBar(isEditMode);
+
+        // set page update status
+        if (PageViewModel is IWidgetUpdate viewModel)
+        {
+            await viewModel.EnableUpdate(!isEditMode);
+        }
+
+        // change window size
+        if (isEditMode)
+        {
+            Size = new WidgetSize(size.Width + divSize.Width, size.Height + divSize.Height);
+        }
+        else if (exitEditMode)
+        {
+            Size = new WidgetSize(size.Width - divSize.Width, size.Height - divSize.Height);
+            exitEditMode = false;
         }
     }
 

@@ -239,7 +239,7 @@ internal class WidgetManagerService : IWidgetManagerService
         if (window is WidgetWindow widgetWindow)
         {
             // set edit mode
-            await SetEditMode(widgetWindow, false);
+            await widgetWindow.SetEditMode(false);
 
             // widget close event
             if (widgetWindow.PageViewModel is IWidgetClose viewModel)
@@ -381,7 +381,7 @@ internal class WidgetManagerService : IWidgetManagerService
             };
             originalWidgetList.Add(widget);
 
-            await widgetWindow.EnqueueOrInvokeAsync(async (window) => await SetEditMode(widgetWindow, true));
+            await widgetWindow.EnqueueOrInvokeAsync(async (window) => await widgetWindow.SetEditMode(true));
         }
 
         // get primary monitor info
@@ -415,7 +415,7 @@ internal class WidgetManagerService : IWidgetManagerService
         {
             await widgetWindow.EnqueueOrInvokeAsync(async (window) => 
             {
-                await SetEditMode(widgetWindow, false);
+                await widgetWindow.SetEditMode(false);
 
                 var widget = new JsonWidgetItem()
                 {
@@ -446,7 +446,7 @@ internal class WidgetManagerService : IWidgetManagerService
         foreach (var widgetWindow in WidgetsList)
         {
             await widgetWindow.EnqueueOrInvokeAsync(async (window) => {
-                await SetEditMode(widgetWindow, false);
+                await widgetWindow.SetEditMode(false);
 
                 var originalWidget = originalWidgetList.First(x => x.Type == widgetWindow.WidgetType && x.IndexTag == widgetWindow.IndexTag);
 
@@ -466,22 +466,6 @@ internal class WidgetManagerService : IWidgetManagerService
         {
             App.MainWindow.Show(true);
             restoreMainWindow = false;
-        }
-    }
-
-    private static async Task SetEditMode(WidgetWindow window, bool isEditMode)
-    {
-        // set window style
-        window.IsResizable = isEditMode;
-
-        // set title bar
-        var frameShellPage = window.Content as FrameShellPage;
-        frameShellPage!.SetCustomTitleBar(isEditMode);
-
-        // set page update status
-        if (window.PageViewModel is IWidgetUpdate viewModel)
-        {
-            await viewModel.EnableUpdate(!isEditMode);
         }
     }
 
