@@ -200,7 +200,7 @@ internal class WidgetManagerService : IWidgetManagerService
     }
 
     // created action for widget window lifecycle
-    private static void WidgetWindow_Created(Window window, JsonWidgetItem widget, WidgetSize minSize)
+    private static void WidgetWindow_Created(Window window, JsonWidgetItem widget, RectSize minSize)
     {
         if (window is WidgetWindow widgetWindow)
         {

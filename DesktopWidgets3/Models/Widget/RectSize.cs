@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Models.Widget;
 
-public struct WidgetSize
+public struct RectSize
 {
     private float _width;
 
@@ -36,7 +36,7 @@ public struct WidgetSize
 
     private readonly bool IsEmpty => Width < 0.0;
 
-    public WidgetSize(float width, float height)
+    public RectSize(float width, float height)
     {
         if (width < 0f)
         {
@@ -52,12 +52,12 @@ public struct WidgetSize
         _height = height;
     }
 
-    public WidgetSize(double width, double height)
+    public RectSize(double width, double height)
         : this((float)width, (float)height)
     {
     }
 
-    public static bool operator ==(WidgetSize size1, WidgetSize size2)
+    public static bool operator ==(RectSize size1, RectSize size2)
     {
         if (size1._width == size2._width)
         {
@@ -67,14 +67,14 @@ public struct WidgetSize
         return false;
     }
 
-    public static bool operator !=(WidgetSize size1, WidgetSize size2)
+    public static bool operator !=(RectSize size1, RectSize size2)
     {
         return !(size1 == size2);
     }
 
     public readonly override bool Equals(object? o)
     {
-        if (o is WidgetSize size)
+        if (o is RectSize size)
         {
             return Equals(this, size);
         }
@@ -82,7 +82,7 @@ public struct WidgetSize
         return false;
     }
 
-    public readonly bool Equals(WidgetSize value)
+    public readonly bool Equals(RectSize value)
     {
         return Equals(this, value);
     }
@@ -97,7 +97,7 @@ public struct WidgetSize
         return Width.GetHashCode() ^ Height.GetHashCode();
     }
 
-    private static bool Equals(WidgetSize size1, WidgetSize size2)
+    private static bool Equals(RectSize size1, RectSize size2)
     {
         if (size1.IsEmpty)
         {

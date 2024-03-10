@@ -22,7 +22,7 @@ internal class JsonWidgetItemConverter : JsonConverter
             IndexTag = jsonObject["IndexTag"]!.Value<int>(),
             IsEnabled = jsonObject["IsEnabled"]!.Value<bool>(),
             Position = jsonObject["Position"]!.ToObject<PointInt32>(serializer),
-            Size = jsonObject["Size"]!.ToObject<WidgetSize>(serializer),
+            Size = jsonObject["Size"]!.ToObject<RectSize>(serializer),
             Settings = widgetType switch
             {
                 WidgetType.Clock => jsonObject["Settings"]!.ToObject<ClockWidgetSettings>(serializer)!,

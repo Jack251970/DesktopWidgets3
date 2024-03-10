@@ -32,7 +32,7 @@ public sealed partial class WidgetWindow : WindowEx
     }
 
     private Size size;
-    public WidgetSize Size
+    public RectSize Size
     {
         get => new(size.Width, size.Height);
         set
@@ -47,7 +47,7 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
-    public WidgetSize MinSize
+    public RectSize MinSize
     {
         get => new(MinWidth, MinHeight);
         set
@@ -153,7 +153,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region edit mode
 
-    private WidgetSize divSize = new(0,0);
+    private RectSize divSize = new(0,0);
     private bool enterEditMode;
     private bool exitEditMode;
 
@@ -177,11 +177,11 @@ public sealed partial class WidgetWindow : WindowEx
         // change window size
         if (isEditMode)
         {
-            Size = new WidgetSize(size.Width + divSize.Width, size.Height + divSize.Height);
+            Size = new RectSize(size.Width + divSize.Width, size.Height + divSize.Height);
         }
         else if (exitEditMode)
         {
-            Size = new WidgetSize(size.Width - divSize.Width, size.Height - divSize.Height);
+            Size = new RectSize(size.Width - divSize.Width, size.Height - divSize.Height);
             exitEditMode = false;
         }
     }
@@ -223,22 +223,36 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region bottom window
+    #region window message
 
     private void OnWindowMessageReceived(object? sender, WindowMessageEventArgs e)
     {
-        if (e.Message.MessageId == WM_WINDOWPOSCHANGING)
+        switch (e.Message.MessageId)
         {
-            var lParam = e.Message.LParam;
-            var windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
-            windowPos.flags |= SWP_NOZORDER;
-            Marshal.StructureToPtr(windowPos, lParam, false);
+            case WM_WINDOWPOSCHANGING:
+                // force window to stay at bottom
+                var lParam = e.Message.LParam;
+                var windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
+                windowPos.flags |= SWP_NOZORDER;
+                Marshal.StructureToPtr(windowPos, lParam, false);
 
-            e.Handled = true;
+                e.Handled = true;
+                break;
+            case WM_DISPLAYCHANGE:
+                break;
+            case WM_DPICHANGED:
+                // No need to handle dpi changed event - WinUIEx got this.
+                break;
         }
     }
 
+    #endregion
+
+    #region window api
+
     private const int WM_WINDOWPOSCHANGING = 0x0046;
+    private const int WM_DISPLAYCHANGE = 0x007e;
+    private const int WM_DPICHANGED = 0x02E0;
     private const int SWP_NOZORDER = 0x0004;
 
     [StructLayout(LayoutKind.Sequential)]

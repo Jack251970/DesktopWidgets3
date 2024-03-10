@@ -43,7 +43,7 @@ public class JsonWidgetItem : BaseWidgetItem
 {
     public required PointInt32 Position { get; set; }
 
-    public required WidgetSize Size { get; set; }
+    public required RectSize Size { get; set; }
 
     public new required BaseWidgetSettings Settings
     {

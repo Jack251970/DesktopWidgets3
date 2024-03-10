@@ -27,26 +27,26 @@ internal class WidgetResourceService : IWidgetResourceService
         };
     }
 
-    public WidgetSize GetDefaultSize(WidgetType widgetType)
+    public RectSize GetDefaultSize(WidgetType widgetType)
     {
         return widgetType switch
         {
-            WidgetType.Clock => new WidgetSize(240, 240),
-            WidgetType.FolderView => new WidgetSize(575, 480),
-            WidgetType.Network => new WidgetSize(300, 150),
-            WidgetType.Performance => new WidgetSize(345, 200),
-            _ => new WidgetSize(318, 200),
+            WidgetType.Clock => new RectSize(240, 240),
+            WidgetType.FolderView => new RectSize(575, 480),
+            WidgetType.Network => new RectSize(300, 150),
+            WidgetType.Performance => new RectSize(345, 200),
+            _ => new RectSize(318, 200),
         }; ;
     }
 
-    public WidgetSize GetMinSize(WidgetType widgetType)
+    public RectSize GetMinSize(WidgetType widgetType)
     {
         return widgetType switch
         {
-            WidgetType.Clock => new WidgetSize(240, 240),
-            WidgetType.FolderView => new WidgetSize(516, 416),
-            WidgetType.Network => new WidgetSize(300, 150),
-            _ => new WidgetSize(318, 200),
+            WidgetType.Clock => new RectSize(240, 240),
+            WidgetType.FolderView => new RectSize(516, 416),
+            WidgetType.Network => new RectSize(300, 150),
+            _ => new RectSize(318, 200),
         };
     }
 
