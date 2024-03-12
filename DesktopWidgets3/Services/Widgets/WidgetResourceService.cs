@@ -27,7 +27,7 @@ internal class WidgetResourceService : IWidgetResourceService
         };
     }
 
-    public RectSize GetDefaultSize(WidgetType widgetType)
+    public static RectSize GetDefaultSize(WidgetType widgetType)
     {
         return widgetType switch
         {
@@ -50,7 +50,7 @@ internal class WidgetResourceService : IWidgetResourceService
         };
     }
 
-    public BaseWidgetSettings GetDefaultSettings(WidgetType widgetType)
+    public static BaseWidgetSettings GetDefaultSettings(WidgetType widgetType)
     {
         return widgetType switch
         {

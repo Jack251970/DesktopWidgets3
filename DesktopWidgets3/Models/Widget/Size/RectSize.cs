@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Models.Widget;
+﻿using Windows.Foundation;
+
+namespace DesktopWidgets3.Models.Widget;
 
 public struct RectSize
 {
@@ -54,6 +56,11 @@ public struct RectSize
 
     public RectSize(double width, double height)
         : this((float)width, (float)height)
+    {
+    }
+
+    public RectSize(Rect size)
+        : this(size.Width, size.Height)
     {
     }
 

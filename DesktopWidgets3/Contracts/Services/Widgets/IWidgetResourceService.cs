@@ -6,11 +6,7 @@ public interface IWidgetResourceService
 
     string GetWidgetIconSource(WidgetType widgetType);
 
-    RectSize GetDefaultSize(WidgetType widgetType);
-
     RectSize GetMinSize(WidgetType widgetType);
-
-    BaseWidgetSettings GetDefaultSettings(WidgetType widgetType);
 
     bool GetWidgetInNewThread(WidgetType widgetType);
 }

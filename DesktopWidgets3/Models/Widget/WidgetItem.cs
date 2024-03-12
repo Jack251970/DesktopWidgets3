@@ -45,6 +45,8 @@ public class JsonWidgetItem : BaseWidgetItem
 
     public required RectSize Size { get; set; }
 
+    public required DisplayMonitor DisplayMonitor  { get; set; }
+
     public new required BaseWidgetSettings Settings
     {
         get => base.Settings;

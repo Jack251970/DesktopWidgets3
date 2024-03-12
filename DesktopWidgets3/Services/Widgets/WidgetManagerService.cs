@@ -68,8 +68,9 @@ internal class WidgetManagerService : IWidgetManagerService
             IndexTag = indexTag,
             IsEnabled = true,
             Position = new PointInt32(-1, -1),
-            Size = _widgetResourceService.GetDefaultSize(widgetType),
-            Settings = _widgetResourceService.GetDefaultSettings(widgetType),
+            Size = WidgetResourceService.GetDefaultSize(widgetType),
+            DisplayMonitor = new(GetMonitorInfo(null)),
+            Settings = WidgetResourceService.GetDefaultSettings(widgetType),
         };
         await _appSettingsService.UpdateWidgetsList(widget);
 
@@ -133,8 +134,9 @@ internal class WidgetManagerService : IWidgetManagerService
             Type = widgetType,
             IndexTag = indexTag,
             Position = new PointInt32(-1, -1),
-            Size = _widgetResourceService.GetDefaultSize(widgetType),
-            Settings = _widgetResourceService.GetDefaultSettings(widgetType),
+            Size = WidgetResourceService.GetDefaultSize(widgetType),
+            DisplayMonitor = new(),
+            Settings = WidgetResourceService.GetDefaultSettings(widgetType),
         };
         await _appSettingsService.DeleteWidgetsList(widget);
 
@@ -377,6 +379,7 @@ internal class WidgetManagerService : IWidgetManagerService
                 IsEnabled = true,
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
+                DisplayMonitor = new(GetMonitorInfo(widgetWindow)),
                 Settings = widgetWindow.Settings,
             };
             originalWidgetList.Add(widget);
@@ -424,6 +427,7 @@ internal class WidgetManagerService : IWidgetManagerService
                     IsEnabled = true,
                     Position = widgetWindow.Position,
                     Size = widgetWindow.Size,
+                    DisplayMonitor = new(GetMonitorInfo(widgetWindow)),
                     Settings = widgetWindow.Settings,
                 };
                 widgetList.Add(widget);
@@ -477,6 +481,25 @@ internal class WidgetManagerService : IWidgetManagerService
     {
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
         widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, parameter, clearNavigation);
+    }
+
+    #endregion
+
+    #region monitor
+
+    public static MonitorInfo GetMonitorInfo(WindowEx? window)
+    {
+        return MonitorInfo.GetDisplayMonitors().First();
+        // TODO: get monitor info here.
+        /*if (window is null)
+        {
+            var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
+            return primaryMonitorInfo;
+        }
+        else
+        {
+            
+        }*/
     }
 
     #endregion
