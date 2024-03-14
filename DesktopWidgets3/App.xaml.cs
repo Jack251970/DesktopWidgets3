@@ -21,7 +21,7 @@ public partial class App : Application
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
     public IHost? Host { get; private set; }
-    
+
     public static T GetService<T>() where T : class
     {
         if ((Current as App)!.Host!.Services.GetService(typeof(T)) is not T service)
@@ -54,6 +54,10 @@ public partial class App : Application
         }
 #endif
         InitializeComponent();
+
+        // The DispatcherQueue event loop exits when all XAML windows on a thread are closed
+        // https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.dispatchershutdownmode
+        DispatcherShutdownMode = DispatcherShutdownMode.OnExplicitShutdown;
 
         // Initialize core extensions before injecting services
         LocalSettingsExtensions.Initialize();
