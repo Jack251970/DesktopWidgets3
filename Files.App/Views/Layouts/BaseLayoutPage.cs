@@ -95,8 +95,6 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
 #pragma warning restore CA1822 // Mark members as static
 
-#pragma warning restore CA1822 // Mark members as static
-
     public CommandBarFlyout ItemContextMenuFlyout { get; set; } = new()
 	{
 		AlwaysExpanded = true,
@@ -1049,13 +1047,13 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			var shellItemList = SafetyExtensions.IgnoreExceptions(() => e.Items.OfType<ListedItem>().Select(x => new VanaraWindowsShell.ShellItem(x.ItemPath)).ToArray());
 			if (shellItemList?[0].FileSystemPath is not null && !InstanceViewModel!.IsPageTypeSearchResults)
 			{
-				var iddo = shellItemList[0].Parent.GetChildrenUIObjects<IDataObject>(HWND.NULL, shellItemList);
+				var iddo = shellItemList[0].Parent!.GetChildrenUIObjects<IDataObject>(HWND.NULL, shellItemList);
 				shellItemList.ForEach(x => x.Dispose());
 
 				var format = System.Windows.Forms.DataFormats.GetFormat("Shell IDList Array");
 				if (iddo.TryGetData<byte[]>((uint)format.Id, out var data))
 				{
-					var mem = new MemoryStream(data).AsRandomAccessStream();
+					var mem = new MemoryStream(data!).AsRandomAccessStream();
 					e.Data.SetData(format.Name, mem);
 				}
 			}

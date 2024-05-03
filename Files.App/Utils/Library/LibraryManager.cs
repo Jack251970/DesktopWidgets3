@@ -89,7 +89,7 @@ public class LibraryManager : IDisposable
 				var libFiles = Directory.EnumerateFiles(ShellLibraryItem.LibrariesPath, "*" + ShellLibraryItem.EXTENSION);
 				foreach (var libFile in libFiles)
 				{
-					using var shellItem = new ShellLibraryEx(Shell32.ShellUtil.GetShellItemForPath(libFile), true);
+					using var shellItem = new ShellLibraryEx(Shell32.ShellUtil.GetShellItemForPath(libFile)!, true);
 					if (shellItem is ShellLibraryEx library)
 					{
 						libraryItems.Add(ShellFolderExtensions.GetShellLibraryItem(library, libFile));
@@ -157,7 +157,7 @@ public class LibraryManager : IDisposable
 				library.Folders.Add(ShellItem.Open(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))); // Add default folder so it's not empty
 				library.Commit();
 				library.Reload();
-				return Task.FromResult(ShellFolderExtensions.GetShellLibraryItem(library, library.GetDisplayName(ShellItemDisplayString.DesktopAbsoluteParsing)));
+				return Task.FromResult(ShellFolderExtensions.GetShellLibraryItem(library, library.GetDisplayName(ShellItemDisplayString.DesktopAbsoluteParsing)!));
 			}
 			catch (Exception e)
 			{
@@ -200,7 +200,7 @@ public class LibraryManager : IDisposable
 			try
 			{
 				var updated = false;
-				using var library = new ShellLibraryEx(Shell32.ShellUtil.GetShellItemForPath(libraryPath), false);
+				using var library = new ShellLibraryEx(Shell32.ShellUtil.GetShellItemForPath(libraryPath)!, false);
 				if (folders is not null)
 				{
 					if (folders.Length > 0)
@@ -392,7 +392,7 @@ public class LibraryManager : IDisposable
 
 		if (!changeType.HasFlag(WatcherChangeTypes.Deleted))
 		{
-			var library = SafetyExtensions.IgnoreExceptions(() => new ShellLibraryEx(Shell32.ShellUtil.GetShellItemForPath(newPath), true));
+			var library = SafetyExtensions.IgnoreExceptions(() => new ShellLibraryEx(Shell32.ShellUtil.GetShellItemForPath(newPath!)!, true));
 			if (library is null)
 			{
 				App.Logger?.LogWarning($"Failed to open library after {changeType}: {newPath}");

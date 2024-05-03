@@ -62,7 +62,7 @@ public class FileOperationsHelpers
 
 			if (!SafetyExtensions.IgnoreExceptions(() =>
 			{
-				using var shd = new ShellFolder(Path.GetDirectoryName(filePath));
+				using var shd = new ShellFolder(Path.GetDirectoryName(filePath)!);
 				op.QueueNewItemOperation(shd, Path.GetFileName(filePath),
 					fileOp == "CreateFolder" ? FileAttributes.Directory : FileAttributes.Normal, template);
 			}))
@@ -282,7 +282,7 @@ public class FileOperationsHelpers
                     throw new Win32Exception(HRESULT.COPYENGINE_E_RECYCLE_BIN_NOT_FOUND);
                 }
 
-                sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath);
+                sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath!);
 				fsProgress.FileName = e.SourceItem.Name;
 				fsProgress.Report();
 			};
@@ -292,7 +292,7 @@ public class FileOperationsHelpers
 			{
 				if (!e.SourceItem.IsFolder)
 				{
-					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath, out _))
+					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath!, out _))
                     {
                         fsProgress.AddProcessedItemsCount(1);
                     }
@@ -460,7 +460,7 @@ public class FileOperationsHelpers
 				if (!SafetyExtensions.IgnoreExceptions(() =>
 				{
 					using ShellItem shi = new(fileToMovePath[i]);
-					using ShellFolder shd = new(Path.GetDirectoryName(moveDestination[i]));
+					using ShellFolder shd = new(Path.GetDirectoryName(moveDestination[i])!);
 
 					op.QueueMoveOperation(shi, shd, Path.GetFileName(moveDestination[i]));
 				}))
@@ -482,7 +482,7 @@ public class FileOperationsHelpers
 
 			op.PreMoveItem += (s, e) =>
 			{
-				sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath);
+				sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath!);
 				fsProgress.FileName = e.SourceItem.Name;
 				fsProgress.Report();
 			};
@@ -491,7 +491,7 @@ public class FileOperationsHelpers
 			{
 				if (!e.SourceItem.IsFolder)
 				{
-					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath, out _))
+					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath!, out _))
                     {
                         fsProgress.AddProcessedItemsCount(1);
                     }
@@ -593,7 +593,7 @@ public class FileOperationsHelpers
 				if (!SafetyExtensions.IgnoreExceptions(() =>
 				{
 					using ShellItem shi = new(fileToCopyPath[i]);
-					using ShellFolder shd = new(Path.GetDirectoryName(copyDestination[i]));
+					using ShellFolder shd = new(Path.GetDirectoryName(copyDestination[i])!);
 
 					// Performa copy operation
 					op.QueueCopyOperation(shi, shd, Path.GetFileName(copyDestination[i]));
@@ -616,7 +616,7 @@ public class FileOperationsHelpers
 
 			op.PreCopyItem += (s, e) =>
 			{
-				sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath);
+				sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath!);
 				fsProgress.FileName = e.SourceItem.Name;
 				fsProgress.Report();
 			};
@@ -625,7 +625,7 @@ public class FileOperationsHelpers
 			{
 				if (!e.SourceItem.IsFolder)
 				{
-					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath, out _))
+					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath!, out _))
                     {
                         fsProgress.AddProcessedItemsCount(1);
                     }

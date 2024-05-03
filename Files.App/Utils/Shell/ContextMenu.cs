@@ -172,10 +172,10 @@ public class ContextMenu : Win32ContextMenu, IDisposable
             // NOTE: The items are all in the same folder
             using var sf = shellItems[0].Parent;
 
-            var menu = sf.GetChildrenUIObjects<Shell32.IContextMenu>(default, shellItems);
+            var menu = sf!.GetChildrenUIObjects<Shell32.IContextMenu>(default, shellItems);
             var hMenu = User32.CreatePopupMenu();
             menu.QueryContextMenu(hMenu, 0, 1, 0x7FFF, flags);
-            var contextMenu = new ContextMenu(menu, hMenu, shellItems.Select(x => x.ParsingName), owningThread, itemFilter);
+            var contextMenu = new ContextMenu(menu, hMenu, shellItems.Select(x => x.ParsingName)!, owningThread, itemFilter);
             contextMenu.EnumMenuItems(hMenu, contextMenu.Items!);
 
             return contextMenu;
@@ -233,10 +233,10 @@ public class ContextMenu : Win32ContextMenu, IDisposable
 
             if (menuItem.Type == MenuItemType.MFT_STRING)
             {
-                menuItem.Label = menuItemInfo.dwTypeData;
+                menuItem.Label = menuItemInfo.dwTypeData!;
                 menuItem.CommandString = GetCommandString(_cMenu, menuItemInfo.wID - 1)!;
 
-                if (_itemFilter is not null && (_itemFilter(menuItem.CommandString!) || _itemFilter(menuItem.Label)))
+                if (_itemFilter is not null && (_itemFilter(menuItem.CommandString!) || _itemFilter(menuItem.Label!)))
                 {
                     // Skip items implemented in UWP
                     container.Dispose();

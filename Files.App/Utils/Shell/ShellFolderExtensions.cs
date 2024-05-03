@@ -17,9 +17,9 @@ public static class ShellFolderExtensions
 		var libraryItem = new ShellLibraryItem
 		{
 			FullPath = filePath,
-			AbsolutePath = library.GetDisplayName(ShellItemDisplayString.DesktopAbsoluteParsing),
-			RelativePath = library.GetDisplayName(ShellItemDisplayString.ParentRelativeParsing),
-			DisplayName = library.GetDisplayName(ShellItemDisplayString.NormalDisplay),
+			AbsolutePath = library.GetDisplayName(ShellItemDisplayString.DesktopAbsoluteParsing)!,
+			RelativePath = library.GetDisplayName(ShellItemDisplayString.ParentRelativeParsing)!,
+			DisplayName = library.GetDisplayName(ShellItemDisplayString.NormalDisplay)!,
 			IsPinned = library.PinnedToNavigationPane,
 		};
 
@@ -27,7 +27,7 @@ public static class ShellFolderExtensions
 		if (folders.Count > 0)
 		{
 			libraryItem.DefaultSaveFolder = SafetyExtensions.IgnoreExceptions(() => library.DefaultSaveFolder.FileSystemPath)!;
-			libraryItem.Folders = folders.Select(f => f.FileSystemPath).ToArray();
+			libraryItem.Folders = folders.Select(f => f.FileSystemPath).ToArray()!;
 		}
 
 		return libraryItem;
@@ -37,7 +37,7 @@ public static class ShellFolderExtensions
 	{
 		T value = default!;
 
-		SafetyExtensions.IgnoreExceptions(() => sip.TryGetValue<T>(key, out value));
+		SafetyExtensions.IgnoreExceptions(() => sip.TryGetValue(key, out value!));
 
 		return value;
 	}
@@ -116,7 +116,7 @@ public static class ShellFolderExtensions
 		var fileSize = fileSizeBytes is not null ? folderItem.Properties.GetPropertyString(Ole32.PROPERTYKEY.System.Size) : null;
 		var fileType = folderItem.Properties.TryGetProperty<string>(Ole32.PROPERTYKEY.System.ItemTypeText);
 
-		return new(isFolder, parsingPath, fileName, filePath, recycleDate, modifiedDate, createdDate, fileSize!, fileSizeBytes ?? 0, fileType, folderItem.PIDL.GetBytes());
+		return new(isFolder, parsingPath, fileName!, filePath, recycleDate, modifiedDate, createdDate, fileSize!, fileSizeBytes ?? 0, fileType, folderItem.PIDL.GetBytes());
 	}
 
 	public static ShellLinkItem GetShellLinkItem(ShellLink linkItem)
@@ -151,7 +151,7 @@ public static class ShellFolderExtensions
             return null!;
         }
 
-        return item.IsFileSystem ? item.FileSystemPath : item.ParsingName;
+        return item.IsFileSystem ? item.FileSystemPath! : item.ParsingName!;
 	}
 
 	public static bool GetStringAsPIDL(string pathOrPIDL, out Shell32.PIDL pPIDL)

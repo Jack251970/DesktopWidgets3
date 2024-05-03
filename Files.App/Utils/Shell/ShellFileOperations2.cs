@@ -448,7 +448,7 @@ public class ShellFileOperations2 : IDisposable
 	public void QueueApplyPropertiesOperation(IEnumerable<ShellItem> items, ShellItemPropertyUpdates props)
 	{
 		op.SetProperties(props.IPropertyChangeArray);
-		op.ApplyPropertiesToItems(GetSHArray(items).IShellItemArray);
+		op.ApplyPropertiesToItems(GetSHArray(items).IShellItemArray!);
 		QueuedOperations++;
 	}
 
@@ -472,7 +472,7 @@ public class ShellFileOperations2 : IDisposable
 	/// <param name="dest">A <see cref="ShellFolder"/> that specifies the destination folder to contain the copy of the items.</param>
 	public void QueueCopyOperation(IEnumerable<ShellItem> sourceItems, ShellFolder dest)
 	{
-		op.CopyItems(GetSHArray(sourceItems).IShellItemArray, dest.IShellItem);
+		op.CopyItems(GetSHArray(sourceItems).IShellItemArray!, dest.IShellItem);
 		QueuedOperations++;
 	}
 
@@ -490,7 +490,7 @@ public class ShellFileOperations2 : IDisposable
 	/// </param>
 	public void QueueDeleteOperation(IEnumerable<ShellItem> items)
 	{
-		op.DeleteItems(GetSHArray(items).IShellItemArray);
+		op.DeleteItems(GetSHArray(items).IShellItemArray!);
 		QueuedOperations++;
 	}
 
@@ -514,7 +514,7 @@ public class ShellFileOperations2 : IDisposable
 	/// <param name="dest">A <see cref="ShellFolder"/> that specifies the destination folder to contain the moved items.</param>
 	public void QueueMoveOperation(IEnumerable<ShellItem> sourceItems, ShellFolder dest)
 	{
-		op.MoveItems(GetSHArray(sourceItems).IShellItemArray, dest.IShellItem);
+		op.MoveItems(GetSHArray(sourceItems).IShellItemArray!, dest.IShellItem);
 		QueuedOperations++;
 	}
 
@@ -563,7 +563,7 @@ public class ShellFileOperations2 : IDisposable
 	/// <param name="newName">The new display name of the items.</param>
 	public void QueueRenameOperation(IEnumerable<ShellItem> sourceItems, string newName)
 	{
-		op.RenameItems(GetSHArray(sourceItems).IShellItemArray, newName);
+		op.RenameItems(GetSHArray(sourceItems).IShellItemArray!, newName);
 		QueuedOperations++;
 	}
 
@@ -606,26 +606,26 @@ public class ShellFileOperations2 : IDisposable
 		public HRESULT PostCopyItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName, HRESULT hrCopy, IShellItem psiNewlyCreated) =>
             CallChkErr(() => parent.PostCopyItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, psiDestinationFolder, psiNewlyCreated, pszNewName, hrCopy)));
 
-		public HRESULT PostDeleteItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, HRESULT hrDelete, IShellItem psiNewlyCreated) =>
-            CallChkErr(() => parent.PostDeleteItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, null!, psiNewlyCreated, null!, hrDelete)));
+		public HRESULT PostDeleteItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, HRESULT hrDelete, IShellItem? psiNewlyCreated) =>
+            CallChkErr(() => parent.PostDeleteItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, null!, psiNewlyCreated!, null!, hrDelete)));
 
 		public HRESULT PostMoveItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName, HRESULT hrMove, IShellItem psiNewlyCreated) =>
             CallChkErr(() => parent.PostMoveItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, psiDestinationFolder, psiNewlyCreated, pszNewName, hrMove)));
 
-		public HRESULT PostNewItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName, [MarshalAs(UnmanagedType.LPWStr)] string pszTemplateName, uint dwFileAttributes, HRESULT hrNew, IShellItem psiNewItem) =>
-            CallChkErr(() => parent.PostNewItem?.Invoke(parent, new ShellFileNewOpEventArgs(dwFlags, null!, psiDestinationFolder, psiNewItem, pszNewName, hrNew, pszTemplateName, dwFileAttributes)));
+		public HRESULT PostNewItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName, [MarshalAs(UnmanagedType.LPWStr)] string? pszTemplateName, uint dwFileAttributes, HRESULT hrNew, IShellItem psiNewItem) =>
+            CallChkErr(() => parent.PostNewItem?.Invoke(parent, new ShellFileNewOpEventArgs(dwFlags, null!, psiDestinationFolder, psiNewItem, pszNewName, hrNew, pszTemplateName!, dwFileAttributes)));
 
 		public HRESULT PostRenameItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName, HRESULT hrRename, IShellItem psiNewlyCreated) =>
             CallChkErr(() => parent.PostRenameItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, null!, psiNewlyCreated, pszNewName, hrRename)));
 
-		public HRESULT PreCopyItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName) =>
-            CallChkErr(() => parent.PreCopyItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, psiDestinationFolder, null!, pszNewName)));
+		public HRESULT PreCopyItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string? pszNewName) =>
+            CallChkErr(() => parent.PreCopyItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, psiDestinationFolder, null!, pszNewName!)));
 
 		public HRESULT PreDeleteItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem) =>
             CallChkErr(() => parent.PreDeleteItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem)));
 
-		public HRESULT PreMoveItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName) =>
-            CallChkErr(() => parent.PreMoveItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, psiDestinationFolder, null!, pszNewName)));
+		public HRESULT PreMoveItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiItem, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string? pszNewName) =>
+            CallChkErr(() => parent.PreMoveItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, psiItem, psiDestinationFolder, null!, pszNewName!)));
 
 		public HRESULT PreNewItem(TRANSFER_SOURCE_FLAGS dwFlags, IShellItem psiDestinationFolder, [MarshalAs(UnmanagedType.LPWStr)] string pszNewName) =>
             CallChkErr(() => parent.PreNewItem?.Invoke(parent, new ShellFileOpEventArgs(dwFlags, null!, psiDestinationFolder, null!, pszNewName)));

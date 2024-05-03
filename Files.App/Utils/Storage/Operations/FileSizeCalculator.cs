@@ -90,7 +90,7 @@ internal class FileSizeCalculator
 			null,
 			FileMode.Open,
 			0,
-			null);
+			null!);
 
 		if (!hFile.IsInvalid)
 		{

@@ -328,7 +328,7 @@ public class Win32API
 							if (!hIcon.IsNull && !hIcon.IsInvalid)
 							{
                                 using var icon = hIcon.ToIcon();
-                                using var image = icon.ToBitmap();
+                                using var image = icon!.ToBitmap();
                                 iconData = (byte[]?)new ImageConverter().ConvertTo(image, typeof(byte[]));
                             }
 						}
@@ -356,7 +356,7 @@ public class Win32API
 						if (!hOverlay.IsNull && !hOverlay.IsInvalid)
 						{
 							using var icon = hOverlay.ToIcon();
-							using var image = icon.ToBitmap();
+							using var image = icon!.ToBitmap();
 
 							overlayData = (byte[]?)new ImageConverter().ConvertTo(image, typeof(byte[]));
 						}
@@ -512,7 +512,7 @@ public class Win32API
         var fcs = new Shell32.SHFOLDERCUSTOMSETTINGS()
 		{
 			dwMask = Shell32.FOLDERCUSTOMSETTINGSMASK.FCSM_ICONFILE,
-			pszIconFile = iconFile,
+			pszIconFile = iconFile!,
 			cchIconFile = 0,
 			iIconIndex = iconIndex,
 		};
@@ -726,7 +726,7 @@ public class Win32API
 	{
 		var volumePath = Path.GetPathRoot(volumeHint);
 
-		using var volumeHandle = Kernel32.CreateFile(volumePath, Kernel32.FileAccess.GENERIC_READ, FileShare.Read, null, FileMode.Open, FileFlagsAndAttributes.FILE_FLAG_BACKUP_SEMANTICS);
+		using var volumeHandle = Kernel32.CreateFile(volumePath!, Kernel32.FileAccess.GENERIC_READ, FileShare.Read, null, FileMode.Open, FileFlagsAndAttributes.FILE_FLAG_BACKUP_SEMANTICS);
 		if (volumeHandle.IsInvalid)
         {
             return null;
@@ -769,7 +769,7 @@ public class Win32API
 			{
 				var item = shellWindows.Item(i);
 
-				var serv = (Shell32.IServiceProvider)item;
+				var serv = (Shell32.IServiceProvider)item!;
 				if (serv is not null)
 				{
 					if (serv.QueryService(Shell32.SID_STopLevelBrowser, typeof(Shell32.IShellBrowser).GUID, out var ppv).Succeeded)
@@ -782,8 +782,8 @@ public class Win32API
 						{
 							if (shellBrowser.QueryActiveShellView(out var shellView).Succeeded)
 							{
-								var folderView = (Shell32.IFolderView)shellView;
-								var folder = folderView.GetFolder<Shell32.IPersistFolder2>();
+								var folderView = (Shell32.IFolderView)shellView!;
+								var folder = folderView!.GetFolder<Shell32.IPersistFolder2>();
 								var folderPidl = new Shell32.PIDL(IntPtr.Zero);
 
 								if (folder.GetCurFolder(ref folderPidl).Succeeded)
@@ -804,7 +804,7 @@ public class Win32API
 
 								Marshal.ReleaseComObject(folder);
 								Marshal.ReleaseComObject(folderView);
-								Marshal.ReleaseComObject(shellView);
+								Marshal.ReleaseComObject(shellView!);
 							}
 						}
 
@@ -815,7 +815,7 @@ public class Win32API
 					Marshal.ReleaseComObject(serv);
 				}
 
-				Marshal.ReleaseComObject(item);
+				Marshal.ReleaseComObject(item!);
 			}
 
 			Marshal.ReleaseComObject(shellWindows);

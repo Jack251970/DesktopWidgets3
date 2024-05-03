@@ -257,7 +257,7 @@ public static partial class LaunchHelper
 		if (executable.StartsWith("\\\\?\\", StringComparison.Ordinal))
 		{
 			using var computer = new ShellFolder(Shell32.KNOWNFOLDERID.FOLDERID_ComputerFolder);
-			using var device = computer.FirstOrDefault(i => executable.Replace("\\\\?\\", "", StringComparison.Ordinal).StartsWith(i.Name, StringComparison.Ordinal));
+			using var device = computer.FirstOrDefault(i => executable.Replace("\\\\?\\", "", StringComparison.Ordinal).StartsWith(i.Name!, StringComparison.Ordinal));
 			var deviceId = device?.ParsingName;
 			var itemPath = Regex.Replace(executable, @"^\\\\\?\\[^\\]*\\?", "");
 			return deviceId is not null ? Path.Combine(deviceId, itemPath) : executable;

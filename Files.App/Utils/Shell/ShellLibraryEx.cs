@@ -9,6 +9,7 @@ using Vanara.Windows.Shell;
 namespace Files.App.Utils.Shell;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
 
 /// <summary>
 /// Represents an encapsulated item for shell library.
@@ -186,7 +187,7 @@ public class ShellLibraryEx : ShellFolder
 	/// <returns>A <see cref="ShellItemArray"/> containing the child folders.</returns>
 	public ShellLibraryFolders GetFilteredFolders(LibraryFolderFilter filter = LibraryFolderFilter.AllItems)
 	{
-		return new(_lib, _lib.GetFolders<Shell32.IShellItemArray>((Shell32.LIBRARYFOLDERFILTER)filter));
+		return new(_lib, _lib.GetFolders<Shell32.IShellItemArray>((Shell32.LIBRARYFOLDERFILTER)filter)!);
 	}
 
 	/// <summary>
