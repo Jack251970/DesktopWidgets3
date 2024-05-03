@@ -179,7 +179,7 @@
 							Width="16"
 							Height="16"
 							Style="{StaticResource ColorIconOpen}" />
-						<TextBlock Text="helpers:ResourceString Name=/FilesResources/Open}" />
+						<TextBlock Text="{helpers:ResourceString Name=Open}" />
 					</StackPanel>
 				</Button.Content>
 
@@ -281,7 +281,7 @@
 			Padding="8,0,8,0"
 			Background="Transparent"
 			BorderBrush="Transparent"
-			ToolTipService.ToolTip="helpers:ResourceString Name=/FilesResources/ManageBranches}"
+			ToolTipService.ToolTip="{helpers:ResourceString Name=ManageBranches}"
 			Visibility="{x:Bind DirectoryPropertiesViewModel.GitBranchDisplayName, Mode=OneWay, Converter={StaticResource NullToVisibilityCollapsedConverter}, FallbackValue=Collapsed}">
 
 			<Button.Content>
@@ -325,10 +325,10 @@
 								VerticalAlignment="Center"
 								Orientation="Horizontal">
 								<RadioButton
-									Content="helpers:ResourceString Name=/FilesResources/Locals}"
+									Content="{helpers:ResourceString Name=Locals}"
 									IsChecked="{x:Bind DirectoryPropertiesViewModel.ShowLocals, Mode=TwoWay}"
 									Style="{StaticResource Local.RadioButtonStyle}" />
-								<RadioButton Content="helpers:ResourceString Name=/FilesResources/Remotes}" Style="{StaticResource Local.RadioButtonStyle}" />
+								<RadioButton Content="{helpers:ResourceString Name=Remotes}" Style="{StaticResource Local.RadioButtonStyle}" />
 							</StackPanel>
 
 							<!--  New Branch Button  -->
@@ -338,9 +338,9 @@
 								Padding="8,0"
 								HorizontalAlignment="Right"
 								Command="{x:Bind DirectoryPropertiesViewModel.NewBranchCommand, Mode=OneWay}"
-								Content="helpers:ResourceString Name=/FilesResources/CreateBranch}"
+								Content="{helpers:ResourceString Name=CreateBranch}"
 								FontSize="12"
-								ToolTipService.ToolTip="helpers:ResourceString Name=/FilesResources/CreateBranch}" />
+								ToolTipService.ToolTip="{helpers:ResourceString Name=CreateBranch}" />
 						</Grid>
 
 						<!--  Branches List  -->
@@ -369,11 +369,11 @@
 											TextTrimming="CharacterEllipsis" />
 										<Button
 											Grid.Column="1"
-											AutomationProperties.Name="helpers:ResourceString Name=/FilesResources/Delete}"
+											AutomationProperties.Name="{helpers:ResourceString Name=Delete}"
 											Background="Transparent"
 											BorderBrush="Transparent"
 											Click="DeleteBranch_Click"
-											ToolTipService.ToolTip="helpers:ResourceString Name=/FilesResources/Delete}"
+											ToolTipService.ToolTip="{helpers:ResourceString Name=Delete}"
 											Visibility="{x:Bind converters:MultiBooleanConverter.NorConvertToVisibility(IsHead, IsRemote)}">
 											<FontIcon FontSize="12" Glyph="&#xE74D;" />
 										</Button>
