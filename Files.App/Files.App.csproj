@@ -51,24 +51,24 @@
         <PackageReference Include="CommunityToolkit.WinUI.UI.Behaviors" Version="7.1.2" />
         <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
         <PackageReference Include="CSharpMarkup.WinUI.LiveChartsCore.SkiaSharpView" Version="2.3.66" />
-        <PackageReference Include="DirectNCore" Version="1.15.0.2" />
+        <PackageReference Include="DirectNCore" Version="1.16.0" />
         <PackageReference Include="DiscUtils.Udf" Version="0.16.13" />
-        <PackageReference Include="FluentFTP" Version="49.0.2" />
+        <PackageReference Include="FluentFTP" Version="50.0.1" />
         <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
-        <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
+        <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
         <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.3" />
         <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.3" />
-        <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.2" />
+        <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.4" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240428000" />
         <PackageReference Include="SevenZipSharp" Version="1.0.2" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.8" />
         <PackageReference Include="Tulpep.ActiveDirectoryObjectPicker" Version="3.0.11" />
-        <PackageReference Include="Vanara.PInvoke.DwmApi" Version="3.4.17" />
-        <PackageReference Include="Vanara.PInvoke.Mpr" Version="3.4.17" />
-        <PackageReference Include="Vanara.Windows.Extensions" Version="3.4.17" />
-        <PackageReference Include="Vanara.Windows.Shell" Version="3.4.17" />
+        <PackageReference Include="Vanara.PInvoke.DwmApi" Version="4.0.1" />
+        <PackageReference Include="Vanara.PInvoke.Mpr" Version="4.0.1" />
+        <PackageReference Include="Vanara.Windows.Extensions" Version="4.0.1" />
+        <PackageReference Include="Vanara.Windows.Shell" Version="4.0.1" />
         <PackageReference Include="WinUIEx" Version="2.3.4" />
     </ItemGroup>
   
