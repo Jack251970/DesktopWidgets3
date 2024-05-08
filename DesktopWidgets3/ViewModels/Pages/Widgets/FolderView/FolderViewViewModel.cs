@@ -254,7 +254,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 Settings.ShowFileExtensionWarning = (bool)e.NewValue!;
                 break;
             case nameof(IGeneralSettingsService.ConflictsResolveOption):
-                Settings.ConflictsResolveOption = (FileNameConflictResolveOptionType)e.NewValue!;
+                Settings.ConflictsResolveOption = (FileNameConflictResolveOptionType)Convert.ToUInt32(e.NewValue);
                 break;
             case nameof(IApplicationSettingsService.ShowRunningAsAdminPrompt):
                 Settings.ShowRunningAsAdminPrompt = (bool)e.NewValue!;
