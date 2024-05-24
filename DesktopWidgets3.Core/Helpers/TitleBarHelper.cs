@@ -14,6 +14,13 @@ namespace DesktopWidgets3.Core.Helpers;
 // https://github.com/microsoft/TemplateStudio/issues/4516
 public partial class TitleBarHelper
 {
+    private static IThemeSelectorService? FallbackThemeSelectorService;
+
+    public static void Initialize(IThemeSelectorService themeSelectorService)
+    {
+        FallbackThemeSelectorService = themeSelectorService;
+    }
+
     private const int WAINACTIVE = 0x00;
     private const int WAACTIVE = 0x01;
     private const int WMACTIVATE = 0x0006;
@@ -104,18 +111,37 @@ public partial class TitleBarHelper
     {
         var res = Application.Current.Resources;
         var frame = TitleBarText as FrameworkElement;
-        if (frame != null)
+        var actualTheme = ElementTheme.Default;
+        if (FallbackThemeSelectorService is not null)
         {
-            if (frame.ActualTheme == ElementTheme.Dark)
+            if (FallbackThemeSelectorService.Theme == ElementTheme.Default)
             {
-                res["WindowCaptionForeground"] = Colors.White;
+                // Application.Current.RequestedTheme hasn't changed
+                actualTheme = Application.Current.RequestedTheme == ApplicationTheme.Light ? ElementTheme.Dark : ElementTheme.Light;
             }
             else
             {
-                res["WindowCaptionForeground"] = Colors.Black;
+                actualTheme = FallbackThemeSelectorService.Theme;
             }
-
-            UpdateTitleBar(Window, frame.ActualTheme);
         }
+        else if (frame is not null)
+        {
+            actualTheme = frame.ActualTheme;
+        }
+
+        if (actualTheme == ElementTheme.Default)
+        {
+            return;
+        }
+
+        if (actualTheme == ElementTheme.Dark)
+        {
+            res["WindowCaptionForeground"] = Colors.White;
+        }
+        else
+        {
+            res["WindowCaptionForeground"] = Colors.Black;
+        }
+        UpdateTitleBar(Window, actualTheme);
     }
 }

@@ -202,6 +202,7 @@ public partial class App : Application
         DependencyExtensions.Initialize(GetService<IDependencyService>());
         LocalSettingsExtensions.RegisterService(GetService<ILocalSettingsService>());
         ThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
+        TitleBarHelper.Initialize(GetService<IThemeSelectorService>());
         WindowsExtensions.Initialize(GetService<IWindowService>());
     }
 

@@ -1,10 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-using Microsoft.UI.Dispatching;
-
 using System.Runtime.InteropServices;
 
-using Windows.UI.ViewManagement;
 using Windows.Graphics;
 
 using WinUIEx.Messaging;
@@ -91,8 +88,6 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    private readonly UISettings settings;
-
     public WidgetWindow()
     {
         InitializeComponent();
@@ -102,22 +97,12 @@ public sealed partial class WidgetWindow : WindowEx
 
         Content = null;
         Title = string.Empty;
-
-        settings = new UISettings();
-        settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
-
+        
         position = AppWindow.Position;
         PositionChanged += WidgetWindow_PositionChanged;
 
         size = GetAppWindowSize();
         SizeChanged += WidgetWindow_SizeChanged;
-    }
-
-    // This handles updating the caption button colors correctly when indows system theme is changed while the app is open
-    private void Settings_ColorValuesChanged(UISettings sender, object args)
-    {
-        // This calls comes off-thread, hence we will need to dispatch it to current app's thread
-        DispatcherQueue.GetForCurrentThread().TryEnqueue(DispatcherQueuePriority.High, () => TitleBarHelper.ApplySystemThemeToCaptionButtons(this, null));
     }
 
     #region position & size
