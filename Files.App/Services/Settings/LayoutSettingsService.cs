@@ -20,7 +20,7 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
 
     public int DefaultGridViewSize
 	{
-		get => (int)Get((long)Constants.Browser.GridViewBrowser.GridViewSizeMedium);
+		get => (int)Get((long)Constants.Browser.GridViewBrowser.GridViewSizeSmall);
 		set => Set((long)value);
 	}
 }
