@@ -300,4 +300,7 @@
   <data name="Settings_MultiThread_Card.Header" xml:space="preserve">
     <value>多线程加速</value>
   </data>
+  <data name="NavigationToolbarNewWindow.Content" xml:space="preserve">
+    <value>请前往仪表板界面添加组件</value>
+  </data>
 </root>

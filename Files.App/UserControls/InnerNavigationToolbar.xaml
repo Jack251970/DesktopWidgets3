@@ -967,37 +967,38 @@
 				</AppBarButton>
 
 				<!--  New Window  -->
-				<AppBarButton
+                <AppBarButton
 					x:Name="NavToolbarNewWindow"
 					Command="{x:Bind ViewModel.OpenNewWindowCommand, Mode=OneWay}"
 					KeyboardAcceleratorTextOverride="{helpers:ResourceString Name=NavigationToolbarNewWindow/KeyboardAcceleratorTextOverride}"
 					Label="{helpers:ResourceString Name=NavigationToolbarNewWindow/Label}">
-					<local:OpacityIcon Style="{StaticResource ColorIconOpenNewWindow}" />
-					<AppBarButton.KeyboardAccelerators>
-						<KeyboardAccelerator
+                    <local:OpacityIcon Style="{StaticResource ColorIconOpenNewWindow}" />
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator
 							Key="N"
 							IsEnabled="False"
 							Modifiers="Control" />
-					</AppBarButton.KeyboardAccelerators>
-				</AppBarButton>
-
-				<!--  Exter Compact Overlay  -->
-				<AppBarButton
+                    </AppBarButton.KeyboardAccelerators>
+                </AppBarButton>
+                
+                <!-- CHANGE: Remove compact overlay items. -->
+                <!--  Exter Compact Overlay  -->
+				<!--<AppBarButton
 					x:Name="NavToolbarEnterCompactOverlay"
 					x:Load="{x:Bind Commands.EnterCompactOverlay.IsExecutable, Mode=OneWay}"
 					Command="{x:Bind Commands.EnterCompactOverlay}"
 					Label="{x:Bind Commands.EnterCompactOverlay.Label}">
 					<local:OpacityIcon Style="{x:Bind Commands.EnterCompactOverlay.OpacityStyle}" />
-				</AppBarButton>
+				</AppBarButton>-->
 
 				<!--  Exit Compact Overlay  -->
-				<AppBarButton
+				<!--<AppBarButton
 					x:Name="NavToolbarExitCompactOverlay"
 					x:Load="{x:Bind Commands.ExitCompactOverlay.IsExecutable, Mode=OneWay}"
 					Command="{x:Bind Commands.ExitCompactOverlay}"
 					Label="{x:Bind Commands.ExitCompactOverlay.Label}">
 					<local:OpacityIcon Style="{x:Bind Commands.ExitCompactOverlay.OpacityStyle}" />
-				</AppBarButton>
+				</AppBarButton>-->
 
 			</CommandBar.SecondaryCommands>
 		</CommandBar>

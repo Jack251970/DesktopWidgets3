@@ -318,4 +318,7 @@
   <data name="Settings_MultiThread_Card.Header" xml:space="preserve">
     <value>Multi-thread acceleration</value>
   </data>
+  <data name="NavigationToolbarNewWindow.Content" xml:space="preserve">
+    <value>Please go to the dashboard page to add widgets</value>
+  </data>
 </root>

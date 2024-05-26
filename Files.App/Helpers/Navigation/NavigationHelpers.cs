@@ -330,10 +330,12 @@ public static class NavigationHelpers
         associatedInstance.PaneHolder?.OpenPathInNewPane((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
 	}
 
-	public static Task LaunchNewWindowAsync()
+	public static async Task LaunchNewWindowAsync(IFolderViewViewModel folderViewViewModel)
 	{
-		var filesUWPUri = new Uri("files-uwp:");
-		return Launcher.LaunchUriAsync(filesUWPUri).AsTask();
+        // CHANGE: Notify creating new widget when launching new window.
+        await folderViewViewModel.MainWindow.ShowMessageDialogAsync("NavigationToolbarNewWindow/Content".GetLocalized(), "NavigationToolbarNewWindow/Label".GetLocalizedResource());
+        /*var filesUWPUri = new Uri("files-uwp:");
+		return Launcher.LaunchUriAsync(filesUWPUri).AsTask();*/
     }
 
     public static async Task OpenSelectedItemsAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, bool openViaApplicationPicker = false)
