@@ -16,9 +16,6 @@ public sealed partial class InnerNavigationToolbar : UserControl
 	public InnerNavigationToolbar()
 	{
 		InitializeComponent();
-
-        // CHANGE: Remove all secondary commands.
-        BaseCommandBar.SecondaryCommands.Clear();
 	}
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
