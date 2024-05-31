@@ -76,7 +76,7 @@ public partial class RadialGauge : RangeBase
 
     private void RadialGauge_Unloaded(object sender, RoutedEventArgs e)
     {
-        // TODO: We should just use a WeakEventListener for ThemeChanged here, but ours currently doesn't support it.
+        // CLOCKTODO: We should just use a WeakEventListener for ThemeChanged here, but ours currently doesn't support it.
         // See proposal for general helper here: https://github.com/CommunityToolkit/dotnet/issues/404
         ThemeListener.ThemeChanged -= ThemeListener_ThemeChanged;
         PointerReleased -= RadialGauge_PointerReleased;

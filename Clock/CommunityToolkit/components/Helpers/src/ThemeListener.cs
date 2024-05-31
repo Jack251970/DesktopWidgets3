@@ -11,7 +11,7 @@ using Windows.System;
 using Microsoft.UI.Dispatching;
 #endif
 
-// TODO: Fix tests for WinUI3
+// CLOCKTODO: Fix tests for WinUI3
 // [assembly: InternalsVisibleTo("UnitTests.XamlIslands.UWPApp")]
 namespace CommunityToolkit.WinUI.Helpers;
 
@@ -107,7 +107,7 @@ public sealed class ThemeListener : IDisposable
         return DispatcherQueue.EnqueueAsync(
             () =>
             {
-                // TODO: This doesn't stop the multiple calls if we're in our faked 'White' HighContrast Mode below.
+                // CLOCKTODO: This doesn't stop the multiple calls if we're in our faked 'White' HighContrast Mode below.
                 if (CurrentTheme != Application.Current.RequestedTheme ||
                     IsHighContrast != _accessible.HighContrast)
                 {
@@ -138,7 +138,7 @@ public sealed class ThemeListener : IDisposable
     /// </summary>
     private void UpdateProperties()
     {
-        // TODO: Not sure if HighContrastScheme names are localized?
+        // CLOCKTODO: Not sure if HighContrastScheme names are localized?
         if (_accessible.HighContrast && _accessible.HighContrastScheme.Contains("white", StringComparison.OrdinalIgnoreCase))
         {
             // If our HighContrastScheme is ON & a lighter one, then we should remain in 'Light' theme mode for Monaco Themes Perspective
