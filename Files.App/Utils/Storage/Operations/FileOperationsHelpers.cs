@@ -33,7 +33,7 @@ public class FileOperationsHelpers
 			var fileList = new System.Collections.Specialized.StringCollection();
 			fileList.AddRange(filesToCopy);
 			var dropEffect = new MemoryStream(operation == DataPackageOperation.Copy ?
-				new byte[] { 5, 0, 0, 0 } : new byte[] { 2, 0, 0, 0 });
+				[5, 0, 0, 0] : [2, 0, 0, 0]);
 			var data = new System.Windows.Forms.DataObject();
 			data.SetFileDropList(fileList);
 			data.SetData("Preferred DropEffect", dropEffect);
@@ -200,7 +200,7 @@ public class FileOperationsHelpers
 		});
 	}
 
-	public static Task<(bool, ShellOperationResult)> DeleteItemAsync(string[] fileToDeletePath, bool permanently, long ownerHwnd, bool asAdmin, IProgress<StatusCenterItemProgressModel> progress, string operationID = "")
+	public static Task<(bool, ShellOperationResult)> DeleteItemAsync(IFolderViewViewModel folderViewViewModel, string[] fileToDeletePath, bool permanently, long ownerHwnd, bool asAdmin, IProgress<StatusCenterItemProgressModel> progress, string operationID = "")
 	{
 		operationID = string.IsNullOrEmpty(operationID) ? Guid.NewGuid().ToString() : operationID;
 
@@ -306,7 +306,7 @@ public class FileOperationsHelpers
 					HResult = (int)e.Result
 				});
 
-				UpdateFileTagsDb(e, "delete");
+				UpdateFileTagsDb(folderViewViewModel, e, "delete");
 			};
 
 			op.FinishOperations += (s, e)
@@ -341,7 +341,7 @@ public class FileOperationsHelpers
 		});
 	}
 
-	public static Task<(bool, ShellOperationResult)> RenameItemAsync(string fileToRenamePath, string newName, bool overwriteOnRename, long ownerHwnd, bool asAdmin, string operationID = "")
+	public static Task<(bool, ShellOperationResult)> RenameItemAsync(IFolderViewViewModel folderViewViewModel, string fileToRenamePath, string newName, bool overwriteOnRename, long ownerHwnd, bool asAdmin, string operationID = "")
 	{
 		operationID = string.IsNullOrEmpty(operationID) ? Guid.NewGuid().ToString() : operationID;
 
@@ -390,7 +390,7 @@ public class FileOperationsHelpers
 					HResult = (int)e.Result
 				});
 			};
-			op.PostRenameItem += (_, e) => UpdateFileTagsDb(e, "rename");
+			op.PostRenameItem += (_, e) => UpdateFileTagsDb(folderViewViewModel, e, "rename");
 			op.FinishOperations += (s, e) => renameTcs.TrySetResult(e.Result.Succeeded);
 
 			try
@@ -408,7 +408,7 @@ public class FileOperationsHelpers
 		});
 	}
 
-	public static Task<(bool, ShellOperationResult)> MoveItemAsync(string[] fileToMovePath, string[] moveDestination, bool overwriteOnMove, long ownerHwnd, bool asAdmin, IProgress<StatusCenterItemProgressModel> progress, string operationID = "")
+	public static Task<(bool, ShellOperationResult)> MoveItemAsync(IFolderViewViewModel folderViewViewModel, string[] fileToMovePath, string[] moveDestination, bool overwriteOnMove, long ownerHwnd, bool asAdmin, IProgress<StatusCenterItemProgressModel> progress, string operationID = "")
 	{
 		operationID = string.IsNullOrEmpty(operationID) ? Guid.NewGuid().ToString() : operationID;
 
@@ -505,7 +505,7 @@ public class FileOperationsHelpers
 					HResult = (int)e.Result
 				});
 					
-				UpdateFileTagsDb(e, "move");
+				UpdateFileTagsDb(folderViewViewModel, e, "move");
 			};
 
 			op.FinishOperations += (s, e)
@@ -540,7 +540,7 @@ public class FileOperationsHelpers
 		});
 	}
 
-	public static Task<(bool, ShellOperationResult)> CopyItemAsync(string[] fileToCopyPath, string[] copyDestination, bool overwriteOnCopy, long ownerHwnd, bool asAdmin, IProgress<StatusCenterItemProgressModel> progress, string operationID = "")
+	public static Task<(bool, ShellOperationResult)> CopyItemAsync(IFolderViewViewModel folderViewViewModel, string[] fileToCopyPath, string[] copyDestination, bool overwriteOnCopy, long ownerHwnd, bool asAdmin, IProgress<StatusCenterItemProgressModel> progress, string operationID = "")
 	{
 		operationID = string.IsNullOrEmpty(operationID) ? Guid.NewGuid().ToString() : operationID;
 
@@ -639,7 +639,7 @@ public class FileOperationsHelpers
 					HResult = (int)e.Result
 				});
 					
-				UpdateFileTagsDb(e, "copy");
+				UpdateFileTagsDb(folderViewViewModel, e, "copy");
 			};
 
 			op.FinishOperations += (s, e)
@@ -881,7 +881,7 @@ public class FileOperationsHelpers
 		return null;
 	}
 
-	private static void UpdateFileTagsDb(ShellFileOperations2.ShellFileOpEventArgs e, string operationType)
+	private static void UpdateFileTagsDb(IFolderViewViewModel folderViewViewModel, ShellFileOperations2.ShellFileOpEventArgs e, string operationType)
 	{
 		var dbInstance = FileTagsHelper.GetDbInstance();
 		if (e.Result.Succeeded)
@@ -911,7 +911,7 @@ public class FileOperationsHelpers
 						using var si = new ShellItem(destination);
 						if (si.IsFolder) // File tag is not copied automatically for folders
 						{
-							FileTagsHelper.WriteFileTag(null!, destination, tag!);  // TODO: Add FolderViewViewModel.
+							FileTagsHelper.WriteFileTag(folderViewViewModel, destination, tag!);
                         }
 					}
 					else

@@ -113,7 +113,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 		FileTagList = oldTags;
 	}
 
-	public void DeleteTag(string uid)
+	public void DeleteTag(IFolderViewViewModel folderViewViewModel, string uid)
 	{
 		var (_, index) = GetTagAndIndex(uid);
 		if (index == -1)
@@ -124,7 +124,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
         var oldTags = FileTagList.ToList();
 		oldTags.RemoveAt(index);
 		FileTagList = oldTags;
-        UntagAllFiles(uid);
+        UntagAllFiles(folderViewViewModel, uid);
 	}
 
 	public override bool ImportSettings(object import)
@@ -174,7 +174,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 		return (tag, index);
 	}
 
-	private static void UntagAllFiles(string uid)
+	private static void UntagAllFiles(IFolderViewViewModel folderViewViewModel, string uid)
 	{
 		var tagDoDelete = new string[] { uid };
 
@@ -183,9 +183,9 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 			if (item.Tags.Contains(uid))
 			{
 				FileTagsHelper.WriteFileTag(
-                    null!,
+                    folderViewViewModel,
 					item.FilePath,
-					item.Tags.Except(tagDoDelete).ToArray());  // TODO: Add FolderViewViewModel.
+					item.Tags.Except(tagDoDelete).ToArray());
             }
 		}
 	}

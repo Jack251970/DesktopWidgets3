@@ -102,7 +102,7 @@ public sealed partial class FolderViewSettingsPage : Page
 
     private void RemoveTag_Click(object sender, RoutedEventArgs e)
     {
-        ViewModel.TagsViewModel.DeleteExistingTag((ListedTagViewModel)((Button)sender).DataContext);
+        ViewModel.TagsViewModel.DeleteExistingTag(null!, (ListedTagViewModel)((Button)sender).DataContext);
     }
 
     private void RenameTextBox_TextChanged(object sender, TextChangedEventArgs e)

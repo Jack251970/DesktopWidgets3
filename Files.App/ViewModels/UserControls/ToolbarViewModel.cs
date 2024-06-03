@@ -630,7 +630,6 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 	public void SearchRegion_LostFocus(object sender, RoutedEventArgs e)
 	{
-        // TODO: Remove Microsoft.UI.Xaml.Input.
         var element = Microsoft.UI.Xaml.Input.FocusManager.GetFocusedElement();
 		if (element is FlyoutBase or AppBarButton)
         {

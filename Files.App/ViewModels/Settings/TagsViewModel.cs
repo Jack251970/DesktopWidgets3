@@ -35,7 +35,7 @@ public class TagsViewModel : ObservableObject
 		SaveNewTagCommand = new RelayCommand(DoSaveNewTag);
 		CancelNewTagCommand = new RelayCommand(DoCancelNewTag);
 
-		Tags = new ObservableCollection<ListedTagViewModel>();
+		Tags = [];
 		Tags.CollectionChanged += Tags_CollectionChanged;
 		fileTagsSettingsService.FileTagList?.ForEach(tag => Tags.Add(new ListedTagViewModel(tag)));
 
@@ -94,13 +94,13 @@ public class TagsViewModel : ObservableObject
 		isBulkOperation = false;
 	}
 
-	public void DeleteExistingTag(ListedTagViewModel item)
+	public void DeleteExistingTag(IFolderViewViewModel folderViewViewModel, ListedTagViewModel item)
 	{
 		isBulkOperation = true;
 		Tags.Remove(item);
 		isBulkOperation = false;
 
-		fileTagsSettingsService.DeleteTag(item.Tag.Uid);
+		fileTagsSettingsService.DeleteTag(folderViewViewModel, item.Tag.Uid);
 	}
 }
 

@@ -39,21 +39,31 @@ public static class FileTagsHelper
 		else if (ReadFileTag(filePath) is not string[] arr || !tag.SequenceEqual(arr))
 		{
             var result = NativeFileOperationsHelper.WriteStringToFile($"{filePath}:files", string.Join(',', tag));
-            if (result == false && folderViewViewModel is not null)  // TODO: Prevent it be null.
+            if (result == false)
             {
-                ContentDialog dialog = new()
+                if (folderViewViewModel is not null)
                 {
-                    Title = "ErrorApplyingTagTitle".GetLocalizedResource(),
-                    Content = "ErrorApplyingTagContent".GetLocalizedResource(),
-                    PrimaryButtonText = "Ok".GetLocalizedResource()
-                };
+                    ContentDialog dialog = new()
+                    {
+                        Title = "ErrorApplyingTagTitle".GetLocalizedResource(),
+                        Content = "ErrorApplyingTagContent".GetLocalizedResource(),
+                        PrimaryButtonText = "Ok".GetLocalizedResource()
+                    };
 
-                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-                {
-                    dialog.XamlRoot = folderViewViewModel.XamlRoot;
+                    if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+                    {
+                        dialog.XamlRoot = folderViewViewModel.XamlRoot;
+                    }
+
+                    await dialog.TryShowAsync(folderViewViewModel);
                 }
-
-                await dialog.TryShowAsync(folderViewViewModel);
+                else
+                {
+                    // CHANGE: Show in MainWindow.
+                    await WindowsExtensions.MainWindow.ShowMessageDialogAsync(
+                        "ErrorApplyingTagContent".GetLocalizedResource(), 
+                        "ErrorApplyingTagTitle".GetLocalizedResource());
+                }
             }
         }
 		if (isReadOnly) // Restore read-only attribute (#7534)

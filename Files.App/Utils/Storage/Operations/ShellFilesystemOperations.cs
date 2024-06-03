@@ -77,7 +77,7 @@ public class ShellFilesystemOperations : IFilesystemOperations
 
 		if (sourceRename.Any())
 		{
-			var resultItem = await FileOperationsHelpers.CopyItemAsync(sourceRename.Select(s => s.Path).ToArray(), destinationRename.ToArray(), false, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
+			var resultItem = await FileOperationsHelpers.CopyItemAsync(_folderViewViewModel, sourceRename.Select(s => s.Path).ToArray(), destinationRename.ToArray(), false, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
 
 			result &= (FilesystemResult)resultItem.Item1;
 
@@ -86,7 +86,7 @@ public class ShellFilesystemOperations : IFilesystemOperations
 
 		if (sourceReplace.Any())
 		{
-			var resultItem = await FileOperationsHelpers.CopyItemAsync(sourceReplace.Select(s => s.Path).ToArray(), destinationReplace.ToArray(), true, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
+			var resultItem = await FileOperationsHelpers.CopyItemAsync(_folderViewViewModel, sourceReplace.Select(s => s.Path).ToArray(), destinationReplace.ToArray(), true, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
 
 			result &= (FilesystemResult)resultItem.Item1;
 
@@ -230,7 +230,7 @@ public class ShellFilesystemOperations : IFilesystemOperations
 					if (newEntryInfo?.Command is not null)
 					{
 						var args = CommandLineParser.SplitArguments(newEntryInfo.Command);
-						if (args.Any())
+						if (args.Length != 0)
 						{
 							if (await LaunchHelper.LaunchAppAsync(
 									args[0].Replace("\"", "", StringComparison.Ordinal),
@@ -383,7 +383,7 @@ public class ShellFilesystemOperations : IFilesystemOperations
 		var operationID = Guid.NewGuid().ToString();
 		using var r = cancellationToken.Register(CancelOperation!, operationID, false);
 
-		var (success, response) = await FileOperationsHelpers.DeleteItemAsync(deleteFilePaths.ToArray(), permanently, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
+		var (success, response) = await FileOperationsHelpers.DeleteItemAsync(_folderViewViewModel, deleteFilePaths.ToArray(), permanently, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
 
 		var result = (FilesystemResult)success;
 		var deleteResult = new ShellOperationResult();
@@ -506,7 +506,7 @@ public class ShellFilesystemOperations : IFilesystemOperations
 
 		if (sourceRename.Any())
 		{
-			var (status, response) = await FileOperationsHelpers.MoveItemAsync(sourceRename.Select(s => s.Path).ToArray(), destinationRename.ToArray(), false, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
+			var (status, response) = await FileOperationsHelpers.MoveItemAsync(_folderViewViewModel, sourceRename.Select(s => s.Path).ToArray(), destinationRename.ToArray(), false, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
 
 			result &= (FilesystemResult)status;
 			moveResult.Items.AddRange(response?.Final ?? Enumerable.Empty<ShellOperationItemResult>());
@@ -514,7 +514,7 @@ public class ShellFilesystemOperations : IFilesystemOperations
 
 		if (sourceReplace.Any())
 		{
-			var (status, response) = await FileOperationsHelpers.MoveItemAsync(sourceReplace.Select(s => s.Path).ToArray(), destinationReplace.ToArray(), true, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
+			var (status, response) = await FileOperationsHelpers.MoveItemAsync(_folderViewViewModel, sourceReplace.Select(s => s.Path).ToArray(), destinationReplace.ToArray(), true, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
 
 			result &= (FilesystemResult)status;
 			moveResult.Items.AddRange(response?.Final ?? Enumerable.Empty<ShellOperationItemResult>());
@@ -647,7 +647,7 @@ public class ShellFilesystemOperations : IFilesystemOperations
 		fsProgress.Report();
 
 		var renameResult = new ShellOperationResult();
-		var (status, response) = await FileOperationsHelpers.RenameItemAsync(source.Path, newName, collision == NameCollisionOption.ReplaceExisting, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin);
+		var (status, response) = await FileOperationsHelpers.RenameItemAsync(_folderViewViewModel, source.Path, newName, collision == NameCollisionOption.ReplaceExisting, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin);
 		var result = (FilesystemResult)status;
 
 		renameResult.Items.AddRange(response?.Final ?? Enumerable.Empty<ShellOperationItemResult>());
@@ -745,7 +745,7 @@ public class ShellFilesystemOperations : IFilesystemOperations
 		using var r = cancellationToken.Register(CancelOperation!, operationID, false);
 
 		var moveResult = new ShellOperationResult();
-		var (status, response) = await FileOperationsHelpers.MoveItemAsync(source.Select(s => s.Path).ToArray(), destination.ToArray(), false, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
+		var (status, response) = await FileOperationsHelpers.MoveItemAsync(_folderViewViewModel, source.Select(s => s.Path).ToArray(), [.. destination], false, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
 
 		var result = (FilesystemResult)status;
 		moveResult.Items.AddRange(response?.Final ?? Enumerable.Empty<ShellOperationItemResult>());

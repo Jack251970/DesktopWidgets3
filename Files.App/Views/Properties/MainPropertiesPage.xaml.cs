@@ -41,7 +41,7 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
         Window = parameter.Window;
 
         // CHANGE: Set title bar to TitlebarArea.
-        Window.SetTitleBar(TitlebarArea);  // TODO: Check
+        Window.SetTitleBar(TitlebarArea);
 
 		base.OnNavigatedTo(e);
 
@@ -56,7 +56,7 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
         Window.Closed += Window_Closed;
 
 		UpdatePageLayout();
-        Window.RaiseSetTitleBarDragRegion(SetTitleBarDragRegion);  // TODO: Check
+        Window.RaiseSetTitleBarDragRegion(SetTitleBarDragRegion);
         Window.AppWindow.Changed += AppWindow_Changed;
     }
 

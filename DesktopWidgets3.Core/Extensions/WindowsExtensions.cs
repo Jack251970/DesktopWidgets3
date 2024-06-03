@@ -9,6 +9,8 @@ namespace DesktopWidgets3.Core.Extensions;
 /// </summary>
 public static class WindowsExtensions
 {
+    public static WindowEx MainWindow { get; private set; } = null!;
+
     private static readonly Dictionary<Window, WindowLifecycleHandler> WindowsAndLifecycle = new();
 
     private static IWindowService? FallbackWindowService;
@@ -91,9 +93,21 @@ public static class WindowsExtensions
             lifecycleActions?.Window_Created?.Invoke(window);
         }
 
-        // register non-main window in ui element extension
-        if (type != ActivationType.Main)
+        if (type == ActivationType.Main)
         {
+            // register main window in ui element extension
+            if (MainWindow is null)
+            {
+                MainWindow = window as WindowEx ?? throw new InvalidOperationException("MainWindow must be of type WindowEx.");
+            }
+            else
+            {
+                throw new InvalidOperationException("MainWindow can only be initialized once.");
+            }
+        }
+        else
+        {
+            // register non-main window in ui element extension
             var lifecycleHandler = new WindowLifecycleHandler
             {
                 ExitDeferral = deferral,

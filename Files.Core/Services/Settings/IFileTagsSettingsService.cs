@@ -23,7 +23,7 @@ public interface IFileTagsSettingsService : IBaseSettingsService
 
 	void EditTag(string uid, string name, string color);
 
-	void DeleteTag(string uid);
+	void DeleteTag(IFolderViewViewModel folderViewViewModel, string uid);
 
 	object ExportSettings();
 

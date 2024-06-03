@@ -6,12 +6,15 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Navigation;
 using Windows.System;
 
 namespace Files.App.Views.Settings;
 
 public sealed partial class TagsPage : Page
 {
+    private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
+
 	private string oldTagName = string.Empty;
 
 	// Will be null unless the user has edited any tag
@@ -32,7 +35,16 @@ public sealed partial class TagsPage : Page
 		InitializeComponent();
 	}
 
-	private void RenameTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        // CHANGE: Initialize folder view view model.
+        if (e.Parameter is IFolderViewViewModel folderViewViewModel)
+        {
+            FolderViewViewModel = folderViewViewModel;
+        }
+    }
+
+    private void RenameTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
 	{
 		var textBox = (TextBox)sender;
 		switch (e.Key)
@@ -97,7 +109,7 @@ public sealed partial class TagsPage : Page
 
 	private void RemoveTag_Click(object sender, RoutedEventArgs e)
 	{
-		ViewModel.DeleteExistingTag((ListedTagViewModel)((Button)sender).DataContext);
+		ViewModel.DeleteExistingTag(FolderViewViewModel, (ListedTagViewModel)((Button)sender).DataContext);
 	}
 
 	private void RenameTextBox_TextChanged(object sender, TextChangedEventArgs e)

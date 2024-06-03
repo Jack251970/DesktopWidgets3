@@ -24,7 +24,7 @@ public interface IFileTagsService
 	/// <param name="tagUids">The tag UIDs to set.</param>
 	/// <param name="cancellationToken">A <see cref="CancellationToken"/> that cancels this action.</param>
 	/// <returns>A <see cref="Task"/> that represents the asynchronous operation. If successful, returns true, otherwise false.</returns>
-	Task<bool> SetFileTagAsync(ILocatableStorable storable, string[] tagUids, CancellationToken cancellationToken = default);
+	Task<bool> SetFileTagAsync(IFolderViewViewModel folderViewViewModel, ILocatableStorable storable, string[] tagUids, CancellationToken cancellationToken = default);
 
 	/// <summary>
 	/// Gets all tags which are used to tag files and folders from the database.
