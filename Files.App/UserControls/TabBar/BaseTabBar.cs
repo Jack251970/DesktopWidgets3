@@ -17,11 +17,11 @@ public abstract class BaseTabBar : ITabBar
 
 	protected ITabBarItemContent CurrentSelectedAppInstance = null!;
 
-    public static event EventHandler<ITabBar>? OnLoaded;
+    public static event EventHandler<ITabBar>? OnLoaded;  // TODO: Check if can be static.
 
-    public static event PropertyChangedEventHandler? StaticPropertyChanged;
+    public static event PropertyChangedEventHandler? StaticPropertyChanged;  // TODO: Check if can be static.
 
-	public const string TabDropHandledIdentifier = "FilesTabViewItemDropHandled";
+    public const string TabDropHandledIdentifier = "FilesTabViewItemDropHandled";
 
 	public const string TabPathIdentifier = "FilesTabViewItemPath";
 

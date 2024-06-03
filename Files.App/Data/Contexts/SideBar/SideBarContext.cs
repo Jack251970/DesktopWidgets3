@@ -29,8 +29,8 @@ internal class SidebarContext : ObservableObject, ISidebarContext
 
 	public SidebarContext()
 	{
-        // TODO: Check if can use static event handler.
-		SidebarViewModel.RightClickedItemChanged += SidebarControl_RightClickedItemChanged;
+        // TODO: Check if can be static.
+        SidebarViewModel.RightClickedItemChanged += SidebarControl_RightClickedItemChanged;
 	}
 
 	public void SidebarControl_RightClickedItemChanged(object? sender, INavigationControlItem? e)

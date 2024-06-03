@@ -33,7 +33,7 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 	public delegate void FileTagsOpenLocationInvokedEventHandler(object sender, PathNavigationEventArgs e);
 	public delegate void FileTagsNewPaneInvokedEventHandler(object sender, QuickAccessCardInvokedEventArgs e);
 
-    public static event EventHandler<IEnumerable<FileTagsItemViewModel>>? SelectedTaggedItemsChanged;  // TODO: Check if can be static
+    public static event EventHandler<IEnumerable<FileTagsItemViewModel>>? SelectedTaggedItemsChanged;  // TODO: Check if can be static.
     public event FileTagsOpenLocationInvokedEventHandler FileTagsOpenLocationInvoked;
 	public event FileTagsNewPaneInvokedEventHandler FileTagsNewPaneInvoked;
 

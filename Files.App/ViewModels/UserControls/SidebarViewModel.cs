@@ -76,8 +76,8 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 
 	public delegate void SelectedTagChangedEventHandler(object sender, SelectedTagChangedEventArgs e);
 
-	public static event SelectedTagChangedEventHandler? SelectedTagChanged;
-    public static event EventHandler<INavigationControlItem?>? RightClickedItemChanged;
+	public static event SelectedTagChangedEventHandler? SelectedTagChanged;  // TODO: Check if can be static.
+    public static event EventHandler<INavigationControlItem?>? RightClickedItemChanged;  // TODO: Check if can be static.
 
     private readonly SectionType[] SectionOrder =
 		[

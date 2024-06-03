@@ -40,7 +40,7 @@ public abstract class HomePageWidget : UserControl
 
     // Events
 
-    public static event EventHandler<WidgetsRightClickedItemChangedEventArgs>? RightClickedItemChanged;
+    public static event EventHandler<WidgetsRightClickedItemChangedEventArgs>? RightClickedItemChanged;  // TODO: Check if can be static.
 
     // Abstract methods
 

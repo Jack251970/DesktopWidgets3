@@ -19,9 +19,9 @@ public sealed partial class FileTagsContainerViewModel : ObservableObject, IAsyn
 
 	public delegate void SelectedTagChangedEventHandler(object sender, SelectedTagChangedEventArgs e);
 
-	public static event SelectedTagChangedEventHandler? SelectedTagChanged;
+	public static event SelectedTagChangedEventHandler? SelectedTagChanged;  // TODO: Check if can be static.
 
-	public ObservableCollection<FileTagsItemViewModel> Tags { get; }
+    public ObservableCollection<FileTagsItemViewModel> Tags { get; }
 
 	[ObservableProperty]
 	private string _Color = null!;
