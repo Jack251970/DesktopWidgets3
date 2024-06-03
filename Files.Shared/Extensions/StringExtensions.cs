@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System;
@@ -13,11 +13,8 @@ public static class StringExtensions
 	/// <returns>The substring.</returns>
 	public static string Left(this string value, int length)
 	{
-		if (value is null)
-		{
-			throw new ArgumentNullException(nameof(value));
-		}
-		if (length < 0)
+        ArgumentNullException.ThrowIfNull(value);
+        if (length < 0)
 		{
 			throw new ArgumentOutOfRangeException(nameof(length), length, "Length is less than zero");
 		}
@@ -31,11 +28,8 @@ public static class StringExtensions
 	/// <returns>The substring.</returns>
 	public static string Right(this string value, int length)
 	{
-		if (value is null)
-		{
-			throw new ArgumentNullException(nameof(value));
-		}
-		if (length < 0)
+        ArgumentNullException.ThrowIfNull(value);
+        if (length < 0)
 		{
 			throw new ArgumentOutOfRangeException(nameof(length), length, "Length is less than zero");
 		}

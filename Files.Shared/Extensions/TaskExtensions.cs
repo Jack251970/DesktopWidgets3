@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System;
@@ -19,9 +19,11 @@ public static class TaskExtensions
 	public static async Task<T?> WithTimeoutAsync<T>(this Task<T> task, TimeSpan timeout, T? defaultValue = default)
 	{
 		if (task == await Task.WhenAny(task, Task.Delay(timeout)))
-			return await task;
+        {
+            return await task;
+        }
 
-		return defaultValue;
+        return defaultValue;
 	}
 
 	public static async Task<TOut> AndThen<TIn, TOut>(this Task<TIn> inputTask, Func<TIn, Task<TOut>> mapping)

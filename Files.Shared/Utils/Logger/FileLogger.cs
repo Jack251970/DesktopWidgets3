@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.Extensions.Logging;
@@ -10,17 +10,12 @@ using System.Threading;
 
 namespace Files.Shared;
 
-public class FileLogger : ILogger
+public sealed class FileLogger(string filePath) : ILogger
 {
 	private readonly SemaphoreSlim semaphoreSlim = new(1);
-	private readonly string filePath;
+	private readonly string filePath = filePath;
 
-	public FileLogger(string filePath)
-	{
-		this.filePath = filePath;
-	}
-
-	public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
 	{
 		return null;
 	}

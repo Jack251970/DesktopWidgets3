@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System;
@@ -34,15 +34,15 @@ public static class FileExtensionHelpers
 	/// <returns><c>true</c> if the fileExtensionToCheck is an image; otherwise, <c>false</c>.</returns>
 	public static bool IsImageFile(string? fileExtensionToCheck)
 	{
-		return HasExtension(fileExtensionToCheck, ".png", ".bmp", ".jpg", ".jpeg", ".gif", ".tiff", ".tif");
-	}
-		
-	/// <summary>
-	/// Check if the file extension is an audio file.
-	/// </summary>
-	/// <param name="fileExtensionToCheck">The file extension to check.</param>
-	/// <returns><c>true</c> if the fileExtensionToCheck is an audio file; otherwise, <c>false</c>.</returns>
-	public static bool IsAudioFile(string? fileExtensionToCheck)
+        return HasExtension(fileExtensionToCheck, ".png", ".bmp", ".jpg", ".jpeg", ".jfif", ".gif", ".tiff", ".tif");
+    }
+
+    /// <summary>
+    /// Check if the file extension is an audio file.
+    /// </summary>
+    /// <param name="fileExtensionToCheck">The file extension to check.</param>
+    /// <returns><c>true</c> if the fileExtensionToCheck is an audio file; otherwise, <c>false</c>.</returns>
+    public static bool IsAudioFile(string? fileExtensionToCheck)
 	{
 		return HasExtension(fileExtensionToCheck, ".mp3", ".m4a", ".wav", ".wma", ".aac", ".adt", ".adts", ".cda", ".flac");
 	}
@@ -74,10 +74,12 @@ public static class FileExtensionHelpers
 	/// <returns><c>true</c> if the fileExtensionToCheck is a zip bundle file; otherwise, <c>false</c>.</returns>
 	public static bool IsZipFile(string? fileExtensionToCheck)
 	{
-		return HasExtension(fileExtensionToCheck, ".zip", ".msix", ".appx", ".msixbundle", ".appxbundle", ".7z", ".rar", ".tar", ".mcpack", ".mcworld", ".jar", ".gz", ".lzh");
-	}
+        return HasExtension(fileExtensionToCheck, ".zip", ".msix", ".appx", ".msixbundle", ".appxbundle", ".7z", ".rar", ".tar", ".mcpack", ".mcworld", ".mrpack", ".jar", ".gz", ".lzh");
+    }
 
-	public static bool IsBrowsableZipFile(string? filePath, out string? ext)
+    private static readonly string[] BrowsableZipFileExtensions = [".zip", ".7z", ".rar", ".tar", ".gz", ".lzh", ".mrpack", ".jar"];
+
+    public static bool IsBrowsableZipFile(string? filePath, out string? ext)
 	{
 		if (string.IsNullOrWhiteSpace(filePath))
 		{
@@ -86,12 +88,11 @@ public static class FileExtensionHelpers
 			return false;
 		}
 
-		// Only extensions we want to browse
-		ext = new[] { ".zip", ".7z", ".rar", ".tar", ".gz", ".lzh", ".jar" }
-			.FirstOrDefault(x => filePath.Contains(x, StringComparison.OrdinalIgnoreCase));
+        // Only extensions we want to browse
+        ext = BrowsableZipFileExtensions.FirstOrDefault(x => filePath.Contains(x, StringComparison.OrdinalIgnoreCase));
 
-		return ext is not null;
-	}
+        return ext is not null;
+    }
 
 	/// <summary>
 	/// Check if the file extension is a driver inf file.
@@ -196,27 +197,26 @@ public static class FileExtensionHelpers
 	{
 		return HasExtension(
 			filePathToCheck, ".mp4", ".m4v", ".mp4v", ".3g2", ".3gp2", ".3gp", ".3gpp",
-			".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".ogg", ".avi", ".wmv", ".mov", ".qt");
-	}
+            ".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".mkv", ".ogg", ".avi", ".wmv", ".mov", ".qt");
+    }
 
-	/// <summary>
-	/// Check if the file extension is a certificate file.
-	/// </summary>
-	/// <param name="filePathToCheck"></param>
-	/// <returns><c>true</c> if the filePathToCheck is a certificate file; otherwise, <c>false</c>.</returns>
-	public static bool IsCertificateFile(string? filePathToCheck)
+    /// <summary>
+    /// Check if the file extension is a certificate file.
+    /// </summary>
+    /// <param name="filePathToCheck"></param>
+    /// <returns><c>true</c> if the filePathToCheck is a certificate file; otherwise, <c>false</c>.</returns>
+    public static bool IsCertificateFile(string? filePathToCheck)
 	{
 		return HasExtension(filePathToCheck, ".cer", ".crt", ".der", ".pfx");
 	}
 
-	/// <summary>
-	/// Check if the file extension is a Python file.
-	/// </summary>
-	/// <param name="filePathToCheck"></param>
-	/// <returns><c>true</c> if the filePathToCheck is a python file; otherwise, <c>false</c>.</returns>
-	public static bool IsPythonFile(string? filePathToCheck)
-	{
-		return HasExtension(filePathToCheck, ".py");
-	}
-
+    /// <summary>
+    /// Check if the file extension is a Script file.
+    /// </summary>
+    /// <param name="filePathToCheck"></param>
+    /// <returns><c>true</c> if the filePathToCheck is a script file; otherwise, <c>false</c>.</returns>
+    public static bool IsScriptFile(string? filePathToCheck)
+    {
+        return HasExtension(filePathToCheck, ".py", ".ahk");
+    }
 }

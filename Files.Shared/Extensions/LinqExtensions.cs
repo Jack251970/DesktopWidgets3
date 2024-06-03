@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System;
@@ -185,13 +185,13 @@ public static class LinqExtensions
 	/// <param name="index"></param>
 	public static List<T> RemoveFrom<T>(this List<T> list, int index)
 	{
-		if (!list.Any())
+		if (list.Count == 0)
         {
             return list;
         }
 
         return index <= 0
-			? new List<T>(0)
+			? []
 			: list.Take(index - 1).ToList();
 	}
 }
