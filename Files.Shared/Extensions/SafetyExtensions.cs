@@ -7,68 +7,98 @@ using System.Threading.Tasks;
 
 namespace Files.Shared.Extensions;
 
+#pragma warning disable CA2254 // Template should be a static expression
+
 public static class SafetyExtensions
 {
-	public static bool IgnoreExceptions(Action action, ILogger? logger = null)
-	{
-		try
-		{
-			action();
-			return true;
-		}
-		catch (Exception ex)
-		{
-			logger?.LogInformation(ex, ex.Message);
+    public static bool IgnoreExceptions(Action action, ILogger? logger = null, Type? exceptionToIgnore = null)
+    {
+        try
+        {
+            action();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (exceptionToIgnore is null || exceptionToIgnore.IsAssignableFrom(ex.GetType()))
+            {
+                logger?.LogInformation(ex, ex.Message);
 
-			return false;
-		}
-	}
+                return false;
+            }
+            else
+            {
+                throw;
+            }
+        }
+    }
 
-	public static async Task<bool> IgnoreExceptions(Func<Task> action, ILogger? logger = null)
-	{
-		try
-		{
-			await action();
+    public static async Task<bool> IgnoreExceptions(Func<Task> action, ILogger? logger = null, Type? exceptionToIgnore = null)
+    {
+        try
+        {
+            await action();
 
-			return true;
-		}
-		catch (Exception ex)
-		{
-			logger?.LogInformation(ex, ex.Message);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (exceptionToIgnore is null || exceptionToIgnore.IsAssignableFrom(ex.GetType()))
+            {
+                logger?.LogInformation(ex, ex.Message);
 
-			return false;
-		}
-	}
+                return false;
+            }
+            else
+            {
+                throw;
+            }
+        }
+    }
 
-	public static T? IgnoreExceptions<T>(Func<T> action, ILogger? logger = null)
-	{
-		try
-		{
-			return action();
-		}
-		catch (Exception ex)
-		{
-			logger?.LogInformation(ex, ex.Message);
+    public static T? IgnoreExceptions<T>(Func<T> action, ILogger? logger = null, Type? exceptionToIgnore = null)
+    {
+        try
+        {
+            return action();
+        }
+        catch (Exception ex)
+        {
+            if (exceptionToIgnore is null || exceptionToIgnore.IsAssignableFrom(ex.GetType()))
+            {
+                logger?.LogInformation(ex, ex.Message);
 
-			return default;
-		}
-	}
+                return default;
+            }
+            else
+            {
+                throw;
+            }
+        }
+    }
 
-	public static async Task<T?> IgnoreExceptions<T>(Func<Task<T>> action, ILogger? logger = null)
-	{
-		try
-		{
-			return await action();
-		}
-		catch (Exception ex)
-		{
-			logger?.LogInformation(ex, ex.Message);
+    public static async Task<T?> IgnoreExceptions<T>(Func<Task<T>> action, ILogger? logger = null, Type? exceptionToIgnore = null)
+    {
+        try
+        {
+            return await action();
+        }
+        catch (Exception ex)
+        {
+            if (exceptionToIgnore is null || exceptionToIgnore.IsAssignableFrom(ex.GetType()))
+            {
+                logger?.LogInformation(ex, ex.Message);
 
-			return default;
-		}
-	}
+                return default;
+            }
+            else
+            {
+                throw;
+            }
+        }
+    }
 
-	public static async Task<TOut> Wrap<TOut>(Func<Task<TOut>> inputTask, Func<Func<Task<TOut>>, Exception, Task<TOut>> onFailed)
+    public static async Task<TOut> Wrap<TOut>(Func<Task<TOut>> inputTask, Func<Func<Task<TOut>>, Exception, Task<TOut>> onFailed)
 	{
 		try
 		{

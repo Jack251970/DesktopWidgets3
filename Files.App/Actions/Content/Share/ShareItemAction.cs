@@ -37,10 +37,8 @@ internal class ShareItemAction : ObservableObject, IAction
 
 	public Task ExecuteAsync()
 	{
-		ShareItemHelpers.ShareItems(FolderViewViewModel, context.SelectedItems);
-
-		return Task.CompletedTask;
-	}
+        return ShareItemHelpers.ShareItemsAsync(FolderViewViewModel, context.SelectedItems);
+    }
 
 	private bool IsContextPageTypeAdaptedToCommand()
 	{

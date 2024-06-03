@@ -91,20 +91,18 @@ public abstract class BasePreviewModel : ObservableObject
 	/// <returns>A list of details</returns>
 	public async virtual Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
 	{
-		var iconData = await FileThumbnailHelper.LoadIconFromStorageItemAsync(Item.ItemFile, 256, ThumbnailMode.SingleItem, ThumbnailOptions.ResizeThumbnail);
+		var iconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, Constants.DefaultIconSizes.Jumbo, false, false);
+        if (iconData is not null)
+        {
+            await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () => FileImage = (await iconData.ToBitmapAsync())!);
+        }
+        else
+        {
+            FileImage ??= (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => new BitmapImage()))!;
+        }
 
-		iconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, 256);
-		if (iconData is not null)
-		{
-			await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () => FileImage = (await iconData.ToBitmapAsync())!);
-		}
-		else
-		{
-			FileImage ??= (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => new BitmapImage()))!;
-		}
-
-		return new List<FileProperty>();
-	}
+        return new List<FileProperty>();
+    }
 
 	/// <summary>
 	/// Override this if the preview control needs to handle the unloaded event.

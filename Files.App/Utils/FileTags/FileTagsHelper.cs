@@ -1,6 +1,9 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.Helpers;
+using Microsoft.UI.Xaml.Controls;
+using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using IO = System.IO;
@@ -21,7 +24,7 @@ public static class FileTagsHelper
 		return tagString?.Split(',', StringSplitOptions.RemoveEmptyEntries)!;
 	}
 
-	public static void WriteFileTag(string filePath, string[] tag)
+	public static async void WriteFileTag(IFolderViewViewModel folderViewViewModel, string filePath, string[] tag)
 	{
 		var isDateOk = NativeFileOperationsHelper.GetFileDateModified(filePath, out var dateModified); // Backup date modified
 		var isReadOnly = NativeFileOperationsHelper.HasFileAttribute(filePath, IO.FileAttributes.ReadOnly);
@@ -29,14 +32,30 @@ public static class FileTagsHelper
 		{
 			NativeFileOperationsHelper.UnsetFileAttribute(filePath, IO.FileAttributes.ReadOnly);
 		}
-		if (tag is null || !tag.Any())
+		if (tag is null || !tag.Any())  // TODO: Optimize .Any() function.
 		{
 			NativeFileOperationsHelper.DeleteFileFromApp($"{filePath}:files");
 		}
 		else if (ReadFileTag(filePath) is not string[] arr || !tag.SequenceEqual(arr))
 		{
-			NativeFileOperationsHelper.WriteStringToFile($"{filePath}:files", string.Join(',', tag));
-		}
+            var result = NativeFileOperationsHelper.WriteStringToFile($"{filePath}:files", string.Join(',', tag));
+            if (result == false && folderViewViewModel is not null)  // TODO: Prevent it be null.
+            {
+                ContentDialog dialog = new()
+                {
+                    Title = "ErrorApplyingTagTitle".GetLocalizedResource(),
+                    Content = "ErrorApplyingTagContent".GetLocalizedResource(),
+                    PrimaryButtonText = "Ok".GetLocalizedResource()
+                };
+
+                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+                {
+                    dialog.XamlRoot = folderViewViewModel.XamlRoot;
+                }
+
+                await dialog.TryShowAsync(folderViewViewModel);
+            }
+        }
 		if (isReadOnly) // Restore read-only attribute (#7534)
 		{
 			NativeFileOperationsHelper.SetFileAttribute(filePath, IO.FileAttributes.ReadOnly);

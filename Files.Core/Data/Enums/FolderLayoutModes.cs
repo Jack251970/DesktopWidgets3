@@ -10,23 +10,28 @@ public enum FolderLayoutModes
 	/// </summary>
 	DetailsView = 0,
 
-	/// <summary>
-	/// Tiles view 
-	/// </summary>
-	TilesView = 1,
+    /// <summary>
+    /// List view 
+    /// </summary>
+    ListView = 1,
 
-	/// <summary>
-	/// Column view 
-	/// </summary>
-	ColumnView = 2,
+    /// <summary>
+    /// Tiles view 
+    /// </summary>
+    TilesView = 2,
 
-	/// <summary>
-	/// Grid view 
-	/// </summary>
-	GridView = 3,
+    /// <summary>
+    /// Column view 
+    /// </summary>
+    ColumnView = 3,
 
-	/// <summary>
-	/// Adaptive view 
-	/// </summary>
-	Adaptive = 4
+    /// <summary>
+    /// Grid view 
+    /// </summary>
+    GridView = 4,
+
+    /// <summary>
+    /// Adaptive view 
+    /// </summary>
+    Adaptive = 5
 }

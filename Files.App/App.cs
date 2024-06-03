@@ -24,9 +24,24 @@ public partial class App
 
     private static bool isInitialized;
 
+    /*private static SystemTrayIcon? SystemTrayIcon { get; set; }*/
+
     public TaskCompletionSource? SplashScreenLoadingTCS { get; private set; }
-	public CommandBarFlyout? LastOpenedFlyout { get; set; }
     public static string? OutputPath { get; set; }
+
+    private CommandBarFlyout? _LastOpenedFlyout;
+    public CommandBarFlyout? LastOpenedFlyout
+    {
+        set
+        {
+            _LastOpenedFlyout = value;
+
+            if (_LastOpenedFlyout is not null)
+            {
+                _LastOpenedFlyout.Closed += LastOpenedFlyout_Closed;
+            }
+        }
+    }
 
     // FILESTODO: Replace with DI
     public static QuickAccessManager QuickAccessManager { get; private set; } = null!;
@@ -47,7 +62,7 @@ public partial class App
         // CHANGE: Initialize user settings service, register folder view view model and its app instances.
         UserSettingsService ??= DependencyExtensions.GetService<IUserSettingsService>();
         FolderViewViewModels.Add(folderViewViewModel);
-        MainPageViewModel.AppInstances.Add(folderViewViewModel, new());
+        MainPageViewModel.AppInstances.Add(folderViewViewModel, []);
 
         /*InitializeComponent();*/
 
@@ -67,8 +82,8 @@ public partial class App
         TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);
 
 #if STORE || STABLE || PREVIEW
-			// Configure AppCenter
-			AppLifecycleHelper.ConfigureAppCenter();
+		// Configure AppCenter
+		AppLifecycleHelper.ConfigureAppCenter();
 #endif
 
         // FILESTODO: Replace with DI
@@ -89,11 +104,10 @@ public partial class App
         isInitialized = true;
     }
 
-	/// <summary>
-	/// Invoked when the application is launched normally by the end user.
-	/// Other entry points will be used such as when the application is launched to open a specific file.
-	/// </summary>
-	public void OnLaunched(string folderPath)
+    /// <summary>
+    /// Gets invoked when the application is launched normally by the end user.
+    /// </summary>
+    public void OnLaunched(string folderPath)
 	{
         Instance = new(FolderViewViewModel);
 
@@ -103,17 +117,21 @@ public partial class App
 		{
             var MainWindow = FolderViewViewModel.MainWindow;
 
-            // Initialize and activate MainWindow
-            MainWindow.Activate();
-
-			// Wait for the Window to initialize
-			await Task.Delay(10);
-
-			SplashScreenLoadingTCS = new TaskCompletionSource();
-			Instance.ShowSplashScreen();
-
             // Get AppActivationArguments
-			var appActivationArguments = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
+            var appActivationArguments = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
+            var isStartupTask = appActivationArguments.Data is Windows.ApplicationModel.Activation.IStartupTaskActivatedEventArgs;  // TODO: Add function.
+
+            if (!isStartupTask)
+            {
+                // Initialize and activate MainWindow
+                MainWindow.Activate();
+
+                // Wait for the Window to initialize
+                await Task.Delay(10);
+
+                SplashScreenLoadingTCS = new TaskCompletionSource();
+                Instance.ShowSplashScreen();
+            }
 
             // CHANGE: Don't track app usage.
 			/*// Start tracking app usage
@@ -125,51 +143,98 @@ public partial class App
             // Configure the DI (dependency injection) container
             InitializeServices();
 
-			// Hook events for the window
-			MainWindow.Closed += Window_Closed;
+            var userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
+            var isLeaveAppRunning = userSettingsService.GeneralSettingsService.LeaveAppRunning;
+
+            if (isStartupTask && !isLeaveAppRunning)
+            {
+                // Initialize and activate MainWindow
+                MainWindow.Activate();
+
+                // Wait for the Window to initialize
+                await Task.Delay(10);
+
+                SplashScreenLoadingTCS = new TaskCompletionSource();
+                Instance.ShowSplashScreen();
+            }
+
+            // Hook events for the window
+            MainWindow.Closed += Window_Closed;
 			MainWindow.Activated += Window_Activated;
 
 			Logger?.LogInformation($"App launched. Launch args type: {appActivationArguments.Data.GetType().Name}");
 
-			// Wait for the UI to update
-			await SplashScreenLoadingTCS!.Task.WithTimeoutAsync(TimeSpan.FromMilliseconds(500));
-			SplashScreenLoadingTCS = null;
+            if (!(isStartupTask && isLeaveAppRunning))
+            {
+                // Wait for the UI to update
+                await SplashScreenLoadingTCS!.Task.WithTimeoutAsync(TimeSpan.FromMilliseconds(500));
+                SplashScreenLoadingTCS = null;
 
-			_ = AppLifecycleHelper.InitializeAppComponentsAsync(FolderViewViewModel);
-			_ = Instance.InitializeApplicationAsync(folderPath);
+                // CHANGE: Don't create a system tray icon.
+                /*// Create a system tray icon
+                SystemTrayIcon = new SystemTrayIcon().Show();*/
+
+                _ = Instance.InitializeApplicationAsync(folderPath);
+            }
+            else
+            {
+                // CHANGE: Don't create a system tray icon.
+                /*// Create a system tray icon
+                SystemTrayIcon = new SystemTrayIcon().Show();*/
+
+                // Sleep current instance
+                Program.Pool = new(0, 1, $"Files-{ApplicationService.AppEnvironment}-Instance");
+
+                Thread.Yield();
+
+                if (Program.Pool.WaitOne())
+                {
+                    // Resume the instance
+                    Program.Pool.Dispose();
+                    Program.Pool = null!;
+                }
+            }
+
+            await AppLifecycleHelper.InitializeAppComponentsAsync(FolderViewViewModel);
 		}
 	}
 
-    /// <summary>
-	/// Invoked when the application is activated.
-	/// </summary>
-	public void OnActivated(AppActivationArguments activatedEventArgs)
-	{
-		Logger.LogInformation($"The app is being activated. Activation type: {activatedEventArgs.Data.GetType().Name}");
+    //// <summary>
+    /// Gets invoked when the application is activated.
+    /// </summary>
+    public async Task OnActivatedAsync(AppActivationArguments activatedEventArgs)
+    {
+        var activatedEventArgsData = activatedEventArgs.Data;
+        Logger.LogInformation($"The app is being activated. Activation type: {activatedEventArgsData.GetType().Name}");
 
-		// InitializeApplication accesses UI, needs to be called on UI thread
-		_ = ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(()
-			=> Instance.InitializeApplicationAsync(activatedEventArgs.Data));
-	}
+        // InitializeApplication accesses UI, needs to be called on UI thread
+        await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(()
+            => Instance.InitializeApplicationAsync(activatedEventArgsData));
+    }
 
     /// <summary>
-    /// Invoked when the main window is activated.
+    /// Gets invoked when the main window is activated.
     /// </summary>
     private void Window_Activated(object sender, WindowActivatedEventArgs args)
-	{
-		// FILESTODO(s): Is this code still needed?
-		if (args.WindowActivationState != WindowActivationState.CodeActivated ||
-			args.WindowActivationState != WindowActivationState.PointerActivated)
+    {
+        AppModel.IsMainWindowClosed = false;
+
+        // FILESTODO(s): Is this code still needed?
+        if (args.WindowActivationState != WindowActivationState.CodeActivated ||
+            args.WindowActivationState != WindowActivationState.PointerActivated)
         {
             return;
         }
 
         LocalSettingsExtensions.SaveLocalSettingAsync("INSTANCE_ACTIVE", -Environment.ProcessId);
-	}
+    }
 
     /// <summary>
-    /// Invoked when application execution is being closed. Save application state.
+    /// Gets invoked when the application execution is closed.
     /// </summary>
+    /// <remarks>
+    /// Saves the current state of the app such as opened tabs, and disposes all cached resources.
+    /// </remarks>
     private async void Window_Closed(object sender, WindowEventArgs args)
 	{
 		// Save application state and stop any background activity
@@ -177,18 +242,21 @@ public partial class App
 		var statusCenterViewModel = FolderViewViewModel.GetService<StatusCenterViewModel>();
 
         // A Workaround for the crash (#10110)
-        if (LastOpenedFlyout?.IsOpen ?? false)
+        if (_LastOpenedFlyout?.IsOpen ?? false)
 		{
 			args.Handled = true;
-			LastOpenedFlyout.Closed += async (sender, e) => await WindowsExtensions.CloseWindow(FolderViewViewModel.MainWindow);
-			LastOpenedFlyout.Hide();
+            _LastOpenedFlyout.Closed += async (sender, e) => await WindowsExtensions.CloseWindow(FolderViewViewModel.MainWindow);
+            _LastOpenedFlyout.Hide();
 			return;
 		}
 
+        AppLifecycleHelper.SaveSessionTabs(FolderViewViewModel);
+
+        // Continue running the app on the background
         if (userSettingsService.GeneralSettingsService.LeaveAppRunning &&
 			!AppModel.ForceProcessTermination &&
-			!Process.GetProcessesByName("Files").Any(x => x.Id != Environment.ProcessId))
-		{
+            !Process.GetProcessesByName("Files").Any(x => x.Id != Environment.ProcessId))
+        {
             // Close open content dialogs
             UIHelpers.CloseAllDialogs(FolderViewViewModel);
 
@@ -197,10 +265,8 @@ public partial class App
 
             // Cache the window instead of closing it
             FolderViewViewModel.MainWindow.AppWindow.Hide();
-            args.Handled = true;
 
-            // Save and close all tabs
-            AppLifecycleHelper.SaveSessionTabs(FolderViewViewModel);
+            // Close all tabs
             MainPageViewModel.AppInstances[FolderViewViewModel].ForEach(tabItem => tabItem.Unload());
             MainPageViewModel.AppInstances[FolderViewViewModel].Clear();
 
@@ -209,23 +275,27 @@ public partial class App
 
             // Sleep current instance
             Program.Pool = new(0, 1, $"Files-{ApplicationService.AppEnvironment}-Instance");
+
             Thread.Yield();
+
             if (Program.Pool.WaitOne())
             {
                 // Resume the instance
                 Program.Pool.Dispose();
-                
-                // CHANGE: Don't check app updates.
-                /*_ = AppLifecycleHelper.CheckAppUpdate();*/
-            }
+                Program.Pool = null!;
 
-            return;
+                if (!AppModel.ForceProcessTermination)
+                {
+                    args.Handled = true;
+                    // CHANGE: Don't check app updates.
+                    /*_ = AppLifecycleHelper.CheckAppUpdate(FolderViewViewModel);*/
+                    return;
+                }
+            }
         }
 
         // Method can take a long time, make sure the window is hidden
         await Task.Yield();
-
-		AppLifecycleHelper.SaveSessionTabs(FolderViewViewModel);
 
         if (OutputPath is not null)
 		{
@@ -278,6 +348,23 @@ public partial class App
 
         // Wait for ongoing file operations
         FileOperationsHelpers.WaitForCompletion();
+    }
+
+    /// <summary>
+    /// Gets invoked when the last opened flyout is closed.
+    /// </summary>
+    private void LastOpenedFlyout_Closed(object? sender, object e)
+    {
+        if (sender is not CommandBarFlyout commandBarFlyout)
+        {
+            return;
+        }
+
+        commandBarFlyout.Closed -= LastOpenedFlyout_Closed;
+        if (_LastOpenedFlyout == commandBarFlyout)
+        {
+            _LastOpenedFlyout = null;
+        }
     }
 
     #region Services & Interfaces

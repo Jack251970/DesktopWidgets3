@@ -19,9 +19,9 @@ public static class SecurityAdvancedAccessControlItemFactory
 
 		if (isAdvanced)
 		{
-			accessControls = new()
-			{
-				new(current)
+			accessControls =
+            [
+                new(current)
 				{
 					AccessMask = AccessMaskFlags.FullControl,
 					AccessMaskName = "SecurityFullControlLabel/Text".GetLocalizedResource(),
@@ -129,7 +129,7 @@ public static class SecurityAdvancedAccessControlItemFactory
 					AccessMaskName = "SecurityTakeOwnershipLabel/Text".GetLocalizedResource(),
 					IsEditable = !isInherited
 				}
-			};
+			];
 
 			if (isFolder)
 			{
@@ -151,9 +151,9 @@ public static class SecurityAdvancedAccessControlItemFactory
 		}
 		else
 		{
-			accessControls = new()
-			{
-				new(current)
+			accessControls =
+            [
+                new(current)
 				{
 					AccessMask = AccessMaskFlags.FullControl,
 					AccessMaskName = "SecurityFullControlLabel/Text".GetLocalizedResource(),
@@ -162,7 +162,7 @@ public static class SecurityAdvancedAccessControlItemFactory
 				new(current)
 				{
 					AccessMask = AccessMaskFlags.Modify,
-					AccessMaskName = "SecurityModifyLabel/Text".GetLocalizedResource(),
+					AccessMaskName = "Modify".GetLocalizedResource(),
 					IsEditable = !isInherited
 				},
 				new(current)
@@ -193,7 +193,7 @@ public static class SecurityAdvancedAccessControlItemFactory
 				{
 					AccessMaskName = "SecuritySpecialLabel/Text".GetLocalizedResource()
 				}
-			};
+			];
 
 			if (!isFolder)
 			{

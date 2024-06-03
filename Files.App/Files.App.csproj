@@ -2,20 +2,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0-windows10.0.22621.0</TargetFramework>
+        <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
         <DefaultLanguage>en-US</DefaultLanguage>
         <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
         <DisableXbfLineInfo>False</DisableXbfLineInfo>
         <IsTrimmable>true</IsTrimmable>
         <Nullable>enable</Nullable>
         <Platforms>x86;x64;arm64</Platforms>
-        <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+        <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
         <UseWinUI>true</UseWinUI>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Configurations>Debug;Release;Stable;Preview;Store</Configurations>
-        <TieredCompilation>true</TieredCompilation>
-        <TieredPgo>true</TieredPgo>
+        <!--
+        <CsWinRTIncludes>Files.App.Server</CsWinRTIncludes>
+        <PublishDir>bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\publish\</PublishDir>
+        <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
+        <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
+        <PublishReadyToRunComposite Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRunComposite>
+        -->
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -43,33 +48,54 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    
+    <!--
+    <ItemGroup>
+        <CsWinRTInputs Include="..\Files.App.Server\bin\$(Platform)\$(Configuration)\$(TargetFramework)\win-$(Platform)\Files.App.Server.winmd" />
+        <None Include="..\Files.App.Server\bin\$(Platform)\$(Configuration)\$(TargetFramework)\win-$(Platform)\Files.App.Server.winmd">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>Files.App.Server.winmd</Link>
+            <Visible>false</Visible>
+        </None>
+    </ItemGroup>
+    -->
 
     <ItemGroup>
         <PackageReference Include="ByteSize" Version="2.1.2" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
-        <PackageReference Include="CommunityToolkit.WinUI.UI.Behaviors" Version="7.1.2" />
-        <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
-        <PackageReference Include="CSharpMarkup.WinUI.LiveChartsCore.SkiaSharpView" Version="2.3.66" />
-        <PackageReference Include="DirectNCore" Version="1.16.0" />
+        <PackageReference Include="DirectNCore" Version="1.16.1" />
         <PackageReference Include="DiscUtils.Udf" Version="0.16.13" />
         <PackageReference Include="FluentFTP" Version="50.0.1" />
         <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
         <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
-        <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.3" />
-        <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.3" />
-        <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.5" />
+        <!--<PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0-rc1.2" />-->
+        <PackageReference Include="CSharpMarkup.WinUI.LiveChartsCore.SkiaSharpView" Version="2.4.18" />
+        <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.4" />
+        <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.4" />
+        <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.6" />
+        <!--<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />-->
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240428000" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
         <PackageReference Include="SevenZipSharp" Version="1.0.2" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.8" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240428000" />
+        <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
+        <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302" PrivateAssets="all" />
+        <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
+        <PackageReference Include="CommunityToolkit.WinUI.UI.Behaviors" Version="7.1.2" />
+        <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+        <PackageReference Include="TagLibSharp" Version="2.3.0" />
         <PackageReference Include="Tulpep.ActiveDirectoryObjectPicker" Version="3.0.11" />
         <PackageReference Include="Vanara.PInvoke.DwmApi" Version="4.0.1" />
-        <PackageReference Include="Vanara.PInvoke.Mpr" Version="4.0.1" />
         <PackageReference Include="Vanara.Windows.Extensions" Version="4.0.1" />
-        <PackageReference Include="Vanara.Windows.Shell" Version="4.0.1" />
         <PackageReference Include="WinUIEx" Version="2.3.4" />
+        <PackageReference Include="Vanara.PInvoke.Mpr" Version="4.0.1" />
+        <PackageReference Include="Vanara.Windows.Shell" Version="4.0.1" />
+        <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
+        <PackageReference Include="Microsoft.Management.Infrastructure.Runtime.Win" Version="3.0.0" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.7" />
     </ItemGroup>
   
     <ItemGroup>

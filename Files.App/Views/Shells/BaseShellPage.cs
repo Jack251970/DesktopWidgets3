@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.Services.Settings;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -216,9 +217,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
         /*InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated += AppSettings_SortDirectionPreferenceUpdated;
 		InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated += AppSettings_SortOptionPreferenceUpdated;
-		InstanceViewModel.FolderSettings.SortDirectoriesAlongsideFilesPreferenceUpdated += AppSettings_SortDirectoriesAlongsideFilesPreferenceUpdated;*/
+		InstanceViewModel.FolderSettings.SortDirectoriesAlongsideFilesPreferenceUpdated += AppSettings_SortDirectoriesAlongsideFilesPreferenceUpdated;
+        InstanceViewModel.FolderSettings.SortFilesFirstPreferenceUpdated += AppSettings_SortFilesFirstPreferenceUpdated;*/
 
-		PointerPressed += CoreWindow_PointerPressed;
+        PointerPressed += CoreWindow_PointerPressed;
 
 		drivesViewModel.PropertyChanged += DrivesManager_PropertyChanged;
 
@@ -250,6 +252,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated += AppSettings_SortDirectionPreferenceUpdated;
         InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated += AppSettings_SortOptionPreferenceUpdated;
         InstanceViewModel.FolderSettings.SortDirectoriesAlongsideFilesPreferenceUpdated += AppSettings_SortDirectoriesAlongsideFilesPreferenceUpdated;
+        InstanceViewModel.FolderSettings.SortFilesFirstPreferenceUpdated += AppSettings_SortFilesFirstPreferenceUpdated;
 
         _lastDateTimeFormats = UserSettingsService.GeneralSettingsService.DateTimeFormat;
         _updateDateDisplayTimer.Start();
@@ -414,7 +417,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         }
         else if (e.ChosenSuggestion is null && !string.IsNullOrWhiteSpace(sender.Query))
         {
-            SubmitSearch(sender.Query, UserSettingsService.GeneralSettingsService.SearchUnindexedItems);
+            SubmitSearch(sender.Query);
         }
     }
 
@@ -432,7 +435,6 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 				Query = sender.Query,
 				Folder = FilesystemViewModel.WorkingDirectory,
 				MaxItemCount = 10,
-				SearchUnindexedItems = UserSettingsService.GeneralSettingsService.SearchUnindexedItems
 			};
 
 			sender.SetSuggestions((await search.SearchAsync(FolderViewViewModel)).Select(suggestion => new SuggestionModel(suggestion)));
@@ -463,7 +465,12 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		FilesystemViewModel?.UpdateSortDirectoriesAlongsideFilesAsync();
 	}
 
-	protected void CoreWindow_PointerPressed(object sender, PointerRoutedEventArgs args)
+    protected void AppSettings_SortFilesFirstPreferenceUpdated(object? sender, bool e)
+    {
+        FilesystemViewModel?.UpdateSortFilesFirstAsync();
+    }
+
+    protected void CoreWindow_PointerPressed(object sender, PointerRoutedEventArgs args)
 	{
 		if (!IsCurrentInstance)
         {
@@ -536,16 +543,8 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		if (string.IsNullOrWhiteSpace(singleItemOverride))
 		{
 			var components = StorageFileExtensions.GetDirectoryPathComponents(newWorkingDir);
-			var lastCommonItemIndex = ToolbarViewModel.PathComponents
-				.Select((value, index) => new { value, index })
-				.LastOrDefault(x => x.index < components.Count && x.value.Path == components[x.index].Path)?.index ?? 0;
-
-			while (ToolbarViewModel.PathComponents.Count > lastCommonItemIndex)
-            {
-                ToolbarViewModel.PathComponents.RemoveAt(lastCommonItemIndex);
-            }
-
-            foreach (var component in components.Skip(lastCommonItemIndex))
+            ToolbarViewModel.PathComponents.Clear();
+            foreach (var component in components)
             {
                 ToolbarViewModel.PathComponents.Add(component);
             }
@@ -559,11 +558,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		}
 	}
 
-	public void SubmitSearch(string query, bool searchUnindexedItems)
+	public void SubmitSearch(string query)
 	{
 		FilesystemViewModel.CancelSearch();
 		InstanceViewModel.CurrentSearchQuery = query;
-		InstanceViewModel.SearchedUnindexedItems = searchUnindexedItems;
 
 		var args = new NavigationArguments()
 		{
@@ -572,7 +570,6 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 			IsSearchResultPage = true,
 			SearchPathParam = FilesystemViewModel.WorkingDirectory,
 			SearchQuery = query,
-			SearchUnindexedItems = searchUnindexedItems,
 		};
 
 		if (this is ColumnShellPage)
@@ -592,11 +589,15 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	public void NavigateToPath(string navigationPath, NavigationArguments? navArgs = null)
 	{
-		var layout = navigationPath.StartsWith("tag:")
-			? typeof(DetailsLayoutPage)
-			: FolderSettings.GetLayoutType(navigationPath);
+        var layout = FolderSettings.GetLayoutType(navigationPath);
 
-		NavigateToPath(navigationPath, layout, navArgs);
+        // Don't use Columns Layout for displaying tags
+        if (navigationPath.StartsWith("tag:") && layout == typeof(ColumnsLayoutPage))
+        {
+            layout = typeof(DetailsLayoutPage);
+        }
+
+        NavigateToPath(navigationPath, layout, navArgs);
 	}
 
 	public Task TabItemDragOver(object sender, DragEventArgs e)
@@ -627,7 +628,6 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 				Query = InstanceViewModel.CurrentSearchQuery ?? (string)TabItemParameter.NavigationParameter,
 				Folder = FilesystemViewModel.WorkingDirectory,
 				ThumbnailSize = InstanceViewModel.FolderSettings.GetIconSize(),
-				SearchUnindexedItems = InstanceViewModel.SearchedUnindexedItems
 			};
 
 			await FilesystemViewModel.SearchAsync(FolderViewViewModel, searchInstance);
@@ -764,8 +764,11 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 					if (itemToSelect is not null && ContentPage is not null)
 					{
-						ContentPage.ItemManipulationModel.SetSelectedItem(itemToSelect);
-						ContentPage.ItemManipulationModel.ScrollIntoView(itemToSelect);
+                        if (UserSettingsService.FoldersSettingsService.ScrollToPreviousFolderWhenNavigatingUp)
+                        {
+                            ContentPage.ItemManipulationModel.SetSelectedItem(itemToSelect);
+                            ContentPage.ItemManipulationModel.ScrollIntoView(itemToSelect);
+                        }
 					}
 				}
 				break;
@@ -920,6 +923,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
             InstanceViewModel.FolderSettings.SortDirectionPreferenceUpdated -= AppSettings_SortDirectionPreferenceUpdated;
             InstanceViewModel.FolderSettings.SortOptionPreferenceUpdated -= AppSettings_SortOptionPreferenceUpdated;
             InstanceViewModel.FolderSettings.SortDirectoriesAlongsideFilesPreferenceUpdated -= AppSettings_SortDirectoriesAlongsideFilesPreferenceUpdated;
+            InstanceViewModel.FolderSettings.SortFilesFirstPreferenceUpdated -= AppSettings_SortFilesFirstPreferenceUpdated;
         }
 
         // Prevent weird case of this being null when many tabs are opened/closed quickly

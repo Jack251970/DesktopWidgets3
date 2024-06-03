@@ -183,9 +183,10 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 			if (item.Tags.Contains(uid))
 			{
 				FileTagsHelper.WriteFileTag(
+                    null!,
 					item.FilePath,
-					item.Tags.Except(tagDoDelete).ToArray());
-			}
+					item.Tags.Except(tagDoDelete).ToArray());  // TODO: Add FolderViewViewModel.
+            }
 		}
 	}
 }

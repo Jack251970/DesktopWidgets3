@@ -118,8 +118,8 @@ public class AboutViewModel : ObservableObject
 
 	public async Task LoadThirdPartyNoticesAsync()
 	{
-		var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(@"ms-appx:///NOTICE.md"));
-		ThirdPartyNotices = await FileIO.ReadTextAsync(file);
+		var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(Constants.DocsPath.ThirdPartyNoticePath));
+        ThirdPartyNotices = await FileIO.ReadTextAsync(file);
 	}
 
 	public string GetAppVersion()
@@ -147,5 +147,5 @@ public class AboutViewModel : ObservableObject
 	public PackageVersion AppVersion => new(3, 0, 15, 0);
 
     // CHANGE: Add commits info here.
-    public string Commits => "ddf3b2aa";
+    public string Commits => "f6f590a5";
 }

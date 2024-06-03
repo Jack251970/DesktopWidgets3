@@ -26,17 +26,20 @@ public abstract class BaseProperties
 	public async Task GetOtherPropertiesAsync(IStorageItemExtraProperties properties)
 	{
 		var dateAccessedProperty = "System.DateAccessed";
+        var dateModifiedProperty = "System.DateModified";
 
-		List<string> propertiesName = new()
+        List<string> propertiesName = new()
 		{
-			dateAccessedProperty
-		};
+			dateAccessedProperty,
+            dateModifiedProperty
+        };  // TODO: Remove new() and replace with []
 
 		var extraProperties = await properties.RetrievePropertiesAsync(propertiesName);
 
 		// Cannot get date and owner in MTP devices
 		ViewModel.ItemAccessedTimestampReal = (DateTimeOffset)(extraProperties[dateAccessedProperty] ?? DateTimeOffset.Now);
-	}
+        ViewModel.ItemModifiedTimestampReal = (DateTimeOffset)(extraProperties[dateModifiedProperty] ?? DateTimeOffset.Now);
+    }
 
 	public async Task<(long size, long sizeOnDisk)> CalculateFolderSizeAsync(string path, CancellationToken token)
 	{

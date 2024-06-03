@@ -7,7 +7,8 @@ public enum LayoutTypes : ushort
 {
 	None,
 	Details,
-	Tiles,
+    List,
+    Tiles,
 	GridSmall,
 	GridMedium,
 	GridLarge,

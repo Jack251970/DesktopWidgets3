@@ -12,36 +12,54 @@ using static Files.App.Helpers.InteropHelpers;
 
 namespace Files.App;
 
-internal class Program
+/// <summary>
+/// Represents the base entry point of the Files app.
+/// </summary>
+/// <remarks>
+/// Gets called at the first time when the app launched or activated.
+/// </remarks>
+internal sealed class Program
 {
-    public static Semaphore Pool;
+    private const uint CWMO_DEFAULT = 0;
+    private const uint INFINITE = 0xFFFFFFFF;
+
+    public static Semaphore? Pool { get; set; }
 
     static Program()
     {
-        Pool = new(0, 1, $"Files-{ApplicationService.AppEnvironment}-Instance", out var isNew);
+        var pool = new Semaphore(0, 1, $"Files-{ApplicationService.AppEnvironment}-Instance", out var isNew);
+
         if (!isNew)
         {
             // Resume cached instance
-            Pool.Release();
+            pool.Release();
+
+            // Redirect to the main process
             var activePid = LocalSettingsExtensions.ReadLocalSettingAsync("INSTANCE_ACTIVE", -1);
             var instance = AppInstance.FindOrRegisterForKey(activePid.ToString());
             RedirectActivationTo(instance, AppInstance.GetCurrent().GetActivatedEventArgs());
+
+            // Kill the current process
             Environment.Exit(0);
         }
-        Pool.Dispose();
+
+        pool.Dispose();
     }
 
-    // Note:
-    //  We can't declare Main to be async because in a WinUI app
-    //  This prevents Narrator from reading XAML elements
-    //  https://github.com/microsoft/WindowsAppSDK-Samples/blob/main/Samples/AppLifecycle/Instancing/cs-winui-packaged/CsWinUiDesktopInstancing/CsWinUiDesktopInstancing/Program.cs
-    //  STAThread has no effect if main is async, needed for Clipboard
+    /// <summary>
+    /// Initializes the process; the entry point of the process.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Main"/> cannot be declared to be async because this prevents Narrator from reading XAML elements in a WinUI app.
+    /// </remarks>
     [STAThread]
     private static void Main()
     {
         WinRT.ComWrappersSupport.InitializeComWrappers();
 
-        var proc = Process.GetCurrentProcess();
+        // CHANGE: Remove server.
+        /*Server.AppInstanceMonitor.StartMonitor(Environment.ProcessId);*/
+
         var OpenTabInExistingInstance = LocalSettingsExtensions.ReadLocalSetting("OpenTabInExistingInstance", true);
         var activatedArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
 
@@ -60,7 +78,7 @@ internal class Program
                         case ParsedCommandType.ExplorerShellCommand:
                             if (!Constants.UserEnvironmentPaths.ShellPlaces.ContainsKey(command.Payload.ToUpperInvariant()))
                             {
-                                OpenShellCommandInExplorer(command.Payload, proc.Id);
+                                OpenShellCommandInExplorer(command.Payload, Environment.ProcessId);
 
                                 // Exit
                                 return;
@@ -141,36 +159,41 @@ internal class Program
             }
         }
 
-        var currentInstance = AppInstance.FindOrRegisterForKey((-proc.Id).ToString());
+        var currentInstance = AppInstance.FindOrRegisterForKey((-Environment.ProcessId).ToString());
         if (currentInstance.IsCurrent)
         {
             currentInstance.Activated += OnActivated;
         }
 
-        LocalSettingsExtensions.SaveLocalSettingAsync("INSTANCE_ACTIVE", -proc.Id);
+        LocalSettingsExtensions.SaveLocalSettingAsync("INSTANCE_ACTIVE", -Environment.ProcessId);
 
         Application.Start((p) =>
         {
-            var context = new DispatcherQueueSynchronizationContext(
-                DispatcherQueue.GetForCurrentThread());
+            var context = new DispatcherQueueSynchronizationContext(DispatcherQueue.GetForCurrentThread());
             SynchronizationContext.SetSynchronizationContext(context);
+
             _ = new App(null!);
         });
     }
 
-    private static void OnActivated(object? sender, AppActivationArguments args)
+    /// <summary>
+    /// Gets invoked when the application is activated.
+    /// </summary>
+    private static /*async*/ void OnActivated(object? sender, AppActivationArguments args)
     {
-        /*if (App.Current is App thisApp)
+        /*// WINUI3: Verify if needed or OnLaunched is called
+        if (App.Current is App thisApp)
         {
-            // WINUI3: Verify if needed or OnLaunched is called
-            thisApp.OnActivated(args);
+            await thisApp.OnActivatedAsync(args);
         }*/
     }
 
-    private const uint CWMO_DEFAULT = 0;
-    private const uint INFINITE = 0xFFFFFFFF;
-
-    // Do the redirection on another thread, and use a non-blocking wait method to wait for the redirection to complete
+    /// <summary>
+    /// Redirects the activation to the main process.
+    /// </summary>
+    /// <remarks>
+    /// Redirects on another thread and uses a non-blocking wait method to wait for the redirection to complete.
+    /// </remarks>
     public static void RedirectActivationTo(AppInstance keyInstance, AppActivationArguments args)
     {
         var eventHandle = CreateEvent(IntPtr.Zero, true, false, null!);

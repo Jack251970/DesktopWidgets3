@@ -7,6 +7,8 @@ using Windows.Storage;
 
 namespace Files.App.Utils.Cloud;
 
+#pragma warning disable CA2254 // Template should be a static expression
+
 public static class CloudDrivesManager
 {
 	private static readonly ILogger _logger = App.Logger;
@@ -15,7 +17,7 @@ public static class CloudDrivesManager
 
 	public static EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 
-	private static readonly List<DriveItem> _Drives = new();
+	private static readonly List<DriveItem> _Drives = [];
 	public static IReadOnlyList<DriveItem> Drives
 	{
 		get
@@ -65,8 +67,8 @@ public static class CloudDrivesManager
 				ShowProperties = true,
 			};
 
-			var iconData = provider.IconData ?? await FileThumbnailHelper.LoadIconWithoutOverlayAsync(provider.SyncFolder, 24);
-			if (iconData is not null)
+            var iconData = provider.IconData ?? await FileThumbnailHelper.LoadIconWithoutOverlayAsync(provider.SyncFolder, Constants.DefaultIconSizes.Large, false, true);
+            if (iconData is not null)
 			{
 				cloudProviderItem.IconData = iconData;
 

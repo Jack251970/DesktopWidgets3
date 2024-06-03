@@ -19,7 +19,9 @@ namespace Files.App.UserControls.Widgets;
 
 public sealed partial class RecentFilesWidget : HomePageWidget, IWidgetItem, INotifyPropertyChanged
 {
-	public delegate void RecentFilesOpenLocationInvokedEventHandler(object sender, PathNavigationEventArgs e);
+    private IHomePageContext HomePageContext { get; } = DependencyExtensions.GetService<IHomePageContext>();
+
+    public delegate void RecentFilesOpenLocationInvokedEventHandler(object sender, PathNavigationEventArgs e);
 
 	public event RecentFilesOpenLocationInvokedEventHandler RecentFilesOpenLocationInvoked;
 
@@ -118,32 +120,48 @@ public sealed partial class RecentFilesWidget : HomePageWidget, IWidgetItem, INo
 
     private void ListView_RightTapped(object sender, RightTappedRoutedEventArgs e)
 	{
-		ItemContextMenuFlyout = new CommandBarFlyout { Placement = FlyoutPlacementMode.Full };
-		ItemContextMenuFlyout.Opening += (sender, e) => FolderViewViewModel.LastOpenedFlyout = sender as CommandBarFlyout;
-		if (e.OriginalSource is not FrameworkElement element || element.DataContext is not RecentItem item)
+        // Ensure values are not null
+        if (e.OriginalSource is not FrameworkElement element ||
+            element.DataContext is not RecentItem item)
         {
             return;
         }
 
-        var menuItems = GetItemMenuItems(item, false);
-		var (_, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(menuItems);
+        // Create a new Flyout
+        var itemContextMenuFlyout = new CommandBarFlyout()
+        {
+            Placement = FlyoutPlacementMode.Full
+        };
 
-		secondaryElements.OfType<FrameworkElement>()
-							.ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth);
+        // Hook events
+        itemContextMenuFlyout.Opening += (sender, e) => FolderViewViewModel.LastOpenedFlyout = sender as CommandBarFlyout;
+        itemContextMenuFlyout.Closed += (sender, e) => OnRightClickedItemChanged(null, null);
 
-		secondaryElements.ForEach(i => ItemContextMenuFlyout.SecondaryCommands.Add(i));
-		FlyouItemPath = item.Path;
-		ItemContextMenuFlyout.Opened += ItemContextMenuFlyout_Opened;
-		ItemContextMenuFlyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
-	}
+        FlyoutItemPath = item.Path;
 
-	private async void ItemContextMenuFlyout_Opened(object? sender, object e)
-	{
-		ItemContextMenuFlyout.Opened -= ItemContextMenuFlyout_Opened;
-		await ShellContextmenuHelper.LoadShellMenuItemsAsync(FolderViewViewModel, FlyouItemPath, ItemContextMenuFlyout, showOpenWithMenu: true, showSendToMenu: true);
-	}
+        // Notify of the change on right clicked item
+        OnRightClickedItemChanged(item, itemContextMenuFlyout);
 
-	public override List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false)
+        // Get items for the flyout
+        var menuItems = GetItemMenuItems(item, QuickAccessService.IsItemPinned(item.Path));
+        var (_, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(menuItems);
+
+        // Set max width of the flyout
+        secondaryElements
+            .OfType<FrameworkElement>()
+            .ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth);
+
+        // Add menu items to the secondary flyout
+        secondaryElements.ForEach(itemContextMenuFlyout.SecondaryCommands.Add);
+
+        // Show the flyout
+        itemContextMenuFlyout.ShowAt(element, new() { Position = e.GetPosition(element) });
+
+        // Load shell menu items
+        _ = ShellContextmenuHelper.LoadShellMenuItemsAsync(FolderViewViewModel, FlyoutItemPath, itemContextMenuFlyout);
+    }
+
+    public override List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false)
 	{
 		return new List<ContextMenuFlyoutItemViewModel>()
 		{
@@ -166,20 +184,20 @@ public sealed partial class RecentFilesWidget : HomePageWidget, IWidgetItem, INo
 			{
 				Text = "RecentItemRemove/Text".GetLocalizedResource(),
 				Glyph = "\uE738",
-				Command = RemoveRecentItemCommand,
+				Command = RemoveRecentItemCommand!,
 				CommandParameter = item
 			},
 			new()
 			{
 				Text = "RecentItemClearAll/Text".GetLocalizedResource(),
 				Glyph = "\uE74D",
-				Command = ClearAllItemsCommand
+				Command = ClearAllItemsCommand!
 			},
 			new()
 			{
 				Text = "OpenFileLocation".GetLocalizedResource(),
 				Glyph = "\uED25",
-				Command = OpenFileLocationCommand,
+				Command = OpenFileLocationCommand!,
 				CommandParameter = item
 			},
 			new()
@@ -189,7 +207,7 @@ public sealed partial class RecentFilesWidget : HomePageWidget, IWidgetItem, INo
 				{
 					OpacityIconStyle = "ColorIconProperties",
 				},
-				Command = OpenPropertiesCommand,
+				Command = OpenPropertiesCommand!,
 				CommandParameter = item
 			},
 			new()
@@ -201,7 +219,7 @@ public sealed partial class RecentFilesWidget : HomePageWidget, IWidgetItem, INo
 			{
 				Text = "Loading".GetLocalizedResource(),
 				Glyph = "\xE712",
-				Items = new List<ContextMenuFlyoutItemViewModel>(),
+				Items = [],
 				ID = "ItemOverflow",
 				Tag = "ItemOverflow",
 				IsEnabled = false,
@@ -235,15 +253,16 @@ public sealed partial class RecentFilesWidget : HomePageWidget, IWidgetItem, INo
 
 	private void OpenProperties(RecentItem? item)
 	{
-		EventHandler<object> flyoutClosed = null!;
-		flyoutClosed = async (s, e) =>
-		{
-			ItemContextMenuFlyout.Closed -= flyoutClosed;
-			var listedItem = await UniversalStorageEnumerator.AddFileAsync(FolderViewViewModel, await BaseStorageFile.GetFileFromPathAsync(item!.Path), null!, default);
-			FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, listedItem, associatedInstance);
-		};
-		ItemContextMenuFlyout.Closed += flyoutClosed;
-	}
+        var flyout = HomePageContext.ItemContextFlyoutMenu;
+        EventHandler<object> flyoutClosed = null!;
+        flyoutClosed = async (s, e) =>
+        {
+            flyout!.Closed -= flyoutClosed;
+            var listedItem = await UniversalStorageEnumerator.AddFileAsync(FolderViewViewModel, await BaseStorageFile.GetFileFromPathAsync(item!.Path), null!, default);
+            FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, listedItem, associatedInstance);
+        };
+        flyout!.Closed += flyoutClosed;
+    }
 
 	private async Task UpdateRecentsListAsync(NotifyCollectionChangedEventArgs e)
 	{

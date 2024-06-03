@@ -19,6 +19,8 @@ namespace Files.App.ViewModels.UserControls;
 
 public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 {
+    private const int MAX_SUGGESTIONS = 10;
+
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
 	private IUserSettingsService UserSettingsService { get; set; } = null!;
@@ -628,7 +630,8 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 	public void SearchRegion_LostFocus(object sender, RoutedEventArgs e)
 	{
-		var element = FocusManager.GetFocusedElement();
+        // TODO: Remove Microsoft.UI.Xaml.Input.
+        var element = Microsoft.UI.Xaml.Input.FocusManager.GetFocusedElement();
 		if (element is FlyoutBase or AppBarButton)
         {
             return;
@@ -712,7 +715,24 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		}
 	}
 
-	public async Task CheckPathInputAsync(string currentInput, string currentSelectedPath, IShellPage shellPage)
+    private static string NormalizePathInput(string currentInput, bool isFtp)
+    {
+        if (currentInput.Contains('/') && !isFtp)
+        {
+            currentInput = currentInput.Replace("/", "\\", StringComparison.Ordinal);
+        }
+
+        currentInput = currentInput.Replace("\\\\", "\\", StringComparison.Ordinal);
+
+        if (currentInput.StartsWith('\\') && !currentInput.StartsWith("\\\\", StringComparison.Ordinal))
+        {
+            currentInput = currentInput.Insert(0, "\\");
+        }
+
+        return currentInput;
+    }
+
+    public async Task CheckPathInputAsync(string currentInput, string currentSelectedPath, IShellPage shellPage)
 	{
 		if (currentInput.StartsWith('>'))
 		{
@@ -739,17 +759,7 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 
 		var isFtp = FtpHelpers.IsFtpPath(currentInput);
 
-        if (currentInput.Contains('/') && !isFtp)
-        {
-            currentInput = currentInput.Replace("/", "\\", StringComparison.Ordinal);
-        }
-
-        currentInput = currentInput.Replace("\\\\", "\\", StringComparison.Ordinal);
-
-		if (currentInput.StartsWith('\\') && !currentInput.StartsWith("\\\\", StringComparison.Ordinal))
-        {
-            currentInput = currentInput.Insert(0, "\\");
-        }
+        currentInput = NormalizePathInput(currentInput, isFtp);
 
         if (currentSelectedPath == currentInput || string.IsNullOrWhiteSpace(currentInput))
         {
@@ -760,7 +770,8 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		{
 			if (currentInput.Equals("Home", StringComparison.OrdinalIgnoreCase) || currentInput.Equals("Home".GetLocalizedResource(), StringComparison.OrdinalIgnoreCase))
 			{
-				shellPage.NavigateHome();
+                SavePathToHistory("Home");
+                shellPage.NavigateHome();
 			}
 			else
 			{
@@ -787,11 +798,13 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 						return;
 					}
 					var pathToNavigate = resFolder.Result?.Path ?? currentInput;
-					shellPage.NavigateToPath(pathToNavigate);
+                    SavePathToHistory(pathToNavigate);
+                    shellPage.NavigateToPath(pathToNavigate);
 				}
 				else if (isFtp)
 				{
-					shellPage.NavigateToPath(currentInput);
+                    SavePathToHistory(currentInput);
+                    shellPage.NavigateToPath(currentInput);
 				}
 				else // Not a folder or inaccessible
 				{
@@ -835,7 +848,23 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		}
 	}
 
-	private static async Task<bool> LaunchApplicationFromPath(string currentInput, string workingDir)
+    private void SavePathToHistory(string path)
+    {
+        var pathHistoryList = UserSettingsService.GeneralSettingsService.PathHistoryList?.ToList() ?? [];
+        pathHistoryList.Remove(path);
+        pathHistoryList.Insert(0, path);
+
+        if (pathHistoryList.Count > MAX_SUGGESTIONS)
+        {
+            UserSettingsService.GeneralSettingsService.PathHistoryList = pathHistoryList.RemoveFrom(MAX_SUGGESTIONS + 1);
+        }
+        else
+        {
+            UserSettingsService.GeneralSettingsService.PathHistoryList = pathHistoryList;
+        }
+    }
+
+    private static async Task<bool> LaunchApplicationFromPath(string currentInput, string workingDir)
 	{
 		var trimmedInput = currentInput.Trim();
 		var fileName = trimmedInput;
@@ -850,10 +879,10 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 		return await LaunchHelper.LaunchAppAsync(fileName, arguments, workingDir);
 	}
 
-	public async Task SetAddressBarSuggestionsAsync(AutoSuggestBox sender, IShellPage shellpage, int maxSuggestions = 7)
+	public async Task SetAddressBarSuggestionsAsync(AutoSuggestBox sender, IShellPage shellpage)
 	{
-		if (!string.IsNullOrWhiteSpace(sender.Text) && shellpage.FilesystemViewModel is not null)
-		{
+        if (sender.Text is not null && shellpage.FilesystemViewModel is not null)
+        {
 			if (!await SafetyExtensions.IgnoreExceptions(async () =>
 			{
 				IList<NavigationBarSuggestionItem>? suggestions = null;
@@ -875,41 +904,60 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 				}
 				else
 				{
-					IsCommandPaletteOpen = false;
-					var isFtp = FtpHelpers.IsFtpPath(sender.Text);
-					var expandedPath = StorageFileExtensions.GetResolvedPath(FolderViewViewModel, sender.Text, isFtp);
-					var folderPath = PathNormalization.GetParentDir(expandedPath) ?? expandedPath;
-					StorageFolderWithPath folder = await shellpage.FilesystemViewModel.GetFolderWithPathFromPathAsync(folderPath);
+                    IsCommandPaletteOpen = false;
+                    var currentInput = sender.Text;
 
-					if (folder is null)
+                    if (string.IsNullOrWhiteSpace(currentInput) || currentInput == "Home")
                     {
-                        return false;
+                        // Load previously entered path
+                        var pathHistoryList = UserSettingsService.GeneralSettingsService.PathHistoryList;
+                        if (pathHistoryList is not null)
+                        {
+                            suggestions = pathHistoryList.Select(x => new NavigationBarSuggestionItem()
+                            {
+                                Text = x,
+                                PrimaryDisplay = x
+                            }).ToList();
+                        }
                     }
+                    else
+                    {
+                        var isFtp = FtpHelpers.IsFtpPath(currentInput);
+                        currentInput = NormalizePathInput(currentInput, isFtp);
+                        var expandedPath = StorageFileExtensions.GetResolvedPath(FolderViewViewModel, currentInput, isFtp);
+                        var folderPath = PathNormalization.GetParentDir(expandedPath) ?? expandedPath;
+                        StorageFolderWithPath folder = await shellpage.FilesystemViewModel.GetFolderWithPathFromPathAsync(folderPath);
 
-                    var currPath = await folder.GetFoldersWithPathAsync(Path.GetFileName(expandedPath), (uint)maxSuggestions);
-					if (currPath.Count >= maxSuggestions)
-					{
-						suggestions = currPath.Select(x => new NavigationBarSuggestionItem()
-						{
-							Text = x.Path,
-							PrimaryDisplay = x.Item.DisplayName
-						}).ToList();
-					}
-					else if (currPath.Any())
-					{
-						var subPath = await currPath.First().GetFoldersWithPathAsync((uint)(maxSuggestions - currPath.Count));
-						suggestions = currPath.Select(x => new NavigationBarSuggestionItem()
-						{
-							Text = x.Path,
-							PrimaryDisplay = x.Item.DisplayName
-						}).Concat(
-							subPath.Select(x => new NavigationBarSuggestionItem()
-							{
-								Text = x.Path,
-								PrimaryDisplay = PathNormalization.Combine(currPath.First().Item.DisplayName, x.Item.DisplayName)
-							})).ToList();
-					}
-				}
+                        if (folder is null)
+                        {
+                            return false;
+                        }
+
+                        var currPath = await folder.GetFoldersWithPathAsync(Path.GetFileName(expandedPath), (uint)MAX_SUGGESTIONS);
+                        if (currPath.Count >= MAX_SUGGESTIONS)
+                        {
+                            suggestions = currPath.Select(x => new NavigationBarSuggestionItem()
+                            {
+                                Text = x.Path,
+                                PrimaryDisplay = x.Item.DisplayName
+                            }).ToList();
+                        }
+                        else if (currPath.Any())
+                        {
+                            var subPath = await currPath.First().GetFoldersWithPathAsync((uint)(MAX_SUGGESTIONS - currPath.Count));
+                            suggestions = currPath.Select(x => new NavigationBarSuggestionItem()
+                            {
+                                Text = x.Path,
+                                PrimaryDisplay = x.Item.DisplayName
+                            }).Concat(
+                                subPath.Select(x => new NavigationBarSuggestionItem()
+                                {
+                                    Text = x.Path,
+                                    PrimaryDisplay = PathNormalization.Combine(currPath.First().Item.DisplayName, x.Item.DisplayName)
+                                })).ToList();
+                        }
+                    }
+                }
 
 				if (suggestions is null || suggestions.Count == 0)
 				{
@@ -991,7 +1039,8 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
                 }
 				LayoutOpacityIcon = instanceViewModel.FolderSettings.LayoutMode switch
 				{
-					FolderLayoutModes.TilesView => Commands.LayoutTiles.OpacityStyle!,
+                    FolderLayoutModes.ListView => Commands.LayoutList.OpacityStyle!,
+                    FolderLayoutModes.TilesView => Commands.LayoutTiles.OpacityStyle!,
 					FolderLayoutModes.ColumnView => Commands.LayoutColumns.OpacityStyle!,
 					FolderLayoutModes.GridView =>
 						instanceViewModel.FolderSettings.GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeSmall
@@ -1002,7 +1051,8 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 					_ => Commands.LayoutDetails.OpacityStyle!
 				};
 				OnPropertyChanged(nameof(IsTilesLayout));
-				OnPropertyChanged(nameof(IsColumnLayout));
+                OnPropertyChanged(nameof(IsListLayout));
+                OnPropertyChanged(nameof(IsColumnLayout));
 				OnPropertyChanged(nameof(IsGridSmallLayout));
 				OnPropertyChanged(nameof(IsGridMediumLayout));
 				OnPropertyChanged(nameof(IsGridLargeLayout));
@@ -1061,9 +1111,10 @@ public class ToolbarViewModel : ObservableObject, IAddressToolbar, IDisposable
 	public bool IsGridSmallLayout => instanceViewModel.FolderSettings is not null && instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.GridView && instanceViewModel.FolderSettings.GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeSmall;
 	public bool IsGridMediumLayout => instanceViewModel.FolderSettings is not null && instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.GridView && !IsGridSmallLayout && instanceViewModel.FolderSettings.GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeMedium;
 	public bool IsGridLargeLayout => instanceViewModel.FolderSettings is not null && instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.GridView && !IsGridSmallLayout && !IsGridMediumLayout;
-	public bool IsDetailsLayout => !IsTilesLayout && !IsColumnLayout && !IsGridSmallLayout && !IsGridMediumLayout && !IsGridLargeLayout;
+    public bool IsDetailsLayout => !IsListLayout && !IsTilesLayout && !IsColumnLayout && !IsGridSmallLayout && !IsGridMediumLayout && !IsGridLargeLayout;
+    public bool IsListLayout => instanceViewModel.FolderSettings.LayoutMode is FolderLayoutModes.ListView;
 
-	public string ExtractToText
+    public string ExtractToText
 		=> IsSelectionArchivesOnly ? SelectedItems.Count > 1 ? string.Format("ExtractToChildFolder".GetLocalizedResource(), $"*{Path.DirectorySeparatorChar}") : string.Format("ExtractToChildFolder".GetLocalizedResource() + "\\", Path.GetFileNameWithoutExtension(selectedItems!.First().Name)) : "ExtractToChildFolder".GetLocalizedResource();
 
 	public void Dispose()

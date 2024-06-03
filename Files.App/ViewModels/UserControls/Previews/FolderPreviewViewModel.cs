@@ -36,10 +36,9 @@ public class FolderPreviewViewModel
 		Folder = await StorageFileExtensions.DangerousGetFolderFromPathAsync(Item.ItemPath, rootItem);
 		var items = await Folder.GetItemsAsync();
 
-		var iconData = await FileThumbnailHelper.LoadIconFromStorageItemAsync(Folder, 256, ThumbnailMode.SingleItem, ThumbnailOptions.ReturnOnlyIfCached);
-		iconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, 256, true);
-
-		if (iconData is not null)
+        // Requesting sizes larger than 220 may result in a thumbnail with a small folder
+        var iconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, Constants.DefaultIconSizes.Jumbo, true, false);
+        if (iconData is not null)
         {
             Thumbnail = (await iconData.ToBitmapAsync())!;
         }

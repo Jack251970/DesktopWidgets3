@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using System.IO;
 using System.Text.RegularExpressions;
 using Windows.Storage;
-using Microsoft.UI.Dispatching;
 
 namespace Files.App.Views.Properties;
 
@@ -148,8 +148,18 @@ public sealed partial class GeneralPage : BasePropertiesPage
 					await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 						UIFilesystemHelpers.SetHiddenAttributeItem(fileOrFolder, ViewModel.IsHidden, itemMM)
 					);
-				}
-			}
+
+                    if (ViewModel.IsAblumCoverModified)
+                    {
+                        MediaFileHelper.ChangeAlbumCover(fileOrFolder.ItemPath, ViewModel.ModifiedAlbumCover);
+
+                        await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
+                        {
+                            AppInstance?.FilesystemViewModel?.RefreshItems(null);
+                        });
+                    }
+                }
+            }
 			return true;
 		}
 
@@ -167,6 +177,16 @@ public sealed partial class GeneralPage : BasePropertiesPage
 			if (ViewModel.IsUnblockFileSelected)
             {
                 NativeFileOperationsHelper.DeleteFileFromApp($"{item.ItemPath}:Zone.Identifier");
+            }
+
+            if (ViewModel.IsAblumCoverModified)
+            {
+                MediaFileHelper.ChangeAlbumCover(item.ItemPath, ViewModel.ModifiedAlbumCover);
+
+                await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
+                {
+                    AppInstance?.FilesystemViewModel?.RefreshItems(null);
+                });
             }
 
             if (!GetNewName(out var newName))

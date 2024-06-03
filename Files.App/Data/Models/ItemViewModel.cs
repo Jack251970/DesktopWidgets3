@@ -237,7 +237,15 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 		await ApplyFilesAndFoldersChangesAsync();
 	}
 
-	private void UpdateSortAndGroupOptions()
+    public async Task UpdateSortFilesFirstAsync()
+    {
+        OnPropertyChanged(nameof(AreFilesSortedFirst));
+
+        await OrderFilesAndFoldersAsync();
+        await ApplyFilesAndFoldersChangesAsync();
+    }
+
+    private void UpdateSortAndGroupOptions()
 	{
 		OnPropertyChanged(nameof(IsSortedByName));
 		OnPropertyChanged(nameof(IsSortedByDate));
@@ -252,7 +260,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 		OnPropertyChanged(nameof(IsSortedAscending));
 		OnPropertyChanged(nameof(IsSortedDescending));
 		OnPropertyChanged(nameof(AreDirectoriesSortedAlongsideFiles));
-	}
+        OnPropertyChanged(nameof(AreFilesSortedFirst));
+    }
 
 	public bool IsSortedByName
 	{
@@ -422,7 +431,17 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 		}
 	}
 
-	public bool HasNoWatcher { get; private set; }
+    public bool AreFilesSortedFirst
+    {
+        get => folderSettings.SortFilesFirst;
+        set
+        {
+            folderSettings.SortFilesFirst = value;
+            OnPropertyChanged(nameof(AreFilesSortedFirst));
+        }
+    }
+
+    public bool HasNoWatcher { get; private set; }
 
 	public ItemViewModel(IFolderViewViewModel folderViewViewModel, LayoutPreferencesManager folderSettingsViewModel)
 	{
@@ -587,7 +606,8 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 			case nameof(UserSettingsService.FoldersSettingsService.DefaultSortOption):
 			case nameof(UserSettingsService.FoldersSettingsService.DefaultGroupOption):
 			case nameof(UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles):
-			case nameof(UserSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories):
+            case nameof(UserSettingsService.FoldersSettingsService.DefaultSortFilesFirst):
+            case nameof(UserSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories):
 			case nameof(UserSettingsService.FoldersSettingsService.DefaultGroupByDateUnit):
 				await dispatcherQueue.EnqueueOrInvokeAsync(() =>
 				{
@@ -644,8 +664,9 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 			{
 				var key = FilesAndFolders.ItemGroupKeySelector?.Invoke(item);
 				var group = FilesAndFolders.GroupedCollection?.FirstOrDefault(x => x.Model.Key == key);
-				group?.OrderOne(list => SortingHelper.OrderFileList(list, folderSettings.DirectorySortOption, folderSettings.DirectorySortDirection, folderSettings.SortDirectoriesAlongsideFiles), item);
-			}
+                group?.OrderOne(list => SortingHelper.OrderFileList(list, folderSettings.DirectorySortOption, folderSettings.DirectorySortDirection,
+                        folderSettings.SortDirectoriesAlongsideFiles, folderSettings.SortFilesFirst), item);
+            }
 
 			UpdateEmptyTextType();
 			DirectoryInfoUpdated?.Invoke(this, EventArgs.Empty);
@@ -812,10 +833,11 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
                 return;
             }
 
-            filesAndFolders = new ConcurrentCollection<ListedItem>(SortingHelper.OrderFileList(filesAndFolders.ToList(), folderSettings.DirectorySortOption, folderSettings.DirectorySortDirection, folderSettings.SortDirectoriesAlongsideFiles));
-		}
+            filesAndFolders = new ConcurrentCollection<ListedItem>(SortingHelper.OrderFileList(filesAndFolders.ToList(), folderSettings.DirectorySortOption, folderSettings.DirectorySortDirection,
+                    folderSettings.SortDirectoriesAlongsideFiles, folderSettings.SortFilesFirst));
+        }
 
-		if (NativeWinApiHelper.IsHasThreadAccessPropertyPresent && dispatcherQueue.HasThreadAccess)
+        if (NativeWinApiHelper.IsHasThreadAccessPropertyPresent && dispatcherQueue.HasThreadAccess)
         {
             return Task.Run(OrderEntries);
         }
@@ -840,10 +862,11 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
                 return;
             }
 
-            gp.Order(list => SortingHelper.OrderFileList(list, folderSettings.DirectorySortOption, folderSettings.DirectorySortDirection, folderSettings.SortDirectoriesAlongsideFiles));
-		}
+            gp.Order(list => SortingHelper.OrderFileList(list, folderSettings.DirectorySortOption, folderSettings.DirectorySortDirection,
+                    folderSettings.SortDirectoriesAlongsideFiles, folderSettings.SortFilesFirst));
+        }
 
-		if (FilesAndFolders.GroupedCollection is null || FilesAndFolders.GroupedCollection.IsSorted)
+        if (FilesAndFolders.GroupedCollection is null || FilesAndFolders.GroupedCollection.IsSorted)
         {
             return;
         }
@@ -1002,144 +1025,55 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 	// ThumbnailSize is set to 96 so that unless we override it, mode is in turn set to SingleItem
 	private async Task LoadItemThumbnailAsync(ListedItem item, uint thumbnailSize = 96, IStorageItem? matchingStorageItem = null)
 	{
-		var wasIconLoaded = false;
-		if (item.IsLibrary || item.PrimaryItemAttribute == StorageItemTypes.File || item.IsArchive)
-		{
-			if (UserSettingsService.FoldersSettingsService.ShowThumbnails &&
-				!item.IsShortcut && !item.IsHiddenItem && !FtpHelpers.IsFtpPath(item.ItemPath))
-			{
-				var matchingStorageFile = matchingStorageItem?.AsBaseStorageFile() ?? await GetFileFromPathAsync(item.ItemPath);
+        if (item.IsLibrary || item.PrimaryItemAttribute == StorageItemTypes.File || item.IsArchive)
+        {
+            var getIconOnly = UserSettingsService.FoldersSettingsService.ShowThumbnails == false;
+            var (IconData, OverlayData) = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, false, getIconOnly);
+            if (IconData is not null)
+            {
+                await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                {
+                    item.FileImage = (await IconData.ToBitmapAsync())!;
+                    if (!string.IsNullOrEmpty(item.FileExtension) &&
+                        !item.IsShortcut && !item.IsExecutable &&
+                        !ImagePreviewViewModel.ContainsExtension(item.FileExtension.ToLowerInvariant()))
+                    {
+                        DefaultIcons.AddIfNotPresent(item.FileExtension.ToLowerInvariant(), item.FileImage);
+                    }
+                }, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
+            }
 
-				if (matchingStorageFile is not null)
-				{
-					// SingleItem returns image thumbnails in the correct aspect ratio for the grid layouts
-					// ListView is used for the details and columns layout
-					var thumbnailMode = thumbnailSize < 96 ? ThumbnailMode.ListView : ThumbnailMode.SingleItem;
+            if (OverlayData is not null)
+            {
+                await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                {
+                    item.IconOverlay = (await OverlayData.ToBitmapAsync())!;
+                    item.ShieldIcon = await GetShieldIcon();
+                }, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
+            }
+        }
+        else
+        {
+            var getIconOnly = UserSettingsService.FoldersSettingsService.ShowThumbnails == false || thumbnailSize < 80;
+            var (IconData, OverlayData) = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, true, getIconOnly);
+            if (IconData is not null)
+            {
+                await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                {
+                    item.FileImage = (await IconData.ToBitmapAsync())!;
+                }, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
+            }
 
-					using StorageItemThumbnail Thumbnail = await FilesystemTasks.Wrap(() => matchingStorageFile.GetThumbnailAsync(thumbnailMode, thumbnailSize, ThumbnailOptions.ResizeThumbnail).AsTask());
-
-					if (!(Thumbnail is null || Thumbnail.Size == 0 || Thumbnail.OriginalHeight == 0 || Thumbnail.OriginalWidth == 0))
-					{
-						await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
-						{
-                            var img = new BitmapImage
-                            {
-                                DecodePixelType = DecodePixelType.Logical,
-                                DecodePixelWidth = (int)thumbnailSize
-                            };
-                            await img.SetSourceAsync(Thumbnail);
-							item.FileImage = img;
-							if (!string.IsNullOrEmpty(item.FileExtension) &&
-								!item.IsShortcut && !item.IsExecutable &&
-								!ImagePreviewViewModel.ContainsExtension(item.FileExtension.ToLowerInvariant()))
-							{
-								DefaultIcons.AddIfNotPresent(item.FileExtension.ToLowerInvariant(), item.FileImage);
-							}
-						}, Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal);
-						wasIconLoaded = true;
-					}
-
-					var overlayInfo = await FileThumbnailHelper.LoadOverlayAsync(item.ItemPath, thumbnailSize);
-					if (overlayInfo is not null)
-					{
-						await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
-						{
-							item.IconOverlay = (await overlayInfo.ToBitmapAsync())!;
-							item.ShieldIcon = await GetShieldIcon();
-						}, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
-					}
-				}
-			}
-
-			if (!wasIconLoaded)
-			{
-				var (IconData, OverlayData) = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, false);
-				if (IconData is not null)
-				{
-					await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
-					{
-						item.FileImage = (await IconData.ToBitmapAsync())!;
-						if (!string.IsNullOrEmpty(item.FileExtension) &&
-							!item.IsShortcut && !item.IsExecutable &&
-							!ImagePreviewViewModel.ContainsExtension(item.FileExtension.ToLowerInvariant()))
-						{
-							DefaultIcons.AddIfNotPresent(item.FileExtension.ToLowerInvariant(), item.FileImage);
-						}
-					}, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
-				}
-
-				if (OverlayData is not null)
-				{
-					await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
-					{
-						item.IconOverlay = (await OverlayData.ToBitmapAsync())!;
-						item.ShieldIcon = await GetShieldIcon();
-					}, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
-				}
-			}
-		}
-		else
-		{
-			if (!item.IsShortcut && !item.IsHiddenItem && !FtpHelpers.IsFtpPath(item.ItemPath))
-			{
-				var matchingStorageFolder = matchingStorageItem?.AsBaseStorageFolder() ?? await GetFolderFromPathAsync(item.ItemPath);
-				if (matchingStorageFolder is not null)
-				{
-					// SingleItem returns image thumbnails in the correct aspect ratio for the grid layouts
-					// ListView is used for the details and columns layout
-					var thumbnailMode = thumbnailSize < 96 ? ThumbnailMode.ListView : ThumbnailMode.SingleItem;
-
-					// We use ReturnOnlyIfCached because otherwise folders thumbnails have a black background, this has the downside the folder previews don't work
-					using StorageItemThumbnail Thumbnail = await FilesystemTasks.Wrap(() => matchingStorageFolder.GetThumbnailAsync(thumbnailMode, thumbnailSize, ThumbnailOptions.ReturnOnlyIfCached).AsTask());
-					if (!(Thumbnail is null || Thumbnail.Size == 0 || Thumbnail.OriginalHeight == 0 || Thumbnail.OriginalWidth == 0))
-					{
-						await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
-						{
-                            var img = new BitmapImage
-                            {
-                                DecodePixelType = DecodePixelType.Logical,
-                                DecodePixelWidth = (int)thumbnailSize
-                            };
-                            await img.SetSourceAsync(Thumbnail);
-							item.FileImage = img;
-						}, Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal);
-						wasIconLoaded = true;
-					}
-
-					var overlayInfo = await FileThumbnailHelper.LoadOverlayAsync(item.ItemPath, thumbnailSize);
-					if (overlayInfo is not null)
-					{
-						await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
-						{
-							item.IconOverlay = (await overlayInfo.ToBitmapAsync())!;
-							item.ShieldIcon = await GetShieldIcon();
-						}, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
-					}
-				}
-			}
-
-			if (!wasIconLoaded)
-			{
-				var (IconData, OverlayData) = await FileThumbnailHelper.LoadIconAndOverlayAsync(item.ItemPath, thumbnailSize, true);
-				if (IconData is not null)
-				{
-					await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
-					{
-						item.FileImage = (await IconData.ToBitmapAsync())!;
-					}, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
-				}
-
-				if (OverlayData is not null)
-				{
-					await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
-					{
-						item.IconOverlay = (await OverlayData.ToBitmapAsync())!;
-						item.ShieldIcon = await GetShieldIcon();
-					}, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
-				}
-			}
-		}
-	}
+            if (OverlayData is not null)
+            {
+                await dispatcherQueue.EnqueueOrInvokeAsync(async () =>
+                {
+                    item.IconOverlay = (await OverlayData.ToBitmapAsync())!;
+                    item.ShieldIcon = await GetShieldIcon();
+                }, Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
+            }
+        }
+    }
 
 	private static void SetFileTag(ListedItem item)
 	{
@@ -1406,9 +1340,9 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 		ImageSource? groupImage = null;
 		if (item.PrimaryItemAttribute != StorageItemTypes.Folder || item.IsArchive)
 		{
-			var headerIconInfo = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(item.ItemPath, 64u, false);
+            var headerIconInfo = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(item.ItemPath, Constants.DefaultIconSizes.ExtraLarge, false, true);
 
-			if (headerIconInfo is not null && !item.IsShortcut)
+            if (headerIconInfo is not null && !item.IsShortcut)
             {
                 groupImage = await dispatcherQueue.EnqueueOrInvokeAsync(() => headerIconInfo.ToBitmapAsync(), Microsoft.UI.Dispatching.DispatcherQueuePriority.Low);
             }
@@ -1831,9 +1765,18 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 				});
 
 				rootFolder ??= await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(path));
-				if (rootFolder?.DisplayName is not null)
+                if (rootFolder is not null)
                 {
-                    currentFolder.ItemNameRaw = rootFolder.DisplayName;
+                    if (rootFolder.DisplayName is not null)
+                    {
+                        currentFolder.ItemNameRaw = rootFolder.DisplayName;
+                    }
+
+                    if (!string.Equals(path, Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var syncStatus = await CheckCloudDriveSyncStatusAsync(rootFolder);
+                        currentFolder.SyncStatusUI = CloudDriveSyncStatusUI.FromCloudDriveSyncStatus(syncStatus);
+                    }
                 }
 
                 return 0;
@@ -1891,9 +1834,9 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 			.FirstOrDefault()?.ItemPath;
 	}
 
-	private static async Task<CloudDriveSyncStatus> CheckCloudDriveSyncStatusAsync(IStorageItem item)
-	{
-		int? syncStatus = null;
+    public async Task<CloudDriveSyncStatus> CheckCloudDriveSyncStatusAsync(IStorageItem item)
+    {
+        int? syncStatus = null;
 		if (item is BaseStorageFile file && file.Properties is not null)
 		{
 			var extraProperties = await FilesystemTasks.Wrap(() => file.Properties.RetrievePropertiesAsync(new string[] { "System.FilePlaceholderStatus" }).AsTask());
@@ -2487,7 +2430,7 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
         if (storageItem is not null)
 		{
-			CloudDriveSyncStatus? syncStatus = hasSyncStatus ? await global::Files.App.Data.Models.ItemViewModel.CheckCloudDriveSyncStatusAsync(storageItem) : null;
+			CloudDriveSyncStatus? syncStatus = hasSyncStatus ? await CheckCloudDriveSyncStatusAsync(storageItem) : null;
 			long? size = null;
 			DateTimeOffset created = default, modified = default;
 

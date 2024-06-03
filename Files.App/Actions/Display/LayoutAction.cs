@@ -25,6 +25,28 @@ internal class LayoutDetailsAction : ToggleLayoutAction
     }
 }
 
+internal class LayoutListAction : ToggleLayoutAction
+{
+    protected override LayoutTypes LayoutType
+        => LayoutTypes.List;
+
+    public override string Label
+        => "List".GetLocalizedResource();
+
+    public override string Description
+        => "LayoutListDescription".GetLocalizedResource();
+
+    public override RichGlyph Glyph
+        => new(opacityStyle: "ColorIconListLayout");
+
+    public override HotKey HotKey
+        => new(Keys.Number2, KeyModifiers.CtrlShift);
+
+    public LayoutListAction(IDisplayPageContext context) : base(context)
+    {
+    }
+}
+
 internal class LayoutTilesAction : ToggleLayoutAction
 {
 	protected override LayoutTypes LayoutType
@@ -40,7 +62,7 @@ internal class LayoutTilesAction : ToggleLayoutAction
 		=> new(opacityStyle: "ColorIconTilesLayout");
 
 	public override HotKey HotKey
-		=> new(Keys.Number2, KeyModifiers.CtrlShift);
+		=> new(Keys.Number3, KeyModifiers.CtrlShift);
 
     public LayoutTilesAction(IDisplayPageContext context) : base(context)
     {
@@ -62,7 +84,7 @@ internal class LayoutGridSmallAction : ToggleLayoutAction
 		=> new(opacityStyle: "ColorIconGridSmallLayout");
 
 	public override HotKey HotKey
-		=> new(Keys.Number3, KeyModifiers.CtrlShift);
+		=> new(Keys.Number4, KeyModifiers.CtrlShift);
 
     public LayoutGridSmallAction(IDisplayPageContext context) : base(context)
     {
@@ -84,7 +106,7 @@ internal class LayoutGridMediumAction : ToggleLayoutAction
 		=> new(opacityStyle: "ColorIconGridMediumLayout");
 
 	public override HotKey HotKey
-		=> new(Keys.Number4, KeyModifiers.CtrlShift);
+		=> new(Keys.Number5, KeyModifiers.CtrlShift);
 
     public LayoutGridMediumAction(IDisplayPageContext context) : base(context)
     {
@@ -106,7 +128,7 @@ internal class LayoutGridLargeAction : ToggleLayoutAction
 		=> new(opacityStyle: "ColorIconGridLargeLayout");
 
 	public override HotKey HotKey
-		=> new(Keys.Number5, KeyModifiers.CtrlShift);
+		=> new(Keys.Number6, KeyModifiers.CtrlShift);
 
     public LayoutGridLargeAction(IDisplayPageContext context) : base(context)
     {
@@ -128,7 +150,7 @@ internal class LayoutColumnsAction : ToggleLayoutAction
 		=> new(opacityStyle: "ColorIconColumnsLayout");
 
 	public override HotKey HotKey
-		=> new(Keys.Number6, KeyModifiers.CtrlShift);
+		=> new(Keys.Number7, KeyModifiers.CtrlShift);
 
     public LayoutColumnsAction(IDisplayPageContext context) : base(context)
     {
@@ -153,7 +175,7 @@ internal class LayoutAdaptiveAction : ToggleLayoutAction
 		=> new("\uF576");
 
 	public override HotKey HotKey
-		=> new(Keys.Number7, KeyModifiers.CtrlShift);
+		=> new(Keys.Number8, KeyModifiers.CtrlShift);
 
     public LayoutAdaptiveAction(IDisplayPageContext context) : base(context)
     {

@@ -79,12 +79,8 @@ public class RecentItem : WidgetCardItem, IEquatable<RecentItem>
 	public async Task LoadRecentItemIconAsync()
 	{
 		var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(RecentPath, 96u, ThumbnailMode.SingleItem, ThumbnailOptions.ResizeThumbnail);
-		if (iconData is null)
-		{
-			EmptyImgVis = true;
-		}
-		else
-		{
+        if (iconData is not null)
+        {
 			EmptyImgVis = false;
 			FileImg = (await iconData.ToBitmapAsync())!;
 		}

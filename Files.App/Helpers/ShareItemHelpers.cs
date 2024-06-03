@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Microsoft.UI.Xaml.Controls;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
+using Windows.Foundation.Metadata;
 using Windows.Storage;
 
 namespace Files.App.Helpers;
@@ -14,7 +16,7 @@ public static class ShareItemHelpers
 			(!item.IsShortcut || item.IsLinkItem) &&
 			(item.PrimaryItemAttribute != StorageItemTypes.Folder || item.IsArchive);
 
-	public static void ShareItems(IFolderViewViewModel folderViewViewModel, IEnumerable<ListedItem> itemsToShare)
+    public static async Task ShareItemsAsync(IFolderViewViewModel folderViewViewModel, IEnumerable<ListedItem> itemsToShare)
 	{
 		var interop = DataTransferManager.As<IDataTransferManagerInterop>();
 		var result = interop.GetForWindow(folderViewViewModel.WindowHandle, InteropHelpers.DataTransferManagerInteropIID);
@@ -22,7 +24,26 @@ public static class ShareItemHelpers
 		var manager = WinRT.MarshalInterface<DataTransferManager>.FromAbi(result);
 		manager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(Manager_DataRequested);
 
-		interop.ShowShareUIForWindow(folderViewViewModel.WindowHandle);
+        try
+        {
+            interop.ShowShareUIForWindow(folderViewViewModel.WindowHandle);
+        }
+        catch (Exception ex)
+        {
+            var errorDialog = new ContentDialog()
+            {
+                Title = "FaildToShareItems".GetLocalizedResource(),
+                Content = ex.Message,
+                PrimaryButtonText = "OK".GetLocalizedResource(),
+            };
+
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            {
+                errorDialog.XamlRoot = folderViewViewModel.XamlRoot;
+            }
+
+            await errorDialog.TryShowAsync(folderViewViewModel);
+        }
 
 		async void Manager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
 		{

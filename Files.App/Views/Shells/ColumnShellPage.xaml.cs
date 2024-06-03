@@ -89,7 +89,6 @@ public sealed partial class ColumnShellPage : BaseShellPage
 				IsSearchResultPage = ColumnParams.IsSearchResultPage,
 				SearchQuery = ColumnParams.SearchQuery,
 				NavPathParam = ColumnParams.NavPathParam,
-				SearchUnindexedItems = ColumnParams.SearchUnindexedItems,
 				SearchPathParam = ColumnParams.SearchPathParam,
 				AssociatedTabInstance = this,
 				SelectItems = ColumnParams.SelectItems
@@ -211,10 +210,10 @@ public sealed partial class ColumnShellPage : BaseShellPage
 
 	public override void NavigateToPath(string? navigationPath, Type? sourcePageType, NavigationArguments? navArgs = null)
 	{
-		this.FindAscendant<ColumnsLayoutPage>()!.SetSelectedPathOrNavigate(navigationPath!, sourcePageType!, navArgs!);
-	}
+        this.FindAscendant<ColumnsLayoutPage>()?.SetSelectedPathOrNavigate(navigationPath!, sourcePageType!, navArgs!);
+    }
 
-	public override void NavigateHome()
+    public override void NavigateHome()
 	{
 		this.FindAscendant<ColumnsLayoutPage>()?.ParentShellPageInstance?.NavigateHome();
 	}
@@ -227,11 +226,10 @@ public sealed partial class ColumnShellPage : BaseShellPage
 		ItemDisplayFrame.BackStack.Remove(ItemDisplayFrame.BackStack.Last());
 	}
 
-	public new void SubmitSearch(string query, bool searchUnindexedItems)
+	public new void SubmitSearch(string query)
 	{
 		FilesystemViewModel.CancelSearch();
 		InstanceViewModel.CurrentSearchQuery = query;
-		InstanceViewModel.SearchedUnindexedItems = searchUnindexedItems;
 		ItemDisplayFrame.Navigate(typeof(ColumnLayoutPage), new NavigationArguments()
 		{
             FolderViewViewModel = FolderViewViewModel,
@@ -239,7 +237,6 @@ public sealed partial class ColumnShellPage : BaseShellPage
 			IsSearchResultPage = true,
 			SearchPathParam = FilesystemViewModel.WorkingDirectory,
 			SearchQuery = query,
-			SearchUnindexedItems = searchUnindexedItems,
 		});
 
 		//this.FindAscendant<ColumnViewBrowser>().SetSelectedPathOrNavigate(null, typeof(ColumnViewBase), navArgs);

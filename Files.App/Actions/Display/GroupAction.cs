@@ -285,6 +285,25 @@ internal class GroupByDateModifiedMonthAction : GroupByDateAction
     }
 }
 
+internal class GroupByDateModifiedDayAction : GroupByDateAction
+{
+    protected override GroupOption GroupOption
+        => GroupOption.DateModified;
+
+    protected override GroupByDateUnit GroupByDateUnit
+        => GroupByDateUnit.Day;
+
+    public override string Label
+        => "Day".GetLocalizedResource();
+
+    public override string Description
+        => "GroupByDateModifiedDayDescription".GetLocalizedResource();
+
+    public GroupByDateModifiedDayAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
 internal class GroupByDateCreatedYearAction : GroupByDateAction
 {
     protected override GroupOption GroupOption
@@ -319,6 +338,25 @@ internal class GroupByDateCreatedMonthAction : GroupByDateAction
 		=> "GroupByDateCreatedMonthDescription".GetLocalizedResource();
 
     public GroupByDateCreatedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateCreatedDayAction : GroupByDateAction
+{
+    protected override GroupOption GroupOption
+        => GroupOption.DateCreated;
+
+    protected override GroupByDateUnit GroupByDateUnit
+        => GroupByDateUnit.Day;
+
+    public override string Label
+        => "Day".GetLocalizedResource();
+
+    public override string Description
+        => "GroupByDateCreatedDayDescription".GetLocalizedResource();
+
+    public GroupByDateCreatedDayAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
     {
     }
 }
@@ -363,6 +401,28 @@ internal class GroupByDateDeletedMonthAction : GroupByDateAction
 		=> pageType is ContentPageTypes.RecycleBin;
 
     public GroupByDateDeletedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
+    {
+    }
+}
+
+internal class GroupByDateDeletedDayAction : GroupByDateAction
+{
+    protected override GroupOption GroupOption
+        => GroupOption.DateDeleted;
+
+    protected override GroupByDateUnit GroupByDateUnit
+        => GroupByDateUnit.Day;
+
+    public override string Label
+        => "Day".GetLocalizedResource();
+
+    public override string Description
+        => "GroupByDateDeletedDayDescription".GetLocalizedResource();
+
+    protected override bool GetIsExecutable(ContentPageTypes pageType)
+        => pageType is ContentPageTypes.RecycleBin;
+
+    public GroupByDateDeletedDayAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
     {
     }
 }
@@ -643,8 +703,13 @@ internal class ToggleGroupByDateUnitAction : IAction
 
 	public Task ExecuteAsync()
 	{
-		context.GroupByDateUnit = context.GroupByDateUnit is GroupByDateUnit.Month ? GroupByDateUnit.Year : GroupByDateUnit.Month;
+        context.GroupByDateUnit = context.GroupByDateUnit switch
+        {
+            GroupByDateUnit.Year => GroupByDateUnit.Month,
+            GroupByDateUnit.Month => GroupByDateUnit.Day,
+            _ => GroupByDateUnit.Year
+        };
 
-		return Task.CompletedTask;
+        return Task.CompletedTask;
 	}
 }

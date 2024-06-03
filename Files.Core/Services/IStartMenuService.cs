@@ -7,29 +7,29 @@ namespace Files.Core.Services;
 /// </summary>
 public interface IStartMenuService
 {
-	// FILESTODO(s)
-	[Obsolete("Use IsPinnedAsync instead. This method is used for a workaround in ListedItem class to avoid major refactoring.")]
-	bool IsPinned(string folderPath);
+    // FILESTODO(s)
+    [Obsolete("Use IsPinnedAsync instead. This method is used for a workaround in ListedItem class to avoid major refactoring.")]
+    bool IsPinned(string itemPath);
 
-	/// <summary>
-	/// Checks if the provided <paramref name="folder"/> is pinned to the Start Menu.
-	/// </summary>
-	/// <param name="folder">The folder to check for.</param>
-	/// <returns>A <see cref="Task"/> that represents the asynchronous operation. If the folder is pinned, returns true; otherwise false.</returns>
-	Task<bool> IsPinnedAsync(IFolder folder);
+    /// <summary>
+    /// Checks if the provided <paramref name="storable"/> is pinned to the Start Menu.
+    /// </summary>
+    /// <param name="storable">The <see cref="IStorable"/> object to check for.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation. If the folder is pinned, returns true; otherwise false.</returns>
+    Task<bool> IsPinnedAsync(IStorable storable);
 
-	/// <summary>
-	/// Adds the provided <paramref name="folder"/> to the pinned items list in the Start Menu.
-	/// </summary>
-	/// <param name="folder">The folder to pin.</param>
-	/// <param name="displayName">The optional name to use when pinning an item.</param>
-	/// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-	Task PinAsync(IFolderViewViewModel folderViewViewModel, IFolder folder, string? displayName = null);
+    /// <summary>
+    /// Adds the provided <paramref name="storable"/> to the pinned items list in the Start Menu.
+    /// </summary>
+    /// <param name="storable">The <see cref="IStorable"/> object to pin.</param>
+    /// <param name="displayName">The optional name to use when pinning an item.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+    Task PinAsync(IFolderViewViewModel folderViewViewModel, IStorable storable, string? displayName = null);
 
-	/// <summary>
-	/// Removes the provided <paramref name="folder"/> from the pinned items list in the Start Menu.
-	/// </summary>
-	/// <param name="folder">The folder to unpin.</param>
-	/// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-	Task UnpinAsync(IFolder folder);
+    /// <summary>
+    /// Removes the provided <paramref name="storable"/> from the pinned items list in the Start Menu.
+    /// </summary>
+    /// <param name="storable">The <see cref="IStorable"/> object to unpin.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+    Task UnpinAsync(IStorable storable);
 }

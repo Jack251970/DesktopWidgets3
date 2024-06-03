@@ -52,15 +52,15 @@ internal class DriveProperties : BaseProperties
 			{
 				ViewModel.IconData = await FileThumbnailHelper.LoadIconFromStorageItemAsync(diskRoot, 80, ThumbnailMode.SingleItem, ThumbnailOptions.ResizeThumbnail);
 			}
-			else
-			{
-				ViewModel.IconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Drive.Path, 80);
-			}
+            else
+            {
+                ViewModel.IconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Drive.Path, 80, false, false);
+            }
 
-			ViewModel.IconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Drive.DeviceID, 80); // For network shortcuts
-		}
+            ViewModel.IconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Drive.DeviceID, 80, false, false); // For network shortcuts
+        }
 
-		if (diskRoot is null || diskRoot.Properties is null)
+        if (diskRoot is null || diskRoot.Properties is null)
 		{
 			ViewModel.LastSeparatorVisibility = false;
 

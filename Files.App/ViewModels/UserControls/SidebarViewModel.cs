@@ -77,10 +77,10 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 	public delegate void SelectedTagChangedEventHandler(object sender, SelectedTagChangedEventArgs e);
 
 	public static event SelectedTagChangedEventHandler? SelectedTagChanged;
+    public static event EventHandler<INavigationControlItem?>? RightClickedItemChanged;
 
-	private readonly SectionType[] SectionOrder =
-		new SectionType[]
-		{
+    private readonly SectionType[] SectionOrder =
+		[
 			SectionType.Home,
 			SectionType.Favorites,
 			SectionType.Library,
@@ -89,7 +89,7 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 			SectionType.Network,
 			SectionType.WSL,
 			SectionType.FileTag
-		};
+		];
 
 	public bool IsSidebarCompactSize
 		=> SidebarDisplayMode == SidebarDisplayMode.Compact || SidebarDisplayMode == SidebarDisplayMode.Minimal;
@@ -753,22 +753,30 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 		}
 
 		rightClickedItem = item;
-		var itemContextMenuFlyout = new CommandBarFlyout { Placement = FlyoutPlacementMode.Full };
-		itemContextMenuFlyout.Opening += (sender, e) => FolderViewViewModel.LastOpenedFlyout = sender as CommandBarFlyout;
+        RightClickedItemChanged?.Invoke(this, item);
 
-		var menuItems = GetLocationItemMenuItems(item, itemContextMenuFlyout);
+        var itemContextMenuFlyout = new CommandBarFlyout()
+        {
+            Placement = FlyoutPlacementMode.Full
+        };
+
+        itemContextMenuFlyout.Opening += (sender, e) => FolderViewViewModel.LastOpenedFlyout = sender as CommandBarFlyout;
+        itemContextMenuFlyout.Closed += (sender, e) => RightClickedItemChanged?.Invoke(this, null);
+
+        var menuItems = GetLocationItemMenuItems(item, itemContextMenuFlyout);
 		var (_, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(menuItems);
 
-		secondaryElements.OfType<FrameworkElement>()
-							.ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth);
+		secondaryElements
+            .OfType<FrameworkElement>()
+            .ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth);
 
-		secondaryElements.ForEach(i => itemContextMenuFlyout.SecondaryCommands.Add(i));
+		secondaryElements.ForEach(itemContextMenuFlyout.SecondaryCommands.Add);
 		if (item.MenuOptions.ShowShellItems)
         {
             itemContextMenuFlyout.Opened += ItemContextMenuFlyout_Opened;
         }
 
-        itemContextMenuFlyout.ShowAt(sidebarItem, new FlyoutShowOptions { Position = args.Position });
+        itemContextMenuFlyout.ShowAt(sidebarItem, new() { Position = args.Position });
 	}
 
 	private async void ItemContextMenuFlyout_Opened(object? sender, object e)
@@ -967,7 +975,7 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 	private void OpenProperties(CommandBarFlyout? menu)
 	{
 		EventHandler<object> flyoutClosed = null!;
-		flyoutClosed = (s, e) =>
+		flyoutClosed = async (s, e) =>
 		{
 			menu!.Closed -= flyoutClosed;
 			if (rightClickedItem is DriveItem)
@@ -988,7 +996,17 @@ public class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 					ItemType = "Folder".GetLocalizedResource(),
 				};
 
-				FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, listedItem, PaneHolder.ActivePane);
+                if (!string.Equals(locationItem.Path, Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    BaseStorageFolder matchingStorageFolder = await PaneHolder.ActivePane.FilesystemViewModel.GetFolderFromPathAsync(locationItem.Path);
+                    if (matchingStorageFolder is not null)
+                    {
+                        var syncStatus = await PaneHolder.ActivePane.FilesystemViewModel.CheckCloudDriveSyncStatusAsync(matchingStorageFolder);
+                        listedItem.SyncStatusUI = CloudDriveSyncStatusUI.FromCloudDriveSyncStatus(syncStatus);
+                    }
+                }
+
+                FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, listedItem, PaneHolder.ActivePane);
 			}
 		};
 		menu!.Closed += flyoutClosed;

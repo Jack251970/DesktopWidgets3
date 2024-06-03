@@ -334,7 +334,7 @@ public static class NavigationHelpers
 	{
         // CHANGE: Notify creating new widget when launching new window.
         await folderViewViewModel.MainWindow.ShowMessageDialogAsync("NavigationToolbarNewWindow/Content".GetLocalized(), "NavigationToolbarNewWindow/Label".GetLocalizedResource());
-        /*var filesUWPUri = new Uri("files-uwp:");
+        /*var filesUWPUri = new Uri("files-uwp:?window=");
 		return Launcher.LaunchUriAsync(filesUWPUri).AsTask();*/
     }
 

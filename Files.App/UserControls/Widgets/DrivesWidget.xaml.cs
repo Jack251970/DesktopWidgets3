@@ -39,20 +39,20 @@ public class DriveCardItem : WidgetCardItem, IWidgetCardItem<DriveItem>, ICompar
 		// Try load thumbnail using ListView mode
 		if (thumbnailData is null || thumbnailData.Length == 0)
         {
-            thumbnailData = await FileThumbnailHelper.LoadIconFromPathAsync(Item.Path, Convert.ToUInt32(Constants.Widgets.WidgetIconSize), Windows.Storage.FileProperties.ThumbnailMode.SingleItem, Windows.Storage.FileProperties.ThumbnailOptions.ResizeThumbnail);
+            thumbnailData = await FileThumbnailHelper.LoadIconFromPathAsync(Item.Path, Convert.ToUInt32(Constants.DefaultIconSizes.Jumbo), Windows.Storage.FileProperties.ThumbnailMode.SingleItem, Windows.Storage.FileProperties.ThumbnailOptions.ResizeThumbnail);
         }
 
         // Thumbnail is still null, use DriveItem icon (loaded using SingleItem mode)
         if (thumbnailData is null || thumbnailData.Length == 0)
-		{
-			await Item.LoadThumbnailAsync();
+        {
+            await Item.LoadThumbnailAsync();
 			thumbnailData = Item.IconData;
 		}
 
 		// Thumbnail data is valid, set the item icon
 		if (thumbnailData is not null && thumbnailData.Length > 0)
         {
-            Thumbnail = (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => thumbnailData.ToBitmapAsync(Constants.Widgets.WidgetIconSize)))!;
+            Thumbnail = (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => thumbnailData.ToBitmapAsync(Constants.DefaultIconSizes.Jumbo)))!;
         }
     }
 
@@ -62,8 +62,9 @@ public class DriveCardItem : WidgetCardItem, IWidgetCardItem<DriveItem>, ICompar
 public sealed partial class DrivesWidget : HomePageWidget, IWidgetItem, INotifyPropertyChanged
 {
     public IUserSettingsService userSettingsService;
+    private IHomePageContext HomePageContext { get; } = DependencyExtensions.GetService<IHomePageContext>();
 
-	private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+    private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
 
 	private readonly NetworkDrivesViewModel networkDrivesViewModel = DependencyExtensions.GetService<NetworkDrivesViewModel>();
 
@@ -184,7 +185,7 @@ public sealed partial class DrivesWidget : HomePageWidget, IWidgetItem, INotifyP
 				{
 					OpacityIconStyle = "ColorIconOpenInNewTab",
 				},
-				Command = OpenInNewTabCommand,
+				Command = OpenInNewTabCommand!,
 				CommandParameter = item,
 				ShowItem = userSettingsService.GeneralSettingsService.ShowOpenInNewTab
 			},
@@ -195,7 +196,7 @@ public sealed partial class DrivesWidget : HomePageWidget, IWidgetItem, INotifyP
 				{
 					OpacityIconStyle = "ColorIconOpenInNewWindow",
 				},
-				Command = OpenInNewWindowCommand,
+				Command = OpenInNewWindowCommand!,
 				CommandParameter = item,
 				ShowItem = userSettingsService.GeneralSettingsService.ShowOpenInNewWindow
 			},
@@ -213,7 +214,7 @@ public sealed partial class DrivesWidget : HomePageWidget, IWidgetItem, INotifyP
 				{
 					OpacityIconStyle = "ColorIconPinToFavorites",
 				},
-				Command = PinToFavoritesCommand,
+				Command = PinToFavoritesCommand!,
 				CommandParameter = item,
 				ShowItem = !isPinned
 			},
@@ -224,7 +225,7 @@ public sealed partial class DrivesWidget : HomePageWidget, IWidgetItem, INotifyP
 				{
 					OpacityIconStyle = "ColorIconUnpinFromFavorites",
 				},
-				Command = UnpinFromFavoritesCommand,
+				Command = UnpinFromFavoritesCommand!,
 				CommandParameter = item,
 				ShowItem = isPinned
 			},
@@ -249,7 +250,7 @@ public sealed partial class DrivesWidget : HomePageWidget, IWidgetItem, INotifyP
 				{
 					OpacityIconStyle = "ColorIconProperties",
 				},
-				Command = OpenPropertiesCommand,
+				Command = OpenPropertiesCommand!,
 				CommandParameter = item
 			},
 			new()
@@ -304,15 +305,21 @@ public sealed partial class DrivesWidget : HomePageWidget, IWidgetItem, INotifyP
 
 	private void OpenProperties(DriveCardItem? item)
 	{
-		EventHandler<object> flyoutClosed = null!;
-		flyoutClosed = async (s, e) =>
-		{
-			ItemContextMenuFlyout.Closed -= flyoutClosed;
-			FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, item!.Item, associatedInstance);
-            await Task.CompletedTask;
-		};
-		ItemContextMenuFlyout.Closed += flyoutClosed;
-	}
+        if (!HomePageContext.IsAnyItemRightClicked)
+        {
+            return;
+        }
+
+        var flyout = HomePageContext.ItemContextFlyoutMenu;
+        EventHandler<object> flyoutClosed = null!;
+        flyoutClosed = (s, e) =>
+        {
+            flyout!.Closed -= flyoutClosed;
+            FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, item!.Item, associatedInstance);
+        };
+
+        flyout!.Closed += flyoutClosed;
+    }
 
 	private async void Button_Click(object sender, RoutedEventArgs e)
 	{

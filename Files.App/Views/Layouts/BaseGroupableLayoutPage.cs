@@ -309,7 +309,9 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 	protected async void RenameTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
 	{
 		var textBox = (TextBox)sender;
-		switch (e.Key)
+        var isShiftPressed = (InteropHelpers.GetKeyState((int)VirtualKey.Shift) & KEY_DOWN_MASK) != 0;
+
+        switch (e.Key)
 		{
 			case VirtualKey.Escape:
 				textBox.LostFocus -= RenameTextBox_LostFocus;
@@ -323,12 +325,18 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 				e.Handled = true;
 				break;
 			case VirtualKey.Up:
-				textBox.SelectionStart = 0;
-				e.Handled = true;
+                if (!isShiftPressed)
+                {
+                    textBox.SelectionStart = 0;
+                }
+                e.Handled = true;
 				break;
 			case VirtualKey.Down:
-				textBox.SelectionStart = textBox.Text.Length;
-				e.Handled = true;
+                if (!isShiftPressed)
+                {
+                    textBox.SelectionStart = textBox.Text.Length;
+                }
+                e.Handled = true;
 				break;
 			case VirtualKey.Left:
 				e.Handled = textBox.SelectionStart == 0;
@@ -339,7 +347,6 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 			case VirtualKey.Tab:
 				textBox.LostFocus -= RenameTextBox_LostFocus;
 
-				var isShiftPressed = (InteropHelpers.GetKeyState((int)VirtualKey.Shift) & KEY_DOWN_MASK) != 0;
 				NextRenameIndex = isShiftPressed ? -1 : 1;
 
 				if (textBox.Text != OldItemName)

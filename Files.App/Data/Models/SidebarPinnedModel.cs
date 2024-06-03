@@ -69,7 +69,7 @@ public class SidebarPinnedModel
 		}
 	}
 
-	public static async Task<LocationItem> CreateLocationItemFromPathAsync(string path)
+	public async Task<LocationItem> CreateLocationItemFromPathAsync(string path)
 	{
 		var item = await FilesystemTasks.Wrap(() => DriveHelpers.GetRootFromPathAsync(path));
 		var res = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(path, item));
@@ -106,7 +106,7 @@ public class SidebarPinnedModel
 		locationItem.IsDefaultLocation = false;
 		locationItem.Text = res.Result?.DisplayName ?? Path.GetFileName(path.TrimEnd('\\'));
 
-        if (res || (FilesystemResult)FolderHelpers.CheckFolderAccessWithWin32(path))
+        if (res)
         {
             locationItem.IsInvalid = false;
             if (res && res.Result is not null)
@@ -122,7 +122,7 @@ public class SidebarPinnedModel
 
             if (locationItem.IconData is null)
             {
-                locationItem.IconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(path, 48u);
+                locationItem.IconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(path, 48u, false, true);
 
                 if (locationItem.IconData is not null)
                 {

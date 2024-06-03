@@ -25,9 +25,9 @@ public class MainPageViewModel : ObservableObject
 
     // Properties
 
-    public static Dictionary<IFolderViewViewModel, ObservableCollection<TabBarItem>> AppInstances { get; private set; } = new();
+    public static Dictionary<IFolderViewViewModel, ObservableCollection<TabBarItem>> AppInstances { get; private set; } = [];
 
-    public List<ITabBar> MultitaskingControls { get; } = new();
+    public List<ITabBar> MultitaskingControls { get; } = [];
 
 	public ITabBar? MultitaskingControl { get; set; }
 
@@ -38,18 +38,37 @@ public class MainPageViewModel : ObservableObject
 		set => SetProperty(ref selectedTabItem, value);
 	}
 
-	// Commands
+    private bool shouldViewControlBeDisplayed;
+    public bool ShouldViewControlBeDisplayed
+    {
+        get => shouldViewControlBeDisplayed;
+        set => SetProperty(ref shouldViewControlBeDisplayed, value);
+    }
 
-	public ICommand NavigateToNumberedTabKeyboardAcceleratorCommand { get; }
-	public ICommand OpenNewWindowAcceleratorCommand { get; }
+    private bool shouldPreviewPaneBeActive;
+    public bool ShouldPreviewPaneBeActive
+    {
+        get => shouldPreviewPaneBeActive;
+        set => SetProperty(ref shouldPreviewPaneBeActive, value);
+    }
+
+    private bool shouldPreviewPaneBeDisplayed;
+    public bool ShouldPreviewPaneBeDisplayed
+    {
+        get => shouldPreviewPaneBeDisplayed;
+        set => SetProperty(ref shouldPreviewPaneBeDisplayed, value);
+    }
+
+    // Commands
+
+    public ICommand NavigateToNumberedTabKeyboardAcceleratorCommand { get; }
 
 	// Constructor
 
 	public MainPageViewModel()
 	{
 		NavigateToNumberedTabKeyboardAcceleratorCommand = new RelayCommand<KeyboardAcceleratorInvokedEventArgs>(ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand);
-		OpenNewWindowAcceleratorCommand = new AsyncRelayCommand<KeyboardAcceleratorInvokedEventArgs>(ExecuteOpenNewWindowAcceleratorCommand);
-	}
+    }
 
 	// Methods
 
@@ -227,12 +246,5 @@ public class MainPageViewModel : ObservableObject
         }
 
         e.Handled = true;
-	}
-
-	private async Task ExecuteOpenNewWindowAcceleratorCommand(KeyboardAcceleratorInvokedEventArgs? e)
-	{
-		await Launcher.LaunchUriAsync(new Uri("files-uwp:"));
-
-		e!.Handled = true;
 	}
 }

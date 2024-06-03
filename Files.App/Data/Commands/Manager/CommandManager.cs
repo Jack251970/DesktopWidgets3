@@ -46,7 +46,6 @@ internal class CommandManager : ICommandManager
 	public IRichCommand ExitCompactOverlay => commands[CommandCodes.ExitCompactOverlay];
 	public IRichCommand ToggleCompactOverlay => commands[CommandCodes.ToggleCompactOverlay];
     public IRichCommand Search => commands[CommandCodes.Search];
-	public IRichCommand SearchUnindexedItems => commands[CommandCodes.SearchUnindexedItems];
 	public IRichCommand EditPath => commands[CommandCodes.EditPath];
 	public IRichCommand Redo => commands[CommandCodes.Redo];
 	public IRichCommand Undo => commands[CommandCodes.Undo];
@@ -114,7 +113,8 @@ internal class CommandManager : ICommandManager
 	public IRichCommand LayoutDecreaseSize => commands[CommandCodes.LayoutDecreaseSize];
 	public IRichCommand LayoutIncreaseSize => commands[CommandCodes.LayoutIncreaseSize];
 	public IRichCommand LayoutDetails => commands[CommandCodes.LayoutDetails];
-	public IRichCommand LayoutTiles => commands[CommandCodes.LayoutTiles];
+    public IRichCommand LayoutList => commands[CommandCodes.LayoutList];
+    public IRichCommand LayoutTiles => commands[CommandCodes.LayoutTiles];
 	public IRichCommand LayoutGridSmall => commands[CommandCodes.LayoutGridSmall];
 	public IRichCommand LayoutGridMedium => commands[CommandCodes.LayoutGridMedium];
 	public IRichCommand LayoutGridLarge => commands[CommandCodes.LayoutGridLarge];
@@ -133,8 +133,10 @@ internal class CommandManager : ICommandManager
 	public IRichCommand SortAscending => commands[CommandCodes.SortAscending];
 	public IRichCommand SortDescending => commands[CommandCodes.SortDescending];
 	public IRichCommand ToggleSortDirection => commands[CommandCodes.ToggleSortDirection];
-	public IRichCommand ToggleSortDirectoriesAlongsideFiles => commands[CommandCodes.ToggleSortDirectoriesAlongsideFiles];
-	public IRichCommand GroupByNone => commands[CommandCodes.GroupByNone];
+    public IRichCommand SortFoldersFirst => commands[CommandCodes.SortFoldersFirst];
+    public IRichCommand SortFilesFirst => commands[CommandCodes.SortFilesFirst];
+    public IRichCommand SortFilesAndFoldersTogether => commands[CommandCodes.SortFilesAndFoldersTogether];
+    public IRichCommand GroupByNone => commands[CommandCodes.GroupByNone];
 	public IRichCommand GroupByName => commands[CommandCodes.GroupByName];
 	public IRichCommand GroupByDateModified => commands[CommandCodes.GroupByDateModified];
 	public IRichCommand GroupByDateCreated => commands[CommandCodes.GroupByDateCreated];
@@ -145,13 +147,16 @@ internal class CommandManager : ICommandManager
 	public IRichCommand GroupByOriginalFolder => commands[CommandCodes.GroupByOriginalFolder];
 	public IRichCommand GroupByDateDeleted => commands[CommandCodes.GroupByDateDeleted];
 	public IRichCommand GroupByFolderPath => commands[CommandCodes.GroupByFolderPath];
-	public IRichCommand GroupByDateModifiedYear => commands[CommandCodes.GroupByDateModifiedYear];
+    public IRichCommand GroupByDateModifiedYear => commands[CommandCodes.GroupByDateModifiedYear];
 	public IRichCommand GroupByDateModifiedMonth => commands[CommandCodes.GroupByDateModifiedMonth];
-	public IRichCommand GroupByDateCreatedYear => commands[CommandCodes.GroupByDateCreatedYear];
-	public IRichCommand GroupByDateCreatedMonth => commands[CommandCodes.GroupByDateCreatedMonth];
-	public IRichCommand GroupByDateDeletedYear => commands[CommandCodes.GroupByDateDeletedYear];
-	public IRichCommand GroupByDateDeletedMonth => commands[CommandCodes.GroupByDateDeletedMonth];
-	public IRichCommand GroupAscending => commands[CommandCodes.GroupAscending];
+    public IRichCommand GroupByDateModifiedDay => commands[CommandCodes.GroupByDateModifiedDay];
+    public IRichCommand GroupByDateCreatedYear => commands[CommandCodes.GroupByDateCreatedYear];
+    public IRichCommand GroupByDateCreatedMonth => commands[CommandCodes.GroupByDateCreatedMonth];
+    public IRichCommand GroupByDateCreatedDay => commands[CommandCodes.GroupByDateCreatedDay];
+    public IRichCommand GroupByDateDeletedYear => commands[CommandCodes.GroupByDateDeletedYear];
+    public IRichCommand GroupByDateDeletedMonth => commands[CommandCodes.GroupByDateDeletedMonth];
+    public IRichCommand GroupByDateDeletedDay => commands[CommandCodes.GroupByDateDeletedDay];
+    public IRichCommand GroupAscending => commands[CommandCodes.GroupAscending];
 	public IRichCommand GroupDescending => commands[CommandCodes.GroupDescending];
 	public IRichCommand ToggleGroupDirection => commands[CommandCodes.ToggleGroupDirection];
 	public IRichCommand GroupByYear => commands[CommandCodes.GroupByYear];
@@ -161,6 +166,7 @@ internal class CommandManager : ICommandManager
     public IRichCommand NavigateBack => commands[CommandCodes.NavigateBack];
 	public IRichCommand NavigateForward => commands[CommandCodes.NavigateForward];
 	public IRichCommand NavigateUp => commands[CommandCodes.NavigateUp];
+    public IRichCommand NewWindow => commands[CommandCodes.NewWindow];
     public IRichCommand NewTab => commands[CommandCodes.NewTab];
     // CHANGE: Remove commands related to tabs.
     /*public IRichCommand DuplicateCurrentTab => commands[CommandCodes.DuplicateCurrentTab];
@@ -231,7 +237,6 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.ExitCompactOverlay] = new ExitCompactOverlayAction(folderViewViewModel),
 		[CommandCodes.ToggleCompactOverlay] = new ToggleCompactOverlayAction(folderViewViewModel),
 		[CommandCodes.Search] = new SearchAction(contentPageContext),
-		[CommandCodes.SearchUnindexedItems] = new SearchUnindexedItemsAction(contentPageContext),
 		[CommandCodes.EditPath] = new EditPathAction(contentPageContext),
 		[CommandCodes.Redo] = new RedoAction(contentPageContext),
 		[CommandCodes.Undo] = new UndoAction(contentPageContext),
@@ -299,7 +304,8 @@ internal class CommandManager : ICommandManager
         [CommandCodes.LayoutDecreaseSize] = new LayoutDecreaseSizeAction(displayPageContext),
 		[CommandCodes.LayoutIncreaseSize] = new LayoutIncreaseSizeAction(displayPageContext),
 		[CommandCodes.LayoutDetails] = new LayoutDetailsAction(displayPageContext),
-		[CommandCodes.LayoutTiles] = new LayoutTilesAction(displayPageContext),
+        [CommandCodes.LayoutList] = new LayoutListAction(displayPageContext),
+        [CommandCodes.LayoutTiles] = new LayoutTilesAction(displayPageContext),
 		[CommandCodes.LayoutGridSmall] = new LayoutGridSmallAction(displayPageContext),
 		[CommandCodes.LayoutGridMedium] = new LayoutGridMediumAction(displayPageContext),
 		[CommandCodes.LayoutGridLarge] = new LayoutGridLargeAction(displayPageContext),
@@ -318,7 +324,9 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.SortAscending] = new SortAscendingAction(displayPageContext),
 		[CommandCodes.SortDescending] = new SortDescendingAction(displayPageContext),
 		[CommandCodes.ToggleSortDirection] = new ToggleSortDirectionAction(displayPageContext),
-		[CommandCodes.ToggleSortDirectoriesAlongsideFiles] = new ToggleSortDirectoriesAlongsideFilesAction(displayPageContext),
+        [CommandCodes.SortFoldersFirst] = new SortFoldersFirstAction(displayPageContext),
+        [CommandCodes.SortFilesFirst] = new SortFilesFirstAction(displayPageContext),
+        [CommandCodes.SortFilesAndFoldersTogether] = new SortFilesAndFoldersTogetherAction(displayPageContext),
 		[CommandCodes.GroupByNone] = new GroupByNoneAction(contentPageContext, displayPageContext),
 		[CommandCodes.GroupByName] = new GroupByNameAction(contentPageContext, displayPageContext),
 		[CommandCodes.GroupByDateModified] = new GroupByDateModifiedAction(contentPageContext, displayPageContext),
@@ -332,11 +340,14 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.GroupByFolderPath] = new GroupByFolderPathAction(contentPageContext, displayPageContext),
 		[CommandCodes.GroupByDateModifiedYear] = new GroupByDateModifiedYearAction(contentPageContext, displayPageContext),
 		[CommandCodes.GroupByDateModifiedMonth] = new GroupByDateModifiedMonthAction(contentPageContext, displayPageContext),
-		[CommandCodes.GroupByDateCreatedYear] = new GroupByDateCreatedYearAction(contentPageContext, displayPageContext),
+        [CommandCodes.GroupByDateModifiedDay] = new GroupByDateModifiedDayAction(contentPageContext, displayPageContext),
+        [CommandCodes.GroupByDateCreatedYear] = new GroupByDateCreatedYearAction(contentPageContext, displayPageContext),
 		[CommandCodes.GroupByDateCreatedMonth] = new GroupByDateCreatedMonthAction(contentPageContext, displayPageContext),
-		[CommandCodes.GroupByDateDeletedYear] = new GroupByDateDeletedYearAction(contentPageContext, displayPageContext),
+        [CommandCodes.GroupByDateCreatedDay] = new GroupByDateCreatedDayAction(contentPageContext, displayPageContext),
+        [CommandCodes.GroupByDateDeletedYear] = new GroupByDateDeletedYearAction(contentPageContext, displayPageContext),
 		[CommandCodes.GroupByDateDeletedMonth] = new GroupByDateDeletedMonthAction(contentPageContext, displayPageContext),
-		[CommandCodes.GroupAscending] = new GroupAscendingAction(displayPageContext),
+        [CommandCodes.GroupByDateDeletedDay] = new GroupByDateDeletedDayAction(contentPageContext, displayPageContext),
+        [CommandCodes.GroupAscending] = new GroupAscendingAction(displayPageContext),
 		[CommandCodes.GroupDescending] = new GroupDescendingAction(displayPageContext),
 		[CommandCodes.ToggleGroupDirection] = new ToggleGroupDirectionAction(displayPageContext),
 		[CommandCodes.GroupByYear] = new GroupByYearAction(displayPageContext),
@@ -346,6 +357,7 @@ internal class CommandManager : ICommandManager
         [CommandCodes.NavigateBack] = new NavigateBackAction(contentPageContext),
 		[CommandCodes.NavigateForward] = new NavigateForwardAction(contentPageContext),
 		[CommandCodes.NavigateUp] = new NavigateUpAction(contentPageContext),
+        [CommandCodes.NewWindow] = new NewWindowAction(folderViewViewModel),
         [CommandCodes.NewTab] = new NewTabAction(folderViewViewModel),
         // CHANGE: Remove commands related to tabs.
         /*[CommandCodes.DuplicateCurrentTab] = new DuplicateCurrentTabAction(),

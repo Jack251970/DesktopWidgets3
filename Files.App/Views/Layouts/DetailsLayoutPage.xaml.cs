@@ -919,10 +919,10 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
             return;
         }
 
-        ParentShellPageInstance?.SubmitSearch($"tag:{tagName}", false);
-	}
+        ParentShellPageInstance?.SubmitSearch($"tag:{tagName}");
+    }
 
-	private void FileTag_PointerEntered(object sender, PointerRoutedEventArgs e)
+    private void FileTag_PointerEntered(object sender, PointerRoutedEventArgs e)
 	{
 		VisualStateManager.GoToState((UserControl)sender, "PointerOver", true);
 	}

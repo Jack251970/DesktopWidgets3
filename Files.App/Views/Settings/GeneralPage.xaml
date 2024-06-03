@@ -59,51 +59,40 @@
 			</local:SettingsBlockControl>
 
 			<!--  Date settings  -->
-			<local:SettingsBlockControl
+            <local:SettingsBlockControl
 				Title="{helpers:ResourceString Name=DateFormat}"
 				HorizontalAlignment="Stretch"
 				Description="{x:Bind ViewModel.DateFormatSample}">
-				<local:SettingsBlockControl.Icon>
-					<FontIcon Glyph="&#xEC92;" />
-				</local:SettingsBlockControl.Icon>
-				<ComboBox
+                <local:SettingsBlockControl.Icon>
+                    <FontIcon Glyph="&#xEC92;" />
+                </local:SettingsBlockControl.Icon>
+                <ComboBox
 					x:Name="DateFormatChooser"
 					Grid.Column="1"
 					AutomationProperties.Name="{helpers:ResourceString Name=DateFormat}"
 					ItemsSource="{x:Bind ViewModel.DateFormats}"
 					SelectedIndex="{x:Bind ViewModel.SelectedDateTimeFormatIndex, Mode=TwoWay}">
-					<ComboBox.ItemTemplate>
-						<DataTemplate x:DataType="vm:DateTimeFormatItem">
-							<StackPanel Orientation="Vertical">
-								<TextBlock Text="{x:Bind Label}" />
-								<TextBlock
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DateTimeFormatItem">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="{x:Bind Label}" />
+                                <TextBlock
 									FontSize="12"
 									FontWeight="Light"
 									Text="{x:Bind Sample1}"
 									Visibility="{Binding IsDropDownOpen, ElementName=DateFormatChooser}" />
-								<TextBlock
+                                <TextBlock
 									FontSize="12"
 									FontWeight="Light"
 									Text="{x:Bind Sample2}"
 									Visibility="{Binding IsDropDownOpen, ElementName=DateFormatChooser}" />
-							</StackPanel>
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
-				</ComboBox>
-			</local:SettingsBlockControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </local:SettingsBlockControl>
 
-			<!--  Search settings  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=SettingsSearchUnindexedItems}" HorizontalAlignment="Stretch">
-				<local:SettingsBlockControl.Icon>
-					<FontIcon Glyph="&#xE721;" />
-				</local:SettingsBlockControl.Icon>
-				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=SettingsSearchUnindexedItems}"
-					IsOn="{x:Bind ViewModel.SearchUnindexedItems, Mode=TwoWay}"
-					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
-			</local:SettingsBlockControl>
-
-			<!--  Startup settings  -->
+            <!--  Startup settings  -->
 			<local:SettingsBlockControl Title="{helpers:ResourceString Name=StartupSettings}" HorizontalAlignment="Stretch">
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE7E8;" />
@@ -286,22 +275,55 @@
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
 
-						<!--  Edit tags  -->
-						<local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowEditTagsMenu}" HorizontalAlignment="Stretch">
-							<ToggleSwitch
-								AutomationProperties.Name="{helpers:ResourceString Name=ShowEditTagsMenu}"
-								IsOn="{x:Bind ViewModel.ShowEditTagsMenu, Mode=TwoWay}"
+                        <!--  Copy path  -->
+                        <local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowCopyPath}" HorizontalAlignment="Stretch">
+                            <ToggleSwitch
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowCopyPath}"
+								IsOn="{x:Bind ViewModel.ShowCopyPath, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
-						</local:SettingsBlockControl>
+                        </local:SettingsBlockControl>
 
-						<!--  Send To  -->
+                        <!--  Create folder with selection  -->
+                        <local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowCreateFolderWithSelection}" HorizontalAlignment="Stretch">
+                            <ToggleSwitch
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowCreateFolderWithSelection}"
+								IsOn="{x:Bind ViewModel.ShowCreateFolderWithSelection, Mode=TwoWay}"
+								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
+                        </local:SettingsBlockControl>
+
+                        <!--  Create shortcut  -->
+                        <local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowCreateShortcut}" HorizontalAlignment="Stretch">
+                            <ToggleSwitch
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowCreateShortcut}"
+								IsOn="{x:Bind ViewModel.ShowCreateShortcut, Mode=TwoWay}"
+								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
+                        </local:SettingsBlockControl>
+
+                        <!--  Compression options  -->
+                        <local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowCompressionOptions}" HorizontalAlignment="Stretch">
+                            <ToggleSwitch
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowCompressionOptions}"
+								IsOn="{x:Bind ViewModel.ShowCompressionOptions, Mode=TwoWay}"
+								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
+                        </local:SettingsBlockControl>
+
+                        <!--  Send To  -->
 						<local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowSendToMenu}" HorizontalAlignment="Stretch">
 							<ToggleSwitch
 								AutomationProperties.Name="{helpers:ResourceString Name=ShowSendToMenu}"
 								IsOn="{x:Bind ViewModel.ShowSendToMenu, Mode=TwoWay}"
 								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
 						</local:SettingsBlockControl>
-					</StackPanel>
+
+                        <!--  Edit tags  -->
+                        <local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowEditTagsMenu}" HorizontalAlignment="Stretch">
+                            <ToggleSwitch
+								AutomationProperties.Name="{helpers:ResourceString Name=ShowEditTagsMenu}"
+								IsOn="{x:Bind ViewModel.ShowEditTagsMenu, Mode=TwoWay}"
+								Style="{StaticResource RightAlignedToggleSwitchStyle}" />
+                        </local:SettingsBlockControl>
+
+                    </StackPanel>
 				</local:SettingsBlockControl.ExpandableContent>
 			</local:SettingsBlockControl>
 

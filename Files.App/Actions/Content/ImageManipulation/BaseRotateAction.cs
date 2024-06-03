@@ -7,6 +7,8 @@ namespace Files.App.Actions;
 
 internal abstract class BaseRotateAction : ObservableObject, IAction
 {
+    private readonly IFolderViewViewModel FolderViewViewModel;
+
 	private readonly IContentPageContext context;
 
 	private readonly InfoPaneViewModel _infoPaneViewModel;
@@ -25,6 +27,7 @@ internal abstract class BaseRotateAction : ObservableObject, IAction
 
 	public BaseRotateAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
+        FolderViewViewModel = folderViewViewModel;
         this.context = context;
         _infoPaneViewModel = folderViewViewModel.GetService<InfoPaneViewModel>();
 
@@ -35,7 +38,7 @@ internal abstract class BaseRotateAction : ObservableObject, IAction
 	{
 		foreach (var image in context.SelectedItems)
         {
-            await BitmapHelper.RotateAsync(PathNormalization.NormalizePath(image.ItemPath), Rotation);
+            await BitmapHelper.RotateAsync(FolderViewViewModel, PathNormalization.NormalizePath(image.ItemPath), Rotation);
         }
 
         context.ShellPage?.SlimContentPage?.ItemManipulationModel?.RefreshItemsThumbnail();

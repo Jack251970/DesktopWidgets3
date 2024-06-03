@@ -36,8 +36,8 @@ internal class ShortcutPreviewViewModel : BasePreviewModel
 
 	private async Task LoadItemThumbnailAsync()
 	{
-		var iconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, 256);
-		if (iconData is not null)
+        var iconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, Constants.DefaultIconSizes.Jumbo, false, false);
+        if (iconData is not null)
 		{
 			FileImage = (await iconData.ToBitmapAsync())!;
 		}

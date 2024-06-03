@@ -420,10 +420,10 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 				var imgSource = await packageView.GetBitmapAsync();
 				using var imageStream = await imgSource.OpenReadAsync();
 				var folder = await StorageFileExtensions.DangerousGetFolderFromPathAsync(destination);
-				// Set the name of the file to be the current time and date
-				var file = await folder.CreateFileAsync($"{DateTime.Now:mm-dd-yy-HHmmss}.png", CreationCollisionOption.GenerateUniqueName);
+                // Set the name of the file to be the current time and date
+                var file = await folder.CreateFileAsync($"{DateTime.Now:MM-dd-yy-HHmmss}.png", CreationCollisionOption.GenerateUniqueName);
 
-				SoftwareBitmap softwareBitmap;
+                SoftwareBitmap softwareBitmap;
 
 				// Create the decoder from the stream
 				var decoder = await BitmapDecoder.CreateAsync(imageStream);

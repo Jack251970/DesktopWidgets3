@@ -25,7 +25,7 @@ public class SettingsViewModel : ObservableObject
 
 	#region ReadAndSaveSettings
 
-	public bool Set<TValue>(TValue value, [CallerMemberName] string propertyName = null!)
+	public bool Set<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TValue>(TValue value, [CallerMemberName] string propertyName = null!)
 	{
         propertyName =
             propertyName is not null && propertyName.StartsWith("set_", StringComparison.OrdinalIgnoreCase) ?

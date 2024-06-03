@@ -276,12 +276,15 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             return;
         }
 
+        int count;
+
         lock (syncRoot)
         {
+            count = collection.Count;
             collection.Add(item);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, collection.Count - 1));
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, count));
     }
 
     public void Clear()
@@ -399,12 +402,15 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             return;
         }
 
+        int count;
+
         lock (syncRoot)
         {
+            count = collection.Count;
             collection.AddRange(items);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items.ToList(), collection.Count - items.Count()));
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items.ToList(), count));
     }
 
     public void InsertRange(int index, IEnumerable<T> items)
@@ -513,14 +519,16 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             return -1;
         }
 
+        int count;
         int index;
 
         lock (syncRoot)
         {
+            count = collection.Count;
             index = ((IList)collection).Add((T)value);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value, collection.Count - 1));
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value, count));
         return index;
     }
 

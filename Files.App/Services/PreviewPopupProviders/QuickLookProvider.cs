@@ -40,11 +40,11 @@ public class QuickLookProvider : IPreviewPopupProvider
 			await writer.WriteLineAsync($"{message}|{path}");
 			await writer.FlushAsync();
 		}
-		catch (TimeoutException)
-		{
-			client.Close();
-		}
-	}
+        catch (Exception ex) when (ex is TimeoutException or IOException)
+        {
+            // ignore
+        }
+    }
 
 	public async Task<bool> DetectAvailability()
 	{
@@ -62,12 +62,11 @@ public class QuickLookProvider : IPreviewPopupProvider
 
 				return serverInstances;
 			}
-			catch (TimeoutException)
-			{
-				client.Close();
-				return 0;
-			}
-		}
+            catch (Exception ex) when (ex is TimeoutException or IOException)
+            {
+                return 0;
+            }
+        }
 
 		try
 		{

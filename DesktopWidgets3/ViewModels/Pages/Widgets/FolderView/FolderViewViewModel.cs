@@ -43,7 +43,6 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     CommandBarFlyout? IFolderViewViewModel.LastOpenedFlyout 
     {
-        get => App.LastOpenedFlyout;
         set => App.LastOpenedFlyout = value;
     }
 

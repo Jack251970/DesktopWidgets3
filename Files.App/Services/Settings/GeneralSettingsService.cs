@@ -20,12 +20,6 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
         RegisterSettingsContext(settingsSharingContext);
     }
 
-    public bool SearchUnindexedItems
-	{
-		get => Get(false);
-		set => Set(value);
-	}
-
 	public bool OpenSpecificPageOnStartup
 	{
 		get => Get(false);
@@ -74,7 +68,13 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 		set => Set(value);
 	}
 
-	public DateTimeFormats DateTimeFormat
+    public List<string> PathHistoryList
+    {
+        get => Get<List<string>>(null)!;
+        set => Set(value);
+    }
+
+    public DateTimeFormats DateTimeFormat
 	{
 		get => Get(DateTimeFormats.Application);
 		set => Set(value);
@@ -188,7 +188,13 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 		set => Set(value);
 	}
 
-	public bool ShowSendToMenu
+    public bool ShowCompressionOptions
+    {
+        get => Get(true);
+        set => Set(value);
+    }
+
+    public bool ShowSendToMenu
 	{
 		get => Get(true);
 		set => Set(value);
@@ -212,7 +218,25 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 		set => Set(value);
 	}
 
-	public bool LeaveAppRunning
+    public bool ShowCopyPath
+    {
+        get => Get(true);
+        set => Set(value);
+    }
+
+    public bool ShowCreateFolderWithSelection
+    {
+        get => Get(true);
+        set => Set(value);
+    }
+
+    public bool ShowCreateShortcut
+    {
+        get => Get(true);
+        set => Set(value);
+    }
+
+    public bool LeaveAppRunning
 	{
 #if STORE || STABLE || PREVIEW
 		get => Get(true);
@@ -244,7 +268,6 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 	{
 		switch (e.SettingName)
 		{
-			case nameof(SearchUnindexedItems):
 			case nameof(OpenSpecificPageOnStartup):
 			case nameof(ContinueLastSessionOnStartUp):
 			case nameof(OpenNewTabOnStartup):
@@ -268,7 +291,11 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 			case nameof(ShowOpenInNewTab):
 			case nameof(ShowOpenInNewWindow):
 			case nameof(ShowOpenInNewPane):
-			case nameof(LeaveAppRunning):
+            case nameof(ShowCopyPath):
+            case nameof(ShowCreateFolderWithSelection):
+            case nameof(ShowCreateShortcut):
+            case nameof(ShowCompressionOptions):
+            case nameof(LeaveAppRunning):
 			case nameof(ConflictsResolveOption):
 			case nameof(ShowHashesDictionary):
 				Analytics.TrackEvent($"Set {e.SettingName} to {e.NewValue}");

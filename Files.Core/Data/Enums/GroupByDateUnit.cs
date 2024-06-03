@@ -10,8 +10,13 @@ public enum GroupByDateUnit : byte
 	/// </summary>
 	Year = 0,
 
-	/// <summary>
-	/// Group items by month.
-	/// </summary>
-	Month = 1
+    /// <summary>
+    /// Group items by month.
+    /// </summary>
+    Month = 1,
+
+    /// <summary>
+    /// Group items by day.
+    /// </summary>
+    Day = 2,
 }

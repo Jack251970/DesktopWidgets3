@@ -23,6 +23,8 @@ public class FoldersViewModel : ObservableObject
         SelectedDefaultLayoutModeIndex = (int)DefaultLayoutMode;
         SelectedDefaultSortingIndex = UserSettingsService.FoldersSettingsService.DefaultSortOption == SortOption.FileTag ? FileTagSortingIndex : (int)UserSettingsService.FoldersSettingsService.DefaultSortOption;
         SelectedDefaultGroupingIndex = UserSettingsService.FoldersSettingsService.DefaultGroupOption == GroupOption.FileTag ? FileTagGroupingIndex : (int)UserSettingsService.FoldersSettingsService.DefaultGroupOption;
+        SelectedDefaultGroupByDateUnitIndex = (int)UserSettingsService.FoldersSettingsService.DefaultGroupByDateUnit;
+        SelectedDefaultSortPriorityIndex = UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles ? 2 : UserSettingsService.FoldersSettingsService.DefaultSortFilesFirst ? 1 : 0;
         SelectedDeleteConfirmationPolicyIndex = (int)DeleteConfirmationPolicy;
     }
 
@@ -282,37 +284,54 @@ public class FoldersViewModel : ObservableObject
 	public bool IsDefaultGrouped
 		=> UserSettingsService.FoldersSettingsService.DefaultGroupOption != GroupOption.None;
 
-	public bool GroupByMonth
-	{
-		get => UserSettingsService.FoldersSettingsService.DefaultGroupByDateUnit == GroupByDateUnit.Month;
-		set
-		{
-			if (value != (UserSettingsService.FoldersSettingsService.DefaultGroupByDateUnit == GroupByDateUnit.Month))
-			{
-				UserSettingsService.FoldersSettingsService.DefaultGroupByDateUnit = value ? GroupByDateUnit.Month : GroupByDateUnit.Year;
-				OnPropertyChanged();
-			}
-		}
-	}
+    private int defaultGroupByDateUnitIndex;
+    public int SelectedDefaultGroupByDateUnitIndex
+    {
+        get => defaultGroupByDateUnitIndex;
+        set
+        {
+            if (SetProperty(ref defaultGroupByDateUnitIndex, value))
+            {
+                OnPropertyChanged(nameof(SelectedDefaultGroupByDateUnitIndex));
+                UserSettingsService.FoldersSettingsService.DefaultGroupByDateUnit = (GroupByDateUnit)value;
+            }
+        }
+    }
 
-	public bool IsGroupByDate
+    public bool IsGroupByDate
 		=> UserSettingsService.FoldersSettingsService.DefaultGroupOption.IsGroupByDate();
 
-	public bool ListAndSortDirectoriesAlongsideFiles
-	{
-		get => UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles;
-		set
-		{
-			if (value != UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles)
-			{
-				UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles = value;
+    private int selectedDefaultSortPriorityIndex;
+    public int SelectedDefaultSortPriorityIndex
+    {
+        get => selectedDefaultSortPriorityIndex;
+        set
+        {
+            if (SetProperty(ref selectedDefaultSortPriorityIndex, value))
+            {
+                OnPropertyChanged(nameof(SelectedDefaultSortPriorityIndex));
 
-				OnPropertyChanged();
-			}
-		}
-	}
+                switch (value)
+                {
+                    case 0:
+                        UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles = false;
+                        UserSettingsService.FoldersSettingsService.DefaultSortFilesFirst = false;
+                        break;
+                    case 1:
+                        UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles = false;
+                        UserSettingsService.FoldersSettingsService.DefaultSortFilesFirst = true;
+                        break;
+                    case 2:
+                        UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
 
-	public bool CalculateFolderSizes
+    public bool CalculateFolderSizes
 	{
 		get => UserSettingsService.FoldersSettingsService.CalculateFolderSizes;
 		set
@@ -326,7 +345,21 @@ public class FoldersViewModel : ObservableObject
 		}
 	}
 
-	private int selectedDefaultSortingIndex;
+    public bool ScrollToPreviousFolderWhenNavigatingUp
+    {
+        get => UserSettingsService.FoldersSettingsService.ScrollToPreviousFolderWhenNavigatingUp;
+        set
+        {
+            if (value != UserSettingsService.FoldersSettingsService.ScrollToPreviousFolderWhenNavigatingUp)
+            {
+                UserSettingsService.FoldersSettingsService.ScrollToPreviousFolderWhenNavigatingUp = value;
+
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private int selectedDefaultSortingIndex;
 	public int SelectedDefaultSortingIndex
 	{
 		get => selectedDefaultSortingIndex;

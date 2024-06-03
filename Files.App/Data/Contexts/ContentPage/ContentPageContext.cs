@@ -46,8 +46,6 @@ internal class ContentPageContext : ObservableObject, IContentPageContext
 
 	public bool IsMultiPaneActive => ShellPage is not null && ShellPage.PaneHolder is not null && ShellPage.PaneHolder.IsMultiPaneActive;
 
-	public bool ShowSearchUnindexedItemsMessage => ShellPage is not null && ShellPage.InstanceViewModel.ShowSearchUnindexedItemsMessage;
-
 	public bool IsGitRepository => ShellPage is not null && ShellPage.InstanceViewModel.IsGitRepository;
 
 	public bool CanExecuteGitAction => IsGitRepository && !GitHelpers.IsExecutingGitAction;
@@ -167,9 +165,6 @@ internal class ContentPageContext : ObservableObject, IContentPageContext
 			case nameof(CurrentInstanceViewModel.IsPageTypeSearchResults):
 				UpdatePageType();
 				break;
-			case nameof(CurrentInstanceViewModel.ShowSearchUnindexedItemsMessage):
-				OnPropertyChanged(nameof(ShowSearchUnindexedItemsMessage));
-				break;
 			case nameof(CurrentInstanceViewModel.IsGitRepository):
 				OnPropertyChanged(nameof(IsGitRepository));
 				OnPropertyChanged(nameof(CanExecuteGitAction));
@@ -221,7 +216,6 @@ internal class ContentPageContext : ObservableObject, IContentPageContext
 		OnPropertyChanged(nameof(CanCreateItem));
 		OnPropertyChanged(nameof(IsMultiPaneEnabled));
 		OnPropertyChanged(nameof(IsMultiPaneActive));
-		OnPropertyChanged(nameof(ShowSearchUnindexedItemsMessage));
 		OnPropertyChanged(nameof(IsGitRepository));
 		OnPropertyChanged(nameof(CanExecuteGitAction));
 	}

@@ -54,15 +54,22 @@ public class LayoutPreferencesManager : ObservableObject
 			// Size down
 			if (value < LayoutPreferencesItem.GridViewSize)
 			{
-				// Size down from tiles to list
-				if (LayoutMode == FolderLayoutModes.TilesView)
-				{
-					LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
-					LayoutMode = FolderLayoutModes.DetailsView;
-					LayoutModeChangeRequested?.Invoke(this, new LayoutModeEventArgs(LayoutMode, GridViewSize));
-				}
-				// Size down from grid to tiles
-				else if (LayoutMode == FolderLayoutModes.GridView && value < Constants.Browser.GridViewBrowser.GridViewSizeSmall)
+                // Size down from List to Details
+                if (LayoutMode == FolderLayoutModes.ListView)
+                {
+                    LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
+                    LayoutMode = FolderLayoutModes.DetailsView;
+                    LayoutModeChangeRequested?.Invoke(this, new LayoutModeEventArgs(LayoutMode, GridViewSize));
+                }
+                // Size down from Tiles to List
+                else if (LayoutMode == FolderLayoutModes.TilesView)
+                {
+                    LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
+                    LayoutMode = FolderLayoutModes.ListView;
+                    LayoutModeChangeRequested?.Invoke(this, new LayoutModeEventArgs(LayoutMode, GridViewSize));
+                }
+                // Size down from Grid to Tiles
+                else if (LayoutMode == FolderLayoutModes.GridView && value < Constants.Browser.GridViewBrowser.GridViewSizeSmall)
 				{
 					LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
 					LayoutMode = FolderLayoutModes.TilesView;
@@ -93,18 +100,25 @@ public class LayoutPreferencesManager : ObservableObject
 			// Size up
 			else if (value > LayoutPreferencesItem.GridViewSize)
 			{
-				// Size up from list to tiles
-				if (LayoutMode == FolderLayoutModes.DetailsView)
-				{
-					LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
-					LayoutMode = FolderLayoutModes.TilesView;
-					LayoutModeChangeRequested?.Invoke(this, new LayoutModeEventArgs(LayoutMode, GridViewSize));
-				}
-				else // Size up from tiles to grid
-				{
-					// Set grid size to allow immediate UI update
-					var newValue = (LayoutMode == FolderLayoutModes.TilesView) ? Constants.Browser.GridViewBrowser.GridViewSizeSmall : (value <= Constants.Browser.GridViewBrowser.GridViewSizeMax) ? value : Constants.Browser.GridViewBrowser.GridViewSizeMax;
-					SetProperty(ref LayoutPreferencesItem.GridViewSize, newValue, nameof(GridViewSize));
+                // Size up from Details to List
+                if (LayoutMode == FolderLayoutModes.DetailsView)
+                {
+                    LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
+                    LayoutMode = FolderLayoutModes.ListView;
+                    LayoutModeChangeRequested?.Invoke(this, new LayoutModeEventArgs(LayoutMode, GridViewSize));
+                }
+                // Size up from List to Tiles
+                else if (LayoutMode == FolderLayoutModes.ListView)
+                {
+                    LayoutPreferencesItem.IsAdaptiveLayoutOverridden = true;
+                    LayoutMode = FolderLayoutModes.TilesView;
+                    LayoutModeChangeRequested?.Invoke(this, new LayoutModeEventArgs(LayoutMode, GridViewSize));
+                }
+                else // Size up from Tiles to Grid
+                {
+                    // Set grid size to allow immediate UI update
+                    var newValue = (LayoutMode == FolderLayoutModes.TilesView) ? Constants.Browser.GridViewBrowser.GridViewSizeSmall : (value <= Constants.Browser.GridViewBrowser.GridViewSizeLarge) ? value : Constants.Browser.GridViewBrowser.GridViewSizeLarge;
+                    SetProperty(ref LayoutPreferencesItem.GridViewSize, newValue, nameof(GridViewSize));
 
 					// Only update layout mode if it isn't already in grid view
 					if (LayoutMode != FolderLayoutModes.GridView)
@@ -119,7 +133,7 @@ public class LayoutPreferencesManager : ObservableObject
 					}
 
 					// Don't request a grid resize if it is already at the max size
-					if (value < Constants.Browser.GridViewBrowser.GridViewSizeMax)
+					if (value < Constants.Browser.GridViewBrowser.GridViewSizeLarge)
                     {
                         GridViewSizeChangeRequested?.Invoke(this, EventArgs.Empty);
                     }
@@ -230,8 +244,8 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
-    // CHANGE: Default not sort directories alongside files.
-	public bool SortDirectoriesAlongsideFiles
+    // CHANGE: Default set SortDirectoriesAlongsideFiles to false.
+    public bool SortDirectoriesAlongsideFiles
 	{
 		get => LayoutPreferencesItem is not null && LayoutPreferencesItem.SortDirectoriesAlongsideFiles;
 		set
@@ -244,7 +258,21 @@ public class LayoutPreferencesManager : ObservableObject
 		}
 	}
 
-	public ColumnsViewModel ColumnsViewModel
+    // CHANGE: Default set SortFilesFirst to false.
+    public bool SortFilesFirst
+    {
+        get => LayoutPreferencesItem is not null && LayoutPreferencesItem.SortFilesFirst;
+        set
+        {
+            if (SetProperty(ref LayoutPreferencesItem.SortFilesFirst, value, nameof(SortFilesFirst)))
+            {
+                LayoutPreferencesUpdateRequired?.Invoke(this, new LayoutPreferenceEventArgs(LayoutPreferencesItem));
+                SortFilesFirstPreferenceUpdated?.Invoke(this, SortFilesFirst);
+            }
+        }
+    }
+
+    public ColumnsViewModel ColumnsViewModel
 	{
 		get => LayoutPreferencesItem.ColumnsViewModel;
 		set
@@ -279,7 +307,8 @@ public class LayoutPreferencesManager : ObservableObject
 				OnPropertyChanged(nameof(DirectoryGroupDirection));
 				OnPropertyChanged(nameof(DirectoryGroupByDateUnit));
 				OnPropertyChanged(nameof(SortDirectoriesAlongsideFiles));
-				OnPropertyChanged(nameof(ColumnsViewModel));
+                OnPropertyChanged(nameof(SortFilesFirst));
+                OnPropertyChanged(nameof(ColumnsViewModel));
 			}
 		}
 	}
@@ -293,7 +322,8 @@ public class LayoutPreferencesManager : ObservableObject
 	public event EventHandler<SortDirection>? GroupDirectionPreferenceUpdated;
 	public event EventHandler<GroupByDateUnit>? GroupByDateUnitPreferenceUpdated;
 	public event EventHandler<bool>? SortDirectoriesAlongsideFilesPreferenceUpdated;
-	public event EventHandler<LayoutModeEventArgs>? LayoutModeChangeRequested;
+    public event EventHandler<bool>? SortFilesFirstPreferenceUpdated;
+    public event EventHandler<LayoutModeEventArgs>? LayoutModeChangeRequested;
 	public event EventHandler? GridViewSizeChangeRequested;
 
     // Constructors
@@ -321,20 +351,22 @@ public class LayoutPreferencesManager : ObservableObject
 	{
 		return LayoutMode switch
 		{
-			FolderLayoutModes.DetailsView
-				=> Constants.Browser.DetailsLayoutBrowser.DetailsViewSize,
-			FolderLayoutModes.ColumnView
-				=> Constants.Browser.ColumnViewBrowser.ColumnViewSize,
-			FolderLayoutModes.TilesView
-				=> Constants.Browser.GridViewBrowser.GridViewSizeSmall,
-			_ when GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeSmall
+            FolderLayoutModes.DetailsView
+                    => Constants.DefaultIconSizes.Large,
+            FolderLayoutModes.ListView
+                => Constants.DefaultIconSizes.Large,
+            FolderLayoutModes.ColumnView
+                => Constants.DefaultIconSizes.Large,
+            FolderLayoutModes.TilesView
+                => Constants.Browser.GridViewBrowser.TilesView,
+            _ when GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeSmall
 				=> Constants.Browser.GridViewBrowser.GridViewSizeSmall,
 			_ when GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeMedium
 				=> Constants.Browser.GridViewBrowser.GridViewSizeMedium,
 			_ when GridViewSize <= Constants.Browser.GridViewBrowser.GridViewSizeLarge
 				=> Constants.Browser.GridViewBrowser.GridViewSizeLarge,
-			_ => Constants.Browser.GridViewBrowser.GridViewSizeMax,
-		};
+            _ => Constants.Browser.GridViewBrowser.GridViewSizeLarge,
+        };
 	}
 
 	public Type GetLayoutType(string path, bool changeLayoutMode = true)
@@ -354,7 +386,8 @@ public class LayoutPreferencesManager : ObservableObject
 		return (preferencesItem.LayoutMode) switch
 		{
 			FolderLayoutModes.DetailsView => typeof(DetailsLayoutPage),
-			FolderLayoutModes.TilesView => typeof(GridLayoutPage),
+            FolderLayoutModes.ListView => typeof(GridLayoutPage),
+            FolderLayoutModes.TilesView => typeof(GridLayoutPage),
 			FolderLayoutModes.GridView => typeof(GridLayoutPage),
 			FolderLayoutModes.ColumnView => typeof(ColumnsLayoutPage),
 			_ => typeof(DetailsLayoutPage)
@@ -431,7 +464,17 @@ public class LayoutPreferencesManager : ObservableObject
 		LayoutModeChangeRequested?.Invoke(this, new LayoutModeEventArgs(FolderLayoutModes.TilesView, GridViewSize));
 	}
 
-	public void ToggleLayoutModeDetailsView(bool manuallySet)
+    public void ToggleLayoutModeList(bool manuallySet)
+    {
+        IsAdaptiveLayoutEnabled &= !manuallySet;
+
+        // List View
+        LayoutMode = FolderLayoutModes.ListView;
+
+        LayoutModeChangeRequested?.Invoke(this, new LayoutModeEventArgs(FolderLayoutModes.ListView, GridViewSize));
+    }
+
+    public void ToggleLayoutModeDetailsView(bool manuallySet)
 	{
 		IsAdaptiveLayoutEnabled &= !manuallySet;
 
@@ -462,7 +505,10 @@ public class LayoutPreferencesManager : ObservableObject
 			case nameof(UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles):
 				SortDirectoriesAlongsideFiles = preferencesItem.SortDirectoriesAlongsideFiles;
 				break;
-			case nameof(UserSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories):
+            case nameof(UserSettingsService.FoldersSettingsService.DefaultSortFilesFirst):
+                SortFilesFirst = preferencesItem.SortFilesFirst;
+                break;
+            case nameof(UserSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories):
 				LayoutPreferencesItem = preferencesItem;
 				// FILESTODO: Update layout
 				break;
@@ -547,8 +593,9 @@ public class LayoutPreferencesManager : ObservableObject
 			UserSettingsService.FoldersSettingsService.DefaultDirectoryGroupDirection = preferencesItem.DirectoryGroupDirection;
 			UserSettingsService.FoldersSettingsService.DefaultGroupByDateUnit = preferencesItem.DirectoryGroupByDateUnit;
 			UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles = preferencesItem.SortDirectoriesAlongsideFiles;
+            UserSettingsService.FoldersSettingsService.DefaultSortFilesFirst = preferencesItem.SortFilesFirst;
 
-			UserSettingsService.FoldersSettingsService.NameColumnWidth = preferencesItem.ColumnsViewModel.NameColumn.UserLengthPixels;
+            UserSettingsService.FoldersSettingsService.NameColumnWidth = preferencesItem.ColumnsViewModel.NameColumn.UserLengthPixels;
 
 			if (!preferencesItem.ColumnsViewModel.DateModifiedColumn.IsHidden)
 			{

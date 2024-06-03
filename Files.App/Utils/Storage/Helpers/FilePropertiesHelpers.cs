@@ -138,7 +138,6 @@ public static class FilePropertiesHelpers
                 FolderViewViewModel = folderViewViewModel,
 				Parameter = item,
 				AppInstance = associatedInstance,
-				AppWindow = appWindow,
 				Window = propertiesWindow
 			},
 			new SuppressNavigationTransitionInfo());

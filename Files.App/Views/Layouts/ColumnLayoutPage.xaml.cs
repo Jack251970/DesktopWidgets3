@@ -37,10 +37,10 @@ public sealed partial class ColumnLayoutPage : BaseGroupableLayoutPage
 	public event EventHandler? ItemInvoked;
 	public event EventHandler? ItemTapped;
 
-	// Properties
+    // Properties
 
-	protected override uint IconSize => Browser.ColumnViewBrowser.ColumnViewSizeSmall;
-	protected override ListViewBase ListViewBase => FileList;
+    protected override uint IconSize => Constants.DefaultIconSizes.Large;
+    protected override ListViewBase ListViewBase => FileList;
 	protected override SemanticZoom RootZoom => RootGridZoom;
 
 	// Constructor
@@ -546,7 +546,10 @@ public sealed partial class ColumnLayoutPage : BaseGroupableLayoutPage
 			case FolderLayoutModes.DetailsView:
 				parent.FolderSettings.ToggleLayoutModeDetailsView(true);
 				break;
-			case FolderLayoutModes.TilesView:
+            case FolderLayoutModes.ListView:
+                parent.FolderSettings.ToggleLayoutModeList(true);
+                break;
+            case FolderLayoutModes.TilesView:
 				parent.FolderSettings.ToggleLayoutModeTiles(true);
 				break;
 			case FolderLayoutModes.GridView:

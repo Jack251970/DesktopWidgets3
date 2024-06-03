@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
+using Files.App.Helpers;
 using Files.App.ViewModels.Dialogs;
 using LibGit2Sharp;
 using Microsoft.AppCenter.Analytics;
@@ -595,11 +596,20 @@ internal static partial class GitHelpers
 		client.DefaultRequestHeaders.Add("Accept", "application/json");
 		client.DefaultRequestHeaders.Add("User-Agent", "Files App");
 
-		var codeResponse = await client.PostAsync(
-			$"https://github.com/login/device/code?client_id={_clientId}&scope=repo",
-			new StringContent(""));
+        HttpResponseMessage codeResponse;
+        try
+        {
+            codeResponse = await client.PostAsync(
+                $"https://github.com/login/device/code?client_id={_clientId}&scope=repo",
+                new StringContent(""));
+        }
+        catch
+        {
+            await DynamicDialogFactory.GetFor_GitHubConnectionError().TryShowAsync(folderViewViewModel);
+            return;
+        }
 
-		if (!codeResponse.IsSuccessStatusCode)
+        if (!codeResponse.IsSuccessStatusCode)
 		{
 			await DynamicDialogFactory.GetFor_GitHubConnectionError().TryShowAsync(folderViewViewModel);
 			return;

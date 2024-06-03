@@ -118,7 +118,7 @@ public class ListedItem : ObservableObject, IGroupableItem
 				var dbInstance = FileTagsHelper.GetDbInstance();
 				dbInstance.SetTags(ItemPath, FileFRN, value);
 				HasTags = !FileTags.IsEmpty();
-				FileTagsHelper.WriteFileTag(ItemPath, value);
+				FileTagsHelper.WriteFileTag(FolderViewViewModel, ItemPath, value);
 				OnPropertyChanged(nameof(FileTagsUI));
 			}
 		}

@@ -137,11 +137,11 @@ public static class ShellFolderExtensions
 			IsFolder = !string.IsNullOrEmpty(linkItem.TargetPath) && linkItem.Target.IsFolder,
 			RunAsAdmin = linkItem.RunAsAdministrator,
 			Arguments = linkItem.Arguments,
-			WorkingDirectory = linkItem.WorkingDirectory,
-			TargetPath = linkItem.TargetPath
-		};
+            WorkingDirectory = Environment.ExpandEnvironmentVariables(linkItem.WorkingDirectory),
+            TargetPath = Environment.ExpandEnvironmentVariables(linkItem.TargetPath)
+        };
 
-		return link;
+        return link;
 	}
 
 	public static string GetParsingPath(this ShellItem item)

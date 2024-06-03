@@ -36,10 +36,25 @@ public class StickyHeaderBehavior : BehaviorBase<FrameworkElement>
 
 	private InsetClip? _contentClip;
 
-	/// <summary>
-	/// The UIElement that will be faded.
-	/// </summary>
-	public static readonly DependencyProperty HeaderElementProperty =
+    private readonly DispatcherTimer _assignAnimationTimer;
+
+    public StickyHeaderBehavior()
+    {
+        _assignAnimationTimer = new()
+        {
+            Interval = TimeSpan.FromMilliseconds(200)
+        };
+        _assignAnimationTimer.Tick += (sender, e) =>
+        {
+            AssignAnimation();
+            _assignAnimationTimer.Stop();
+        };
+    }
+
+    /// <summary>
+    /// The UIElement that will be faded.
+    /// </summary>
+    public static readonly DependencyProperty HeaderElementProperty =
 		DependencyProperty.Register(
 			nameof(HeaderElement),
 			typeof(UIElement),
@@ -92,8 +107,10 @@ public class StickyHeaderBehavior : BehaviorBase<FrameworkElement>
 	private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
 		var b = d as StickyHeaderBehavior;
-		b?.AssignAnimation();
-	}
+
+        // For some reason, the assignment needs to be delayed. (#14237)
+        b?._assignAnimationTimer.Start();
+    }
 
 	/// <summary>
 	/// Uses Composition API to get the UIElement and sets an ExpressionAnimation

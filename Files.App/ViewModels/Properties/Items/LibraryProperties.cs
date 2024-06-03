@@ -51,8 +51,8 @@ internal class LibraryProperties : BaseProperties
 		ViewModel.IsReadOnly = NativeFileOperationsHelper.HasFileAttribute(Library.ItemPath, SystemIO.FileAttributes.ReadOnly);
 		ViewModel.IsHidden = NativeFileOperationsHelper.HasFileAttribute(Library.ItemPath, SystemIO.FileAttributes.Hidden);
 
-		var fileIconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Library.ItemPath, 80);
-		if (fileIconData is not null)
+        var fileIconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Library.ItemPath, 80, false, false);
+        if (fileIconData is not null)
 		{
 			ViewModel.IconData = fileIconData;
 			ViewModel.LoadCustomIcon = false;

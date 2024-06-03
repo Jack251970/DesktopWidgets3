@@ -236,9 +236,9 @@ public class Win32API
 
 	private static readonly object _lock = new();
 
-	public static (byte[]? icon, byte[]? overlay) GetFileIconAndOverlay(string path, int thumbnailSize, bool isFolder, bool getOverlay = true, bool onlyGetOverlay = false)
-	{
-		byte[]? iconData = null, overlayData = null;
+    public static (byte[]? icon, byte[]? overlay) GetFileIconAndOverlay(string path, int thumbnailSize, bool isFolder, bool getIconOnly, bool getOverlay = true, bool onlyGetOverlay = false)
+    {
+        byte[]? iconData = null, overlayData = null;
 		var entry = _iconAndOverlayCache.GetOrAdd(path, _ => new());
 
 		if (entry.TryGetValue(thumbnailSize, out var cacheEntry))
@@ -264,7 +264,7 @@ public class Win32API
 				if (shellItem is not null && shellItem.IShellItem is Shell32.IShellItemImageFactory fctry)
 				{
 					var flags = Shell32.SIIGBF.SIIGBF_BIGGERSIZEOK;
-					if (thumbnailSize < 80)
+                    if (getIconOnly)
                     {
                         flags |= Shell32.SIIGBF.SIIGBF_ICONONLY;
                     }
@@ -404,7 +404,12 @@ public class Win32API
 		{
 			return false;
 		}
-		catch (Win32Exception)
+        catch (InvalidOperationException ex)
+        {
+            App.Logger.LogWarning(ex, ex.Message);
+            return false;
+        }
+        catch (Win32Exception)
 		{
 			// If user cancels UAC
 			return false;

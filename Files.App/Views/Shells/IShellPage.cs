@@ -69,7 +69,7 @@ public interface IShellPage : ITabBarItemContent, IMultiPaneInfo, IDisposable, I
 	/// </summary>
 	void ResetNavigationStackLayoutMode();
 
-	void SubmitSearch(string query, bool searchUnindexedItems);
+	void SubmitSearch(string query);
 
 	/// <summary>
 	/// Used to make commands in the column view work properly

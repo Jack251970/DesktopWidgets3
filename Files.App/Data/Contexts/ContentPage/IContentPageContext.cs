@@ -32,8 +32,6 @@ public interface IContentPageContext : INotifyPropertyChanged
 	bool IsMultiPaneEnabled { get; }
 	bool IsMultiPaneActive { get; }
 
-	bool ShowSearchUnindexedItemsMessage { get; }
-
 	bool IsGitRepository { get; }
 	bool CanExecuteGitAction { get; }
 

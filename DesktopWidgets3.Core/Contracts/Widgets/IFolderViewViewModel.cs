@@ -32,7 +32,7 @@ public partial interface IFolderViewViewModel
     
     TaskCompletionSource? SplashScreenLoadingTCS { get; }
 
-    CommandBarFlyout? LastOpenedFlyout { get; set; }
+    CommandBarFlyout? LastOpenedFlyout { set; }
 
     event PropertyChangedEventHandler? PropertyChanged;
 

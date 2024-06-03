@@ -13,7 +13,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
-using System.Runtime.CompilerServices;
+using System.Data;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
 using Windows.Services.Store;
 using WinRT.Interop;
@@ -23,7 +24,7 @@ namespace Files.App.Views;
 
 #pragma warning disable CA2254 // Template should be a static expression
 
-public sealed partial class MainPage : Page, INotifyPropertyChanged
+public sealed partial class MainPage : Page
 {
     // CHANGE: Use tab control model instead tab control component.
     public readonly TabBar TabControl;
@@ -77,7 +78,10 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
             FlowDirection = FlowDirection.RightToLeft;
         }
 
-		_updateDateDisplayTimer = DispatcherQueue.CreateTimer();
+        ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+        /*UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;*/
+
+        _updateDateDisplayTimer = DispatcherQueue.CreateTimer();
 		_updateDateDisplayTimer.Interval = TimeSpan.FromSeconds(1);
 		_updateDateDisplayTimer.Tick += UpdateDateDisplayTimer_Tick;
 	}
@@ -133,18 +137,18 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         }
     }
 
-	/*// WINUI3
-	private ContentDialog SetContentDialogRoot(ContentDialog contentDialog)
-	{
-		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+    // WINUI3
+    private ContentDialog SetContentDialogRoot(ContentDialog contentDialog)
+    {
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
             contentDialog.XamlRoot = FolderViewViewModel.XamlRoot;
         }
 
         return contentDialog;
-	}*/
+    }
 
-	private void UserSettingsService_OnSettingChangedEvent(object? sender, SettingChangedEventArgs e)
+    private void UserSettingsService_OnSettingChangedEvent(object? sender, SettingChangedEventArgs e)
 	{
 		switch (e.SettingName)
 		{
@@ -157,10 +161,9 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
     private void HorizontalMultitaskingControl_Loaded(object sender, RoutedEventArgs e)
 	{
         // CHANGE: Remove drag zone change event.
-        /*TabControl.DragArea.SizeChanged += (_, _) => SetRectDragRegion();*/
-
+        /*TabControl.DragArea.SizeChanged += (_, _) => FolderViewViewModel.MainWindow.RaiseSetTitleBarDragRegion(SetTitleBarDragRegion);*/
         if (ViewModel.MultitaskingControl is not TabBar)
-		{
+        {
 			ViewModel.MultitaskingControl = TabControl;
 			ViewModel.MultitaskingControls.Add(TabControl);
             ViewModel.MultitaskingControl.CurrentInstanceChanged += MultitaskingControl_CurrentInstanceChanged;
@@ -168,12 +171,12 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
     }
 
     // CHANGE: Remove drag zone change event.
-    /*private void SetRectDragRegion()
-	{
-		DragZoneHelper.SetDragZones(
-			FolderViewViewModel.MainWindow,
-			dragZoneLeftIndent: (int)(TabControl.ActualWidth + TabControl.Margin.Left - TabControl.DragArea.ActualWidth));
-	}*/
+    /*private int SetTitleBarDragRegion(InputNonClientPointerSource source, SizeInt32 size, double scaleFactor, Func<UIElement, RectInt32?, RectInt32> getScaledRect)
+    {
+        var height = (int)TabControl.ActualHeight;
+        source.SetRegionRects(NonClientRegionKind.Passthrough, [getScaledRect(this, new RectInt32(0, 0, (int)(TabControl.ActualWidth + TabControl.Margin.Left - TabControl.DragArea.ActualWidth), height))]);
+        return height;
+    }*/
 
     public async void TabItemContent_ContentChanged(object? sender, CustomTabViewItemParameter e)
 	{
@@ -239,8 +242,8 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	}
 
     private void UpdateNavToolbarProperties()
-	{
-		if (NavToolbar is not null)
+    {
+        if (NavToolbar is not null)
         {
             NavToolbar.ViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.ToolbarViewModel;
         }
@@ -343,8 +346,11 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 
 	private void Page_Loaded(object sender, RoutedEventArgs e)
 	{
-		// Defers the status bar loading until after the page has loaded to improve startup perf
-		FindName(nameof(StatusBarControl));
+        // CHANGE: Remove app window changed event.
+        /*FolderViewViewModel.MainWindow.AppWindow.Changed += (_, _) => FolderViewViewModel.MainWindow.RaiseSetTitleBarDragRegion(SetTitleBarDragRegion);*/
+
+        // Defers the status bar loading until after the page has loaded to improve startup perf
+        FindName(nameof(StatusBarControl));
 		FindName(nameof(InnerNavigationToolbar));
 		FindName(nameof(TabControl));
 		FindName(nameof(NavToolbar));
@@ -426,9 +432,9 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 	/// </summary>
 	private void UpdatePositioning()
 	{
-		if (PreviewPane is null || !ShouldPreviewPaneBeActive)
-		{
-			PaneRow.MinHeight = 0;
+        if (PreviewPane is null || !ViewModel.ShouldPreviewPaneBeActive)
+        {
+            PaneRow.MinHeight = 0;
 			PaneRow.MaxHeight = double.MaxValue;
 			PaneRow.Height = new GridLength(0);
 			PaneColumn.MinWidth = 0;
@@ -497,40 +503,24 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
 		this.ChangeCursor(InputSystemCursor.Create(InputSystemCursorShape.Arrow));
 	}
 
-    public bool ShouldViewControlBeDisplayed => SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false;
-
-    public bool ShouldPreviewPaneBeActive => UserSettingsService.InfoPaneSettingsService.IsEnabled && ShouldPreviewPaneBeDisplayed;
-
-    public bool ShouldPreviewPaneBeDisplayed
-	{
-		get
-		{
-			var isHomePage = !(SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false);
-			var isMultiPane = SidebarAdaptiveViewModel.PaneHolder?.IsMultiPaneActive ?? false;
-			var isBigEnough = FolderViewViewModel.MainWindow.Bounds.Width > 450 && FolderViewViewModel.MainWindow.Bounds.Height > 450 || RootGrid.ActualWidth > 700 && FolderViewViewModel.MainWindow.Bounds.Height > 360;
-			var isEnabled = (!isHomePage || isMultiPane) && isBigEnough;
-
-			return isEnabled;
-		}
-	}
-
     private void LoadPaneChanged()
-	{
-		OnPropertyChanged(nameof(ShouldViewControlBeDisplayed));
-		OnPropertyChanged(nameof(ShouldPreviewPaneBeActive));
-		OnPropertyChanged(nameof(ShouldPreviewPaneBeDisplayed));
-		UpdatePositioning();
-	}
+    {
+        var isHomePage = !(SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false);
+        var isMultiPane = SidebarAdaptiveViewModel.PaneHolder?.IsMultiPaneActive ?? false;
+        var isBigEnough = FolderViewViewModel.MainWindow.Bounds.Width > 450 && FolderViewViewModel.MainWindow.Bounds.Height > 450 || RootGrid.ActualWidth > 700 && FolderViewViewModel.MainWindow.Bounds.Height > 360;
 
-	public event PropertyChangedEventHandler? PropertyChanged;
+        ViewModel.ShouldPreviewPaneBeDisplayed = (!isHomePage || isMultiPane) && isBigEnough;
+        ViewModel.ShouldPreviewPaneBeActive = UserSettingsService.InfoPaneSettingsService.IsEnabled && ViewModel.ShouldPreviewPaneBeDisplayed;
+        ViewModel.ShouldViewControlBeDisplayed = SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false;
 
-	private void OnPropertyChanged([CallerMemberName] string propertyName = "")
-	{
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        UpdatePositioning();
+    }
 
-		if (propertyName == nameof(ShouldPreviewPaneBeActive) && ShouldPreviewPaneBeActive)
+    private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ViewModel.ShouldPreviewPaneBeActive) && ViewModel.ShouldPreviewPaneBeActive)
         {
-            _ = FolderViewViewModel.GetService<InfoPaneViewModel>().UpdateSelectedItemPreviewAsync();
+            await FolderViewViewModel.GetService<InfoPaneViewModel>().UpdateSelectedItemPreviewAsync();
         }
     }
 
@@ -557,6 +547,68 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
                 break;
 		}
 	}
+
+    private bool lockFlag = false;
+    //private string[] dropableArchiveTypes = { "zip", "rar", "7z", "tar" };
+
+    private async void HorizontalMultitaskingControlAddButton_Drop(object sender, DragEventArgs e)
+    {
+        if (lockFlag || !FilesystemHelpers.HasDraggedStorageItems(e.DataView))
+        {
+            return;
+        }
+
+        lockFlag = true;
+
+        var items = (await FilesystemHelpers.GetDraggedStorageItems(e.DataView))
+            .Where(x => x.ItemType is FilesystemItemType.Directory
+            //|| dropableArchiveTypes.Contains(x.Name.Split('.').Last().ToLower())
+            );
+
+        var deferral = e.GetDeferral();
+        try
+        {
+            foreach (var item in items)
+            {
+                await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, item.Path);
+            }
+
+            deferral.Complete();
+        }
+        catch { }
+        lockFlag = false;
+    }
+
+    private async void HorizontalMultitaskingControlAddButton_DragOver(object sender, DragEventArgs e)
+    {
+        if (!FilesystemHelpers.HasDraggedStorageItems(e.DataView))
+        {
+            e.AcceptedOperation = DataPackageOperation.None;
+            return;
+        }
+
+        var hasValidDraggedItems =
+            (await FilesystemHelpers.GetDraggedStorageItems(e.DataView)).Any(x => x.ItemType is FilesystemItemType.Directory
+            //|| dropableArchiveTypes.Contains(x.Name.Split('.').Last().ToLower())
+            );
+
+        if (!hasValidDraggedItems)
+        {
+            e.AcceptedOperation = DataPackageOperation.None;
+            return;
+        }
+
+        try
+        {
+            e.Handled = true;
+            var deferral = e.GetDeferral();
+            e.DragUIOverride.IsCaptionVisible = true;
+            e.DragUIOverride.Caption = string.Format("OpenInNewTab".GetLocalizedResource());
+            e.AcceptedOperation = DataPackageOperation.Link;
+            deferral.Complete();
+        }
+        catch { }
+    }
 
     private void NavToolbar_Loaded(object sender, RoutedEventArgs e)
     {

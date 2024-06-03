@@ -331,7 +331,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		{
 			if (!string.IsNullOrEmpty(DeviceID) && !string.Equals(DeviceID, "network-folder"))
             {
-                IconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(DeviceID, 16);
+                IconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(DeviceID, Constants.DefaultIconSizes.Large, false, true);
             }
 
             if (Root is not null)

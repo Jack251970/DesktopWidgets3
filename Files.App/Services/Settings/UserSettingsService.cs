@@ -47,8 +47,9 @@ internal sealed class UserSettingsService : BaseJsonSettings, IUserSettingsServi
 		// Remove session settings
 		export.Remove(nameof(GeneralSettingsService.LastSessionTabList));
 		export.Remove(nameof(GeneralSettingsService.LastCrashedTabList));
+        export.Remove(nameof(GeneralSettingsService.PathHistoryList));
 
-		return JsonSettingsSerializer!.SerializeToJson(export)!;
+        return JsonSettingsSerializer!.SerializeToJson(export)!;
 	}
 
 	public override bool ImportSettings(object import)

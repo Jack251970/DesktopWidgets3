@@ -29,7 +29,10 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
 				case LayoutTypes.Details:
 					viewModel.ToggleLayoutModeDetailsView(true);
 					break;
-				case LayoutTypes.Tiles:
+                case LayoutTypes.List:
+                    viewModel.ToggleLayoutModeList(true);
+                    break;
+                case LayoutTypes.Tiles:
 					viewModel.ToggleLayoutModeTiles(true);
 					break;
 				case LayoutTypes.GridSmall:
@@ -129,7 +132,20 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
         }
 	}
 
-	private LayoutPreferencesManager? FolderSettings => Context.PaneOrColumn?.InstanceViewModel?.FolderSettings;
+    private bool _SortFilesFirst = false;
+    public bool SortFilesFirst
+    {
+        get => _SortFilesFirst;
+        set
+        {
+            if (FolderSettings is LayoutPreferencesManager viewModel)
+            {
+                viewModel.SortFilesFirst = value;
+            }
+        }
+    }
+
+    private LayoutPreferencesManager? FolderSettings => Context.PaneOrColumn?.InstanceViewModel?.FolderSettings;
 
 	public DisplayPageContext()
 	{
@@ -217,7 +233,10 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
 			case nameof(LayoutPreferencesManager.SortDirectoriesAlongsideFiles):
 				SetProperty(ref _SortDirectoriesAlongsideFiles, viewModel.SortDirectoriesAlongsideFiles, nameof(SortDirectoriesAlongsideFiles));
 				break;
-		}
+            case nameof(LayoutPreferencesManager.SortFilesFirst):
+                SetProperty(ref _SortFilesFirst, viewModel.SortFilesFirst, nameof(SortFilesFirst));
+                break;
+        }
 	}
 
 	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -250,7 +269,8 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
 			SetProperty(ref _GroupDirection, viewModel.DirectoryGroupDirection, nameof(GroupDirection));
 			SetProperty(ref _GroupByDateUnit, viewModel.DirectoryGroupByDateUnit, nameof(GroupByDateUnit));
 			SetProperty(ref _SortDirectoriesAlongsideFiles, viewModel.SortDirectoriesAlongsideFiles, nameof(SortDirectoriesAlongsideFiles));
-		}
+            SetProperty(ref _SortFilesFirst, viewModel.SortFilesFirst, nameof(SortFilesFirst));
+        }
 	}
 
 	private LayoutTypes GetLayoutType()
@@ -270,7 +290,8 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
         return viewModel.LayoutMode switch
 		{
 			FolderLayoutModes.DetailsView => LayoutTypes.Details,
-			FolderLayoutModes.TilesView => LayoutTypes.Tiles,
+            FolderLayoutModes.ListView => LayoutTypes.List,
+            FolderLayoutModes.TilesView => LayoutTypes.Tiles,
 			FolderLayoutModes.GridView => viewModel.GridViewSizeKind switch
 			{
 				GridViewSizeKind.Small => LayoutTypes.GridSmall,

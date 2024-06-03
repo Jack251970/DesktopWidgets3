@@ -17,7 +17,8 @@ public class LayoutPreferencesItem
     public ColumnsViewModel ColumnsViewModel = null!;
 
 	public bool SortDirectoriesAlongsideFiles;
-	public bool IsAdaptiveLayoutOverridden;
+    public bool SortFilesFirst;
+    public bool IsAdaptiveLayoutOverridden;
 	public int GridViewSize;
 
 	public FolderLayoutModes LayoutMode;
@@ -48,7 +49,8 @@ public class LayoutPreferencesItem
 		DirectoryGroupDirection = UserSettingsService.FoldersSettingsService.DefaultDirectoryGroupDirection;
 		DirectoryGroupByDateUnit = UserSettingsService.FoldersSettingsService.DefaultGroupByDateUnit;
 		SortDirectoriesAlongsideFiles = UserSettingsService.FoldersSettingsService.DefaultSortDirectoriesAlongsideFiles;
-		IsAdaptiveLayoutOverridden = defaultLayout is not FolderLayoutModes.Adaptive;
+        SortFilesFirst = UserSettingsService.FoldersSettingsService.DefaultSortFilesFirst;
+        IsAdaptiveLayoutOverridden = defaultLayout is not FolderLayoutModes.Adaptive;
 
 		ColumnsViewModel = new ColumnsViewModel();
 		ColumnsViewModel.DateCreatedColumn.UserCollapsed = !UserSettingsService.FoldersSettingsService.ShowDateCreatedColumn;
@@ -108,7 +110,8 @@ public class LayoutPreferencesItem
 				item.DirectoryGroupDirection == DirectoryGroupDirection &&
 				item.DirectoryGroupByDateUnit == DirectoryGroupByDateUnit &&
 				item.SortDirectoriesAlongsideFiles == SortDirectoriesAlongsideFiles &&
-				item.IsAdaptiveLayoutOverridden == IsAdaptiveLayoutOverridden &&
+                item.SortFilesFirst == SortFilesFirst &&
+                item.IsAdaptiveLayoutOverridden == IsAdaptiveLayoutOverridden &&
 				item.ColumnsViewModel.Equals(ColumnsViewModel);
 		}
 		return base.Equals(obj);
@@ -126,7 +129,8 @@ public class LayoutPreferencesItem
 		hash.Add(DirectoryGroupDirection);
 		hash.Add(DirectoryGroupByDateUnit);
 		hash.Add(SortDirectoriesAlongsideFiles);
-		hash.Add(IsAdaptiveLayoutOverridden);
+        hash.Add(SortFilesFirst);
+        hash.Add(IsAdaptiveLayoutOverridden);
 		hash.Add(ColumnsViewModel);
 
 		return hash.ToHashCode();

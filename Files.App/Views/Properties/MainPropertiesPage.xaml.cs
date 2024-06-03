@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Windows.Graphics;
 using Files.App.ViewModels.Properties;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -8,14 +9,15 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.System;
+using Microsoft.UI.Input;
 
 namespace Files.App.Views.Properties;
 
 public sealed partial class MainPropertiesPage : BasePropertiesPage
 {
-    private AppWindow AppWindow = null!;
+    private AppWindow AppWindow => Window.AppWindow;
 
-	private Window Window = null!;
+    private Window Window = null!;
 
     // CHANGE: Move app settings to BlankWindow.
 	/*private SettingsViewModel AppSettings { get; set; } = null!;*/
@@ -36,18 +38,17 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 	{
 		var parameter = (PropertiesPageNavigationParameter)e.Parameter;
 
-        AppWindow = parameter.AppWindow;
-		Window = parameter.Window;
+        Window = parameter.Window;
 
         // CHANGE: Set title bar to TitlebarArea.
-        Window.SetTitleBar(TitlebarArea);
+        Window.SetTitleBar(TitlebarArea);  // TODO: Check
 
 		base.OnNavigatedTo(e);
 
-		MainPropertiesViewModel = new(FolderViewViewModel, Window, AppWindow, MainContentFrame, BaseProperties, parameter);
-	}
+        MainPropertiesViewModel = new(FolderViewViewModel, Window, MainContentFrame, BaseProperties, parameter);
+    }
 
-	private void Page_Loaded(object sender, RoutedEventArgs e)
+    private void Page_Loaded(object sender, RoutedEventArgs e)
 	{
         // CHANGE: Register theme mode change event in BlankWindow.
         /*AppSettings = DependencyExtensions.GetService<SettingsViewModel>();
@@ -55,9 +56,17 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
         Window.Closed += Window_Closed;
 
 		UpdatePageLayout();
-	}
+        Window.RaiseSetTitleBarDragRegion(SetTitleBarDragRegion);  // TODO: Check
+        Window.AppWindow.Changed += AppWindow_Changed;
+    }
 
-	private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+    private int SetTitleBarDragRegion(InputNonClientPointerSource source, SizeInt32 size, double scaleFactor, Func<UIElement, RectInt32?, RectInt32> getScaledRect)
+    {
+        source.SetRegionRects(NonClientRegionKind.Passthrough, [getScaledRect(BackwardNavigationButton, null)]);
+        return (int)TitlebarArea.ActualHeight;
+    }
+
+    private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
 		=> UpdatePageLayout();
 
 	private async void Page_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -70,10 +79,6 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 
 	private void UpdatePageLayout()
 	{
-        // CHANGE: Remove drag zone change event.
-        /*// Drag zone
-		DragZoneHelper.SetDragZones(Window, (int)TitlebarArea.ActualHeight, 40);*/
-
         // NavigationView Pane Mode
         MainPropertiesWindowNavigationView.PaneDisplayMode =
 			ActualWidth <= 600
@@ -131,18 +136,24 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 	{
 		/*AppSettings.ThemeModeChanged -= AppSettings_ThemeModeChanged;*/
 		Window.Closed -= Window_Closed;
+        Window.AppWindow.Changed -= AppWindow_Changed;
 
-		if (MainPropertiesViewModel.ChangedPropertiesCancellationTokenSource is not null &&
+        if (MainPropertiesViewModel.ChangedPropertiesCancellationTokenSource is not null &&
 			!MainPropertiesViewModel.ChangedPropertiesCancellationTokenSource.IsCancellationRequested)
 		{
 			MainPropertiesViewModel.ChangedPropertiesCancellationTokenSource.Cancel();
 		}
 	}
 
-	public async override Task<bool> SaveChangesAsync()
-		=> await Task.FromResult(false);
+    private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs e)
+    {
+        Window.RaiseSetTitleBarDragRegion(SetTitleBarDragRegion);
+    }
 
-	public override void Dispose()
+    public async override Task<bool> SaveChangesAsync()
+        => await Task.FromResult(false);
+
+    public override void Dispose()
 	{
 	}
 }

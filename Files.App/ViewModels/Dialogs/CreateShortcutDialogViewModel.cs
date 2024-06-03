@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Input;
 using Windows.Storage.Pickers;
 
@@ -91,23 +93,32 @@ public class CreateShortcutDialogViewModel : ObservableObject
 		WorkingDirectory = workingDirectory;
 		_destinationItemPath = string.Empty;
 
-		SelectDestinationCommand = new AsyncRelayCommand(SelectDestinationAsync);
+		SelectDestinationCommand = new AsyncRelayCommand(SelectDestination);
 		PrimaryButtonCommand = new AsyncRelayCommand(CreateShortcutAsync);
 	}
 
-	private async Task SelectDestinationAsync()
-	{
-		var folderPicker = InitializeWithWindow(new FolderPicker());
-		folderPicker.FileTypeFilter.Add("*");
-
-		var selectedFolder = await folderPicker.PickSingleFolderAsync();
-		if (selectedFolder is not null)
+    private Task SelectDestination()
+    {
+        var bi = new InteropHelpers.BROWSEINFO
         {
-            DestinationItemPath = selectedFolder.Path;
+            ulFlags = 0x00004000,
+            lpszTitle = "Select a folder"
+        };
+        var pidl = InteropHelpers.SHBrowseForFolder(ref bi);
+        if (pidl != nint.Zero)
+        {
+            var path = new StringBuilder(260);
+            if (InteropHelpers.SHGetPathFromIDList(pidl, path))
+            {
+                DestinationItemPath = path.ToString();
+            }
+            Marshal.FreeCoTaskMem(pidl);
         }
+
+        return Task.CompletedTask;
     }
 
-	private FolderPicker InitializeWithWindow(FolderPicker obj)
+    private FolderPicker InitializeWithWindow(FolderPicker obj)
 	{
 		WinRT.Interop.InitializeWithWindow.Initialize(obj, FolderViewViewModel.WindowHandle);
 		return obj;
@@ -127,10 +138,10 @@ public class CreateShortcutDialogViewModel : ObservableObject
 
 				if (destinationPath.EndsWith('\\'))
                 {
-                    destinationPath = destinationPath.Substring(0, destinationPath.Length - 1);
+                    destinationPath = destinationPath[..^1];
                 }
 
-                destinationName = destinationPath.Substring(destinationPath.LastIndexOf('\\') + 1);
+                destinationName = destinationPath[(destinationPath.LastIndexOf('\\') + 1)..];
 			}
 		}
 		else

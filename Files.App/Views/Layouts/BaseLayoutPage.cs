@@ -386,7 +386,6 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 					IsSearchResultPage = navigationArguments.IsSearchResultPage,
 					SearchPathParam = navigationArguments.SearchPathParam,
 					SearchQuery = navigationArguments.SearchQuery,
-					SearchUnindexedItems = navigationArguments.SearchUnindexedItems,
 					IsLayoutSwitch = true,
 					AssociatedTabInstance = ParentShellPageInstance
 				});
@@ -510,7 +509,6 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 					Query = navigationArguments.SearchQuery,
 					Folder = navigationArguments.SearchPathParam,
 					ThumbnailSize = InstanceViewModel!.FolderSettings.GetIconSize(),
-					SearchUnindexedItems = navigationArguments.SearchUnindexedItems
 				};
 
 				_ = ParentShellPageInstance.FilesystemViewModel.SearchAsync(FolderViewViewModel, searchInstance);
@@ -741,8 +739,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
 	public void UpdateSelectionSize()
 	{
-		var items = (selectedItems?.Any() ?? false) ? selectedItems : GetAllItems();
-		if (items is null)
+        var items = (selectedItems?.Any() ?? false) ? selectedItems : SafetyExtensions.IgnoreExceptions(GetAllItems, App.Logger);
+        if (items is null)
         {
             return;
         }
@@ -1404,20 +1402,22 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
         if (ParentShellPageInstance.FilesystemViewModel.FilesAndFolders.IsGrouped)
 		{
-			CollectionViewSource = new()
-			{
+            var newSource = new CollectionViewSource()
+            {
 				IsSourceGrouped = true,
 				Source = ParentShellPageInstance.FilesystemViewModel.FilesAndFolders.GroupedCollection
 			};
-		}
+            CollectionViewSource = newSource;
+        }
 		else
 		{
-			CollectionViewSource = new()
-			{
+            var newSource = new CollectionViewSource()
+            {
 				IsSourceGrouped = false,
 				Source = ParentShellPageInstance.FilesystemViewModel.FilesAndFolders
 			};
-		}
+            CollectionViewSource = newSource;
+        }
 	}
 
 	protected void SemanticZoom_ViewChangeStarted(object _, SemanticZoomViewChangedEventArgs e)

@@ -26,7 +26,6 @@ public class FolderSearch
 
 	public uint MaxItemCount { get; set; } = 0; // 0: no limit
 	public uint ThumbnailSize { get; set; } = 24;
-	public bool SearchUnindexedItems { get; set; } = false;
 
 	private uint UsedMaxItemCount => MaxItemCount > 0 ? MaxItemCount : uint.MaxValue;
 
@@ -525,9 +524,7 @@ public class FolderSearch
         {
             FolderDepth = FolderDepth.Deep,
             UserSearchFilter = AQSQuery ?? string.Empty,
-            IndexerOption = SearchUnindexedItems
-            ? IndexerOption.DoNotUseIndexer
-            : IndexerOption.OnlyUseIndexerAndOptimizeForIndexedProperties
+            IndexerOption = IndexerOption.UseIndexerWhenAvailable
         };
 
         query.SortOrder.Clear();

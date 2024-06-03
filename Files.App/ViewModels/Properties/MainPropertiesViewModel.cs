@@ -24,14 +24,13 @@ public class MainPropertiesViewModel : ObservableObject
 			if (SetProperty(ref _SelectedNavigationViewItem, value) &&
 				!SelectionChangedAutomatically)
 			{
-				var parameter = new PropertiesPageNavigationParameter()
+				var parameter = new PropertiesPageNavigationParameter
 				{
                     FolderViewViewModel = FolderViewViewModel,
 					AppInstance = _parameter.AppInstance,
 					CancellationTokenSource = ChangedPropertiesCancellationTokenSource,
 					Parameter = _parameter.Parameter,
-					Window = Window,
-					AppWindow = AppWindow,
+					Window = Window
 				};
 
 				var page = value.ItemType switch
@@ -82,7 +81,7 @@ public class MainPropertiesViewModel : ObservableObject
 
 	private readonly Window Window;
 
-	private readonly AppWindow AppWindow;
+	private AppWindow AppWindow => Window.AppWindow;
 
 	private readonly Frame _mainFrame;
 
@@ -96,13 +95,12 @@ public class MainPropertiesViewModel : ObservableObject
 	public IAsyncRelayCommand SaveChangedPropertiesCommand { get; }
 	public IRelayCommand CancelChangedPropertiesCommand { get; }
 
-	public MainPropertiesViewModel(IFolderViewViewModel folderViewViewModel, Window window, AppWindow appWindow, Frame mainFrame, BaseProperties baseProperties, PropertiesPageNavigationParameter parameter)
+	public MainPropertiesViewModel(IFolderViewViewModel folderViewViewModel, Window window, Frame mainFrame, BaseProperties baseProperties, PropertiesPageNavigationParameter parameter)
 	{
 		ChangedPropertiesCancellationTokenSource = new();
 
         FolderViewViewModel = folderViewViewModel;
 		Window = window;
-		AppWindow = appWindow;
 		_mainFrame = mainFrame;
 		_parameter = parameter;
 		_baseProperties = baseProperties;
@@ -112,7 +110,7 @@ public class MainPropertiesViewModel : ObservableObject
 		CancelChangedPropertiesCommand = new RelayCommand(ExecuteCancelChangedPropertiesCommand);
 
 		NavigationViewItems = PropertiesNavigationViewItemFactory.Initialize(parameter.Parameter);
-		SelectedNavigationViewItem = NavigationViewItems.Where(x => x.ItemType == PropertiesNavigationViewItemType.General).First();
+		SelectedNavigationViewItem = NavigationViewItems.First(x => x.ItemType == PropertiesNavigationViewItemType.General);
 	}
 
 	private void ExecuteDoBackwardNavigationCommand()

@@ -13,28 +13,27 @@ public static class WallpaperHelpers
 {
 	public static async Task SetAsBackgroundAsync(IFolderViewViewModel folderViewViewModel, WallpaperType type, string filePath)
 	{
-
-		if (type == WallpaperType.Desktop)
-		{
-			try
-			{
-				// Set the desktop background
-				var wallpaper = (Shell32.IDesktopWallpaper)new Shell32.DesktopWallpaper();
-				wallpaper.GetMonitorDevicePathAt(0, out var monitorId);
-				wallpaper.SetWallpaper(monitorId, filePath);
-			}
-			catch (Exception ex)
-			{
-				ShowErrorPrompt(folderViewViewModel, ex.Message);
-			}
-		}
-		else if (type == WallpaperType.LockScreen)
-		{
-			// Set the lockscreen background
-			IStorageFile sourceFile = await StorageFile.GetFileFromPathAsync(filePath);
-			await LockScreen.SetImageFileAsync(sourceFile);
-		}
-	}
+        try
+        {
+            if (type == WallpaperType.Desktop)
+            {
+                // Set the desktop background
+                var wallpaper = (Shell32.IDesktopWallpaper)new Shell32.DesktopWallpaper();
+                wallpaper.GetMonitorDevicePathAt(0, out var monitorId);
+                wallpaper.SetWallpaper(monitorId, filePath);
+            }
+            else if (type == WallpaperType.LockScreen)
+            {
+                // Set the lockscreen background
+                IStorageFile sourceFile = await StorageFile.GetFileFromPathAsync(filePath);
+                await LockScreen.SetImageFileAsync(sourceFile);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErrorPrompt(folderViewViewModel, ex.Message);
+        }
+    }
 
 	public static void SetSlideshow(IFolderViewViewModel folderViewViewModel, string[] filePaths)
 	{

@@ -80,22 +80,23 @@ public class FolderCardItem : WidgetCardItem, IWidgetCardItem<LocationItem>
 
 	public async Task LoadCardThumbnailAsync()
 	{
-		if (thumbnailData is null || thumbnailData.Length == 0)
-		{
-			thumbnailData = await FileThumbnailHelper.LoadIconFromPathAsync(Path, Convert.ToUInt32(Constants.Widgets.WidgetIconSize), Windows.Storage.FileProperties.ThumbnailMode.SingleItem, Windows.Storage.FileProperties.ThumbnailOptions.ResizeThumbnail);
-		}
-		if (thumbnailData is not null && thumbnailData.Length > 0)
-		{
-			Thumbnail = (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => thumbnailData.ToBitmapAsync(Constants.Widgets.WidgetIconSize)))!;
-		}
+        if (thumbnailData is null || thumbnailData.Length == 0)
+        {
+            thumbnailData = await FileThumbnailHelper.LoadIconFromPathAsync(Path, Convert.ToUInt32(Constants.DefaultIconSizes.Jumbo), Windows.Storage.FileProperties.ThumbnailMode.SingleItem, Windows.Storage.FileProperties.ThumbnailOptions.ResizeThumbnail);
+        }
+        if (thumbnailData is not null && thumbnailData.Length > 0)
+        {
+            Thumbnail = (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => thumbnailData.ToBitmapAsync(Constants.DefaultIconSizes.Jumbo)))!;
+        }
 	}
 }
 
 public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INotifyPropertyChanged
 {
 	public IUserSettingsService userSettingsService;
+    private IHomePageContext HomePageContext { get; } = DependencyExtensions.GetService<IHomePageContext>();
 
-	public static readonly ObservableCollection<FolderCardItem> ItemsAdded = new();
+    public static readonly ObservableCollection<FolderCardItem> ItemsAdded = [];
 
 	static QuickAccessWidget()
 	{
@@ -167,7 +168,7 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 				{
 					OpacityIconStyle = "ColorIconOpenInNewTab",
 				},
-				Command = OpenInNewTabCommand,
+				Command = OpenInNewTabCommand!,
 				CommandParameter = item,
 				ShowItem = userSettingsService.GeneralSettingsService.ShowOpenInNewTab
 			},
@@ -178,7 +179,7 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 				{
 					OpacityIconStyle = "ColorIconOpenInNewWindow",
 				},
-				Command = OpenInNewWindowCommand,
+				Command = OpenInNewWindowCommand!,
 				CommandParameter = item,
 				ShowItem = userSettingsService.GeneralSettingsService.ShowOpenInNewWindow
 			},
@@ -196,7 +197,7 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 				{
 					OpacityIconStyle = "ColorIconPinToFavorites",
 				},
-				Command = PinToFavoritesCommand,
+				Command = PinToFavoritesCommand!,
 				CommandParameter = item,
 				ShowItem = !isPinned
 			},
@@ -207,7 +208,7 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 				{
 					OpacityIconStyle = "ColorIconUnpinFromFavorites",
 				},
-				Command = UnpinFromFavoritesCommand,
+				Command = UnpinFromFavoritesCommand!,
 				CommandParameter = item,
 				ShowItem = isPinned
 			},
@@ -230,7 +231,7 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 			{
 				Text = "Loading".GetLocalizedResource(),
 				Glyph = "\xE712",
-				Items = new List<ContextMenuFlyoutItemViewModel>(),
+				Items = [],
 				ID = "ItemOverflow",
 				Tag = "ItemOverflow",
 				IsEnabled = false,
@@ -249,81 +250,85 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 		{
 			if (e.Reset)
 			{
-				// Find the intersection between the two lists and determine whether to remove or add
-				var itemsToRemove = ItemsAdded.Where(x => !e.Paths.Contains(x.Path)).ToList();
-				var itemsToAdd = e.Paths.Where(x => !ItemsAdded.Any(y => y.Path == x)).ToList();
+                // Find the intersection between the two lists and determine whether to remove or add
+                var originalItemsAdded = ItemsAdded.ToList();
+                var itemsToRemove = originalItemsAdded.Where(x => !e.Paths.Contains(x.Path));
+                var itemsToAdd = e.Paths.Where(x => !originalItemsAdded.Any(y => y.Path == x));
 
-				// Remove items
-				foreach (var itemToRemove in itemsToRemove)
+                // Remove items
+                foreach (var itemToRemove in itemsToRemove)
                 {
                     ItemsAdded.Remove(itemToRemove);
                 }
 
                 // Add items
                 foreach (var itemToAdd in itemsToAdd)
-				{
-					var item = await SidebarPinnedModel.CreateLocationItemFromPathAsync(itemToAdd);
-					var lastIndex = ItemsAdded.IndexOf(ItemsAdded.FirstOrDefault(x => !x.IsPinned)!);
-					var isPinned = (bool?)e.Items.Where(x => x.FilePath == itemToAdd).FirstOrDefault()?.Properties["System.Home.IsPinned"] ?? false;
-					if (ItemsAdded.Any(x => x.Path == itemToAdd))
+                {
+                    var interimItemsAdded = ItemsAdded.ToList();
+                    var item = await App.QuickAccessManager.Model.CreateLocationItemFromPathAsync(itemToAdd);
+                    var lastIndex = ItemsAdded.IndexOf(interimItemsAdded.FirstOrDefault(x => !x.IsPinned)!);
+                    var isPinned = (bool?)e.Items.Where(x => x.FilePath == itemToAdd).FirstOrDefault()?.Properties["System.Home.IsPinned"] ?? false;
+                    if (interimItemsAdded.Any(x => x.Path == itemToAdd))
                     {
                         continue;
                     }
 
-                    ItemsAdded.Insert(isPinned && lastIndex >= 0 ? lastIndex : ItemsAdded.Count, new FolderCardItem(item, Path.GetFileName(item.Text), isPinned)
-					{
-						Path = item.Path,
-					});
-				}
+                    ItemsAdded.Insert(isPinned && lastIndex >= 0 ? Math.Min(lastIndex, ItemsAdded.Count) : ItemsAdded.Count, new FolderCardItem(item, Path.GetFileName(item.Text), isPinned)
+                    {
+                        Path = item.Path,
+                    });
+                }
 
-				return;
+                return;
 			}
 			if (e.Reorder)
 			{
-				// Remove pinned items
-				foreach (var itemToRemove in ItemsAdded.Where(x => x.IsPinned).ToList())
+                // Remove pinned items
+                foreach (var itemToRemove in ItemsAdded.ToList().Where(x => x.IsPinned))
                 {
                     ItemsAdded.Remove(itemToRemove);
                 }
 
                 // Add pinned items in the new order
                 foreach (var itemToAdd in e.Paths)
-				{
-					var item = await SidebarPinnedModel.CreateLocationItemFromPathAsync(itemToAdd);
-					var lastIndex = ItemsAdded.IndexOf(ItemsAdded.FirstOrDefault(x => !x.IsPinned)!);
-					if (ItemsAdded.Any(x => x.Path == itemToAdd))
+                {
+                    var interimItemsAdded = ItemsAdded.ToList();
+                    var item = await App.QuickAccessManager.Model.CreateLocationItemFromPathAsync(itemToAdd);
+                    var lastIndex = ItemsAdded.IndexOf(interimItemsAdded.FirstOrDefault(x => !x.IsPinned)!);
+                    if (interimItemsAdded.Any(x => x.Path == itemToAdd))
                     {
                         continue;
                     }
 
-                    ItemsAdded.Insert(lastIndex >= 0 ? lastIndex : ItemsAdded.Count, new FolderCardItem(item, Path.GetFileName(item.Text), true)
-					{
-						Path = item.Path,
-					});
-				}
+                    ItemsAdded.Insert(lastIndex >= 0 ? Math.Min(lastIndex, ItemsAdded.Count) : ItemsAdded.Count, new FolderCardItem(item, Path.GetFileName(item.Text), true)
+                    {
+                        Path = item.Path,
+                    });
+                }
 
-				return;
+                return;
 			}
 			if (e.Add)
 			{
-				foreach (var itemToAdd in e.Paths)
-				{
-					var item = await SidebarPinnedModel.CreateLocationItemFromPathAsync(itemToAdd);
-					var lastIndex = ItemsAdded.IndexOf(ItemsAdded.FirstOrDefault(x => !x.IsPinned)!);
-					if (ItemsAdded.Any(x => x.Path == itemToAdd))
+                foreach (var itemToAdd in e.Paths)
+                {
+                    var interimItemsAdded = ItemsAdded.ToList();
+                    var item = await App.QuickAccessManager.Model.CreateLocationItemFromPathAsync(itemToAdd);
+                    var lastIndex = ItemsAdded.IndexOf(interimItemsAdded.FirstOrDefault(x => !x.IsPinned)!);
+                    if (interimItemsAdded.Any(x => x.Path == itemToAdd))
                     {
                         continue;
                     }
 
-                    ItemsAdded.Insert(e.Pin && lastIndex >= 0 ? lastIndex : ItemsAdded.Count, new FolderCardItem(item, Path.GetFileName(item.Text), e.Pin) // Add just after the Recent Folders
-					{
-						Path = item.Path,
-					});
-				}
-			}
+                    ItemsAdded.Insert(e.Pin && lastIndex >= 0 ? Math.Min(lastIndex, ItemsAdded.Count) : ItemsAdded.Count, new FolderCardItem(item, Path.GetFileName(item.Text), e.Pin) // Add just after the Recent Folders
+                    {
+                        Path = item.Path,
+                    });
+                }
+            }
 			else
             {
-                foreach (var itemToRemove in ItemsAdded.Where(x => e.Paths.Contains(x.Path)).ToList())
+                foreach (var itemToRemove in ItemsAdded.ToList().Where(x => e.Paths.Contains(x.Path)))
                 {
                     ItemsAdded.Remove(itemToRemove);
                 }
@@ -397,14 +402,22 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 
 	private void OpenProperties(FolderCardItem? item)
 	{
-		EventHandler<object> flyoutClosed = null!;
-		flyoutClosed = (s, e) =>
-		{
-			ItemContextMenuFlyout.Closed -= flyoutClosed;
-			CardPropertiesInvoked?.Invoke(this, new QuickAccessCardEventArgs { Item = item!.Item });
-		};
-		ItemContextMenuFlyout.Closed += flyoutClosed;
-	}
+        if (!HomePageContext.IsAnyItemRightClicked)
+        {
+            return;
+        }
+
+        var flyout = HomePageContext.ItemContextFlyoutMenu;
+        EventHandler<object> flyoutClosed = null!;
+
+        flyoutClosed = (s, e) =>
+        {
+            flyout!.Closed -= flyoutClosed;
+            CardPropertiesInvoked?.Invoke(this, new QuickAccessCardEventArgs { Item = item!.Item });
+        };
+
+        flyout!.Closed += flyoutClosed;
+    }
 
 	public async override Task PinToFavoritesAsync(WidgetCardItem? item)
 	{
@@ -415,8 +428,8 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 		var items = (await QuickAccessService.GetPinnedFoldersAsync())
 			.Where(link => !((bool?)link.Properties["System.Home.IsPinned"] ?? false));
 
-		var recentItem = items.Where(x => !ItemsAdded.Select(y => y.Path).Contains(x.FilePath)).FirstOrDefault();
-		if (recentItem is not null)
+        var recentItem = items.Where(x => !ItemsAdded.ToList().Select(y => y.Path).Contains(x.FilePath)).FirstOrDefault();
+        if (recentItem is not null)
 		{
 			ModifyItemAsync(this, new ModifyQuickAccessEventArgs(new[] { recentItem.FilePath }, true)
 			{
@@ -432,7 +445,7 @@ public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INo
 		ModifyItemAsync(this, new ModifyQuickAccessEventArgs(new[] { item.Path }, false));
 	}
 
-	private async void Button_Click(object sender, RoutedEventArgs e)
+	private async void Button_Click(object sender, RoutedEventArgs _)
 	{
 		var ClickedCard = (sender as Button)!.Tag.ToString()!;
 		var NavigationPath = ClickedCard; // path to navigate

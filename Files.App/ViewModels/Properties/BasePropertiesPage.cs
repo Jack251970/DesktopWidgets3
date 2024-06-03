@@ -1,10 +1,14 @@
 // Copyright(c) 2023 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.Shared.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using TagLib;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
+using Windows.Storage.Pickers;
 
 namespace Files.App.ViewModels.Properties;
 
@@ -63,6 +67,10 @@ public abstract class BasePropertiesPage : Page, IDisposable
 			if (items.All(item => item.PrimaryItemAttribute == StorageItemTypes.File || item.IsArchive))
             {
                 BaseProperties = new CombinedFileProperties(ViewModel, np.CancellationTokenSource, DispatcherQueue, items, AppInstance);
+
+                ViewModel.IsEditAlbumCoverVisible =
+                    items.All(item => FileExtensionHelpers.IsVideoFile(item.FileExtension)) ||
+                    items.All(item => FileExtensionHelpers.IsAudioFile(item.FileExtension));
             }
             // Selection includes folders
             else
@@ -85,7 +93,29 @@ public abstract class BasePropertiesPage : Page, IDisposable
             }
         }
 
-		base.OnNavigatedTo(e);
+        ViewModel.EditAlbumCoverCommand = new RelayCommand(async () =>
+        {
+            var filePicker = new FileOpenPicker();
+            filePicker.FileTypeFilter.Add(".jpg");
+            filePicker.FileTypeFilter.Add(".jpeg");
+            filePicker.FileTypeFilter.Add(".bmp");
+            filePicker.FileTypeFilter.Add(".png");
+
+            var parentWindowId = np.Window.AppWindow.Id;
+            var handle = Microsoft.UI.Win32Interop.GetWindowFromWindowId(parentWindowId);
+            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, handle);
+
+            var file = await filePicker.PickSingleFileAsync();
+
+            if (file is not null)
+            {
+                ViewModel.IsAblumCoverModified = true;
+                ViewModel.ModifiedAlbumCover = new Picture(file.Path);
+                ViewModel.IconData = await FileThumbnailHelper.LoadIconFromPathAsync(file.Path, 80, ThumbnailMode.DocumentsView, ThumbnailOptions.ResizeThumbnail, false);
+            }
+        });
+
+        base.OnNavigatedTo(e);
 	}
 
 	protected override void OnNavigatedFrom(NavigationEventArgs e)

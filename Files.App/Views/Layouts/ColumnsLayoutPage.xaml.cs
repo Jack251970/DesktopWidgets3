@@ -18,10 +18,10 @@ namespace Files.App.Views.Layouts;
 /// </summary>
 public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 {
-	// Properties
+    // Properties
 
-	protected override uint IconSize => Browser.ColumnViewBrowser.ColumnViewSizeSmall;
-	protected override ItemsControl ItemsControl => ColumnHost;
+    protected override uint IconSize => Constants.DefaultIconSizes.Large;
+    protected override ItemsControl ItemsControl => ColumnHost;
 
 	public string? OwnerPath { get; private set; }
 
@@ -125,7 +125,6 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 			Column = 0,
 			IsSearchResultPage = navigationArguments.IsSearchResultPage,
 			SearchQuery = navigationArguments.SearchQuery,
-			SearchUnindexedItems = navigationArguments.SearchUnindexedItems,
 			SearchPathParam = navigationArguments.SearchPathParam,
 			NavPathParam = path,
 			SelectItems = path == navigationArguments.NavPathParam ? navigationArguments.SelectItems : null
@@ -421,7 +420,6 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 				{
 					columnParam.IsSearchResultPage = navArgs.IsSearchResultPage;
 					columnParam.SearchQuery = navArgs.SearchQuery;
-					columnParam.SearchUnindexedItems = navArgs.SearchUnindexedItems;
 					columnParam.SearchPathParam = navArgs.SearchPathParam;
 				}
 

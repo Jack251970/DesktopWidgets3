@@ -4,7 +4,6 @@
 using System.Collections.Specialized;
 using System.Globalization;
 using Windows.Globalization;
-using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.System;
 using static Files.App.Helpers.MenuFlyoutHelper;
@@ -303,7 +302,49 @@ public class GeneralViewModel : ObservableObject, IDisposable
 		}
 	}
 
-	public bool AlwaysOpenDualPaneInNewTab
+    public bool ShowCreateFolderWithSelection
+    {
+        get => UserSettingsService.GeneralSettingsService.ShowCreateFolderWithSelection;
+        set
+        {
+            if (value != UserSettingsService.GeneralSettingsService.ShowCreateFolderWithSelection)
+            {
+                UserSettingsService.GeneralSettingsService.ShowCreateFolderWithSelection = value;
+
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool ShowCopyPath
+    {
+        get => UserSettingsService.GeneralSettingsService.ShowCopyPath;
+        set
+        {
+            if (value != UserSettingsService.GeneralSettingsService.ShowCopyPath)
+            {
+                UserSettingsService.GeneralSettingsService.ShowCopyPath = value;
+
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool ShowCreateShortcut
+    {
+        get => UserSettingsService.GeneralSettingsService.ShowCreateShortcut;
+        set
+        {
+            if (value != UserSettingsService.GeneralSettingsService.ShowCreateShortcut)
+            {
+                UserSettingsService.GeneralSettingsService.ShowCreateShortcut = value;
+
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool AlwaysOpenDualPaneInNewTab
 	{
 		get => UserSettingsService.GeneralSettingsService.AlwaysOpenDualPaneInNewTab;
 		set
@@ -376,20 +417,6 @@ public class GeneralViewModel : ObservableObject, IDisposable
 			if (value != UserSettingsService.GeneralSettingsService.DateTimeFormat)
 			{
 				UserSettingsService.GeneralSettingsService.DateTimeFormat = value;
-				OnPropertyChanged();
-			}
-		}
-	}
-
-	public bool SearchUnindexedItems
-	{
-		get => UserSettingsService.GeneralSettingsService.SearchUnindexedItems;
-		set
-		{
-			if (value != UserSettingsService.GeneralSettingsService.SearchUnindexedItems)
-			{
-				UserSettingsService.GeneralSettingsService.SearchUnindexedItems = value;
-
 				OnPropertyChanged();
 			}
 		}
@@ -483,7 +510,22 @@ public class GeneralViewModel : ObservableObject, IDisposable
 		}
 	}
 
-	public bool ShowSendToMenu
+    public bool ShowCompressionOptions
+    {
+        get => UserSettingsService.GeneralSettingsService.ShowCompressionOptions;
+        set
+        {
+            if (value == UserSettingsService.GeneralSettingsService.ShowCompressionOptions)
+            {
+                return;
+            }
+
+            UserSettingsService.GeneralSettingsService.ShowCompressionOptions = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowSendToMenu
 	{
 		get => UserSettingsService.GeneralSettingsService.ShowSendToMenu;
 		set

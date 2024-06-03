@@ -38,7 +38,6 @@ public class CurrentInstanceViewModel : ObservableObject
 			SetProperty(ref isPageTypeSearchResults, value);
 			OnPropertyChanged(nameof(CanCreateFileInPage));
 			OnPropertyChanged(nameof(CanCopyPathInPage));
-			OnPropertyChanged(nameof(ShowSearchUnindexedItemsMessage));
 		}
 	}
 
@@ -48,21 +47,6 @@ public class CurrentInstanceViewModel : ObservableObject
 		get => currentSearchQuery;
 		set => SetProperty(ref currentSearchQuery, value);
 	}
-
-	private bool searchedUnindexedItems;
-	public bool SearchedUnindexedItems
-	{
-		get => searchedUnindexedItems;
-		set
-		{
-			if (SetProperty(ref searchedUnindexedItems, value))
-			{
-				OnPropertyChanged(nameof(ShowSearchUnindexedItemsMessage));
-			}
-		}
-	}
-
-    public bool ShowSearchUnindexedItemsMessage => !SearchedUnindexedItems && IsPageTypeSearchResults;
 
     private bool isPageTypeNotHome = false;
 	public bool IsPageTypeNotHome

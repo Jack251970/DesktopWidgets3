@@ -11,8 +11,6 @@ using System.IO;
 using System.Windows.Input;
 using Windows.Storage;
 
-// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
-
 namespace Files.App.UserControls.Widgets;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -20,8 +18,9 @@ namespace Files.App.UserControls.Widgets;
 public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 {
 	private IUserSettingsService userSettingsService;
+    private IHomePageContext HomePageContext { get; } = DependencyExtensions.GetService<IHomePageContext>();
 
-	public FileTagsWidgetViewModel ViewModel
+    public FileTagsWidgetViewModel ViewModel
 	{
 		get => (FileTagsWidgetViewModel)DataContext;
 		set => DataContext = value;
@@ -34,7 +33,8 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 	public delegate void FileTagsOpenLocationInvokedEventHandler(object sender, PathNavigationEventArgs e);
 	public delegate void FileTagsNewPaneInvokedEventHandler(object sender, QuickAccessCardInvokedEventArgs e);
 
-	public event FileTagsOpenLocationInvokedEventHandler FileTagsOpenLocationInvoked;
+    public static event EventHandler<IEnumerable<FileTagsItemViewModel>>? SelectedTaggedItemsChanged;  // TODO: Check if can be static
+    public event FileTagsOpenLocationInvokedEventHandler FileTagsOpenLocationInvoked;
 	public event FileTagsNewPaneInvokedEventHandler FileTagsNewPaneInvoked;
 
 	public string WidgetName => nameof(FileTagsWidget);
@@ -78,21 +78,29 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 
     private void OpenProperties(WidgetCardItem? item)
 	{
-		EventHandler<object> flyoutClosed = null!;
-		flyoutClosed = (s, e) =>
-		{
-			ItemContextMenuFlyout.Closed -= flyoutClosed;
-			ListedItem listedItem = new(null!)
-			{
-				ItemPath = (item!.Item as FileTagsItemViewModel)?.Path ?? string.Empty,
-				ItemNameRaw = (item.Item as FileTagsItemViewModel)?.Name ?? string.Empty,
-				PrimaryItemAttribute = StorageItemTypes.Folder,
-				ItemType = "Folder".GetLocalizedResource(),
-			};
-			FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, listedItem, AppInstance);
-		};
-		ItemContextMenuFlyout.Closed += flyoutClosed;
-	}
+        if (!HomePageContext.IsAnyItemRightClicked)
+        {
+            return;
+        }
+
+        var flyout = HomePageContext.ItemContextFlyoutMenu;
+        EventHandler<object> flyoutClosed = null!;
+        flyoutClosed = (s, e) =>
+        {
+            flyout!.Closed -= flyoutClosed;
+
+            ListedItem listedItem = new(null!)
+            {
+                ItemPath = (item!.Item as FileTagsItemViewModel)?.Path ?? string.Empty,
+                ItemNameRaw = (item.Item as FileTagsItemViewModel)?.Name ?? string.Empty,
+                PrimaryItemAttribute = StorageItemTypes.Folder,
+                ItemType = "Folder".GetLocalizedResource(),
+            };
+            FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, listedItem, AppInstance);
+        };
+
+        flyout!.Closed += flyoutClosed;
+    }
 
 	private void OpenInNewPane(WidgetCardItem? item)
 	{
@@ -110,57 +118,52 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
         }
     }
 
-	private void AdaptiveGridView_RightTapped(object sender, RightTappedRoutedEventArgs e)
-	{
-		if (e.OriginalSource is not FrameworkElement element ||
-			element.DataContext is not FileTagsItemViewModel item)
-		{
-			return;
-		}
-
-		LoadContextMenu(
-			element,
-			e,
-			GetItemMenuItems(item, QuickAccessService.IsItemPinned(item.Path), item.IsFolder),
-			rightClickedItem: item);
-	}
-
-	private void LoadContextMenu(
-		FrameworkElement element,
-		RightTappedRoutedEventArgs e,
-		List<ContextMenuFlyoutItemViewModel> menuItems,
-		FileTagsItemViewModel? rightClickedItem = null)
-	{
-		var itemContextMenuFlyout = new CommandBarFlyout { Placement = FlyoutPlacementMode.Full };
-		itemContextMenuFlyout.Opening += (sender, e) => FolderViewViewModel.LastOpenedFlyout = sender as CommandBarFlyout;
-
-		var (_, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(menuItems);
-
-		if (!UserSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu)
+    private void AdaptiveGridView_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        // Ensure values are not null
+        if (e.OriginalSource is not FrameworkElement element ||
+            element.DataContext is not FileTagsItemViewModel item)
         {
-            secondaryElements.OfType<FrameworkElement>()
-								.ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth); // Set menu min width if the overflow menu setting is disabled
+            return;
         }
 
+        // Create a new Flyout
+        var itemContextMenuFlyout = new CommandBarFlyout()
+        {
+            Placement = FlyoutPlacementMode.Full
+        };
+
+        // Hook events
+        itemContextMenuFlyout.Opening += (sender, e) => FolderViewViewModel.LastOpenedFlyout = sender as CommandBarFlyout;
+        itemContextMenuFlyout.Closed += (sender, e) => OnRightClickedItemChanged(null, null);
+
+        FlyoutItemPath = item.Path;
+
+        // Notify of the change on right clicked item
+        OnRightClickedItemChanged(item, itemContextMenuFlyout);
+
+        // Get items for the flyout
+        var menuItems = GetItemMenuItems(item, QuickAccessService.IsItemPinned(item.Path), item.IsFolder);
+        var (_, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(menuItems);
+
+        // Set max width of the flyout
+        secondaryElements
+            .OfType<FrameworkElement>()
+            .ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth);
+
+        // Add menu items to the secondary flyout
         secondaryElements.ForEach(itemContextMenuFlyout.SecondaryCommands.Add);
-		ItemContextMenuFlyout = itemContextMenuFlyout;
-		if (rightClickedItem is not null)
-		{
-			FlyouItemPath = rightClickedItem.Path;
-			ItemContextMenuFlyout.Opened += ItemContextMenuFlyout_Opened;
-		}
-		itemContextMenuFlyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
 
-		e.Handled = true;
-	}
+        // Show the flyout
+        itemContextMenuFlyout.ShowAt(element, new() { Position = e.GetPosition(element) });
 
-	private async void ItemContextMenuFlyout_Opened(object? sender, object e)
-	{
-		ItemContextMenuFlyout.Opened -= ItemContextMenuFlyout_Opened;
-		await ShellContextmenuHelper.LoadShellMenuItemsAsync(FolderViewViewModel, FlyouItemPath, ItemContextMenuFlyout, showOpenWithMenu: true, showSendToMenu: true);
-	}
+        // Load shell menu items
+        _ = ShellContextmenuHelper.LoadShellMenuItemsAsync(FolderViewViewModel, FlyoutItemPath, itemContextMenuFlyout);
 
-	public override List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false)
+        e.Handled = true;
+    }
+
+    public override List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false)
 	{
 		return new List<ContextMenuFlyoutItemViewModel>()
 		{
@@ -187,7 +190,7 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 				{
 					OpacityIconStyle = "ColorIconOpenInNewTab",
 				},
-				Command = OpenInNewTabCommand,
+				Command = OpenInNewTabCommand!,
 				CommandParameter = item,
 				ShowItem = isFolder
 			},
@@ -198,7 +201,7 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 				{
 					OpacityIconStyle = "ColorIconOpenInNewWindow",
 				},
-				Command = OpenInNewWindowCommand,
+				Command = OpenInNewWindowCommand!,
 				CommandParameter = item,
 				ShowItem = isFolder
 			},
@@ -206,7 +209,7 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 			{
 				Text = "OpenFileLocation".GetLocalizedResource(),
 				Glyph = "\uED25",
-				Command = OpenFileLocationCommand,
+				Command = OpenFileLocationCommand!,
 				CommandParameter = item,
 				ShowItem = !isFolder
 			},
@@ -224,7 +227,7 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 				{
 					OpacityIconStyle = "ColorIconPinToFavorites",
 				},
-				Command = PinToFavoritesCommand,
+				Command = PinToFavoritesCommand!,
 				CommandParameter = item,
 				ShowItem = !isPinned && isFolder
 			},
@@ -235,7 +238,7 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 				{
 					OpacityIconStyle = "ColorIconUnpinFromFavorites",
 				},
-				Command = UnpinFromFavoritesCommand,
+				Command = UnpinFromFavoritesCommand!,
 				CommandParameter = item,
 				ShowItem = isPinned && isFolder
 			},
@@ -246,7 +249,7 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 				{
 					OpacityIconStyle = "ColorIconProperties",
 				},
-				Command = OpenPropertiesCommand,
+				Command = OpenPropertiesCommand!,
 				CommandParameter = item,
 				ShowItem = isFolder
 			},
@@ -259,7 +262,7 @@ public sealed partial class FileTagsWidget : HomePageWidget, IWidgetItem
 			{
 				Text = "Loading".GetLocalizedResource(),
 				Glyph = "\xE712",
-				Items = new List<ContextMenuFlyoutItemViewModel>(),
+				Items = [],
 				ID = "ItemOverflow",
 				Tag = "ItemOverflow",
 				IsEnabled = false,

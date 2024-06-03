@@ -141,6 +141,7 @@ public static class AppLifecycleHelper
                 .AddTransient<IPageContext, PageContext>()
                 .AddTransient<IContentPageContext, ContentPageContext>()
                 .AddTransient<IDisplayPageContext, DisplayPageContext>()
+                .AddSingleton<IHomePageContext, HomePageContext>()
                 .AddTransient<IWindowContext, WindowContext>()
                 .AddTransient<IMultitaskingContext, MultitaskingContext>()
                 .AddSingleton<ITagsContext, TagsContext>()
@@ -348,8 +349,22 @@ public static class AppLifecycleHelper
 			{
 				await Launcher.LaunchUriAsync(new Uri("files-uwp:"));
 			})
-			.Wait(1000);
+			.Wait(100);
 		}
 		Process.GetCurrentProcess().Kill();
 	}
+
+    /// <summary>
+    ///	Checks if the taskbar is set to auto-hide.
+    /// </summary>
+    public static bool IsAutoHideTaskbarEnabled()
+    {
+        const string registryKey = @"Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3";
+        const string valueName = "Settings";
+
+        using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(registryKey);
+
+        // The least significant bit of the 9th byte controls the auto-hide setting																		
+        return key?.GetValue(valueName) is byte[] value && ((value[8] & 0x01) == 1);
+    }
 }

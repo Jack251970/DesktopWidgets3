@@ -24,7 +24,7 @@ internal sealed class FileTagsService : IFileTagsService
 	/// <inheritdoc/>
 	public Task<bool> SetFileTagAsync(ILocatableStorable storable, string[] tagUids, CancellationToken cancellationToken = default)
 	{
-		FileTagsHelper.WriteFileTag(storable.Path, tagUids);
+		FileTagsHelper.WriteFileTag(null!, storable.Path, tagUids);  // TODO: Add FolderViewViewModel.
 		return Task.FromResult(true);
 	}
 

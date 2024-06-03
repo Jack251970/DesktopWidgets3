@@ -70,7 +70,7 @@ public class AccessControlEntry : ObservableObject
             }
             else if (ModifyAccess)
             {
-                accessMaskStrings.Add("SecurityModifyLabel/Text".GetLocalizedResource());
+                accessMaskStrings.Add("Modify".GetLocalizedResource());
             }
             else if (ReadAndExecuteAccess)
             {

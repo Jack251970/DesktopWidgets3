@@ -911,8 +911,8 @@ public class FileOperationsHelpers
 						using var si = new ShellItem(destination);
 						if (si.IsFolder) // File tag is not copied automatically for folders
 						{
-							FileTagsHelper.WriteFileTag(destination, tag!);
-						}
+							FileTagsHelper.WriteFileTag(null!, destination, tag!);  // TODO: Add FolderViewViewModel.
+                        }
 					}
 					else
 					{

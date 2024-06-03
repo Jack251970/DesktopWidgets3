@@ -19,7 +19,6 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand ExitCompactOverlay { get; }
 	IRichCommand ToggleCompactOverlay { get; }
     IRichCommand Search { get; }
-	IRichCommand SearchUnindexedItems { get; }
 	IRichCommand EditPath { get; }
 
     IRichCommand Redo { get; }
@@ -108,7 +107,8 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand LayoutDecreaseSize { get; }
 	IRichCommand LayoutIncreaseSize { get; }
 	IRichCommand LayoutDetails { get; }
-	IRichCommand LayoutTiles { get; }
+    IRichCommand LayoutList { get; }
+    IRichCommand LayoutTiles { get; }
 	IRichCommand LayoutGridSmall { get; }
 	IRichCommand LayoutGridMedium { get; }
 	IRichCommand LayoutGridLarge { get; }
@@ -128,9 +128,11 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand SortAscending { get; }
 	IRichCommand SortDescending { get; }
 	IRichCommand ToggleSortDirection { get; }
-	IRichCommand ToggleSortDirectoriesAlongsideFiles { get; }
+    IRichCommand SortFoldersFirst { get; }
+    IRichCommand SortFilesFirst { get; }
+    IRichCommand SortFilesAndFoldersTogether { get; }
 
-	IRichCommand GroupByNone { get; }
+    IRichCommand GroupByNone { get; }
 	IRichCommand GroupByName { get; }
 	IRichCommand GroupByDateModified { get; }
 	IRichCommand GroupByDateCreated { get; }
@@ -143,11 +145,14 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand GroupByFolderPath { get; }
 	IRichCommand GroupByDateModifiedYear { get; }
 	IRichCommand GroupByDateModifiedMonth { get; }
-	IRichCommand GroupByDateCreatedYear { get; }
+    IRichCommand GroupByDateModifiedDay { get; }
+    IRichCommand GroupByDateCreatedYear { get; }
 	IRichCommand GroupByDateCreatedMonth { get; }
-	IRichCommand GroupByDateDeletedYear { get; }
+    IRichCommand GroupByDateCreatedDay { get; }
+    IRichCommand GroupByDateDeletedYear { get; }
 	IRichCommand GroupByDateDeletedMonth { get; }
-	IRichCommand GroupAscending { get; }
+    IRichCommand GroupByDateDeletedDay { get; }
+    IRichCommand GroupAscending { get; }
 	IRichCommand GroupDescending { get; }
 	IRichCommand ToggleGroupDirection { get; }
 	IRichCommand GroupByYear { get; }
@@ -160,6 +165,7 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand NavigateForward { get; }
 	IRichCommand NavigateUp { get; }
 
+    IRichCommand NewWindow { get; }
     IRichCommand NewTab { get; }
     // CHANGE: Remove commands related to tabs.
     /*IRichCommand DuplicateCurrentTab { get; }

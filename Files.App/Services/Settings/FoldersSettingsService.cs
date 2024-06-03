@@ -332,7 +332,13 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 		set => Set(value);
 	}
 
-	public bool CalculateFolderSizes
+    public bool ScrollToPreviousFolderWhenNavigatingUp
+    {
+        get => Get(true);
+        set => Set(value);
+    }
+
+    public bool CalculateFolderSizes
 	{
 		get => Get(false);
 		set => Set(value);
@@ -374,7 +380,13 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 		set => Set(value);
 	}
 
-	public bool ShowFileExtensions
+    public bool DefaultSortFilesFirst
+    {
+        get => Get(false);
+        set => Set(value);
+    }
+
+    public bool ShowFileExtensions
 	{
 		get => Get(true);
 		set => Set(value);
@@ -450,7 +462,8 @@ internal sealed class FoldersSettingsService : BaseObservableJsonSettings, IFold
 			case nameof(OpenItemsWithOneClick):
 			case nameof(ColumnLayoutOpenFoldersWithOneClick):
 			case nameof(OpenFoldersInNewTab):
-			case nameof(CalculateFolderSizes):
+            case nameof(ScrollToPreviousFolderWhenNavigatingUp):
+            case nameof(CalculateFolderSizes):
 			case nameof(ShowFileExtensions):
 			case nameof(ShowThumbnails):
 			case nameof(DeleteConfirmationPolicy):

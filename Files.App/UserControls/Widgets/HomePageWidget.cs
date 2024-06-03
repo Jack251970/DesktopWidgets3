@@ -17,23 +17,36 @@ public abstract class HomePageWidget : UserControl
 {
     protected IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
+    // Dependency injections
+
     public IUserSettingsService UserSettingsService { get; set; } = null!;
 	public IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetService<IQuickAccessService>();
 	public IStorageService StorageService { get; } = DependencyExtensions.GetService<IStorageService>();
 
-	public ICommand RemoveRecentItemCommand;
-	public ICommand ClearAllItemsCommand;
-	public ICommand OpenFileLocationCommand;
-	public ICommand OpenInNewTabCommand;
-	public ICommand OpenInNewWindowCommand;
-	public ICommand OpenPropertiesCommand;
-	public ICommand PinToFavoritesCommand;
-	public ICommand UnpinFromFavoritesCommand;
+    // Fields
 
-	protected CommandBarFlyout ItemContextMenuFlyout;
-	protected string FlyouItemPath;
+    protected string? FlyoutItemPath;
 
-	public abstract List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false);
+    // Commands
+
+    public ICommand? RemoveRecentItemCommand { get; protected set; }
+    public ICommand? ClearAllItemsCommand { get; protected set; }
+    public ICommand? OpenFileLocationCommand { get; protected set; }
+    public ICommand? OpenInNewTabCommand { get; protected set; }
+    public ICommand? OpenInNewWindowCommand { get; protected set; }
+    public ICommand? OpenPropertiesCommand { get; protected set; }
+    public ICommand? PinToFavoritesCommand { get; protected set; }
+    public ICommand? UnpinFromFavoritesCommand { get; protected set; }
+
+    // Events
+
+    public static event EventHandler<WidgetsRightClickedItemChangedEventArgs>? RightClickedItemChanged;
+
+    // Abstract methods
+
+    public abstract List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false);
+
+    // Initialize method
 
     // CHANGE: Initialize folder view view model and related services.
     protected void Initialize(IFolderViewViewModel folderViewViewModel)
@@ -42,37 +55,56 @@ public abstract class HomePageWidget : UserControl
         UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
     }
 
+    // Event methods
+
     public void Button_RightTapped(object sender, RightTappedRoutedEventArgs e)
-	{
-		var itemContextMenuFlyout = new CommandBarFlyout { Placement = FlyoutPlacementMode.Full };
-		itemContextMenuFlyout.Opening += (sender, e) => FolderViewViewModel.LastOpenedFlyout = sender as CommandBarFlyout;
-		if (sender is not Button widgetCardItem || widgetCardItem.DataContext is not WidgetCardItem item)
+    {
+        // Ensure values are not null
+        if (sender is not Button widgetCardItem ||
+            widgetCardItem.DataContext is not WidgetCardItem item)
         {
             return;
         }
 
+        // Create a new Flyout
+        var itemContextMenuFlyout = new CommandBarFlyout()
+        {
+            Placement = FlyoutPlacementMode.Full
+        };
+
+        // Hook events
+        itemContextMenuFlyout.Opening += (sender, e) => FolderViewViewModel.LastOpenedFlyout = sender as CommandBarFlyout;
+        itemContextMenuFlyout.Closed += (sender, e) => OnRightClickedItemChanged(null, null);
+
+        FlyoutItemPath = item.Path;
+
+        // Notify of the change on right clicked item
+        OnRightClickedItemChanged(item, itemContextMenuFlyout);
+
+        // Get items for the flyout
         var menuItems = GetItemMenuItems(item, QuickAccessService.IsItemPinned(item.Path));
-		var (_, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(menuItems);
+        var (_, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(menuItems);
 
-		secondaryElements.OfType<FrameworkElement>()
-							.ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth);
+        // Set max width of the flyout
+        secondaryElements
+            .OfType<FrameworkElement>()
+            .ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth);
 
-		secondaryElements.ForEach(itemContextMenuFlyout.SecondaryCommands.Add);
-		ItemContextMenuFlyout = itemContextMenuFlyout;
-		FlyouItemPath = item.Path;
-		ItemContextMenuFlyout.Opened += ItemContextMenuFlyout_Opened;
-		itemContextMenuFlyout.ShowAt(widgetCardItem, new FlyoutShowOptions { Position = e.GetPosition(widgetCardItem) });
+        // Add menu items to the secondary flyout
+        secondaryElements.ForEach(itemContextMenuFlyout.SecondaryCommands.Add);
 
-		e.Handled = true;
-	}
+        // Show the flyout
+        itemContextMenuFlyout.ShowAt(widgetCardItem, new() { Position = e.GetPosition(widgetCardItem) });
 
-	private async void ItemContextMenuFlyout_Opened(object? sender, object e)
-	{
-		ItemContextMenuFlyout.Opened -= ItemContextMenuFlyout_Opened;
-		await ShellContextmenuHelper.LoadShellMenuItemsAsync(FolderViewViewModel, FlyouItemPath, ItemContextMenuFlyout);
-	}
+        // Load shell menu items
+        _ = ShellContextmenuHelper.LoadShellMenuItemsAsync(FolderViewViewModel, FlyoutItemPath, itemContextMenuFlyout);
 
-	public async Task OpenInNewTabAsync(WidgetCardItem? item)
+        e.Handled = true;
+    }
+
+    // Command methods
+
+    public async Task OpenInNewTabAsync(WidgetCardItem? item)
 	{
 		await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, item!.Path);
 	}
@@ -92,4 +124,8 @@ public abstract class HomePageWidget : UserControl
 		await QuickAccessService.UnpinFromSidebarAsync(item!.Path);
 	}
 
+    protected void OnRightClickedItemChanged(WidgetCardItem? item, CommandBarFlyout? flyout)
+    {
+        RightClickedItemChanged?.Invoke(this, new WidgetsRightClickedItemChangedEventArgs(item, flyout));
+    }
 }

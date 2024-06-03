@@ -343,7 +343,18 @@ public static class DecompressHelper
             return true;
         }
 
-        return zipFile.ArchiveFileData.Count > 1;
-	}
+        return zipFile.ArchiveFileData.Select(file =>
+        {
+            var pathCharIndex = file.FileName.IndexOfAny(['/', '\\']);
+            if (pathCharIndex == -1)
+            {
+                return file.FileName;
+            }
+            else
+            {
+                return file.FileName[..pathCharIndex];
+            }
+        }).Distinct().Count() > 1;
+    }
 }
 

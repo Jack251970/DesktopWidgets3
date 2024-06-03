@@ -50,16 +50,22 @@ public sealed partial class MainWindow
 
         folderViewViewModel.MainWindow.AppWindow.Title = "Files";
         folderViewViewModel.MainWindow.AppWindow.SetIcon(Path.Combine(InfoHelper.GetInstalledLocation(), ApplicationService.AppIcoPath));
-        
+
         // CHANGE: Don't set title bar.
         /*folderViewViewModel.MainWindow.AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
         folderViewViewModel.MainWindow.AppWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
         folderViewViewModel.MainWindow.AppWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;*/
 
-		// Workaround for full screen window messing up the taskbar
-		// https://github.com/microsoft/microsoft-ui-xaml/issues/8431
-		InteropHelpers.SetPropW(WindowHandle, "NonRudeHWND", new IntPtr(1));
-	}
+        // Workaround for full screen window messing up the taskbar
+        // https://github.com/microsoft/microsoft-ui-xaml/issues/8431
+        // This property should only be set if the "Automatically hide the taskbar" in Windows 11,
+        // or "Automatically hide the taskbar in desktop mode" in Windows 10 is enabled.
+        // Setting this property when the setting is disabled will result in the taskbar overlapping the application
+        if (AppLifecycleHelper.IsAutoHideTaskbarEnabled())
+        {
+            InteropHelpers.SetPropW(WindowHandle, "NonRudeHWND", new IntPtr(1));
+        }
+    }
 
     public void ShowSplashScreen()
 	{
@@ -313,7 +319,7 @@ public sealed partial class MainWindow
 							var tagUid = tag is not null ? new[] { tag.Uid } : null;
 							var dbInstance = FileTagsHelper.GetDbInstance();
 							dbInstance.SetTags(file, fileFRN, tagUid);
-							FileTagsHelper.WriteFileTag(file, tagUid!);
+							FileTagsHelper.WriteFileTag(FolderViewViewModel, file, tagUid!);
 						}
 					}
 					break;

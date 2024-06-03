@@ -64,11 +64,18 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 
 		_dialogClosingCts = new();
 
-		_messenger = new WeakReferenceMessenger();
+        _AggregatedResolveOption = _userSettingsService.GeneralSettingsService.ConflictsResolveOption;
+
+        _messenger = new WeakReferenceMessenger();
 		_messenger.Register(this);
 
-		foreach (var item in items)
+        foreach (var item in items)
         {
+            if (item is FileSystemDialogConflictItemViewModel conflictItem && conflictItem.IsConflict)
+            {
+                conflictItem.ConflictResolveOption = _AggregatedResolveOption;
+            }
+
             item.Messenger = _messenger;
         }
 
@@ -119,11 +126,6 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 					: FileNameConflictResolveOptionType.None;
 		}
 	}
-
-	public FileNameConflictResolveOptionType LoadConflictResolveOption()
-	{
-		return _userSettingsService.GeneralSettingsService.ConflictsResolveOption;
-    }
 
 	public void SaveConflictResolveOption()
 	{

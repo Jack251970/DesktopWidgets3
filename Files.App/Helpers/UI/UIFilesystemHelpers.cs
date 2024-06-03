@@ -352,8 +352,13 @@ public static class UIFilesystemHelpers
 				break;
 		}
 
-		if (created.Status == ReturnResult.AccessUnauthorized)
-		{
+        // Add newly created item to recent files list
+        if (created.Status == ReturnResult.Success && created.Item?.Path is not null)
+        {
+            App.RecentItemsManager.AddToRecentItems(created.Item.Path);
+        }
+        else if (created.Status == ReturnResult.AccessUnauthorized)
+        {
 			await DialogDisplayHelper.ShowDialogAsync
 			(
                 folderViewViewModel,

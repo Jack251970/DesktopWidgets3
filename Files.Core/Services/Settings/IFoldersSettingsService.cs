@@ -200,10 +200,15 @@ public interface IFoldersSettingsService : IBaseSettingsService, INotifyProperty
 	/// </summary>
 	bool CalculateFolderSizes { get; set; }
 
-	/// <summary>
-	/// Gets or sets a value indicating the default sorting option.
-	/// </summary>
-	SortOption DefaultSortOption { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether or not to scroll to the parent folder when navigating up.
+    /// </summary>
+    bool ScrollToPreviousFolderWhenNavigatingUp { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating the default sorting option.
+    /// </summary>
+    SortOption DefaultSortOption { get; set; }
 
 	/// <summary>
 	/// Gets or sets a value indicating the default grouping option.
@@ -230,10 +235,15 @@ public interface IFoldersSettingsService : IBaseSettingsService, INotifyProperty
 	/// </summary>
 	bool DefaultSortDirectoriesAlongsideFiles { get; set; }
 
-	/// <summary>
-	/// Gets or sets a value indicating if file extensions should be displayed.
-	/// </summary>
-	bool ShowFileExtensions { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating if files should be sorted first.
+    /// </summary>
+    bool DefaultSortFilesFirst { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating if file extensions should be displayed.
+    /// </summary>
+    bool ShowFileExtensions { get; set; }
 
 	/// <summary>
 	/// Gets or sets a value indicating if media thumbnails should be displayed.

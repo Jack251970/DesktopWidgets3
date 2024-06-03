@@ -38,12 +38,16 @@ internal class PinToStartAction : IAction
 	{
 		if (context.SelectedItems.Count > 0 && context.ShellPage?.SlimContentPage?.SelectedItems is not null)
 		{
-			foreach (var listedItem in context.ShellPage.SlimContentPage.SelectedItems)
-			{
-				var folder = await StorageService.GetFolderAsync(listedItem.ItemPath);
-				await StartMenuService.PinAsync(FolderViewViewModel, folder, listedItem.Name);
-			}
-		}
+            foreach (var listedItem in context.ShellPage.SlimContentPage.SelectedItems)
+            {
+                IStorable storable = listedItem.IsFolder switch
+                {
+                    true => await StorageService.GetFolderAsync(listedItem.ItemPath),
+                    _ => await StorageService.GetFileAsync(listedItem.ItemPath)
+                };
+                await StartMenuService.PinAsync(FolderViewViewModel, storable, listedItem.Name);
+            }
+        }
 		else if (context.ShellPage?.FilesystemViewModel?.CurrentFolder is not null)
 		{
 			var currentFolder = context.ShellPage.FilesystemViewModel.CurrentFolder;
