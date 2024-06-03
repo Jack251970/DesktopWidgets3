@@ -21,8 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clock", "Clock\Clock.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HardwareInfo", "HardwareInfo\HardwareInfo.csproj", "{51621AFC-B275-448F-B611-E467C100712F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Files.App.Server", "Files.App.Server\Files.App.Server.csproj", "{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -314,36 +312,6 @@ Global
 		{51621AFC-B275-448F-B611-E467C100712F}.Store|x64.Build.0 = Debug|Any CPU
 		{51621AFC-B275-448F-B611-E467C100712F}.Store|x86.ActiveCfg = Debug|Any CPU
 		{51621AFC-B275-448F-B611-E467C100712F}.Store|x86.Build.0 = Debug|Any CPU
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Debug|arm64.ActiveCfg = Debug|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Debug|arm64.Build.0 = Debug|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Debug|x64.ActiveCfg = Debug|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Debug|x64.Build.0 = Debug|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Debug|x86.ActiveCfg = Debug|x86
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Debug|x86.Build.0 = Debug|x86
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Preview|arm64.ActiveCfg = Preview|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Preview|arm64.Build.0 = Preview|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Preview|x64.ActiveCfg = Preview|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Preview|x64.Build.0 = Preview|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Preview|x86.ActiveCfg = Preview|x86
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Preview|x86.Build.0 = Preview|x86
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Release|arm64.ActiveCfg = Release|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Release|arm64.Build.0 = Release|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Release|x64.ActiveCfg = Release|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Release|x64.Build.0 = Release|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Release|x86.ActiveCfg = Release|x86
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Release|x86.Build.0 = Release|x86
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Stable|arm64.ActiveCfg = Stable|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Stable|arm64.Build.0 = Stable|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Stable|x64.ActiveCfg = Stable|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Stable|x64.Build.0 = Stable|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Stable|x86.ActiveCfg = Stable|x86
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Stable|x86.Build.0 = Stable|x86
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Store|arm64.ActiveCfg = Store|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Store|arm64.Build.0 = Store|arm64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Store|x64.ActiveCfg = Store|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Store|x64.Build.0 = Store|x64
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Store|x86.ActiveCfg = Store|x86
-		{FC3BE709-A136-461D-AF5D-E57C9FF92EDD}.Store|x86.Build.0 = Store|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
