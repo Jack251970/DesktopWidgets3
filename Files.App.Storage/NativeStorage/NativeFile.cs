@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
@@ -13,14 +13,9 @@ using System.Threading.Tasks;
 namespace Files.App.Storage.NativeStorage;
 
 /// <inheritdoc cref="IFile"/>
-public class NativeFile : NativeStorable<FileInfo>, ILocatableFile, IModifiableFile, IFileExtended, INestedFile
+public class NativeFile(FileInfo fileInfo, string? name = null) : NativeStorable<FileInfo>(fileInfo, name), ILocatableFile, IModifiableFile, IFileExtended, INestedFile
 {
-	public NativeFile(FileInfo fileInfo, string? name = null)
-		: base(fileInfo, name)
-	{
-	}
-
-	public NativeFile(string path, string? name = null)
+    public NativeFile(string path, string? name = null)
 		: this(new FileInfo(path), name)
 	{
 	}

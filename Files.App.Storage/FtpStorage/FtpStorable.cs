@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
@@ -37,7 +37,7 @@ public abstract class FtpStorable : ILocatableStorable, INestedStorable
 	/// <inheritdoc/>
 	public Task<IFolder?> GetParentAsync(CancellationToken cancellationToken = default)
 	{
-		return Task.FromResult<IFolder?>(Parent);
+		return Task.FromResult(Parent);
 	}
 
 	protected AsyncFtpClient GetFtpClient()

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
@@ -15,15 +15,10 @@ using Windows.Storage;
 namespace Files.App.Storage.WindowsStorage;
 
 /// <inheritdoc cref="IFile"/>
-public sealed class WindowsStorageFile : WindowsStorable<StorageFile>, ILocatableFile, IModifiableFile, IFileExtended, INestedFile
+public sealed class WindowsStorageFile(StorageFile storage) : WindowsStorable<StorageFile>(storage), ILocatableFile, IModifiableFile, IFileExtended, INestedFile
 {
-	public WindowsStorageFile(StorageFile storage)
-		: base(storage)
-	{
-	}
-
-	/// <inheritdoc/>
-	public Task<Stream> OpenStreamAsync(FileAccess access, CancellationToken cancellationToken = default)
+    /// <inheritdoc/>
+    public Task<Stream> OpenStreamAsync(FileAccess access, CancellationToken cancellationToken = default)
 	{
 		return OpenStreamAsync(access, FileShare.None, cancellationToken);
 	}

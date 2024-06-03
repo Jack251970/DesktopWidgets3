@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
@@ -11,30 +11,22 @@ using System.Threading.Tasks;
 namespace Files.App.Storage.NativeStorage;
 
 /// <inheritdoc cref="IStorable"/>
-public abstract class NativeStorable<TStorage> : ILocatableStorable, INestedStorable
+public abstract class NativeStorable<TStorage>(TStorage storage, string? name = null) : ILocatableStorable, INestedStorable
 	where TStorage : FileSystemInfo
 {
-	protected readonly TStorage storage;
+	protected readonly TStorage storage = storage;
 
-	/// <inheritdoc/>
-	public string Path { get; protected set; }
+    /// <inheritdoc/>
+    public string Path { get; protected set; } = storage.FullName;
 
-	/// <inheritdoc/>
-	public string Name { get; protected set; }
+    /// <inheritdoc/>
+    public string Name { get; protected set; } = name ?? storage.Name;
 
-	/// <inheritdoc/>
-	public virtual string Id { get; }
+    /// <inheritdoc/>
+    public virtual string Id { get; } = storage.FullName;
 
-	protected NativeStorable(TStorage storage, string? name = null)
-	{
-		this.storage = storage;
-		Path = storage.FullName;
-		Name = name ?? storage.Name;
-		Id = storage.FullName;
-	}
-
-	/// <inheritdoc/>
-	public virtual Task<IFolder?> GetParentAsync(CancellationToken cancellationToken = default)
+    /// <inheritdoc/>
+    public virtual Task<IFolder?> GetParentAsync(CancellationToken cancellationToken = default)
 	{
 		var parent = Directory.GetParent(Path);
 		if (parent is null)

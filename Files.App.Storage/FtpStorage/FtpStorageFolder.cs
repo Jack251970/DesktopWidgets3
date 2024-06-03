@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
@@ -20,13 +20,8 @@ using System.Threading.Tasks;
 
 namespace Files.App.Storage.FtpStorage;
 
-public sealed class FtpStorageFolder : FtpStorable, ILocatableFolder, IModifiableFolder, IFolderExtended, INestedFolder, IDirectCopy, IDirectMove
+public sealed class FtpStorageFolder(string path, string name, IFolder? parent) : FtpStorable(path, name, parent), ILocatableFolder, IModifiableFolder, IFolderExtended, INestedFolder, IDirectCopy, IDirectMove
 {
-    public FtpStorageFolder(string path, string name, IFolder? parent)
-        : base(path, name, parent)
-    {
-    }
-
     /// <inheritdoc/>
     public async Task<INestedFile> GetFileAsync(string fileName, CancellationToken cancellationToken = default)
     {

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
@@ -18,17 +18,12 @@ using Files.Core.Storage.NestedStorage;
 namespace Files.App.Storage.WindowsStorage;
 
 /// <inheritdoc cref="IFolder"/>
-public sealed class WindowsStorageFolder : WindowsStorable<StorageFolder>, ILocatableFolder, IFolderExtended, INestedFolder, IDirectCopy, IDirectMove
+public sealed class WindowsStorageFolder(StorageFolder storage) : WindowsStorable<StorageFolder>(storage), ILocatableFolder, IFolderExtended, INestedFolder, IDirectCopy, IDirectMove
 {
-	// FILESTODO: Implement IMutableFolder
+    // FILESTODO: Implement IMutableFolder
 
-	public WindowsStorageFolder(StorageFolder storage)
-		: base(storage)
-	{
-	}
-
-	/// <inheritdoc/>
-	public async Task<INestedFile> GetFileAsync(string fileName, CancellationToken cancellationToken = default)
+    /// <inheritdoc/>
+    public async Task<INestedFile> GetFileAsync(string fileName, CancellationToken cancellationToken = default)
 	{
 		var file = await storage.GetFileAsync(fileName).AsTask(cancellationToken);
 		return new WindowsStorageFile(file);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
@@ -20,14 +20,9 @@ using System.Threading.Tasks;
 namespace Files.App.Storage.NativeStorage;
 
 /// <inheritdoc cref="IFolder"/>
-public class NativeFolder : NativeStorable<DirectoryInfo>, ILocatableFolder, IModifiableFolder, IMutableFolder, IFolderExtended, INestedFolder, IDirectCopy, IDirectMove
+public class NativeFolder(DirectoryInfo directoryInfo, string? name = null) : NativeStorable<DirectoryInfo>(directoryInfo, name), ILocatableFolder, IModifiableFolder, IMutableFolder, IFolderExtended, INestedFolder, IDirectCopy, IDirectMove
 {
-	public NativeFolder(DirectoryInfo directoryInfo, string? name = null)
-		: base(directoryInfo, name)
-	{
-	}
-
-	public NativeFolder(string path, string? name = null)
+    public NativeFolder(string path, string? name = null)
 		: this(new DirectoryInfo(path), name)
 	{
 	}

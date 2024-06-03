@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Extensions;
@@ -16,7 +16,7 @@ internal static class FtpHelpers
 		path = path.Replace("\\", "/", StringComparison.Ordinal);
 
 		var schemaIndex = path.IndexOf("://", StringComparison.Ordinal) + 3;
-		var hostIndex = path.IndexOf("/", schemaIndex, StringComparison.Ordinal);
+		var hostIndex = path.IndexOf('/', schemaIndex);
 
 		return hostIndex == -1 ? "/" : path[hostIndex..];
 	}
@@ -51,7 +51,7 @@ internal static class FtpHelpers
 	{
 		path = path.Replace("\\", "/", StringComparison.Ordinal);
 		var schemaIndex = path.IndexOf("://", StringComparison.Ordinal) + 3;
-		var hostIndex = path.IndexOf("/", schemaIndex, StringComparison.Ordinal);
+		var hostIndex = path.IndexOf('/', schemaIndex);
 
 		if (hostIndex == -1)
         {

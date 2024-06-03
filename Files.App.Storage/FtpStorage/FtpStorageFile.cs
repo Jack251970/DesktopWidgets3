@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
@@ -12,15 +12,10 @@ using System.Threading.Tasks;
 
 namespace Files.App.Storage.FtpStorage;
 
-public sealed class FtpStorageFile : FtpStorable, IModifiableFile, ILocatableFile, INestedFile
+public sealed class FtpStorageFile(string path, string name, IFolder? parent) : FtpStorable(path, name, parent), IModifiableFile, ILocatableFile, INestedFile
 {
-	public FtpStorageFile(string path, string name, IFolder? parent)
-		: base(path, name, parent)
-	{
-	}
-
-	/// <inheritdoc/>
-	public async Task<Stream> OpenStreamAsync(FileAccess access, CancellationToken cancellationToken = default)
+    /// <inheritdoc/>
+    public async Task<Stream> OpenStreamAsync(FileAccess access, CancellationToken cancellationToken = default)
 	{
 		using var ftpClient = GetFtpClient();
 		await ftpClient.EnsureConnectedAsync(cancellationToken);
