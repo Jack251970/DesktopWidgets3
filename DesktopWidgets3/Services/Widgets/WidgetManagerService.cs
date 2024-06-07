@@ -281,7 +281,7 @@ internal class WidgetManagerService : IWidgetManagerService
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
         var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
-        return widget?.Settings;
+        return widget?.Settings.Clone();
     }
 
     public async Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings)
@@ -289,7 +289,7 @@ internal class WidgetManagerService : IWidgetManagerService
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
         widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, new WidgetNavigationParameter()
         {
-            Settings = settings.Clone()
+            Settings = settings
         });
 
         var widgetList = await _appSettingsService.GetWidgetsList();
