@@ -12,12 +12,11 @@ using WinUIEx;
 
 namespace Files.App;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-
 public sealed partial class MainWindow
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
+    // CHANGE: Model instead of component.
     /*private static MainWindow? _Instance;
 	public static MainWindow Instance => _Instance ??= new();*/
 
@@ -25,11 +24,11 @@ public sealed partial class MainWindow
 
     public MainWindow(IFolderViewViewModel folderViewViewModel)
 	{
+        // CHANGE: Model instead of component.
+        /*InitializeComponent();*/
         FolderViewViewModel = folderViewViewModel;
 
         WindowHandle = folderViewViewModel.WindowHandle;
-
-        /*InitializeComponent();*/
 
         EnsureEarlyWindow(folderViewViewModel);
     }
@@ -46,7 +45,7 @@ public sealed partial class MainWindow
         folderViewViewModel.AppWindow.Title = "Files";
         folderViewViewModel.AppWindow.SetIcon(Path.Combine(InfoHelper.GetInstalledLocation(), AppLifecycleHelper.AppIconPath));
 
-        // CHANGE: Don't set title bar.
+        // CHANGE: Remove title bar setting.
         /*folderViewViewModel.AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
         folderViewViewModel.AppWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
         folderViewViewModel.AppWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;*/
@@ -71,11 +70,11 @@ public sealed partial class MainWindow
 
 	public async Task InitializeApplicationAsync(object activatedEventArgs)
 	{
-        // CHANGE: Don't set system backdrop.
-		/*// Set system backdrop
+        // CHANGE: Remove system backdrop setting.
+        /*// Set system backdrop
 		FolderViewViewModel.MainWindow.SystemBackdrop = new AppSystemBackdrop(FolderViewViewModel);*/
 
-		var rootFrame = EnsureWindowIsInitialized();
+        var rootFrame = EnsureWindowIsInitialized();
 
         switch (activatedEventArgs)
 		{
@@ -83,7 +82,7 @@ public sealed partial class MainWindow
             case string folderPath:
                 var _userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
                 _userSettingsService.GeneralSettingsService.OpenSpecificPageOnStartup = true;
-                _userSettingsService.GeneralSettingsService.TabsOnStartupList = new List<string>() { folderPath };
+                _userSettingsService.GeneralSettingsService.TabsOnStartupList = [folderPath];
                 rootFrame.Navigate(typeof(MainPage), FolderViewViewModel, new SuppressNavigationTransitionInfo());
                 break;
 
@@ -242,7 +241,6 @@ public sealed partial class MainWindow
 		// NOTE:
 		//  Do not repeat app initialization when the Window already has content,
 		//  just ensure that the window is active
-        // CHANGE: Use folder view page to replace main window.
 		if (FolderViewViewModel.Content is not Frame rootFrame)
 		{
 			// Create a Frame to act as the navigation context and navigate to the first page
@@ -250,7 +248,7 @@ public sealed partial class MainWindow
 			rootFrame.NavigationFailed += OnNavigationFailed;
 
             // Place the frame in the current Window
-            FolderViewViewModel.Page.Content = rootFrame;
+            FolderViewViewModel.Content = rootFrame;
 		}
 
 		return rootFrame;

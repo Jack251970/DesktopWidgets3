@@ -47,7 +47,7 @@ internal sealed class OpenInNewWindowItemAction : ObservableObject, IAction
 
 		foreach (var listedItem in items)
 		{
-            // CHANGE: Open in new window means opening in explorer.
+            // CHANGE: Opening in explorer instead of opening in new window.
             await NavigationHelpers.OpenInExplorerAsync((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
             /*var selectedItemPath = (listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath;
             var folderUri = new Uri($"files-uwp:?folder={@selectedItemPath}");

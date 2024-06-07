@@ -12,7 +12,7 @@ namespace Files.App.Helpers;
 
 public static class UIHelpers
 {
-    // CHANGE: Move properties to folder view view model.
+    // CHANGE: Move property to FolderViewViewModel.
 	/*public static event PropertyChangedEventHandler? PropertyChanged;
 
 	private static bool canShowDialog = true;

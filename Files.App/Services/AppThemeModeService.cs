@@ -10,7 +10,7 @@ namespace Files.App.Services;
 
 public class AppThemeModeService : IAppThemeModeService
 {
-    // CHANGE: Remove theme setting and use theme extensions instead.
+    // CHANGE: Use theme extensions instead of theme setting.
     /*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();
 
 	private UISettings UISettings { get; } = new();
@@ -55,7 +55,7 @@ public class AppThemeModeService : IAppThemeModeService
 	/// </summary>
 	public AppThemeModeService()
 	{
-        // CHANGE: Remove theme setting and use theme extensions instead.
+        // CHANGE: Use theme extensions instead of theme setting.
         /*// Set the desired theme based on what is set in the application settings
 		SetAppThemeMode();
 
@@ -120,7 +120,7 @@ public class AppThemeModeService : IAppThemeModeService
         }
     }
 
-    // CHANGE: Remove theme setting and use theme extensions instead.
+    // CHANGE: Use theme extensions instead of theme setting.
     /*private async void UISettings_ColorValuesChanged(UISettings sender, object args)
 	{
 		await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>

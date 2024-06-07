@@ -28,7 +28,7 @@ public sealed class AppModel : ObservableObject
 		}
 	}
 
-    // CHANGE: Move this property to FolderViewViewModel
+    // CHANGE: Move this property to FolderViewViewModel.
     /*private int _TabStripSelectedIndex = 0;
     public int TabStripSelectedIndex
     {

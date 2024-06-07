@@ -63,8 +63,9 @@ internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
         };
     }
 
+    // CHANGE: Remove cultureInfo.
     protected static string ToString(DateTimeOffset offset, string format)
-        => offset.ToLocalTime().ToString(format);//, cultureInfo);// CHANGE: Remove cultureInfo.
+        => offset.ToLocalTime().ToString(format);//, cultureInfo);
 
     private static int GetWeekOfYear(DateTimeOffset t)
 	{

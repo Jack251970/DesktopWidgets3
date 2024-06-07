@@ -876,9 +876,15 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected void SetLoadingIndicatorForTabs(bool isLoading)
 	{
-        var multitaskingControls = ((FolderViewViewModel.Content as Frame)!.Content as MainPage)!.ViewModel.MultitaskingControls;
+        var multitaskingControls = ((FolderViewViewModel.Content as Frame)?.Content as MainPage)?.ViewModel.MultitaskingControls;
 
-		foreach (var x in multitaskingControls!)
+        // CHANGE: Fix for null reference exception.
+        if (multitaskingControls is null)
+        {
+            return;
+        }
+
+		foreach (var x in multitaskingControls)
         {
             x.SetLoadingIndicatorStatus(x.Items.FirstOrDefault(x => x.TabItemContent == PaneHolder)!, isLoading);
         }
@@ -953,7 +959,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		ToolbarViewModel.PathBoxQuerySubmitted -= NavigationToolbar_QuerySubmitted;
 		ToolbarViewModel.SearchBox.TextChanged -= ShellPage_TextChanged;
 
-        // CHANGE: For columns layout page, we don't need folder settings.
+        // CHANGE: Fix for null reference exception.
         if (InstanceViewModel.FolderSettings is not null)
         {
             InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired -= FolderSettings_LayoutPreferencesUpdateRequired;

@@ -46,7 +46,7 @@ internal sealed class OpenDirectoryInNewTabAction : ObservableObject, IAction
 
         foreach (var listedItem in context.ShellPage.SlimContentPage.SelectedItems)
 		{
-            // CHANGE: Open in new tab means opening in explorer.
+            // CHANGE: Opening in explorer instead of opening in new tab.
             await NavigationHelpers.OpenInExplorerAsync((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
             /*await UIThreadExtensions.DispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{

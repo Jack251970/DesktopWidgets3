@@ -7,8 +7,8 @@ namespace Files.App.Data.Contexts;
 
 internal sealed class WindowContext : ObservableObject, IWindowContext
 {
-    // CHANGE: True always.
-	private bool isCompactOverlay = true;
+    // CHANGE: Remove compact overlay.
+    private bool isCompactOverlay = true;
 	public bool IsCompactOverlay => isCompactOverlay;
 
 	public WindowContext()

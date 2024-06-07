@@ -38,7 +38,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     Page IFolderViewViewModel.Page => WidgetPage;
 
-    UIElement IFolderViewViewModel.Content => WidgetPage.Content;
+    UIElement IFolderViewViewModel.Content
+    {
+        get => WidgetPage.Content;
+        set => WidgetPage.Content = value;
+    }
 
     XamlRoot IFolderViewViewModel.XamlRoot => WidgetPage.Content.XamlRoot;
 

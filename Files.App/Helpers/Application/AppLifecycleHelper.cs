@@ -99,7 +99,7 @@ public static class AppLifecycleHelper
 
 		FileTagsHelper.UpdateTagsDb();
 
-        // CHANGE: Don't check app updates.
+        // CHANGE: Remove update check.
 		/*await CheckAppUpdate(folderViewViewModel);*/
 
 		static Task OptionalTaskAsync(Task task, bool condition)

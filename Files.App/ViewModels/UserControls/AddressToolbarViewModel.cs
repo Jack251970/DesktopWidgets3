@@ -1052,11 +1052,12 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 		switch (e.PropertyName)
 		{
 			case nameof(LayoutPreferencesManager.LayoutMode):
-                // CHANGE: Ingore if commands is null.
+                // CHANGE: Fix for null reference exception.
                 if (Commands is null)
                 {
                     return;
                 }
+
                 LayoutOpacityIcon = instanceViewModel.FolderSettings.LayoutMode switch
 				{
 					FolderLayoutModes.ListView => Commands.LayoutList.OpacityStyle!,

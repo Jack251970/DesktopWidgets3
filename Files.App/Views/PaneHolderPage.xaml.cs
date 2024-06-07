@@ -246,7 +246,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 	{
 		base.OnNavigatedTo(eventArgs);
 
-        // CHANGE: Bind pane holder first to ensure event handler is binded correctly.
+        // CHANGE: Fix for null reference exception.
         PaneLeft.PaneHolder = this;
 
         // CHANGE: Initialize folder view view model and related services.

@@ -23,6 +23,7 @@ public partial class App
 
     private static bool isInitialized;
 
+    // CHANGE: Remove system tray icon.
     /*private static SystemTrayIcon? SystemTrayIcon { get; set; }*/
 
     public TaskCompletionSource? SplashScreenLoadingTCS { get; private set; }
@@ -56,14 +57,15 @@ public partial class App
 	/// </summary>
 	public App(IFolderViewViewModel folderViewViewModel)
 	{
+        // CHANGE: Model instead of component.
+        /*InitializeComponent();*/
         FolderViewViewModel = folderViewViewModel;
 
-        // CHANGE: Initialize user settings service, register folder view view model and its app instances.
         UserSettingsService ??= DependencyExtensions.GetService<IUserSettingsService>();
+        
+        // CHANGE: Regiter folder view view model and its app instances.
         FolderViewViewModels.Add(folderViewViewModel);
         MainPageViewModel.AppInstances.Add(folderViewViewModel, []);
-
-        /*InitializeComponent();*/
 
 		Initialize();
     }
@@ -114,7 +116,7 @@ public partial class App
             var MainWindow = FolderViewViewModel.MainWindow;
 
             // Get AppActivationArguments
-            var appActivationArguments = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
+            var appActivationArguments = AppInstance.GetCurrent().GetActivatedEventArgs();
             // TODO(Later): Add start up argument function.
             var isStartupTask = appActivationArguments.Data is Windows.ApplicationModel.Activation.IStartupTaskActivatedEventArgs;
 
@@ -130,8 +132,8 @@ public partial class App
                 Instance.ShowSplashScreen();
             }
 
-            // CHANGE: Don't track app usage.
-			/*// Start tracking app usage
+            // CHANGE: Remove SystemInformation.
+            /*// Start tracking app usage
 			if (appActivationArguments.Data is Windows.ApplicationModel.Activation.IActivatedEventArgs activationEventArgs)
             {
                 SystemInformation.Instance.TrackAppUse(activationEventArgs);
@@ -167,7 +169,7 @@ public partial class App
                 await SplashScreenLoadingTCS!.Task.WithTimeoutAsync(TimeSpan.FromMilliseconds(500));
                 SplashScreenLoadingTCS = null;
 
-                // CHANGE: Don't create a system tray icon.
+                // CHANGE: Remove system tray icon.
                 /*// Create a system tray icon
                 SystemTrayIcon = new SystemTrayIcon().Show();*/
 
@@ -175,7 +177,7 @@ public partial class App
             }
             else
             {
-                // CHANGE: Don't create a system tray icon.
+                // CHANGE: Remove system tray icon.
                 /*// Create a system tray icon
                 SystemTrayIcon = new SystemTrayIcon().Show();*/
 
@@ -307,7 +309,7 @@ public partial class App
                 if (!AppModel.ForceProcessTermination)
                 {
                     args.Handled = true;
-                    // CHANGE: Don't check app updates.
+                    // CHANGE: Remove update check.
                     /*_ = AppLifecycleHelper.CheckAppUpdate(FolderViewViewModel);*/
                     return;
                 }
@@ -355,7 +357,7 @@ public partial class App
             });
         }*/
 
-        // CHANGE: Register folder view view model and its app instances.
+        // CHANGE: Unregister folder view view model and its app instances.
         MainPageViewModel.AppInstances.Remove(FolderViewViewModel);
         FolderViewViewModels.Remove(FolderViewViewModel);
     }

@@ -32,7 +32,7 @@ public partial interface IFolderViewViewModel
 
     Page Page { get; }
 
-    UIElement Content { get; }
+    UIElement Content { get; set; }
 
     XamlRoot XamlRoot { get; }
     

@@ -313,7 +313,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
         NetworkDrivesService.Drives.CollectionChanged += (x, args) => Manager_DataChanged(SectionType.Network, args);
         WSLDistroManager.DataChanged += Manager_DataChanged;
         App.FileTagsManager.DataChanged += Manager_DataChanged;
-        // CHANGE: Default set to minimal.
+        // CHANGE: Remove sidebar.
         /*SidebarDisplayMode = UserSettingsService.AppearanceSettingsService.IsSidebarOpen ? SidebarDisplayMode.Expanded : SidebarDisplayMode.Compact;*/
         SidebarDisplayMode = SidebarDisplayMode.Minimal;
 
@@ -452,13 +452,13 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
             }
         }
 
-        // CHANGE: Remove expand seaction storage function.
+        // CHANGE: Remove expand seaction storage.
         section.IsExpanded = section.Text == "SidebarFavorites".GetLocalizedResource();
         /*section.IsExpanded = FolderViewViewModel.GetService<SettingsViewModel>().Get(section.Text == "SidebarFavorites".GetLocalizedResource(), $"section:{section.Text.Replace('\\', '_')}");
         section.PropertyChanged += Section_PropertyChanged;*/
     }
 
-    // CHANGE: Remove expand seaction storage function.
+    // CHANGE: Remove expand seaction storage.
     /*private void Section_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (sender is LocationItem section && e.PropertyName == nameof(section.IsExpanded))

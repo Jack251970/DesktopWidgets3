@@ -1,12 +1,10 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.Helpers;
 using CommunityToolkit.WinUI.UI;
 using CommunityToolkit.WinUI.UI.Controls;
 using DesktopWidgets3.Core.Helpers;
 using Files.App.UserControls.Sidebar;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -16,17 +14,13 @@ using Microsoft.UI.Xaml.Navigation;
 using System.Data;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
-using Windows.Services.Store;
-using WinRT.Interop;
 using VirtualKey = Windows.System.VirtualKey;
 
 namespace Files.App.Views;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 public sealed partial class MainPage : Page
 {
-    // CHANGE: Use tab control model instead tab control component.
+    // CHANGE: Use tab control model instead of tab control component.
     public readonly TabBar TabControl;
 
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
@@ -643,8 +637,8 @@ public sealed partial class MainPage : Page
 			InputSystemCursorShape.SizeWestEast : InputSystemCursorShape.SizeNorthSouth));
     }
 
-    // CHANGE: Remove toggle pane button.
-	/*private void TogglePaneButton_Click(object sender, RoutedEventArgs e)
+    // CHANGE: Remove sidebar.
+    /*private void TogglePaneButton_Click(object sender, RoutedEventArgs e)
 	{
 		if (SidebarControl.DisplayMode == SidebarDisplayMode.Minimal)
 		{

@@ -25,7 +25,6 @@ public sealed class LayoutViewModel : ObservableObject
 		SelectedDefaultGroupByDateUnitIndex = (int)UserSettingsService.LayoutSettingsService.DefaultGroupByDateUnit;*/
 	}
 
-    // CHANGE: Initialize in separate function instead of constructor.
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();

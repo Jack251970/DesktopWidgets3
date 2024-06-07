@@ -1239,7 +1239,7 @@
                     <local:OpacityIcon Style="{x:Bind Commands.NewWindow.OpacityStyle}" />
                 </AppBarButton>
 
-                <!-- // CHANGE: Remove compact overlay items. -->
+                <!-- // CHANGE: Remove compact overlay. -->
                 <!--  Exter Compact Overlay  -->
                 <!--<AppBarButton
 					x:Name="NavToolbarEnterCompactOverlay"

@@ -52,7 +52,7 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 
         Window = parameter.Window;
 
-        // CHANGE: Set title bar to TitlebarArea.
+        // CHANGE: Set title bar.
         Window.SetTitleBar(TitlebarArea);
 
 		base.OnNavigatedTo(e);
@@ -113,7 +113,7 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
         }
     }
 
-    // CHANGE: Remove theme mode change event.
+    // CHANGE: Remove theme change event.
     /*private async void AppThemeModeService_AppThemeModeChanged(object? sender, EventArgs e)
     {
         if (Parent is null)

@@ -42,7 +42,7 @@ public sealed class AdvancedViewModel : ObservableObject
 		OpenSettingsJsonCommand = new AsyncRelayCommand(OpenSettingsJsonAsync);
 		OpenFilesOnWindowsStartupCommand = new AsyncRelayCommand(OpenFilesOnWindowsStartupAsync);
 
-        // CHANGE: Don't detect startup task state.
+        // CHANGE: Remove startup task state detecting.
 		/*_ = DetectOpenFilesAtStartupAsync();*/
 	}
 

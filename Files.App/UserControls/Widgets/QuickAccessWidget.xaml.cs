@@ -16,7 +16,7 @@ public sealed partial class QuickAccessWidget : UserControl
 
     public QuickAccessWidget(IFolderViewViewModel folderViewViewModel)
     {
-        // CHANGE: Initialize and view model.
+        // CHANGE: Initialize view model.
         ViewModel.Initialize(folderViewViewModel);
 
         InitializeComponent();

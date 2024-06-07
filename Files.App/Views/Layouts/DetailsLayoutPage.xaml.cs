@@ -141,7 +141,7 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 
         base.OnNavigatedTo(eventArgs);
 
-        // CHANGE: Initialize in navigation event instead of constructor.
+        // CHANGE: Initialize command.
         UpdateSortOptionsCommand = new RelayCommand<string>(x =>
         {
             if (!Enum.TryParse<SortOption>(x, out var val))

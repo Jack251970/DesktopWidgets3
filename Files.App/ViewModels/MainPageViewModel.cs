@@ -266,7 +266,7 @@ public sealed class MainPageViewModel : ObservableObject
             }
         }
 
-        // CHANGE: Don't load app theme resources.
+        // CHANGE: Remove theme resource loading.
         /*// Load the app theme resources
         ResourcesService.LoadAppResources(AppearanceSettingsService);*/
 

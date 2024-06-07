@@ -18,10 +18,10 @@ public sealed partial class SearchBox : UserControl
         set => SetValue(SearchBoxViewModelProperty, value);
     }
 
-    // CHANGE: Fix suggestions binding bug.
+    // CHANGE: Fix for null reference exception.
     public ObservableCollection<SuggestionModel>? Suggestions => SearchBoxViewModel?.Suggestions;
 
-    // CHANGE: Fix query binding bug.
+    // CHANGE: Fix for null reference exception.
     public string Query
     {
         get => SearchBoxViewModel?.Query ?? string.Empty;
@@ -33,7 +33,7 @@ public sealed partial class SearchBox : UserControl
         InitializeComponent();
     }
 
-    // CHANGE: Fix got focus event binding bug.
+    // CHANGE: Fix for null reference exception.
     private void SearchRegion_GotFocus(object sender, RoutedEventArgs e)
         => SearchBoxViewModel?.SearchRegion_GotFocus(sender, e);
 

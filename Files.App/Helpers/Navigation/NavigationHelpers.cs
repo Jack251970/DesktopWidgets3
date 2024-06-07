@@ -16,7 +16,7 @@ public static class NavigationHelpers
 	private static DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetService<DrivesViewModel>();
     private static INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetService<INetworkDrivesService>();
 
-    // CHANGE: Open in explorer.
+    // CHANGE: Opening in explorer functions.
     public static async Task OpenInExplorerAsync(string path) => await OpenInExplorerAsync(path, string.Empty);
     public static async Task OpenInExplorerAsync(string path, string args)
     {
@@ -39,14 +39,14 @@ public static class NavigationHelpers
 
     public static Task OpenPathInNewTab(IFolderViewViewModel folderViewViewModel, string? path, bool focusNewTab)
 	{
-        // CHANGE: Open path in new tab means opening in explorer.
+        // CHANGE: Opening in explorer instead of opening path in new tab.
+        /*return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), path, focusNewTab);*/
         if (folderViewViewModel is null)
         {
             return Task.CompletedTask;
         }
 
         return OpenInExplorerAsync(path!);
-        /*return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), path, focusNewTab);*/
     }
 
     public static Task AddNewTabAsync(IFolderViewViewModel folderViewViewModel)
@@ -333,7 +333,7 @@ public static class NavigationHelpers
 
 	public static async Task LaunchNewWindowAsync(IFolderViewViewModel folderViewViewModel)
 	{
-        // CHANGE: Notify creating new widget when launching new window.
+        // CHANGE: Notifying instead of launching new window.
         await folderViewViewModel.MainWindow.ShowMessageDialogAsync("NavigationToolbarNewWindow/Content".GetLocalized(), "NavigationToolbarNewWindow/Label".GetLocalizedResource());
         /*var filesUWPUri = new Uri("files-uwp:?window=");
 		return Launcher.LaunchUriAsync(filesUWPUri).AsTask();*/
@@ -365,7 +365,8 @@ public static class NavigationHelpers
             return;
         }
 
-        // CHANGE: Opening in new tab, which means opening in explorer, only happens when multiple folders are selected.
+        // CHANGE: Navigating new path instead of opening single folders in new tab.
+        // CHANGE: Opening in explorer instead of opening multiple folders in new tab.
         forceOpenInNewTab = selectedItems.Count(item => item.PrimaryItemAttribute == StorageItemTypes.Folder) > 1;
         foreach (var item in selectedItems)
 		{
@@ -749,7 +750,7 @@ public static class NavigationHelpers
 
 	private static async Task OpenPathAsync(IFolderViewViewModel folderViewViewModel, bool forceOpenInNewTab, bool openFolderInNewTabSetting, string path, string text, IShellPage associatedInstance, IEnumerable<string>? selectItems = null)
 	{
-        // CHANGE: Add allow navigation setting.
+        // CHANGE: Navigation setting.
 		if (forceOpenInNewTab || openFolderInNewTabSetting || !folderViewViewModel.AllowNavigation)
         {
 			await OpenPathInNewTab(folderViewViewModel, text, true);

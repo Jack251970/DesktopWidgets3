@@ -44,7 +44,7 @@ public sealed class PinnedFoldersManager
 				.Where(link => (bool?)link.Properties["System.Home.IsPinned"] ?? false)
 				.Select(link => link.FilePath).ToList();
 			RemoveStaleSidebarItems();
-            // CHANGE: Default set showFavoritesSection to true.
+            // TODO: Add setting support.
             await AddAllItemsToSidebarAsync(true);
 		}
 		finally

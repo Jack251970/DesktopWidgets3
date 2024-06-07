@@ -302,7 +302,7 @@ public sealed class SystemTrayIcon : IDisposable
         }
         else
         {
-            // CHANGE: Don't exit the app.
+            // CHANGE: Remove exit call.
             /*App.Current.Exit();*/
         }
     }

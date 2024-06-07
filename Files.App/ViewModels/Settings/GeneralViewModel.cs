@@ -172,7 +172,7 @@ public sealed class GeneralViewModel : ObservableObject, IDisposable
 
 	private void AddSupportedAppLanguages()
 	{
-        // CHANGE: Only support English and Chinese.
+        // CHANGE: Manully add supported languages.
         try
         {
             var appLanguages = ApplicationLanguages.ManifestLanguages

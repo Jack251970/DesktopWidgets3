@@ -159,7 +159,7 @@ public sealed partial class WidgetWindow : WindowEx
             await viewModel.EnableUpdate(!isEditMode);
         }
 
-        // change window size
+        // set window size
         if (isEditMode)
         {
             Size = new RectSize(size.Width + divSize.Width, size.Height + divSize.Height);
