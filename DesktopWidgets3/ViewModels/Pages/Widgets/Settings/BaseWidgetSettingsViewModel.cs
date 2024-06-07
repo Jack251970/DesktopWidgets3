@@ -55,6 +55,7 @@ public abstract partial class BaseWidgetSettingsViewModel : ObservableRecipient,
         if (NeedUpdate)
         {
             _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, WidgetSettings!);
+            NeedUpdate = false;
         }
     }
 

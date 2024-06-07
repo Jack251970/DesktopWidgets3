@@ -95,8 +95,9 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
             var newPath = await StorageHelper.PickSingleFolderDialog(App.MainWindow.WindowHandle);
             if (!string.IsNullOrEmpty(newPath))
             {
-                Settings.FolderPath = FolderPath = newPath;
+                Settings.FolderPath = newPath;
                 NeedUpdate = true;
+                FolderPath = newPath;
             }
         }
     }
