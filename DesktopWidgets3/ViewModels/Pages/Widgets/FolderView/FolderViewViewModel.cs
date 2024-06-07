@@ -138,6 +138,31 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             _userSettingsService.LayoutSettingsService.SyncFolderPreferencesAcrossDirectories = settings.SyncFolderPreferencesAcrossDirectories;
         }
 
+        if (_userSettingsService.LayoutSettingsService.DetailsViewSize != settings.DetailsViewSize)
+        {
+            _userSettingsService.LayoutSettingsService.DetailsViewSize = settings.DetailsViewSize;
+        }
+
+        if (_userSettingsService.LayoutSettingsService.ListViewSize != settings.ListViewSize)
+        {
+            _userSettingsService.LayoutSettingsService.ListViewSize = settings.ListViewSize;
+        }
+
+        if (_userSettingsService.LayoutSettingsService.TilesViewSize != settings.TilesViewSize)
+        {
+            _userSettingsService.LayoutSettingsService.TilesViewSize = settings.TilesViewSize;
+        }
+
+        if (_userSettingsService.LayoutSettingsService.GridViewSize != settings.GridViewSize)
+        {
+            _userSettingsService.LayoutSettingsService.GridViewSize = settings.GridViewSize;
+        }
+
+        if (_userSettingsService.LayoutSettingsService.ColumnsViewSize != settings.ColumnsViewSize)
+        {
+            _userSettingsService.LayoutSettingsService.ColumnsViewSize = settings.ColumnsViewSize;
+        }
+
         if (_userSettingsService.FoldersSettingsService.ShowHiddenItems != settings.ShowHiddenItems)
         {
             _userSettingsService.FoldersSettingsService.ShowHiddenItems = settings.ShowHiddenItems;
@@ -212,6 +237,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             AllowNavigation = AllowNavigation,
             MoveShellExtensionsToSubMenu = _userSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu,
             SyncFolderPreferencesAcrossDirectories = _userSettingsService.LayoutSettingsService.SyncFolderPreferencesAcrossDirectories,
+            DetailsViewSize = _userSettingsService.LayoutSettingsService.DetailsViewSize,
+            ListViewSize = _userSettingsService.LayoutSettingsService.ListViewSize,
+            TilesViewSize = _userSettingsService.LayoutSettingsService.TilesViewSize,
+            GridViewSize = _userSettingsService.LayoutSettingsService.GridViewSize,
+            ColumnsViewSize = _userSettingsService.LayoutSettingsService.ColumnsViewSize,
             ShowHiddenItems = _userSettingsService.FoldersSettingsService.ShowHiddenItems,
             ShowDotFiles = _userSettingsService.FoldersSettingsService.ShowDotFiles,
             ShowProtectedSystemFiles = _userSettingsService.FoldersSettingsService.ShowProtectedSystemFiles,
@@ -238,6 +268,21 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             case nameof(ILayoutSettingsService.SyncFolderPreferencesAcrossDirectories):
                 Settings.SyncFolderPreferencesAcrossDirectories = (bool)e.NewValue!;
                 break;
+            case nameof(ILayoutSettingsService.DetailsViewSize):
+                Settings.DetailsViewSize = (DetailsViewSizeKind)Enum.Parse(typeof(DetailsViewSizeKind), e.NewValue!.ToString()!);
+                break;
+            case nameof(ILayoutSettingsService.ListViewSize):
+                Settings.ListViewSize = (ListViewSizeKind)Enum.Parse(typeof(ListViewSizeKind), e.NewValue!.ToString()!);
+                break;
+            case nameof(ILayoutSettingsService.TilesViewSize):
+                Settings.TilesViewSize = (TilesViewSizeKind)Enum.Parse(typeof(TilesViewSizeKind), e.NewValue!.ToString()!);
+                break;
+            case nameof(ILayoutSettingsService.GridViewSize):
+                Settings.GridViewSize = (GridViewSizeKind)Enum.Parse(typeof(GridViewSizeKind), e.NewValue!.ToString()!);
+                break;
+            case nameof(ILayoutSettingsService.ColumnsViewSize):
+                Settings.ColumnsViewSize = (ColumnsViewSizeKind)Enum.Parse(typeof(ColumnsViewSizeKind), e.NewValue!.ToString()!);
+                break;
 			case nameof(IFoldersSettingsService.ShowHiddenItems):
                 Settings.ShowHiddenItems = (bool)e.NewValue!;
                 break;
@@ -263,7 +308,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
                 Settings.ShowFileExtensionWarning = (bool)e.NewValue!;
                 break;
             case nameof(IGeneralSettingsService.ConflictsResolveOption):
-                Settings.ConflictsResolveOption = (FileNameConflictResolveOptionType)Convert.ToUInt32(e.NewValue);
+                Settings.ConflictsResolveOption = (FileNameConflictResolveOptionType)Enum.Parse(typeof(FileNameConflictResolveOptionType), e.NewValue!.ToString()!);
                 break;
             case nameof(IApplicationSettingsService.ShowRunningAsAdminPrompt):
                 Settings.ShowRunningAsAdminPrompt = (bool)e.NewValue!;

@@ -42,6 +42,16 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
 
     public bool SyncFolderPreferencesAcrossDirectories { get; set; } = false;
 
+    public DetailsViewSizeKind DetailsViewSize { get; set; } = DetailsViewSizeKind.Small;
+
+    public ListViewSizeKind ListViewSize { get; set; } = ListViewSizeKind.Small;
+
+    public TilesViewSizeKind TilesViewSize { get; set; } = TilesViewSizeKind.Small;
+
+    public GridViewSizeKind GridViewSize { get; set; } = GridViewSizeKind.Small;
+
+    public ColumnsViewSizeKind ColumnsViewSize { get; set; } = ColumnsViewSizeKind.Small;
+
     public bool ShowHiddenItems { get; set; } = false;
 
     public bool ShowDotFiles { get; set; } = true;
@@ -71,6 +81,11 @@ public class FolderViewWidgetSettings : BaseWidgetSettings
         clone.AllowNavigation = AllowNavigation;
         clone.MoveShellExtensionsToSubMenu = MoveShellExtensionsToSubMenu;
         clone.SyncFolderPreferencesAcrossDirectories = SyncFolderPreferencesAcrossDirectories;
+        clone.DetailsViewSize = DetailsViewSize;
+        clone.ListViewSize = ListViewSize;
+        clone.TilesViewSize = TilesViewSize;
+        clone.GridViewSize = GridViewSize;
+        clone.ColumnsViewSize = ColumnsViewSize;
         clone.ShowHiddenItems = ShowHiddenItems;
         clone.ShowDotFiles = ShowDotFiles;
         clone.ShowProtectedSystemFiles = ShowProtectedSystemFiles;
