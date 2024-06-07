@@ -74,9 +74,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         set => Set((long)value);
     }
 
+    // CHANGE: Change to new default setting.
     public double GitStatusColumnWidth
     {
-        get => Get(80d);
+        get => Get(67d);
         set
         {
             if (ShowGitStatusColumn)
@@ -86,9 +87,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double GitLastCommitDateColumnWidth
     {
-        get => Get(140d);
+        get => Get(118d);
         set
         {
             if (ShowGitLastCommitDateColumn)
@@ -98,9 +100,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double GitLastCommitMessageColumnWidth
     {
-        get => Get(140d);
+        get => Get(118d);
         set
         {
             if (ShowGitLastCommitMessageColumn)
@@ -110,9 +113,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double GitCommitAuthorColumnWidth
     {
-        get => Get(140d);
+        get => Get(118d);
         set
         {
             if (ShowGitCommitAuthorColumn)
@@ -122,9 +126,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double GitLastCommitShaColumnWidth
     {
-        get => Get(80d);
+        get => Get(67d);
         set
         {
             if (ShowGitLastCommitShaColumn)
@@ -134,9 +139,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double TagColumnWidth
     {
-        get => Get(140d);
+        get => Get(118d);
         set
         {
             if (ShowFileTagColumn)
@@ -146,15 +152,17 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double NameColumnWidth
     {
-        get => Get(240d);
+        get => Get(201d);
         set => Set(value);
     }
 
+    // CHANGE: Change to new default setting.
     public double DateModifiedColumnWidth
     {
-        get => Get(200d);
+        get => Get(168d);
         set
         {
             if (ShowDateColumn)
@@ -164,9 +172,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double TypeColumnWidth
     {
-        get => Get(140d);
+        get => Get(118d);
         set
         {
             if (ShowTypeColumn)
@@ -176,9 +185,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double DateCreatedColumnWidth
     {
-        get => Get(200d);
+        get => Get(168d);
         set
         {
             if (ShowDateCreatedColumn)
@@ -188,9 +198,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double SizeColumnWidth
     {
-        get => Get(100d);
+        get => Get(84d);
         set
         {
             if (ShowSizeColumn)
@@ -200,9 +211,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double DateDeletedColumnWidth
     {
-        get => Get(200d);
+        get => Get(168d);
         set
         {
             if (ShowDateDeletedColumn)
@@ -212,9 +224,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double PathColumnWidth
     {
-        get => Get(200d);
+        get => Get(168d);
         set
         {
             if (ShowPathColumn)
@@ -224,9 +237,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double OriginalPathColumnWidth
     {
-        get => Get(200d);
+        get => Get(168d);
         set
         {
             if (ShowOriginalPathColumn)
@@ -236,9 +250,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public double SyncStatusColumnWidth
     {
-        get => Get(50d);
+        get => Get(42d);
         set
         {
             if (ShowSyncStatusColumn)
@@ -248,9 +263,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         }
     }
 
+    // CHANGE: Change to new default setting.
     public bool ShowDateColumn
     {
-        get => Get(true);
+        get => Get(false);
         set => Set(value);
     }
 
@@ -302,27 +318,31 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         set => Set(value);
     }
 
+    // CHANGE: Change to new default setting.
     public bool ShowFileTagColumn
     {
-        get => Get(true);
+        get => Get(false);
         set => Set(value);
     }
 
+    // CHANGE: Change to new default setting.
     public bool ShowDateDeletedColumn
     {
-        get => Get(true);
+        get => Get(false);
         set => Set(value);
     }
 
+    // CHANGE: Change to new default setting.
     public bool ShowPathColumn
     {
-        get => Get(true);
+        get => Get(false);
         set => Set(value);
     }
 
+    // CHANGE: Change to new default setting.
     public bool ShowOriginalPathColumn
     {
-        get => Get(true);
+        get => Get(false);
         set => Set(value);
     }
 
@@ -350,9 +370,10 @@ internal sealed class LayoutSettingsService : BaseObservableJsonSettings, ILayou
         set => Set(value);
     }
 
+    // CHANGE: Change to new default setting.
     public GridViewSizeKind GridViewSize
     {
-        get => Get(GridViewSizeKind.Large);
+        get => Get(GridViewSizeKind.Small);
         set => Set(value);
     }
 
