@@ -1,6 +1,8 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Files.App.ViewModels.Dialogs;
+using Files.App.ViewModels.Dialogs.AddItemDialog;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -8,17 +10,24 @@ namespace Files.App.Dialogs;
 
 public sealed partial class AddItemDialog : ContentDialog, IDialog<AddItemDialogViewModel>
 {
+    private readonly IFolderViewViewModel FolderViewViewModel;
+
 	private readonly IAddItemService addItemService = DependencyExtensions.GetService<IAddItemService>();
 
-	public AddItemDialogViewModel ViewModel
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;
+
+    public AddItemDialogViewModel ViewModel
 	{
 		get => (AddItemDialogViewModel)DataContext;
 		set => DataContext = value;
-	}
+    }
 
-	public AddItemDialog()
+	public AddItemDialog(IFolderViewViewModel folderViewViewModel)
 	{
-		InitializeComponent();
+        FolderViewViewModel = folderViewViewModel;
+
+        InitializeComponent();
 	}
 
 	public async new Task<DialogResult> ShowAsync()

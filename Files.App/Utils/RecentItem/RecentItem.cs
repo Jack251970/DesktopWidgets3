@@ -1,16 +1,13 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.UserControls.Widgets;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.Storage;
-using Windows.Storage.FileProperties;
 
 namespace Files.App.Utils.RecentItem;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-public class RecentItem : WidgetCardItem, IEquatable<RecentItem>
+public sealed class RecentItem : WidgetCardItem, IEquatable<RecentItem>
 {
 	private BitmapImage _fileImg;
 	public BitmapImage FileImg
@@ -21,18 +18,13 @@ public class RecentItem : WidgetCardItem, IEquatable<RecentItem>
 	public string LinkPath { get; set; }    // path of shortcut item (this is unique)
 	public string RecentPath { get; set; }  // path to target item
 	public string Name { get; set; }
-	public StorageItemTypes Type { get; set; }
-	public bool FolderImg { get; set; }
-	public bool EmptyImgVis { get; set; }
-	public bool FileIconVis { get; set; }
-    public bool IsFile => Type == StorageItemTypes.File;
-    public DateTime LastModified { get; set; }
+	public DateTime LastModified { get; set; }
 	public byte[] PIDL { get; set; }
-    public new string Path => RecentPath;
+    public override string Path => RecentPath;
 
     public RecentItem()
 	{
-		EmptyImgVis = true; // defer icon load to LoadRecentItemIcon()
+		
 	}
 
 	/// <summary>
@@ -48,48 +40,47 @@ public class RecentItem : WidgetCardItem, IEquatable<RecentItem>
 	/// <summary>
 	/// Create a RecentItem from a ShellLinkItem (usually from shortcuts in `Windows\Recent`)
 	/// </summary>
-	public RecentItem(ShellLinkItem linkItem) : base()
-	{
+	public RecentItem(ShellLinkItem linkItem, bool showFileExtension) : base()
+    {
 		LinkPath = linkItem.FilePath;
 		RecentPath = linkItem.TargetPath;
-		Name = NameOrPathWithoutExtension(linkItem.FileName);
-		Type = linkItem.IsFolder ? StorageItemTypes.Folder : ZipStorageFolder.IsZipPath(LinkPath) ? StorageItemTypes.Folder : StorageItemTypes.File;
-		FolderImg = linkItem.IsFolder;
-		FileIconVis = !linkItem.IsFolder;
-		LastModified = linkItem.ModifiedDate;
+        Name = showFileExtension ? linkItem.FileName : NameOrPathWithoutExtension(linkItem.FileName);
+        LastModified = linkItem.ModifiedDate;
 		PIDL = linkItem.PIDL;
 	}
 
-	/// <summary>
-	/// Create a RecentItem from a ShellFileItem (usually from enumerating Quick Access directly).
-	/// </summary>
-	/// <param name="fileItem">The shell file item</param>
-	public RecentItem(ShellFileItem fileItem) : base()
-	{
-		LinkPath = ShellStorageFolder.IsShellPath(fileItem.FilePath) ? fileItem.RecyclePath : fileItem.FilePath; // use true path on disk for shell items
-		RecentPath = LinkPath; // intentionally the same
-		Name = NameOrPathWithoutExtension(fileItem.FileName);
-		Type = fileItem.IsFolder ? StorageItemTypes.Folder : ZipStorageFolder.IsZipPath(LinkPath) ? StorageItemTypes.Folder : StorageItemTypes.File;
-		FolderImg = fileItem.IsFolder;
-		FileIconVis = !fileItem.IsFolder;
-		LastModified = fileItem.ModifiedDate;
-		PIDL = fileItem.PIDL;
-	}
+    /// <summary>
+    /// Create a RecentItem from a ShellFileItem (usually from enumerating Quick Access directly).
+    /// </summary>
+    /// <param name="fileItem">The shell file item</param>
+    public RecentItem(ShellFileItem fileItem, bool showFileExtension) : base()
+    {
+        LinkPath = ShellStorageFolder.IsShellPath(fileItem.FilePath) ? fileItem.RecyclePath : fileItem.FilePath; // use true path on disk for shell items
+        RecentPath = LinkPath; // intentionally the same
+        Name = showFileExtension ? fileItem.FileName : NameOrPathWithoutExtension(fileItem.FileName);
+        LastModified = fileItem.ModifiedDate;
+        PIDL = fileItem.PIDL;
+    }
 
-	public async Task LoadRecentItemIconAsync()
-	{
-		var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(RecentPath, 96u, ThumbnailMode.SingleItem, ThumbnailOptions.ResizeThumbnail);
-        if (iconData is not null)
+    public async Task LoadRecentItemIconAsync()
+    {
+        var result = await FileThumbnailHelper.GetIconAsync(
+            RecentPath,
+            Constants.ShellIconSizes.Small,
+            false,
+            IconOptions.UseCurrentScale);
+
+        var bitmapImage = await result.ToBitmapAsync();
+        if (bitmapImage is not null)
         {
-			EmptyImgVis = false;
-			FileImg = (await iconData.ToBitmapAsync())!;
-		}
-	}
+            FileImg = bitmapImage;
+        }
+    }
 
-	/// <summary>
-	/// Test equality for generic collection methods such as Remove(...)
-	/// </summary>
-	public bool Equals(RecentItem? other)
+    /// <summary>
+    /// Test equality for generic collection methods such as Remove(...)
+    /// </summary>
+    public bool Equals(RecentItem? other)
 	{
 		if (other is null)
 		{

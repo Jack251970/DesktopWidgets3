@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -10,6 +10,9 @@ namespace Files.App.Dialogs;
 public sealed partial class FilesystemOperationDialog : ContentDialog, IDialog<FileSystemDialogViewModel>
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
+
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;
 
     public FileSystemDialogViewModel ViewModel
 	{
@@ -59,7 +62,7 @@ public sealed partial class FilesystemOperationDialog : ContentDialog, IDialog<F
 	{
 		if (ViewModel.FileSystemDialogMode.ConflictsExist)
         {
-            ContainerGrid.Width = FolderViewViewModel.MainWindow.Bounds.Width <= 700 ? FolderViewViewModel.MainWindow.Bounds.Width - 50 : 650;
+            ContainerGrid.Width = FolderViewViewModel.Bounds.Width <= 700 ? FolderViewViewModel.Bounds.Width - 50 : 650;
         }
     }
 

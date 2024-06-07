@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage.LocatableStorage;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using System.Runtime.InteropServices;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Portable;
 using Windows.Storage;
@@ -13,7 +13,7 @@ namespace Files.App.Utils;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning disable CA2254 // Template should be a static expression
 
-public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
+public sealed class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 {
 	public event EventHandler<ILocatableFolder> DeviceAdded;
 	public event EventHandler<string> DeviceRemoved;
@@ -88,8 +88,8 @@ public class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 		{
 			root = StorageDevice.FromId(deviceId);
 		}
-		catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException)
-		{
+        catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException or COMException)
+        {
             App.Logger?.LogWarning($"{ex.GetType()}: Attempting to add the device, {args.Name},"
 				+ $" failed at the StorageFolder initialization step. This device will be ignored. Device ID: {deviceId}");
 			return;

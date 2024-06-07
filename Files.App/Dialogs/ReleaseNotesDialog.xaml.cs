@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -9,6 +9,9 @@ namespace Files.App.Dialogs;
 public sealed partial class ReleaseNotesDialog : ContentDialog, IDialog<ReleaseNotesDialogViewModel>
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
+
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;
 
     public ReleaseNotesDialogViewModel ViewModel
 	{
@@ -28,7 +31,7 @@ public sealed partial class ReleaseNotesDialog : ContentDialog, IDialog<ReleaseN
 
 	private void UpdateDialogLayout()
 	{
-		ContainerGrid.MaxHeight = FolderViewViewModel.MainWindow.Bounds.Height - 70;
+		ContainerGrid.MaxHeight = FolderViewViewModel.Bounds.Height - 70;
 	}
 
 	private void Current_SizeChanged(object sender, WindowSizeChangedEventArgs e)

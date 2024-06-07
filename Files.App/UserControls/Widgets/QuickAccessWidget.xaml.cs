@@ -1,476 +1,52 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
-using Files.App.ViewModels.Widgets;
+
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media.Imaging;
-using System.Collections.Specialized;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
-using Windows.System;
-using Windows.UI.Core;
 
 namespace Files.App.UserControls.Widgets;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
-public class QuickAccessCardEventArgs : EventArgs
+/// <summary>
+/// Represents group of control displays a list of quick access folders with <see cref="WidgetFolderCardItem"/>.
+/// </summary>
+public sealed partial class QuickAccessWidget : UserControl
 {
-	public LocationItem Item { get; set; }
-}
+    public QuickAccessWidgetViewModel ViewModel { get; set; } = DependencyExtensions.GetService<QuickAccessWidgetViewModel>();
 
-public class QuickAccessCardInvokedEventArgs : EventArgs
-{
-	public string Path { get; set; }
-}
-
-public class ModifyQuickAccessEventArgs : EventArgs
-{
-	public string[] Paths { get; set; }
-	public ShellFileItem[] Items { get; set; }
-	public bool Add;
-	public bool Pin = true;
-	public bool Reset = false;
-	public bool Reorder = false;
-
-	public ModifyQuickAccessEventArgs(string[] paths, bool add)
-	{
-		Paths = paths;
-		Add = add;
-	}
-
-	public ModifyQuickAccessEventArgs(ShellFileItem[] items, bool add)
-	{
-		Paths = items.Select(x => x.FilePath).ToArray();
-		Items = items;
-		Add = add;
-	}
-}
-
-public class FolderCardItem : WidgetCardItem, IWidgetCardItem<LocationItem>
-{
-	private BitmapImage thumbnail;
-	private byte[] thumbnailData;
-
-	public string AutomationProperties { get; set; }
-	public bool HasPath => !string.IsNullOrEmpty(Path);
-	public bool HasThumbnail => thumbnail is not null && thumbnailData is not null;
-	public BitmapImage Thumbnail
-	{
-		get => thumbnail;
-		set => SetProperty(ref thumbnail, value);
-	}
-	public new LocationItem Item { get; private set; }
-	public string Text { get; set; }
-	public bool IsPinned { get; set; }
-
-	public FolderCardItem(LocationItem item, string text, bool isPinned)
-	{
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			Text = text;
-			AutomationProperties = Text;
-		}
-		IsPinned = isPinned;
-		Item = item;
-		Path = item.Path;
-	}
-
-	public async Task LoadCardThumbnailAsync()
-	{
-        if (thumbnailData is null || thumbnailData.Length == 0)
-        {
-            thumbnailData = await FileThumbnailHelper.LoadIconFromPathAsync(Path, Convert.ToUInt32(Constants.DefaultIconSizes.Jumbo), Windows.Storage.FileProperties.ThumbnailMode.SingleItem, Windows.Storage.FileProperties.ThumbnailOptions.ResizeThumbnail);
-        }
-        if (thumbnailData is not null && thumbnailData.Length > 0)
-        {
-            Thumbnail = (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => thumbnailData.ToBitmapAsync(Constants.DefaultIconSizes.Jumbo)))!;
-        }
-	}
-}
-
-public sealed partial class QuickAccessWidget : HomePageWidget, IWidgetItem, INotifyPropertyChanged
-{
-	public IUserSettingsService userSettingsService;
-    private IHomePageContext HomePageContext { get; } = DependencyExtensions.GetService<IHomePageContext>();
-
-    public static readonly ObservableCollection<FolderCardItem> ItemsAdded = [];
-
-	static QuickAccessWidget()
-	{
-		ItemsAdded.CollectionChanged += ItemsAdded_CollectionChanged;
-	}
-
-	public QuickAccessWidget()
-	{
-		InitializeComponent();
-
-		Loaded += QuickAccessWidget_Loaded;
-		Unloaded += QuickAccessWidget_Unloaded;
-
-		OpenInNewTabCommand = new AsyncRelayCommand<FolderCardItem>(OpenInNewTabAsync);
-		OpenInNewWindowCommand = new AsyncRelayCommand<FolderCardItem>(OpenInNewWindowAsync);
-		OpenInNewPaneCommand = new RelayCommand<FolderCardItem>(OpenInNewPane);
-		OpenPropertiesCommand = new RelayCommand<FolderCardItem>(OpenProperties);
-		PinToFavoritesCommand = new AsyncRelayCommand<FolderCardItem>(PinToFavoritesAsync);
-		UnpinFromFavoritesCommand = new AsyncRelayCommand<FolderCardItem>(UnpinFromFavoritesAsync);
-	}
-
-    public new void Initialize(IFolderViewViewModel folderViewViewModel)
+    public QuickAccessWidget(IFolderViewViewModel folderViewViewModel)
     {
-        base.Initialize(folderViewViewModel);
+        // CHANGE: Initialize and view model.
+        ViewModel.Initialize(folderViewViewModel);
 
-        userSettingsService = UserSettingsService;
+        InitializeComponent();
     }
 
-    public delegate void QuickAccessCardInvokedEventHandler(object sender, QuickAccessCardInvokedEventArgs e);
-
-	public delegate void QuickAccessCardNewPaneInvokedEventHandler(object sender, QuickAccessCardInvokedEventArgs e);
-
-	public delegate void QuickAccessCardPropertiesInvokedEventHandler(object sender, QuickAccessCardEventArgs e);
-
-	public event QuickAccessCardInvokedEventHandler CardInvoked;
-
-	public event QuickAccessCardNewPaneInvokedEventHandler CardNewPaneInvoked;
-
-	public event QuickAccessCardPropertiesInvokedEventHandler CardPropertiesInvoked;
-
-    // CHANGE: Unused event.
-	/*public event EventHandler QuickAccessWidgetShowMultiPaneControlsInvoked;*/
-
-	public event PropertyChangedEventHandler? PropertyChanged;
-
-	public bool IsWidgetSettingEnabled => UserSettingsService.GeneralSettingsService.ShowQuickAccessWidget;
-
-	public bool ShowMenuFlyout => false;
-
-	public MenuFlyoutItem MenuFlyoutItem => null!;
-
-	public new ICommand OpenPropertiesCommand;
-	public ICommand OpenInNewPaneCommand;
-
-	public string WidgetName => nameof(QuickAccessWidget);
-
-	public string AutomationProperties => "QuickAccess".GetLocalizedResource();
-
-	public string WidgetHeader => "QuickAccess".GetLocalizedResource();
-
-	public override List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false)
-	{
-		return new List<ContextMenuFlyoutItemViewModel>()
-		{				
-			new()
-			{
-				Text = "OpenInNewTab".GetLocalizedResource(),
-				OpacityIcon = new OpacityIconModel()
-				{
-					OpacityIconStyle = "ColorIconOpenInNewTab",
-				},
-				Command = OpenInNewTabCommand!,
-				CommandParameter = item,
-				ShowItem = userSettingsService.GeneralSettingsService.ShowOpenInNewTab
-			},
-			new()
-			{
-				Text = "OpenInNewWindow".GetLocalizedResource(),
-				OpacityIcon = new OpacityIconModel()
-				{
-					OpacityIconStyle = "ColorIconOpenInNewWindow",
-				},
-				Command = OpenInNewWindowCommand!,
-				CommandParameter = item,
-				ShowItem = userSettingsService.GeneralSettingsService.ShowOpenInNewWindow
-			},
-			new()
-			{
-				Text = "OpenInNewPane".GetLocalizedResource(),
-				Command = OpenInNewPaneCommand,
-				CommandParameter = item,
-				ShowItem = userSettingsService.GeneralSettingsService.ShowOpenInNewPane
-			},
-			new()
-			{
-				Text = "PinToFavorites".GetLocalizedResource(),
-				OpacityIcon = new OpacityIconModel()
-				{
-					OpacityIconStyle = "ColorIconPinToFavorites",
-				},
-				Command = PinToFavoritesCommand!,
-				CommandParameter = item,
-				ShowItem = !isPinned
-			},
-			new()
-			{
-				Text = "UnpinFromFavorites".GetLocalizedResource(),
-				OpacityIcon = new OpacityIconModel()
-				{
-					OpacityIconStyle = "ColorIconUnpinFromFavorites",
-				},
-				Command = UnpinFromFavoritesCommand!,
-				CommandParameter = item,
-				ShowItem = isPinned
-			},
-			new()
-			{
-				Text = "Properties".GetLocalizedResource(),
-				OpacityIcon = new OpacityIconModel()
-				{
-					OpacityIconStyle = "ColorIconProperties",
-				},
-				Command = OpenPropertiesCommand,
-				CommandParameter = item
-			},
-			new()
-			{
-				ItemType = ContextMenuFlyoutItemType.Separator,
-				Tag = "OverflowSeparator",
-			},
-			new()
-			{
-				Text = "Loading".GetLocalizedResource(),
-				Glyph = "\xE712",
-				Items = [],
-				ID = "ItemOverflow",
-				Tag = "ItemOverflow",
-				IsEnabled = false,
-			}
-		}.Where(x => x.ShowItem).ToList();
-	}
-
-	private async void ModifyItemAsync(object? sender, ModifyQuickAccessEventArgs? e)
-	{
-		if (e is null)
+    private async void Button_PointerPressed(object sender, PointerRoutedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(null).Properties.IsMiddleButtonPressed ||
+            sender is not Button button ||
+            button.Tag.ToString() is not string path)
         {
             return;
         }
 
-        await DispatcherQueue.EnqueueOrInvokeAsync(async () =>
-		{
-			if (e.Reset)
-			{
-                // Find the intersection between the two lists and determine whether to remove or add
-                var originalItemsAdded = ItemsAdded.ToList();
-                var itemsToRemove = originalItemsAdded.Where(x => !e.Paths.Contains(x.Path));
-                var itemsToAdd = e.Paths.Where(x => !originalItemsAdded.Any(y => y.Path == x));
-
-                // Remove items
-                foreach (var itemToRemove in itemsToRemove)
-                {
-                    ItemsAdded.Remove(itemToRemove);
-                }
-
-                // Add items
-                foreach (var itemToAdd in itemsToAdd)
-                {
-                    var interimItemsAdded = ItemsAdded.ToList();
-                    var item = await App.QuickAccessManager.Model.CreateLocationItemFromPathAsync(itemToAdd);
-                    var lastIndex = ItemsAdded.IndexOf(interimItemsAdded.FirstOrDefault(x => !x.IsPinned)!);
-                    var isPinned = (bool?)e.Items.Where(x => x.FilePath == itemToAdd).FirstOrDefault()?.Properties["System.Home.IsPinned"] ?? false;
-                    if (interimItemsAdded.Any(x => x.Path == itemToAdd))
-                    {
-                        continue;
-                    }
-
-                    ItemsAdded.Insert(isPinned && lastIndex >= 0 ? Math.Min(lastIndex, ItemsAdded.Count) : ItemsAdded.Count, new FolderCardItem(item, Path.GetFileName(item.Text), isPinned)
-                    {
-                        Path = item.Path,
-                    });
-                }
-
-                return;
-			}
-			if (e.Reorder)
-			{
-                // Remove pinned items
-                foreach (var itemToRemove in ItemsAdded.ToList().Where(x => x.IsPinned))
-                {
-                    ItemsAdded.Remove(itemToRemove);
-                }
-
-                // Add pinned items in the new order
-                foreach (var itemToAdd in e.Paths)
-                {
-                    var interimItemsAdded = ItemsAdded.ToList();
-                    var item = await App.QuickAccessManager.Model.CreateLocationItemFromPathAsync(itemToAdd);
-                    var lastIndex = ItemsAdded.IndexOf(interimItemsAdded.FirstOrDefault(x => !x.IsPinned)!);
-                    if (interimItemsAdded.Any(x => x.Path == itemToAdd))
-                    {
-                        continue;
-                    }
-
-                    ItemsAdded.Insert(lastIndex >= 0 ? Math.Min(lastIndex, ItemsAdded.Count) : ItemsAdded.Count, new FolderCardItem(item, Path.GetFileName(item.Text), true)
-                    {
-                        Path = item.Path,
-                    });
-                }
-
-                return;
-			}
-			if (e.Add)
-			{
-                foreach (var itemToAdd in e.Paths)
-                {
-                    var interimItemsAdded = ItemsAdded.ToList();
-                    var item = await App.QuickAccessManager.Model.CreateLocationItemFromPathAsync(itemToAdd);
-                    var lastIndex = ItemsAdded.IndexOf(interimItemsAdded.FirstOrDefault(x => !x.IsPinned)!);
-                    if (interimItemsAdded.Any(x => x.Path == itemToAdd))
-                    {
-                        continue;
-                    }
-
-                    ItemsAdded.Insert(e.Pin && lastIndex >= 0 ? Math.Min(lastIndex, ItemsAdded.Count) : ItemsAdded.Count, new FolderCardItem(item, Path.GetFileName(item.Text), e.Pin) // Add just after the Recent Folders
-                    {
-                        Path = item.Path,
-                    });
-                }
-            }
-			else
-            {
-                foreach (var itemToRemove in ItemsAdded.ToList().Where(x => e.Paths.Contains(x.Path)))
-                {
-                    ItemsAdded.Remove(itemToRemove);
-                }
-            }
-        });
-	}
-
-	private async void QuickAccessWidget_Loaded(object sender, RoutedEventArgs e)
-	{
-		Loaded -= QuickAccessWidget_Loaded;
-
-		var itemsToAdd = await QuickAccessService.GetPinnedFoldersAsync();
-		ModifyItemAsync(this, new ModifyQuickAccessEventArgs(itemsToAdd.ToArray(), false)
-		{
-			Reset = true
-		});
-
-		App.QuickAccessManager.UpdateQuickAccessWidget += ModifyItemAsync;
-	}
-
-	private void QuickAccessWidget_Unloaded(object sender, RoutedEventArgs e)
-	{
-		Unloaded -= QuickAccessWidget_Unloaded;
-		App.QuickAccessManager.UpdateQuickAccessWidget -= ModifyItemAsync;
-	}
-
-	private static async void ItemsAdded_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-	{
-		if (e.Action is NotifyCollectionChangedAction.Add)
-		{
-			foreach (FolderCardItem cardItem in e.NewItems!)
-            {
-                await cardItem.LoadCardThumbnailAsync();
-            }
-        }
-	}
-
-	private static void MenuFlyout_Opening(object sender)
-	{			
-		var pinToFavoritesItem = (sender as MenuFlyout)?.Items.SingleOrDefault(x => x.Name == "PinToFavorites");
-		if (pinToFavoritesItem is not null)
-        {
-            pinToFavoritesItem.Visibility = (pinToFavoritesItem.DataContext as FolderCardItem)?.IsPinned ?? false ? Visibility.Collapsed : Visibility.Visible;
-        }
-
-        var unpinFromFavoritesItem = (sender as MenuFlyout)?.Items.SingleOrDefault(x => x.Name == "UnpinFromFavorites");
-		if (unpinFromFavoritesItem is not null)
-        {
-            unpinFromFavoritesItem.Visibility = (unpinFromFavoritesItem.DataContext as FolderCardItem)?.IsPinned ?? false ? Visibility.Visible : Visibility.Collapsed;
-        }
+        await NavigationHelpers.OpenPathInNewTab(ViewModel.FolderViewViewModel, path, false);
     }
 
-	private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-	{
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-	}
-
-	private void OpenInNewPane(FolderCardItem? item)
-	{
-		CardNewPaneInvoked?.Invoke(this, new QuickAccessCardInvokedEventArgs { Path = item!.Path });
-	}
-
-	private async void Button_PointerPressed(object sender, PointerRoutedEventArgs e)
-	{
-		if (e.GetCurrentPoint(null).Properties.IsMiddleButtonPressed) // check middle click
-		{
-			var navigationPath = ((Button)sender).Tag.ToString()!;
-			await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, navigationPath);
-		}
-	}
-
-	private void OpenProperties(FolderCardItem? item)
-	{
-        if (!HomePageContext.IsAnyItemRightClicked)
+    private async void Button_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button ||
+            button.Tag.ToString() is not string path)
         {
             return;
         }
 
-        var flyout = HomePageContext.ItemContextFlyoutMenu;
-        EventHandler<object> flyoutClosed = null!;
-
-        flyoutClosed = (s, e) =>
-        {
-            flyout!.Closed -= flyoutClosed;
-            CardPropertiesInvoked?.Invoke(this, new QuickAccessCardEventArgs { Item = item!.Item });
-        };
-
-        flyout!.Closed += flyoutClosed;
+        await ViewModel.NavigateToPath(path);
     }
 
-	public async override Task PinToFavoritesAsync(WidgetCardItem? item)
-	{
-		await QuickAccessService.PinToSidebarAsync(item!.Path);
-
-		ModifyItemAsync(this, new ModifyQuickAccessEventArgs(new[] { item.Path }, false));
-
-		var items = (await QuickAccessService.GetPinnedFoldersAsync())
-			.Where(link => !((bool?)link.Properties["System.Home.IsPinned"] ?? false));
-
-        var recentItem = items.Where(x => !ItemsAdded.ToList().Select(y => y.Path).Contains(x.FilePath)).FirstOrDefault();
-        if (recentItem is not null)
-		{
-			ModifyItemAsync(this, new ModifyQuickAccessEventArgs(new[] { recentItem.FilePath }, true)
-			{
-				Pin = false
-			});
-		}
-	}
-
-	public async override Task UnpinFromFavoritesAsync(WidgetCardItem? item)
-	{
-		await QuickAccessService.UnpinFromSidebarAsync(item!.Path);
-
-		ModifyItemAsync(this, new ModifyQuickAccessEventArgs(new[] { item.Path }, false));
-	}
-
-	private async void Button_Click(object sender, RoutedEventArgs _)
-	{
-		var ClickedCard = (sender as Button)!.Tag.ToString()!;
-		var NavigationPath = ClickedCard; // path to navigate
-
-		if (string.IsNullOrEmpty(NavigationPath))
-        {
-            return;
-        }
-
-        var ctrlPressed = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
-		if (ctrlPressed)
-		{
-			await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, NavigationPath);
-			return;
-		}
-
-		CardInvoked?.Invoke(this, new QuickAccessCardInvokedEventArgs { Path = NavigationPath });
-	}
-
-	public Task RefreshWidgetAsync()
-	{
-		return Task.CompletedTask;
-	}
-
-	public void Dispose() 
-	{
-	}
+    private void Button_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        ViewModel.BuildItemContextMenu(sender, e);
+    }
 }

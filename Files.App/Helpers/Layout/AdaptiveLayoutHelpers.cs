@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Previews;
@@ -12,13 +12,14 @@ namespace Files.App.Helpers;
 
 public static class AdaptiveLayoutHelpers
 {
-	/*private static IFoldersSettingsService FoldersSettingsService { get; } = DependencyExtensions.GetService<IFoldersSettingsService>();*/
+    /*private static IFoldersSettingsService FoldersSettingsService { get; } = DependencyExtensions.GetService<IFoldersSettingsService>();*/
+    private static ILayoutSettingsService LayoutSettingsService { get; } = DependencyExtensions.GetService<ILayoutSettingsService>();
 
-	public static void ApplyAdaptativeLayout(IFolderViewViewModel folderViewViewModel, LayoutPreferencesManager folderSettings, string path, IList<ListedItem> filesAndFolders)
+    public static void ApplyAdaptativeLayout(IFolderViewViewModel folderViewViewModel, LayoutPreferencesManager folderSettings, string path, IList<ListedItem> filesAndFolders)
 	{
-        var FoldersSettingsService = folderViewViewModel.GetService<IFoldersSettingsService>();
+        var LayoutSettingsService = folderViewViewModel.GetService<ILayoutSettingsService>();
 		
-        if (FoldersSettingsService.SyncFolderPreferencesAcrossDirectories)
+        if (LayoutSettingsService.SyncFolderPreferencesAcrossDirectories)
         {
             return;
         }
@@ -40,9 +41,9 @@ public static class AdaptiveLayoutHelpers
 				folderSettings.ToggleLayoutModeDetailsView(false);
 				break;
 			case Layouts.Grid:
-				folderSettings.ToggleLayoutModeGridView(folderSettings.GridViewSize);
-				break;
-		}
+                folderSettings.ToggleLayoutModeGridView(false);
+                break;
+        }
 	}
 
 	private static Layouts GetAdaptiveLayout(string path, IList<ListedItem> filesAndFolders)
@@ -60,8 +61,8 @@ public static class AdaptiveLayoutHelpers
 	{
 		var iniPath = IO.Path.Combine(path, "desktop.ini");
 
-		var iniContents = NativeFileOperationsHelper.ReadStringFromFile(iniPath)?.Trim();
-		if (string.IsNullOrEmpty(iniContents))
+        var iniContents = Win32Helper.ReadStringFromFile(iniPath)?.Trim();
+        if (string.IsNullOrEmpty(iniContents))
         {
             return Layouts.None;
         }

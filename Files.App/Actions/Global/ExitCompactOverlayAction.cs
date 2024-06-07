@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Windowing;
 
 namespace Files.App.Actions;
 
-internal class ExitCompactOverlayAction : ObservableObject, IAction
+internal sealed class ExitCompactOverlayAction : ObservableObject, IAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -18,7 +18,7 @@ internal class ExitCompactOverlayAction : ObservableObject, IAction
 		=> new(opacityStyle: "ColorIconExitCompactOverlay");
 
 	public HotKey HotKey
-		=> new(Keys.Down, KeyModifiers.MenuCtrl);
+		=> new(Keys.Down, KeyModifiers.CtrlAlt);
 
 	public string Description
 		=> "ExitCompactOverlayDescription".GetLocalizedResource();
@@ -34,9 +34,9 @@ internal class ExitCompactOverlayAction : ObservableObject, IAction
         windowContext.PropertyChanged += WindowContext_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
-        var appWindow = FolderViewViewModel.MainWindow.AppWindow;
+        var appWindow = FolderViewViewModel.AppWindow;
 		appWindow.SetPresenter(AppWindowPresenterKind.Overlapped);
 
 		return Task.CompletedTask;

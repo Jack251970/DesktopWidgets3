@@ -1,6 +1,7 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.ApplicationModel.DataTransfer;
 
@@ -8,7 +9,12 @@ namespace Files.App.Dialogs;
 
 public sealed partial class GitHubLoginDialog : ContentDialog, IDialog<GitHubLoginDialogViewModel>
 {
-	public GitHubLoginDialogViewModel ViewModel
+    private readonly IFolderViewViewModel FolderViewViewModel;
+
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;
+
+    public GitHubLoginDialogViewModel ViewModel
 	{
 		get => (GitHubLoginDialogViewModel)DataContext;
 		set
@@ -26,9 +32,11 @@ public sealed partial class GitHubLoginDialog : ContentDialog, IDialog<GitHubLog
         }
 	}
 
-	public GitHubLoginDialog()
-	{
-		InitializeComponent();
+	public GitHubLoginDialog(IFolderViewViewModel folderViewViewModel)
+    {
+        FolderViewViewModel = folderViewViewModel;
+
+        InitializeComponent();
 	}
 
 	public async new Task<DialogResult> ShowAsync()

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -8,41 +8,107 @@ using Microsoft.UI.Xaml.Input;
 namespace Files.App.Data.Commands;
 
 [DebuggerDisplay("Command None")]
-public class NoneCommand : IRichCommand
+internal sealed class NoneCommand : IRichCommand
 {
-	public event EventHandler? CanExecuteChanged { add { } remove { } }
-	public event PropertyChangingEventHandler? PropertyChanging { add { } remove { } }
-	public event PropertyChangedEventHandler? PropertyChanged { add { } remove { } }
+    public event EventHandler? CanExecuteChanged { add { } remove { } }
+    public event PropertyChangingEventHandler? PropertyChanging { add { } remove { } }
+    public event PropertyChangedEventHandler? PropertyChanged { add { } remove { } }
 
-	public CommandCodes Code => CommandCodes.None;
+    /// <inheritdoc/>
+    public CommandCodes Code
+        => CommandCodes.None;
 
-	public string Label => string.Empty;
-	public string LabelWithHotKey => string.Empty;
-	public string AutomationName => string.Empty;
+    /// <inheritdoc/>
+    public string Label
+        => string.Empty;
 
-	public string Description => string.Empty;
+    /// <inheritdoc/>
+    public string LabelWithHotKey
+        => string.Empty;
 
-	public RichGlyph Glyph => RichGlyph.None;
-	public object? Icon => null;
-	public FontIcon? FontIcon => null;
-	public Style? OpacityStyle => null;
+    /// <inheritdoc/>
+    public string AutomationName
+        => string.Empty;
 
-    public bool IsCustomHotKeys => false;
-	public string? HotKeyText => null;
-	public HotKeyCollection HotKeys
-	{
-		get => HotKeyCollection.Empty;
-		set => throw new InvalidOperationException("This command is readonly.");
-	}
+    /// <inheritdoc/>
+    public string Description
+        => string.Empty;
 
-    public bool IsToggle => false;
-	public bool IsOn { get => false; set { } }
-	public bool IsExecutable => false;
+    /// <inheritdoc/>
+    public RichGlyph Glyph
+        => RichGlyph.None;
 
-	public bool CanExecute(object? parameter) => false;
-	public void Execute(object? parameter) { }
-	public Task ExecuteAsync() => Task.CompletedTask;
-	public void ExecuteTapped(object sender, TappedRoutedEventArgs e) { }
+    /// <inheritdoc/>
+    public object? Icon
+        => null;
 
-	public void ResetHotKeys() { }
+    /// <inheritdoc/>
+    public FontIcon? FontIcon
+        => null;
+
+    /// <inheritdoc/>
+    public Style? OpacityStyle
+        => null;
+
+    /// <inheritdoc/>
+    public bool IsCustomHotKeys
+        => false;
+
+    /// <inheritdoc/>
+    public string? HotKeyText
+        => null;
+
+    /// <inheritdoc/>
+    public HotKeyCollection HotKeys
+    {
+        get => HotKeyCollection.Empty;
+        set => throw new InvalidOperationException("This command is readonly.");
+    }
+
+    /// <inheritdoc/>
+    public HotKeyCollection DefaultHotKeys
+    {
+        get => HotKeyCollection.Empty;
+        set => throw new InvalidOperationException("This command is readonly.");
+    }
+
+    /// <inheritdoc/>
+    public bool IsToggle
+        => false;
+
+    /// <inheritdoc/>
+    public bool IsOn
+    {
+        get => false;
+        set
+        {
+        }
+    }
+
+    /// <inheritdoc/>
+    public bool IsExecutable
+        => false;
+
+    public bool CanExecute(object? parameter)
+        => false;
+
+    /// <inheritdoc/>
+    public void Execute(object? parameter)
+    {
+    }
+
+    /// <inheritdoc/>
+    public Task ExecuteAsync(object? parameter = null)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public void ExecuteTapped(object sender, TappedRoutedEventArgs e)
+    {
+    }
+
+    public void ResetHotKeys()
+    {
+    }
 }

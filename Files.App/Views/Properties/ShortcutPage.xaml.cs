@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
@@ -23,6 +23,11 @@ public sealed partial class ShortcutPage : BasePropertiesPage
         {
             return true;
         }
+
+        ViewModel.RunAsAdmin = ViewModel.RunAsAdminEditedValue;
+        ViewModel.ShortcutItemPath = ViewModel.ShortcutItemPathEditedValue;
+        ViewModel.ShortcutItemWorkingDir = ViewModel.ShortcutItemWorkingDirEditedValue;
+        ViewModel.ShortcutItemArguments = ViewModel.ShortcutItemArgumentsEditedValue;
 
         await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 			UIFilesystemHelpers.UpdateShortcutItemProperties(shortcutItem,

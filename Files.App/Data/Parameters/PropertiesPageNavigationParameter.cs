@@ -1,13 +1,13 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
 
 namespace Files.App.Data.Parameters;
 
-public class PropertiesPageNavigationParameter
+public sealed class PropertiesPageNavigationParameter
 {
-    // CHECK: Required is just for checking.
+    // CHECK: Required is just for final checking.
     public /*required*/ IFolderViewViewModel FolderViewViewModel = null!;
 
 	public CancellationTokenSource CancellationTokenSource = null!;

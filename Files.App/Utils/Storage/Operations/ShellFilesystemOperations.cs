@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
@@ -6,29 +6,18 @@ using Windows.Storage;
 
 namespace Files.App.Utils.Storage;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-
 /// <summary>
 /// Provides group of shell file system operation for given page instance.
 /// </summary>
-public class ShellFilesystemOperations : IFilesystemOperations
+public sealed class ShellFilesystemOperations(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance) : IFilesystemOperations
 {
-    private readonly IFolderViewViewModel _folderViewViewModel;
+    private readonly IFolderViewViewModel _folderViewViewModel = folderViewViewModel;
 
-    private IShellPage _associatedInstance;
+    private IShellPage _associatedInstance = associatedInstance;
 
-	private FilesystemOperations _filesystemOperations;
+	private FilesystemOperations _filesystemOperations = new(folderViewViewModel, associatedInstance);
 
-	public ShellFilesystemOperations(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
-	{
-        // CHANGE: Initialize folder view view model.
-        _folderViewViewModel = folderViewViewModel;
-
-		_associatedInstance = associatedInstance;
-		_filesystemOperations = new FilesystemOperations(folderViewViewModel, associatedInstance);
-	}
-
-	public Task<IStorageHistory> CopyAsync(IStorageItem source, string destination, NameCollisionOption collision, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken)
+    public Task<IStorageHistory> CopyAsync(IStorageItem source, string destination, NameCollisionOption collision, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken)
 	{
 		return CopyAsync(source.FromStorageItem(), destination, collision, progress, cancellationToken);
 	}
@@ -45,13 +34,14 @@ public class ShellFilesystemOperations : IFilesystemOperations
 
 	public async Task<IStorageHistory> CopyItemsAsync(IList<IStorageItemWithPath> source, IList<string> destination, IList<FileNameConflictResolveOptionType> collisions, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken, bool asAdmin = false)
 	{
-		if (source.Any(x => string.IsNullOrWhiteSpace(x.Path) || x.Path.StartsWith(@"\\?\", StringComparison.Ordinal)) || destination.Any(x => string.IsNullOrWhiteSpace(x) || x.StartsWith(@"\\?\", StringComparison.Ordinal) || FtpHelpers.IsFtpPath(x) || ZipStorageFolder.IsZipPath(x, false)))
-		{
-			// Fallback to built-in file operations
-			return await _filesystemOperations.CopyItemsAsync(source, destination, collisions, progress, cancellationToken);
-		}
+        if (source.Any(x => string.IsNullOrWhiteSpace(x.Path) || x.Path.StartsWith(@"\\?\", StringComparison.Ordinal) || FtpHelpers.IsFtpPath(x.Path) || ZipStorageFolder.IsZipPath(x.Path, false))
+            || destination.Any(x => string.IsNullOrWhiteSpace(x) || x.StartsWith(@"\\?\", StringComparison.Ordinal) || FtpHelpers.IsFtpPath(x) || ZipStorageFolder.IsZipPath(x, false)))
+        {
+            // Fallback to built-in file operations
+            return await _filesystemOperations.CopyItemsAsync(source, destination, collisions, progress, cancellationToken);
+        }
 
-		StatusCenterItemProgressModel fsProgress = new(
+        StatusCenterItemProgressModel fsProgress = new(
 			progress,
 			true,
 			FileSystemStatusCode.InProgress,
@@ -118,7 +108,7 @@ public class ShellFilesystemOperations : IFilesystemOperations
 		{
 			if (copyResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.Unauthorized))
 			{
-				if (!asAdmin && await RequestAdminOperation())
+                if (!asAdmin && await RequestAdminOperation())
                 {
                     return await CopyItemsAsync(source, destination, collisions, progress, cancellationToken, true);
                 }
@@ -673,9 +663,17 @@ public class ShellFilesystemOperations : IFilesystemOperations
 		{
 			if (renameResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.Unauthorized))
 			{
-				if (!asAdmin && await RequestAdminOperation())
+                if (!asAdmin && await RequestAdminOperation())
                 {
-                    return await RenameAsync(source, newName, collision, progress, cancellationToken, true);
+                    var res = await RenameAsync(source, newName, collision, progress, cancellationToken, true);
+                    if (res is null)
+                    {
+                        await DynamicDialogFactory
+                            .GetFor_RenameRequiresHigherPermissions(_folderViewViewModel, source.Path)
+                            .TryShowAsync(_folderViewViewModel);
+                    }
+
+                    return res!;
                 }
             }
 			else if (renameResult.Items.Any(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.InUse))
@@ -745,9 +743,9 @@ public class ShellFilesystemOperations : IFilesystemOperations
 		using var r = cancellationToken.Register(CancelOperation!, operationID, false);
 
 		var moveResult = new ShellOperationResult();
-		var (status, response) = await FileOperationsHelpers.MoveItemAsync(_folderViewViewModel, source.Select(s => s.Path).ToArray(), [.. destination], false, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
+        var (status, response) = await FileOperationsHelpers.MoveItemAsync(_folderViewViewModel, source.Select(s => s.Path).ToArray(), [.. destination], false, _folderViewViewModel.WindowHandle.ToInt64(), asAdmin, progress, operationID);
 
-		var result = (FilesystemResult)status;
+        var result = (FilesystemResult)status;
 		moveResult.Items.AddRange(response?.Final ?? Enumerable.Empty<ShellOperationItemResult>());
 
 		result &= (FilesystemResult)moveResult.Items.All(x => x.Succeeded);

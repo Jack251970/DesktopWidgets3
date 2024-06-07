@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Services.Settings;
@@ -14,7 +14,6 @@ using Windows.Foundation.Metadata;
 using Windows.System;
 using Windows.UI.Core;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
-using SortDirection = Files.Core.Data.Enums.SortDirection;
 
 namespace Files.App.Views.Shells;
 
@@ -53,7 +52,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
     protected ICommandManager Commands { get; set; } = null!;
 
-    public ToolbarViewModel ToolbarViewModel { get; } = new();
+    public AddressToolbarViewModel ToolbarViewModel { get; } = new();
 
     public IBaseLayoutPage SlimContentPage => ContentPage;
 
@@ -257,13 +256,14 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         _lastDateTimeFormats = UserSettingsService.GeneralSettingsService.DateTimeFormat;
         _updateDateDisplayTimer.Start();
 
-        // CHANGE: Register event handler for folder path changed.
+        // CHANGE: Folder path changed event.
         FolderViewViewModel.FolderPathChanged += FolderViewViewModel_FolderPathChanged;
     }
 
+    // CHANGE: Folder path changed event.
     private async void FolderViewViewModel_FolderPathChanged(string folderPath)
     {
-        // Move to new path
+        // Navigate to new path
         await ToolbarViewModel.CheckPathInputAsync(folderPath, ToolbarViewModel.PathComponents.LastOrDefault()?.Path!, this);
 
         // Clear back stack
@@ -309,8 +309,9 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		if (InstanceViewModel.GitRepositoryPath != FilesystemViewModel.GitDirectory)
 		{
 			InstanceViewModel.GitRepositoryPath = FilesystemViewModel.GitDirectory;
+            InstanceViewModel.IsGitRepository = FilesystemViewModel.IsValidGitDirectory;
 
-			InstanceViewModel.GitBranchName = headBranch is not null
+            InstanceViewModel.GitBranchName = headBranch is not null
 				? headBranch.Name
 				: string.Empty;
 
@@ -328,19 +329,25 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 			}
 		}
 
-		if (!GitHelpers.IsExecutingGitAction)
+        var contentPage = ContentPage;
+        if (contentPage is null)
+        {
+            return;
+        }
+
+        if (!GitHelpers.IsExecutingGitAction)
 		{
-			ContentPage.DirectoryPropertiesViewModel.UpdateGitInfo(
+            contentPage.DirectoryPropertiesViewModel.UpdateGitInfo(
 				InstanceViewModel.IsGitRepository,
 				InstanceViewModel.GitRepositoryPath,
 				headBranch);
 		}
 
-		ContentPage.DirectoryPropertiesViewModel.DirectoryItemCount = $"{FilesystemViewModel.FilesAndFolders.Count} {directoryItemCountLocalization}";
-		ContentPage.UpdateSelectionSize();
-	}
+        contentPage.DirectoryPropertiesViewModel.DirectoryItemCount = $"{FilesystemViewModel.FilesAndFolders.Count} {directoryItemCountLocalization}";
+        contentPage.UpdateSelectionSize();
+    }
 
-	protected async void FilesystemViewModel_GitDirectoryUpdated(object? sender, EventArgs e)
+    protected async void FilesystemViewModel_GitDirectoryUpdated(object? sender, EventArgs e)
 	{
 		if (GitHelpers.IsExecutingGitAction)
         {
@@ -363,7 +370,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected async void GitCheckout_Required(object? sender, string branchName)
 	{
-		if (!await GitHelpers.Checkout(FilesystemViewModel.GitDirectory, branchName))
+		if (!await GitHelpers.Checkout(FolderViewViewModel, FilesystemViewModel.GitDirectory, branchName))
 		{
 			_ContentPage.DirectoryPropertiesViewModel.ShowLocals = true;
 			_ContentPage.DirectoryPropertiesViewModel.SelectedBranchIndex = DirectoryPropertiesViewModel.ACTIVE_BRANCH_INDEX;
@@ -409,9 +416,9 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		}
 	}
 
-	protected async void ShellPage_QuerySubmitted(ISearchBox sender, SearchBoxQuerySubmittedEventArgs e)
-	{
-		if (e.ChosenSuggestion is SuggestionModel item && !string.IsNullOrWhiteSpace(item.ItemPath))
+    protected async void ShellPage_QuerySubmitted(ISearchBoxViewModel sender, SearchBoxQuerySubmittedEventArgs e)
+    {
+        if (e.ChosenSuggestion is SuggestionModel item && !string.IsNullOrWhiteSpace(item.ItemPath))
         {
             await NavigationHelpers.OpenPath(FolderViewViewModel, item.ItemPath, this);
         }
@@ -421,9 +428,12 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         }
     }
 
-	protected async void ShellPage_TextChanged(ISearchBox sender, SearchBoxTextChangedEventArgs e)
-	{
-		if (e.Reason != SearchBoxTextChangeReason.UserInput)
+    protected async void ShellPage_TextChanged(ISearchBoxViewModel sender, SearchBoxTextChangedEventArgs e)
+    {
+        FilesystemViewModel.FilesAndFoldersFilter = sender.Query;
+        await FilesystemViewModel.ApplyFilesAndFoldersChangesAsync();
+
+        if (e.Reason != SearchBoxTextChangeReason.UserInput)
         {
             return;
         }
@@ -535,14 +545,25 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         }
     }
 
-	// Ensure that the path bar gets updated for user interaction
-	// whenever the path changes.We will get the individual directories from
-	// the updated, most-current path and add them to the UI.
-	public void UpdatePathUIToWorkingDirectory(string newWorkingDir, string singleItemOverride = null!)
-	{
-		if (string.IsNullOrWhiteSpace(singleItemOverride))
+    private volatile CancellationTokenSource? cts;
+
+    // Ensure that the path bar gets updated for user interaction
+    // whenever the path changes.We will get the individual directories from
+    // the updated, most-current path and add them to the UI.
+    public async Task UpdatePathUIToWorkingDirectoryAsync(string newWorkingDir, string singleItemOverride = null!)
+    {
+        if (string.IsNullOrWhiteSpace(singleItemOverride))
 		{
-			var components = StorageFileExtensions.GetDirectoryPathComponents(newWorkingDir);
+            cts = new CancellationTokenSource();
+
+            var components = await StorageFileExtensions.GetDirectoryPathComponentsWithDisplayNameAsync(newWorkingDir);
+
+            // Cancel if overrided by single item
+            if (cts.IsCancellationRequested)
+            {
+                return;
+            }
+
             ToolbarViewModel.PathComponents.Clear();
             foreach (var component in components)
             {
@@ -551,8 +572,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
         }
 		else
 		{
-			// Clear the path UI
-			ToolbarViewModel.PathComponents.Clear();
+            cts?.Cancel();
+
+            // Clear the path UI
+            ToolbarViewModel.PathComponents.Clear();
 			ToolbarViewModel.IsSingleItemOverride = true;
 			ToolbarViewModel.PathComponents.Add(new PathBoxItem() { Path = null, Title = singleItemOverride });
 		}
@@ -572,13 +595,15 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 			SearchQuery = query,
 		};
 
-		if (this is ColumnShellPage)
+        var layout = InstanceViewModel.FolderSettings.GetLayoutType(FilesystemViewModel.WorkingDirectory);
+
+        if (layout == typeof(ColumnsLayoutPage))
         {
             NavigateToPath(FilesystemViewModel.WorkingDirectory, typeof(DetailsLayoutPage), args);
         }
         else
         {
-            ItemDisplay.Navigate(InstanceViewModel.FolderSettings.GetLayoutType(FilesystemViewModel.WorkingDirectory), args);
+            NavigateToPath(FilesystemViewModel.WorkingDirectory, layout, args);
         }
     }
 
@@ -627,10 +652,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 			{
 				Query = InstanceViewModel.CurrentSearchQuery ?? (string)TabItemParameter.NavigationParameter,
 				Folder = FilesystemViewModel.WorkingDirectory,
-				ThumbnailSize = InstanceViewModel.FolderSettings.GetIconSize(),
-			};
+                ThumbnailSize = InstanceViewModel.FolderSettings.GetRoundedIconSize(),
+            };
 
-			await FilesystemViewModel.SearchAsync(FolderViewViewModel, searchInstance);
+            await FilesystemViewModel.SearchAsync(FolderViewViewModel, searchInstance);
         }
         else if (CurrentPageType != typeof(HomePage))
         {
@@ -729,7 +754,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 				break;
 			case ItemLoadStatusChangedEventArgs.ItemLoadStatus.Complete:
 				SetLoadingIndicatorForTabs(false);
-				ToolbarViewModel.CanRefresh = true;
+
+                ContentPage?.ItemManipulationModel.ScrollToTop();
+
+                ToolbarViewModel.CanRefresh = true;
 				// Select previous directory
 				if (!string.IsNullOrWhiteSpace(e.PreviousDirectory) &&
 					e.PreviousDirectory.Contains(e.Path!, StringComparison.Ordinal) &&
@@ -738,39 +766,48 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 					// Remove the WorkingDir from previous dir
 					e.PreviousDirectory = e.PreviousDirectory.Replace(e.Path!, string.Empty, StringComparison.Ordinal);
 
-					// Get previous dir name
-					if (e.PreviousDirectory.StartsWith('\\'))
+                    var isNetwork = e.Path!.StartsWith("\\\\");
+                    var isFtp = FtpHelpers.IsFtpPath(e.Path);
+                    var separator = isFtp ? "/" : "\\";
+
+                    // Get previous dir name
+                    if (e.PreviousDirectory.StartsWith(separator))
                     {
                         e.PreviousDirectory = e.PreviousDirectory.Remove(0, 1);
                     }
-
-                    if (e.PreviousDirectory.Contains('\\'))
+                    if (e.PreviousDirectory.Contains(separator))
                     {
-                        e.PreviousDirectory = e.PreviousDirectory.Split('\\')[0];
+                        e.PreviousDirectory = e.PreviousDirectory.Split(separator)[0];
                     }
 
                     // Get the first folder and combine it with WorkingDir
-                    var folderToSelect = string.Format("{0}\\{1}", e.Path, e.PreviousDirectory);
+                    var folderToSelect = e.Path + separator + e.PreviousDirectory;
 
-					// Make sure we don't get double \\ in the e.Path
-					folderToSelect = folderToSelect.Replace("\\\\", "\\", StringComparison.Ordinal);
+                    // Make sure we don't get double separators in the e.Path
+                    folderToSelect = folderToSelect.Replace(separator + separator, separator, StringComparison.Ordinal);
 
-					if (folderToSelect.EndsWith('\\'))
+                    if (isNetwork)
+                    {
+                        folderToSelect = separator + folderToSelect;
+                    }
+                    else if (isFtp)
+                    {
+                        folderToSelect = folderToSelect.Replace(":/", "://", StringComparison.Ordinal);
+                    }
+
+                    if (folderToSelect.EndsWith(separator))
                     {
                         folderToSelect = folderToSelect.Remove(folderToSelect.Length - 1, 1);
                     }
 
-                    var itemToSelect = FilesystemViewModel.FilesAndFolders.Where((item) => item.ItemPath == folderToSelect).FirstOrDefault();
+                    var itemToSelect = FilesystemViewModel.FilesAndFolders.ToList().FirstOrDefault((item) => item.ItemPath == folderToSelect);
 
-					if (itemToSelect is not null && ContentPage is not null)
-					{
-                        if (UserSettingsService.FoldersSettingsService.ScrollToPreviousFolderWhenNavigatingUp)
-                        {
-                            ContentPage.ItemManipulationModel.SetSelectedItem(itemToSelect);
-                            ContentPage.ItemManipulationModel.ScrollIntoView(itemToSelect);
-                        }
-					}
-				}
+                    if (itemToSelect is not null && ContentPage is not null && UserSettingsService.FoldersSettingsService.ScrollToPreviousFolderWhenNavigatingUp)
+                    {
+                        ContentPage.ItemManipulationModel.SetSelectedItem(itemToSelect);
+                        ContentPage.ItemManipulationModel.ScrollIntoView(itemToSelect);
+                    }
+                }
 				break;
 		}
 	}
@@ -817,7 +854,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 			drivesViewModel.ShowUserConsentOnInit = false;
 			await DispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{
-				var dialog = DynamicDialogFactory.GetFor_ConsentDialog();
+				var dialog = DynamicDialogFactory.GetFor_ConsentDialog(FolderViewViewModel);
 
 				if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
                 {
@@ -839,7 +876,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected void SetLoadingIndicatorForTabs(bool isLoading)
 	{
-        var multitaskingControls = ((FolderViewViewModel.MainWindowContent as Frame)!.Content as MainPage)!.ViewModel.MultitaskingControls;
+        var multitaskingControls = ((FolderViewViewModel.Content as Frame)!.Content as MainPage)!.ViewModel.MultitaskingControls;
 
 		foreach (var x in multitaskingControls!)
         {
@@ -947,7 +984,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 		_updateDateDisplayTimer.Stop();
 
-        // CHANGE: Unregister event handler for folder path changed.
+        // CHANGE: Folder path changed event.
         FolderViewViewModel.FolderPathChanged -= FolderViewViewModel_FolderPathChanged;
     }
 }

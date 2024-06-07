@@ -1,4 +1,4 @@
-// Copyright(c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Files.App.ViewModels.Properties;
 
-public class FileProperties : BaseProperties, IFileProperties
+public sealed class FileProperties : BaseProperties, IFileProperties
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -50,7 +50,7 @@ public class FileProperties : BaseProperties, IFileProperties
 		ViewModel.LoadCustomIcon = Item.LoadCustomIcon;
 		ViewModel.CustomIconSource = Item.CustomIconSource;
 		ViewModel.LoadFileIcon = Item.LoadFileIcon;
-		ViewModel.IsDownloadedFile = NativeFileOperationsHelper.ReadStringFromFile($"{Item.ItemPath}:Zone.Identifier") is not null;
+        ViewModel.IsDownloadedFile = Win32Helper.ReadStringFromFile($"{Item.ItemPath}:Zone.Identifier") is not null;
         ViewModel.IsEditAlbumCoverVisible =
                 FileExtensionHelpers.IsVideoFile(Item.FileExtension) ||
                 FileExtensionHelpers.IsAudioFile(Item.FileExtension);
@@ -84,17 +84,17 @@ public class FileProperties : BaseProperties, IFileProperties
 
 		ViewModel.ShortcutItemOpenLinkCommand = new RelayCommand(async () =>
 		{
-			if (Item.IsLinkItem)
-			{
-				var tmpItem = (ShortcutItem)Item;
-				await Win32Helpers.InvokeWin32ComponentAsync(ViewModel.ShortcutItemPath, AppInstance, ViewModel.ShortcutItemArguments, ViewModel.RunAsAdmin, ViewModel.ShortcutItemWorkingDir);
-			}
-			else
-			{
-				await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(
-					() => NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, Path.GetDirectoryName(ViewModel.ShortcutItemPath)));
-			}
-		},
+            if (Item.IsLinkItem)
+            {
+                var tmpItem = (ShortcutItem)Item;
+                await Win32Helper.InvokeWin32ComponentAsync(ViewModel.ShortcutItemPath, AppInstance, ViewModel.ShortcutItemArguments, ViewModel.RunAsAdmin, ViewModel.ShortcutItemWorkingDir);
+            }
+            else
+            {
+                await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(
+                    () => NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, Path.GetDirectoryName(ViewModel.ShortcutItemPath), true));
+            }
+        },
 		() =>
 		{
 			return !string.IsNullOrWhiteSpace(ViewModel.ShortcutItemPath);
@@ -103,42 +103,46 @@ public class FileProperties : BaseProperties, IFileProperties
 
 	public async override Task GetSpecialPropertiesAsync()
 	{
-		ViewModel.IsReadOnly = NativeFileOperationsHelper.HasFileAttribute(
-			Item.ItemPath, FileAttributes.ReadOnly);
-		ViewModel.IsHidden = NativeFileOperationsHelper.HasFileAttribute(
-			Item.ItemPath, FileAttributes.Hidden);
+        ViewModel.IsReadOnly = Win32Helper.HasFileAttribute(
+                Item.ItemPath, FileAttributes.ReadOnly);
+        ViewModel.IsHidden = Win32Helper.HasFileAttribute(
+            Item.ItemPath, FileAttributes.Hidden);
 
-		ViewModel.ItemSizeVisibility = true;
-		ViewModel.ItemSize = Item.FileSizeBytes.ToLongSizeString();
+        ViewModel.ItemSizeVisibility = true;
+        ViewModel.ItemSize = Item.FileSizeBytes.ToLongSizeString();
 
-		// Only load the size for items on the device
-		if (Item.SyncStatusUI.SyncStatus is not CloudDriveSyncStatus.FileOnline and not CloudDriveSyncStatus.FolderOnline)
+        // Only load the size for items on the device
+        if (Item.SyncStatusUI.SyncStatus is not CloudDriveSyncStatus.FileOnline and not CloudDriveSyncStatus.FolderOnline)
         {
-            ViewModel.ItemSizeOnDisk = NativeFileOperationsHelper.GetFileSizeOnDisk(Item.ItemPath)?.ToLongSizeString() ??
-				string.Empty;
+            ViewModel.ItemSizeOnDisk = Win32Helper.GetFileSizeOnDisk(Item.ItemPath)?.ToLongSizeString() ??
+               string.Empty;
         }
 
-        var fileIconData = await FileThumbnailHelper.LoadIconFromPathAsync(Item.ItemPath, 80, Windows.Storage.FileProperties.ThumbnailMode.DocumentsView, Windows.Storage.FileProperties.ThumbnailOptions.ResizeThumbnail, false);
-		if (fileIconData is not null)
-		{
-			ViewModel.IconData = fileIconData;
-			ViewModel.LoadUnknownTypeGlyph = false;
-			ViewModel.LoadFileIcon = true;
-		}
+        var result = await FileThumbnailHelper.GetIconAsync(
+            Item.ItemPath,
+            Constants.ShellIconSizes.ExtraLarge,
+            false,
+            IconOptions.UseCurrentScale);
 
-		if (Item.IsShortcut)
-		{
-			ViewModel.ItemCreatedTimestampReal = Item.ItemDateCreatedReal;
-			ViewModel.ItemAccessedTimestampReal = Item.ItemDateAccessedReal;
-			ViewModel.LoadLinkIcon = Item.LoadWebShortcutGlyph;
-			if (Item.IsLinkItem || string.IsNullOrWhiteSpace(((ShortcutItem)Item).TargetPath))
-			{
-				// Can't show any other property
-				return;
-			}
-		}
+        if (result is not null)
+        {
+            ViewModel.IconData = result;
+            ViewModel.LoadUnknownTypeGlyph = false;
+            ViewModel.LoadFileIcon = true;
+        }
 
-		var filePath = (Item as ShortcutItem)?.TargetPath ?? Item.ItemPath;
+        if (Item.IsShortcut)
+        {
+            ViewModel.ItemCreatedTimestampReal = Item.ItemDateCreatedReal;
+            ViewModel.ItemAccessedTimestampReal = Item.ItemDateAccessedReal;
+            if (Item.IsLinkItem || string.IsNullOrWhiteSpace(((ShortcutItem)Item).TargetPath))
+            {
+                // Can't show any other property
+                return;
+            }
+        }
+
+        var filePath = (Item as ShortcutItem)?.TargetPath ?? Item.ItemPath;
 		BaseStorageFile file = await AppInstance.FilesystemViewModel.GetFileFromPathAsync(filePath);
 
 		// Couldn't access the file and can't load any other properties
@@ -187,16 +191,6 @@ public class FileProperties : BaseProperties, IFileProperties
 			await LocationHelpers.GetAddressFromCoordinatesAsync((double?)list.Find(
 				x => x.Property == "System.GPS.LatitudeDecimal")!.Value,
 				(double?)list.Find(x => x.Property == "System.GPS.LongitudeDecimal")!.Value);
-
-		// Find Encoding Bitrate property and convert it to kbps
-		var encodingBitrate = list.Find(x => x.Property == "System.Audio.EncodingBitrate");
-		if (encodingBitrate?.Value is not null)
-		{
-			var sizes = new string[] { "Bps", "KBps", "MBps", "GBps" };
-			var order = Math.Min((int)Math.Floor(Math.Log((uint)encodingBitrate.Value, 1024)), 3);
-			var readableSpeed = (uint)encodingBitrate.Value / Math.Pow(1024, order);
-			encodingBitrate.Value = $"{readableSpeed:0.##} {sizes[order]}";
-		}
 
 		var query = list
 			.Where(fileProp => !(fileProp.Value is null && fileProp.IsReadOnly))
@@ -292,58 +286,52 @@ public class FileProperties : BaseProperties, IFileProperties
 		_ = GetSystemFilePropertiesAsync();
 	}
 
-	private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		switch (e.PropertyName)
-		{
-			case "IsReadOnly":
-				if (ViewModel.IsReadOnly)
-				{
-					NativeFileOperationsHelper.SetFileAttribute(
-						Item.ItemPath,
-						FileAttributes.ReadOnly
-					);
-				}
-				else
-				{
-					NativeFileOperationsHelper.UnsetFileAttribute(
-						Item.ItemPath,
-						FileAttributes.ReadOnly
-					);
-				}
+    private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(ViewModel.IsReadOnly):
+                if (ViewModel.IsReadOnly is not null)
+                {
+                    if ((bool)ViewModel.IsReadOnly)
+                    {
+                        Win32Helper.SetFileAttribute(Item.ItemPath, FileAttributes.ReadOnly);
+                    }
+                    else
+                    {
+                        Win32Helper.UnsetFileAttribute(Item.ItemPath, FileAttributes.ReadOnly);
+                    }
+                }
 
-				break;
+                break;
 
-			case "IsHidden":
-				if (ViewModel.IsHidden)
-				{
-					NativeFileOperationsHelper.SetFileAttribute(
-						Item.ItemPath,
-                        FileAttributes.Hidden
-					);
-				}
-				else
-				{
-					NativeFileOperationsHelper.UnsetFileAttribute(
-						Item.ItemPath,
-						FileAttributes.Hidden
-					);
-				}
+            case nameof(ViewModel.IsHidden):
+                if (ViewModel.IsHidden is not null)
+                {
+                    if ((bool)ViewModel.IsHidden)
+                    {
+                        Win32Helper.SetFileAttribute(Item.ItemPath, FileAttributes.Hidden);
+                    }
+                    else
+                    {
+                        Win32Helper.UnsetFileAttribute(Item.ItemPath, FileAttributes.Hidden);
+                    }
+                }
 
-				break;
+                break;
 
-			case "RunAsAdmin":
-			case "ShortcutItemPath":
-			case "ShortcutItemWorkingDir":
-			case "ShortcutItemArguments":
-				if (string.IsNullOrWhiteSpace(ViewModel.ShortcutItemPath))
+            case nameof(ViewModel.RunAsAdmin):
+            case nameof(ViewModel.ShortcutItemPath):
+            case nameof(ViewModel.ShortcutItemWorkingDir):
+            case nameof(ViewModel.ShortcutItemArguments):
+                if (string.IsNullOrWhiteSpace(ViewModel.ShortcutItemPath))
                 {
                     return;
                 }
 
                 await FileOperationsHelpers.CreateOrUpdateLinkAsync(Item.ItemPath, ViewModel.ShortcutItemPath, ViewModel.ShortcutItemArguments, ViewModel.ShortcutItemWorkingDir, ViewModel.RunAsAdmin);
 
-				break;
-		}
-	}
+                break;
+        }
+    }
 }

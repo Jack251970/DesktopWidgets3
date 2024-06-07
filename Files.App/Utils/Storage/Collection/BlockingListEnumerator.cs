@@ -1,19 +1,19 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Utils.Storage;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-public class BlockingListEnumerator<T> : IEnumerator<T>
+public sealed class BlockingListEnumerator<T>(IList<T> inner, object @lock) : IEnumerator<T>
 {
-	private readonly IList<T> m_Inner;
+	private readonly IList<T> m_Inner = inner;
 
-	private readonly object m_Lock;
+	private readonly object m_Lock = @lock;
 
 	private T m_Current;
 
-	private int m_Pos;
+	private int m_Pos = -1;
 
 	public T Current
 	{
@@ -29,14 +29,7 @@ public class BlockingListEnumerator<T> : IEnumerator<T>
 	object IEnumerator.Current
 		=> Current!;
 
-	public BlockingListEnumerator(IList<T> inner, object @lock)
-	{
-		m_Inner = inner;
-		m_Lock = @lock;
-		m_Pos = -1;
-	}
-
-	public void Dispose()
+    public void Dispose()
 	{
 	}
 

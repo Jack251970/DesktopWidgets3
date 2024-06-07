@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -9,11 +9,11 @@ using Windows.Storage.Search;
 
 namespace Files.App.Utils.Storage;
 
-public class VirtualStorageFolder : BaseStorageFolder
+public sealed class VirtualStorageFolder(string cFileName) : BaseStorageFolder
 {
-	public override string Path { get; }
-	public override string Name { get; }
-	public override string DisplayName => Name;
+    public override string Path { get; } = "";
+    public override string Name { get; } = cFileName;
+    public override string DisplayName => Name;
 	public override string DisplayType => "Folder".GetLocalizedResource();
 	public override string FolderRelativeId => $"0\\{Name}";
 
@@ -21,13 +21,7 @@ public class VirtualStorageFolder : BaseStorageFolder
 	public override FileAttributes Attributes { get; } = FileAttributes.Directory;
 	public override IStorageItemExtraProperties Properties => new BaseBasicStorageItemExtraProperties(this);
 
-	public VirtualStorageFolder(string cFileName)
-	{
-		Path = "";
-		Name = cFileName;
-	}
-
-	public override IAsyncOperation<StorageFolder> ToStorageFolderAsync() => throw new NotSupportedException();
+    public override IAsyncOperation<StorageFolder> ToStorageFolderAsync() => throw new NotSupportedException();
 
 	public override bool IsEqual(IStorageItem item) => item?.Path == Path;
 	public override bool IsOfType(StorageItemTypes type) => type is StorageItemTypes.Folder;

@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
 
 namespace Files.App.Actions;
 
-internal class InstallCertificateAction : ObservableObject, IAction
+internal sealed class InstallCertificateAction : ObservableObject, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -31,7 +31,7 @@ internal class InstallCertificateAction : ObservableObject, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public async Task ExecuteAsync()
+	public async Task ExecuteAsync(object? parameter = null)
 	{
 		await ContextMenu.InvokeVerb("add", context.SelectedItems.Select(x => x.ItemPath).ToArray());
 	}

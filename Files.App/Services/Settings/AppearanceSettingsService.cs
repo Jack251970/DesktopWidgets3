@@ -1,7 +1,9 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.AppCenter.Analytics;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 
 namespace Files.App.Services.Settings;
 
@@ -32,14 +34,15 @@ internal sealed class AppearanceSettingsService : BaseObservableJsonSettings, IA
 		set => Set(value);
 	}
 
-	public bool UseCompactStyles
-	{
-		get => Get(false);
-		set => Set(value);
-	}
+    /// <inheritdoc/>
+    public string AppThemeMode
+    {
+        get => Get("Default")!;
+        set => Set(value);
+    }
 
-	/// <inheritdoc/>
-	public string AppThemeBackgroundColor
+    /// <inheritdoc/>
+    public string AppThemeBackgroundColor
 	{
 		get => Get("#00000000")!;
 		set => Set(value);
@@ -80,17 +83,55 @@ internal sealed class AppearanceSettingsService : BaseObservableJsonSettings, IA
 		set => Set(value);
 	}
 
-	protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)
+    /// <inheritdoc/>
+    public string AppThemeBackgroundImageSource
+    {
+        get => Get("")!;
+        set => Set(value);
+    }
+
+    /// <inheritdoc/>
+    public Stretch AppThemeBackgroundImageFit
+    {
+        get => Get(Stretch.UniformToFill);
+        set => Set(value);
+    }
+
+    /// <inheritdoc/>
+    public float AppThemeBackgroundImageOpacity
+    {
+        get => Get(1f);
+        set => Set(value);
+    }
+
+    /// <inheritdoc/>
+    public VerticalAlignment AppThemeBackgroundImageVerticalAlignment
+    {
+        get => Get(VerticalAlignment.Center);
+        set => Set(value);
+    }
+
+    /// <inheritdoc/>
+    public HorizontalAlignment AppThemeBackgroundImageHorizontalAlignment
+    {
+        get => Get(HorizontalAlignment.Center);
+        set => Set(value);
+    }
+
+    protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)
 	{
 		switch (e.SettingName)
 		{
-			case nameof(UseCompactStyles):
 			case nameof(AppThemeBackgroundColor):
 			case nameof(AppThemeAddressBarBackgroundColor):
 			case nameof(AppThemeSidebarBackgroundColor):
 			case nameof(AppThemeFileAreaBackgroundColor):
 			case nameof(AppThemeBackdropMaterial):
-				Analytics.TrackEvent($"Set {e.SettingName} to {e.NewValue}");
+            case nameof(AppThemeBackgroundImageFit):
+            case nameof(AppThemeBackgroundImageOpacity):
+            case nameof(AppThemeBackgroundImageVerticalAlignment):
+            case nameof(AppThemeBackgroundImageHorizontalAlignment):
+                Analytics.TrackEvent($"Set {e.SettingName} to {e.NewValue}");
 				break;
 		}
 

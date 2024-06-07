@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class OpenSettingsAction : BaseUIAction, IAction
+internal sealed class OpenSettingsAction(IFolderViewViewModel folderViewViewModel) : BaseUIAction(folderViewViewModel), IAction
 {
-	private readonly IDialogService dialogService;
+	private readonly IDialogService dialogService = folderViewViewModel.GetService<IDialogService>();
 
 	private readonly SettingsDialogViewModel viewModel = new();
 
@@ -18,12 +18,7 @@ internal class OpenSettingsAction : BaseUIAction, IAction
 	public HotKey HotKey
 		=> new(Keys.OemComma, KeyModifiers.Ctrl);
 
-    public OpenSettingsAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
-    {
-        dialogService = folderViewViewModel.GetService<IDialogService>();
-    }
-
-    public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		var dialog = dialogService.GetDialog(viewModel);
 		return dialog.TryShowAsync(FolderViewViewModel);

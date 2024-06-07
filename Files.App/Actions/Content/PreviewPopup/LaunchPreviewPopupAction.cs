@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class LaunchPreviewPopupAction : ObservableObject, IAction
+internal sealed class LaunchPreviewPopupAction : ObservableObject, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -31,7 +31,7 @@ internal class LaunchPreviewPopupAction : ObservableObject, IAction
 		context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public async Task ExecuteAsync()
+	public async Task ExecuteAsync(object? parameter = null)
 	{
 		var provider = await previewPopupService.GetProviderAsync();
 		if (provider is null)

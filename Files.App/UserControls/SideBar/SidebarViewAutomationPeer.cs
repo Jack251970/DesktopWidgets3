@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Automation.Peers;
@@ -31,12 +31,11 @@ internal class SidebarViewAutomationPeer : FrameworkElementAutomationPeer, ISele
 	{
 		if (Owner.SelectedItemContainer != null)
         {
-            return new IRawElementProviderSimple[]
-			{
-			ProviderFromPeer(CreatePeerForElement(Owner.SelectedItemContainer))
-			};
+            return
+            [
+            ProviderFromPeer(CreatePeerForElement(Owner.SelectedItemContainer))
+			];
         }
-
-        return Array.Empty<IRawElementProviderSimple>();
+        return [];
 	}
 }

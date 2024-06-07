@@ -1,11 +1,7 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Storage.WindowsStorage;
-using Files.Core.Storage;
-using Files.Core.Storage.Enums;
-using Files.Core.Storage.LocatableStorage;
-using Files.Core.Storage.NestedStorage;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -17,7 +13,7 @@ namespace Files.App.Data.Items;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFolder
+public sealed class DriveItem : ObservableObject, INavigationControlItem, ILocatableFolder
 {
 	private BitmapImage icon;
 	public BitmapImage Icon
@@ -54,7 +50,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		=> Type == DriveType.Network;
 
     public bool IsPinned
-        => App.QuickAccessManager.Model.FavoriteItems.Contains(path);
+        => App.QuickAccessManager.Model.PinnedFolders.Contains(path);
 
 	public string MaxSpaceText
 		=> MaxSpace.ToSizeString();
@@ -124,12 +120,8 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		get => type; set
 		{
 			type = value;
-			if (value == DriveType.Network)
-			{
-                ToolTip = "Network".GetLocalizedResource();
-			}
-			else if (value == DriveType.CloudDrive)
-			{
+            if (value is DriveType.Network or DriveType.CloudDrive)
+            {
 				ToolTip = Text;
 			}
 		}
@@ -259,7 +251,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		item.DeviceID = deviceId;
 		item.Root = root;
 
-        _ = ThreadExtensions.MainDispatcherQueue!.EnqueueOrInvokeAsync(item.UpdatePropertiesAsync);
+        _ = ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(item.UpdatePropertiesAsync);
 
 		return item;
 	}
@@ -268,7 +260,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 	{
 		try
 		{
-			var properties = await Root.Properties.RetrievePropertiesAsync(new[] { "System.ItemNameDisplay" })
+			var properties = await Root.Properties.RetrievePropertiesAsync(["System.ItemNameDisplay"])
 				.AsTask().WithTimeoutAsync(TimeSpan.FromSeconds(5));
 			Text = (string)properties!["System.ItemNameDisplay"];
 		}
@@ -281,7 +273,7 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 	{
 		try
 		{
-			var properties = await Root.Properties.RetrievePropertiesAsync(new[] { "System.FreeSpace", "System.Capacity" })
+			var properties = await Root.Properties.RetrievePropertiesAsync(["System.FreeSpace", "System.Capacity"])
 				.AsTask().WithTimeoutAsync(TimeSpan.FromSeconds(5));
 
 			if (properties is not null && properties["System.Capacity"] is not null && properties["System.FreeSpace"] is not null)
@@ -320,37 +312,34 @@ public class DriveItem : ObservableObject, INavigationControlItem, ILocatableFol
 		return result == 0 ? Text.CompareTo(other?.Text) : result;
 	}
 
-	public async Task LoadThumbnailAsync(bool isSidebar = false)
-	{
-		if (!isSidebar)
-		{
-			using var thumbnail = await DriveHelpers.GetThumbnailAsync(Root);
-			IconData ??= await thumbnail.ToByteArrayAsync();
-		}
-		else
-		{
-			if (!string.IsNullOrEmpty(DeviceID) && !string.Equals(DeviceID, "network-folder"))
-            {
-                IconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(DeviceID, Constants.DefaultIconSizes.Large, false, true);
-            }
+    public async Task LoadThumbnailAsync()
+    {
+        if (!string.IsNullOrEmpty(DeviceID) && !string.Equals(DeviceID, "network-folder"))
+        {
+            var result = await FileThumbnailHelper.GetIconAsync(
+                DeviceID,
+                Constants.ShellIconSizes.Small,
+                false,
+                IconOptions.ReturnIconOnly | IconOptions.UseCurrentScale);
 
-            if (Root is not null)
-			{
-				using var thumbnail = await DriveHelpers.GetThumbnailAsync(Root);
-				IconData ??= await thumbnail.ToByteArrayAsync();
-			}
+            IconData ??= result!;
+        }
 
-			if (string.Equals(DeviceID, "network-folder"))
-            {
-                IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.NetworkDrives).IconData;
-            }
+        if (Root is not null)
+        {
+            using var thumbnail = await DriveHelpers.GetThumbnailAsync(Root);
+            IconData ??= await thumbnail.ToByteArrayAsync();
+        }
 
-            IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.Folder).IconData;
-		}
-		Icon ??= (await IconData.ToBitmapAsync())!;
-	}
+        if (string.Equals(DeviceID, "network-folder"))
+            IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.NetworkDrives).IconData;
 
-	private string GetSizeString()
+        IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.Folder).IconData;
+
+        Icon ??= (await IconData.ToBitmapAsync())!;
+    }
+
+    private string GetSizeString()
 	{
 		return string.Format(
 			"DriveFreeSpaceAndCapacity".GetLocalizedResource(),

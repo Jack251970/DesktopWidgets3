@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -12,7 +12,10 @@ public sealed partial class CreateArchiveDialog : ContentDialog
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
-	private bool canCreate = false;
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;
+
+    private bool canCreate = false;
 	public bool CanCreate => canCreate;
 
 	public string FileName
@@ -92,8 +95,10 @@ public sealed partial class CreateArchiveDialog : ContentDialog
 		ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
 
 		if (e.Result is ContentDialogResult.Primary)
-			canCreate = true;
-	}
+        {
+            canCreate = true;
+        }
+    }
 
 	private void PasswordBox_Loading(FrameworkElement _, object e)
 		=> PasswordBox.Focus(FocusState.Programmatic);
@@ -106,7 +111,7 @@ public sealed partial class CreateArchiveDialog : ContentDialog
         }
     }
 
-	private class DialogViewModel : ObservableObject
+	private sealed class DialogViewModel : ObservableObject
 	{
         private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -183,39 +188,39 @@ public sealed partial class CreateArchiveDialog : ContentDialog
             }
 		}
 
-		public IImmutableList<FileFormatItem> FileFormats { get; } = new List<FileFormatItem>
-		{
-			new(ArchiveFormats.Zip, ".zip"),
-			new(ArchiveFormats.SevenZip, ".7z"),
-		}.ToImmutableList();
+        public ImmutableList<FileFormatItem> FileFormats { get; } =
+        [
+            new(ArchiveFormats.Zip, ".zip"),
+            new(ArchiveFormats.SevenZip, ".7z"),
+        ];
 
-		public IImmutableList<CompressionLevelItem> CompressionLevels { get; } = new List<CompressionLevelItem>
-		{
-			new(ArchiveCompressionLevels.Ultra, "CompressionLevelUltra".GetLocalizedResource()),
-			new(ArchiveCompressionLevels.High, "CompressionLevelHigh".GetLocalizedResource()),
-			new(ArchiveCompressionLevels.Normal, "CompressionLevelNormal".GetLocalizedResource()),
-			new(ArchiveCompressionLevels.Low, "CompressionLevelLow".GetLocalizedResource()),
-			new(ArchiveCompressionLevels.Fast, "CompressionLevelFast".GetLocalizedResource()),
-			new(ArchiveCompressionLevels.None, "CompressionLevelNone".GetLocalizedResource()),
-		}.ToImmutableList();
+        public ImmutableList<CompressionLevelItem> CompressionLevels { get; } =
+        [
+            new CompressionLevelItem(ArchiveCompressionLevels.Ultra, "CompressionLevelUltra".GetLocalizedResource()),
+            new CompressionLevelItem(ArchiveCompressionLevels.High, "CompressionLevelHigh".GetLocalizedResource()),
+            new CompressionLevelItem(ArchiveCompressionLevels.Normal, "CompressionLevelNormal".GetLocalizedResource()),
+            new CompressionLevelItem(ArchiveCompressionLevels.Low, "CompressionLevelLow".GetLocalizedResource()),
+            new CompressionLevelItem(ArchiveCompressionLevels.Fast, "CompressionLevelFast".GetLocalizedResource()),
+            new CompressionLevelItem(ArchiveCompressionLevels.None, "CompressionLevelNone".GetLocalizedResource()),
+        ];
 
-		public IImmutableList<SplittingSizeItem> SplittingSizes { get; } = new List<SplittingSizeItem>
-		{
-			new(ArchiveSplittingSizes.None, "Do not split".GetLocalizedResource()),
-			new(ArchiveSplittingSizes.Mo10, ToSizeText(10)),
-			new(ArchiveSplittingSizes.Mo100, ToSizeText(100)),
-			new(ArchiveSplittingSizes.Cd650, ToSizeText(650), "CD".GetLocalizedResource()),
-			new(ArchiveSplittingSizes.Cd700, ToSizeText(700), "CD".GetLocalizedResource()),
-			new(ArchiveSplittingSizes.Mo1024, ToSizeText(1024)),
-			new(ArchiveSplittingSizes.Mo2048, ToSizeText(2048)),
-			new(ArchiveSplittingSizes.Fat4092, ToSizeText(4092), "FAT".GetLocalizedResource()),
-			new(ArchiveSplittingSizes.Dvd4480, ToSizeText(4480), "DVD".GetLocalizedResource()),
-			new(ArchiveSplittingSizes.Mo5120, ToSizeText(5120)),
-			new(ArchiveSplittingSizes.Dvd8128, ToSizeText(8128), "DVD".GetLocalizedResource()),
-			new(ArchiveSplittingSizes.Bd23040, ToSizeText(23040), "Bluray".GetLocalizedResource()),
-		}.ToImmutableList();
+        public ImmutableList<SplittingSizeItem> SplittingSizes { get; } =
+        [
+            new(ArchiveSplittingSizes.None, "Do not split".GetLocalizedResource()),
+            new(ArchiveSplittingSizes.Mo10, ToSizeText(10)),
+            new(ArchiveSplittingSizes.Mo100, ToSizeText(100)),
+            new(ArchiveSplittingSizes.Cd650, ToSizeText(650), "CD".GetLocalizedResource()),
+            new(ArchiveSplittingSizes.Cd700, ToSizeText(700), "CD".GetLocalizedResource()),
+            new(ArchiveSplittingSizes.Mo1024, ToSizeText(1024)),
+            new(ArchiveSplittingSizes.Mo2048, ToSizeText(2048)),
+            new(ArchiveSplittingSizes.Fat4092, ToSizeText(4092), "FAT".GetLocalizedResource()),
+            new(ArchiveSplittingSizes.Dvd4480, ToSizeText(4480), "DVD".GetLocalizedResource()),
+            new(ArchiveSplittingSizes.Mo5120, ToSizeText(5120)),
+            new(ArchiveSplittingSizes.Dvd8128, ToSizeText(8128), "DVD".GetLocalizedResource()),
+            new(ArchiveSplittingSizes.Bd23040, ToSizeText(23040), "Bluray".GetLocalizedResource()),
+        ];
 
-		public DialogViewModel(IFolderViewViewModel folderViewViewModel)
+        public DialogViewModel(IFolderViewViewModel folderViewViewModel)
 		{
             FolderViewViewModel = folderViewViewModel;
 

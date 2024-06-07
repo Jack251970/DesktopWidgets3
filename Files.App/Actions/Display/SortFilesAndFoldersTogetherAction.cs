@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class SortFilesAndFoldersTogetherAction : ObservableObject, IToggleAction
+internal sealed class SortFilesAndFoldersTogetherAction : ObservableObject, IToggleAction
 {
 	private readonly IDisplayPageContext context;
 
@@ -23,7 +23,7 @@ internal class SortFilesAndFoldersTogetherAction : ObservableObject, IToggleActi
         context.PropertyChanged += Context_PropertyChanged;
     }
 
-    public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		context.SortDirectoriesAlongsideFiles = true;
 

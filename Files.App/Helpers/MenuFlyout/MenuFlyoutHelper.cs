@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -9,17 +9,16 @@ namespace Files.App.Helpers;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-public class MenuFlyoutHelper : DependencyObject
+[Obsolete("Must not use this helper to generate menu flyout any longer.")]
+public sealed class MenuFlyoutHelper : DependencyObject
 {
-    #region View Models
-
     public interface IMenuFlyoutItemViewModel { }
 
-    public class MenuFlyoutSeparatorViewModel : IMenuFlyoutItemViewModel { }
+    public sealed class MenuFlyoutSeparatorViewModel : IMenuFlyoutItemViewModel { }
 
-    public class MenuFlyoutItemViewModel : IMenuFlyoutItemViewModel
+    public sealed class MenuFlyoutItemViewModel(string text) : IMenuFlyoutItemViewModel
     {
-        public string Text { get; init; }
+        public string Text { get; init; } = text;
 
         public ICommand Command { get; init; }
 
@@ -28,36 +27,21 @@ public class MenuFlyoutHelper : DependencyObject
         public string Tooltip { get; init; }
 
         public bool IsEnabled { get; set; } = true;
-
-        public MenuFlyoutItemViewModel(string text)
-        {
-            Text = text;
-        }
     }
 
-    public class MenuFlyoutSubItemViewModel : IMenuFlyoutItemViewModel
+    public sealed class MenuFlyoutSubItemViewModel(string text) : IMenuFlyoutItemViewModel
     {
-        public string Text { get; }
+        public string Text { get; } = text;
 
         public bool IsEnabled { get; set; } = true;
 
-        public IList<IMenuFlyoutItemViewModel> Items { get; } = new List<IMenuFlyoutItemViewModel>();
-
-        public MenuFlyoutSubItemViewModel(string text)
-            => Text = text;
+        public IList<IMenuFlyoutItemViewModel> Items { get; } = [];
     }
 
-    public class MenuFlyoutFactoryItemViewModel : IMenuFlyoutItemViewModel
+    public sealed class MenuFlyoutFactoryItemViewModel(Func<MenuFlyoutItemBase> factoryFunc) : IMenuFlyoutItemViewModel
     {
-        public Func<MenuFlyoutItemBase> Build { get; }
-
-        public MenuFlyoutFactoryItemViewModel(Func<MenuFlyoutItemBase> factoryFunc)
-            => Build = factoryFunc;
+        public Func<MenuFlyoutItemBase> Build { get; } = factoryFunc;
     }
-
-    #endregion View Models
-
-    #region ItemsSource
 
     public static IEnumerable<IMenuFlyoutItemViewModel> GetItemsSource(DependencyObject obj) => (IEnumerable<IMenuFlyoutItemViewModel>)obj.GetValue(ItemsSourceProperty);
 
@@ -66,10 +50,6 @@ public class MenuFlyoutHelper : DependencyObject
     public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.RegisterAttached("ItemsSource", typeof(IEnumerable<IMenuFlyoutItemViewModel>), typeof(MenuFlyoutHelper), new PropertyMetadata(null, ItemsSourceChanged));
 
     private static async void ItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) { await SetupItemsAsync((MenuFlyout)d); }
-
-	#endregion ItemsSource
-
-	#region IsVisible
 
 	public static bool GetIsVisible(DependencyObject d) => (bool)d.GetValue(IsVisibleProperty);
 
@@ -92,8 +72,6 @@ public class MenuFlyoutHelper : DependencyObject
             flyout.Hide();
         }
     }
-
-	#endregion IsVisible
 
 	private static async Task SetupItemsAsync(MenuFlyout menu)
 	{

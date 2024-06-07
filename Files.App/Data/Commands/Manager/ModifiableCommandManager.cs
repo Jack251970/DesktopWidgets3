@@ -1,15 +1,15 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using System.Collections.Immutable;
+using System.Collections.Frozen;
 
 namespace Files.App.Data.Commands;
 
-internal class ModifiableCommandManager : IModifiableCommandManager
+internal sealed class ModifiableCommandManager : IModifiableCommandManager
 {
     /*private readonly ICommandManager Commands = DependencyExtensions.GetService<ICommandManager>();*/
 
-    private IImmutableDictionary<CommandCodes, IRichCommand> ModifiableCommands = null!;
+    private FrozenDictionary<CommandCodes, IRichCommand> ModifiableCommands = null!;
 
 	public IRichCommand this[CommandCodes code] => ModifiableCommands.TryGetValue(code, out var command) ? command : None;
 
@@ -19,18 +19,18 @@ internal class ModifiableCommandManager : IModifiableCommandManager
 
 	public ModifiableCommandManager()
 	{
-		/*ModifiableCommands = CreateModifiableCommands().ToImmutableDictionary();*/
+		/*ModifiableCommands = CreateModifiableCommands();*/
 	}
 
-    public void Initialize(ICommandManager commands)
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        ModifiableCommands = CreateModifiableCommands(commands).ToImmutableDictionary();
+        ModifiableCommands = CreateModifiableCommands(folderViewViewModel.GetService<ICommandManager>());
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-	public IEnumerator<IRichCommand> GetEnumerator() => ModifiableCommands.Values.GetEnumerator();
+    public IEnumerator<IRichCommand> GetEnumerator() => (ModifiableCommands.Values as IEnumerable<IRichCommand>).GetEnumerator();
 
-	private static IDictionary<CommandCodes, IRichCommand> CreateModifiableCommands(ICommandManager commands) => new Dictionary<CommandCodes, IRichCommand>
+    private static FrozenDictionary<CommandCodes, IRichCommand> CreateModifiableCommands(ICommandManager commands) => new Dictionary<CommandCodes, IRichCommand>
 	{
 		[CommandCodes.None] = new NoneCommand(),
 		[CommandCodes.PasteItem] = new ModifiableCommand(commands.PasteItem, new() {
@@ -39,6 +39,6 @@ internal class ModifiableCommandManager : IModifiableCommandManager
 		[CommandCodes.DeleteItem] = new ModifiableCommand(commands.DeleteItem, new() {
 			{ KeyModifiers.Shift,  commands.DeleteItemPermanently }
 		}),
-	};
+	}.ToFrozenDictionary();
 }
 

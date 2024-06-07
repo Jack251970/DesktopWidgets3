@@ -1,9 +1,10 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
 using Files.Core.Storage.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -24,8 +25,8 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
     private readonly StatusCenterViewModel StatusCenterViewModel;
 
     private IShellPage associatedInstance;
-	private readonly IJumpListService jumpListService;
-	private IFilesystemOperations filesystemOperations;
+	private readonly IWindowsJumpListService jumpListService;
+	private ShellFilesystemOperations filesystemOperations;
 
 	private ItemManipulationModel? ItemManipulationModel => associatedInstance.SlimContentPage?.ItemManipulationModel;
 
@@ -38,30 +39,30 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
         {
             var userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
             return userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible
-                ? new[] { '\\', '/', '*', '?', '"', '<', '>', '|' } // Allow ":" char
-                : new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+                ? ['\\', '/', '*', '?', '"', '<', '>', '|'] // Allow ":" char
+                : ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
         }
     }*/
     private static char[] GetRestrictedCharacters(IFolderViewViewModel folderViewViewModel)
     {
         var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
         return userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible
-            ? new[] { '\\', '/', '*', '?', '"', '<', '>', '|' } // Allow ":" char
-            : new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+            ? ['\\', '/', '*', '?', '"', '<', '>', '|'] // Allow ":" char
+            : ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
     }
 
-    private static readonly string[] RestrictedFileNames = new string[]
-	{
-			"CON", "PRN", "AUX",
-			"NUL", "COM1", "COM2",
-			"COM3", "COM4", "COM5",
-			"COM6", "COM7", "COM8",
-			"COM9", "LPT1", "LPT2",
-			"LPT3", "LPT4", "LPT5",
-			"LPT6", "LPT7", "LPT8", "LPT9"
-	};
+    private static readonly string[] RestrictedFileNames =
+    [
+            "CON", "PRN", "AUX",
+            "NUL", "COM1", "COM2",
+            "COM3", "COM4", "COM5",
+            "COM6", "COM7", "COM8",
+            "COM9", "LPT1", "LPT2",
+            "LPT3", "LPT4", "LPT5",
+            "LPT6", "LPT7", "LPT8", "LPT9"
+    ];
 
-	private readonly IUserSettingsService UserSettingsService;
+    private readonly IUserSettingsService UserSettingsService;
 	public FilesystemHelpers(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, CancellationToken cancellationToken)
 	{
         // CHANGE: Initialize folder view view model and related services.
@@ -71,7 +72,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 		this.associatedInstance = associatedInstance;
 		this.cancellationToken = cancellationToken;
-		jumpListService = DependencyExtensions.GetService<IJumpListService>();
+		jumpListService = DependencyExtensions.GetService<IWindowsJumpListService>();
 		filesystemOperations = new ShellFilesystemOperations(folderViewViewModel, this.associatedInstance);
 	}
 	public async Task<(ReturnResult, IStorageItem?)> CreateAsync(IStorageItemWithPath source, bool registerHistory)
@@ -142,7 +143,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 				(!canBeSentToBin || permanently, canBeSentToBin),
 				FilesystemOperationType.Delete,
 				incomingItems,
-				new());
+                []);
 
 			var dialogService = FolderViewViewModel.GetService<IDialogService>();
 
@@ -183,12 +184,9 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
             App.HistoryWrapper.AddHistory(history);
         }
 
-        var itemsDeleted = history?.Source.Count ?? 0;
-
-		// Remove items from jump list
-		source.ForEach(async x => await jumpListService.RemoveFolderAsync(x.Path));
-
-		var itemsCount = banner.TotalItemsCount;
+        // Execute removal tasks concurrently in background
+        _ = Task.WhenAll(source.Select(x => jumpListService.RemoveFolderAsync(x.Path)));
+        var itemsCount = banner.TotalItemsCount;
 
 		// Remove the in-progress card from the StatusCenter
 		StatusCenterViewModel.RemoveItem(banner);
@@ -254,8 +252,8 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 		bool showDialog,
 		bool registerHistory,
 		bool isTargetExecutable = false,
-		bool isTargetPythonFile = false)
-	{
+        bool isTargetScriptFile = false)
+    {
 		try
 		{
 			if (destination is null)
@@ -266,25 +264,16 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			{
 				return await RecycleItemsFromClipboard(packageView, destination, UserSettingsService.FoldersSettingsService.DeleteConfirmationPolicy, registerHistory);
 			}
-			else if (operation.HasFlag(DataPackageOperation.Copy))
-			{
-				return await CopyItemsFromClipboard(packageView, destination, showDialog, registerHistory);
-			}
 			else if (operation.HasFlag(DataPackageOperation.Move))
 			{
 				return await MoveItemsFromClipboard(packageView, destination, showDialog, registerHistory);
 			}
 			else if (operation.HasFlag(DataPackageOperation.Link))
 			{
-				// Open with piggybacks off of the link operation, since there isn't one for it
-				if (isTargetExecutable || isTargetPythonFile)
-				{
+                // Open with piggybacks off of the link operation, since there isn't one for it
+                if (isTargetExecutable || isTargetScriptFile)
+                {
 					var items = await GetDraggedStorageItems(packageView);
-					if (isTargetPythonFile && !SoftwareHelpers.IsPythonInstalled())
-                    {
-                        return ReturnResult.Cancelled;
-                    }
-
                     _ = NavigationHelpers.OpenItemsWithExecutableAsync(associatedInstance, items, destination);
 					return ReturnResult.Success;
 				}
@@ -346,17 +335,15 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 		banner.Progress.ReportStatus(FileSystemStatusCode.Success);
 
-		await Task.Yield();
-
 		if (registerHistory && history is not null && source.Any((item) => !string.IsNullOrWhiteSpace(item.Path)))
 		{
 			foreach (var item in history.Source.Zip(history.Destination, (k, v) => new { Key = k, Value = v }).ToDictionary(k => k.Key, v => v.Value))
 			{
 				foreach (var item2 in itemsResult)
 				{
-					if (!string.IsNullOrEmpty(item2.CustomName) && item2.SourcePath == item.Key.Path)
-					{
-						var renameHistory = await filesystemOperations.RenameAsync(item.Value, item2.CustomName, NameCollisionOption.FailIfExists, banner.ProgressEventSource, token);
+                    if (!string.IsNullOrEmpty(item2.CustomName) && item2.SourcePath == item.Key.Path && Path.GetFileName(item2.SourcePath) != item2.CustomName)
+                    {
+                        var renameHistory = await filesystemOperations.RenameAsync(item.Value, item2.CustomName, NameCollisionOption.FailIfExists, banner.ProgressEventSource, token);
 						history.Destination[history.Source.IndexOf(item.Key)] = renameHistory.Destination[0];
 					}
 				}
@@ -364,7 +351,9 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			App.HistoryWrapper.AddHistory(history);
 		}
 
-		var itemsCount = banner.TotalItemsCount;
+        await Task.Yield();
+
+        var itemsCount = banner.TotalItemsCount;
 
 		StatusCenterViewModel.RemoveItem(banner);
 
@@ -505,10 +494,10 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			App.HistoryWrapper.AddHistory(history);
 		}
 
-		// Remove items from jump list
-		source.ForEach(async x => await jumpListService.RemoveFolderAsync(x.Path));
+        // Execute removal tasks concurrently in background
+        _ = Task.WhenAll(source.Select(x => jumpListService.RemoveFolderAsync(x.Path)));
 
-		var itemsCount = banner.TotalItemsCount;
+        var itemsCount = banner.TotalItemsCount;
 
 		StatusCenterViewModel.RemoveItem(banner);
 
@@ -642,10 +631,9 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 		progress.ProgressChanged += (s, e) => returnStatus = returnStatus < ReturnResult.Failed ? e.Status!.Value.ToStatus() : returnStatus;
 
 		source = source.Where(x => !string.IsNullOrEmpty(x.Path));
-		var dest = source.Select(x => Path.Combine(destination,
-			string.Format("ShortcutCreateNewSuffix".GetLocalizedResource(), x.Name) + ".lnk"));
 
-		source = await source.ToListAsync();
+        var dest = source.Select(x => Path.Combine(destination, FilesystemHelpers.GetShortcutNamingPreference(x.Name)));
+        source = await source.ToListAsync();
 		dest = await dest.ToListAsync();
 
 		var history = await filesystemOperations.CreateShortcutItemsAsync((IList<IStorageItemWithPath>)source, (IList<string>)dest, progress, cancellationToken);
@@ -732,7 +720,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			{
 				if (result != DialogResult.Primary) // Operation was cancelled
 				{
-					return (new(), true, itemsResult);
+					return ([], true, itemsResult);
 				}
 			}
 
@@ -858,8 +846,8 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 
 						foreach (var path in itemPaths)
 						{
-							var isDirectory = NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Directory);
-							itemsList.Add(StorageHelpers.FromPathAndType(path, isDirectory ? FilesystemItemType.Directory : FilesystemItemType.File));
+                            var isDirectory = Win32Helper.HasFileAttribute(path, FileAttributes.Directory);
+                            itemsList.Add(StorageHelpers.FromPathAndType(path, isDirectory ? FilesystemItemType.Directory : FilesystemItemType.File));
 						}
 					}
 					finally
@@ -902,7 +890,29 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 		return false;
 	}
 
-	public void Dispose()
+    /// <summary>
+    /// Gets the shortcut naming template from File Explorer
+    /// </summary>
+    public static string GetShortcutNamingPreference(string itemName)
+    {
+        var keyName = @"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\NamingTemplates";
+        var value = Registry.GetValue(keyName, "ShortcutNameTemplate", null);
+
+        if (value is null)
+        {
+            return string.Format("ShortcutCreateNewSuffix".GetLocalizedResource(), itemName) + ".lnk";
+        }
+        else
+        {
+            // Trim the quotes and the "%s" from the string
+            value = value?.ToString()?.TrimStart(['"', '%', 's']);
+            value = value?.ToString()?.TrimEnd(['"']);
+
+            return itemName + value;
+        }
+    }
+
+    public void Dispose()
 	{
 		filesystemOperations?.Dispose();
 

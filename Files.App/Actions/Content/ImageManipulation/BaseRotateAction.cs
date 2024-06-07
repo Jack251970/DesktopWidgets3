@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Windows.Graphics.Imaging;
@@ -34,12 +34,9 @@ internal abstract class BaseRotateAction : ObservableObject, IAction
 		context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public async Task ExecuteAsync()
+	public async Task ExecuteAsync(object? parameter = null)
 	{
-		foreach (var image in context.SelectedItems)
-        {
-            await BitmapHelper.RotateAsync(FolderViewViewModel, PathNormalization.NormalizePath(image.ItemPath), Rotation);
-        }
+        await Task.WhenAll(context.SelectedItems.Select(image => BitmapHelper.RotateAsync(FolderViewViewModel, PathNormalization.NormalizePath(image.ItemPath), Rotation)));
 
         context.ShellPage?.SlimContentPage?.ItemManipulationModel?.RefreshItemsThumbnail();
 

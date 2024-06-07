@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Windows.Graphics;
@@ -15,12 +15,11 @@ namespace Files.App.Views.Properties;
 
 public sealed partial class MainPropertiesPage : BasePropertiesPage
 {
-    private AppWindow AppWindow => Window.AppWindow;
+    /*private IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetService<IAppThemeModeService>();
+
+    private AppWindow AppWindow => Window.AppWindow;*/
 
     private Window Window = null!;
-
-    // CHANGE: Move app settings to BlankWindow.
-	/*private SettingsViewModel AppSettings { get; set; } = null!;*/
 
     private MainPropertiesViewModel MainPropertiesViewModel { get; set; } = null!;
 
@@ -34,7 +33,20 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
         }
     }
 
-	protected override void OnNavigatedTo(NavigationEventArgs e)
+    // Navigates to specified properties page
+    public bool TryNavigateToPage(PropertiesNavigationViewItemType pageType)
+    {
+        var page = MainPropertiesViewModel.NavigationViewItems.FirstOrDefault(item => item.ItemType == pageType);
+        if (page is null)
+        {
+            return false;
+        }
+
+        MainPropertiesViewModel.SelectedNavigationViewItem = page;
+        return true;
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
 	{
 		var parameter = (PropertiesPageNavigationParameter)e.Parameter;
 
@@ -50,9 +62,8 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
 	{
-        // CHANGE: Register theme mode change event in BlankWindow.
-        /*AppSettings = DependencyExtensions.GetService<SettingsViewModel>();
-		AppSettings.ThemeModeChanged += AppSettings_ThemeModeChanged;*/
+        // CHANGE: Remove theme change event, we have registered it when creating the window.
+        /*AppThemeModeService.AppThemeModeChanged += AppThemeModeService_AppThemeModeChanged;*/
         Window.Closed += Window_Closed;
 
 		UpdatePageLayout();
@@ -103,39 +114,24 @@ public sealed partial class MainPropertiesPage : BasePropertiesPage
     }
 
     // CHANGE: Remove theme mode change event.
-	/*private async void AppSettings_ThemeModeChanged(object? sender, EventArgs e)
-	{
-		if (Parent is null)
+    /*private async void AppThemeModeService_AppThemeModeChanged(object? sender, EventArgs e)
+    {
+        if (Parent is null)
         {
             return;
         }
 
         await DispatcherQueue.EnqueueOrInvokeAsync(() =>
-		{
-			((Frame)Parent).RequestedTheme = ThemeHelper.RootTheme;
+        {
+            AppThemeModeService.SetAppThemeMode(Window, Window.AppWindow.TitleBar, AppThemeModeService.AppThemeMode, false);
+        });
+    }*/
 
-			switch (ThemeHelper.RootTheme)
-			{
-				case ElementTheme.Default:
-					AppWindow.TitleBar.ButtonHoverBackgroundColor = (Color)Application.Current.Resources["SystemBaseLowColor"];
-					AppWindow.TitleBar.ButtonForegroundColor = (Color)Application.Current.Resources["SystemBaseHighColor"];
-					break;
-				case ElementTheme.Light:
-					AppWindow.TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(0x33, 0, 0, 0);
-					AppWindow.TitleBar.ButtonForegroundColor = Colors.Black;
-					break;
-				case ElementTheme.Dark:
-					AppWindow.TitleBar.ButtonHoverBackgroundColor = Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF);
-					AppWindow.TitleBar.ButtonForegroundColor = Colors.White;
-					break;
-			}
-		});
-	}*/
-
-	private void Window_Closed(object sender, WindowEventArgs args)
+    private void Window_Closed(object sender, WindowEventArgs args)
 	{
-		/*AppSettings.ThemeModeChanged -= AppSettings_ThemeModeChanged;*/
-		Window.Closed -= Window_Closed;
+        // CHANGE: Remove theme change event, we have registered it when creating the window.
+        /*AppThemeModeService.AppThemeModeChanged -= AppThemeModeService_AppThemeModeChanged;*/
+        Window.Closed -= Window_Closed;
         Window.AppWindow.Changed -= AppWindow_Changed;
 
         if (MainPropertiesViewModel.ChangedPropertiesCancellationTokenSource is not null &&

@@ -1,11 +1,11 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
 
 namespace Files.App.Data.Models;
 
-public class ColumnsViewModel : ObservableObject
+public sealed class ColumnsViewModel : ObservableObject
 {
 	private DetailsLayoutColumnItem iconColumn = new()
 	{
@@ -13,8 +13,8 @@ public class ColumnsViewModel : ObservableObject
 		IsResizable = false,
 	};
 
-	[LiteDB.BsonIgnore]
-	public DetailsLayoutColumnItem IconColumn
+    [RegistryIgnore]
+    public DetailsLayoutColumnItem IconColumn
 	{
 		get => iconColumn;
 		set => SetProperty(ref iconColumn, value);
@@ -141,7 +141,6 @@ public class ColumnsViewModel : ObservableObject
 		set => SetProperty(ref sizeColumn, value);
 	}
 
-	[LiteDB.BsonIgnore]
 	public double TotalWidth =>
 		IconColumn.Length.Value +
 		GitStatusColumn.Length.Value +

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Input;
@@ -90,7 +90,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
             }
             else
             {
-                return FolderViewViewModel.MainWindow.Bounds.Width > DualPaneWidthThreshold;
+                return FolderViewViewModel.Bounds.Width > DualPaneWidthThreshold;
             }
         }
 	}
@@ -178,9 +178,10 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 			if (value != _IsRightPaneVisible)
 			{
 				_IsRightPaneVisible = value;
-				if (!_IsRightPaneVisible)
+                if (!_IsRightPaneVisible)
                 {
                     ActivePane = PaneLeft;
+                    Pane_ContentChanged(null!, null!);
                 }
 
                 Pane_ContentChanged(null!, null!);
@@ -238,7 +239,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 
     private void Current_SizeChanged(object sender, WindowSizeChangedEventArgs e)
     {
-		WindowIsCompact = FolderViewViewModel.MainWindow.Bounds.Width <= DualPaneWidthThreshold;
+		WindowIsCompact = FolderViewViewModel.Bounds.Width <= DualPaneWidthThreshold;
 	}
 
 	protected override void OnNavigatedTo(NavigationEventArgs eventArgs)
@@ -272,7 +273,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
             ActivePane = PaneLeft;
             IsRightPaneVisible = IsMultiPaneEnabled && UserSettingsService.GeneralSettingsService.AlwaysOpenDualPaneInNewTab;
 
-            _WindowIsCompact = FolderViewViewModel.MainWindow.Bounds.Width <= DualPaneWidthThreshold;
+            _WindowIsCompact = FolderViewViewModel.Bounds.Width <= DualPaneWidthThreshold;
         }
 
         if (eventArgs.Parameter is PanePathNavigationArguments panePathArgs)
@@ -376,7 +377,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 			case (true, true, false, VirtualKey.Right): // ctrl + shift + "->" select right pane
 				if (string.IsNullOrEmpty(NavParamsRight?.NavPath))
 				{
-					NavParamsRight = new NavigationParams { NavPath = "Home" };
+					NavParamsRight = new NavigationParams { FolderViewViewModel = FolderViewViewModel, NavPath = "Home" };
 				}
 				IsRightPaneVisible = true;
 				ActivePane = PaneRight;

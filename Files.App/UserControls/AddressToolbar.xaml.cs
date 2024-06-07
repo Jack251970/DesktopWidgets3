@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Input;
@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Windows.System;
 using FocusManager = Microsoft.UI.Xaml.Input.FocusManager;
 
@@ -55,14 +56,14 @@ public sealed partial class AddressToolbar : UserControl
 
     // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty ViewModelProperty =
-		DependencyProperty.Register(nameof(ViewModel), typeof(ToolbarViewModel), typeof(AddressToolbar), new PropertyMetadata(null));
-	public ToolbarViewModel? ViewModel
-	{
-		get => (ToolbarViewModel)GetValue(ViewModelProperty);
-		set => SetValue(ViewModelProperty, value);
-	}
+            DependencyProperty.Register(nameof(ViewModel), typeof(AddressToolbarViewModel), typeof(AddressToolbar), new PropertyMetadata(null));
+    public AddressToolbarViewModel? ViewModel
+    {
+        get => (AddressToolbarViewModel)GetValue(ViewModelProperty);
+        set => SetValue(ViewModelProperty, value);
+    }
 
-	public StatusCenterViewModel? OngoingTasksViewModel { get; set; }
+    public StatusCenterViewModel? OngoingTasksViewModel { get; set; }
 
     public AddressToolbar()
     {
@@ -95,7 +96,7 @@ public sealed partial class AddressToolbar : UserControl
 
 		if (DependencyObjectHelpers.FindChild<TextBox>(VisiblePath) is TextBox textBox)
 		{
-			if (textBox.Text.StartsWith(">"))
+			if (textBox.Text.StartsWith('>'))
             {
                 textBox.Select(1, textBox.Text.Length - 1);
             }
@@ -161,9 +162,18 @@ public sealed partial class AddressToolbar : UserControl
 
 	private void SearchRegion_OnGotFocus(object sender, RoutedEventArgs e) => ViewModel?.SearchRegion_GotFocus(sender, e);
 	private void SearchRegion_LostFocus(object sender, RoutedEventArgs e) => ViewModel?.SearchRegion_LostFocus(sender, e);
-#pragma warning disable CA1822 // Mark members as static
-    private void SearchRegion_AccessKeyInvoked(UIElement sender, AccessKeyInvokedEventArgs _) => sender.Focus(FocusState.Keyboard);
-#pragma warning restore CA1822 // Mark members as static
+    private void SearchRegion_AccessKeyInvoked(UIElement sender, AccessKeyInvokedEventArgs args)
+    {
+        // Suppress access key invocation if any dialog is open
+        if (VisualTreeHelper.GetOpenPopupsForXamlRoot(FolderViewViewModel.XamlRoot).Any())
+        {
+            args.Handled = true;
+        }
+        else
+        {
+            sender.Focus(FocusState.Keyboard);
+        }
+    }
 
     private void VisiblePath_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
 		=> ViewModel!.VisiblePath_QuerySubmitted(sender, args);
@@ -182,4 +192,13 @@ public sealed partial class AddressToolbar : UserControl
 			UserSettingsService.AppSettingsService.ShowStatusCenterTeachingTip = false;
 		}
 	}
+
+    private void Button_AccessKeyInvoked(UIElement sender, AccessKeyInvokedEventArgs args)
+    {
+        // Suppress access key invocation if any dialog is open
+        if (VisualTreeHelper.GetOpenPopupsForXamlRoot(FolderViewViewModel.XamlRoot).Any())
+        {
+            args.Handled = true;
+        }
+    }
 }

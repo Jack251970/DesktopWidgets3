@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
@@ -12,11 +12,11 @@ using IO = System.IO;
 
 namespace Files.App.Utils.Storage;
 
-public sealed class SystemStorageFile : BaseStorageFile
+public sealed class SystemStorageFile(StorageFile file) : BaseStorageFile
 {
-	public StorageFile File { get; }
+    public StorageFile File { get; } = file;
 
-	public override string Path => File?.Path!;
+    public override string Path => File?.Path!;
 	public override string Name => File?.Name!;
 	public override string DisplayName => File?.DisplayName!;
 	public override string ContentType => File.ContentType;
@@ -27,11 +27,6 @@ public sealed class SystemStorageFile : BaseStorageFile
 	public override DateTimeOffset DateCreated => File.DateCreated;
 	public override Windows.Storage.FileAttributes Attributes => File.Attributes;
 	public override IStorageItemExtraProperties Properties => File?.Properties!;
-
-    public SystemStorageFile(StorageFile file)
-    {
-        File = file;
-    }
 
     public static IAsyncOperation<BaseStorageFile> FromPathAsync(string path)
 		=> AsyncInfo.Run<BaseStorageFile>(async (cancellationToken)
@@ -87,27 +82,27 @@ public sealed class SystemStorageFile : BaseStorageFile
 					return destFile;
 				}
 			}
-			catch (UnauthorizedAccessException) // shortcuts & .url
-			{
-				if (!string.IsNullOrEmpty(destFolder!.Path))
-				{
-					var destination = IO.Path.Combine(destFolder.Path, desiredNewName);
-					var hFile = NativeFileOperationsHelper.CreateFileForWrite(destination,
-						option == NameCollisionOption.ReplaceExisting);
-					if (!hFile.IsInvalid)
-					{
-						using (var inStream = await this.OpenStreamForReadAsync())
-						using (var outStream = new FileStream(hFile, FileAccess.Write))
-						{
-							await inStream.CopyToAsync(outStream, cancellationToken);
-							await outStream.FlushAsync(cancellationToken);
-						}
-						return new NativeStorageFile(destination, desiredNewName, DateTime.Now);
-					}
-				}
-				throw;
-			}
-		});
+            catch (UnauthorizedAccessException) // shortcuts & .url
+            {
+                if (!string.IsNullOrEmpty(destFolder!.Path))
+                {
+                    var destination = IO.Path.Combine(destFolder.Path, desiredNewName);
+                    var hFile = Win32Helper.CreateFileForWrite(destination,
+                        option == NameCollisionOption.ReplaceExisting);
+                    if (!hFile.IsInvalid)
+                    {
+                        using (var inStream = await this.OpenStreamForReadAsync())
+                        using (var outStream = new FileStream(hFile, FileAccess.Write))
+                        {
+                            await inStream.CopyToAsync(outStream, cancellationToken);
+                            await outStream.FlushAsync(cancellationToken);
+                        }
+                        return new NativeStorageFile(destination, desiredNewName, DateTime.Now);
+                    }
+                }
+                throw;
+            }
+        });
 	}
 
 	public override IAsyncOperation<IRandomAccessStream> OpenAsync(FileAccessMode accessMode) => File.OpenAsync(accessMode);
@@ -176,23 +171,17 @@ public sealed class SystemStorageFile : BaseStorageFile
 	public override IAsyncOperation<StorageItemThumbnail> GetThumbnailAsync(ThumbnailMode mode, uint requestedSize, ThumbnailOptions options)
 		=> File.GetThumbnailAsync(mode, requestedSize, options);
 
-	private class SystemFileBasicProperties : BaseBasicProperties
+	private sealed class SystemFileBasicProperties(IStorageItemExtraProperties basicProps, DateTimeOffset dateCreated) : BaseBasicProperties
 	{
-		private readonly IStorageItemExtraProperties basicProps;
-		private readonly DateTimeOffset? dateCreated;
+		private readonly IStorageItemExtraProperties basicProps = basicProps;
+		private readonly DateTimeOffset? dateCreated = dateCreated;
 
 		public override ulong Size => (basicProps as BasicProperties)?.Size ?? 0;
 
 		public override DateTimeOffset DateCreated => dateCreated ?? DateTimeOffset.Now;
 		public override DateTimeOffset DateModified => (basicProps as BasicProperties)?.DateModified ?? DateTimeOffset.Now;
 
-		public SystemFileBasicProperties(IStorageItemExtraProperties basicProps, DateTimeOffset dateCreated)
-		{
-			this.basicProps = basicProps;
-			this.dateCreated = dateCreated;
-		}
-
-		public override IAsyncOperation<IDictionary<string, object>> RetrievePropertiesAsync(IEnumerable<string> propertiesToRetrieve)
+        public override IAsyncOperation<IDictionary<string, object>> RetrievePropertiesAsync(IEnumerable<string> propertiesToRetrieve)
 			=> basicProps.RetrievePropertiesAsync(propertiesToRetrieve);
 
 		public override IAsyncAction SavePropertiesAsync()

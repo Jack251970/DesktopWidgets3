@@ -1,4 +1,4 @@
-// Copyright(c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
@@ -53,7 +53,7 @@ public abstract class BasePropertiesPage : Page, IDisposable
 			{
 				try
 				{
-					await Win32API.OpenFormatDriveDialog(props.Drive.Path);
+					await Win32Helper.OpenFormatDriveDialog(props.Drive.Path);
 				}
 				catch (Exception)
 				{
@@ -111,7 +111,13 @@ public abstract class BasePropertiesPage : Page, IDisposable
             {
                 ViewModel.IsAblumCoverModified = true;
                 ViewModel.ModifiedAlbumCover = new Picture(file.Path);
-                ViewModel.IconData = await FileThumbnailHelper.LoadIconFromPathAsync(file.Path, 80, ThumbnailMode.DocumentsView, ThumbnailOptions.ResizeThumbnail, false);
+
+                var result = await FileThumbnailHelper.GetIconAsync(
+                        file.Path,
+                        Constants.ShellIconSizes.ExtraLarge,
+                        false,
+                        IconOptions.UseCurrentScale);
+                ViewModel.IconData = result!;
             }
         });
 

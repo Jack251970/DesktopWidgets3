@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Controls;
@@ -18,10 +18,15 @@ public static class ShareItemHelpers
 
     public static async Task ShareItemsAsync(IFolderViewViewModel folderViewViewModel, IEnumerable<ListedItem> itemsToShare)
 	{
-		var interop = DataTransferManager.As<IDataTransferManagerInterop>();
-		var result = interop.GetForWindow(folderViewViewModel.WindowHandle, InteropHelpers.DataTransferManagerInteropIID);
+        if (itemsToShare is null)
+        {
+            return;
+        }
 
-		var manager = WinRT.MarshalInterface<DataTransferManager>.FromAbi(result);
+        var interop = DataTransferManager.As<IDataTransferManagerInterop>();
+        var result = interop.GetForWindow(folderViewViewModel.WindowHandle, Win32PInvoke.DataTransferManagerInteropIID);
+
+        var manager = WinRT.MarshalInterface<DataTransferManager>.FromAbi(result);
 		manager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(Manager_DataRequested);
 
         try
@@ -48,8 +53,8 @@ public static class ShareItemHelpers
 		async void Manager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
 		{
 			var dataRequestDeferral = args.Request.GetDeferral();
-			List<IStorageItem> items = new();
-			var dataRequest = args.Request;
+            List<IStorageItem> items = [];
+            var dataRequest = args.Request;
 
 			foreach (var item in itemsToShare)
 			{

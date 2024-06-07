@@ -87,7 +87,6 @@
     <ProjectReference Include="..\Files.App.Storage\Files.App.Storage.csproj" />
     <ProjectReference Include="..\Files.App\Files.App.csproj" />
     <ProjectReference Include="..\Files.Core.Storage\Files.Core.Storage.csproj" />
-    <ProjectReference Include="..\Files.Core\Files.Core.csproj" />
     <ProjectReference Include="..\Files.Shared\Files.Shared.csproj" />
     <ProjectReference Include="..\HardwareInfo\HardwareInfo.csproj" />
   </ItemGroup>

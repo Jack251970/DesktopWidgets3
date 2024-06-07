@@ -1,8 +1,8 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using System.Collections.Frozen;
 using Files.App.Dialogs;
-using Files.App.ViewModels.Dialogs;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation.Metadata;
@@ -14,11 +14,11 @@ internal sealed class DialogService : IDialogService
 {
     private IFolderViewViewModel _folderViewViewModel = null!;
 
-    private IReadOnlyDictionary<Type, Func<ContentDialog>> _dialogs;
+    private FrozenDictionary<Type, Func<ContentDialog>> _dialogs;
 
 	public DialogService()
 	{
-        _dialogs = new Dictionary<Type, Func<ContentDialog>>() { };
+        _dialogs = new Dictionary<Type, Func<ContentDialog>>() { }.ToFrozenDictionary();
 	}
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
@@ -26,19 +26,19 @@ internal sealed class DialogService : IDialogService
         _folderViewViewModel = folderViewViewModel;
         _dialogs = new Dictionary<Type, Func<ContentDialog>>()
         {
-            { typeof(AddItemDialogViewModel), () => new AddItemDialog() },
-            { typeof(CredentialDialogViewModel), () => new CredentialDialog() },
-            { typeof(ElevateConfirmDialogViewModel), () => new ElevateConfirmDialog() },
+            { typeof(AddItemDialogViewModel), () => new AddItemDialog(folderViewViewModel) },
+            { typeof(CredentialDialogViewModel), () => new CredentialDialog(folderViewViewModel) },
+            { typeof(ElevateConfirmDialogViewModel), () => new ElevateConfirmDialog(folderViewViewModel) },
             { typeof(FileSystemDialogViewModel), () => new FilesystemOperationDialog(folderViewViewModel) },
-            { typeof(DecompressArchiveDialogViewModel), () => new DecompressArchiveDialog() },
+            { typeof(DecompressArchiveDialogViewModel), () => new DecompressArchiveDialog(folderViewViewModel) },
             { typeof(SettingsDialogViewModel), () => new SettingsDialog(folderViewViewModel) },
-            { typeof(CreateShortcutDialogViewModel), () => new CreateShortcutDialog() },
-            { typeof(ReorderSidebarItemsDialogViewModel), () => new ReorderSidebarItemsDialog() },
-            { typeof(AddBranchDialogViewModel), () => new AddBranchDialog() },
-            { typeof(GitHubLoginDialogViewModel), () => new GitHubLoginDialog() },
+            { typeof(CreateShortcutDialogViewModel), () => new CreateShortcutDialog(folderViewViewModel) },
+            { typeof(ReorderSidebarItemsDialogViewModel), () => new ReorderSidebarItemsDialog(folderViewViewModel) },
+            { typeof(AddBranchDialogViewModel), () => new AddBranchDialog(folderViewViewModel) },
+            { typeof(GitHubLoginDialogViewModel), () => new GitHubLoginDialog(folderViewViewModel) },
             { typeof(FileTooLargeDialogViewModel), () => new FileTooLargeDialog(folderViewViewModel) },
             { typeof(ReleaseNotesDialogViewModel), () => new ReleaseNotesDialog(folderViewViewModel) },
-        };
+        }.ToFrozenDictionary();
     }
 
     /// <inheritdoc/>

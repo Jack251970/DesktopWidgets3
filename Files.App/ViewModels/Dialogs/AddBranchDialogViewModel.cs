@@ -1,6 +1,6 @@
 ﻿namespace Files.App.ViewModels.Dialogs;
 
-public class AddBranchDialogViewModel : ObservableObject
+public sealed class AddBranchDialogViewModel : ObservableObject
 {
 	private readonly string _repositoryPath;
 
@@ -56,7 +56,7 @@ public class AddBranchDialogViewModel : ObservableObject
 	{
 		_repositoryPath = repositoryPath;
 		BasedOn = activeBranch;
-		Branches = Array.Empty<string>();
+		Branches = [];
 	}
 
 	public async Task LoadBranches()

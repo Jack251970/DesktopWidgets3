@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal sealed class DecompressArchiveHere : BaseDecompressArchiveAction
+internal sealed class DecompressArchiveHere(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : BaseDecompressArchiveAction(folderViewViewModel, context)
 {
 	public override string Label
 		=> "ExtractHere".GetLocalizedResource();
@@ -11,11 +11,7 @@ internal sealed class DecompressArchiveHere : BaseDecompressArchiveAction
 	public override string Description
 		=> "DecompressArchiveHereDescription".GetLocalizedResource();
 
-	public DecompressArchiveHere(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel, context)
-    {
-    }
-
-    public override Task ExecuteAsync()
+    public override Task ExecuteAsync(object? parameter = null)
 	{
 		return DecompressHelper.DecompressArchiveHereAsync(FolderViewViewModel, context.ShellPage!);
 	}

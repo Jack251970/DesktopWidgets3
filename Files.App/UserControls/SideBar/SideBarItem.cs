@@ -21,7 +21,7 @@ public sealed partial class SidebarItem : Control
 	public bool IsGroupHeader => Item?.Children is not null;
 	public bool CollapseEnabled => DisplayMode != SidebarDisplayMode.Compact;
 
-	private bool hasChildSelection => selectedChildItem != null;
+	private bool HasChildSelection => selectedChildItem != null;
 	private bool isPointerOver = false;
 	private bool isClicking = false;
 	private object? selectedChildItem = null;
@@ -188,7 +188,7 @@ public sealed partial class SidebarItem : Control
 		}
 	}
 
-	void ItemPropertyChangedHandler(object? sender, PropertyChangedEventArgs args)
+    private void ItemPropertyChangedHandler(object? sender, PropertyChangedEventArgs args)
 	{
 		if (args.PropertyName == nameof(ISidebarItemModel.IconSource))
 		{
@@ -310,7 +310,7 @@ public sealed partial class SidebarItem : Control
 		}
 		else
 		{
-			return IsSelected || hasChildSelection;
+			return IsSelected || HasChildSelection;
 		}
 	}
 
@@ -403,48 +403,58 @@ public sealed partial class SidebarItem : Control
 		}
 	}
 
-	private void ItemGrid_DragOver(object sender, DragEventArgs e)
-	{
-		if (HasChildren)
-		{
-			IsExpanded = true;
-		}
+    private async void ItemGrid_DragOver(object sender, DragEventArgs e)
+    {
+        if (HasChildren)
+        {
+            IsExpanded = true;
+        }
 
-		var insertsAbove = DetermineDropTargetPosition(e);
-		if (insertsAbove == SidebarItemDropPosition.Center)
-		{
-			VisualStateManager.GoToState(this, "DragOnTop", true);
-		}
-		else if (insertsAbove == SidebarItemDropPosition.Top)
-		{
-			VisualStateManager.GoToState(this, "DragInsertAbove", true);
-		}
-		else if (insertsAbove == SidebarItemDropPosition.Bottom)
-		{
-			VisualStateManager.GoToState(this, "DragInsertBelow", true);
-		}
+        var insertsAbove = DetermineDropTargetPosition(e);
+        if (insertsAbove == SidebarItemDropPosition.Center)
+        {
+            VisualStateManager.GoToState(this, "DragOnTop", true);
+        }
+        else if (insertsAbove == SidebarItemDropPosition.Top)
+        {
+            VisualStateManager.GoToState(this, "DragInsertAbove", true);
+        }
+        else if (insertsAbove == SidebarItemDropPosition.Bottom)
+        {
+            VisualStateManager.GoToState(this, "DragInsertBelow", true);
+        }
 
-		Owner?.RaiseItemDragOver(this, insertsAbove, e);
-	}
+        if (Owner is not null)
+        {
+            var deferral = e.GetDeferral();
+            await Owner.RaiseItemDragOver(this, insertsAbove, e);
+            deferral.Complete();
+        }
+    }
 
-	private void ItemGrid_ContextRequested(UIElement sender, Microsoft.UI.Xaml.Input.ContextRequestedEventArgs args)
-	{
-		Owner?.RaiseContextRequested(this, args.TryGetPosition(this, out var point) ? point : default);
-		args.Handled = true;
-	}
+    private void ItemGrid_ContextRequested(UIElement sender, Microsoft.UI.Xaml.Input.ContextRequestedEventArgs args)
+    {
+        Owner?.RaiseContextRequested(this, args.TryGetPosition(this, out var point) ? point : default);
+        args.Handled = true;
+    }
 
-	private void ItemGrid_DragLeave(object sender, DragEventArgs e)
-	{
-		UpdatePointerState();
-	}
+    private void ItemGrid_DragLeave(object sender, DragEventArgs e)
+    {
+        UpdatePointerState();
+    }
 
-	private void ItemGrid_Drop(object sender, DragEventArgs e)
-	{
-		UpdatePointerState();
-		Owner?.RaiseItemDropped(this, DetermineDropTargetPosition(e), e);
-	}
+    private async void ItemGrid_Drop(object sender, DragEventArgs e)
+    {
+        UpdatePointerState();
+        if (Owner is not null)
+        {
+            var deferral = e.GetDeferral();
+            await Owner.RaiseItemDropped(this, DetermineDropTargetPosition(e), e);
+            deferral.Complete();
+        }
+    }
 
-	private SidebarItemDropPosition DetermineDropTargetPosition(DragEventArgs args)
+    private SidebarItemDropPosition DetermineDropTargetPosition(DragEventArgs args)
 	{
 		if (UseReorderDrop)
 		{

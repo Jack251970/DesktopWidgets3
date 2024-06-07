@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Input;
@@ -9,7 +9,7 @@ namespace Files.App.Data.Models;
 
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
-public class ContextMenuFlyoutItemViewModel
+public sealed class ContextMenuFlyoutItemViewModel
 {
 	public bool ShowItem { get; set; } = true;
 

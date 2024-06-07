@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
@@ -15,13 +15,9 @@ namespace Files.App.Services;
 
 #pragma warning disable CA2254 // Template should be a static expression
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning disable IL2026 // Assembly reference for System.Runtime.InteropServices.RuntimeInformation not found
 
 public sealed class SideloadUpdateService : ObservableObject, IUpdateService, IDisposable
 {
-	[DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-	private static extern uint RegisterApplicationRestart(string pwzCommandLine, int dwFlags);
-
 	private const string SIDELOAD_STABLE = "https://cdn.files.community/files/stable/Files.Package.appinstaller";
 	private const string SIDELOAD_PREVIEW = "https://cdn.files.community/files/preview/Files.Package.appinstaller";
 
@@ -230,13 +226,14 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 
         IsUpdating = true;
 
-		var pm = new PackageManager();
 		DeploymentResult? result = null;
 
 		try
 		{
-			var restartStatus = RegisterApplicationRestart(null!, 0);
-			App.AppModel.ForceProcessTermination = true;
+            var packageManager = new PackageManager();
+
+            var restartStatus = Win32PInvoke.RegisterApplicationRestart(null!, 0);
+            App.AppModel.ForceProcessTermination = true;
 
 			Logger?.LogInformation($"Register for restart: {restartStatus}");
 
@@ -244,11 +241,11 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 			{
 				var bundlePath = new Uri(LocalSettingsExtensions.GetApplicationDataFolder("Files") + "\\" + TEMPORARY_UPDATE_PACKAGE_NAME);
 
-				var deployment = pm.RequestAddPackageAsync(
+				var deployment = packageManager.RequestAddPackageAsync(
 					bundlePath,
 					null,
 					DeploymentOptions.ForceApplicationShutdown,
-					pm.GetDefaultPackageVolume(),
+                    packageManager.GetDefaultPackageVolume(),
 					null,
 					null);
 

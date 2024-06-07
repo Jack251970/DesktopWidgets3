@@ -303,4 +303,22 @@
   <data name="NavigationToolbarNewWindow.Content" xml:space="preserve">
     <value>请前往仪表板界面添加组件</value>
   </data>
+  <data name="TrayMenu_TaskBarIcon.ToolTipText" xml:space="preserve">
+    <value>桌面小组件3</value>
+  </data>
+  <data name="Cpu" xml:space="preserve">
+    <value>Cpu</value>
+  </data>
+  <data name="Gpu" xml:space="preserve">
+    <value>Gpu</value>
+  </data>
+  <data name="Settings_AboutApp_Card.Header" xml:space="preserve">
+    <value>桌面小组件3</value>
+  </data>
+  <data name="Settings_CopyRight_Card.Description" xml:space="preserve">
+    <value>CopyRight © 2024 Jack251970. All rights reserved.</value>
+  </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>桌面小组件3</value>
+  </data>
 </root>

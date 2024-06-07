@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Controls;
@@ -20,22 +20,12 @@ public class TagsListItem
 		=> this as FlyoutItem;
 }
 
-public class TagItem : TagsListItem
+public sealed class TagItem(TagViewModel tag) : TagsListItem
 {
-	public TagViewModel Tag { get; set; }
-
-	public TagItem(TagViewModel tag)
-	{
-		Tag = tag;
-	}
+    public TagViewModel Tag { get; set; } = tag;
 }
 
-public class FlyoutItem : TagsListItem
+public sealed class FlyoutItem(MenuFlyout flyout) : TagsListItem
 {
-	public MenuFlyout Flyout { get; set; }
-
-	public FlyoutItem(MenuFlyout flyout)
-	{
-		Flyout = flyout;
-	}
+    public MenuFlyout Flyout { get; set; } = flyout;
 }

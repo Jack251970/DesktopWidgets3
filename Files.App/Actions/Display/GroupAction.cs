@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class GroupByNoneAction : GroupByAction
+internal sealed class GroupByNoneAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.None;
@@ -13,13 +13,9 @@ internal class GroupByNoneAction : GroupByAction
 
 	public override string Description
 		=> "GroupByNoneDescription".GetLocalizedResource();
-
-    public GroupByNoneAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByNameAction : GroupByAction
+internal sealed class GroupByNameAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.Name;
@@ -29,13 +25,9 @@ internal class GroupByNameAction : GroupByAction
 
 	public override string Description
 		=> "GroupByNameDescription".GetLocalizedResource();
-
-    public GroupByNameAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateModifiedAction : GroupByAction
+internal sealed class GroupByDateModifiedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.DateModified;
@@ -45,13 +37,9 @@ internal class GroupByDateModifiedAction : GroupByAction
 
 	public override string Description
 		=> "GroupByDateModifiedDescription".GetLocalizedResource();
-
-    public GroupByDateModifiedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateCreatedAction : GroupByAction
+internal sealed class GroupByDateCreatedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.DateCreated;
@@ -61,13 +49,9 @@ internal class GroupByDateCreatedAction : GroupByAction
 
 	public override string Description
 		=> "GroupByDateCreatedDescription".GetLocalizedResource();
-
-    public GroupByDateCreatedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupBySizeAction : GroupByAction
+internal sealed class GroupBySizeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.Size;
@@ -77,13 +61,9 @@ internal class GroupBySizeAction : GroupByAction
 
 	public override string Description
 		=> "GroupBySizeDescription".GetLocalizedResource();
-
-    public GroupBySizeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByTypeAction : GroupByAction
+internal sealed class GroupByTypeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.FileType;
@@ -93,13 +73,9 @@ internal class GroupByTypeAction : GroupByAction
 
 	public override string Description
 		=> "GroupByTypeDescription".GetLocalizedResource();
-
-    public GroupByTypeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupBySyncStatusAction : GroupByAction
+internal sealed class GroupBySyncStatusAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.SyncStatus;
@@ -112,13 +88,9 @@ internal class GroupBySyncStatusAction : GroupByAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.CloudDrive;
-
-    public GroupBySyncStatusAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByTagAction : GroupByAction
+internal sealed class GroupByTagAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.FileTag;
@@ -128,13 +100,9 @@ internal class GroupByTagAction : GroupByAction
 
 	public override string Description
 		=> "GroupByTagDescription".GetLocalizedResource();
-
-    public GroupByTagAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByOriginalFolderAction : GroupByAction
+internal sealed class GroupByOriginalFolderAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.OriginalFolder;
@@ -147,13 +115,9 @@ internal class GroupByOriginalFolderAction : GroupByAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.RecycleBin;
-
-    public GroupByOriginalFolderAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateDeletedAction : GroupByAction
+internal sealed class GroupByDateDeletedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.DateDeleted;
@@ -166,13 +130,9 @@ internal class GroupByDateDeletedAction : GroupByAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.RecycleBin;
-
-    public GroupByDateDeletedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByFolderPathAction : GroupByAction
+internal sealed class GroupByFolderPathAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.FolderPath;
@@ -185,10 +145,6 @@ internal class GroupByFolderPathAction : GroupByAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.Library or ContentPageTypes.SearchResults;
-    
-    public GroupByFolderPathAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
 internal abstract class GroupByAction : ObservableObject, IToggleAction
@@ -218,7 +174,7 @@ internal abstract class GroupByAction : ObservableObject, IToggleAction
 		DisplayContext.PropertyChanged += DisplayContext_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		DisplayContext.GroupOption = GroupOption;
 
@@ -247,7 +203,7 @@ internal abstract class GroupByAction : ObservableObject, IToggleAction
     }
 }
 
-internal class GroupByDateModifiedYearAction : GroupByDateAction
+internal sealed class GroupByDateModifiedYearAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByDateAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.DateModified;
@@ -260,13 +216,9 @@ internal class GroupByDateModifiedYearAction : GroupByDateAction
 
 	public override string Description
 		=> "GroupByDateModifiedYearDescription".GetLocalizedResource();
-
-    public GroupByDateModifiedYearAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateModifiedMonthAction : GroupByDateAction
+internal sealed class GroupByDateModifiedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByDateAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.DateModified;
@@ -279,13 +231,9 @@ internal class GroupByDateModifiedMonthAction : GroupByDateAction
 
 	public override string Description
 		=> "GroupByDateModifiedMonthDescription".GetLocalizedResource();
-
-    public GroupByDateModifiedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateModifiedDayAction : GroupByDateAction
+internal sealed class GroupByDateModifiedDayAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByDateAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
         => GroupOption.DateModified;
@@ -298,13 +246,9 @@ internal class GroupByDateModifiedDayAction : GroupByDateAction
 
     public override string Description
         => "GroupByDateModifiedDayDescription".GetLocalizedResource();
-
-    public GroupByDateModifiedDayAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateCreatedYearAction : GroupByDateAction
+internal sealed class GroupByDateCreatedYearAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByDateAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.DateCreated;
@@ -317,13 +261,9 @@ internal class GroupByDateCreatedYearAction : GroupByDateAction
 
 	public override string Description
 		=> "GroupByDateCreatedYearDescription".GetLocalizedResource();
-
-    public GroupByDateCreatedYearAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateCreatedMonthAction : GroupByDateAction
+internal sealed class GroupByDateCreatedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByDateAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.DateCreated;
@@ -336,13 +276,9 @@ internal class GroupByDateCreatedMonthAction : GroupByDateAction
 
 	public override string Description
 		=> "GroupByDateCreatedMonthDescription".GetLocalizedResource();
-
-    public GroupByDateCreatedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateCreatedDayAction : GroupByDateAction
+internal sealed class GroupByDateCreatedDayAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByDateAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
         => GroupOption.DateCreated;
@@ -355,13 +291,9 @@ internal class GroupByDateCreatedDayAction : GroupByDateAction
 
     public override string Description
         => "GroupByDateCreatedDayDescription".GetLocalizedResource();
-
-    public GroupByDateCreatedDayAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateDeletedYearAction : GroupByDateAction
+internal sealed class GroupByDateDeletedYearAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByDateAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.DateDeleted;
@@ -377,13 +309,9 @@ internal class GroupByDateDeletedYearAction : GroupByDateAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.RecycleBin;
-
-    public GroupByDateDeletedYearAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateDeletedMonthAction : GroupByDateAction
+internal sealed class GroupByDateDeletedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByDateAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
 		=> GroupOption.DateDeleted;
@@ -399,13 +327,9 @@ internal class GroupByDateDeletedMonthAction : GroupByDateAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.RecycleBin;
-
-    public GroupByDateDeletedMonthAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class GroupByDateDeletedDayAction : GroupByDateAction
+internal sealed class GroupByDateDeletedDayAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : GroupByDateAction(contentPageContext, displayPageContext)
 {
     protected override GroupOption GroupOption
         => GroupOption.DateDeleted;
@@ -421,10 +345,6 @@ internal class GroupByDateDeletedDayAction : GroupByDateAction
 
     protected override bool GetIsExecutable(ContentPageTypes pageType)
         => pageType is ContentPageTypes.RecycleBin;
-
-    public GroupByDateDeletedDayAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
 internal abstract class GroupByDateAction : ObservableObject, IToggleAction
@@ -457,7 +377,7 @@ internal abstract class GroupByDateAction : ObservableObject, IToggleAction
 		DisplayContext.PropertyChanged += DisplayContext_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		DisplayContext.GroupOption = GroupOption;
 		DisplayContext.GroupByDateUnit = GroupByDateUnit;
@@ -487,7 +407,7 @@ internal abstract class GroupByDateAction : ObservableObject, IToggleAction
     }
 }
 
-internal class GroupAscendingAction : ObservableObject, IToggleAction
+internal sealed class GroupAscendingAction : ObservableObject, IToggleAction
 {
 	private readonly IDisplayPageContext context;
 
@@ -510,7 +430,7 @@ internal class GroupAscendingAction : ObservableObject, IToggleAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		context.GroupDirection = SortDirection.Ascending;
 
@@ -531,7 +451,7 @@ internal class GroupAscendingAction : ObservableObject, IToggleAction
 	}
 }
 
-internal class GroupDescendingAction : ObservableObject, IToggleAction
+internal sealed class GroupDescendingAction : ObservableObject, IToggleAction
 {
 	private readonly IDisplayPageContext context;
 
@@ -554,7 +474,7 @@ internal class GroupDescendingAction : ObservableObject, IToggleAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		context.GroupDirection = SortDirection.Descending;
 
@@ -575,7 +495,7 @@ internal class GroupDescendingAction : ObservableObject, IToggleAction
 	}
 }
 
-internal class ToggleGroupDirectionAction : IAction
+internal sealed class ToggleGroupDirectionAction : IAction
 {
 	private readonly IDisplayPageContext context;
 
@@ -590,7 +510,7 @@ internal class ToggleGroupDirectionAction : IAction
         this.context = context;
     }
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		context.GroupDirection = context.SortDirection is SortDirection.Descending ? SortDirection.Ascending : SortDirection.Descending;
 
@@ -598,7 +518,7 @@ internal class ToggleGroupDirectionAction : IAction
 	}
 }
 
-internal class GroupByYearAction : ObservableObject, IToggleAction
+internal sealed class GroupByYearAction : ObservableObject, IToggleAction
 {
 	private readonly IDisplayPageContext context;
 
@@ -621,7 +541,7 @@ internal class GroupByYearAction : ObservableObject, IToggleAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		context.GroupByDateUnit = GroupByDateUnit.Year;
 
@@ -642,7 +562,7 @@ internal class GroupByYearAction : ObservableObject, IToggleAction
 	}
 }
 
-internal class GroupByMonthAction : ObservableObject, IToggleAction
+internal sealed class GroupByMonthAction : ObservableObject, IToggleAction
 {
 	private readonly IDisplayPageContext context;
 
@@ -665,7 +585,7 @@ internal class GroupByMonthAction : ObservableObject, IToggleAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		context.GroupByDateUnit = GroupByDateUnit.Month;
 
@@ -686,9 +606,9 @@ internal class GroupByMonthAction : ObservableObject, IToggleAction
 	}
 }
 
-internal class ToggleGroupByDateUnitAction : IAction
+internal sealed class ToggleGroupByDateUnitAction(IDisplayPageContext context) : IAction
 {
-	private readonly IDisplayPageContext context;
+	private readonly IDisplayPageContext context = context;
 
 	public string Label
 		=> "ToggleGroupingUnit".GetLocalizedResource();
@@ -696,12 +616,7 @@ internal class ToggleGroupByDateUnitAction : IAction
 	public string Description
 		=> "ToggleGroupByDateUnitDescription".GetLocalizedResource();
 
-	public ToggleGroupByDateUnitAction(IDisplayPageContext context)
-    {
-        this.context = context;
-    }
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
         context.GroupByDateUnit = context.GroupByDateUnit switch
         {

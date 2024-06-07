@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
@@ -6,19 +6,17 @@ using Windows.Storage.Streams;
 
 namespace Files.App.ViewModels.Previews;
 
-public class RichTextPreviewViewModel : BasePreviewModel
+public sealed class RichTextPreviewViewModel(ListedItem item) : BasePreviewModel(item)
 {
 	public IRandomAccessStream Stream { get; set; } = null!;
 
-	public RichTextPreviewViewModel(ListedItem item) : base(item) { }
-
-	public static bool ContainsExtension(string extension)
+    public static bool ContainsExtension(string extension)
 		=> extension is ".rtf";
 
 	public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
 	{
 		Stream = await Item.ItemFile.OpenReadAsync();
 
-		return new List<FileProperty>();
+		return [];
 	}
 }

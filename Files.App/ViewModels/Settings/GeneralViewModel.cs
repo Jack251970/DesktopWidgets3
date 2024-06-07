@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.Specialized;
@@ -10,7 +10,7 @@ using static Files.App.Helpers.MenuFlyoutHelper;
 
 namespace Files.App.ViewModels.Settings;
 
-public class GeneralViewModel : ObservableObject, IDisposable
+public sealed class GeneralViewModel : ObservableObject, IDisposable
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
@@ -110,7 +110,7 @@ public class GeneralViewModel : ObservableObject, IDisposable
         }
         else
         {
-            PagesOnStartupList = new ObservableCollection<PageOnStartupViewModel>();
+            PagesOnStartupList = [];
         }
 
         PagesOnStartupList.CollectionChanged += PagesOnStartupList_CollectionChanged;*/
@@ -132,7 +132,7 @@ public class GeneralViewModel : ObservableObject, IDisposable
         }
         else
         {
-            PagesOnStartupList = new ObservableCollection<PageOnStartupViewModel>();
+            PagesOnStartupList = [];
         }
 
         PagesOnStartupList.CollectionChanged += PagesOnStartupList_CollectionChanged;
@@ -141,14 +141,21 @@ public class GeneralViewModel : ObservableObject, IDisposable
     }
 
     private async void DoRestartAsync()
-	{
-		UserSettingsService.AppSettingsService.RestoreTabsOnStartup = true; // Tells the app to restore tabs when it's next launched
-		AppLifecycleHelper.SaveSessionTabs(); // Saves the open tabs
-		await Launcher.LaunchUriAsync(new Uri("files-uwp:")); // Launches a new instance of Files
-		Process.GetCurrentProcess().Kill(); // Closes the current instance
-	}
+    {
+        // Tells the app to restore tabs when it's next launched
+        UserSettingsService.AppSettingsService.RestoreTabsOnStartup = true;
 
-	private void DoCancelRestart()
+        // Save the updated tab list before restarting
+        AppLifecycleHelper.SaveSessionTabs();
+
+        // Launches a new instance of Files
+        await Launcher.LaunchUriAsync(new Uri("files-uwp:"));
+
+        // Closes the current instance
+        Process.GetCurrentProcess().Kill();
+    }
+
+    private void DoCancelRestart()
 	{
 		ShowRestartControl = false;
 	}
@@ -182,7 +189,7 @@ public class GeneralViewModel : ObservableObject, IDisposable
         }
         catch
         {
-            List<string> manifestLanguages = new() { "en-US", "zh-Hans" };
+            List<string> manifestLanguages = ["en-US", "zh-Hans"];
             var appLanguages = manifestLanguages
             .Append(string.Empty) // Add default language id
             .Select(language => new AppLanguageItem(language))
@@ -567,7 +574,7 @@ public class GeneralViewModel : ObservableObject, IDisposable
 	}
 }
 
-public class PageOnStartupViewModel
+public sealed class PageOnStartupViewModel
 {
     public string Text => ShellHelpers.GetShellNameFromPath(Path);
 
@@ -579,7 +586,7 @@ public class PageOnStartupViewModel
     }
 }
 
-public class AppLanguageItem
+public sealed class AppLanguageItem
 {
 	public string LanguagID { get; set; }
 
@@ -608,7 +615,7 @@ public class AppLanguageItem
 	}
 }
 
-public class DateTimeFormatItem
+public sealed class DateTimeFormatItem
 {
 	public string Label { get; }
 

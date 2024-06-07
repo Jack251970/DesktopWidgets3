@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Data.Contexts;
@@ -9,9 +9,7 @@ public enum LayoutTypes : ushort
 	Details,
     List,
     Tiles,
-	GridSmall,
-	GridMedium,
-	GridLarge,
-	Columns,
+    Grid,
+    Columns,
 	Adaptive,
 }

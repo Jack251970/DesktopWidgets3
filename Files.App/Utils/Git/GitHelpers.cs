@@ -1,26 +1,21 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
-using Files.App.Helpers;
-using Files.App.ViewModels.Dialogs;
 using LibGit2Sharp;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.RegularExpressions;
+using System.Net.Sockets;
+using System.Text;
 
 namespace Files.App.Utils.Git;
 
-#pragma warning disable IL2026 // Misuse of dynamic method signature
 #pragma warning disable CA2254 // Template should be a static expression
 
 internal static partial class GitHelpers
 {
-	private const string BRANCH_NAME_PATTERN = @"^(?!/)(?!.*//)[^\000-\037\177 ~^:?*[]+(?!.*\.\.)(?!.*@\{)(?!.*\\)(?<!/\.)(?<!\.)(?<!/)(?<!\.lock)$";
-
 	private const string GIT_RESOURCE_NAME = "Files:https://github.com";
 
 	private const string GIT_RESOURCE_USERNAME = "Personal Access Token";
@@ -35,8 +30,6 @@ internal static partial class GitHelpers
 
 	/*private static readonly IDialogService _dialogService = DependencyExtensions.GetService<IDialogService>();*/
 
-	private static readonly IApplicationService _applicationService = DependencyExtensions.GetService<IApplicationService>();
-
 	private static readonly FetchOptions _fetchOptions = new()
 	{
 		Prune = true
@@ -44,15 +37,13 @@ internal static partial class GitHelpers
 
 	private static readonly PullOptions _pullOptions = new();
 
-	private static readonly string _clientId = _applicationService.Environment is AppEnvironment.Store or AppEnvironment.Stable or AppEnvironment.Preview
-			? CLIENT_ID_SECRET
-			: string.Empty;
+    private static readonly string _clientId = AppLifecycleHelper.AppEnvironment is AppEnvironment.Store or AppEnvironment.Stable or AppEnvironment.Preview
+            ? CLIENT_ID_SECRET
+            : string.Empty;
 
-	private static ThreadWithMessageQueue? _owningThread;
+    private static readonly SemaphoreSlim GitOperationSemaphore = new(1, 1);
 
-	private static int _activeOperationsCount = 0;
-
-	private static bool _IsExecutingGitAction;
+    private static bool _IsExecutingGitAction;
 	public static bool IsExecutingGitAction
 	{
 		get => _IsExecutingGitAction;
@@ -69,14 +60,6 @@ internal static partial class GitHelpers
 	public static event PropertyChangedEventHandler? IsExecutingGitActionChanged;
 
 	public static event EventHandler? GitFetchCompleted;
-
-	public static void TryDispose()
-	{
-		var threadToDispose = _owningThread;
-		_owningThread = null;
-		Interlocked.Exchange(ref _activeOperationsCount, 0);
-		threadToDispose?.Dispose();
-	}
 
 	public static string? GetGitRepositoryPath(string? path, string root)
 	{
@@ -105,8 +88,8 @@ internal static partial class GitHelpers
 					? path
 					: GetGitRepositoryPath(PathNormalization.GetParentDir(path), root);
 		}
-		catch (LibGit2SharpException ex)
-		{
+        catch (Exception ex) when (ex is LibGit2SharpException or EncoderFallbackException)
+        {
 			_logger?.LogWarning(ex.Message);
 
 			return null;
@@ -136,11 +119,11 @@ internal static partial class GitHelpers
 	{
 		if (string.IsNullOrWhiteSpace(path) || !Repository.IsValid(path))
         {
-            return Array.Empty<BranchItem>();
+            return [];
         }
 
-        var (result, returnValue) = await PostMethodToThreadWithMessageQueueAsync<(GitOperationResult, BranchItem[])>(() =>
-		{
+        var (result, returnValue) = await DoGitOperationAsync<(GitOperationResult, BranchItem[])>(() =>
+        {
 			var branches = Array.Empty<BranchItem>();
 			var result = GitOperationResult.Success;
 			try
@@ -173,8 +156,8 @@ internal static partial class GitHelpers
             return null;
         }
 
-        var (_, returnValue) = await PostMethodToThreadWithMessageQueueAsync<(GitOperationResult, BranchItem?)>(() =>
-		{
+        var (_, returnValue) = await DoGitOperationAsync<(GitOperationResult, BranchItem?)>(() =>
+        {
 			BranchItem? head = null;
 			try
 			{
@@ -197,12 +180,12 @@ internal static partial class GitHelpers
 			}
 
 			return (GitOperationResult.Success, head);
-		});
+		}, true);
 
-		return returnValue;
+        return returnValue;
 	}
 
-	public static async Task<bool> Checkout(string? repositoryPath, string? branch)
+	public static async Task<bool> Checkout(IFolderViewViewModel folderViewViewModel, string? repositoryPath, string? branch)
 	{
 		Analytics.TrackEvent("Triggered git checkout");
 
@@ -225,7 +208,7 @@ internal static partial class GitHelpers
 
 		if (repository.RetrieveStatus().IsDirty)
 		{
-			var dialog = DynamicDialogFactory.GetFor_GitCheckoutConflicts(checkoutBranch.FriendlyName, repository.Head.FriendlyName);
+			var dialog = DynamicDialogFactory.GetFor_GitCheckoutConflicts(folderViewViewModel, checkoutBranch.FriendlyName, repository.Head.FriendlyName);
 			await dialog.ShowAsync();
 
 			var resolveConflictOption = (GitCheckoutOptions)dialog.ViewModel.AdditionalData;
@@ -252,8 +235,8 @@ internal static partial class GitHelpers
 			}
 		}
 
-		var result = await PostMethodToThreadWithMessageQueueAsync<GitOperationResult>(() =>
-		{
+        var result = await DoGitOperationAsync<GitOperationResult>(() =>
+        {
 			try
 			{
 				if (checkoutBranch.IsRemote)
@@ -306,13 +289,13 @@ internal static partial class GitHelpers
 		IsExecutingGitAction = true;
 
 		if (repository.Head.FriendlyName.Equals(viewModel.NewBranchName) ||
-			await Checkout(repositoryPath, viewModel.BasedOn))
+			await Checkout(folderViewViewModel, repositoryPath, viewModel.BasedOn))
 		{
 			repository.CreateBranch(viewModel.NewBranchName);
 
 			if (viewModel.Checkout)
             {
-                await Checkout(repositoryPath, viewModel.NewBranchName);
+                await Checkout(folderViewViewModel, repositoryPath, viewModel.NewBranchName);
             }
         }
 
@@ -332,7 +315,7 @@ internal static partial class GitHelpers
 			return;
 		}
 
-		var dialog = DynamicDialogFactory.GetFor_DeleteGitBranchConfirmation(branchToDelete);
+		var dialog = DynamicDialogFactory.GetFor_DeleteGitBranchConfirmation(folderViewViewModel, branchToDelete);
 		await dialog.TryShowAsync(folderViewViewModel);
 		if (!(dialog.ViewModel.AdditionalData as bool? ?? false))
         {
@@ -341,8 +324,8 @@ internal static partial class GitHelpers
 
         IsExecutingGitAction = true;
 
-		await PostMethodToThreadWithMessageQueueAsync<GitOperationResult>(() =>
-		{
+        await DoGitOperationAsync<GitOperationResult>(() =>
+        {
 			try
 			{
 				using var repository = new Repository(repositoryPath);
@@ -367,8 +350,8 @@ internal static partial class GitHelpers
             return false;
         }
 
-        var nameValidator = MyRegex();
-		if (!nameValidator.IsMatch(branchName))
+        var nameValidator = RegexHelpers.GitBranchName();
+        if (!nameValidator.IsMatch(branchName))
         {
             return false;
         }
@@ -404,9 +387,9 @@ internal static partial class GitHelpers
 			IsExecutingGitAction = true;
 		});
 
-		await PostMethodToThreadWithMessageQueueAsync<GitOperationResult>(() =>
-		{
-			var result = GitOperationResult.Success;
+        await DoGitOperationAsync<GitOperationResult>(() =>
+        {
+            var result = GitOperationResult.Success;
 			try
 			{
 				foreach (var remote in repository.Network.Remotes)
@@ -467,9 +450,9 @@ internal static partial class GitHelpers
 			IsExecutingGitAction = true;
 		});
 
-		var result = await PostMethodToThreadWithMessageQueueAsync<GitOperationResult>(() =>
-		{
-			try
+        var result = await DoGitOperationAsync<GitOperationResult>(() =>
+        {
+            try
 			{
                 Commands.Pull(
 					repository,
@@ -499,7 +482,7 @@ internal static partial class GitHelpers
 				CloseButtonText = "Close".GetLocalizedResource(),
 				DynamicButtons = DynamicDialogButtons.Cancel
 			};
-			var dialog = new DynamicDialog(viewModel);
+			var dialog = new DynamicDialog(folderViewViewModel, viewModel);
 			await dialog.TryShowAsync(folderViewViewModel);
 		}
 
@@ -557,9 +540,9 @@ internal static partial class GitHelpers
 					b => b.UpstreamBranch = branch.CanonicalName);
 			}
 
-			var result = await PostMethodToThreadWithMessageQueueAsync<GitOperationResult>(() =>
-			{
-				try
+            var result = await DoGitOperationAsync<GitOperationResult>(() =>
+            {
+                try
 				{
 					repository.Network.Push(branch, options);
 				}
@@ -596,33 +579,33 @@ internal static partial class GitHelpers
 		client.DefaultRequestHeaders.Add("Accept", "application/json");
 		client.DefaultRequestHeaders.Add("User-Agent", "Files App");
 
-        HttpResponseMessage codeResponse;
+        JsonDocument? codeJsonContent;
         try
         {
-            codeResponse = await client.PostAsync(
+            var codeResponse = await client.PostAsync(
                 $"https://github.com/login/device/code?client_id={_clientId}&scope=repo",
                 new StringContent(""));
+
+            if (!codeResponse.IsSuccessStatusCode)
+            {
+                await DynamicDialogFactory.GetFor_GitHubConnectionError(folderViewViewModel).TryShowAsync(folderViewViewModel);
+                return;
+            }
+
+            codeJsonContent = await codeResponse.Content.ReadFromJsonAsync<JsonDocument>();
+            if (codeJsonContent is null)
+            {
+                await DynamicDialogFactory.GetFor_GitHubConnectionError(folderViewViewModel).TryShowAsync(folderViewViewModel);
+                return;
+            }
         }
         catch
         {
-            await DynamicDialogFactory.GetFor_GitHubConnectionError().TryShowAsync(folderViewViewModel);
+            await DynamicDialogFactory.GetFor_GitHubConnectionError(folderViewViewModel).TryShowAsync(folderViewViewModel);
             return;
         }
 
-        if (!codeResponse.IsSuccessStatusCode)
-		{
-			await DynamicDialogFactory.GetFor_GitHubConnectionError().TryShowAsync(folderViewViewModel);
-			return;
-		}
-
-		var codeJsonContent = await codeResponse.Content.ReadFromJsonAsync<JsonDocument>();
-		if (codeJsonContent is null)
-		{
-			await DynamicDialogFactory.GetFor_GitHubConnectionError().TryShowAsync(folderViewViewModel);
-			return;
-		}
-
-		var userCode = codeJsonContent.RootElement.GetProperty("user_code").GetString() ?? string.Empty;
+        var userCode = codeJsonContent.RootElement.GetProperty("user_code").GetString() ?? string.Empty;
 		var deviceCode = codeJsonContent.RootElement.GetProperty("device_code").GetString() ?? string.Empty;
 		var interval = codeJsonContent.RootElement.GetProperty("interval").GetInt32();
 		var expiresIn = codeJsonContent.RootElement.GetProperty("expires_in").GetInt32();
@@ -636,53 +619,62 @@ internal static partial class GitHelpers
 
 		while (!loginCTS.Token.IsCancellationRequested && pending && expiresIn > 0)
 		{
-			var loginResponse = await client.PostAsync(
-				$"https://github.com/login/oauth/access_token?client_id={_clientId}&device_code={deviceCode}&grant_type=urn:ietf:params:oauth:grant-type:device_code",
-				new StringContent(""));
-
-			expiresIn -= interval;
-
-			if (!loginResponse.IsSuccessStatusCode)
-			{
-				dialog.Hide();
-				break;
-			}
-
-			var loginJsonContent = await loginResponse.Content.ReadFromJsonAsync<JsonDocument>();
-			if (loginJsonContent is null)
-			{
-				dialog.Hide();
-				break;
-			}
-
-			if (loginJsonContent.RootElement.TryGetProperty("error", out var error))
-			{
-				if (error.GetString() == "authorization_pending")
-				{
-					await Task.Delay(TimeSpan.FromSeconds(interval));
-					continue;
-				}
-
-				dialog.Hide();
-				break;
-			}
-
-			var token = loginJsonContent.RootElement.GetProperty("access_token").GetString();
-			if (token is null)
+            try
             {
-                continue;
+                var loginResponse = await client.PostAsync(
+				    $"https://github.com/login/oauth/access_token?client_id={_clientId}&device_code={deviceCode}&grant_type=urn:ietf:params:oauth:grant-type:device_code",
+				    new StringContent(""));
+
+			    expiresIn -= interval;
+
+			    if (!loginResponse.IsSuccessStatusCode)
+			    {
+				    dialog.Hide();
+				    break;
+			    }
+
+			    var loginJsonContent = await loginResponse.Content.ReadFromJsonAsync<JsonDocument>();
+			    if (loginJsonContent is null)
+			    {
+				    dialog.Hide();
+				    break;
+			    }
+
+			    if (loginJsonContent.RootElement.TryGetProperty("error", out var error))
+			    {
+				    if (error.GetString() == "authorization_pending")
+				    {
+					    await Task.Delay(TimeSpan.FromSeconds(interval));
+					    continue;
+				    }
+
+				    dialog.Hide();
+				    break;
+			    }
+
+			    var token = loginJsonContent.RootElement.GetProperty("access_token").GetString();
+			    if (token is null)
+                {
+                    continue;
+                }
+
+                pending = false;
+
+			    CredentialsHelpers.SavePassword(
+				    GIT_RESOURCE_NAME,
+				    GIT_RESOURCE_USERNAME,
+				    token);
+
+			    viewModel.Subtitle = "AuthorizationSucceded".GetLocalizedResource();
+			    viewModel.LoginConfirmed = true;
             }
-
-            pending = false;
-
-			CredentialsHelpers.SavePassword(
-				GIT_RESOURCE_NAME,
-				GIT_RESOURCE_USERNAME,
-				token);
-
-			viewModel.Subtitle = "AuthorizationSucceded".GetLocalizedResource();
-			viewModel.LoginConfirmed = true;
-		}
+            catch (SocketException ex)
+            {
+                _logger!.LogWarning(ex.Message);
+                dialog.Hide();
+                break;
+            }
+        }
 
 		await loginDialogTask;
 	}
@@ -789,7 +781,7 @@ internal static partial class GitHelpers
 		catch (LibGit2SharpException ex)
 		{
 			_logger?.LogWarning(ex.Message);
-			await DynamicDialogFactory.GetFor_GitCannotInitializeqRepositoryHere().TryShowAsync(folderViewViewModel);
+			await DynamicDialogFactory.GetFor_GitCannotInitializeqRepositoryHere(folderViewViewModel).TryShowAsync(folderViewViewModel);
 		}
 	}
 
@@ -885,33 +877,27 @@ internal static partial class GitHelpers
 			ex.Message.Contains("authentication replays", StringComparison.OrdinalIgnoreCase);
 	}
 
-	private static void DisposeIfFinished()
-	{
-		if (Interlocked.Decrement(ref _activeOperationsCount) == 0)
+	private static async Task<T?> DoGitOperationAsync<T>(Func<object> payload, bool useSemaphore = false)
+    {
+        if (useSemaphore)
         {
-            TryDispose();
+            await GitOperationSemaphore.WaitAsync();
+        }
+        else
+        {
+            await Task.Yield();
+        }
+
+        try
+        {
+            return (T)payload();
+        }
+        finally
+        {
+            if (useSemaphore)
+            {
+                GitOperationSemaphore.Release();
+            }
         }
     }
-
-	private static async Task<T?> PostMethodToThreadWithMessageQueueAsync<T>(Func<object> payload)
-	{
-		T? returnValue = default;
-
-		Interlocked.Increment(ref _activeOperationsCount);
-		_owningThread ??= new ThreadWithMessageQueue();
-
-		try
-		{
-			returnValue = await _owningThread.PostMethod<T>(payload);
-		}
-		finally
-		{
-			DisposeIfFinished();
-		}
-
-		return returnValue;
-	}
-
-    [GeneratedRegex("^(?!/)(?!.*//)[^\\000-\\037\\177 ~^:?*[]+(?!.*\\.\\.)(?!.*@\\{)(?!.*\\\\)(?<!/\\.)(?<!\\.)(?<!/)(?<!\\.lock)$")]
-    private static partial Regex MyRegex();
 }

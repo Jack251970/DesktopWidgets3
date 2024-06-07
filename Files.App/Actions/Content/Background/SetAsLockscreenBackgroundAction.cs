@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class SetAsLockscreenBackgroundAction : BaseSetAsAction
+internal class SetAsLockscreenBackgroundAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : BaseSetAsAction(context)
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private readonly IFolderViewViewModel FolderViewViewModel = folderViewViewModel;
 
     public override string Label
 		=> "SetAsLockscreen".GetLocalizedResource();
@@ -20,12 +20,7 @@ internal class SetAsLockscreenBackgroundAction : BaseSetAsAction
 		base.IsExecutable &&
 		context.SelectedItem is not null;
 
-    public SetAsLockscreenBackgroundAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(context)
-    {
-        FolderViewViewModel = folderViewViewModel;
-    }
-
-	public override Task ExecuteAsync()
+    public override Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.SelectedItem is not null)
         {

@@ -5,9 +5,9 @@ using static Vanara.PInvoke.Kernel32;
 
 namespace Files.App.Utils.Storage.Operations;
 
-internal class FileSizeCalculator
+internal sealed class FileSizeCalculator(params string[] paths)
 {
-	private readonly string[] _paths;
+	private readonly string[] _paths = paths;
 	private readonly ConcurrentDictionary<string, long> _computedFiles = new();
 	private long _size;
 
@@ -15,17 +15,12 @@ internal class FileSizeCalculator
 	public int ItemsCount => _computedFiles.Count;
 	public bool Completed { get; private set; }
 
-	public FileSizeCalculator(params string[] paths)
-	{
-		_paths = paths;
-	}
-
-	public async Task ComputeSizeAsync(CancellationToken cancellationToken = default)
+    public async Task ComputeSizeAsync(CancellationToken cancellationToken = default)
 	{
 		await Parallel.ForEachAsync(_paths, cancellationToken, async (path, token) => await Task.Factory.StartNew(() =>
 		{
 			var queue = new Queue<string>();
-			if (!NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Directory))
+			if (!Win32Helper.HasFileAttribute(path, FileAttributes.Directory))
 			{
 				ComputeFileSize(path);
 			}
@@ -105,7 +100,7 @@ internal class FileSizeCalculator
 
 	public void ForceComputeFileSize(string path)
 	{
-		if (!NativeFileOperationsHelper.HasFileAttribute(path, FileAttributes.Directory))
+		if (!Win32Helper.HasFileAttribute(path, FileAttributes.Directory))
 		{
 			ComputeFileSize(path);
 		}

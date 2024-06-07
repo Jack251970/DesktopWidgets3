@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Storage;
-using static Files.App.Constants;
 using static Files.App.Helpers.PathNormalization;
 
 namespace Files.App.Views.Layouts;
@@ -20,7 +19,6 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 {
     // Properties
 
-    protected override uint IconSize => Constants.DefaultIconSizes.Large;
     protected override ItemsControl ItemsControl => ColumnHost;
 
 	public string? OwnerPath { get; private set; }
@@ -38,9 +36,9 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 
 	public void HandleSelectionChange(ColumnLayoutPage initiator)
 	{
-		foreach (var blade in ColumnHost.ActiveBlades)
-		{
-			var columnView = blade.FindDescendant<ColumnLayoutPage>();
+        foreach (var blade in ColumnHost.ActiveBlades.ToList())
+        {
+            var columnView = blade.FindDescendant<ColumnLayoutPage>();
 			if (columnView != null && columnView != initiator)
             {
                 columnView.ClearSelectionIndicator();
@@ -68,8 +66,8 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
         }
 
         var nextBladeIndex = ColumnHost.ActiveBlades.IndexOf(column.ListView.FindAscendant<BladeItem>()) + 1;
-		var nextBlade = ColumnHost.ActiveBlades.ElementAtOrDefault(nextBladeIndex);
-		var arePathsDifferent = ((nextBlade?.Content as Frame)?.Content as IShellPage)?.FilesystemViewModel?.WorkingDirectory != column.NavPathParam;
+        var nextBlade = ColumnHost.ActiveBlades.ToList().ElementAtOrDefault(nextBladeIndex);
+        var arePathsDifferent = ((nextBlade?.Content as Frame)?.Content as IShellPage)?.FilesystemViewModel?.WorkingDirectory != column.NavPathParam;
 
 		if (nextBlade is null || arePathsDifferent)
 		{
@@ -103,8 +101,8 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 
 		if (!string.IsNullOrEmpty(pathRoot))
 		{
-			var rootPathList = App.QuickAccessManager.Model.FavoriteItems.Select(NormalizePath)
-				.Concat(CloudDrivesManager.Drives.Select(x => NormalizePath(x.Path))).ToList()
+            var rootPathList = App.QuickAccessManager.Model.PinnedFolders.Select(NormalizePath)
+                .Concat(CloudDrivesManager.Drives.Select(x => NormalizePath(x.Path))).ToList()
 				.Concat(App.LibraryManager.Libraries.Select(x => NormalizePath(x.Path))).ToList();
 			rootPathList.Add(NormalizePath(pathRoot));
 
@@ -255,15 +253,15 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
             return;
         }
 
-        var currentBlade = ColumnHost.ActiveBlades.Single(x => (x.Content as Frame)?.Content == sender);
-		currentBlade.StartBringIntoView();
-		ColumnHost.ActiveBlades?.ForEach(x =>
-			{
-				var shellPage = (x.Content as Frame)?.Content as ColumnShellPage;
-				shellPage!.IsCurrentInstance = false;
-			});
+        var currentBlade = ColumnHost.ActiveBlades.ToList().Single(x => (x.Content as Frame)?.Content == sender);
+        currentBlade.StartBringIntoView();
+        ColumnHost.ActiveBlades?.ToList().ForEach(x =>
+        {
+            var shellPage = (x.Content as Frame)?.Content as ColumnShellPage;
+            shellPage!.IsCurrentInstance = false;
+        });
 
-		shPage.IsCurrentInstance = true;
+        shPage.IsCurrentInstance = true;
 		ContentChanged(shPage);
 	}
 
@@ -311,8 +309,8 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
         }
         else
 		{
-			var workingDirectory = ((ColumnHost.ActiveBlades?.FirstOrDefault()?.Content as Frame)?.Content as ColumnShellPage)?.FilesystemViewModel.WorkingDirectory;
-			if (workingDirectory is null || string.Equals(workingDirectory, GetPathRoot(workingDirectory), StringComparison.OrdinalIgnoreCase))
+            var workingDirectory = ((ColumnHost.ActiveBlades?.ToList().FirstOrDefault()?.Content as Frame)?.Content as ColumnShellPage)?.FilesystemViewModel.WorkingDirectory;
+            if (workingDirectory is null || string.Equals(workingDirectory, GetPathRoot(workingDirectory), StringComparison.OrdinalIgnoreCase))
             {
                 ParentShellPageInstance?.NavigateHome();
             }
@@ -386,10 +384,10 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 		}
 
 		var destPath = navArgs is not null ? navArgs.NavPathParam : navigationPath;
-		var columnPath = ((ColumnHost.ActiveBlades.Last().Content as Frame)?.Content as ColumnShellPage)?.FilesystemViewModel.WorkingDirectory;
-		var columnFirstPath = ((ColumnHost.ActiveBlades.First().Content as Frame)?.Content as ColumnShellPage)?.FilesystemViewModel.WorkingDirectory;
-
-		if (string.IsNullOrEmpty(destPath) || string.IsNullOrEmpty(columnPath) || string.IsNullOrEmpty(columnFirstPath))
+        var columnPath = ((ColumnHost.ActiveBlades.ToList().LastOrDefault()?.Content as Frame)?.Content as ColumnShellPage)?.FilesystemViewModel.WorkingDirectory;
+        var columnFirstPath = ((ColumnHost.ActiveBlades.ToList().FirstOrDefault()?.Content as Frame)?.Content as ColumnShellPage)?.FilesystemViewModel.WorkingDirectory;
+        
+        if (string.IsNullOrEmpty(destPath) || string.IsNullOrEmpty(columnPath) || string.IsNullOrEmpty(columnFirstPath))
 		{
 			ParentShellPageInstance?.NavigateToPath(navigationPath, sourcePageType, navArgs!);
 			return;
@@ -432,9 +430,9 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 	{
 		if (ColumnHost.ActiveBlades?.Count > 1)
 		{
-			foreach (var item in ColumnHost.ActiveBlades)
-			{
-				if (item.Content is Frame { Content: ColumnShellPage s } &&
+            foreach (var item in ColumnHost.ActiveBlades.ToList())
+            {
+                if (item.Content is Frame { Content: ColumnShellPage s } &&
 					NormalizePath(s.FilesystemViewModel?.WorkingDirectory!) == NormalizePath(e.ItemPath))
 				{
 					DismissOtherBlades(item);
@@ -464,8 +462,8 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 		{
 			if (ColumnHost.ActiveBlades?.Count > 0)
 			{
-				var shellPages = ColumnHost.ActiveBlades.Select(x => (x.Content as Frame)!.Content as IShellPage);
-				var activeInstance = shellPages.SingleOrDefault(x => x!.IsCurrentInstance);
+                var shellPages = ColumnHost.ActiveBlades.ToList().Select(x => (x.Content as Frame)!.Content as IShellPage);
+                var activeInstance = shellPages.SingleOrDefault(x => x!.IsCurrentInstance);
 				return activeInstance ?? shellPages.Last()!;
 			}
 
@@ -507,9 +505,9 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 
 		if (relativeIndex is -1)
 		{
-			// Get the index of the blade with the same path as the requested
-			var blade = ColumnHost.ActiveBlades.FirstOrDefault(b =>
-				column.NavPathParam.Equals(((b.Content as Frame)?.Content as ColumnShellPage)?.FilesystemViewModel?.WorkingDirectory));
+            // Get the index of the blade with the same path as the requested
+            var blade = ColumnHost.ActiveBlades.ToList().FirstOrDefault(b =>
+                column.NavPathParam.Equals(((b.Content as Frame)?.Content as ColumnShellPage)?.FilesystemViewModel?.WorkingDirectory));
 
 			if (blade is not null)
             {

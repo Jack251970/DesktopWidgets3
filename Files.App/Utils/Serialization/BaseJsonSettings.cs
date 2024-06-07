@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.CompilerServices;
@@ -94,9 +94,11 @@ internal abstract class BaseJsonSettings : ISettingsSharingContext
 			return false;
 		}
 
-		if (JsonSettingsDatabase?.SetValue(propertyName, value) ?? false)
-		{
-			RaiseOnSettingChangedEvent(this, new SettingChangedEventArgs(propertyName, value));
+        if (JsonSettingsDatabase is not null &&
+            (!JsonSettingsDatabase.GetValue<TValue>(propertyName)?.Equals(value) ?? true) &&
+            JsonSettingsDatabase.SetValue(propertyName, value))
+        {
+            RaiseOnSettingChangedEvent(this, new SettingChangedEventArgs(propertyName, value));
 			return true;
 		}
 

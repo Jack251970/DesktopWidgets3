@@ -1,17 +1,13 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices;
 
 namespace Files.App.UserControls.Selection;
 
-public class IgnorePreviousItemSelectionStrategy : ItemSelectionStrategy
+public sealed class IgnorePreviousItemSelectionStrategy(ICollection<object> selectedItems) : ItemSelectionStrategy(selectedItems)
 {
-	public IgnorePreviousItemSelectionStrategy(ICollection<object> selectedItems) : base(selectedItems)
-	{
-	}
-
-	public override void HandleIntersectionWithItem(object item)
+    public override void HandleIntersectionWithItem(object item)
 	{
 		try
 		{

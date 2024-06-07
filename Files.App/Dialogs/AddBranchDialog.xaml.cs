@@ -1,21 +1,28 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.ViewModels.Dialogs;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.Dialogs;
 
 public sealed partial class AddBranchDialog : ContentDialog, IDialog<AddBranchDialogViewModel>
 {
-	public AddBranchDialogViewModel ViewModel
+    private readonly IFolderViewViewModel FolderViewViewModel;
+
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;  // TODO(Later): Check if this can follow system theme change.
+
+    public AddBranchDialogViewModel ViewModel
 	{
 		get => (AddBranchDialogViewModel)DataContext;
 		set => DataContext = value;
 	}
 
-	public AddBranchDialog()
+	public AddBranchDialog(IFolderViewViewModel folderViewViewModel)
 	{
+        FolderViewViewModel = folderViewViewModel;
+
 		InitializeComponent();
 	}
 

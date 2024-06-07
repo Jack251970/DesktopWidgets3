@@ -1,7 +1,10 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using System.Windows.Input;
 using Windows.System;
@@ -11,16 +14,16 @@ namespace Files.App.ViewModels;
 /// <summary>
 /// Represents ViewModel of <see cref="MainPage"/>.
 /// </summary>
-public class MainPageViewModel : ObservableObject
+public sealed class MainPageViewModel : ObservableObject
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     // Dependency injections
 
-    /*private IAppearanceSettingsService AppearanceSettingsService { get; set; } = null!;*/
-	private NetworkDrivesViewModel NetworkDrivesViewModel { get; } = DependencyExtensions.GetService<NetworkDrivesViewModel>();
+    private IAppearanceSettingsService AppearanceSettingsService { get; set; } = null!;
+    private INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetService<INetworkDrivesService>();
     private IUserSettingsService UserSettingsService { get; set; } = null!;
-	/*private IResourcesService ResourcesService { get; } = DependencyExtensions.GetService<IResourcesService>();*/
+	private IResourcesService ResourcesService { get; } = DependencyExtensions.GetService<IResourcesService>();
 	private DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetService<DrivesViewModel>();
 
     // Properties
@@ -59,6 +62,23 @@ public class MainPageViewModel : ObservableObject
         set => SetProperty(ref shouldPreviewPaneBeDisplayed, value);
     }
 
+    public Stretch AppThemeBackgroundImageFit
+        => AppearanceSettingsService.AppThemeBackgroundImageFit;
+
+    public float AppThemeBackgroundImageOpacity
+        => AppearanceSettingsService.AppThemeBackgroundImageOpacity;
+
+    public ImageSource? AppThemeBackgroundImageSource =>
+        string.IsNullOrEmpty(AppearanceSettingsService.AppThemeBackgroundImageSource)
+            ? null
+            : new BitmapImage(new Uri(AppearanceSettingsService.AppThemeBackgroundImageSource, UriKind.RelativeOrAbsolute));
+
+    public VerticalAlignment AppThemeBackgroundImageVerticalAlignment
+        => AppearanceSettingsService.AppThemeBackgroundImageVerticalAlignment;
+
+    public HorizontalAlignment AppThemeBackgroundImageHorizontalAlignment
+        => AppearanceSettingsService.AppThemeBackgroundImageHorizontalAlignment;
+
     // Commands
 
     public ICommand NavigateToNumberedTabKeyboardAcceleratorCommand { get; }
@@ -68,6 +88,28 @@ public class MainPageViewModel : ObservableObject
 	public MainPageViewModel()
 	{
 		NavigateToNumberedTabKeyboardAcceleratorCommand = new RelayCommand<KeyboardAcceleratorInvokedEventArgs>(ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand);
+
+        /*AppearanceSettingsService.PropertyChanged += (s, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageSource):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageSource));
+                    break;
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageOpacity):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageOpacity));
+                    break;
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageFit):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageFit));
+                    break;
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageVerticalAlignment):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageVerticalAlignment));
+                    break;
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageHorizontalAlignment):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageHorizontalAlignment));
+                    break;
+            }
+        };*/
     }
 
 	// Methods
@@ -84,13 +126,32 @@ public class MainPageViewModel : ObservableObject
         {
             FolderViewViewModel = folderViewViewModel;
 
-            /*AppearanceSettingsService = folderViewViewModel.GetService<IAppearanceSettingsService>();*/
+            AppearanceSettingsService = folderViewViewModel.GetService<IAppearanceSettingsService>();
             UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
         }
 
-        // Initialize the static theme helper to capture a reference to this window
-        // to handle theme changes without restarting the app
-        var isInitialized = ThemeHelper.Initialize();
+        // TODO(Later): Check if need
+        AppearanceSettingsService.PropertyChanged += (s, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageSource):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageSource));
+                    break;
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageOpacity):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageOpacity));
+                    break;
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageFit):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageFit));
+                    break;
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageVerticalAlignment):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageVerticalAlignment));
+                    break;
+                case nameof(AppearanceSettingsService.AppThemeBackgroundImageHorizontalAlignment):
+                    OnPropertyChanged(nameof(AppThemeBackgroundImageHorizontalAlignment));
+                    break;
+            }
+        };
 
         var parameter = e.Parameter;
 		var ignoreStartupSettings = false;
@@ -138,22 +199,21 @@ public class MainPageViewModel : ObservableObject
 				{
 					foreach (var path in UserSettingsService.GeneralSettingsService.TabsOnStartupList)
                     {
-                        await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), path);
+                        await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), path, true);
                     }
                 }
 				else if (UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp &&
 					UserSettingsService.GeneralSettingsService.LastSessionTabList is not null)
 				{
-					foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
-					{
-						var tabArgs = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
-						await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
-					}
-
-					var defaultArg = new CustomTabViewItemParameter() { FolderViewViewModel = FolderViewViewModel, InitialPageType = typeof(PaneHolderPage), NavigationParameter = "Home" };
-
-					UserSettingsService.GeneralSettingsService.LastSessionTabList = new List<string> { defaultArg.Serialize() };
-				}
+                    if (AppInstances[FolderViewViewModel].Count == 0)
+                    {
+                        foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
+                        {
+                            var tabArgs = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
+                            await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
+                        }
+                    }
+                }
 				else
 				{
 					await NavigationHelpers.AddNewTabAsync(FolderViewViewModel);
@@ -175,21 +235,18 @@ public class MainPageViewModel : ObservableObject
 					{
 						foreach (var path in UserSettingsService.GeneralSettingsService.TabsOnStartupList)
                         {
-                            await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), path);
+                            await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), path, true);
                         }
                     }
-					else if (UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp &&
-						UserSettingsService.GeneralSettingsService.LastSessionTabList is not null)
-					{
-						foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
+                    else if (UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp &&
+                            UserSettingsService.GeneralSettingsService.LastSessionTabList is not null &&
+                            AppInstances[FolderViewViewModel].Count == 0)
+                    {
+                        foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 						{
 							var tabArgs = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
 							await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 						}
-
-						var defaultArg = new CustomTabViewItemParameter() { FolderViewViewModel = FolderViewViewModel, InitialPageType = typeof(PaneHolderPage), NavigationParameter = "Home" };
-
-						UserSettingsService.GeneralSettingsService.LastSessionTabList = new List<string> { defaultArg.Serialize() };
 					}
 				}
 				catch { }
@@ -197,7 +254,7 @@ public class MainPageViewModel : ObservableObject
 
 			if (parameter is string navArgs)
             {
-                await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), navArgs);
+                await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), navArgs, true);
             }
             else if (parameter is PaneNavigationArguments paneArgs)
             {
@@ -209,17 +266,14 @@ public class MainPageViewModel : ObservableObject
             }
         }
 
-        if (isInitialized)
-		{
-            // CHANGE: Don't load app theme resources.
-            /*// Load the app theme resources
-			ResourcesService.LoadAppResources(AppearanceSettingsService);*/
+        // CHANGE: Don't load app theme resources.
+        /*// Load the app theme resources
+        ResourcesService.LoadAppResources(AppearanceSettingsService);*/
 
-            await Task.WhenAll(
-				DrivesViewModel.UpdateDrivesAsync(),
-				NetworkDrivesViewModel.UpdateDrivesAsync());
-		}
-	}
+        await Task.WhenAll(
+            DrivesViewModel.UpdateDrivesAsync(),
+            NetworkDrivesService.UpdateDrivesAsync());
+    }
 
     // Command methods
 

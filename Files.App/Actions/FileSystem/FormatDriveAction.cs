@@ -1,9 +1,9 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class FormatDriveAction : ObservableObject, IAction
+internal sealed class FormatDriveAction : ObservableObject, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -29,12 +29,12 @@ internal class FormatDriveAction : ObservableObject, IAction
 		context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
-		return Win32API.OpenFormatDriveDialog(context.Folder?.ItemPath ?? string.Empty);
-	}
+        return Win32Helper.OpenFormatDriveDialog(context.Folder?.ItemPath ?? string.Empty);
+    }
 
-	public void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    public void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName is nameof(IContentPageContext.HasItem))
         {

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -17,9 +17,9 @@ public sealed partial class SplashScreenPage : Page
 #pragma warning disable CA1822 // Mark members as static
 
     private string BranchLabel =>
-		ApplicationService.AppEnvironment switch
-		{
-			AppEnvironment.Dev => "Dev",
+        AppLifecycleHelper.AppEnvironment switch
+        {
+            AppEnvironment.Dev => "Dev",
 			AppEnvironment.Preview => "Preview",
 			_ => string.Empty,
 		};

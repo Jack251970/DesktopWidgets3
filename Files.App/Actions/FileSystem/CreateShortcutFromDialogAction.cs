@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class CreateShortcutFromDialogAction : BaseUIAction, IAction
+internal sealed class CreateShortcutFromDialogAction : BaseUIAction, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -27,7 +27,7 @@ internal class CreateShortcutFromDialogAction : BaseUIAction, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		return UIFilesystemHelpers.CreateShortcutFromDialogAsync(FolderViewViewModel, context.ShellPage!);
 	}

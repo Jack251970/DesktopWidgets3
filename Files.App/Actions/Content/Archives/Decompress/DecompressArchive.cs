@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Files.App.Actions;
 
-internal sealed class DecompressArchive : BaseDecompressArchiveAction
+internal sealed class DecompressArchive(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : BaseDecompressArchiveAction(folderViewViewModel, context)
 {
 	public override string Label
 		=> "ExtractFiles".GetLocalizedResource();
@@ -17,16 +17,14 @@ internal sealed class DecompressArchive : BaseDecompressArchiveAction
 	public override HotKey HotKey
 		=> new(Keys.E, KeyModifiers.Ctrl);
 
-	public DecompressArchive(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel, context)
-    {
-    }
-
-    public override Task ExecuteAsync()
+    public override Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage is null)
-			return Task.CompletedTask;
+        {
+            return Task.CompletedTask;
+        }
 
-		return DecompressHelper.DecompressArchiveAsync(FolderViewViewModel, context.ShellPage);
+        return DecompressHelper.DecompressArchiveAsync(FolderViewViewModel, context.ShellPage);
 	}
 
 	protected override bool CanDecompressInsideArchive()

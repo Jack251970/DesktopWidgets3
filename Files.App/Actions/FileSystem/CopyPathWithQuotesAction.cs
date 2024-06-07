@@ -1,13 +1,13 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Windows.ApplicationModel.DataTransfer;
 
 namespace Files.App.Actions;
 
-internal class CopyPathWithQuotesAction : IAction
+internal sealed class CopyPathWithQuotesAction(IContentPageContext context) : IAction
 {
-	private readonly IContentPageContext context;
+	private readonly IContentPageContext context = context;
 
 	public string Label
 		=> "CopyPathWithQuotes".GetLocalizedResource();
@@ -19,17 +19,12 @@ internal class CopyPathWithQuotesAction : IAction
 		=> new(opacityStyle: "ColorIconCopyPath");
 
 	public HotKey HotKey
-		=> new(Keys.C, KeyModifiers.MenuCtrl);
+		=> new(Keys.C, KeyModifiers.CtrlAlt);
 
 	public bool IsExecutable
 		=> context.HasSelection;
 
-	public CopyPathWithQuotesAction(IContentPageContext context)
-    {
-        this.context = context;
-    }
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage?.SlimContentPage is not null)
 		{

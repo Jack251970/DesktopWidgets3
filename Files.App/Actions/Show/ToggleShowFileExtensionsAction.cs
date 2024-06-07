@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class ToggleShowFileExtensionsAction : ObservableObject, IToggleAction
+internal sealed class ToggleShowFileExtensionsAction : ObservableObject, IToggleAction
 {
 	private readonly IFoldersSettingsService settings;
 
@@ -23,7 +23,7 @@ internal class ToggleShowFileExtensionsAction : ObservableObject, IToggleAction
 		settings.PropertyChanged += Settings_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		settings.ShowFileExtensions = !settings.ShowFileExtensions;
 

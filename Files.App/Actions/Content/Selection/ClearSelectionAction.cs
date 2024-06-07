@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class ClearSelectionAction : IAction
+internal sealed class ClearSelectionAction(IContentPageContext context) : IAction
 {
-	private readonly IContentPageContext context;
+	private readonly IContentPageContext context = context;
 
 	public string Label
 		=> "ClearSelection".GetLocalizedResource();
@@ -44,12 +44,7 @@ internal class ClearSelectionAction : IAction
 		}
 	}
 
-	public ClearSelectionAction(IContentPageContext context)
-    {
-        this.context = context;
-    }
-
-    public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		context.ShellPage?.SlimContentPage?.ItemManipulationModel?.ClearSelection();
 

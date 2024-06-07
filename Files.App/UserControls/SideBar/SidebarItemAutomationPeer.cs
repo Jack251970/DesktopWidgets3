@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -9,28 +9,25 @@ using Microsoft.UI.Xaml.Automation.Provider;
 
 namespace Files.App.UserControls.Sidebar;
 
-public class SidebarItemAutomationPeer : FrameworkElementAutomationPeer, IInvokeProvider, IExpandCollapseProvider, ISelectionItemProvider
+public sealed class SidebarItemAutomationPeer(SidebarItem owner) : FrameworkElementAutomationPeer(owner), IInvokeProvider, IExpandCollapseProvider, ISelectionItemProvider
 {
 	public ExpandCollapseState ExpandCollapseState
 	{
 		get
 		{
 			if (Owner.HasChildren)
-				return Owner.IsExpanded ? ExpandCollapseState.Expanded : ExpandCollapseState.Collapsed;
-			return ExpandCollapseState.LeafNode;
+            {
+                return Owner.IsExpanded ? ExpandCollapseState.Expanded : ExpandCollapseState.Collapsed;
+            }
+            return ExpandCollapseState.LeafNode;
 		}
 	}
 	public bool IsSelected => Owner.IsSelected;
 	public IRawElementProviderSimple SelectionContainer => ProviderFromPeer(CreatePeerForElement(Owner.Owner));
 
-	private new SidebarItem Owner { get; init; }
+    private new SidebarItem Owner { get; init; } = owner;
 
-	public SidebarItemAutomationPeer(SidebarItem owner) : base(owner)
-	{
-		this.Owner = owner;
-	}
-
-	protected override AutomationControlType GetAutomationControlTypeCore()
+    protected override AutomationControlType GetAutomationControlTypeCore()
 	{
 		return AutomationControlType.ListItem;
 	}

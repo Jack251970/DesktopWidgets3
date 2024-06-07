@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -9,18 +9,12 @@ using Windows.Storage.Search;
 
 namespace Files.App.Utils.Storage;
 
-public partial class BaseStorageItemQueryResult
+public partial class BaseStorageItemQueryResult(BaseStorageFolder folder, QueryOptions options)
 {
-	public BaseStorageFolder Folder { get; }
-	public QueryOptions Options { get; }
+    public BaseStorageFolder Folder { get; } = folder;
+    public QueryOptions Options { get; } = options;
 
-	public BaseStorageItemQueryResult(BaseStorageFolder folder, QueryOptions options)
-	{
-		Folder = folder;
-		Options = options;
-	}
-
-	public virtual IAsyncOperation<IReadOnlyList<IStorageItem>> GetItemsAsync(uint startIndex, uint maxNumberOfItems)
+    public virtual IAsyncOperation<IReadOnlyList<IStorageItem>> GetItemsAsync(uint startIndex, uint maxNumberOfItems)
 	{
 		return AsyncInfo.Run<IReadOnlyList<IStorageItem>>(async (cancellationToken) =>
 		{
@@ -37,8 +31,8 @@ public partial class BaseStorageItemQueryResult
 			var query = string.Join(' ', Options.ApplicationSearchFilter, Options.UserSearchFilter).Trim();
 			if (!string.IsNullOrEmpty(query))
 			{
-				var spaceSplit = MyRegex().Split(query);
-				foreach (var split in spaceSplit)
+                var spaceSplit = RegexHelpers.SpaceSplit().Split(query);
+                foreach (var split in spaceSplit)
 				{
 					var colonSplit = split.Split(':');
 					if (colonSplit.Length == 2)
@@ -59,23 +53,14 @@ public partial class BaseStorageItemQueryResult
 	}
 
 	public virtual StorageItemQueryResult ToStorageItemQueryResult() => null!;
-
-    [GeneratedRegex("(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")]
-    private static partial Regex MyRegex();
 }
 
-public partial class BaseStorageFileQueryResult
+public partial class BaseStorageFileQueryResult(BaseStorageFolder folder, QueryOptions options)
 {
-	public BaseStorageFolder Folder { get; }
-	public QueryOptions Options { get; }
+    public BaseStorageFolder Folder { get; } = folder;
+    public QueryOptions Options { get; } = options;
 
-	public BaseStorageFileQueryResult(BaseStorageFolder folder, QueryOptions options)
-	{
-		Folder = folder;
-		Options = options;
-	}
-
-	public virtual IAsyncOperation<IReadOnlyList<BaseStorageFile>> GetFilesAsync(uint startIndex, uint maxNumberOfItems)
+    public virtual IAsyncOperation<IReadOnlyList<BaseStorageFile>> GetFilesAsync(uint startIndex, uint maxNumberOfItems)
 	{
 		return AsyncInfo.Run<IReadOnlyList<BaseStorageFile>>(async (cancellationToken) =>
 		{
@@ -92,8 +77,8 @@ public partial class BaseStorageFileQueryResult
 			var query = string.Join(' ', Options.ApplicationSearchFilter, Options.UserSearchFilter).Trim();
 			if (!string.IsNullOrEmpty(query))
 			{
-				var spaceSplit = MyRegex().Split(query);
-				foreach (var split in spaceSplit)
+                var spaceSplit = RegexHelpers.SpaceSplit().Split(query);
+                foreach (var split in spaceSplit)
 				{
 					var colonSplit = split.Split(':');
 					if (colonSplit.Length == 2)
@@ -114,23 +99,14 @@ public partial class BaseStorageFileQueryResult
 	}
 
 	public virtual StorageFileQueryResult ToStorageFileQueryResult() => null!;
-
-    [GeneratedRegex("(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")]
-    private static partial Regex MyRegex();
 }
 
-public partial class BaseStorageFolderQueryResult
+public partial class BaseStorageFolderQueryResult(BaseStorageFolder folder, QueryOptions options)
 {
-	public BaseStorageFolder Folder { get; }
-	public QueryOptions Options { get; }
+    public BaseStorageFolder Folder { get; } = folder;
+    public QueryOptions Options { get; } = options;
 
-	public BaseStorageFolderQueryResult(BaseStorageFolder folder, QueryOptions options)
-	{
-		Folder = folder;
-		Options = options;
-	}
-
-	public virtual IAsyncOperation<IReadOnlyList<BaseStorageFolder>> GetFoldersAsync(uint startIndex, uint maxNumberOfItems)
+    public virtual IAsyncOperation<IReadOnlyList<BaseStorageFolder>> GetFoldersAsync(uint startIndex, uint maxNumberOfItems)
 	{
 		return AsyncInfo.Run<IReadOnlyList<BaseStorageFolder>>(async (cancellationToken) =>
 		{
@@ -147,8 +123,8 @@ public partial class BaseStorageFolderQueryResult
 			var query = string.Join(' ', Options.ApplicationSearchFilter, Options.UserSearchFilter).Trim();
 			if (!string.IsNullOrEmpty(query))
 			{
-				var spaceSplit = MyRegex().Split(query);
-				foreach (var split in spaceSplit)
+                var spaceSplit = RegexHelpers.SpaceSplit().Split(query);
+                foreach (var split in spaceSplit)
 				{
 					var colonSplit = split.Split(':');
 					if (colonSplit.Length == 2)
@@ -169,21 +145,13 @@ public partial class BaseStorageFolderQueryResult
 	}
 
 	public virtual StorageFolderQueryResult ToStorageFolderQueryResult() => null!;
-
-    [GeneratedRegex("(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")]
-    private static partial Regex MyRegex();
 }
 
-public class SystemStorageItemQueryResult : BaseStorageItemQueryResult
+public sealed class SystemStorageItemQueryResult(StorageItemQueryResult sfqr) : BaseStorageItemQueryResult(sfqr.Folder, sfqr.GetCurrentQueryOptions())
 {
-	private StorageItemQueryResult StorageItemQueryResult { get; }
+    private StorageItemQueryResult StorageItemQueryResult { get; } = sfqr;
 
-	public SystemStorageItemQueryResult(StorageItemQueryResult sfqr) : base(sfqr.Folder, sfqr.GetCurrentQueryOptions())
-	{
-		StorageItemQueryResult = sfqr;
-	}
-
-	public override IAsyncOperation<IReadOnlyList<IStorageItem>> GetItemsAsync(uint startIndex, uint maxNumberOfItems)
+    public override IAsyncOperation<IReadOnlyList<IStorageItem>> GetItemsAsync(uint startIndex, uint maxNumberOfItems)
 	{
 		return AsyncInfo.Run<IReadOnlyList<IStorageItem>>(async (cancellationToken) =>
 		{
@@ -204,16 +172,11 @@ public class SystemStorageItemQueryResult : BaseStorageItemQueryResult
 	public override StorageItemQueryResult ToStorageItemQueryResult() => StorageItemQueryResult;
 }
 
-public class SystemStorageFileQueryResult : BaseStorageFileQueryResult
+public sealed class SystemStorageFileQueryResult(StorageFileQueryResult sfqr) : BaseStorageFileQueryResult(sfqr.Folder, sfqr.GetCurrentQueryOptions())
 {
-	private StorageFileQueryResult StorageFileQueryResult { get; }
+    private StorageFileQueryResult StorageFileQueryResult { get; } = sfqr;
 
-	public SystemStorageFileQueryResult(StorageFileQueryResult sfqr) : base(sfqr.Folder, sfqr.GetCurrentQueryOptions())
-	{
-		StorageFileQueryResult = sfqr;
-	}
-
-	public override IAsyncOperation<IReadOnlyList<BaseStorageFile>> GetFilesAsync(uint startIndex, uint maxNumberOfItems)
+    public override IAsyncOperation<IReadOnlyList<BaseStorageFile>> GetFilesAsync(uint startIndex, uint maxNumberOfItems)
 	{
 		return AsyncInfo.Run<IReadOnlyList<BaseStorageFile>>(async (cancellationToken) =>
 		{
@@ -234,16 +197,11 @@ public class SystemStorageFileQueryResult : BaseStorageFileQueryResult
 	public override StorageFileQueryResult ToStorageFileQueryResult() => StorageFileQueryResult;
 }
 
-public class SystemStorageFolderQueryResult : BaseStorageFolderQueryResult
+public sealed class SystemStorageFolderQueryResult(StorageFolderQueryResult sfqr) : BaseStorageFolderQueryResult(sfqr.Folder, sfqr.GetCurrentQueryOptions())
 {
-	private StorageFolderQueryResult StorageFolderQueryResult { get; }
+    private StorageFolderQueryResult StorageFolderQueryResult { get; } = sfqr;
 
-	public SystemStorageFolderQueryResult(StorageFolderQueryResult sfqr) : base(sfqr.Folder, sfqr.GetCurrentQueryOptions())
-	{
-		StorageFolderQueryResult = sfqr;
-	}
-
-	public override IAsyncOperation<IReadOnlyList<BaseStorageFolder>> GetFoldersAsync(uint startIndex, uint maxNumberOfItems)
+    public override IAsyncOperation<IReadOnlyList<BaseStorageFolder>> GetFoldersAsync(uint startIndex, uint maxNumberOfItems)
 	{
 		return AsyncInfo.Run<IReadOnlyList<BaseStorageFolder>>(async (cancellationToken) =>
 		{

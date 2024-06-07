@@ -1,15 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Data.EventArguments;
 
-public class SearchBoxQuerySubmittedEventArgs
+public sealed class SearchBoxQuerySubmittedEventArgs(SuggestionModel chosenSuggestion)
 {
-	public SuggestionModel ChosenSuggestion { get; }
-
-    public SearchBoxQuerySubmittedEventArgs(SuggestionModel chosenSuggestion)
-    {
-        ChosenSuggestion = chosenSuggestion;
-    }
+    public SuggestionModel ChosenSuggestion { get; } = chosenSuggestion;
 }
-

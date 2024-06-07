@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
@@ -11,11 +11,11 @@ using IO = System.IO;
 
 namespace Files.App.Utils.Storage;
 
-public class VirtualStorageFile : BaseStorageFile
+public sealed class VirtualStorageFile(Stream contents, string cFileName) : BaseStorageFile
 {
-	public override string Path { get; }
-	public override string Name { get; }
-	public override string DisplayName => Name;
+    public override string Path { get; } = "";
+    public override string Name { get; } = cFileName;
+    public override string DisplayName => Name;
 	public override string ContentType => "application/octet-stream";
 	public override string FileType => IO.Path.GetExtension(Name);
 	public override string FolderRelativeId => $"0\\{Name}";
@@ -33,20 +33,13 @@ public class VirtualStorageFile : BaseStorageFile
 		}
 	}
 
-	private Stream Contents { get; init; }
+    private Stream Contents { get; init; } = contents;
 
-	public override DateTimeOffset DateCreated { get; }
+    public override DateTimeOffset DateCreated { get; }
 	public override Windows.Storage.FileAttributes Attributes { get; } = Windows.Storage.FileAttributes.Normal;
 	public override IStorageItemExtraProperties Properties => new BaseBasicStorageItemExtraProperties(this);
 
-	public VirtualStorageFile(Stream contents, string cFileName)
-	{
-		Contents = contents;
-		Name = cFileName;
-		Path = "";
-	}
-
-	private async void StreamedFileWriterAsync(StreamedFileDataRequest request)
+    private async void StreamedFileWriterAsync(StreamedFileDataRequest request)
 	{
 		try
 		{

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
@@ -7,7 +7,7 @@ using Windows.Foundation.Metadata;
 
 namespace Files.App.Actions;
 
-internal sealed class CompressIntoArchiveAction : BaseCompressArchiveAction
+internal sealed class CompressIntoArchiveAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : BaseCompressArchiveAction(folderViewViewModel, context)
 {
 	public override string Label
 		=> "CreateArchive".GetLocalizedResource();
@@ -15,11 +15,7 @@ internal sealed class CompressIntoArchiveAction : BaseCompressArchiveAction
 	public override string Description
 		=> "CompressIntoArchiveDescription".GetLocalizedResource();
 
-	public CompressIntoArchiveAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel, context)
-    {
-	}
-
-	public async override Task ExecuteAsync()
+    public async override Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage is null)
         {

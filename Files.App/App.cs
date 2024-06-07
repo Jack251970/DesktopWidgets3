@@ -1,14 +1,13 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Core.Helpers;
-using Files.Core.Services.SizeProvider;
+using Files.App.Services.SizeProvider;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage;
 
 namespace Files.App;
 
@@ -17,7 +16,7 @@ namespace Files.App;
 /// </summary>
 public partial class App
 {
-    public static readonly List<IFolderViewViewModel> FolderViewViewModels = new();
+    public static readonly List<IFolderViewViewModel> FolderViewViewModels = [];
 
     private readonly IFolderViewViewModel FolderViewViewModel;
     private MainWindow Instance { get; set; } = null!;
@@ -98,9 +97,6 @@ public partial class App
         // Configure resouces dispose handler
         ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closed += MainWindow_Closed;
 
-        // Register theme change handler
-        ThemeExtensions.ElementTheme_Changed += (sender, theme) => Helpers.ThemeHelper.RootTheme = theme;
-
         isInitialized = true;
     }
 
@@ -119,7 +115,8 @@ public partial class App
 
             // Get AppActivationArguments
             var appActivationArguments = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
-            var isStartupTask = appActivationArguments.Data is Windows.ApplicationModel.Activation.IStartupTaskActivatedEventArgs;  // TODO: Add function.
+            // TODO(Later): Add start up argument function.
+            var isStartupTask = appActivationArguments.Data is Windows.ApplicationModel.Activation.IStartupTaskActivatedEventArgs;
 
             if (!isStartupTask)
             {
@@ -183,7 +180,7 @@ public partial class App
                 SystemTrayIcon = new SystemTrayIcon().Show();*/
 
                 // Sleep current instance
-                Program.Pool = new(0, 1, $"Files-{ApplicationService.AppEnvironment}-Instance");
+                Program.Pool = new(0, 1, $"Files-{AppLifecycleHelper.AppEnvironment}-Instance");
 
                 Thread.Yield();
 
@@ -250,7 +247,30 @@ public partial class App
 			return;
 		}
 
+        // Save the current tab list in case it was overwriten by another instance
         AppLifecycleHelper.SaveSessionTabs(FolderViewViewModel);
+
+        if (OutputPath is not null)
+        {
+            var instance = MainPageViewModel.AppInstances[FolderViewViewModel].FirstOrDefault(x => x.TabItemContent.IsCurrentInstance);
+            if (instance is null)
+            {
+                return;
+            }
+
+            var items = (instance.TabItemContent as PaneHolderPage)?.ActivePane?.SlimContentPage?.SelectedItems;
+            if (items is null)
+            {
+                return;
+            }
+
+            var results = items.Select(x => x.ItemPath).ToList();
+            SystemIO.File.WriteAllLines(OutputPath, results);
+
+            var eventHandle = Win32PInvoke.CreateEvent(IntPtr.Zero, false, false, "FILEDIALOG");
+            Win32PInvoke.SetEvent(eventHandle);
+            Win32PInvoke.CloseHandle(eventHandle);
+        }
 
         // Continue running the app on the background
         if (userSettingsService.GeneralSettingsService.LeaveAppRunning &&
@@ -264,7 +284,7 @@ public partial class App
             statusCenterViewModel.RemoveAllCompletedItems();
 
             // Cache the window instead of closing it
-            FolderViewViewModel.MainWindow.AppWindow.Hide();
+            FolderViewViewModel.AppWindow.Hide();
 
             // Close all tabs
             MainPageViewModel.AppInstances[FolderViewViewModel].ForEach(tabItem => tabItem.Unload());
@@ -274,7 +294,7 @@ public partial class App
             await FilePropertiesHelpers.WaitClosingAll();
 
             // Sleep current instance
-            Program.Pool = new(0, 1, $"Files-{ApplicationService.AppEnvironment}-Instance");
+            Program.Pool = new(0, 1, $"Files-{AppLifecycleHelper.AppEnvironment}-Instance");
 
             Thread.Yield();
 
@@ -297,26 +317,43 @@ public partial class App
         // Method can take a long time, make sure the window is hidden
         await Task.Yield();
 
-        if (OutputPath is not null)
-		{
-			await SafetyExtensions.IgnoreExceptions(async () =>
-			{
-				var instance = MainPageViewModel.AppInstances[FolderViewViewModel].FirstOrDefault(x => x.TabItemContent.IsCurrentInstance);
-				if (instance is null)
+        // CHANGE: Remove background running notification.
+        /*// Displays a notification the first time the app goes to the background
+        if (userSettingsService.AppSettingsService.ShowBackgroundRunningNotification)
+        {
+            SafetyExtensions.IgnoreExceptions(() =>
+            {
+                var toastContent = new ToastContent()
                 {
-                    return;
-                }
+                    Visual = new()
+                    {
+                        BindingGeneric = new ToastBindingGeneric()
+                        {
+                            Children =
+                            {
+                                new AdaptiveText()
+                                {
+                                    Text = "BackgroundRunningNotificationHeader".GetLocalizedResource()
+                                },
+                                new AdaptiveText()
+                                {
+                                    Text = "BackgroundRunningNotificationBody".GetLocalizedResource()
+                                }
+                            },
+                        }
+                    },
+                    ActivationType = ToastActivationType.Protocol
+                };
 
-                var items = (instance.TabItemContent as PaneHolderPage)?.ActivePane?.SlimContentPage?.SelectedItems;
-				if (items is null)
-                {
-                    return;
-                }
+                // Create the toast notification
+                var toastNotification = new ToastNotification(toastContent.GetXml());
 
-                await FileIO.WriteLinesAsync(await StorageFile.GetFileFromPathAsync(OutputPath), items.Select(x => x.ItemPath));
-			},
-			Logger);
-		}
+                // And send the notification
+                ToastNotificationManager.CreateToastNotifier().Show(toastNotification);
+
+                userSettingsService.AppSettingsService.ShowBackgroundRunningNotification = false;
+            });
+        }*/
 
         // CHANGE: Register folder view view model and its app instances.
         MainPageViewModel.AppInstances.Remove(FolderViewViewModel);
@@ -338,9 +375,6 @@ public partial class App
             }
         },
         Logger);
-
-        // Dispose git operations' thread
-        GitHelpers.TryDispose();
 
         // Destroy cached properties windows
         FilePropertiesHelpers.DestroyCachedWindows();
@@ -369,73 +403,94 @@ public partial class App
 
     #region Services & Interfaces
 
+    // Settings services
+    public IUserSettingsService UserSettingsService { get; private set; } = null!;
+    public IActionsSettingsService ActionsSettingsService { get; private set; } = null!;
+    // Contexts
+    public IPageContext PageContext { get; private set; } = null!;
+    public IContentPageContext ContentPageContext { get; private set; } = null!;
+    public IDisplayPageContext DisplayPageContext { get; private set; } = null!;
+    public IWindowContext WindowContext { get; private set; } = null!;
+    public IMultitaskingContext MultitaskingContext { get; private set; } = null!;
+    // Services
+    public IDialogService DialogService { get; private set; } = null!;
     public ICommandManager CommandManager { get; private set; } = null!;
     public IModifiableCommandManager ModifiableCommandManager { get; private set; } = null!;
-    public IDialogService DialogService { get; private set; } = null!;
-    public StatusCenterViewModel StatusCenterViewModel { get; private set; } = null!;
-    public InfoPaneViewModel InfoPaneViewModel { get; private set; } = null!;
-    public IUserSettingsService UserSettingsService { get; private set; } = null!;
     public IDateTimeFormatter DateTimeFormatter { get; private set; } = null!;
     public ISizeProvider SizeProvider { get; private set; } = null!;
-
-    public IWindowContext WindowContext { get; private set; } = null!;
-    public IContentPageContext ContentPageContext { get; private set; } = null!;
-    public IPageContext PageContext { get; private set; } = null!;
-    public IDisplayPageContext DisplayPageContext { get; private set; } = null!;
-    public IMultitaskingContext MultitaskingContext { get; private set; } = null!;
+    // ViewModels
+    public StatusCenterViewModel StatusCenterViewModel { get; private set; } = null!;
+    public InfoPaneViewModel InfoPaneViewModel { get; private set; } = null!;
 
     private void InitializeServices()
     {
+        // Create services
+
+        // Settings services
+        UserSettingsService ??= DependencyExtensions.GetService<IUserSettingsService>();
+        ActionsSettingsService ??= DependencyExtensions.GetService<IActionsSettingsService>();
+        // Contexts
+        PageContext ??= DependencyExtensions.GetService<IPageContext>();
+        ContentPageContext ??= DependencyExtensions.GetService<IContentPageContext>();
+        DisplayPageContext ??= DependencyExtensions.GetService<IDisplayPageContext>();
+        WindowContext ??= DependencyExtensions.GetService<IWindowContext>();
+        MultitaskingContext ??= DependencyExtensions.GetService<IMultitaskingContext>();
+        // Services
+        DialogService ??= DependencyExtensions.GetService<IDialogService>();
         CommandManager ??= DependencyExtensions.GetService<ICommandManager>();
         ModifiableCommandManager ??= DependencyExtensions.GetService<IModifiableCommandManager>();
-        DialogService ??= DependencyExtensions.GetService<IDialogService>();
-        StatusCenterViewModel ??= DependencyExtensions.GetService<StatusCenterViewModel>();
-        InfoPaneViewModel ??= DependencyExtensions.GetService<InfoPaneViewModel>();
-        UserSettingsService ??= DependencyExtensions.GetService<IUserSettingsService>();
         DateTimeFormatter ??= DependencyExtensions.GetService<IDateTimeFormatter>();
         SizeProvider ??= DependencyExtensions.GetService<ISizeProvider>();
+        // ViewModels
+        StatusCenterViewModel ??= DependencyExtensions.GetService<StatusCenterViewModel>();
+        InfoPaneViewModel ??= DependencyExtensions.GetService<InfoPaneViewModel>();
 
-        WindowContext ??= DependencyExtensions.GetService<IWindowContext>();
-        ContentPageContext ??= DependencyExtensions.GetService<IContentPageContext>();
-        PageContext ??= DependencyExtensions.GetService<IPageContext>();
-        DisplayPageContext ??= DependencyExtensions.GetService<IDisplayPageContext>();
-        MultitaskingContext ??= DependencyExtensions.GetService<IMultitaskingContext>();
+        // Initialize services
 
+        // Settings services
+        ActionsSettingsService.Initialize(UserSettingsService);
+        // Contexts
         WindowContext.Initialize(FolderViewViewModel);
         DisplayPageContext.Initialize(FolderViewViewModel);
         MultitaskingContext.Initialize(FolderViewViewModel);
-
-        CommandManager.Initialize(FolderViewViewModel);
-        ModifiableCommandManager.Initialize(CommandManager);
+        // Services
         DialogService.Initialize(FolderViewViewModel);
-        InfoPaneViewModel.Initialize(FolderViewViewModel);
+        CommandManager.Initialize(FolderViewViewModel);
+        ModifiableCommandManager.Initialize(FolderViewViewModel);
         DateTimeFormatter.Initialize(FolderViewViewModel);
+        // ViewModels
+        InfoPaneViewModel.Initialize(FolderViewViewModel);
     }
 
     public T GetService<T>() where T : class
     {
         return typeof(T) switch
         {
-            Type t when t == typeof(ICommandManager) => (CommandManager as T)!,
-            Type t when t == typeof(IModifiableCommandManager) => (ModifiableCommandManager as T)!,
-            Type t when t == typeof(IDialogService) => (DialogService as T)!,
-            Type t when t == typeof(StatusCenterViewModel) => (StatusCenterViewModel as T)!,
-            Type t when t == typeof(InfoPaneViewModel) => (InfoPaneViewModel as T)!,
+            // Settings services
             Type t when t == typeof(IUserSettingsService) => (UserSettingsService as T)!,
+            Type t when t == typeof(IAppearanceSettingsService) => (UserSettingsService.AppearanceSettingsService as T)!,
             Type t when t == typeof(IGeneralSettingsService) => (UserSettingsService.GeneralSettingsService as T)!,
             Type t when t == typeof(IFoldersSettingsService) => (UserSettingsService.FoldersSettingsService as T)!,
-            Type t when t == typeof(IAppearanceSettingsService) => (UserSettingsService.AppearanceSettingsService as T)!,
             Type t when t == typeof(IApplicationSettingsService) => (UserSettingsService.ApplicationSettingsService as T)!,
             Type t when t == typeof(IInfoPaneSettingsService) => (UserSettingsService.InfoPaneSettingsService as T)!,
             Type t when t == typeof(ILayoutSettingsService) => (UserSettingsService.LayoutSettingsService as T)!,
+            Type t when t == typeof(IAppSettingsService) => (UserSettingsService.AppSettingsService as T)!,
+            Type t when t == typeof(IActionsSettingsService) => (ActionsSettingsService as T)!,
+            // Contexts
+            Type t when t == typeof(IPageContext) => (PageContext as T)!,
+            Type t when t == typeof(IContentPageContext) => (ContentPageContext as T)!,
+            Type t when t == typeof(IDisplayPageContext) => (DisplayPageContext as T)!,
+            Type t when t == typeof(IWindowContext) => (WindowContext as T)!,
+            Type t when t == typeof(IMultitaskingContext) => (MultitaskingContext as T)!,
+            // Services
+            Type t when t == typeof(IDialogService) => (DialogService as T)!,
+            Type t when t == typeof(ICommandManager) => (CommandManager as T)!,
+            Type t when t == typeof(IModifiableCommandManager) => (ModifiableCommandManager as T)!,
             Type t when t == typeof(IDateTimeFormatter) => (DateTimeFormatter as T)!,
             Type t when t == typeof(ISizeProvider) => (SizeProvider as T)!,
-            Type t when t == typeof(IAppSettingsService) => (UserSettingsService.AppSettingsService as T)!,
-            Type t when t == typeof(IWindowContext) => (WindowContext as T)!,
-            Type t when t == typeof(IContentPageContext) => (ContentPageContext as T)!,
-            Type t when t == typeof(IPageContext) => (PageContext as T)!,
-            Type t when t == typeof(IDisplayPageContext) => (DisplayPageContext as T)!,
-            Type t when t == typeof(IMultitaskingContext) => (MultitaskingContext as T)!,
+            // ViewModels
+            Type t when t == typeof(StatusCenterViewModel) => (StatusCenterViewModel as T)!,
+            Type t when t == typeof(InfoPaneViewModel) => (InfoPaneViewModel as T)!,
             _ => null!,
         };
     }

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
@@ -7,14 +7,9 @@ using System.IO;
 
 namespace Files.App.ViewModels.Previews;
 
-public class ArchivePreviewViewModel : BasePreviewModel
+public sealed class ArchivePreviewViewModel(ListedItem item) : BasePreviewModel(item)
 {
-	public ArchivePreviewViewModel(ListedItem item)
-		: base(item)
-	{
-	}
-
-	public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
+    public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
 	{
 		var details = new List<FileProperty>();
 

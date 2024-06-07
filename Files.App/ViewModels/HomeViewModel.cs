@@ -1,123 +1,191 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.ViewModels.Widgets;
 using Microsoft.UI.Xaml;
 using System.Windows.Input;
 
 namespace Files.App.ViewModels;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-
-public class HomeViewModel : ObservableObject, IDisposable
+public sealed class HomeViewModel : ObservableObject, IDisposable
 {
-	public ObservableCollection<WidgetItem> WidgetItems { get; } = new();
+    public IFolderViewViewModel FolderViewViewModel { get; private set; } = null!;
 
-	public ICommand HomePageLoadedCommand { get; }
+    // Dependency injections
 
-	public event EventHandler<RoutedEventArgs>? HomePageLoadedInvoked;
-	public event EventHandler? WidgetListRefreshRequestedInvoked;
+    private IUserSettingsService UserSettingsService { get; set; } = null!;
 
-	public HomeViewModel()
-	{
-		HomePageLoadedCommand = new RelayCommand<RoutedEventArgs>(ExecuteHomePageLoadedCommand);
-	}
+    // Properties
 
-	private void ExecuteHomePageLoadedCommand(RoutedEventArgs? e)
-	{
-		HomePageLoadedInvoked?.Invoke(this, e!);
-	}
+    public ObservableCollection<WidgetContainerItem> WidgetItems { get; } = [];
 
-	public void RefreshWidgetList()
-	{
-		for (var i = 0; i < WidgetItems.Count; i++)
-		{
-			if (!WidgetItems[i].WidgetItemModel.IsWidgetSettingEnabled)
-			{
-				RemoveWidgetAt(i);
-			}
-		}
+    // Commands
 
-		WidgetListRefreshRequestedInvoked?.Invoke(this, EventArgs.Empty);
-	}
+    public ICommand HomePageLoadedCommand { get; }
 
-	public bool AddWidget(WidgetItem widgetModel)
-	{
-		return InsertWidget(widgetModel, WidgetItems.Count + 1);
-	}
+    // Constructor
 
-	public bool InsertWidget(WidgetItem widgetModel, int atIndex)
-	{
-		// The widget must not be null and must implement IWidgetItemModel
-		if (widgetModel.WidgetItemModel is not IWidgetItem widgetItemModel)
-		{
-			return false;
-		}
+    public HomeViewModel()
+    {
+        HomePageLoadedCommand = new RelayCommand<RoutedEventArgs>(ExecuteHomePageLoadedCommand);
+    }
 
-		// Don't add existing ones!
-		if (!CanAddWidget(widgetItemModel.WidgetName))
-		{
-			return false;
-		}
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
+    {
+        FolderViewViewModel = folderViewViewModel;
+        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+    }
 
-		if (atIndex > WidgetItems.Count)
-		{
-			WidgetItems.Add(widgetModel);
-		}
-		else
-		{
-			WidgetItems.Insert(atIndex, widgetModel);
-		}
+    // Methods
 
-		return true;
-	}
+    public void ReloadWidgets()
+    {
+        var reloadQuickAccessWidget = WidgetsHelpers.TryGetWidget<QuickAccessWidgetViewModel>(this);
+        var reloadDrivesWidget = WidgetsHelpers.TryGetWidget<DrivesWidgetViewModel>(this);
+        var reloadFileTagsWidget = WidgetsHelpers.TryGetWidget<FileTagsWidgetViewModel>(this);
+        var reloadRecentFilesWidget = WidgetsHelpers.TryGetWidget<RecentFilesWidgetViewModel>(this);
 
-	public bool CanAddWidget(string widgetName)
-	{
-		return !(WidgetItems.Any((item) => item.WidgetItemModel.WidgetName == widgetName));
-	}
+        if (reloadQuickAccessWidget)
+        {
+            var quickAccessWidget = new QuickAccessWidget(FolderViewViewModel);
 
-	public void RemoveWidgetAt(int index)
-	{
-		if (index < 0)
-		{
-			return;
-		}
+            AddWidget(
+                new(
+                    quickAccessWidget,
+                    quickAccessWidget.ViewModel,
+                    (value) => UserSettingsService.GeneralSettingsService.FoldersWidgetExpanded = value,
+                    () => UserSettingsService.GeneralSettingsService.FoldersWidgetExpanded));
+        }
 
-		WidgetItems[index].Dispose();
-		WidgetItems.RemoveAt(index);
-	}
+        if (reloadDrivesWidget)
+        {
+            var drivesWidget = new DrivesWidget(FolderViewViewModel);
 
-	public void RemoveWidget<TWidget>() where TWidget : IWidgetItem
-	{
-		var indexToRemove = -1;
+            AddWidget(
+                new(
+                    drivesWidget,
+                    drivesWidget.ViewModel,
+                    (value) => UserSettingsService.GeneralSettingsService.DrivesWidgetExpanded = value,
+                    () => UserSettingsService.GeneralSettingsService.DrivesWidgetExpanded));
+        }
 
-		for (var i = 0; i < WidgetItems.Count; i++)
-		{
-			if (typeof(TWidget).IsAssignableFrom(WidgetItems[i].WidgetControl.GetType()))
-			{
-				// Found matching types
-				indexToRemove = i;
-				break;
-			}
-		}
+        if (reloadFileTagsWidget)
+        {
+            var fileTagsWidget = new FileTagsWidget(FolderViewViewModel);
 
-		RemoveWidgetAt(indexToRemove);
-	}
+            AddWidget(
+                new(
+                    fileTagsWidget,
+                    fileTagsWidget.ViewModel,
+                    (value) => UserSettingsService.GeneralSettingsService.FileTagsWidgetExpanded = value,
+                    () => UserSettingsService.GeneralSettingsService.FileTagsWidgetExpanded));
+        }
 
-	public void ReorderWidget(WidgetItem widgetModel, int place)
-	{
-		var widgetIndex = WidgetItems.IndexOf(widgetModel);
-		WidgetItems.Move(widgetIndex, place);
-	}
+        if (reloadRecentFilesWidget)
+        {
+            var recentFilesWidget = new RecentFilesWidget(FolderViewViewModel);
 
-	public void Dispose()
-	{
-		for (var i = 0; i < WidgetItems.Count; i++)
+            AddWidget(
+                new(
+                    recentFilesWidget,
+                    recentFilesWidget.ViewModel,
+                    (value) => UserSettingsService.GeneralSettingsService.RecentFilesWidgetExpanded = value,
+                    () => UserSettingsService.GeneralSettingsService.RecentFilesWidgetExpanded));
+        }
+    }
+
+    public void RefreshWidgetList()
+    {
+        for (var i = 0; i < WidgetItems.Count; i++)
+        {
+            if (!WidgetItems[i].WidgetItemModel.IsWidgetSettingEnabled)
+            {
+                RemoveWidgetAt(i);
+            }
+        }
+
+        ReloadWidgets();
+    }
+
+    public bool AddWidget(WidgetContainerItem widgetModel)
+    {
+        return InsertWidget(widgetModel, WidgetItems.Count + 1);
+    }
+
+    public bool InsertWidget(WidgetContainerItem widgetModel, int atIndex)
+    {
+        // The widget must not be null and must implement IWidgetItemModel
+        if (widgetModel.WidgetItemModel is not IWidgetViewModel widgetItemModel)
+        {
+            return false;
+        }
+
+        // Don't add existing ones!
+        if (!CanAddWidget(widgetItemModel.WidgetName))
+        {
+            return false;
+        }
+
+        if (atIndex > WidgetItems.Count)
+        {
+            WidgetItems.Add(widgetModel);
+        }
+        else
+        {
+            WidgetItems.Insert(atIndex, widgetModel);
+        }
+
+        return true;
+    }
+
+    public bool CanAddWidget(string widgetName)
+    {
+        return !(WidgetItems.Any((item) => item.WidgetItemModel.WidgetName == widgetName));
+    }
+
+    public void RemoveWidgetAt(int index)
+    {
+        if (index < 0)
+        {
+            return;
+        }
+
+        WidgetItems[index].Dispose();
+        WidgetItems.RemoveAt(index);
+    }
+
+    public void RemoveWidget<TWidget>() where TWidget : IWidgetViewModel
+    {
+        var indexToRemove = -1;
+
+        for (var i = 0; i < WidgetItems.Count; i++)
+        {
+            if (typeof(TWidget).IsAssignableFrom(WidgetItems[i].WidgetControl.GetType()))
+            {
+                // Found matching types
+                indexToRemove = i;
+                break;
+            }
+        }
+
+        RemoveWidgetAt(indexToRemove);
+    }
+
+    // Command methods
+
+    private void ExecuteHomePageLoadedCommand(RoutedEventArgs? e)
+    {
+        ReloadWidgets();
+    }
+
+    // Disposer
+
+    public void Dispose()
+    {
+        for (var i = 0; i < WidgetItems.Count; i++)
         {
             WidgetItems[i].Dispose();
         }
 
         WidgetItems.Clear();
-	}
+    }
 }

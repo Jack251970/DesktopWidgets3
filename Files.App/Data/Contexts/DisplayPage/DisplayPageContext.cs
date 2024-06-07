@@ -1,18 +1,17 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
-
-using static Files.App.Constants.Browser.GridViewBrowser;
 
 namespace Files.App.Data.Contexts;
 
-internal class DisplayPageContext : ObservableObject, IDisplayPageContext
+internal sealed class DisplayPageContext : ObservableObject, IDisplayPageContext
 {
 	private IPageContext Context { get; set; } = null!;
 	private IFoldersSettingsService Settings { get; set; } = null!;
+    private ILayoutSettingsService LayoutSettingsService { get; set; } = null!;
 
-	public bool IsLayoutAdaptiveEnabled => !Settings.SyncFolderPreferencesAcrossDirectories;
+    public bool IsLayoutAdaptiveEnabled => !LayoutSettingsService.SyncFolderPreferencesAcrossDirectories;
 
-	private LayoutTypes _LayoutType = LayoutTypes.None;
+    private LayoutTypes _LayoutType = LayoutTypes.None;
 	public LayoutTypes LayoutType
 	{
 		get => _LayoutType;
@@ -35,16 +34,10 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
                 case LayoutTypes.Tiles:
 					viewModel.ToggleLayoutModeTiles(true);
 					break;
-				case LayoutTypes.GridSmall:
-					viewModel.ToggleLayoutModeGridViewSmall(true);
-					break;
-				case LayoutTypes.GridMedium:
-					viewModel.ToggleLayoutModeGridViewMedium(true);
-					break;
-				case LayoutTypes.GridLarge:
-					viewModel.ToggleLayoutModeGridViewLarge(true);
-					break;
-				case LayoutTypes.Columns:
+                case LayoutTypes.Grid:
+                    viewModel.ToggleLayoutModeGridView(true);
+                    break;
+                case LayoutTypes.Columns:
 					viewModel.ToggleLayoutModeColumnView(true);
 					break;
 				case LayoutTypes.Adaptive:
@@ -146,39 +139,23 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
     }
 
     private LayoutPreferencesManager? FolderSettings => Context.PaneOrColumn?.InstanceViewModel?.FolderSettings;
-
-	public DisplayPageContext()
+    public DisplayPageContext()
 	{
-		
-	}
+        
+    }
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         Context = folderViewViewModel.GetService<IPageContext>();
         Settings = folderViewViewModel.GetService<IFoldersSettingsService>();
+        LayoutSettingsService = folderViewViewModel.GetService<ILayoutSettingsService>();
 
         Context.Changing += Context_Changing;
         Context.Changed += Context_Changed;
-        Settings.PropertyChanged += Settings_PropertyChanged;
+        LayoutSettingsService.PropertyChanged += Settings_PropertyChanged;
     }
 
-    public void DecreaseLayoutSize()
-	{
-		if (FolderSettings is LayoutPreferencesManager viewModel)
-        {
-            viewModel.GridViewSize -= GridViewIncrement;
-        }
-    }
-
-	public void IncreaseLayoutSize()
-	{
-		if (FolderSettings is LayoutPreferencesManager viewModel)
-        {
-            viewModel.GridViewSize += GridViewIncrement;
-        }
-    }
-
-	private void Context_Changing(object? sender, EventArgs e)
+    private void Context_Changing(object? sender, EventArgs e)
 	{
         var viewModel = FolderSettings;
 		if (viewModel is not null)
@@ -211,7 +188,6 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
         switch (e.PropertyName)
 		{
 			case nameof(LayoutPreferencesManager.LayoutMode):
-			case nameof(LayoutPreferencesManager.GridViewSize):
 			case nameof(LayoutPreferencesManager.IsAdaptiveLayoutEnabled):
 				SetProperty(ref _LayoutType, GetLayoutType(), nameof(LayoutType));
 				break;
@@ -241,9 +217,9 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
 
 	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName is nameof(IFoldersSettingsService.SyncFolderPreferencesAcrossDirectories))
-		{
-			OnPropertyChanged(nameof(IsLayoutAdaptiveEnabled));
+        if (e.PropertyName is nameof(ILayoutSettingsService.SyncFolderPreferencesAcrossDirectories))
+        {
+            OnPropertyChanged(nameof(IsLayoutAdaptiveEnabled));
 			SetProperty(ref _LayoutType, GetLayoutType(), nameof(LayoutType));
 		}
 	}
@@ -292,14 +268,8 @@ internal class DisplayPageContext : ObservableObject, IDisplayPageContext
 			FolderLayoutModes.DetailsView => LayoutTypes.Details,
             FolderLayoutModes.ListView => LayoutTypes.List,
             FolderLayoutModes.TilesView => LayoutTypes.Tiles,
-			FolderLayoutModes.GridView => viewModel.GridViewSizeKind switch
-			{
-				GridViewSizeKind.Small => LayoutTypes.GridSmall,
-				GridViewSizeKind.Medium => LayoutTypes.GridMedium,
-				GridViewSizeKind.Large => LayoutTypes.GridLarge,
-				_ => throw new InvalidEnumArgumentException(),
-			},
-			FolderLayoutModes.ColumnView => LayoutTypes.Columns,
+            FolderLayoutModes.GridView => LayoutTypes.Grid,
+            FolderLayoutModes.ColumnView => LayoutTypes.Columns,
 			_ => throw new InvalidEnumArgumentException(),
 		};
 	}

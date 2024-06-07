@@ -1,6 +1,7 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.Dialogs;
@@ -8,6 +9,9 @@ namespace Files.App.Dialogs;
 public sealed partial class FileTooLargeDialog : ContentDialog, IDialog<FileTooLargeDialogViewModel>
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
+
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;
 
     public FileTooLargeDialogViewModel ViewModel
 	{

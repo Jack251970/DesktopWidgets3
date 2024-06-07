@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
@@ -6,7 +6,7 @@ using Windows.Storage;
 
 namespace Files.App.Actions;
 
-internal class OpenItemAction : ObservableObject, IAction
+internal sealed class OpenItemAction : ObservableObject, IAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -41,7 +41,7 @@ internal class OpenItemAction : ObservableObject, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage is not null)
         {
@@ -60,7 +60,7 @@ internal class OpenItemAction : ObservableObject, IAction
     }
 }
 
-internal class OpenItemWithApplicationPickerAction : ObservableObject, IAction
+internal sealed class OpenItemWithApplicationPickerAction : ObservableObject, IAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -90,7 +90,7 @@ internal class OpenItemWithApplicationPickerAction : ObservableObject, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage is null)
         {
@@ -109,7 +109,7 @@ internal class OpenItemWithApplicationPickerAction : ObservableObject, IAction
     }
 }
 
-internal class OpenParentFolderAction : ObservableObject, IAction
+internal sealed class OpenParentFolderAction : ObservableObject, IAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -138,7 +138,7 @@ internal class OpenParentFolderAction : ObservableObject, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public async Task ExecuteAsync()
+	public async Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage is null)
         {
@@ -157,7 +157,7 @@ internal class OpenParentFolderAction : ObservableObject, IAction
 		{
             FolderViewViewModel = FolderViewViewModel,
 			NavPathParam = folderPath,
-			SelectItems = new[] { item.ItemNameRaw },
+			SelectItems = [item.ItemNameRaw],
 			AssociatedTabInstance = context.ShellPage
 		});
 

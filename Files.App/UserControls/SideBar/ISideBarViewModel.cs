@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Input;
@@ -27,21 +27,23 @@ public interface ISidebarViewModel
 	/// <param name="args">The <see cref="ItemContextInvokedArgs"/> for this event.</param>
 	void HandleItemContextInvokedAsync(object sender, ItemContextInvokedArgs args);
 
-	/// <summary>
-	/// Gets invoked when an item drags over any item of the sidebar.
-	/// </summary>
-	/// <param name="args">The <see cref="ItemDragOverEventArgs"/> for this event.</param>
-	void HandleItemDragOverAsync(ItemDragOverEventArgs args);
+    /// <summary>
+    /// Gets invoked when an item drags over any item of the sidebar.
+    /// </summary>
+    /// <param name="args">The <see cref="ItemDragOverEventArgs"/> for this event.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+    Task HandleItemDragOverAsync(ItemDragOverEventArgs args);
 
-	/// <summary>
-	/// Gets invoked when an item is dropped on any item of the sidebar.
-	/// </summary>
-	/// <param name="args">The <see cref="ItemDroppedEventArgs"/> for this event.</param>
-	void HandleItemDroppedAsync(ItemDroppedEventArgs args);
+    /// <summary>
+    /// Gets invoked when an item is dropped on any item of the sidebar.
+    /// </summary>
+    /// <param name="args">The <see cref="ItemDroppedEventArgs"/> for this event.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+    Task HandleItemDroppedAsync(ItemDroppedEventArgs args);
 
-	/// <summary>
-	/// Gets invoked when an item is invoked (double clicked) on any item of the sidebar.
-	/// </summary>
-	/// <param name="item">The item that was invoked.</param>
-	void HandleItemInvokedAsync(object item, PointerUpdateKind pointerUpdateKind);
+    /// <summary>
+    /// Gets invoked when an item is invoked (double clicked) on any item of the sidebar.
+    /// </summary>
+    /// <param name="item">The item that was invoked.</param>
+    void HandleItemInvokedAsync(object item, PointerUpdateKind pointerUpdateKind);
 }

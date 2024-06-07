@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class RestoreRecycleBinAction : BaseUIAction, IAction
+internal sealed class RestoreRecycleBinAction : BaseUIAction, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -28,7 +28,7 @@ internal class RestoreRecycleBinAction : BaseUIAction, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public async Task ExecuteAsync()
+	public async Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage is not null)
         {

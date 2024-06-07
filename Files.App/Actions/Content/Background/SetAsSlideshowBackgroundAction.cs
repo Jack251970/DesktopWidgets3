@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class SetAsSlideshowBackgroundAction : BaseSetAsAction
+internal sealed class SetAsSlideshowBackgroundAction : BaseSetAsAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -20,12 +20,9 @@ internal class SetAsSlideshowBackgroundAction : BaseSetAsAction
 		base.IsExecutable &&
 		context.SelectedItems.Count > 1;
 
-    public SetAsSlideshowBackgroundAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(context)
-    {
-        FolderViewViewModel = folderViewViewModel;
-    }
+    public SetAsSlideshowBackgroundAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(context) => FolderViewViewModel = folderViewViewModel;
 
-    public override Task ExecuteAsync()
+    public override Task ExecuteAsync(object? parameter = null)
 	{
 		var paths = context.SelectedItems.Select(item => item.ItemPath).ToArray();
 		WallpaperHelpers.SetSlideshow(FolderViewViewModel, paths);

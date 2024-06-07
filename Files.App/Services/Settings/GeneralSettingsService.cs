@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.AppCenter.Analytics;
@@ -134,8 +134,8 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 		set => Set(value);
 	}
 
-	public bool ShowFavoritesSection
-	{
+	public bool ShowPinnedSection
+    {
 		get => Get(true);
 		set => Set(value);
 	}
@@ -258,12 +258,6 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 		set => Set(value);
 	}
 
-	public Dictionary<string, string> Actions
-	{
-		get => Get<Dictionary<string, string>>(null) ?? new();
-		set => Set(value);
-	}
-
 	protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)
 	{
 		switch (e.SettingName)
@@ -279,7 +273,7 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 			case nameof(FoldersWidgetExpanded):
 			case nameof(RecentFilesWidgetExpanded):
 			case nameof(DrivesWidgetExpanded):
-			case nameof(ShowFavoritesSection):
+			case nameof(ShowPinnedSection):
 			case nameof(ShowLibrarySection):
 			case nameof(ShowCloudDrivesSection):
 			case nameof(ShowNetworkDrivesSection):

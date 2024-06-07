@@ -1,10 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
 using Microsoft.Extensions.Logging;
 using System.IO;
-using System.Text.RegularExpressions;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 
@@ -57,12 +56,12 @@ public static partial class LaunchHelper
 
     private static async Task<bool> HandleApplicationLaunch(string application, string arguments, string workingDirectory)
 	{
-		var currentWindows = Win32API.GetDesktopWindows();
+		var currentWindows = Win32Helper.GetDesktopWindows();
 
 		if (FileExtensionHelpers.IsVhdFile(application))
 		{
 			// Use PowerShell to mount Vhd Disk as this requires admin rights
-			return await Win32API.MountVhdDisk(application);
+			return await Win32Helper.MountVhdDisk(application);
 		}
 
 		try
@@ -114,7 +113,7 @@ public static partial class LaunchHelper
             process.StartInfo.WorkingDirectory = string.IsNullOrEmpty(workingDirectory) ? PathNormalization.GetParentDir(application) : workingDirectory;
             process.Start();
 
-			Win32API.BringToForeground(currentWindows);
+            Win32Helper.BringToForeground(currentWindows);
 
 			return true;
 		}
@@ -131,29 +130,34 @@ public static partial class LaunchHelper
             {
 				process.Start();
 
-				Win32API.BringToForeground(currentWindows);
+                Win32Helper.BringToForeground(currentWindows);
 
 				return true;
 			}
-			catch (Win32Exception)
+            catch (Win32Exception ex) when (ex.NativeErrorCode == 50)
+            {
+                // ShellExecute return code 50 (ERROR_NOT_SUPPORTED) for some exes (#15179)
+                return Win32Helper.RunPowershellCommand($"\"{application}\"", false);
+            }
+            catch (Win32Exception)
 			{
 				try
 				{
-					var opened = await Win32API.StartSTATask(async () =>
+					var opened = await Win32Helper.StartSTATask(async () =>
 					{
 						var split = application.Split('|').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => GetMtpPath(x));
 						if (split.Count() == 1)
 						{
 							Process.Start(split.First());
 
-							Win32API.BringToForeground(currentWindows);
+                            Win32Helper.BringToForeground(currentWindows);
 						}
 						else
 						{
 							var groups = split.GroupBy(x => new
 							{
 								Dir = Path.GetDirectoryName(x),
-								Prog = Win32API.GetFileAssociationAsync(x).Result ?? Path.GetExtension(x)
+								Prog = Win32Helper.GetFileAssociationAsync(x).Result ?? Path.GetExtension(x)
 							});
 
 							foreach (var group in groups)
@@ -179,7 +183,7 @@ public static partial class LaunchHelper
 					{
 						if (application.StartsWith(@"\\SHELL\", StringComparison.Ordinal))
 						{
-							opened = await Win32API.StartSTATask(async () =>
+							opened = await Win32Helper.StartSTATask(async () =>
 							{
 								using var cMenu = await ContextMenu.GetContextMenuForFiles(new[] { application }, Shell32.CMF.CMF_DEFAULTONLY);
 
@@ -195,8 +199,8 @@ public static partial class LaunchHelper
 
 					if (!opened)
 					{
-						var isAlternateStream = MyRegex().IsMatch(application);
-						if (isAlternateStream)
+                        var isAlternateStream = RegexHelpers.AlternateStream().IsMatch(application);
+                        if (isAlternateStream)
 						{
 							var basePath = Path.Combine(Environment.GetEnvironmentVariable("TEMP")!, Guid.NewGuid().ToString("n"));
 							Kernel32.CreateDirectory(basePath);
@@ -254,13 +258,10 @@ public static partial class LaunchHelper
 			using var computer = new ShellFolder(Shell32.KNOWNFOLDERID.FOLDERID_ComputerFolder);
 			using var device = computer.FirstOrDefault(i => executable.Replace("\\\\?\\", "", StringComparison.Ordinal).StartsWith(i.Name!, StringComparison.Ordinal));
 			var deviceId = device?.ParsingName;
-			var itemPath = Regex.Replace(executable, @"^\\\\\?\\[^\\]*\\?", "");
-			return deviceId is not null ? Path.Combine(deviceId, itemPath) : executable;
+            var itemPath = RegexHelpers.WindowsPath().Replace(executable, "");
+            return deviceId is not null ? Path.Combine(deviceId, itemPath) : executable;
 		}
 
 		return executable;
 	}
-
-    [GeneratedRegex("\\w:\\w")]
-    private static partial Regex MyRegex();
 }

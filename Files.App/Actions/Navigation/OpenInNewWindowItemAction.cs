@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class OpenInNewWindowItemAction : ObservableObject, IAction
+internal sealed class OpenInNewWindowItemAction : ObservableObject, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -16,7 +16,7 @@ internal class OpenInNewWindowItemAction : ObservableObject, IAction
 		=> "OpenInNewWindowDescription".GetLocalizedResource();
 
 	public HotKey HotKey
-		=> new(Keys.Enter, KeyModifiers.MenuCtrl);
+		=> new(Keys.Enter, KeyModifiers.CtrlAlt);
 
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconOpenInNewWindow");
@@ -25,8 +25,8 @@ internal class OpenInNewWindowItemAction : ObservableObject, IAction
 		context.ShellPage is not null &&
 		context.ShellPage.SlimContentPage is not null &&
 		context.SelectedItems.Count <= 5 &&
-		context.SelectedItems.Where(x => x.IsFolder == true).Count() == context.SelectedItems.Count &&
-		userSettingsService.GeneralSettingsService.ShowOpenInNewWindow;
+        context.SelectedItems.Count(x => x.IsFolder) == context.SelectedItems.Count &&
+        userSettingsService.GeneralSettingsService.ShowOpenInNewWindow;
 
 	public OpenInNewWindowItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
@@ -36,7 +36,7 @@ internal class OpenInNewWindowItemAction : ObservableObject, IAction
 		context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public async Task ExecuteAsync()
+	public async Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage?.SlimContentPage?.SelectedItems is null)
         {

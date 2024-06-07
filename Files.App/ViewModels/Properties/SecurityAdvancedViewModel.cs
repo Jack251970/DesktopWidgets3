@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -7,7 +7,7 @@ using Windows.Storage;
 
 namespace Files.App.ViewModels.Properties;
 
-public class SecurityAdvancedViewModel : ObservableObject
+public sealed class SecurityAdvancedViewModel : ObservableObject
 {
 	private readonly PropertiesPageNavigationParameter _navigationParameter;
 
@@ -155,12 +155,12 @@ public class SecurityAdvancedViewModel : ObservableObject
 	{
 		var imageres = System.IO.Path.Combine(Constants.UserEnvironmentPaths.SystemRootPath, "System32", "imageres.dll");
 
-		var imageResList = Utils.Shell.Win32API.ExtractSelectedIconsFromDLL(
-			imageres,
-			new List<int>() { Constants.ImageRes.ShieldIcon },
-			16);
+        var imageResList = Win32Helper.ExtractSelectedIconsFromDLL(
+            imageres,
+            [Constants.ImageRes.ShieldIcon],
+            16);
 
-		ShieldIconFileInfo = imageResList.First();
+        ShieldIconFileInfo = imageResList.First();
 	}
 
 	private void LoadAccessControlEntry()

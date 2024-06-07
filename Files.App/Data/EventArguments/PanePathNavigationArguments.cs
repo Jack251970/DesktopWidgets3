@@ -1,6 +1,6 @@
 ﻿namespace Files.App.Data.EventArguments;
 
-internal class PanePathNavigationArguments
+internal sealed class PanePathNavigationArguments
 {
     public required IFolderViewViewModel FolderViewViewModel { get; set; }
 

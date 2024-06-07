@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Core.Helpers;
@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
+using Windows.Win32;
 using IO = System.IO;
 
 namespace Files.App.Utils.Storage;
@@ -113,7 +114,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 	{
         async Task<bool> queryFileAssoc()
         {
-            var assoc = await NativeWinApiHelper.GetFileAssociationAsync(filePath);
+            var assoc = await Win32Helper.GetFileAssociationAsync(filePath);
             if (assoc is not null)
             {
                 return assoc == InfoHelper.GetFamilyName()
@@ -363,7 +364,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 				else
 				{
 					var fileName = IO.Path.Combine(IO.Path.GetDirectoryName(Path)!, desiredName);
-					NativeFileOperationsHelper.MoveFileFromApp(Path, fileName);
+					PInvoke.MoveFileFromApp(Path, fileName);
 				}
 			}
 			else
@@ -408,7 +409,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 				}
 				else if (option == StorageDeleteOption.PermanentDelete)
 				{
-					NativeFileOperationsHelper.DeleteFileFromApp(Path);
+					PInvoke.DeleteFileFromApp(Path);
 				}
 				else
 				{
@@ -497,7 +498,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 	{
 		return SafetyExtensions.IgnoreExceptions(() =>
 		{
-			var hFile = NativeFileOperationsHelper.OpenFileForRead(path);
+			var hFile = Win32Helper.OpenFileForRead(path);
 			if (hFile.IsInvalid)
 			{
 				return false;
@@ -523,7 +524,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 			return false;
 		}
 	}
-	private static async Task<bool> CheckAccess(IStorageFile file)
+	private static async Task<bool> CheckAccess(BaseStorageFile file)
 	{
 		return await SafetyExtensions.IgnoreExceptions(async () =>
 		{
@@ -536,7 +537,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 	{
 		return SafetyExtensions.IgnoreExceptions(() =>
 		{
-			var hFile = NativeFileOperationsHelper.OpenFileForRead(path, true);
+			var hFile = Win32Helper.OpenFileForRead(path, true);
 			if (hFile.IsInvalid)
 			{
 				return Task.FromResult(false);
@@ -587,7 +588,7 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 			}
 			else
 			{
-				var hFile = NativeFileOperationsHelper.OpenFileForRead(containerPath, readWrite);
+				var hFile = Win32Helper.OpenFileForRead(containerPath, readWrite);
 				if (hFile.IsInvalid)
 				{
 					return null!;
@@ -650,14 +651,9 @@ public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream,
 		}, ((IPasswordProtectedItem)this).RetryWithCredentialsAsync));
 	}
 
-	private class ZipFolderBasicProperties : BaseBasicProperties
+	private sealed class ZipFolderBasicProperties(ArchiveFileInfo entry) : BaseBasicProperties
 	{
-		private ArchiveFileInfo entry;
-
-        public ZipFolderBasicProperties(ArchiveFileInfo entry)
-        {
-            this.entry = entry;
-        }
+		private ArchiveFileInfo entry = entry;
 
         public override DateTimeOffset DateModified => entry.LastWriteTime == DateTime.MinValue ? DateTimeOffset.MinValue : entry.LastWriteTime;
 

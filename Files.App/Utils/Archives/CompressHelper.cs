@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
 using System.IO;
 using Windows.Storage;
+using Windows.Win32;
 
 namespace Files.App.Utils.Archives;
 
@@ -103,9 +104,9 @@ public static class CompressHelper
 		}
 		else
 		{
-			NativeFileOperationsHelper.DeleteFileFromApp(archivePath);
+            PInvoke.DeleteFileFromApp(archivePath);
 
-			StatusCenterHelper.AddCard_Compress(
+            StatusCenterHelper.AddCard_Compress(
                 folderViewViewModel,
 				creator.Sources,
 				archivePath.CreateEnumerable(),

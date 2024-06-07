@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class NewWindowAction : IAction
+internal sealed class NewWindowAction(IFolderViewViewModel folderViewViewModel) : IAction
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private readonly IFolderViewViewModel FolderViewViewModel = folderViewViewModel;
 
     public string Label
 		=> "NewWindow".GetLocalizedResource();
@@ -19,12 +19,7 @@ internal class NewWindowAction : IAction
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconOpenNewWindow");
 
-	public NewWindowAction(IFolderViewViewModel folderViewViewModel)
-	{
-        FolderViewViewModel = folderViewViewModel;
-	}
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		return NavigationHelpers.LaunchNewWindowAsync(FolderViewViewModel);
 	}

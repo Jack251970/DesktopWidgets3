@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Media;
 
 namespace Files.App.Converters;
 
-internal class StatusCenterStateToBrushConverter : DependencyObject, IValueConverter
+internal sealed class StatusCenterStateToBrushConverter : DependencyObject, IValueConverter
 {
 	public static readonly DependencyProperty InProgressBackgroundBrushProperty =
 		DependencyProperty.Register(nameof(InProgressBackgroundBrush), typeof(SolidColorBrush), typeof(StatusCenterStateToBrushConverter), new PropertyMetadata(null));

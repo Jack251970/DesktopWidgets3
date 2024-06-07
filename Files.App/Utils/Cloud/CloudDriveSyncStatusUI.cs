@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -7,7 +7,7 @@ namespace Files.App.Utils.Cloud;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-public class CloudDriveSyncStatusUI : ObservableObject
+public sealed class CloudDriveSyncStatusUI : ObservableObject
 {
 	public string Glyph { get; }
 
@@ -21,7 +21,8 @@ public class CloudDriveSyncStatusUI : ObservableObject
 
 	public CloudDriveSyncStatusUI()
 	{
-	}
+        SyncStatus = CloudDriveSyncStatus.Unknown;
+    }
 
 	private CloudDriveSyncStatusUI(CloudDriveSyncStatus syncStatus)
 	{

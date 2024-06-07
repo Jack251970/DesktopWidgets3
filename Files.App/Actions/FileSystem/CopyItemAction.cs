@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class CopyItemAction : ObservableObject, IAction
+internal sealed class CopyItemAction : ObservableObject, IAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -33,7 +33,7 @@ internal class CopyItemAction : ObservableObject, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
         if (context.ShellPage is not null)
         {

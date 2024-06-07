@@ -1,26 +1,25 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
-
-using Files.App.UserControls.Widgets;
 
 namespace Files.App.Services;
 
-#pragma warning disable IL2026 // Unrecognized escape sequence in cref attribute
 #pragma warning disable IL2072 // Unrecognized escape sequence in cref attribute
 #pragma warning disable IL2075 // Unrecognized escape sequence in cref attribute
 
-public class QuickAccessService : IQuickAccessService
+public sealed class QuickAccessService : IQuickAccessService
 {
-	private static readonly string guid = "::{679f85cb-0220-4080-b29b-5540cc05aab6}";
+    // Quick access shell folder (::{679f85cb-0220-4080-b29b-5540cc05aab6}) contains recent files
+    // which are unnecessary for getting pinned folders, so we use frequent places shell folder instead.
+    private static readonly string guid = "::{3936e9e4-d92c-4eee-a85a-bc16d5ea0819}";
 
-	public async Task<IEnumerable<ShellFileItem>> GetPinnedFoldersAsync()
-	{
-		var result = (await Win32Shell.GetShellFolderAsync(guid, "Enumerate", 0, int.MaxValue, "System.Home.IsPinned")).Enumerate
-			.Where(link => link.IsFolder);
-		return result;
-	}
+    public async Task<IEnumerable<ShellFileItem>> GetPinnedFoldersAsync()
+    {
+        var result = (await Win32Helper.GetShellFolderAsync(guid, false, true, 0, int.MaxValue, "System.Home.IsPinned")).Enumerate
+            .Where(link => link.IsFolder);
+        return result;
+    }
 
-	public Task PinToSidebarAsync(string folderPath) => PinToSidebarAsync(new[] { folderPath });
+    public Task PinToSidebarAsync(string folderPath) => PinToSidebarAsync([folderPath]);
 
 	public Task PinToSidebarAsync(string[] folderPaths) => PinToSidebarAsync(folderPaths, true);
 
@@ -28,7 +27,7 @@ public class QuickAccessService : IQuickAccessService
 	{
 		foreach (var folderPath in folderPaths)
         {
-            await ContextMenu.InvokeVerb("pintohome", new[] {folderPath});
+            await ContextMenu.InvokeVerb("pintohome", [folderPath]);
         }
 
         await App.QuickAccessManager.Model.LoadAsync();
@@ -46,9 +45,9 @@ public class QuickAccessService : IQuickAccessService
 	{
 		var shellAppType = Type.GetTypeFromProgID("Shell.Application");
 		var shell = Activator.CreateInstance(shellAppType!);
-		dynamic? f2 = shellAppType!.InvokeMember("NameSpace", System.Reflection.BindingFlags.InvokeMethod, null, shell, new object[] { $"shell:{guid}" });
+        dynamic? f2 = shellAppType!.InvokeMember("NameSpace", System.Reflection.BindingFlags.InvokeMethod, null, shell, [$"shell:{guid}"]);
 
-		if (folderPaths.Length == 0)
+        if (folderPaths.Length == 0)
         {
             folderPaths = (await GetPinnedFoldersAsync())
 				.Where(link => (bool?)link.Properties["System.Home.IsPinned"] ?? false)
@@ -91,12 +90,12 @@ public class QuickAccessService : IQuickAccessService
 
 	public bool IsItemPinned(string folderPath)
 	{
-		return App.QuickAccessManager.Model.FavoriteItems.Contains(folderPath);
+		return App.QuickAccessManager.Model.PinnedFolders.Contains(folderPath);
 	}
 
 	public async Task SaveAsync(string[] items)
 	{
-		if (Equals(items, App.QuickAccessManager.Model.FavoriteItems.ToArray()))
+		if (Equals(items, App.QuickAccessManager.Model.PinnedFolders.ToArray()))
         {
             return;
         }
@@ -104,7 +103,7 @@ public class QuickAccessService : IQuickAccessService
         App.QuickAccessManager.PinnedItemsWatcher!.EnableRaisingEvents = false;
 
 		// Unpin every item that is below this index and then pin them all in order
-		await UnpinFromSidebarAsync(Array.Empty<string>(), false);
+		await UnpinFromSidebarAsync([], false);
 
 		await PinToSidebarAsync(items, false);
         App.QuickAccessManager.PinnedItemsWatcher!.EnableRaisingEvents = true;

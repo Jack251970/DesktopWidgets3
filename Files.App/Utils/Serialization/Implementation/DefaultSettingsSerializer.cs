@@ -1,18 +1,16 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
-
-using static Files.App.Helpers.NativeFileOperationsHelper;
 
 namespace Files.App.Utils.Serialization.Implementation;
 
 internal sealed class DefaultSettingsSerializer : ISettingsSerializer
 {
-	private string? _filePath;
+	/*private string? _filePath;*/
 
 	public bool CreateFile(string path)
 	{
-        // CHANGE: Remove function to create file for settings.
-		/*CreateDirectoryFromApp(Path.GetDirectoryName(path)!, IntPtr.Zero);
+        // CHANGE: Remove function to create & read and write setting file.
+        /*PInvoke.CreateDirectoryFromApp(Path.GetDirectoryName(path), null);
 
 		var hFile = CreateFileFromApp(path, GENERIC_READ, FILE_SHARE_READ, IntPtr.Zero, OPEN_ALWAYS, (uint)File_Attributes.BackupSemantics, IntPtr.Zero);
 		if (hFile.IsHandleInvalid())
@@ -20,10 +18,10 @@ internal sealed class DefaultSettingsSerializer : ISettingsSerializer
 			return false;
 		}
 
-		CloseHandle(hFile);*/
+		Win32PInvoke.CloseHandle(hFile);
 
-		_filePath = path;
-		return true;
+        _filePath = path;*/
+        return true;
 	}
 
 	/// <summary>
@@ -33,15 +31,19 @@ internal sealed class DefaultSettingsSerializer : ISettingsSerializer
 	/// <exception cref="ArgumentNullException"></exception>
 	public string ReadFromFile()
 	{
-		_ = _filePath ?? throw new ArgumentNullException(nameof(_filePath));
+        // CHANGE: Remove function to create & read and write setting file.
+        /*_ = _filePath ?? throw new ArgumentNullException(nameof(_filePath));
 
-		return ReadStringFromFile(_filePath);
-	}
+        return Win32Helper.ReadStringFromFile(_filePath);*/
+        return string.Empty;
+    }
 
 	public bool WriteToFile(string? text)
 	{
-		_ = _filePath ?? throw new ArgumentNullException(null, nameof(_filePath));
+        // CHANGE: Remove function to create & read and write setting file.
+        /*_ = _filePath ?? throw new ArgumentNullException(null, nameof(_filePath));
 
-		return WriteStringToFile(_filePath, text!);
-	}
+        return Win32Helper.WriteStringToFile(_filePath, text!);*/
+        return true;
+    }
 }

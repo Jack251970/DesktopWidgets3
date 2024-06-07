@@ -1,19 +1,19 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
 
 namespace Files.App.Actions;
 
-internal class PinToStartAction : IAction
+internal sealed class PinToStartAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : IAction
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private readonly IFolderViewViewModel FolderViewViewModel = folderViewViewModel;
 
     private IStorageService StorageService { get; } = DependencyExtensions.GetService<IStorageService>();
 
 	private IStartMenuService StartMenuService { get; } = DependencyExtensions.GetService<IStartMenuService>();
 
-	public IContentPageContext context;
+	public IContentPageContext context = context;
 
 	public string Label
 		=> "PinItemToStart/Text".GetLocalizedResource();
@@ -22,19 +22,12 @@ internal class PinToStartAction : IAction
 		=> "PinToStartDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
-		=> new(opacityStyle: "ColorIconPinToFavorites");
+		=> new(opacityStyle: "Icons.Pin.16x16");
 
 	public bool IsExecutable =>
 		context.ShellPage is not null;
 
-	public PinToStartAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
-    {
-        FolderViewViewModel = folderViewViewModel;
-
-        this.context = context;
-    }
-
-	public async Task ExecuteAsync()
+    public async Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.SelectedItems.Count > 0 && context.ShellPage?.SlimContentPage?.SelectedItems is not null)
 		{
@@ -43,7 +36,7 @@ internal class PinToStartAction : IAction
                 IStorable storable = listedItem.IsFolder switch
                 {
                     true => await StorageService.GetFolderAsync(listedItem.ItemPath),
-                    _ => await StorageService.GetFileAsync(listedItem.ItemPath)
+                    _ => await StorageService.GetFileAsync((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath)
                 };
                 await StartMenuService.PinAsync(FolderViewViewModel, storable, listedItem.Name);
             }

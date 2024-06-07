@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -9,9 +9,9 @@ using Windows.System;
 
 namespace Files.App.ViewModels.UserControls;
 
-public class SearchBoxViewModel : ObservableObject, ISearchBox
+public sealed class SearchBoxViewModel : ObservableObject, ISearchBoxViewModel
 {
-	private string query = null!;
+    private string query = null!;
 	public string Query
 	{
 		get => query;
@@ -20,19 +20,19 @@ public class SearchBoxViewModel : ObservableObject, ISearchBox
 
 	public bool WasQuerySubmitted { get; set; } = false;
 
-	public event TypedEventHandler<ISearchBox, SearchBoxTextChangedEventArgs>? TextChanged;
+    public event TypedEventHandler<ISearchBoxViewModel, SearchBoxTextChangedEventArgs>? TextChanged;
 
-	public event TypedEventHandler<ISearchBox, SearchBoxQuerySubmittedEventArgs>? QuerySubmitted;
+    public event TypedEventHandler<ISearchBoxViewModel, SearchBoxQuerySubmittedEventArgs>? QuerySubmitted;
 
-	public event EventHandler<ISearchBox>? Escaped;
+    public event EventHandler<ISearchBoxViewModel>? Escaped;
 
-	private readonly SuggestionComparer suggestionComparer = new();
+    private readonly SuggestionComparer suggestionComparer = new();
 
-	public ObservableCollection<SuggestionModel> Suggestions { get; } = new ObservableCollection<SuggestionModel>();
+    public ObservableCollection<SuggestionModel> Suggestions { get; } = [];
 
-	private readonly List<SuggestionModel> oldQueries = new();
+    private readonly List<SuggestionModel> oldQueries = [];
 
-	public void ClearSuggestions()
+    public void ClearSuggestions()
 	{
 		Suggestions.Clear();
 	}
@@ -134,7 +134,7 @@ public class SearchBoxViewModel : ObservableObject, ISearchBox
 		oldQueries.ForEach(Suggestions.Add);
 	}
 
-	private class SuggestionComparer : IEqualityComparer<SuggestionModel>, IComparer<SuggestionModel>
+	private sealed class SuggestionComparer : IEqualityComparer<SuggestionModel>, IComparer<SuggestionModel>
 	{
         public int Compare(SuggestionModel? x, SuggestionModel? y)
         {

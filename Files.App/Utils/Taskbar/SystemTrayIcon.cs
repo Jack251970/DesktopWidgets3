@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices;
@@ -8,48 +8,53 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.WindowsAndMessaging;
-using Windows.ApplicationModel;
 using Windows.System;
+using DesktopWidgets3.Core.Helpers;
 
 namespace Files.App.Utils.Taskbar;
 
 /// <summary>
 /// Represents a tray icon of Notification Area so-called System Tray.
 /// </summary>
-/*public class SystemTrayIcon : IDisposable
+public sealed class SystemTrayIcon : IDisposable
 {
-	// Constants
+    private readonly IFolderViewViewModel FolderViewViewModel;
 
-	private const uint WM_FILES_UNIQUE_MESSAGE = 2048u;
-	private const uint WM_FILES_CONTEXTMENU_DOCSLINK = 1u;
-	private const uint WM_FILES_CONTEXTMENU_RESTART = 2u;
-	private const uint WM_FILES_CONTEXTMENU_QUIT = 3u;
+    // Constants
 
-	// Fields
+    private const uint WM_FILES_UNIQUE_MESSAGE = 2048u;
+    private const uint WM_FILES_CONTEXTMENU_DOCSLINK = 1u;
+    private const uint WM_FILES_CONTEXTMENU_RESTART = 2u;
+    private const uint WM_FILES_CONTEXTMENU_QUIT = 3u;
 
-	private static readonly Guid _trayIconGuid = new("684F2832-AC2B-4630-98C2-73D6AEBD46B7");
+    // Fields
 
-	private readonly SystemTrayIconWindow _IconWindow;
+    private static readonly Guid _trayIconGuid = new("684F2832-AC2B-4630-98C2-73D6AEBD46B7");
 
-	private readonly uint _taskbarRestartMessageId;
+    private readonly SystemTrayIconWindow _IconWindow;
 
-	private bool _notifyIconCreated;
+    private readonly uint _taskbarRestartMessageId;
 
-	private DateTime _lastLaunchDate;
+    private bool _notifyIconCreated;
 
-	// Properties
+    private DateTime _lastLaunchDate;
 
-	public Guid Id { get; private set; }
+    // Properties
 
-	private bool _IsVisible;
-	public bool IsVisible
-	{
-		get => _IsVisible;
-		private set
-		{
-			if (_IsVisible != value)
-			{
-				_IsVisible = value;
+    public Guid Id
+    {
+        get; private set;
+    }
+
+    private bool _IsVisible;
+    public bool IsVisible
+    {
+        get => _IsVisible;
+        private set
+        {
+            if (_IsVisible != value)
+            {
+                _IsVisible = value;
 
                 if (!value)
                 {
@@ -59,211 +64,204 @@ namespace Files.App.Utils.Taskbar;
                 {
                     CreateOrModifyNotifyIcon();
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 
-	private string _Tooltip;
-	public string Tooltip
-	{
-		get => _Tooltip;
-		set
-		{
-			if (_Tooltip != value)
-			{
-				_Tooltip = value;
+    private string _Tooltip;
+    public string Tooltip
+    {
+        get => _Tooltip;
+        set
+        {
+            if (_Tooltip != value)
+            {
+                _Tooltip = value;
 
-				CreateOrModifyNotifyIcon();
-			}
-		}
-	}
+                CreateOrModifyNotifyIcon();
+            }
+        }
+    }
 
-	private Icon _Icon;
-	public Icon Icon
-	{
-		get => _Icon;
-		set
-		{
-			if (_Icon != value)
-			{
-				_Icon = value;
+    private Icon _Icon;
+    public Icon Icon
+    {
+        get => _Icon;
+        set
+        {
+            if (_Icon != value)
+            {
+                _Icon = value;
 
-				CreateOrModifyNotifyIcon();
-			}
-		}
-	}
+                CreateOrModifyNotifyIcon();
+            }
+        }
+    }
 
-	private Rect Position
-	{
-		get
-		{
-			if (!IsVisible)
+    private Rect Position
+    {
+        get
+        {
+            if (!IsVisible)
             {
                 return default;
             }
 
             NOTIFYICONIDENTIFIER identifier = default;
-			identifier.cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONIDENTIFIER));
-			identifier.hWnd = _IconWindow.WindowHandle;
-			identifier.guidItem = Id;
+            identifier.cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONIDENTIFIER));
+            identifier.hWnd = _IconWindow.WindowHandle;
+            identifier.guidItem = Id;
 
-			// Get RECT
-			PInvoke.Shell_NotifyIconGetRect(in identifier, out RECT _IconLocation);
+            // Get RECT
+            PInvoke.Shell_NotifyIconGetRect(in identifier, out var _IconLocation);
 
-			return new Rect(
-				_IconLocation.left,
-				_IconLocation.top,
-				_IconLocation.right - _IconLocation.left,
-				_IconLocation.bottom - _IconLocation.top);
-		}
-	}
+            return new Rect(
+                _IconLocation.left,
+                _IconLocation.top,
+                _IconLocation.right - _IconLocation.left,
+                _IconLocation.bottom - _IconLocation.top);
+        }
+    }
 
-	// Constructor
+    // Constructor
 
-	/// <summary>
-	/// Initializes an instance of <see cref="SystemTrayIcon"/>.
-	/// </summary>
-	/// <remarks>
-	/// Note that initializing an instance won't make the icon visible.
-	/// </remarks>
-	public SystemTrayIcon()
-	{
-		var appIcoPath = ApplicationService.AppEnvironment switch
-		{
-			AppEnvironment.Dev => Constants.AssetPaths.DevLogo,
-			AppEnvironment.Preview => Constants.AssetPaths.PreviewLogo,
-			_ => Constants.AssetPaths.StableLogo
-		};
+    /// <summary>
+    /// Initializes an instance of <see cref="SystemTrayIcon"/>.
+    /// </summary>
+    /// <remarks>
+    /// Note that initializing an instance won't make the icon visible.
+    /// </remarks>
+    public SystemTrayIcon(IFolderViewViewModel folderViewViewModel)
+    {
+        FolderViewViewModel = folderViewViewModel;
+        _Icon = new(AppLifecycleHelper.AppIconPath);
+        // CHANGE: Use InfoHelper instead of Package.Current.
+        _Tooltip = InfoHelper.GetDisplayName();
+        _taskbarRestartMessageId = PInvoke.RegisterWindowMessage("TaskbarCreated");
 
-		var iconPath = SystemIO.Path.Combine(Package.Current.InstalledLocation.Path, appIcoPath);
+        Id = _trayIconGuid;
+        _IconWindow = new SystemTrayIconWindow(this);
 
-		_Icon = new(iconPath);
-		_Tooltip = Package.Current.DisplayName;
-		_taskbarRestartMessageId = PInvoke.RegisterWindowMessage("TaskbarCreated");
+        CreateOrModifyNotifyIcon();
+    }
 
-		Id = _trayIconGuid;
-		_IconWindow = new SystemTrayIconWindow(this);
+    // Public Methods
 
-		CreateOrModifyNotifyIcon();
-	}
+    /// <summary>
+    /// Shows the tray icon.
+    /// </summary>
+    public SystemTrayIcon Show()
+    {
+        IsVisible = true;
 
-	// Public Methods
+        return this;
+    }
 
-	/// <summary>
-	/// Shows the tray icon.
-	/// </summary>
-	public SystemTrayIcon Show()
-	{
-		IsVisible = true;
+    /// <summary>
+    /// Hides the tray icon.
+    /// </summary>
+    public SystemTrayIcon Hide()
+    {
+        IsVisible = false;
 
-		return this;
-	}
+        return this;
+    }
 
-	/// <summary>
-	/// Hides the tray icon.
-	/// </summary>
-	public SystemTrayIcon Hide()
-	{
-		IsVisible = false;
+    // Private Methods
 
-		return this;
-	}
+    private void CreateOrModifyNotifyIcon()
+    {
+        if (IsVisible)
+        {
+            NOTIFYICONDATAW lpData = default;
 
-	// Private Methods
+            lpData.cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW));
+            lpData.hWnd = _IconWindow.WindowHandle;
+            lpData.uCallbackMessage = WM_FILES_UNIQUE_MESSAGE;
+            lpData.hIcon = (Icon != null) ? new HICON(Icon.Handle) : default;
+            lpData.guidItem = Id;
+            lpData.uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP | NOTIFY_ICON_DATA_FLAGS.NIF_GUID | NOTIFY_ICON_DATA_FLAGS.NIF_SHOWTIP;
+            lpData.szTip = _Tooltip ?? string.Empty;
 
-	private void CreateOrModifyNotifyIcon()
-	{
-		if (IsVisible)
-		{
-			NOTIFYICONDATAW lpData = default;
+            if (!_notifyIconCreated)
+            {
+                // Delete the existing icon
+                PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_DELETE, in lpData);
 
-			lpData.cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW));
-			lpData.hWnd = _IconWindow.WindowHandle;
-			lpData.uCallbackMessage = WM_FILES_UNIQUE_MESSAGE;
-			lpData.hIcon = (Icon != null) ? new HICON(Icon.Handle) : default;
-			lpData.guidItem = Id;
-			lpData.uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP | NOTIFY_ICON_DATA_FLAGS.NIF_GUID | NOTIFY_ICON_DATA_FLAGS.NIF_SHOWTIP;
-			lpData.szTip = _Tooltip ?? string.Empty;
+                _notifyIconCreated = true;
 
-			if (!_notifyIconCreated)
-			{
-				// Delete the existing icon
-				PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_DELETE, in lpData);
+                // Add a new icon
+                PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_ADD, in lpData);
 
-				_notifyIconCreated = true;
+                lpData.Anonymous.uVersion = 4u;
 
-				// Add a new icon
-				PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_ADD, in lpData);
+                // Set the icon handler version
+                // NOTE: Do not omit this code. If you remove, the icon won't be shown.
+                PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_SETVERSION, in lpData);
+            }
+            else
+            {
+                // Modify the existing icon
+                PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_MODIFY, in lpData);
+            }
+        }
+    }
 
-				lpData.Anonymous.uVersion = 4u;
+    private void DeleteNotifyIcon()
+    {
+        if (_notifyIconCreated)
+        {
+            _notifyIconCreated = false;
 
-				// Set the icon handler version
-				// NOTE: Do not omit this code. If you remove, the icon won't be shown.
-				PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_SETVERSION, in lpData);
-			}
-			else
-			{
-				// Modify the existing icon
-				PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_MODIFY, in lpData);
-			}
-		}
-	}
+            NOTIFYICONDATAW lpData = default;
 
-	private void DeleteNotifyIcon()
-	{
-		if (_notifyIconCreated)
-		{
-			_notifyIconCreated = false;
+            lpData.cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW));
+            lpData.hWnd = _IconWindow.WindowHandle;
+            lpData.guidItem = Id;
+            lpData.uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP | NOTIFY_ICON_DATA_FLAGS.NIF_GUID | NOTIFY_ICON_DATA_FLAGS.NIF_SHOWTIP;
 
-			NOTIFYICONDATAW lpData = default;
+            // Delete the existing icon
+            PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_DELETE, in lpData);
+        }
+    }
 
-			lpData.cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW));
-			lpData.hWnd = _IconWindow.WindowHandle;
-			lpData.guidItem = Id;
-			lpData.uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP | NOTIFY_ICON_DATA_FLAGS.NIF_GUID | NOTIFY_ICON_DATA_FLAGS.NIF_SHOWTIP;
+    private void ShowContextMenu()
+    {
+        PInvoke.GetCursorPos(out var lpPoint);
 
-			// Delete the existing icon
-			PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_DELETE, in lpData);
-		}
-	}
+        var hMenu = PInvoke.CreatePopupMenu_SafeHandle();
 
-	private void ShowContextMenu()
-	{
-		PInvoke.GetCursorPos(out var lpPoint);
+        // Generate the classic context menu
+        PInvoke.AppendMenu(hMenu, MENU_ITEM_FLAGS.MF_BYCOMMAND, WM_FILES_CONTEXTMENU_DOCSLINK, "Documentation".GetLocalizedResource());
+        PInvoke.AppendMenu(hMenu, MENU_ITEM_FLAGS.MF_SEPARATOR, 0u, string.Empty);
+        //PInvoke.AppendMenu(hMenu, MENU_ITEM_FLAGS.MF_BYCOMMAND, WM_FILES_CONTEXTMENU_RESTART, "Restart".GetLocalizedResource());
+        PInvoke.AppendMenu(hMenu, MENU_ITEM_FLAGS.MF_BYCOMMAND, WM_FILES_CONTEXTMENU_QUIT, "Quit".GetLocalizedResource());
+        PInvoke.SetForegroundWindow(_IconWindow.WindowHandle);
 
-		DestroyMenuSafeHandle hMenu = PInvoke.CreatePopupMenu_SafeHandle();
+        var tRACK_POPUP_MENU_FLAGS =
+            TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD |
+            (PInvoke.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_MENUDROPALIGNMENT, PInvoke.GetDpiForWindow(_IconWindow.WindowHandle)) != 0
+                ? TRACK_POPUP_MENU_FLAGS.TPM_RIGHTALIGN
+                : TRACK_POPUP_MENU_FLAGS.TPM_LEFTBUTTON);
 
-		// Generate the classic context menu
-		PInvoke.AppendMenu(hMenu, MENU_ITEM_FLAGS.MF_BYCOMMAND, WM_FILES_CONTEXTMENU_DOCSLINK, "Documentation".GetLocalizedResource());
-		PInvoke.AppendMenu(hMenu, MENU_ITEM_FLAGS.MF_SEPARATOR, 0u, string.Empty);
-		//PInvoke.AppendMenu(hMenu, MENU_ITEM_FLAGS.MF_BYCOMMAND, WM_FILES_CONTEXTMENU_RESTART, "Restart".GetLocalizedResource());
-		PInvoke.AppendMenu(hMenu, MENU_ITEM_FLAGS.MF_BYCOMMAND, WM_FILES_CONTEXTMENU_QUIT, "Quit".GetLocalizedResource());
-		PInvoke.SetForegroundWindow(_IconWindow.WindowHandle);
+        switch (PInvoke.TrackPopupMenuEx(hMenu, (uint)tRACK_POPUP_MENU_FLAGS, lpPoint.X, lpPoint.Y, _IconWindow.WindowHandle, null).Value)
+        {
+            case 1:
+                OnDocumentationClicked();
+                break;
+            case 2:
+                OnRestartClicked();
+                break;
+            case 3:
+                OnQuitClicked();
+                break;
+        }
+    }
 
-		TRACK_POPUP_MENU_FLAGS tRACK_POPUP_MENU_FLAGS =
-			TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD |
-			(PInvoke.GetSystemMetricsForDpi((int)SYSTEM_METRICS_INDEX.SM_MENUDROPALIGNMENT, PInvoke.GetDpiForWindow(_IconWindow.WindowHandle)) != 0
-				? TRACK_POPUP_MENU_FLAGS.TPM_RIGHTALIGN
-				: TRACK_POPUP_MENU_FLAGS.TPM_LEFTBUTTON);
-
-		switch (PInvoke.TrackPopupMenuEx(hMenu, (uint)tRACK_POPUP_MENU_FLAGS, lpPoint.x, lpPoint.y, _IconWindow.WindowHandle, null).Value)
-		{
-			case 1:
-				OnDocumentationClicked();
-				break;
-			case 2:
-				OnRestartClicked();
-				break;
-			case 3:
-				OnQuitClicked();
-				break;
-		}
-	}
-
-	private void OnLeftClicked()
-	{
-		// Prevents duplicate launch
-		if (DateTime.Now - _lastLaunchDate < TimeSpan.FromSeconds(1))
+    private void OnLeftClicked()
+    {
+        // Prevents duplicate launch
+        if (DateTime.Now - _lastLaunchDate < TimeSpan.FromSeconds(1))
         {
             return;
         }
@@ -276,85 +274,86 @@ namespace Files.App.Utils.Taskbar;
         }
         else
         {
-            MainWindow.Instance.Activate();
+            FolderViewViewModel.MainWindow.Activate();
         }
-	}
+    }
 
-	private void OnDocumentationClicked()
-	{
-		Launcher.LaunchUriAsync(new Uri(Constants.GitHub.DocumentationUrl)).AsTask();
-	}
+    private void OnDocumentationClicked()
+    {
+        Launcher.LaunchUriAsync(new Uri(Constants.ExternalUrl.DocumentationUrl)).AsTask();
+    }
 
-	private void OnRestartClicked()
-	{
-		Microsoft.Windows.AppLifecycle.AppInstance.Restart("");
+    private void OnRestartClicked()
+    {
+        Microsoft.Windows.AppLifecycle.AppInstance.Restart("");
 
-		Program.Pool!.Release();
-		Environment.Exit(0);
-	}
+        Program.Pool!.Release();
+        Environment.Exit(0);
+    }
 
-	private void OnQuitClicked()
-	{
-		Hide();
+    private void OnQuitClicked()
+    {
+        Hide();
 
-		App.AppModel.ForceProcessTermination = true;
+        App.AppModel.ForceProcessTermination = true;
         if (Program.Pool is not null)
         {
             Program.Pool.Release();
         }
         else
         {
-            App.Current.Exit();
+            // CHANGE: Don't exit the app.
+            /*App.Current.Exit();*/
         }
-	}
+    }
 
-	internal LRESULT WindowProc(HWND hWnd, uint uMsg, WPARAM wParam, LPARAM lParam)
-	{
-		switch (uMsg)
-		{
-			case WM_FILES_UNIQUE_MESSAGE:
-				{
-					switch ((uint)(lParam.Value & 0xFFFF))
-					{
-						case PInvoke.WM_LBUTTONUP:
-							{
-								PInvoke.SetForegroundWindow(hWnd);
-								OnLeftClicked();
+    internal LRESULT WindowProc(HWND hWnd, uint uMsg, WPARAM wParam, LPARAM lParam)
+    {
+        switch (uMsg)
+        {
+            case WM_FILES_UNIQUE_MESSAGE:
+                {
+                    switch ((uint)(lParam.Value & 0xFFFF))
+                    {
+                        case PInvoke.WM_LBUTTONUP:
+                            {
+                                PInvoke.SetForegroundWindow(hWnd);
+                                OnLeftClicked();
 
-								break;
-							}
-						case PInvoke.WM_RBUTTONUP:
-							{
-								ShowContextMenu();
+                                break;
+                            }
+                        case PInvoke.WM_RBUTTONUP:
+                            {
+                                ShowContextMenu();
 
-								break;
-							}
-					}
+                                break;
+                            }
+                    }
 
-					break;
-				}
-			case PInvoke.WM_DESTROY:
-				{
-					DeleteNotifyIcon();
+                    break;
+                }
+            case PInvoke.WM_DESTROY:
+                {
+                    DeleteNotifyIcon();
 
-					break;
-				}
-			default:
-				{
-					if (uMsg == _taskbarRestartMessageId)
-					{
-						DeleteNotifyIcon();
-						CreateOrModifyNotifyIcon();
-					}
+                    break;
+                }
+            default:
+                {
+                    if (uMsg == _taskbarRestartMessageId)
+                    {
+                        DeleteNotifyIcon();
+                        CreateOrModifyNotifyIcon();
+                    }
 
-					return PInvoke.DefWindowProc(hWnd, uMsg, wParam, lParam);
-				}
-		}
-		return default;
-	}
+                    return PInvoke.DefWindowProc(hWnd, uMsg, wParam, lParam);
+                }
+        }
+        return default;
+    }
 
-	public void Dispose()
-	{
-		_IconWindow.Dispose();
-	}
-}*/
+    public void Dispose()
+    {
+        _IconWindow.Dispose();
+    }
+}

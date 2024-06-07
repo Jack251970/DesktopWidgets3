@@ -1,4 +1,4 @@
-﻿<!--  Copyright (c) 2023 Files Community. Licensed under the MIT License. See the LICENSE.  -->
+﻿<!--  Copyright (c) 2024 Files Community. Licensed under the MIT License. See the LICENSE.  -->
 <Page
 	x:Class="Files.App.Views.Settings.AppearancePage"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -10,6 +10,7 @@
 	xmlns:local="using:Files.App.UserControls.Settings"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:uc="using:Files.App.UserControls"
 	xmlns:vm="using:Files.App.ViewModels.Settings"
 	xmlns:wctconverters="using:CommunityToolkit.WinUI.UI.Converters"
 	mc:Ignorable="d">
@@ -54,7 +55,7 @@
 							Width="32"
 							Height="12"
 							VerticalAlignment="Bottom"
-							Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+							Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
 							BorderBrush="{ThemeResource ControlElevationBorderBrush}"
 							BorderThickness="1,1,1,0"
 							CornerRadius="4,4,0,0" />
@@ -70,7 +71,7 @@
 						Grid.Row="1"
 						Height="50"
 						VerticalAlignment="Bottom"
-						Background="{ThemeResource LayerOnMicaBaseAltFillColorDefault}"
+						Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
 						BorderBrush="{ThemeResource ControlElevationBorderBrush}"
 						BorderThickness="0,0,0,.5" />
 
@@ -108,7 +109,7 @@
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xE790;" />
 				</local:SettingsBlockControl.Icon>
-				<ComboBox
+                <uc:ComboBoxEx
 					x:Name="ThemeChooser"
 					AutomationProperties.Name="{helpers:ResourceString Name=SettingsAppearanceTheme}"
 					ItemsSource="{x:Bind ViewModel.Themes, Mode=OneWay}"
@@ -120,67 +121,127 @@
 				<local:SettingsBlockControl.Icon>
 					<FontIcon Glyph="&#xEF1F;" />
 				</local:SettingsBlockControl.Icon>
-				<ComboBox
+                <uc:ComboBoxEx
 					AutomationProperties.Name="{helpers:ResourceString Name=BackdropMaterial}"
 					ItemsSource="{x:Bind ViewModel.BackdropMaterialTypes.Values}"
 					SelectedItem="{x:Bind ViewModel.SelectedBackdropMaterial, Mode=TwoWay}" />
 			</local:SettingsBlockControl>
 
-			<!--  App Background  -->
-			<local:SettingsBlockControl
-				Title="{helpers:ResourceString Name=Background}"
+            <!--  App Background  -->
+            <local:SettingsBlockControl
+				Title="{helpers:ResourceString Name=BackgroundColor}"
 				HorizontalAlignment="Stretch"
 				IsExpanded="True">
-				<local:SettingsBlockControl.Icon>
-					<FontIcon Glyph="&#xE771;" />
-				</local:SettingsBlockControl.Icon>
-				<Button Padding="0" AutomationProperties.Name="{helpers:ResourceString Name=Background}">
-					<StackPanel Orientation="Horizontal">
-						<Border
+                <local:SettingsBlockControl.Icon>
+                    <FontIcon Glyph="&#xE771;" />
+                </local:SettingsBlockControl.Icon>
+                <Button Padding="0" AutomationProperties.Name="{helpers:ResourceString Name=BackgroundColor}">
+                    <StackPanel Orientation="Horizontal">
+                        <Border
 							Width="24"
 							Height="24"
 							Margin="4"
 							Background="Gray"
 							CornerRadius="4">
-							<Grid>
-								<PathIcon Data="M0 6 L0 0 L6 0 L6 6 L12 6 L12 0 L18 0 L18 6 L12 6 L12 12 L18 12 L18 6 L24 6 L24 12 L18 12 L18 18 L24 18 L24 24 L6 24 L6 18 L0 18 L0 12 L6 12 L6 18 L12 18 L12 24 L18 24 L18 18 L12 18 L12 12 L6 12 L6 6 Z" Foreground="LightGray" />
-								<Rectangle Fill="{ThemeResource App.Theme.BackgroundBrush}" />
-							</Grid>
-						</Border>
-						<FontIcon
+                            <Grid>
+                                <PathIcon Data="M0 6 L0 0 L6 0 L6 6 L12 6 L12 0 L18 0 L18 6 L12 6 L12 12 L18 12 L18 6 L24 6 L24 12 L18 12 L18 18 L24 18 L24 24 L6 24 L6 18 L0 18 L0 12 L6 12 L6 18 L12 18 L12 24 L18 24 L18 18 L12 18 L12 12 L6 12 L6 6 Z" Foreground="LightGray" />
+                                <Rectangle Fill="{ThemeResource App.Theme.BackgroundBrush}" />
+                            </Grid>
+                        </Border>
+                        <FontIcon
 							Margin="8,4,10,4"
 							FontSize="12"
 							Glyph="&#xE70D;" />
-					</StackPanel>
-					<Button.Flyout>
-						<Flyout>
-							<toolkit:ColorPicker
+                    </StackPanel>
+                    <Button.Flyout>
+                        <Flyout>
+                            <toolkit:ColorPicker
 								IsAlphaEnabled="True"
 								IsColorSpectrumVisible="False"
 								Color="{x:Bind ViewModel.AppThemeBackgroundColor, Mode=TwoWay}" />
-						</Flyout>
-					</Button.Flyout>
-				</Button>
-				<local:SettingsBlockControl.ExpandableContent>
-					<GridView
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+                <local:SettingsBlockControl.ExpandableContent>
+                    <GridView
 						Padding="8"
 						HorizontalAlignment="Stretch"
 						ItemTemplate="{StaticResource AppThemeResourcesItemTemplate}"
 						ItemsSource="{x:Bind ViewModel.AppThemeResources, Mode=OneWay}"
 						SelectedItem="{x:Bind ViewModel.SelectedAppThemeResources, Mode=TwoWay}" />
-				</local:SettingsBlockControl.ExpandableContent>
-			</local:SettingsBlockControl>
+                </local:SettingsBlockControl.ExpandableContent>
+            </local:SettingsBlockControl>
 
-			<!--  Compact Spacing  -->
-			<local:SettingsBlockControl Title="{helpers:ResourceString Name=UseCompactSpacing}" HorizontalAlignment="Stretch">
-				<local:SettingsBlockControl.Icon>
-					<FontIcon Glyph="&#xE62B;" />
-				</local:SettingsBlockControl.Icon>
-				<ToggleSwitch
-					AutomationProperties.Name="{helpers:ResourceString Name=UseCompactSpacing}"
-					IsOn="{x:Bind ViewModel.UseCompactStyles, Mode=TwoWay}"
-					Style="{StaticResource RightAlignedToggleSwitchStyle}" />
-			</local:SettingsBlockControl>
-		</StackPanel>
+            <!--  App Background Image  -->
+            <local:SettingsBlockControl
+				Title="{helpers:ResourceString Name=BackgroundImage}"
+				HorizontalAlignment="Stretch"
+				Description="{x:Bind ViewModel.AppThemeBackgroundImageSource, Mode=OneWay}"
+				IsExpanded="False">
+                <local:SettingsBlockControl.Icon>
+                    <FontIcon Glyph="&#xE91B;" />
+                </local:SettingsBlockControl.Icon>
+
+                <!--  Browse Button  -->
+                <SplitButton
+					x:Name="SelectImageButton"
+					Command="{x:Bind ViewModel.SelectImageCommand, Mode=OneWay}"
+					Content="{helpers:ResourceString Name=Browse}">
+                    <SplitButton.Flyout>
+                        <MenuFlyout Placement="Bottom">
+                            <MenuFlyoutItem
+								x:Name="RemoveImageMenuItem"
+								Command="{x:Bind ViewModel.RemoveImageCommand, Mode=OneWay}"
+								Text="{helpers:ResourceString Name=Remove}" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+
+                <local:SettingsBlockControl.ExpandableContent>
+                    <StackPanel>
+                        <!--  Opactiy Slider  -->
+                        <local:SettingsBlockControl Title="{helpers:ResourceString Name=Opacity}" HorizontalAlignment="Stretch">
+                            <Slider
+								Width="140"
+								HorizontalAlignment="Right"
+								AutomationProperties.Name="{helpers:ResourceString Name=Opacity}"
+								IsThumbToolTipEnabled="False"
+								Maximum="1"
+								Minimum=".1"
+								StepFrequency=".1"
+								Value="{x:Bind ViewModel.AppThemeBackgroundImageOpacity, Mode=TwoWay}" />
+                        </local:SettingsBlockControl>
+
+                        <!--  Image Fit  -->
+                        <local:SettingsBlockControl Title="{helpers:ResourceString Name=ImageFit}" HorizontalAlignment="Stretch">
+                            <uc:ComboBoxEx
+								MinWidth="140"
+								AutomationProperties.Name="{helpers:ResourceString Name=ImageFit}"
+								ItemsSource="{x:Bind ViewModel.ImageStretchTypes.Values}"
+								SelectedItem="{x:Bind ViewModel.SelectedImageStretchType, Mode=TwoWay}" />
+                        </local:SettingsBlockControl>
+
+                        <!--  VerticalAlignment  -->
+                        <local:SettingsBlockControl Title="{helpers:ResourceString Name=VerticalAlignment}" HorizontalAlignment="Stretch">
+                            <uc:ComboBoxEx
+								MinWidth="140"
+								AutomationProperties.Name="{helpers:ResourceString Name=VerticalAlignment}"
+								ItemsSource="{x:Bind ViewModel.ImageVerticalAlignmentTypes.Values}"
+								SelectedItem="{x:Bind ViewModel.SelectedImageVerticalAlignmentType, Mode=TwoWay}" />
+                        </local:SettingsBlockControl>
+
+                        <!--  HorizontalAlignment  -->
+                        <local:SettingsBlockControl Title="{helpers:ResourceString Name=HorizontalAlignment}" HorizontalAlignment="Stretch">
+                            <uc:ComboBoxEx
+								MinWidth="140"
+								AutomationProperties.Name="{helpers:ResourceString Name=HorizontalAlignment}"
+								ItemsSource="{x:Bind ViewModel.ImageHorizontalAlignmentTypes.Values}"
+								SelectedItem="{x:Bind ViewModel.SelectedImageHorizontalAlignmentType, Mode=TwoWay}" />
+                        </local:SettingsBlockControl>
+
+                    </StackPanel>
+                </local:SettingsBlockControl.ExpandableContent>
+            </local:SettingsBlockControl>
+        </StackPanel>
 	</Grid>
 </Page>

@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class InvertSelectionAction : ObservableObject, IAction
+internal sealed class InvertSelectionAction(IContentPageContext context) : IAction
 {
-	private readonly IContentPageContext context;
+	private readonly IContentPageContext context = context;
 
 	public string Label
 		=> "InvertSelection".GetLocalizedResource();
@@ -44,29 +44,10 @@ internal class InvertSelectionAction : ObservableObject, IAction
 		}
 	}
 
-	public InvertSelectionAction(IContentPageContext context)
-    {
-        this.context = context;
-
-        context.PropertyChanged += Context_PropertyChanged;
-	}
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		context?.ShellPage?.SlimContentPage?.ItemManipulationModel?.InvertSelection();
 
 		return Task.CompletedTask;
-	}
-
-	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		switch (e.PropertyName)
-		{
-			case nameof(IContentPageContext.PageType):
-			case nameof(IContentPageContext.HasItem):
-			case nameof(IContentPageContext.ShellPage):
-				OnPropertyChanged(nameof(IsExecutable));
-				break;
-		}
 	}
 }

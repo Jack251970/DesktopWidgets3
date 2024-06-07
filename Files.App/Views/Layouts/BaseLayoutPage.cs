@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -23,7 +23,7 @@ using Windows.Storage;
 using Windows.System;
 using static Files.App.Helpers.PathNormalization;
 using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
-using SortDirection = Files.Core.Data.Enums.SortDirection;
+using SortDirection = Files.App.Data.Enums.SortDirection;
 using VanaraWindowsShell = Vanara.Windows.Shell;
 
 namespace Files.App.Views.Layouts;
@@ -75,7 +75,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 	// Properties
 
 	protected AddressToolbar? NavToolbar
-		=> (FolderViewViewModel.MainWindowContent as Frame)?.FindDescendant<AddressToolbar>();
+		=> (FolderViewViewModel.Content as Frame)?.FindDescendant<AddressToolbar>();
 
 	public LayoutPreferencesManager? FolderSettings
 		=> ParentShellPageInstance?.InstanceViewModel.FolderSettings;
@@ -109,7 +109,6 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		Placement = FlyoutPlacementMode.Right,
 	};
 
-	protected abstract uint IconSize { get; }
 	protected abstract ItemsControl ItemsControl { get; }
 
     public IShellPage? ParentShellPageInstance { get; private set; }
@@ -203,9 +202,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				// Select first matching item after currently selected item
 				if (previouslySelectedItem is not null)
 				{
-					// Use FilesAndFolders because only displayed entries should be jumped to
-					var candidateItems = ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders
-						.SkipWhile(x => x != previouslySelectedItem)
+                    // Use FilesAndFolders because only displayed entries should be jumped to
+                    var candidateItems = ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders.ToList()
+                        .SkipWhile(x => x != previouslySelectedItem)
 						.Skip(value.Length == 1 ? 1 : 0) // User is trying to cycle through items starting with the same letter
 						.Where(f => f.Name.Length >= value.Length && string.Equals(f.Name[..value.Length], value, StringComparison.OrdinalIgnoreCase));
 					jumpedToItem = candidateItems.FirstOrDefault();
@@ -213,9 +212,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
 				if (jumpedToItem is null)
 				{
-					// Use FilesAndFolders because only displayed entries should be jumped to
-					var candidateItems = ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders
-						.Where(f => f.Name.Length >= value.Length && string.Equals(f.Name[..value.Length], value, StringComparison.OrdinalIgnoreCase));
+                    // Use FilesAndFolders because only displayed entries should be jumped to
+                    var candidateItems = ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders
+                        .Where(f => f.Name.Length >= value.Length && string.Equals(f.Name[..value.Length], value, StringComparison.OrdinalIgnoreCase));
 					jumpedToItem = candidateItems.FirstOrDefault();
 				}
 
@@ -234,8 +233,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		}
 	}
 
-	private List<ListedItem>? selectedItems = new();
-	public List<ListedItem>? SelectedItems
+    private List<ListedItem>? selectedItems = [];
+    public List<ListedItem>? SelectedItems
 	{
 		get => selectedItems;
 		internal set
@@ -503,15 +502,15 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			if (!navigationArguments.IsLayoutSwitch)
 			{
 				var displayName = App.LibraryManager.TryGetLibrary(navigationArguments.SearchPathParam!, out var lib) ? lib.Text : navigationArguments.SearchPathParam;
-				ParentShellPageInstance.UpdatePathUIToWorkingDirectory(null!, string.Format("SearchPagePathBoxOverrideText".GetLocalizedResource(), navigationArguments.SearchQuery, displayName));
-				var searchInstance = new FolderSearch
+                await ParentShellPageInstance.UpdatePathUIToWorkingDirectoryAsync(null!, string.Format("SearchPagePathBoxOverrideText".GetLocalizedResource(), navigationArguments.SearchQuery, displayName));
+                var searchInstance = new FolderSearch
 				{
 					Query = navigationArguments.SearchQuery,
 					Folder = navigationArguments.SearchPathParam,
-					ThumbnailSize = InstanceViewModel!.FolderSettings.GetIconSize(),
-				};
+                    ThumbnailSize = InstanceViewModel!.FolderSettings.GetRoundedIconSize(),
+                };
 
-				_ = ParentShellPageInstance.FilesystemViewModel.SearchAsync(FolderViewViewModel, searchInstance);
+                _ = ParentShellPageInstance.FilesystemViewModel.SearchAsync(FolderViewViewModel, searchInstance);
 			}
 		}
 
@@ -536,10 +535,12 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				navigationArguments.SelectItems is not null &&
 				navigationArguments.SelectItems.Any())
 			{
-				List<ListedItem> listedItemsToSelect = new();
-				listedItemsToSelect.AddRange(ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders.Where((li) => navigationArguments.SelectItems.Contains(li.ItemNameRaw)));
+                List<ListedItem> listedItemsToSelect =
+                [
+                    .. ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders.ToList().Where((li) => navigationArguments.SelectItems.Contains(li.ItemNameRaw)),
+                ];
 
-				ItemManipulationModel.SetSelectedItems(listedItemsToSelect);
+                ItemManipulationModel.SetSelectedItems(listedItemsToSelect);
 				ItemManipulationModel.FocusSelectedItems();
 			}
 			else if (navigationArguments is not null && navigationArguments.FocusOnNavigation)
@@ -633,12 +634,12 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				SelectedItemsPropertiesViewModel.CheckAllFileExtensions(SelectedItems!.Select(selectedItem => selectedItem?.FileExtension).ToList()!);
 
 				shiftPressed = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
-				var items = ContextFlyoutItemHelper.GetItemContextCommandsWithoutShellItems(folderViewViewModel: FolderViewViewModel, currentInstanceViewModel: InstanceViewModel!, selectedItems: SelectedItems!, selectedItemsPropertiesViewModel: SelectedItemsPropertiesViewModel, commandsViewModel: CommandsViewModel!, shiftPressed: shiftPressed, itemViewModel: null);
+                var items = ContentPageContextFlyoutFactory.GetItemContextCommandsWithoutShellItems(folderViewViewModel: FolderViewViewModel, currentInstanceViewModel: InstanceViewModel!, selectedItems: SelectedItems!, selectedItemsPropertiesViewModel: SelectedItemsPropertiesViewModel, commandsViewModel: CommandsViewModel!, shiftPressed: shiftPressed, itemViewModel: null);
 
-				ItemContextMenuFlyout.PrimaryCommands.Clear();
+                ItemContextMenuFlyout.PrimaryCommands.Clear();
 				ItemContextMenuFlyout.SecondaryCommands.Clear();
 
-				var (primaryElements, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(items);
+                var (primaryElements, secondaryElements) = ContextFlyoutModelToElementHelper.GetAppBarItemsFromModel(items);
                 AddCloseHandler(ItemContextMenuFlyout, primaryElements, secondaryElements);
 				primaryElements.ForEach(ItemContextMenuFlyout.PrimaryCommands.Add);
 				secondaryElements.OfType<FrameworkElement>().ForEach(i => i.MinWidth = Constants.UI.ContextMenuItemsMaxWidth); // Set menu min width
@@ -651,8 +652,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
                 if (!InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
 				{
-					var shellMenuItems = await ContextFlyoutItemHelper.GetItemContextShellCommandsAsync(workingDir: ParentShellPageInstance.FilesystemViewModel.WorkingDirectory, selectedItems: SelectedItems!, shiftPressed: shiftPressed, showOpenMenu: false, shellContextMenuItemCancellationToken.Token);
-					if (shellMenuItems.Any())
+                    var shellMenuItems = await ContentPageContextFlyoutFactory.GetItemContextShellCommandsAsync(workingDir: ParentShellPageInstance.FilesystemViewModel.WorkingDirectory, selectedItems: SelectedItems!, shiftPressed: shiftPressed, showOpenMenu: false, shellContextMenuItemCancellationToken.Token);
+                    if (shellMenuItems.Count != 0)
                     {
                         await AddShellMenuItemsAsync(shellMenuItems, ItemContextMenuFlyout, shiftPressed);
                     }
@@ -699,12 +700,12 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			shellContextMenuItemCancellationToken = new CancellationTokenSource();
 
 			shiftPressed = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
-			var items = ContextFlyoutItemHelper.GetItemContextCommandsWithoutShellItems(folderViewViewModel: FolderViewViewModel, currentInstanceViewModel: InstanceViewModel!, selectedItems: new List<ListedItem> { ParentShellPageInstance!.FilesystemViewModel.CurrentFolder! }, commandsViewModel: CommandsViewModel!, shiftPressed: shiftPressed, itemViewModel: ParentShellPageInstance!.FilesystemViewModel, selectedItemsPropertiesViewModel: null);
+            var items = ContentPageContextFlyoutFactory.GetItemContextCommandsWithoutShellItems(folderViewViewModel: FolderViewViewModel, currentInstanceViewModel: InstanceViewModel!, selectedItems: [ParentShellPageInstance!.FilesystemViewModel.CurrentFolder], commandsViewModel: CommandsViewModel!, shiftPressed: shiftPressed, itemViewModel: ParentShellPageInstance!.FilesystemViewModel, selectedItemsPropertiesViewModel: null);
 
-			BaseContextMenuFlyout.PrimaryCommands.Clear();
+            BaseContextMenuFlyout.PrimaryCommands.Clear();
 			BaseContextMenuFlyout.SecondaryCommands.Clear();
 
-			var (primaryElements, secondaryElements) = ItemModelListToContextFlyoutHelper.GetAppBarItemsFromModel(items);
+            var (primaryElements, secondaryElements) = ContextFlyoutModelToElementHelper.GetAppBarItemsFromModel(items);
 
             AddCloseHandler(BaseContextMenuFlyout, primaryElements, secondaryElements);
 
@@ -716,8 +717,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
 			if (!InstanceViewModel!.IsPageTypeSearchResults && !InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
 			{
-				var shellMenuItems = await ContextFlyoutItemHelper.GetItemContextShellCommandsAsync(workingDir: ParentShellPageInstance.FilesystemViewModel.WorkingDirectory, selectedItems: new List<ListedItem>(), shiftPressed: shiftPressed, showOpenMenu: false, shellContextMenuItemCancellationToken.Token);
-				if (shellMenuItems.Any())
+                var shellMenuItems = await ContentPageContextFlyoutFactory.GetItemContextShellCommandsAsync(workingDir: ParentShellPageInstance.FilesystemViewModel.WorkingDirectory, selectedItems: [], shiftPressed: shiftPressed, showOpenMenu: false, shellContextMenuItemCancellationToken.Token);
+                if (shellMenuItems.Any())
                 {
                     await AddShellMenuItemsAsync(shellMenuItems, BaseContextMenuFlyout, shiftPressed);
                 }
@@ -826,10 +827,10 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			overflowShellMenuItemsUnfiltered[i + 1 < overflowShellMenuItemsUnfiltered.Count ? i + 1 : i].ItemType != ContextMenuFlyoutItemType.Separator)
 			|| x.ItemType != ContextMenuFlyoutItemType.Separator).ToList();
 
-		var overflowItems = ItemModelListToContextFlyoutHelper.GetMenuFlyoutItemsFromModel(overflowShellMenuItems);
-		var mainItems = ItemModelListToContextFlyoutHelper.GetAppBarButtonsFromModelIgnorePrimary(mainShellMenuItems);
+        var overflowItems = ContextFlyoutModelToElementHelper.GetMenuFlyoutItemsFromModel(overflowShellMenuItems);
+        var mainItems = ContextFlyoutModelToElementHelper.GetAppBarButtonsFromModelIgnorePrimary(mainShellMenuItems);
 
-		var openedPopups = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetOpenPopups(FolderViewViewModel.MainWindow);
+        var openedPopups = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetOpenPopups(FolderViewViewModel.MainWindow);
 		var secondaryMenu = openedPopups.FirstOrDefault(popup => popup.Name == "OverflowPopup");
 
 		var itemsControl = secondaryMenu?.Child.FindDescendant<ItemsControl>();
@@ -837,11 +838,11 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		{
 			contextMenuFlyout.SetValue(ContextMenuExtensions.ItemsControlProperty, itemsControl);
 
-			var ttv = secondaryMenu.TransformToVisual(FolderViewViewModel.MainWindowContent);
+			var ttv = secondaryMenu.TransformToVisual(FolderViewViewModel.Content);
 			var cMenuPos = ttv.TransformPoint(new Point(0, 0));
 
-			var requiredHeight = contextMenuFlyout.SecondaryCommands.Concat(mainItems).Where(x => x is not AppBarSeparator).Count() * Constants.UI.ContextMenuSecondaryItemsHeight;
-			var availableHeight = FolderViewViewModel.MainWindow.Bounds.Height - cMenuPos.Y - Constants.UI.ContextMenuPrimaryItemsHeight;
+            var requiredHeight = contextMenuFlyout.SecondaryCommands.Concat(mainItems).Count(x => x is not AppBarSeparator) * Constants.UI.ContextMenuSecondaryItemsHeight;
+            var availableHeight = FolderViewViewModel.Bounds.Height - cMenuPos.Y - Constants.UI.ContextMenuPrimaryItemsHeight;
 
 			// Set menu max height to current height (Avoid menu repositioning)
 			if (requiredHeight > availableHeight)
@@ -853,13 +854,13 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
             mainItems.OfType<FrameworkElement>().ForEach(x => x.MaxWidth = itemsControl.ActualWidth - Constants.UI.ContextMenuLabelMargin);
 		}
 
-		ContextFlyoutItemHelper.SwapPlaceholderWithShellOption(
+        ContentPageContextFlyoutFactory.SwapPlaceholderWithShellOption(
 			contextMenuFlyout,
 			"TurnOnBitLockerPlaceholder",
 			turnOnBitLockerMenuItem,
 			contextMenuFlyout.SecondaryCommands.Count - 2
 		);
-		ContextFlyoutItemHelper.SwapPlaceholderWithShellOption(
+        ContentPageContextFlyoutFactory.SwapPlaceholderWithShellOption(
 			contextMenuFlyout,
 			"ManageBitLockerPlaceholder",
 			manageBitLockerMenuItem,
@@ -920,9 +921,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		if (openWithMenuItem?.LoadSubMenuAction is not null && openWithOverflow is not null && openWith is not null)
 		{
 			await openWithMenuItem.LoadSubMenuAction();
-			var openWithSubItems = ItemModelListToContextFlyoutHelper.GetMenuFlyoutItemsFromModel(ShellContextmenuHelper.GetOpenWithItems(shellMenuItems));
+            var openWithSubItems = ContextFlyoutModelToElementHelper.GetMenuFlyoutItemsFromModel(ShellContextFlyoutFactory.GetOpenWithItems(shellMenuItems));
 
-			if (openWithSubItems is not null)
+            if (openWithSubItems is not null)
 			{
 				var flyout = (MenuFlyout)openWithOverflow.Flyout;
 
@@ -936,7 +937,14 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
                 openWithOverflow.Flyout = flyout;
 				openWith.Visibility = Visibility.Collapsed;
 				openWithOverflow.Visibility = Visibility.Visible;
-			}
+
+                // FILESTODO: delete this when https://github.com/microsoft/microsoft-ui-xaml/issues/9409 is resolved
+                openWithOverflow.Content = new OpacityIconModel()
+                {
+                    OpacityIconStyle = "ColorIconOpenWith"
+                }.ToOpacityIcon();
+                openWithOverflow.Label = "OpenWith".GetLocalizedResource();
+            }
 		}
 
 		// Add items to sendto dropdown
@@ -948,9 +956,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			if (sendToMenuItem?.LoadSubMenuAction is not null && sendToOverflow is not null && sendTo is not null)
 			{
 				await sendToMenuItem.LoadSubMenuAction();
-				var sendToSubItems = ItemModelListToContextFlyoutHelper.GetMenuFlyoutItemsFromModel(ShellContextmenuHelper.GetSendToItems(shellMenuItems));
+                var sendToSubItems = ContextFlyoutModelToElementHelper.GetMenuFlyoutItemsFromModel(ShellContextFlyoutFactory.GetSendToItems(shellMenuItems));
 
-				if (sendToSubItems is not null)
+                if (sendToSubItems is not null)
 				{
 					var flyout = (MenuFlyout)sendToOverflow.Flyout;
 
@@ -968,23 +976,25 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			}
 		}
 
-		// Add items to main shell submenu
-		mainShellMenuItems.Where(x => x.LoadSubMenuAction is not null).ForEach(async x =>
-		{
-			await x.LoadSubMenuAction();
+        // Filter mainShellMenuItems that have a non-null LoadSubMenuAction
+        var mainItemsWithSubMenu = mainShellMenuItems.Where(x => x.LoadSubMenuAction is not null);
 
-			ShellContextmenuHelper.AddItemsToMainMenu(mainItems, x);
-		});
+        var mainSubMenuTasks = mainItemsWithSubMenu.Select(async item =>
+        {
+            await item.LoadSubMenuAction();
+            ShellContextFlyoutFactory.AddItemsToMainMenu(mainItems, item);
+        });
 
-		// Add items to overflow shell submenu
-		overflowShellMenuItems.Where(x => x.LoadSubMenuAction is not null).ForEach(async x =>
-		{
-			await x.LoadSubMenuAction();
+        // Filter overflowShellMenuItems that have a non-null LoadSubMenuAction
+        var overflowItemsWithSubMenu = overflowShellMenuItems.Where(x => x.LoadSubMenuAction is not null);
 
-			ShellContextmenuHelper.AddItemsToOverflowMenu(overflowItem, x);
-		});
+        var overflowSubMenuTasks = overflowItemsWithSubMenu.Select(async item =>
+        {
+            await item.LoadSubMenuAction();
+            ShellContextFlyoutFactory.AddItemsToOverflowMenu(overflowItem, item);
+        });
 
-		itemsControl?.Items.OfType<FrameworkElement>().ForEach(item =>
+        itemsControl?.Items.OfType<FrameworkElement>().ForEach(item =>
 		{
 			// Enable CharacterEllipsis text trimming for menu items
 			if (item.FindDescendant("OverflowTextLabel") is TextBlock label)
@@ -1011,7 +1021,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				clickAction(flyout.Items);
 			}
 		});
-	}
+
+        await Task.WhenAll(mainSubMenuTasks.Concat(overflowSubMenuTasks));
+    }
 
 	private static void RemoveOverflow(CommandBarFlyout contextMenuFlyout)
 	{
@@ -1038,9 +1050,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		}
 	}
 
-	protected void FileList_DragItemsStarting(object _, DragItemsStartingEventArgs e)
-	{
-		try
+    protected virtual void FileList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+    {
+        try
 		{
 			var shellItemList = SafetyExtensions.IgnoreExceptions(() => e.Items.OfType<ListedItem>().Select(x => new VanaraWindowsShell.ShellItem(x.ItemPath)).ToArray());
 			if (shellItemList?[0].FileSystemPath is not null && !InstanceViewModel!.IsPageTypeSearchResults)
@@ -1111,9 +1123,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				{
 					e.DragUIOverride.IsCaptionVisible = true;
 
-					if (item.IsExecutable || item.IsPythonFile)
-					{
-						e.DragUIOverride.Caption = $"{"OpenWith".GetLocalizedResource()} {item.Name}";
+                    if (item.IsExecutable || item.IsScriptFile)
+                    {
+                        e.DragUIOverride.Caption = $"{"OpenWith".GetLocalizedResource()} {item.Name}";
 						e.AcceptedOperation = DataPackageOperation.Link;
 					}
 					// Items from the same drive as this folder are dragged into this folder, so we move the items instead of copy
@@ -1130,9 +1142,10 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 					else if (e.Modifiers.HasFlag(DragDropModifiers.Shift))
 					{
 						e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalizedResource(), item.Name);
-						e.AcceptedOperation = DataPackageOperation.Move;
-					}
-					else if (draggedItems.Any(x => x.Item is ZipStorageFile || x.Item is ZipStorageFolder)
+                        // Some applications such as Edge can't raise the drop event by the Move flag (#14008), so we set the Copy flag as well.
+                        e.AcceptedOperation = DataPackageOperation.Move | DataPackageOperation.Copy;
+                    }
+                    else if (draggedItems.Any(x => x.Item is ZipStorageFile || x.Item is ZipStorageFolder)
 						|| ZipStorageFolder.IsZipPath(item.ItemPath))
 					{
 						e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalizedResource(), item.Name);
@@ -1141,9 +1154,10 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 					else if (draggedItems.AreItemsInSameDrive(item.ItemPath))
 					{
 						e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalizedResource(), item.Name);
-						e.AcceptedOperation = DataPackageOperation.Move;
-					}
-					else
+                        // Some applications such as Edge can't raise the drop event by the Move flag (#14008), so we set the Copy flag as well.
+                        e.AcceptedOperation = DataPackageOperation.Move | DataPackageOperation.Copy;
+                    }
+                    else
 					{
 						e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalizedResource(), item.Name);
 						e.AcceptedOperation = DataPackageOperation.Copy;
@@ -1178,9 +1192,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		}
 	}
 
-	private async void Item_Drop(object sender, DragEventArgs e)
-	{
-		var deferral = e.GetDeferral();
+    protected async virtual void Item_Drop(object sender, DragEventArgs e)
+    {
+        var deferral = e.GetDeferral();
 
 		e.Handled = true;
 
@@ -1190,7 +1204,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		var item = GetItemFromElement(sender);
 		if (item is not null)
         {
-            await ParentShellPageInstance!.FilesystemHelpers.PerformOperationTypeAsync(e.AcceptedOperation, e.DataView, (item as ShortcutItem)?.TargetPath ?? item.ItemPath, false, true, item.IsExecutable, item.IsPythonFile);
+            await ParentShellPageInstance!.FilesystemHelpers.PerformOperationTypeAsync(e.AcceptedOperation, e.DataView, (item as ShortcutItem)?.TargetPath ?? item.ItemPath, false, true, item.IsExecutable, item.IsScriptFile);
         }
 
         deferral.Complete();
@@ -1245,8 +1259,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				uint callbackPhase = 3;
 				args.RegisterUpdateCallback(callbackPhase, async (s, c) =>
 				{
-					await ParentShellPageInstance!.FilesystemViewModel.LoadExtendedItemPropertiesAsync(listedItem, IconSize);
-					if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None && listedItem is GitItem gitItem)
+                    await ParentShellPageInstance!.FilesystemViewModel.LoadExtendedItemPropertiesAsync(listedItem);
+                    if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None && listedItem is GitItem gitItem)
                     {
                         await ParentShellPageInstance.FilesystemViewModel.LoadGitPropertiesAsync(gitItem);
                     }
@@ -1303,7 +1317,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			// Selection of a range of items with shift
 			else if (e.KeyModifiers == VirtualKeyModifiers.Shift &&
 				selectedItems is not null &&
-				selectedItems.Any())
+				selectedItems.Count != 0)
 			{
 				var last = selectedItems.Last();
 				byte found = 0;
@@ -1360,8 +1374,8 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
         UninitializeDrag(container);
 		if ((item.PrimaryItemAttribute == StorageItemTypes.Folder && !RecycleBinHelpers.IsPathUnderRecycleBin(item.ItemPath))
 			|| item.IsExecutable
-			|| item.IsPythonFile)
-		{
+            || item.IsScriptFile)
+        {
 			container.AllowDrop = true;
 			container.AddHandler(DragOverEvent, Item_DragOverEventHandler, true);
 			container.DragLeave += Item_DragLeave;
@@ -1388,9 +1402,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		CommandsViewModel?.DragOverCommand?.Execute(e);
 	}
 
-	protected void ItemsLayout_Drop(object _, DragEventArgs e)
-	{
-		CommandsViewModel?.DropCommand?.Execute(e);
+    protected virtual void ItemsLayout_Drop(object sender, DragEventArgs e)
+    {
+        CommandsViewModel?.DropCommand?.Execute(e);
 	}
 
 	private void UpdateCollectionViewSource()

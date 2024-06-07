@@ -1,7 +1,6 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.UserControls.Widgets;
 using System.IO;
 
 namespace Files.App.Utils;
@@ -16,9 +15,9 @@ public sealed class QuickAccessManager
 
 	public IQuickAccessService QuickAccessService;
 
-	public SidebarPinnedModel Model;
+    public PinnedFoldersManager Model;
 
-	public QuickAccessManager()
+    public QuickAccessManager()
 	{
 		QuickAccessService = DependencyExtensions.GetService<IQuickAccessService>();
 		Model = new();
@@ -45,8 +44,11 @@ public sealed class QuickAccessManager
     {
         PinnedItemsModified += Model.LoadAsync;
 
-        //if (!Model.FavoriteItems.Contains(Constants.UserEnvironmentPaths.RecycleBinPath) && SystemInformation.Instance.IsFirstRun)
-        //	await QuickAccessService.PinToSidebar(Constants.UserEnvironmentPaths.RecycleBinPath);
+        // CHANGE: Remove SystemInformation.
+        if (!Model.PinnedFolders.Contains(Constants.UserEnvironmentPaths.RecycleBinPath)/* && SystemInformation.Instance.IsFirstRun*/)
+        {
+            await QuickAccessService.PinToSidebarAsync(Constants.UserEnvironmentPaths.RecycleBinPath);
+        }
 
         await Model.LoadAsync();
     }

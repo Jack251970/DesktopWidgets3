@@ -75,6 +75,30 @@ public static class InfoHelper
         }
     }
 
+    public static string GetFullName()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return Package.Current.Id.FullName;
+        }
+        else
+        {
+            return GetDisplayName();
+        }
+    }
+
+    public static string GetFullName(this Package package)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return package.Id.FullName;
+        }
+        else
+        {
+            return package.GetDisplayName();
+        }
+    }
+
     public static string GetName()
     {
         if (RuntimeHelper.IsMSIX)
@@ -216,6 +240,19 @@ public static class InfoHelper
         }
     }
 
+    public static string GetCompany(this Package package)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return package.PublisherDisplayName;
+        }
+        else
+        {
+            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+            return (attributes.Length == 0) ? "" : ((AssemblyCompanyAttribute)attributes[0]).Company;
+        }
+    }
+
     public static string GetConfiguration()
     {
         if (RuntimeHelper.IsMSIX)
@@ -227,19 +264,6 @@ public static class InfoHelper
             var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyConfigurationAttribute), false);
             return (attributes.Length == 0) ? "" : ((AssemblyConfigurationAttribute)attributes[0]).Configuration;
         }
-    }
-
-    public static string GetCompany(this Package package)
-    {
-        if (RuntimeHelper.IsMSIX)
-        {
-            return package.PublisherDisplayName;
-        }
-        else
-        {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyCompanyAttribute)attributes[0]).Company;
-        }  
     }
 
     public static string GetConfiguration(this Package package)
@@ -315,6 +339,30 @@ public static class InfoHelper
         else
         {
             return AppContext.BaseDirectory; //Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        }
+    }
+
+    public static string GetEffectivePath()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return Package.Current.EffectivePath;
+        }
+        else
+        {
+            return GetInstalledLocation();
+        }
+    }
+
+    public static string GetEffectivePath(this Package package)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return package.EffectivePath;
+        }
+        else
+        {
+            return GetInstalledLocation(package);
         }
     }
 }

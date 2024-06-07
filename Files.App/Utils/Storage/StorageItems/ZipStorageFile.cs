@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
@@ -9,20 +9,21 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
+using Windows.Win32;
 using IO = System.IO;
 
 namespace Files.App.Utils.Storage;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
+public sealed class ZipStorageFile(string path, string containerPath) : BaseStorageFile, IPasswordProtectedItem
 {
-	private readonly string containerPath;
+	private readonly string containerPath = containerPath;
 	private readonly BaseStorageFile backingFile;
 
-	public override string Path { get; }
-	public override string Name { get; }
-	public override string DisplayName => Name;
+    public override string Path { get; } = path;
+    public override string Name { get; } = IO.Path.GetFileName(path.TrimEnd('\\', '/'));
+    public override string DisplayName => Name;
 	public override string ContentType => "application/octet-stream";
 	public override string FileType => IO.Path.GetExtension(Name);
 	public override string FolderRelativeId => $"0\\{Name}";
@@ -50,13 +51,6 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 
     public IFolderViewViewModel FolderViewViewModel { get; set; }
 	public Func<IFolderViewViewModel, IPasswordProtectedItem, Task<StorageCredential>> PasswordRequestedCallback { get; set; }
-
-	public ZipStorageFile(string path, string containerPath)
-	{
-		Name = IO.Path.GetFileName(path.TrimEnd('\\', '/'));
-		Path = path;
-		this.containerPath = containerPath;
-	}
 
     public ZipStorageFile(string path, string containerPath, BaseStorageFile backingFile) : this(path, containerPath)
     {
@@ -116,7 +110,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 					return await backingFile.OpenAsync(accessMode);
 				}
 
-				var file = NativeFileOperationsHelper.OpenFileForRead(containerPath, rw);
+				var file = Win32Helper.OpenFileForRead(containerPath, rw);
 				return file.IsInvalid ? null! : new FileStream(file, rw ? FileAccess.ReadWrite : FileAccess.Read).AsRandomAccessStream();
 			}
 
@@ -161,7 +155,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 					return await backingFile.OpenReadAsync();
 				}
 
-				var hFile = NativeFileOperationsHelper.OpenFileForRead(containerPath);
+				var hFile = Win32Helper.OpenFileForRead(containerPath);
 				return hFile.IsInvalid ? null! : new StreamWithContentType(new FileStream(hFile, FileAccess.Read).AsRandomAccessStream());
 			}
 
@@ -200,7 +194,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 					return await backingFile.OpenSequentialReadAsync();
 				}
 
-				var hFile = NativeFileOperationsHelper.OpenFileForRead(containerPath);
+				var hFile = Win32Helper.OpenFileForRead(containerPath);
 				return hFile.IsInvalid ? null! : new FileStream(hFile, FileAccess.Read).AsInputStream();
 			}
 
@@ -320,7 +314,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 				else
 				{
 					var fileName = IO.Path.Combine(IO.Path.GetDirectoryName(Path)!, desiredName);
-					NativeFileOperationsHelper.MoveFileFromApp(Path, fileName);
+                    PInvoke.MoveFileFromApp(Path, fileName);
 				}
 			}
 			else
@@ -362,7 +356,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 				}
 				else if (option == StorageDeleteOption.PermanentDelete)
 				{
-					NativeFileOperationsHelper.DeleteFileFromApp(Path);
+                    PInvoke.DeleteFileFromApp(Path);
 				}
 				else
 				{
@@ -405,7 +399,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 	{
 		try
 		{
-			var hFile = NativeFileOperationsHelper.OpenFileForRead(path);
+			var hFile = Win32Helper.OpenFileForRead(path);
 			if (hFile.IsInvalid)
 			{
 				return false;
@@ -476,7 +470,7 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 			}
 			else
 			{
-				var hFile = NativeFileOperationsHelper.OpenFileForRead(containerPath, readWrite);
+				var hFile = Win32Helper.OpenFileForRead(containerPath, readWrite);
 				if (hFile.IsInvalid)
 				{
 					return null!;
@@ -520,14 +514,9 @@ public sealed class ZipStorageFile : BaseStorageFile, IPasswordProtectedItem
 		};
 	}
 
-	private class ZipFileBasicProperties : BaseBasicProperties
+	private sealed class ZipFileBasicProperties(ArchiveFileInfo entry) : BaseBasicProperties
 	{
-		private ArchiveFileInfo entry;
-
-        public ZipFileBasicProperties(ArchiveFileInfo entry)
-        {
-            this.entry = entry;
-        }
+		private ArchiveFileInfo entry = entry;
 
         public override DateTimeOffset DateModified => entry.LastWriteTime == DateTime.MinValue ? DateTimeOffset.MinValue : entry.LastWriteTime;
 

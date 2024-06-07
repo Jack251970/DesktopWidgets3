@@ -1,18 +1,16 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.UserControls.Widgets;
-using Files.App.ViewModels.Widgets;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Immutable;
 
 namespace Files.App.Data.Contexts;
 
-internal class HomePageContext : ObservableObject, IHomePageContext
+public sealed class HomePageContext : ObservableObject, IHomePageContext
 {
-	private static readonly IImmutableList<FileTagsItemViewModel> emptyTaggedItems = Enumerable.Empty<FileTagsItemViewModel>().ToImmutableList();
+    private static readonly ImmutableList<WidgetFileTagCardItem> emptyTaggedItems = Enumerable.Empty<WidgetFileTagCardItem>().ToImmutableList();
 
-	public bool IsAnyItemRightClicked => rightClickedItem is not null;
+    public bool IsAnyItemRightClicked => rightClickedItem is not null;
 
 	private WidgetCardItem? rightClickedItem = null;
 	public WidgetCardItem? RightClickedItem => rightClickedItem;
@@ -20,23 +18,23 @@ internal class HomePageContext : ObservableObject, IHomePageContext
 	private CommandBarFlyout? itemContextFlyoutMenu = null;
 	public CommandBarFlyout? ItemContextFlyoutMenu => itemContextFlyoutMenu;
 
-	private IReadOnlyList<FileTagsItemViewModel> selectedTaggedItems = emptyTaggedItems;
-	public IReadOnlyList<FileTagsItemViewModel> SelectedTaggedItems
-	{
-		get => selectedTaggedItems;
+    private IReadOnlyList<WidgetFileTagCardItem> selectedTaggedItems = emptyTaggedItems;
+    public IReadOnlyList<WidgetFileTagCardItem> SelectedTaggedItems
+    {
+        get => selectedTaggedItems;
 		set => selectedTaggedItems = value ?? emptyTaggedItems;
 	}
 
 	public HomePageContext()
 	{
-        // TODO: Check if can use static event handlers.
-        HomePageWidget.RightClickedItemChanged += HomePageWidget_RightClickedItemChanged;
-		FileTagsWidget.SelectedTaggedItemsChanged += FileTagsWidget_SelectedTaggedItemsChanged;
-	}
+        // TODO(Later): Check if can use static event handlers.
+        BaseWidgetViewModel.RightClickedItemChanged += HomePageWidget_RightClickedItemChanged;
+        FileTagsWidgetViewModel.SelectedTaggedItemsChanged += FileTagsWidget_SelectedTaggedItemsChanged;
+    }
 
-	private void FileTagsWidget_SelectedTaggedItemsChanged(object? sender, IEnumerable<FileTagsItemViewModel> e)
-	{
-		SetProperty(ref selectedTaggedItems, e.ToList());
+    private void FileTagsWidget_SelectedTaggedItemsChanged(object? sender, IEnumerable<WidgetFileTagCardItem> e)
+    {
+        SetProperty(ref selectedTaggedItems, e.ToList());
 	}
 
 	private void HomePageWidget_RightClickedItemChanged(object? sender, WidgetsRightClickedItemChangedEventArgs e)

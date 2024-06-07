@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class DeleteItemAction : BaseDeleteAction, IAction
+internal sealed class DeleteItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : BaseDeleteAction(folderViewViewModel, context), IAction
 {
     public string Label
 		=> "Delete".GetLocalizedResource();
@@ -20,11 +20,7 @@ internal class DeleteItemAction : BaseDeleteAction, IAction
 	public HotKey SecondHotKey
 		=> new(Keys.D, KeyModifiers.Ctrl);
 
-    public DeleteItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel, context)
-    {
-    }
-
-    public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		return DeleteItemsAsync(false);
 	}

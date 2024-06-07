@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -8,7 +8,7 @@ namespace Files.App.Data.Items;
 /// <summary>
 /// Represents item for a column shown in <see cref="DetailsLayoutPage"/>.
 /// </summary>
-public class DetailsLayoutColumnItem : ObservableObject
+public sealed class DetailsLayoutColumnItem : ObservableObject
 {
 	private const int GRID_SPLITTER_WIDTH = 12;
 
@@ -19,7 +19,9 @@ public class DetailsLayoutColumnItem : ObservableObject
 	}
 
 	private double _NormalMaxLength = 800;
-	public double NormalMaxLength
+
+    [RegistryIgnore]
+    public double NormalMaxLength
 	{
 		get => _NormalMaxLength;
 		set => SetProperty(ref _NormalMaxLength, value);
@@ -38,33 +40,27 @@ public class DetailsLayoutColumnItem : ObservableObject
         }
 	}
 
-	[LiteDB.BsonIgnore]
-	public bool IsResizable { get; set; } = true;
+    [RegistryIgnore]
+    public bool IsResizable { get; set; } = true;
 
-	[LiteDB.BsonIgnore]
 	public double MinLength
 		=> UserCollapsed || IsHidden ? 0 : NormalMinLength;
 
-	[LiteDB.BsonIgnore]
 	public Visibility Visibility
 		=> UserCollapsed || IsHidden ? Visibility.Collapsed : Visibility.Visible;
 
-	[LiteDB.BsonIgnore]
 	public GridLength Length
 		=> UserCollapsed || IsHidden ? new GridLength(0) : UserLength;
 
-	[LiteDB.BsonIgnore]
 	public GridLength LengthIncludingGridSplitter =>
 		UserCollapsed || IsHidden
 			? new(0)
 			: new(UserLength.Value + (IsResizable ? GRID_SPLITTER_WIDTH : 0));
 
-	[LiteDB.BsonIgnore]
 	public double MaxLength
 		=> UserCollapsed || IsHidden ? 0 : NormalMaxLength;
 
 	private bool _IsHidden;
-	[LiteDB.BsonIgnore]
 	public bool IsHidden
 	{
 		get => _IsHidden;
@@ -72,8 +68,9 @@ public class DetailsLayoutColumnItem : ObservableObject
 	}
 
 	private double _NormalMinLength = 50;
-	[LiteDB.BsonIgnore]
-	public double NormalMinLength
+
+    [RegistryIgnore]
+    public double NormalMinLength
 	{
 		get => _NormalMinLength;
 		set
@@ -86,8 +83,9 @@ public class DetailsLayoutColumnItem : ObservableObject
 	}
 
 	private GridLength _UserLength = new(200, GridUnitType.Pixel);
-	[LiteDB.BsonIgnore]
-	public GridLength UserLength
+
+    [RegistryIgnore]
+    public GridLength UserLength
 	{
 		get => _UserLength;
 		set

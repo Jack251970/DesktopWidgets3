@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class EditPathAction : IAction
+internal sealed class EditPathAction : IAction
 {
 	private readonly IContentPageContext context;
 
@@ -17,14 +17,14 @@ internal class EditPathAction : IAction
 		=> new(Keys.L, KeyModifiers.Ctrl);
 
 	public HotKey SecondHotKey
-		=> new(Keys.D, KeyModifiers.Menu);
+		=> new(Keys.D, KeyModifiers.Alt);
 
 	public EditPathAction(IContentPageContext context)
 	{
 		this.context = context;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage is not null)
         {

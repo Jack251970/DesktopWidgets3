@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -21,7 +21,7 @@ namespace Files.App.Data.Behaviors;
 /// <remarks>
 /// See also, <see cref="Microsoft.Xaml.Interactivity.Behavior{Microsoft.UI.Xaml.UIElement}"/>
 /// </remarks>
-public class StickyHeaderBehavior : BehaviorBase<FrameworkElement>
+public sealed class StickyHeaderBehavior : BehaviorBase<FrameworkElement>
 {
 	private static readonly bool IsXamlRootAvailable =
 		ApiInformation.IsPropertyPresent("Microsoft.UI.Xaml.UIElement", "XamlRoot");
@@ -172,9 +172,6 @@ public class StickyHeaderBehavior : BehaviorBase<FrameworkElement>
         headerElement.SizeChanged -= ScrollHeader_SizeChanged;
 		headerElement.SizeChanged += ScrollHeader_SizeChanged;
 
-		_scrollViewer.GotFocus -= ScrollViewer_GotFocus;
-		_scrollViewer.GotFocus += ScrollViewer_GotFocus;
-
 		var compositor = _scrollProperties.Compositor;
 
 		if (_animationProperties is null)
@@ -221,11 +218,6 @@ public class StickyHeaderBehavior : BehaviorBase<FrameworkElement>
             element.SizeChanged -= ScrollHeader_SizeChanged;
         }
 
-        if (_scrollViewer is not null)
-        {
-            _scrollViewer.GotFocus -= ScrollViewer_GotFocus;
-        }
-
         StopAnimation();
 	}
 
@@ -253,40 +245,5 @@ public class StickyHeaderBehavior : BehaviorBase<FrameworkElement>
 	private void ScrollHeader_SizeChanged(object sender, SizeChangedEventArgs e)
 	{
 		AssignAnimation();
-	}
-
-	private void ScrollViewer_GotFocus(object sender, RoutedEventArgs e)
-	{
-		var scroller = (ScrollViewer)sender;
-
-		object focusedElement;
-
-		if (IsXamlRootAvailable && scroller.XamlRoot is not null)
-		{
-			focusedElement = FocusManager.GetFocusedElement(scroller.XamlRoot);
-		}
-		else
-		{
-			focusedElement = FocusManager.GetFocusedElement();
-		}
-
-		// To prevent Popups (Flyouts...) from triggering the autoscroll, we check if the focused element has a valid parent.
-		// Popups have no parents, whereas a normal Item would have the ListView as a parent.
-		if (focusedElement is UIElement element && VisualTreeHelper.GetParent(element) is not null)
-		{
-			// NOTE: Ignore if element is child of header
-			if (!element.FindAscendants().Any(x => x == HeaderElement))
-			{
-				var header = (FrameworkElement)HeaderElement;
-
-				var point = element.TransformToVisual(scroller).TransformPoint(new Point(0, 0));
-
-				// NOTE: Do not change scroller horizontal offset
-				if (point.Y < header.ActualHeight)
-                {
-                    scroller.ChangeView(scroller.HorizontalOffset, scroller.VerticalOffset - (header.ActualHeight - point.Y), 1, false);
-                }
-            }
-		}
 	}
 }

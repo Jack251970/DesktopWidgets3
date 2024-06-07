@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class GitPullAction : ObservableObject, IAction
+internal sealed class GitPullAction : ObservableObject, IAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -29,7 +29,7 @@ internal class GitPullAction : ObservableObject, IAction
         _context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		return GitHelpers.PullOriginAsync(FolderViewViewModel, _context.ShellPage!.InstanceViewModel.GitRepositoryPath);
 	}

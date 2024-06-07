@@ -1,14 +1,13 @@
 ﻿using Files.App.Views;
 using Files.App.ViewModels;
-using Files.Core.Data.EventArguments;
-using Files.Core.Data.Enums;
-using Files.Core.Services.Settings;
-
+using Files.App.Data.EventArguments;
+using Files.App.Data.Enums;
+using Files.App.Services.Settings;
+using Windows.Foundation;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
 using System.ComponentModel;
-
 using FilesApp = Files.App.App;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
@@ -33,9 +32,13 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     IntPtr IFolderViewViewModel.WindowHandle => WidgetWindow.WindowHandle;
 
+    AppWindow IFolderViewViewModel.AppWindow => WidgetWindow.AppWindow;
+
+    Rect IFolderViewViewModel.Bounds => WidgetWindow.Bounds;
+
     Page IFolderViewViewModel.Page => WidgetPage;
 
-    UIElement IFolderViewViewModel.MainWindowContent => WidgetPage.Content;
+    UIElement IFolderViewViewModel.Content => WidgetPage.Content;
 
     XamlRoot IFolderViewViewModel.XamlRoot => WidgetPage.Content.XamlRoot;
 
@@ -92,9 +95,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public Page WidgetPage { get; set; } = null!;
 
-    private void FolderViewViewModel_NavigatedTo(object? parameter, bool isInitialized)
+    private void FolderViewViewModel_NavigatedTo(object? parameter)
     {
-        if (!isInitialized)
+        if (_isInitialized)
         {
             var userSettingsService = App.GetService<IUserSettingsService>();
 
@@ -126,9 +129,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             _userSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu = settings.MoveShellExtensionsToSubMenu;
         }
 
-        if (_userSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories != settings.SyncFolderPreferencesAcrossDirectories)
+        if (_userSettingsService.LayoutSettingsService.SyncFolderPreferencesAcrossDirectories != settings.SyncFolderPreferencesAcrossDirectories)
         {
-            _userSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories = settings.SyncFolderPreferencesAcrossDirectories;
+            _userSettingsService.LayoutSettingsService.SyncFolderPreferencesAcrossDirectories = settings.SyncFolderPreferencesAcrossDirectories;
         }
 
         if (_userSettingsService.FoldersSettingsService.ShowHiddenItems != settings.ShowHiddenItems)
@@ -189,7 +192,10 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         if (FolderPath != settings.FolderPath)
         {
             FolderPath = settings.FolderPath;
-            FolderPathChanged?.Invoke(FolderPath);
+            if (_isInitialized)
+            {
+                FolderPathChanged?.Invoke(FolderPath);
+            }
         }
     }
 
@@ -201,7 +207,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             FolderPath = FolderPath,
             AllowNavigation = AllowNavigation,
             MoveShellExtensionsToSubMenu = _userSettingsService.GeneralSettingsService.MoveShellExtensionsToSubMenu,
-            SyncFolderPreferencesAcrossDirectories = _userSettingsService.FoldersSettingsService.SyncFolderPreferencesAcrossDirectories,
+            SyncFolderPreferencesAcrossDirectories = _userSettingsService.LayoutSettingsService.SyncFolderPreferencesAcrossDirectories,
             ShowHiddenItems = _userSettingsService.FoldersSettingsService.ShowHiddenItems,
             ShowDotFiles = _userSettingsService.FoldersSettingsService.ShowDotFiles,
             ShowProtectedSystemFiles = _userSettingsService.FoldersSettingsService.ShowProtectedSystemFiles,
@@ -225,7 +231,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             case nameof(IGeneralSettingsService.MoveShellExtensionsToSubMenu):
                 Settings.MoveShellExtensionsToSubMenu = (bool)e.NewValue!;
                 break;
-            case nameof(IFoldersSettingsService.SyncFolderPreferencesAcrossDirectories):
+            case nameof(ILayoutSettingsService.SyncFolderPreferencesAcrossDirectories):
                 Settings.SyncFolderPreferencesAcrossDirectories = (bool)e.NewValue!;
                 break;
 			case nameof(IFoldersSettingsService.ShowHiddenItems):

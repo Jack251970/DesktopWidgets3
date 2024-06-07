@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
@@ -38,7 +38,7 @@ public static class DecompressHelper
         // Fill files
 
         var buffer = new byte[4096];
-		var entriesAmount = zipFile.ArchiveFileData.Where(x => !x.IsDirectory).Count();
+        var entriesAmount = zipFile.ArchiveFileData.Count(x => !x.IsDirectory);
 
         StatusCenterItemProgressModel fsProgress = new(
             progress,
@@ -160,7 +160,7 @@ public static class DecompressHelper
         var isArchiveEncrypted = await FilesystemTasks.Wrap(() => IsArchiveEncrypted(archive));
 		var password = string.Empty;
 
-		DecompressArchiveDialog decompressArchiveDialog = new();
+		DecompressArchiveDialog decompressArchiveDialog = new(folderViewViewModel);
 		DecompressArchiveDialogViewModel decompressArchiveViewModel = new(folderViewViewModel, archive)
 		{
 			IsArchiveEncrypted = isArchiveEncrypted,
@@ -227,7 +227,7 @@ public static class DecompressHelper
 
             if (await FilesystemTasks.Wrap(() => IsArchiveEncrypted(archive)))
 			{
-				DecompressArchiveDialog decompressArchiveDialog = new();
+				DecompressArchiveDialog decompressArchiveDialog = new(folderViewViewModel);
 				DecompressArchiveDialogViewModel decompressArchiveViewModel = new(folderViewViewModel, archive)
 				{
 					IsArchiveEncrypted = true,
@@ -284,7 +284,7 @@ public static class DecompressHelper
 
             if (await FilesystemTasks.Wrap(() => IsArchiveEncrypted(archive)))
 			{
-				DecompressArchiveDialog decompressArchiveDialog = new();
+				DecompressArchiveDialog decompressArchiveDialog = new(folderViewViewModel);
 				DecompressArchiveDialogViewModel decompressArchiveViewModel = new(folderViewViewModel, archive)
 				{
 					IsArchiveEncrypted = true,

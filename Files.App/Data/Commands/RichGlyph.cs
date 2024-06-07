@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -7,35 +7,29 @@ using Microsoft.UI.Xaml.Media;
 
 namespace Files.App.Data.Commands;
 
-public readonly struct RichGlyph
+public readonly struct RichGlyph(string baseGlyph = "", string fontFamily = "", string opacityStyle = "")
 {
 	public static RichGlyph None { get; } = new(string.Empty);
 
-	public bool IsNone { get; }
+    public bool IsNone { get; } = string.IsNullOrEmpty(baseGlyph) && string.IsNullOrEmpty(fontFamily) && string.IsNullOrEmpty(opacityStyle);
 
-	public string BaseGlyph { get; }
-	public string FontFamily { get; }
-	public string OpacityStyle { get; }
+    public string BaseGlyph { get; } = baseGlyph;
+    public string FontFamily { get; } = fontFamily;
+    public string OpacityStyle { get; } = opacityStyle;
 
-	public RichGlyph(string baseGlyph = "", string fontFamily = "", string opacityStyle = "")
-	{
-		BaseGlyph = baseGlyph;
-		FontFamily = fontFamily;
-		OpacityStyle = opacityStyle;
-
-		IsNone = string.IsNullOrEmpty(baseGlyph) && string.IsNullOrEmpty(fontFamily) && string.IsNullOrEmpty(opacityStyle);
-	}
-
-	public void Deconstruct(out string baseGlyph, out string fontFamily, out string opacityStyle)
+    public void Deconstruct(out string baseGlyph, out string fontFamily, out string opacityStyle)
 	{
 		baseGlyph = BaseGlyph;
 		fontFamily = FontFamily;
 		opacityStyle = OpacityStyle;
 	}
 
-	public object? ToIcon() => (object?)ToOpacityIcon() ?? ToFontIcon();
+    public object? ToIcon()
+    {
+        return (object?)ToOpacityIcon() ?? ToFontIcon();
+    }
 
-	public FontIcon? ToFontIcon()
+    public FontIcon? ToFontIcon()
 	{
 		if (IsNone)
         {

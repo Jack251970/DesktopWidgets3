@@ -3,9 +3,9 @@ using Windows.Storage.FileProperties;
 
 namespace Files.App.ViewModels.Properties;
 
-#pragma warning disable CA2254 // Template should be a static or const member
+#pragma warning disable CA2254 // Template should be a static expression
 
-internal class DriveProperties : BaseProperties
+internal sealed class DriveProperties : BaseProperties
 {
 	public DriveItem Drive { get; }
 
@@ -46,18 +46,28 @@ internal class DriveProperties : BaseProperties
 		var item = await FilesystemTasks.Wrap(() => DriveHelpers.GetRootFromPathAsync(Drive.Path));
 		BaseStorageFolder diskRoot = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderFromPathAsync(Drive.Path, item));
 
-		if (ViewModel.LoadFileIcon)
-		{
-			if (diskRoot is not null)
-			{
-				ViewModel.IconData = await FileThumbnailHelper.LoadIconFromStorageItemAsync(diskRoot, 80, ThumbnailMode.SingleItem, ThumbnailOptions.ResizeThumbnail);
-			}
+        if (ViewModel.LoadFileIcon)
+        {
+            var result = await FileThumbnailHelper.GetIconAsync(
+                Drive.Path,
+                Constants.ShellIconSizes.ExtraLarge,
+                true,
+                IconOptions.ReturnIconOnly | IconOptions.UseCurrentScale);
+
+            if (result is not null)
+            {
+                ViewModel.IconData = result;
+            }
             else
             {
-                ViewModel.IconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Drive.Path, 80, false, false);
-            }
+                result = await FileThumbnailHelper.GetIconAsync(
+                    Drive.DeviceID,
+                    Constants.ShellIconSizes.ExtraLarge,
+                    true,
+                    IconOptions.ReturnIconOnly | IconOptions.UseCurrentScale); // For network shortcuts
 
-            ViewModel.IconData ??= await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Drive.DeviceID, 80, false, false); // For network shortcuts
+                ViewModel.IconData = result!;
+            }
         }
 
         if (diskRoot is null || diskRoot.Properties is null)
@@ -73,7 +83,7 @@ internal class DriveProperties : BaseProperties
 			var capacity = "System.Capacity";
 			var fileSystem = "System.Volume.FileSystem";
 
-			var properties = await diskRoot.Properties.RetrievePropertiesAsync(new[] { freeSpace, capacity, fileSystem });
+			var properties = await diskRoot.Properties.RetrievePropertiesAsync([freeSpace, capacity, fileSystem]);
 
 			ViewModel.DriveCapacityValue = (ulong)properties[capacity];
 			ViewModel.DriveFreeSpaceValue = (ulong)properties[freeSpace];

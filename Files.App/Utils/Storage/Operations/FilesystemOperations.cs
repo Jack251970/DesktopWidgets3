@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
@@ -7,27 +7,20 @@ using System.IO;
 using System.Text;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
+using Windows.Win32;
 
 namespace Files.App.Utils.Storage;
 
 /// <summary>
 /// Provides group of file system operation for given page instance.
 /// </summary>
-public class FilesystemOperations : IFilesystemOperations
+public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance) : IFilesystemOperations
 {
-    private readonly IFolderViewViewModel _folderViewViewModel;
+    private readonly IFolderViewViewModel _folderViewViewModel = folderViewViewModel;
 
-    private IShellPage _associatedInstance;
+    private IShellPage _associatedInstance = associatedInstance;
 
-	public FilesystemOperations(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
-	{
-        // CHANGE: Initialize folder view view model.
-        _folderViewViewModel = folderViewViewModel;
-
-        _associatedInstance = associatedInstance;
-	}
-
-	public async Task<(IStorageHistory, IStorageItem)> CreateAsync(IStorageItemWithPath source, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken, bool asAdmin = false)
+    public async Task<(IStorageHistory, IStorageItem)> CreateAsync(IStorageItemWithPath source, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken, bool asAdmin = false)
 	{
 		IStorageItemWithPath item = null!;
 		var fsResult = (FilesystemResult)false;
@@ -175,7 +168,7 @@ public class FilesystemOperations : IFilesystemOperations
 			{
 				// CopyFileFromApp only works on file not directories
 				var fsSourceFolder = await source.ToStorageItemResult();
-				var fsDestinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+				var fsDestinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 				var fsResult = (FilesystemResult)(fsSourceFolder.ErrorCode | fsDestinationFolder.ErrorCode);
 
 				if (fsResult)
@@ -203,10 +196,10 @@ public class FilesystemOperations : IFilesystemOperations
 
 					if (fsCopyResult)
 					{
-						if (NativeFileOperationsHelper.HasFileAttribute(source.Path, SystemIO.FileAttributes.Hidden))
+						if (Win32Helper.HasFileAttribute(source.Path, SystemIO.FileAttributes.Hidden))
 						{
 							// The source folder was hidden, apply hidden attribute to destination
-							NativeFileOperationsHelper.SetFileAttribute(fsCopyResult.Result.Path, SystemIO.FileAttributes.Hidden);
+							Win32Helper.SetFileAttribute(fsCopyResult.Result.Path, SystemIO.FileAttributes.Hidden);
 						}
 
 						copiedItem = (BaseStorageFolder)fsCopyResult;
@@ -230,7 +223,7 @@ public class FilesystemOperations : IFilesystemOperations
 		}
 		else if (source.ItemType == FilesystemItemType.File)
 		{
-			var fsResult = (FilesystemResult)await Task.Run(() => NativeFileOperationsHelper.CopyFileFromApp(source.Path, destination, true));
+			var fsResult = (FilesystemResult)await Task.Run(() => PInvoke.CopyFileFromApp(source.Path, destination, true));
 
 			if (!fsResult)
 			{
@@ -400,7 +393,7 @@ public class FilesystemOperations : IFilesystemOperations
 			}
 			else
 			{
-				var fsResult = (FilesystemResult)await Task.Run(() => NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination));
+				var fsResult = (FilesystemResult)await Task.Run(() => PInvoke.MoveFileFromApp(source.Path, destination));
 
 				if (!fsResult)
 				{
@@ -447,10 +440,10 @@ public class FilesystemOperations : IFilesystemOperations
 
 						if (fsResultMove)
 						{
-							if (NativeFileOperationsHelper.HasFileAttribute(source.Path, SystemIO.FileAttributes.Hidden))
+							if (Win32Helper.HasFileAttribute(source.Path, SystemIO.FileAttributes.Hidden))
 							{
 								// The source folder was hidden, apply hidden attribute to destination
-								NativeFileOperationsHelper.SetFileAttribute(fsResultMove.Result.Path, SystemIO.FileAttributes.Hidden);
+								Win32Helper.SetFileAttribute(fsResultMove.Result.Path, SystemIO.FileAttributes.Hidden);
 							}
 
 							movedItem = (BaseStorageFolder)fsResultMove;
@@ -468,13 +461,13 @@ public class FilesystemOperations : IFilesystemOperations
 		}
 		else if (source.ItemType == FilesystemItemType.File)
 		{
-			var fsResult = (FilesystemResult)await Task.Run(() => NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination));
+			var fsResult = (FilesystemResult)await Task.Run(() => PInvoke.MoveFileFromApp(source.Path, destination));
 
 			if (!fsResult)
 			{
 				Debug.WriteLine(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
 
-				var destinationResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+				var destinationResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 				var sourceResult = await source.ToStorageItemResult();
 				fsResult = sourceResult.ErrorCode | destinationResult.ErrorCode;
 
@@ -555,18 +548,18 @@ public class FilesystemOperations : IFilesystemOperations
 
 		if (permanently)
 		{
-			fsResult = (FilesystemResult)NativeFileOperationsHelper.DeleteFileFromApp(source.Path);
+			fsResult = (FilesystemResult)PInvoke.DeleteFileFromApp(source.Path);
 		}
 		if (!fsResult)
 		{
 			if (source.ItemType == FilesystemItemType.File)
 			{
-				fsResult = await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path)
+				fsResult = await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path, CancellationToken.None)
 					.OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
 			}
 			else if (source.ItemType == FilesystemItemType.Directory)
 			{
-				fsResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path)
+				fsResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path, CancellationToken.None)
 					.OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
 			}
 		}
@@ -580,7 +573,7 @@ public class FilesystemOperations : IFilesystemOperations
 		else if (fsResult == FileSystemStatusCode.InUse)
 		{
 			// FILESTODO: Retry
-			await DialogDisplayHelper.ShowDialogAsync(_folderViewViewModel, DynamicDialogFactory.GetFor_FileInUseDialog());
+			await DialogDisplayHelper.ShowDialogAsync(_folderViewViewModel, DynamicDialogFactory.GetFor_FileInUseDialog(_folderViewViewModel));
 		}
 
 		if (deleteFromRecycleBin)
@@ -588,7 +581,7 @@ public class FilesystemOperations : IFilesystemOperations
 			// Recycle bin also stores a file starting with $I for each item
 			var iFilePath = Path.Combine(Path.GetDirectoryName(source.Path)!, Path.GetFileName(source.Path).Replace("$R", "$I", StringComparison.Ordinal));
 
-			await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(iFilePath)
+			await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(iFilePath, CancellationToken.None)
 				.OnSuccess(iFile => iFile.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask());
 		}
 		fsProgress.ReportStatus(fsResult);
@@ -680,7 +673,7 @@ public class FilesystemOperations : IFilesystemOperations
 			{
 				// Try again with MoveFileFromApp
 				var destination = Path.Combine(Path.GetDirectoryName(source.Path)!, newName);
-				if (NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination))
+				if (PInvoke.MoveFileFromApp(source.Path, destination))
 				{
 					fsProgress.ReportStatus(FileSystemStatusCode.Success);
 
@@ -702,7 +695,7 @@ public class FilesystemOperations : IFilesystemOperations
 			else if (renamed == FileSystemStatusCode.InUse)
 			{
 				// FILESTODO: Retry
-				await DialogDisplayHelper.ShowDialogAsync(_folderViewViewModel, DynamicDialogFactory.GetFor_FileInUseDialog());
+				await DialogDisplayHelper.ShowDialogAsync(_folderViewViewModel, DynamicDialogFactory.GetFor_FileInUseDialog(_folderViewViewModel));
 			}
 			else if (renamed == FileSystemStatusCode.NotFound)
 			{
@@ -768,7 +761,7 @@ public class FilesystemOperations : IFilesystemOperations
 
 		}
 
-		if (rawStorageHistory.Any() && rawStorageHistory.All((item) => item is not null))
+		if (rawStorageHistory.Count != 0 && rawStorageHistory.All((item) => item is not null))
 		{
 			return new StorageHistory(
 				rawStorageHistory[0].OperationType,
@@ -791,14 +784,14 @@ public class FilesystemOperations : IFilesystemOperations
 
 		FilesystemResult fsResult = FileSystemStatusCode.InProgress;
 
-		fsResult = (FilesystemResult)await Task.Run(() => NativeFileOperationsHelper.MoveFileFromApp(source.Path, destination));
+        fsResult = (FilesystemResult)await Task.Run(() => PInvoke.MoveFileFromApp(source.Path, destination));
 
 		if (!fsResult)
 		{
 			if (source.ItemType == FilesystemItemType.Directory)
 			{
-				var sourceFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path);
-				var destinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+				var sourceFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path, CancellationToken.None);
+				var destinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 
 				fsResult = sourceFolder.ErrorCode | destinationFolder.ErrorCode;
 				fsProgress.ReportStatus(fsResult);
@@ -820,8 +813,8 @@ public class FilesystemOperations : IFilesystemOperations
 			}
 			else
 			{
-				var sourceFile = await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path);
-				var destinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+				var sourceFile = await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path, CancellationToken.None);
+				var destinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 
 				fsResult = sourceFile.ErrorCode | destinationFolder.ErrorCode;
 				fsProgress.ReportStatus(fsResult);
@@ -845,7 +838,7 @@ public class FilesystemOperations : IFilesystemOperations
 			// Recycle bin also stores a file starting with $I for each item
 			var iFilePath = Path.Combine(Path.GetDirectoryName(source.Path)!, Path.GetFileName(source.Path).Replace("$R", "$I", StringComparison.Ordinal));
 
-			await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(iFilePath)
+			await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(iFilePath, CancellationToken.None)
 				.OnSuccess(iFile => iFile.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask());
 		}
 
@@ -871,24 +864,34 @@ public class FilesystemOperations : IFilesystemOperations
 	}
 
 	private static async Task<BaseStorageFolder> CloneDirectoryAsync(BaseStorageFolder sourceFolder, BaseStorageFolder destinationFolder, string sourceRootName, CreationCollisionOption collision = CreationCollisionOption.FailIfExists)
-	{
-		var createdRoot = await destinationFolder.CreateFolderAsync(sourceRootName, collision);
-		destinationFolder = createdRoot;
+    {
+        BaseStorageFolder createdRoot;
+        if (collision is CreationCollisionOption.ReplaceExisting)
+        {
+            // Dont't delete the contents of the folder
+            createdRoot = await destinationFolder.CreateFolderAsync(sourceRootName, CreationCollisionOption.OpenIfExists);
+        }
+        else
+        {
+            createdRoot = await destinationFolder.CreateFolderAsync(sourceRootName, collision);
+        }
 
-		foreach (var fileInSourceDir in await sourceFolder.GetFilesAsync())
-		{
-			await fileInSourceDir.CopyAsync(destinationFolder, fileInSourceDir.Name, NameCollisionOption.GenerateUniqueName);
-		}
+        destinationFolder = createdRoot;
 
-		foreach (var folderinSourceDir in await sourceFolder.GetFoldersAsync())
-		{
-			await CloneDirectoryAsync(folderinSourceDir, destinationFolder, folderinSourceDir.Name);
-		}
+        foreach (var fileInSourceDir in await sourceFolder.GetFilesAsync())
+        {
+            await fileInSourceDir.CopyAsync(destinationFolder, fileInSourceDir.Name, collision.ConvertBack());
+        }
 
-		return createdRoot;
-	}
+        foreach (var folderinSourceDir in await sourceFolder.GetFoldersAsync())
+        {
+            await CloneDirectoryAsync(folderinSourceDir, destinationFolder, folderinSourceDir.Name, collision);
+        }
 
-	public async Task<IStorageHistory> CopyItemsAsync(IList<IStorageItem> source, IList<string> destination, IList<FileNameConflictResolveOptionType> collisions, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken)
+        return createdRoot;
+    }
+
+    public async Task<IStorageHistory> CopyItemsAsync(IList<IStorageItem> source, IList<string> destination, IList<FileNameConflictResolveOptionType> collisions, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken)
 	{
 		return await CopyItemsAsync(await source.Select((item) => item.FromStorageItem()).ToListAsync(), destination, collisions, progress, cancellationToken);
 	}
@@ -922,7 +925,7 @@ public class FilesystemOperations : IFilesystemOperations
 
 		}
 
-		if (rawStorageHistory.Any() && rawStorageHistory.All((item) => item is not null))
+		if (rawStorageHistory.Count != 0 && rawStorageHistory.All((item) => item is not null))
 		{
 			return new StorageHistory(
 				rawStorageHistory[0].OperationType,
@@ -965,7 +968,7 @@ public class FilesystemOperations : IFilesystemOperations
 			fsProgress.Report();
 		}
 
-		if (rawStorageHistory.Any() && rawStorageHistory.All((item) => item is not null))
+		if (rawStorageHistory.Count != 0 && rawStorageHistory.All((item) => item is not null))
 		{
 			return new StorageHistory(
 				rawStorageHistory[0].OperationType,
@@ -1002,7 +1005,7 @@ public class FilesystemOperations : IFilesystemOperations
 			fsProgress.Report();
 		}
 
-		if (rawStorageHistory.Any() && rawStorageHistory.All((item) => item is not null))
+		if (rawStorageHistory.Count != 0 && rawStorageHistory.All((item) => item is not null))
 		{
 			return new StorageHistory(
 				rawStorageHistory[0].OperationType,

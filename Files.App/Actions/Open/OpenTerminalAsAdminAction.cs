@@ -1,10 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
-
 
 namespace Files.App.Actions;
 
-internal class OpenTerminalAsAdminAction : OpenTerminalAction
+internal sealed class OpenTerminalAsAdminAction(IContentPageContext context) : OpenTerminalAction(context)
 {
     public override string Label
 		=> "OpenTerminalAsAdmin".GetLocalizedResource();
@@ -14,10 +13,6 @@ internal class OpenTerminalAsAdminAction : OpenTerminalAction
 
 	public override HotKey HotKey
 		=> new(Keys.Oem3, KeyModifiers.CtrlShift);
-
-    public OpenTerminalAsAdminAction(IContentPageContext context) : base(context)
-    {
-    }
 
     protected override ProcessStartInfo? GetProcessStartInfo()
 	{

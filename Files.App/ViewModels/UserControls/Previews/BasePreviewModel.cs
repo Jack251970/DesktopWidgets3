@@ -1,10 +1,9 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.Storage.FileProperties;
 
 namespace Files.App.ViewModels.Previews;
 
@@ -56,7 +55,7 @@ public abstract class BasePreviewModel : ObservableObject
 	/// <returns>The task to run</returns>
 	public async virtual Task LoadAsync()
 	{
-		List<FileProperty> detailsFull = new();
+		List<FileProperty> detailsFull = [];
 
 		if (Item.ItemFile is null)
 		{
@@ -82,34 +81,39 @@ public abstract class BasePreviewModel : ObservableObject
 		Item.FileDetails = new ObservableCollection<FileProperty>(detailsFull);
 	}
 
-	/// <summary>
-	/// Override this and place the code to load the file preview here.
-	/// You can return details that may have been obtained while loading the preview (eg. word count).
-	/// This details will be displayed *before* the system file properties.
-	/// If there are none, return an empty list.
-	/// </summary>
-	/// <returns>A list of details</returns>
-	public async virtual Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
-	{
-		var iconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, Constants.DefaultIconSizes.Jumbo, false, false);
-        if (iconData is not null)
+    /// <summary>
+    /// Override this and place the code to load the file preview here.
+    /// You can return details that may have been obtained while loading the preview (eg. word count).
+    /// This details will be displayed *before* the system file properties.
+    /// If there are none, return an empty list.
+    /// </summary>
+    /// <returns>A list of details</returns>
+    public async virtual Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
+    {
+        var result = await FileThumbnailHelper.GetIconAsync(
+            Item.ItemPath,
+            Constants.ShellIconSizes.Jumbo,
+            false,
+            IconOptions.None);
+
+        if (result is not null)
         {
-            await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () => FileImage = (await iconData.ToBitmapAsync())!);
+            await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () => FileImage = (await result.ToBitmapAsync())!);
         }
         else
         {
             FileImage ??= (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => new BitmapImage()))!;
         }
 
-        return new List<FileProperty>();
+        return [];
     }
 
-	/// <summary>
-	/// Override this if the preview control needs to handle the unloaded event.
-	/// </summary>
-	/// <param name="sender"></param>
-	/// <param name="e"></param>
-	public virtual void PreviewControlBase_Unloaded(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// Override this if the preview control needs to handle the unloaded event.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    public virtual void PreviewControlBase_Unloaded(object sender, RoutedEventArgs e)
 		=> LoadCancelledTokenSource.Cancel();
 
 	protected FileProperty GetFileProperty(string nameResource, object value)
@@ -139,10 +143,8 @@ public abstract class BasePreviewModel : ObservableObject
 		return list.Where(i => i.ValueText is not null).ToList();
 	}
 
-	private class DetailsOnlyPreviewModel : BasePreviewModel
+	private sealed class DetailsOnlyPreviewModel(ListedItem item) : BasePreviewModel(item)
 	{
-		public DetailsOnlyPreviewModel(ListedItem item) : base(item) { }
-
-		public override Task<List<FileProperty>> LoadPreviewAndDetailsAsync() => Task.FromResult(DetailsFromPreview);
+        public override Task<List<FileProperty>> LoadPreviewAndDetailsAsync() => Task.FromResult(DetailsFromPreview);
 	}
 }

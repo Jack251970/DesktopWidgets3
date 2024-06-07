@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 
 namespace Files.App.Data.Contexts;
 
-internal class MultitaskingContext : ObservableObject, IMultitaskingContext
+internal sealed class MultitaskingContext : ObservableObject, IMultitaskingContext
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
@@ -41,10 +41,10 @@ internal class MultitaskingContext : ObservableObject, IMultitaskingContext
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        // CHANGE: Remove event handlers related to app instances.
+        // CHANGE: Remove events related to app instances.
         /*MainPageViewModel.AppInstances.CollectionChanged += AppInstances_CollectionChanged;*/
         FolderViewViewModel.PropertyChanged += AppModel_PropertyChanged;
-        // CHANGE: Remove event handlers related to tab bar.
+        // CHANGE: Remove events related to tab bar.
         /*BaseTabBar.OnLoaded += BaseMultitaskingControl_OnLoaded;
         TabBar.SelectedTabItemChanged += HorizontalMultitaskingControl_SelectedTabItemChanged;*/
         FocusManager.GotFocus += FocusManager_GotFocus;

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -17,11 +17,13 @@ namespace Files.App.ViewModels.Layouts;
 /// <summary>
 /// Represents ViewModel for <see cref="BaseLayoutPage"/>.
 /// </summary>
-public class BaseLayoutViewModel : IDisposable
+public sealed class BaseLayoutViewModel : IDisposable
 {
     private readonly IFolderViewViewModel _folderViewViewModel;
 
-	private readonly IShellPage _associatedInstance;
+    public ICommandManager Commands { get; private set; }
+
+    private readonly IShellPage _associatedInstance;
 
 	private readonly ItemManipulationModel _itemManipulationModel;
 
@@ -38,7 +40,9 @@ public class BaseLayoutViewModel : IDisposable
 	public BaseLayoutViewModel(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, ItemManipulationModel itemManipulationModel)
 	{
         _folderViewViewModel = folderViewViewModel;
-		_associatedInstance = associatedInstance;
+        Commands = _folderViewViewModel.GetService<ICommandManager>();
+
+        _associatedInstance = associatedInstance;
 		_itemManipulationModel = itemManipulationModel;
 
 		CreateNewFileCommand = new RelayCommand<ShellNewEntry>(CreateNewFile);
@@ -65,11 +69,11 @@ public class BaseLayoutViewModel : IDisposable
 
 			if (Item.IsShortcut)
             {
-                await NavigationHelpers.OpenPathInNewTab(_folderViewViewModel, ((e.OriginalSource as FrameworkElement)?.DataContext as ShortcutItem)?.TargetPath ?? Item.ItemPath);
+                await NavigationHelpers.OpenPathInNewTab(_folderViewViewModel, ((e.OriginalSource as FrameworkElement)?.DataContext as ShortcutItem)?.TargetPath ?? Item.ItemPath, false);
             }
             else
             {
-                await NavigationHelpers.OpenPathInNewTab(_folderViewViewModel, Item.ItemPath);
+                await NavigationHelpers.OpenPathInNewTab(_folderViewViewModel, Item.ItemPath, false);
             }
         }
 	}
@@ -84,12 +88,12 @@ public class BaseLayoutViewModel : IDisposable
 			// Mouse wheel down
 			if (delta < 0)
             {
-                _associatedInstance.InstanceViewModel.FolderSettings.GridViewSize -= Constants.Browser.GridViewBrowser.GridViewIncrement;
+                Commands.LayoutIncreaseSize.ExecuteAsync();
             }
             // Mouse wheel up
             else if (delta > 0)
             {
-                _associatedInstance.InstanceViewModel.FolderSettings.GridViewSize += Constants.Browser.GridViewBrowser.GridViewIncrement;
+                Commands.LayoutDecreaseSize.ExecuteAsync();
             }
 
             e.Handled = true;
@@ -134,8 +138,9 @@ public class BaseLayoutViewModel : IDisposable
 				if (pwd!.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal))
 				{
 					e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalizedResource(), folderName);
-					e.AcceptedOperation = DataPackageOperation.Move;
-				}
+                    // Some applications such as Edge can't raise the drop event by the Move flag (#14008), so we set the Copy flag as well.
+                    e.AcceptedOperation = DataPackageOperation.Move | DataPackageOperation.Copy;
+                }
 				else if (e.Modifiers.HasFlag(DragDropModifiers.Alt) || e.Modifiers.HasFlag(DragDropModifiers.Control | DragDropModifiers.Shift))
 				{
 					e.DragUIOverride.Caption = string.Format("LinkToFolderCaptionText".GetLocalizedResource(), folderName);
@@ -148,9 +153,9 @@ public class BaseLayoutViewModel : IDisposable
 				}
 				else if (e.Modifiers.HasFlag(DragDropModifiers.Shift))
 				{
-					e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalizedResource(), folderName);
-					e.AcceptedOperation = DataPackageOperation.Move;
-				}
+                    // Some applications such as Edge can't raise the drop event by the Move flag (#14008), so we set the Copy flag as well.
+                    e.AcceptedOperation = DataPackageOperation.Move | DataPackageOperation.Copy;
+                }
 				else if (draggedItems.Any(x =>
 					x.Item is ZipStorageFile ||
 					x.Item is ZipStorageFolder) ||
@@ -161,9 +166,9 @@ public class BaseLayoutViewModel : IDisposable
 				}
 				else if (draggedItems.AreItemsInSameDrive(_associatedInstance.FilesystemViewModel.WorkingDirectory))
 				{
-					e.DragUIOverride.Caption = string.Format("MoveToFolderCaptionText".GetLocalizedResource(), folderName);
-					e.AcceptedOperation = DataPackageOperation.Move;
-				}
+                    // Some applications such as Edge can't raise the drop event by the Move flag (#14008), so we set the Copy flag as well.
+                    e.AcceptedOperation = DataPackageOperation.Move | DataPackageOperation.Copy;
+                }
 				else
 				{
 					e.DragUIOverride.Caption = string.Format("CopyToFolderCaptionText".GetLocalizedResource(), folderName);
@@ -181,9 +186,18 @@ public class BaseLayoutViewModel : IDisposable
 
 		if (FilesystemHelpers.HasDraggedStorageItems(e.DataView))
 		{
-			await _associatedInstance.FilesystemHelpers.PerformOperationTypeAsync(e.AcceptedOperation, e.DataView, _associatedInstance.FilesystemViewModel.WorkingDirectory, false, true);
-			await _associatedInstance.RefreshIfNoWatcherExistsAsync();
-		}
+            var deferral = e.GetDeferral();
+
+            try
+            {
+                await _associatedInstance.FilesystemHelpers.PerformOperationTypeAsync(e.AcceptedOperation, e.DataView, _associatedInstance.FilesystemViewModel.WorkingDirectory, false, true);
+                await _associatedInstance.RefreshIfNoWatcherExistsAsync();
+            }
+            finally
+            {
+                deferral.Complete();
+            }
+        }
 	}
 
 	public void Dispose()

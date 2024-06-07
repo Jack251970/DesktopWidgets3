@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class ToggleDetailsPaneAction : ObservableObject, IToggleAction
+internal sealed class ToggleDetailsPaneAction : ObservableObject, IToggleAction
 {
 	private readonly InfoPaneViewModel viewModel;
 	private readonly IInfoPaneSettingsService infoPaneSettingsService;
@@ -18,7 +18,7 @@ internal class ToggleDetailsPaneAction : ObservableObject, IToggleAction
 		=> new(opacityStyle: "ColorIconRightPane");
 
 	public HotKey HotKey
-		=> new(Keys.D, KeyModifiers.MenuCtrl);
+		=> new(Keys.D, KeyModifiers.CtrlAlt);
 
 	public bool IsOn
 		=> viewModel.IsEnabled;
@@ -31,7 +31,7 @@ internal class ToggleDetailsPaneAction : ObservableObject, IToggleAction
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		viewModel.IsEnabled = true;
 		infoPaneSettingsService.SelectedTab = InfoPaneTabs.Details;

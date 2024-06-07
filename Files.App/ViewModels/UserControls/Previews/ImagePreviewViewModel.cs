@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
@@ -8,7 +8,7 @@ using Windows.Storage;
 
 namespace Files.App.ViewModels.Previews;
 
-public class ImagePreviewViewModel : BasePreviewModel
+public sealed class ImagePreviewViewModel(ListedItem item) : BasePreviewModel(item)
 {
 	private ImageSource imageSource = null!;
 	public ImageSource ImageSource
@@ -17,13 +17,8 @@ public class ImagePreviewViewModel : BasePreviewModel
 		private set => SetProperty(ref imageSource, value);
 	}
 
-	public ImagePreviewViewModel(ListedItem item)
-		: base(item)
-	{
-	}
-
-	// FILESTODO: Use existing helper mothods
-	public static bool ContainsExtension(string extension)
+    // FILESTODO: Use existing helper mothods
+    public static bool ContainsExtension(string extension)
 		=> extension is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".gif" or ".tiff" or ".ico" or ".webp";
 
 	public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
@@ -37,6 +32,6 @@ public class ImagePreviewViewModel : BasePreviewModel
 			ImageSource = bitmap;
 		});
 
-		return new List<FileProperty>();
+		return [];
 	}
 }

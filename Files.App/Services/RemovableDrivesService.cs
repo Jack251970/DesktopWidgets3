@@ -1,15 +1,14 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Storage.WindowsStorage;
-using Files.Core.Storage.LocatableStorage;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using Windows.Storage;
 
 namespace Files.App.Services;
 
-public class RemovableDrivesService : IRemovableDrivesService
+public sealed class RemovableDrivesService : IRemovableDrivesService
 {
 	public IStorageDeviceWatcher CreateWatcher()
 	{

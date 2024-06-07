@@ -1,15 +1,15 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media;
 using static Files.App.Helpers.MenuFlyoutHelper;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Markup;
 
 namespace Files.App.UserControls.Menus;
 
-public class FileTagsContextMenu : MenuFlyout
+public sealed class FileTagsContextMenu : MenuFlyout
 {
 	private IFileTagsSettingsService FileTagsSettingsService { get; } =
 		DependencyExtensions.GetService<IFileTagsSettingsService>();
@@ -40,7 +40,7 @@ public class FileTagsContextMenu : MenuFlyout
 		Opening += Item_Opening;
 	}
 
-	private void TagItem_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+	private void TagItem_Click(object sender, RoutedEventArgs e)
 	{
 		var tagItem = (ToggleMenuFlyoutItem)sender;
 		if (tagItem.IsChecked)
@@ -53,41 +53,46 @@ public class FileTagsContextMenu : MenuFlyout
 		}
 	}
 
-	private void Item_Opening(object? sender, object e)
-	{
-		Opening -= Item_Opening;
+    private void Item_Opening(object? sender, object e)
+    {
+        Opening -= Item_Opening;
 
-		// go through each tag and find the common one for all files
-		var commonFileTags = SelectedItems
-			.Select(x => x.FileTags ?? Enumerable.Empty<string>())
-			.Aggregate((x, y) => x.Intersect(y))
-			.Select(x => Items.FirstOrDefault(y => x == ((TagViewModel)y.Tag)?.Uid));
+        if (SelectedItems is null)
+        {
+            return;
+        }
 
-		commonFileTags.OfType<ToggleMenuFlyoutItem>().ForEach(x => x.IsChecked = true);
-	}
+        // go through each tag and find the common one for all files
+        var commonFileTags = SelectedItems
+            .Select(x => x?.FileTags ?? Enumerable.Empty<string>())
+            .Aggregate((x, y) => x.Intersect(y))
+            .Select(x => Items.FirstOrDefault(y => x == ((TagViewModel)y.Tag)?.Uid));
 
-	private static void RemoveFileTag(IEnumerable<ListedItem> selectedListedItems, TagViewModel removed)
-	{
-		foreach (var selectedItem in selectedListedItems)
-		{
-			var existingTags = selectedItem.FileTags ?? Array.Empty<string>();
-			if (existingTags.Contains(removed.Uid))
-			{
-				var tagList = existingTags.Except(new[] { removed.Uid }).ToArray();
-				selectedItem.FileTags = tagList.Any() ? tagList : null!;
-			}
-		}
-	}
+        commonFileTags.OfType<ToggleMenuFlyoutItem>().ForEach(x => x.IsChecked = true);
+    }
 
-	private static void AddFileTag(IEnumerable<ListedItem> selectedListedItems, TagViewModel added)
-	{
-		foreach (var selectedItem in selectedListedItems)
-		{
-			var existingTags = selectedItem.FileTags ?? Array.Empty<string>();
-			if (!existingTags.Contains(added.Uid))
-			{
-				selectedItem.FileTags = existingTags.Append(added.Uid).ToArray();
-			}
-		}
-	}
+    private static void RemoveFileTag(IEnumerable<ListedItem> selectedListedItems, TagViewModel removed)
+    {
+        foreach (var selectedItem in selectedListedItems)
+        {
+            var existingTags = selectedItem.FileTags ?? [];
+            if (existingTags.Contains(removed.Uid))
+            {
+                var tagList = existingTags.Except([removed.Uid]).ToArray();
+                selectedItem.FileTags = tagList;
+            }
+        }
+    }
+
+    private static void AddFileTag(IEnumerable<ListedItem> selectedListedItems, TagViewModel added)
+    {
+        foreach (var selectedItem in selectedListedItems)
+        {
+            var existingTags = selectedItem.FileTags ?? [];
+            if (!existingTags.Contains(added.Uid))
+            {
+                selectedItem.FileTags = [.. existingTags, added.Uid];
+            }
+        }
+    }
 }

@@ -1,13 +1,13 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Windowing;
 
 namespace Files.App.Data.Contexts;
 
-internal class WindowContext : ObservableObject, IWindowContext
+internal sealed class WindowContext : ObservableObject, IWindowContext
 {
-    // CHANGE: Default to true.
+    // CHANGE: True always.
 	private bool isCompactOverlay = true;
 	public bool IsCompactOverlay => isCompactOverlay;
 

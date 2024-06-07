@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
@@ -10,7 +10,7 @@ namespace Files.App.Data.Models;
 
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
-public class SelectedItemsPropertiesViewModel : ObservableObject
+public sealed class SelectedItemsPropertiesViewModel : ObservableObject
 {
 	private IDateTimeFormatter DateTimeFormatter { get; set; } = null!;
 
@@ -547,39 +547,72 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 		set => SetProperty(ref shortcutItemType, value);
 	}
 
-	private string shortcutItemPath;
-	public string ShortcutItemPath
-	{
-		get => shortcutItemPath;
-		set => SetProperty(ref shortcutItemPath, value);
-	}
+    private string shortcutItemPath;
+    public string ShortcutItemPath
+    {
+        get => shortcutItemPath;
+        set
+        {
+            SetProperty(ref shortcutItemPath, value);
+            ShortcutItemPathEditedValue = value;
+        }
+    }
 
-	private bool isShortcutItemPathReadOnly;
+    private string shortcutItemPathEditedValue;
+    public string ShortcutItemPathEditedValue
+    {
+        get => shortcutItemPathEditedValue;
+        set => SetProperty(ref shortcutItemPathEditedValue, value);
+    }
+
+    private bool isShortcutItemPathReadOnly;
 	public bool IsShortcutItemPathReadOnly
 	{
 		get => isShortcutItemPathReadOnly;
 		set => SetProperty(ref isShortcutItemPathReadOnly, value);
 	}
 
-	private string shortcutItemWorkingDir;
-	public string ShortcutItemWorkingDir
-	{
-		get => shortcutItemWorkingDir;
-		set => SetProperty(ref shortcutItemWorkingDir, value);
-	}
+    private string shortcutItemWorkingDir;
+    public string ShortcutItemWorkingDir
+    {
+        get => shortcutItemWorkingDir;
+        set
+        {
+            SetProperty(ref shortcutItemWorkingDir, value);
+            ShortcutItemWorkingDirEditedValue = value;
+        }
+    }
 
-	private bool shortcutItemWorkingDirVisibility = false;
+    private string shortcutItemWorkingDirEditedValue;
+    public string ShortcutItemWorkingDirEditedValue
+    {
+        get => shortcutItemWorkingDirEditedValue;
+        set => SetProperty(ref shortcutItemWorkingDirEditedValue, value);
+    }
+
+    private bool shortcutItemWorkingDirVisibility = false;
 	public bool ShortcutItemWorkingDirVisibility
 	{
 		get => shortcutItemWorkingDirVisibility;
 		set => SetProperty(ref shortcutItemWorkingDirVisibility, value);
 	}
 
-	private string shortcutItemArguments;
-	public string ShortcutItemArguments
+    private string shortcutItemArguments;
+    public string ShortcutItemArguments
     {
         get => shortcutItemArguments;
-        set => SetProperty(ref shortcutItemArguments, value);
+        set
+        {
+            SetProperty(ref shortcutItemArguments, value);
+            ShortcutItemArgumentsEditedValue = value;
+        }
+    }
+
+    private string shortcutItemArgumentsEditedValue;
+    public string ShortcutItemArgumentsEditedValue
+    {
+        get => shortcutItemArgumentsEditedValue;
+        set => SetProperty(ref shortcutItemArgumentsEditedValue, value);
     }
 
     private bool shortcutItemArgumentsVisibility = false;
@@ -587,13 +620,6 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 	{
 		get => shortcutItemArgumentsVisibility;
 		set => SetProperty(ref shortcutItemArgumentsVisibility, value);
-	}
-
-	private bool loadLinkIcon;
-	public bool LoadLinkIcon
-	{
-		get => loadLinkIcon;
-		set => SetProperty(ref loadLinkIcon, value);
 	}
 
 	private RelayCommand shortcutItemOpenLinkCommand;
@@ -607,57 +633,92 @@ public class SelectedItemsPropertiesViewModel : ObservableObject
 
     public Uri FolderIconSource => ContainsFilesOrFolders ? new Uri("ms-appx:///Files.App/Assets/FolderIcon2.svg") : new Uri("ms-appx:///Files.App/Assets/FolderIcon.svg");
 
-    private ObservableCollection<FilePropertySection> propertySections = new();
+    private ObservableCollection<FilePropertySection> propertySections = [];
 	public ObservableCollection<FilePropertySection> PropertySections
 	{
 		get => propertySections;
 		set => SetProperty(ref propertySections, value);
 	}
 
-	private ObservableCollection<FileProperty> fileProperties = new();
+	private ObservableCollection<FileProperty> fileProperties = [];
 	public ObservableCollection<FileProperty> FileProperties
 	{
 		get => fileProperties;
 		set => SetProperty(ref fileProperties, value);
 	}
 
-	private bool isReadOnly;
-	public bool IsReadOnly
+	private bool? isReadOnly;
+	public bool? IsReadOnly
 	{
 		get => isReadOnly;
 		set
 		{
 			IsReadOnlyEnabled = true;
 			SetProperty(ref isReadOnly, value);
-		}
+            IsReadOnlyEditedValue = value;
+        }
 	}
 
-	private bool isReadOnlyEnabled;
+    private bool? isReadOnlyEditedValue;
+    public bool? IsReadOnlyEditedValue
+    {
+        get => isReadOnlyEditedValue;
+        set
+        {
+            IsReadOnlyEnabled = true;
+            SetProperty(ref isReadOnlyEditedValue, value);
+        }
+    }
+
+    private bool isReadOnlyEnabled;
 	public bool IsReadOnlyEnabled
 	{
 		get => isReadOnlyEnabled;
 		set => SetProperty(ref isReadOnlyEnabled, value);
 	}
 
-	private bool isHidden;
-	public bool IsHidden
-	{
-		get => isHidden;
-		set => SetProperty(ref isHidden, value);
-	}
+    private bool? isHidden;
+    public bool? IsHidden
+    {
+        get => isHidden;
+        set
+        {
+            SetProperty(ref isHidden, value);
+            IsHiddenEditedValue = value;
+        }
+    }
 
-	private bool runAsAdmin;
-	public bool RunAsAdmin
-	{
-		get => runAsAdmin;
-		set
-		{
-			RunAsAdminEnabled = true;
-			SetProperty(ref runAsAdmin, value);
-		}
-	}
+    private bool? isHiddenEditedValue;
+    public bool? IsHiddenEditedValue
+    {
+        get => isHiddenEditedValue;
+        set => SetProperty(ref isHiddenEditedValue, value);
+    }
 
-	private bool runAsAdminEnabled;
+    private bool runAsAdmin;
+    public bool RunAsAdmin
+    {
+        get => runAsAdmin;
+        set
+        {
+            RunAsAdminEnabled = true;
+            SetProperty(ref runAsAdmin, value);
+            RunAsAdminEditedValue = value;
+        }
+    }
+
+    private bool runAsAdminEditedValue;
+    public bool RunAsAdminEditedValue
+    {
+        get => runAsAdminEditedValue;
+        set
+        {
+            RunAsAdminEnabled = true;
+            SetProperty(ref runAsAdminEditedValue, value);
+        }
+    }
+
+    private bool runAsAdminEnabled;
 	public bool RunAsAdminEnabled
 	{
 		get => runAsAdminEnabled;

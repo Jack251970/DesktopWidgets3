@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
 
 namespace Files.App.Actions;
 
-internal class PlayAllAction : ObservableObject, IAction
+internal sealed class PlayAllAction : ObservableObject, IAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -34,7 +34,7 @@ internal class PlayAllAction : ObservableObject, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		return NavigationHelpers.OpenSelectedItemsAsync(FolderViewViewModel, context.ShellPage!);
 	}

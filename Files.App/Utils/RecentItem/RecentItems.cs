@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.Extensions.Logging;
@@ -13,16 +13,16 @@ namespace Files.App.Utils.RecentItem;
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CA2254 // Template should be a static expression
 
-public class RecentItems : IDisposable
+public sealed class RecentItems : IDisposable
 {
 	private const string QuickAccessGuid = "::{679f85cb-0220-4080-b29b-5540cc05aab6}";
 
 	public EventHandler<NotifyCollectionChangedEventArgs>? RecentFilesChanged;
 	public EventHandler<NotifyCollectionChangedEventArgs>? RecentFoldersChanged;
 
-	// recent files
-	private readonly List<RecentItem> recentFiles = new();
-	public IReadOnlyList<RecentItem> RecentFiles    // already sorted
+    // recent files
+    private readonly List<RecentItem> recentFiles = [];
+    public IReadOnlyList<RecentItem> RecentFiles    // already sorted
 	{
 		get
 		{
@@ -33,9 +33,9 @@ public class RecentItems : IDisposable
 		}
 	}
 
-	// recent folders
-	private readonly List<RecentItem> recentFolders = new();
-	public IReadOnlyList<RecentItem> RecentFolders  // already sorted
+    // recent folders
+    private readonly List<RecentItem> recentFolders = [];
+    public IReadOnlyList<RecentItem> RecentFolders  // already sorted
 	{
 		get
 		{
@@ -46,12 +46,17 @@ public class RecentItems : IDisposable
 		}
 	}
 
-	public RecentItems()
-	{
-		RecentItemsManager.Default.RecentItemsChanged += OnRecentItemsChangedAsync;
-	}
+    private readonly IUserSettingsService UserSettingsService;
 
-	private async void OnRecentItemsChangedAsync(object? sender, EventArgs e)
+    private bool ShowFileExtensions => UserSettingsService.FoldersSettingsService.ShowFileExtensions;
+
+    public RecentItems(IUserSettingsService userSettingsService)
+    {
+        RecentItemsManager.Default.RecentItemsChanged += OnRecentItemsChangedAsync;
+        UserSettingsService = userSettingsService;
+    }
+
+    private async void OnRecentItemsChangedAsync(object? sender, EventArgs e)
 	{
 		await UpdateRecentFilesAsync();
 	}
@@ -101,20 +106,21 @@ public class RecentItems : IDisposable
 		}
 	}
 
-	/// <summary>
-	/// Enumerate recently accessed files via `Quick Access`.
-	/// </summary>
-	public async Task<List<RecentItem>> ListRecentFilesAsync()
-	{
-		return (await Win32Shell.GetShellFolderAsync(QuickAccessGuid, "Enumerate", 0, int.MaxValue)).Enumerate
-			.Where(link => !link.IsFolder)
-			.Select(link => new RecentItem(link)).ToList();
-	}
+    /// <summary>
+    /// Enumerate recently accessed files via `Quick Access`.
+    /// </summary>
+    public async Task<List<RecentItem>> ListRecentFilesAsync()
+    {
+        // Since the maximum number of recent files is 20, we set the count to 20 to avoid loading of unnecessary shell items.
+        return (await Win32Helper.GetShellFolderAsync(QuickAccessGuid, false, true, 0, 20)).Enumerate
+            .Where(link => !link.IsFolder)
+            .Select(link => new RecentItem(link, ShowFileExtensions)).ToList();
+    }
 
-	/// <summary>
-	/// Enumerate recently accessed folders via `Windows\Recent`.
-	/// </summary>
-	public async Task<List<RecentItem>> ListRecentFoldersAsync()
+    /// <summary>
+    /// Enumerate recently accessed folders via `Windows\Recent`.
+    /// </summary>
+    public async Task<List<RecentItem>> ListRecentFoldersAsync()
 	{
 		var excludeMask = FileAttributes.Hidden;
 		var linkFilePaths = Directory.EnumerateFiles(Constants.UserEnvironmentPaths.RecentItemsPath).Where(f => (new FileInfo(f).Attributes & excludeMask) == 0);
@@ -130,9 +136,9 @@ public class RecentItems : IDisposable
 					if (!string.IsNullOrEmpty(link.TargetPath) && link.Target.IsFolder)
 					{
 						var shellLinkItem = ShellFolderExtensions.GetShellLinkItem(link);
-						return new RecentItem(shellLinkItem);
-					}
-				}
+                        return new RecentItem(shellLinkItem, ShowFileExtensions);
+                    }
+                }
 				catch (FileNotFoundException)
 				{
 					// occurs when shortcut or shortcut target is deleted and accessed (link.Target)

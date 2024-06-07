@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
@@ -14,10 +14,10 @@ public static class NavigationHelpers
 {
 	/*private static MainPageViewModel MainPageViewModel { get; } = DependencyExtensions.GetService<MainPageViewModel>();*/
 	private static DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetService<DrivesViewModel>();
-	private static NetworkDrivesViewModel NetworkDrivesViewModel { get; } = DependencyExtensions.GetService<NetworkDrivesViewModel>();
+    private static INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetService<INetworkDrivesService>();
 
+    // CHANGE: Open in explorer.
     public static async Task OpenInExplorerAsync(string path) => await OpenInExplorerAsync(path, string.Empty);
-
     public static async Task OpenInExplorerAsync(string path, string args)
     {
         try
@@ -37,7 +37,7 @@ public static class NavigationHelpers
         }
     }
 
-    public static Task OpenPathInNewTab(IFolderViewViewModel folderViewViewModel, string? path)
+    public static Task OpenPathInNewTab(IFolderViewViewModel folderViewViewModel, string? path, bool focusNewTab)
 	{
         // CHANGE: Open path in new tab means opening in explorer.
         if (folderViewViewModel is null)
@@ -46,15 +46,15 @@ public static class NavigationHelpers
         }
 
         return OpenInExplorerAsync(path!);
-		/*return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), path);*/
-	}
+        /*return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), path, focusNewTab);*/
+    }
 
     public static Task AddNewTabAsync(IFolderViewViewModel folderViewViewModel)
 	{
-		return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), "Home");
+		return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), "Home", true);
 	}
 
-	public static async Task AddNewTabByPathAsync(IFolderViewViewModel folderViewViewModel, Type type, string? path, int atIndex = -1)
+	public static async Task AddNewTabByPathAsync(IFolderViewViewModel folderViewViewModel, Type type, string? path, bool focusNewTab, int atIndex = -1)
 	{
 		if (string.IsNullOrEmpty(path))
 		{
@@ -92,7 +92,10 @@ public static class NavigationHelpers
 
         MainPageViewModel.AppInstances[folderViewViewModel].Insert(index, tabItem);
 
-        folderViewViewModel.TabStripSelectedIndex = index;
+        if (focusNewTab)
+        {
+            folderViewViewModel.TabStripSelectedIndex = index;
+        }
     }
 
 	public static async Task AddNewTabByParamAsync(IFolderViewViewModel folderViewViewModel, Type type, object tabViewItemArgs, int atIndex = -1)
@@ -181,13 +184,6 @@ public static class NavigationHelpers
 		else if (currentPath.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
 		{
 			tabLocationHeader = "RecycleBin".GetLocalizedResource();
-
-			// Use 48 for higher resolution, the other items look fine with 16.
-			var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(currentPath, 48u, Windows.Storage.FileProperties.ThumbnailMode.ListView, Windows.Storage.FileProperties.ThumbnailOptions.UseCurrentScale, true);
-			if (iconData is not null)
-            {
-                iconSource.ImageSource = await iconData.ToBitmapAsync();
-            }
         }
 		else if (currentPath.Equals(Constants.UserEnvironmentPaths.MyComputerPath, StringComparison.OrdinalIgnoreCase))
 		{
@@ -219,7 +215,7 @@ public static class NavigationHelpers
 			}
 			else if (PathNormalization.NormalizePath(PathNormalization.GetPathRoot(currentPath)) == normalizedCurrentPath) // If path is a drive's root
 			{
-				var matchingDrive = NetworkDrivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(netDrive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(netDrive.Path), StringComparison.OrdinalIgnoreCase));
+				var matchingDrive = NetworkDrivesService.Drives.Cast<DriveItem>().FirstOrDefault(netDrive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(netDrive.Path), StringComparison.OrdinalIgnoreCase));
 				matchingDrive ??= DrivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(drive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(drive.Path), StringComparison.OrdinalIgnoreCase));
 				tabLocationHeader = matchingDrive is not null ? matchingDrive.Text : normalizedCurrentPath;
 			}
@@ -241,10 +237,15 @@ public static class NavigationHelpers
 
 		if (iconSource.ImageSource is null)
 		{
-			var iconData = await FileThumbnailHelper.LoadIconFromPathAsync(currentPath, 16u, Windows.Storage.FileProperties.ThumbnailMode.ListView, Windows.Storage.FileProperties.ThumbnailOptions.UseCurrentScale, true);
-			if (iconData is not null)
+            var result = await FileThumbnailHelper.GetIconAsync(
+                    currentPath,
+                    Constants.ShellIconSizes.Small,
+                    true,
+                    IconOptions.ReturnIconOnly | IconOptions.UseCurrentScale);
+
+            if (result is not null)
             {
-                iconSource.ImageSource = await iconData.ToBitmapAsync();
+                iconSource.ImageSource = await result.ToBitmapAsync();
             }
         }
 
@@ -356,7 +357,7 @@ public static class NavigationHelpers
 			selectedItems.Count > 1 &&
 			selectedItems.All(x => x.PrimaryItemAttribute == StorageItemTypes.File && !x.IsExecutable && !x.IsShortcut))
 		{
-			opened = await Win32Helpers.InvokeWin32ComponentAsync(string.Join('|', selectedItems.Select(x => x.ItemPath)), associatedInstance);
+			opened = await Win32Helper.InvokeWin32ComponentAsync(string.Join('|', selectedItems.Select(x => x.ItemPath)), associatedInstance);
 		}
 
 		if (opened)
@@ -391,7 +392,7 @@ public static class NavigationHelpers
         }
 
         var arguments = string.Join(" ", items.Select(item => $"\"{item.Path}\""));
-		await Win32Helpers.InvokeWin32ComponentAsync(executablePath, associatedInstance, arguments);
+		await Win32Helper.InvokeWin32ComponentAsync(executablePath, associatedInstance, arguments);
 	}
 
 	/// <summary>
@@ -407,9 +408,9 @@ public static class NavigationHelpers
 	public static async Task<bool> OpenPath(IFolderViewViewModel folderViewViewModel, string path, IShellPage associatedInstance, FilesystemItemType? itemType = null, bool openSilent = false, bool openViaApplicationPicker = false, IEnumerable<string>? selectItems = null, string? args = default, bool forceOpenInNewTab = false)
 	{
 		var previousDir = associatedInstance.FilesystemViewModel.WorkingDirectory;
-		var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, SystemIO.FileAttributes.Hidden);
-		var isDirectory = NativeFileOperationsHelper.HasFileAttribute(path, SystemIO.FileAttributes.Directory);
-		var isReparsePoint = NativeFileOperationsHelper.HasFileAttribute(path, SystemIO.FileAttributes.ReparsePoint);
+		var isHiddenItem = Win32Helper.HasFileAttribute(path, SystemIO.FileAttributes.Hidden);
+		var isDirectory = Win32Helper.HasFileAttribute(path, SystemIO.FileAttributes.Directory);
+		var isReparsePoint = Win32Helper.HasFileAttribute(path, SystemIO.FileAttributes.ReparsePoint);
 		var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path);
 		var isScreenSaver = FileExtensionHelpers.IsScreenSaverFile(path);
 		var isTag = path.StartsWith("tag:");
@@ -431,7 +432,7 @@ public static class NavigationHelpers
 			}
 			else
 			{
-				await OpenPathInNewTab(folderViewViewModel, path);
+				await OpenPathInNewTab(folderViewViewModel, path, true);
 			}
 
 			return true;
@@ -455,7 +456,7 @@ public static class NavigationHelpers
 
 				if (shortcutInfo.InvalidTarget)
 				{
-					if (await DialogDisplayHelper.ShowDialogAsync(folderViewViewModel, DynamicDialogFactory.GetFor_ShortcutNotFound(shortcutInfo.TargetPath)) != DynamicDialogResult.Primary)
+					if (await DialogDisplayHelper.ShowDialogAsync(folderViewViewModel, DynamicDialogFactory.GetFor_ShortcutNotFound(folderViewViewModel, shortcutInfo.TargetPath)) != DynamicDialogResult.Primary)
                     {
                         return false;
                     }
@@ -468,16 +469,16 @@ public static class NavigationHelpers
 			else if (isReparsePoint)
 			{
 				if (!isDirectory &&
-					NativeFindStorageItemHelper.GetWin32FindDataForPath(path, out var findData) &&
-					findData.dwReserved0 == NativeFileOperationsHelper.IO_REPARSE_TAG_SYMLINK)
+                    Win32Helper.GetWin32FindDataForPath(path, out var findData) &&
+					findData.dwReserved0 == Win32PInvoke.IO_REPARSE_TAG_SYMLINK)
 				{
-					shortcutInfo.TargetPath = NativeFileOperationsHelper.ParseSymLink(path);
+					shortcutInfo.TargetPath = Win32Helper.ParseSymLink(path);
 				}
 				itemType ??= isDirectory ? FilesystemItemType.Directory : FilesystemItemType.File;
 			}
 			else if (isHiddenItem)
 			{
-				itemType = NativeFileOperationsHelper.HasFileAttribute(path, SystemIO.FileAttributes.Directory) ? FilesystemItemType.Directory : FilesystemItemType.File;
+				itemType = Win32Helper.HasFileAttribute(path, SystemIO.FileAttributes.Directory) ? FilesystemItemType.Directory : FilesystemItemType.File;
 			}
 			else
 			{
@@ -521,7 +522,7 @@ public static class NavigationHelpers
 		var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
 
 		var opened = (FilesystemResult)false;
-		var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, SystemIO.FileAttributes.Hidden);
+		var isHiddenItem = Win32Helper.HasFileAttribute(path, SystemIO.FileAttributes.Hidden);
 		if (isHiddenItem)
 		{
 			await OpenPath(folderViewViewModel, forceOpenInNewTab, UserSettingsService.FoldersSettingsService.OpenFoldersInNewTab, path, associatedInstance);
@@ -543,14 +544,14 @@ public static class NavigationHelpers
 		var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
 
 		var opened = (FilesystemResult)false;
-		var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, System.IO.FileAttributes.Hidden);
+		var isHiddenItem = Win32Helper.HasFileAttribute(path, System.IO.FileAttributes.Hidden);
 		var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path);
 
 		if (isShortcut)
 		{
 			if (string.IsNullOrEmpty(shortcutInfo.TargetPath))
 			{
-				await Win32Helpers.InvokeWin32ComponentAsync(path, associatedInstance);
+				await Win32Helper.InvokeWin32ComponentAsync(path, associatedInstance);
 				opened = (FilesystemResult)true;
 			}
 			else
@@ -586,7 +587,7 @@ public static class NavigationHelpers
             }
             else
             {
-                await Win32Helpers.InvokeWin32ComponentAsync(path, associatedInstance);
+                await Win32Helper.InvokeWin32ComponentAsync(path, associatedInstance);
             }
         }
 		return opened;
@@ -595,14 +596,14 @@ public static class NavigationHelpers
 	private static async Task<FilesystemResult> OpenFile(IFolderViewViewModel folderViewViewModel, string path, IShellPage associatedInstance, ShellLinkItem shortcutInfo, bool openViaApplicationPicker = false, string? args = default)
 	{
 		var opened = (FilesystemResult)false;
-		var isHiddenItem = NativeFileOperationsHelper.HasFileAttribute(path, System.IO.FileAttributes.Hidden);
+		var isHiddenItem = Win32Helper.HasFileAttribute(path, System.IO.FileAttributes.Hidden);
 		var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path) || !string.IsNullOrEmpty(shortcutInfo.TargetPath);
 
 		if (isShortcut)
 		{
 			if (string.IsNullOrEmpty(shortcutInfo.TargetPath))
 			{
-				await Win32Helpers.InvokeWin32ComponentAsync(path, associatedInstance, args!);
+				await Win32Helper.InvokeWin32ComponentAsync(path, associatedInstance, args!);
 			}
 			else
 			{
@@ -615,13 +616,13 @@ public static class NavigationHelpers
                         App.RecentItemsManager.AddToRecentItems(childFile.Path);
                     }
                 }
-				await Win32Helpers.InvokeWin32ComponentAsync(shortcutInfo.TargetPath, associatedInstance, $"{args} {shortcutInfo.Arguments}", shortcutInfo.RunAsAdmin, shortcutInfo.WorkingDirectory);
+				await Win32Helper.InvokeWin32ComponentAsync(shortcutInfo.TargetPath, associatedInstance, $"{args} {shortcutInfo.Arguments}", shortcutInfo.RunAsAdmin, shortcutInfo.WorkingDirectory);
 			}
 			opened = (FilesystemResult)true;
 		}
 		else if (isHiddenItem)
 		{
-			await Win32Helpers.InvokeWin32ComponentAsync(path, associatedInstance, args!);
+			await Win32Helper.InvokeWin32ComponentAsync(path, associatedInstance, args!);
 		}
 		else
 		{
@@ -728,7 +729,7 @@ public static class NavigationHelpers
 
 						if (!launchSuccess)
                         {
-                            await Win32Helpers.InvokeWin32ComponentAsync(path, associatedInstance, args!);
+                            await Win32Helper.InvokeWin32ComponentAsync(path, associatedInstance, args!);
                         }
                     }
 				});
@@ -751,7 +752,7 @@ public static class NavigationHelpers
         // CHANGE: Add allow navigation setting.
 		if (forceOpenInNewTab || openFolderInNewTabSetting || !folderViewViewModel.AllowNavigation)
         {
-			await OpenPathInNewTab(folderViewViewModel, text);
+			await OpenPathInNewTab(folderViewViewModel, text, true);
 		}
 		else
 		{

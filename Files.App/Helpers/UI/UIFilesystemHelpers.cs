@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Core.Helpers;
@@ -27,7 +27,7 @@ public static class UIFilesystemHelpers
 		{
 			RequestedOperation = DataPackageOperation.Move
 		};
-		ConcurrentBag<IStorageItem> items = new();
+		ConcurrentBag<IStorageItem> items = [];
 
 		if (associatedInstance.SlimContentPage.IsItemSelected)
 		{
@@ -147,7 +147,7 @@ public static class UIFilesystemHelpers
 		{
 			RequestedOperation = DataPackageOperation.Copy
 		};
-		ConcurrentBag<IStorageItem> items = new();
+		ConcurrentBag<IStorageItem> items = [];
 
 		if (associatedInstance.SlimContentPage.IsItemSelected)
 		{
@@ -415,8 +415,8 @@ public static class UIFilesystemHelpers
 
         foreach (var selectedItem in selectedItems)
 		{
-			var fileName = string.Format("ShortcutCreateNewSuffix".GetLocalizedResource(), selectedItem.Name) + ".lnk";
-			var filePath = Path.Combine(currentPath ?? string.Empty, fileName);
+            var fileName = FilesystemHelpers.GetShortcutNamingPreference(selectedItem.Name);
+            var filePath = Path.Combine(currentPath ?? string.Empty, fileName);
 
 			if (!await FileOperationsHelpers.CreateOrUpdateLinkAsync(filePath, selectedItem.ItemPath))
             {

@@ -1,22 +1,17 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Utils.Storage;
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
 
-public class StorageHistoryHelpers : IDisposable
+public sealed class StorageHistoryHelpers(IStorageHistoryOperations storageHistoryOperations) : IDisposable
 {
     private readonly StorageHistoryWrapper HistoryWrapper = App.HistoryWrapper;
 
-    private IStorageHistoryOperations operations;
+    private IStorageHistoryOperations operations = storageHistoryOperations;
 
 	private static readonly SemaphoreSlim semaphore = new(1, 1);
-
-    public StorageHistoryHelpers(IStorageHistoryOperations storageHistoryOperations)
-    {
-        operations = storageHistoryOperations;
-    }
 
     public async Task<ReturnResult> TryUndo()
 	{

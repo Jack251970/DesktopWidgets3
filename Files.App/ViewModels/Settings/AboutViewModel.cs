@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
@@ -12,16 +12,17 @@ namespace Files.App.ViewModels.Settings;
 
 #pragma warning disable CA1822 // Mark members as static
 
-public class AboutViewModel : ObservableObject
+public sealed class AboutViewModel : ObservableObject
 {
-    protected readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+    public readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
 
 	public ICommand CopyAppVersionCommand { get; }
 	public ICommand CopyWindowsVersionCommand { get; }
 	public ICommand SupportUsCommand { get; }
 	public ICommand OpenLogLocationCommand { get; }
 	public ICommand OpenDocumentationCommand { get; }
-	public ICommand SubmitFeatureRequestCommand { get; }
+    public ICommand OpenDiscordCommand { get; }
+    public ICommand SubmitFeatureRequestCommand { get; }
 	public ICommand SubmitBugReportCommand { get; }
 	public ICommand OpenGitHubRepoCommand { get; }
 	public ICommand OpenPrivacyPolicyCommand { get; }
@@ -40,7 +41,8 @@ public class AboutViewModel : ObservableObject
 		CopyWindowsVersionCommand = new RelayCommand(CopyWindowsVersion);
 		SupportUsCommand = new AsyncRelayCommand(SupportUs);
 		OpenDocumentationCommand = new AsyncRelayCommand(DoOpenDocumentation);
-		SubmitFeatureRequestCommand = new AsyncRelayCommand(DoSubmitFeatureRequest);
+        OpenDiscordCommand = new AsyncRelayCommand(DoOpenDiscord);
+        SubmitFeatureRequestCommand = new AsyncRelayCommand(DoSubmitFeatureRequest);
 		SubmitBugReportCommand = new AsyncRelayCommand(DoSubmitBugReport);
 		OpenGitHubRepoCommand = new AsyncRelayCommand(DoOpenGitHubRepo);
 		OpenPrivacyPolicyCommand = new AsyncRelayCommand(DoOpenPrivacyPolicy);
@@ -48,43 +50,47 @@ public class AboutViewModel : ObservableObject
 		OpenCrowdinCommand = new AsyncRelayCommand(DoOpenCrowdin);
 	}
 
-	private Task OpenLogLocation()
-	{
-		return Launcher.LaunchFolderAsync(ApplicationData.Current.LocalFolder).AsTask();
-	}
+    private Task<bool> OpenLogLocation()
+    {
+        return Launcher.LaunchFolderAsync(ApplicationData.Current.LocalFolder).AsTask();
+    }
 
-	public Task DoOpenDocumentation()
-	{
-		return Launcher.LaunchUriAsync(new Uri(Constants.GitHub.DocumentationUrl)).AsTask();
-	}
+    public Task DoOpenDocumentation()
+    {
+        return Launcher.LaunchUriAsync(new Uri(Constants.ExternalUrl.DocumentationUrl)).AsTask();
+    }
 
-	public Task DoSubmitFeatureRequest()
-	{
-		return Launcher.LaunchUriAsync(new Uri($"{Constants.GitHub.FeatureRequestUrl}&{GetVersionsQueryString()}")).AsTask();
-	}
+    public Task DoOpenDiscord()
+    {
+        return Launcher.LaunchUriAsync(new Uri(Constants.ExternalUrl.DiscordUrl)).AsTask();
+    }
 
-	public Task DoSubmitBugReport()
-	{
-		return Launcher.LaunchUriAsync(new Uri($"{Constants.GitHub.BugReportUrl}&{GetVersionsQueryString()}")).AsTask();
-	}
+    public Task DoSubmitFeatureRequest()
+    {
+        return Launcher.LaunchUriAsync(new Uri($"{Constants.ExternalUrl.FeatureRequestUrl}&{GetVersionsQueryString()}")).AsTask();
+    }
 
-	public Task DoOpenGitHubRepo()
-	{
-		return Launcher.LaunchUriAsync(new Uri(Constants.GitHub.GitHubRepoUrl)).AsTask();
-	}
+    public Task DoSubmitBugReport()
+    {
+        return Launcher.LaunchUriAsync(new Uri($"{Constants.ExternalUrl.BugReportUrl}&{GetVersionsQueryString()}")).AsTask();
+    }
 
-	public Task DoOpenPrivacyPolicy()
-	{
-		return Launcher.LaunchUriAsync(new Uri(Constants.GitHub.PrivacyPolicyUrl)).AsTask();
-	}
-		
+    public Task DoOpenGitHubRepo()
+    {
+        return Launcher.LaunchUriAsync(new Uri(Constants.ExternalUrl.GitHubRepoUrl)).AsTask();
+    }
 
-	public Task DoOpenCrowdin()
-	{
-		return Launcher.LaunchUriAsync(new Uri("https://crowdin.com/project/files-app")).AsTask();
-	}
+    public Task DoOpenPrivacyPolicy()
+    {
+        return Launcher.LaunchUriAsync(new Uri(Constants.ExternalUrl.PrivacyPolicyUrl)).AsTask();
+    }
 
-	public void CopyAppVersion()
+    public Task DoOpenCrowdin()
+    {
+        return Launcher.LaunchUriAsync(new Uri(Constants.ExternalUrl.CrowdinUrl)).AsTask();
+    }
+
+    public void CopyAppVersion()
 	{
 		SafetyExtensions.IgnoreExceptions(() =>
 		{
@@ -112,10 +118,10 @@ public class AboutViewModel : ObservableObject
 
 	public Task SupportUs()
 	{
-		return Launcher.LaunchUriAsync(new Uri(Constants.GitHub.SupportUsUrl)).AsTask();
-	}
+        return Launcher.LaunchUriAsync(new Uri(Constants.ExternalUrl.SupportUsUrl)).AsTask();
+    }
 
-	public async Task LoadThirdPartyNoticesAsync()
+    public async Task LoadThirdPartyNoticesAsync()
 	{
 		var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(Constants.DocsPath.ThirdPartyNoticePath));
         ThirdPartyNotices = await FileIO.ReadTextAsync(file);
@@ -139,12 +145,12 @@ public class AboutViewModel : ObservableObject
 		return query.ToString() ?? string.Empty;
 	}
 
-    // CHECK: Update AppVersion and Commits properties.
+    // CHECK: Update AppVersion and Commits info.
     public string Version => string.Format($"{"SettingsAboutVersionTitle".GetLocalizedResource()} {AppVersion.Major}.{AppVersion.Minor}.{AppVersion.Build}.{AppVersion.Revision} ({Commits})");
 
-    public string AppName => "Files"; //InfoHelper.GetDisplayName();
-	public PackageVersion AppVersion => new(3, 0, 15, 0);
+    public string AppName => "Files";
+	public PackageVersion AppVersion => new(3, 4, 1, 0);
 
-    // CHANGE: Add commits info here.
-    public string Commits => "f6f590a5";
+    // CHANGE: Add commit info here.
+    public string Commits => "c1187f12";
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -13,7 +13,7 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.System;
 using Windows.UI.Core;
-using SortDirection = Files.Core.Data.Enums.SortDirection;
+using SortDirection = Files.App.Data.Enums.SortDirection;
 
 namespace Files.App.Views.Layouts;
 
@@ -28,13 +28,10 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 
 	// Fields
 
-	private uint currentIconSize;
-
 	private ListedItem? _nextItemToSelect;
 
 	// Properties
 
-	protected override uint IconSize => currentIconSize;
 	protected override ListViewBase ListViewBase => FileList;
 	protected override SemanticZoom RootZoom => RootGridZoom;
 
@@ -58,31 +55,59 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 		}
 	}
 
-	// Constructor
+    /// <summary>
+    /// Row height for items in the Details View
+    /// </summary>
+    public int RowHeight => LayoutSizeKindHelper.GetDetailsViewRowHeight((DetailsViewSizeKind)UserSettingsService.LayoutSettingsService.DetailsViewSize);
 
-	public DetailsLayoutPage() : base()
+    // Constructor
+
+    public DetailsLayoutPage() : base()
 	{
 		InitializeComponent();
 		DataContext = this;
 		var selectionRectangle = RectangleSelection.Create(FileList, SelectionRectangle, FileList_SelectionChanged);
 		selectionRectangle.SelectionEnded += SelectionRectangle_SelectionEnded;
-	}
 
-	// Methods
+        /*UpdateSortOptionsCommand = new RelayCommand<string>(x =>
+        {
+            if (!Enum.TryParse<SortOption>(x, out var val))
+            {
+                return;
+            }
 
-	protected override void ItemManipulationModel_ScrollIntoViewInvoked(object? sender, ListedItem e)
+            if (FolderSettings!.DirectorySortOption == val)
+            {
+                FolderSettings.DirectorySortDirection = (SortDirection)(((int)FolderSettings.DirectorySortDirection + 1) % 2);
+            }
+            else
+            {
+                FolderSettings.DirectorySortOption = val;
+                FolderSettings.DirectorySortDirection = SortDirection.Ascending;
+            }
+        });*/
+    }
+
+    // Methods
+
+    protected override void ItemManipulationModel_ScrollIntoViewInvoked(object? sender, ListedItem e)
 	{
 		FileList.ScrollIntoView(e);
-		ContentScroller?.ChangeView(null, FileList.Items.IndexOf(e) * Convert.ToInt32(Application.Current.Resources["ListItemHeight"]), null, true); // Scroll to index * item height
-	}
+		ContentScroller?.ChangeView(null, FileList.Items.IndexOf(e) * RowHeight, null, true); // Scroll to index * item height
+    }
 
-	protected override void ItemManipulationModel_FocusSelectedItemsInvoked(object? sender, EventArgs e)
+    protected override void ItemManipulationModel_ScrollToTopInvoked(object? sender, EventArgs e)
+    {
+        ContentScroller?.ChangeView(null, 0, null, true);
+    }
+
+    protected override void ItemManipulationModel_FocusSelectedItemsInvoked(object? sender, EventArgs e)
 	{
 		if (SelectedItems?.Any() ?? false)
 		{
 			FileList.ScrollIntoView(SelectedItems.Last());
-			ContentScroller?.ChangeView(null, FileList.Items.IndexOf(SelectedItems.Last()) * Convert.ToInt32(Application.Current.Resources["ListItemHeight"]), null, false);
-			(FileList.ContainerFromItem(SelectedItems.Last()) as ListViewItem)?.Focus(FocusState.Keyboard);
+            ContentScroller?.ChangeView(null, FileList.Items.IndexOf(SelectedItems.Last()) * RowHeight, null, false);
+            (FileList.ContainerFromItem(SelectedItems.Last()) as ListViewItem)?.Focus(FocusState.Keyboard);
 		}
 	}
 
@@ -116,7 +141,26 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 
         base.OnNavigatedTo(eventArgs);
 
-		if (FolderSettings?.ColumnsViewModel is not null)
+        // CHANGE: Initialize in navigation event instead of constructor.
+        UpdateSortOptionsCommand = new RelayCommand<string>(x =>
+        {
+            if (!Enum.TryParse<SortOption>(x, out var val))
+            {
+                return;
+            }
+
+            if (FolderSettings!.DirectorySortOption == val)
+            {
+                FolderSettings.DirectorySortDirection = (SortDirection)(((int)FolderSettings.DirectorySortDirection + 1) % 2);
+            }
+            else
+            {
+                FolderSettings.DirectorySortOption = val;
+                FolderSettings.DirectorySortDirection = SortDirection.Ascending;
+            }
+        });
+
+        if (FolderSettings?.ColumnsViewModel is not null)
 		{
 			ColumnsViewModel.DateCreatedColumn = FolderSettings.ColumnsViewModel.DateCreatedColumn;
 			ColumnsViewModel.DateDeletedColumn = FolderSettings.ColumnsViewModel.DateDeletedColumn;
@@ -138,39 +182,20 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 
 		ParentShellPageInstance!.FilesystemViewModel.EnabledGitProperties = GetEnabledGitProperties(ColumnsViewModel);
 
-		currentIconSize = FolderSettings!.GetIconSize();
-		FolderSettings.LayoutModeChangeRequested += FolderSettings_LayoutModeChangeRequested;
-		FolderSettings.GridViewSizeChangeRequested += FolderSettings_GridViewSizeChangeRequested;
+		FolderSettings!.LayoutModeChangeRequested += FolderSettings_LayoutModeChangeRequested;
 		FolderSettings.GroupOptionPreferenceUpdated += ZoomIn;
 		FolderSettings.SortDirectionPreferenceUpdated += FolderSettings_SortDirectionPreferenceUpdated;
 		FolderSettings.SortOptionPreferenceUpdated += FolderSettings_SortOptionPreferenceUpdated;
 		ParentShellPageInstance.FilesystemViewModel.PageTypeUpdated += FilesystemViewModel_PageTypeUpdated;
+        UserSettingsService.LayoutSettingsService.PropertyChanged += LayoutSettingsService_PropertyChanged;
 
-		var parameters = (NavigationArguments)eventArgs.Parameter;
+        var parameters = (NavigationArguments)eventArgs.Parameter;
 		if (parameters.IsLayoutSwitch)
         {
             _ = ReloadItemIconsAsync();
         }
 
-        UpdateSortOptionsCommand = new RelayCommand<string>(x =>
-		{
-			if (!Enum.TryParse<SortOption>(x, out var val))
-            {
-                return;
-            }
-
-            if (FolderSettings.DirectorySortOption == val)
-			{
-				FolderSettings.DirectorySortDirection = (SortDirection)(((int)FolderSettings.DirectorySortDirection + 1) % 2);
-			}
-			else
-			{
-				FolderSettings.DirectorySortOption = val;
-				FolderSettings.DirectorySortDirection = SortDirection.Ascending;
-			}
-		});
-
-		FilesystemViewModel_PageTypeUpdated(null, new PageTypeUpdatedEventArgs()
+        FilesystemViewModel_PageTypeUpdated(null, new PageTypeUpdatedEventArgs()
 		{
 			IsTypeCloudDrive = InstanceViewModel?.IsPageTypeCloudDrive ?? false,
 			IsTypeRecycleBin = InstanceViewModel?.IsPageTypeRecycleBin ?? false,
@@ -179,20 +204,62 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 		});
 
 		RootGrid_SizeChanged(null, null);
-	}
 
-	protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        SetItemContainerStyle();
+    }
+
+    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 	{
 		base.OnNavigatingFrom(e);
 		FolderSettings!.LayoutModeChangeRequested -= FolderSettings_LayoutModeChangeRequested;
-		FolderSettings.GridViewSizeChangeRequested -= FolderSettings_GridViewSizeChangeRequested;
 		FolderSettings.GroupOptionPreferenceUpdated -= ZoomIn;
 		FolderSettings.SortDirectionPreferenceUpdated -= FolderSettings_SortDirectionPreferenceUpdated;
 		FolderSettings.SortOptionPreferenceUpdated -= FolderSettings_SortOptionPreferenceUpdated;
 		ParentShellPageInstance!.FilesystemViewModel.PageTypeUpdated -= FilesystemViewModel_PageTypeUpdated;
-	}
+        UserSettingsService.LayoutSettingsService.PropertyChanged -= LayoutSettingsService_PropertyChanged;
+    }
 
-	private void FileList_LayoutUpdated(object? sender, object e)
+    private void LayoutSettingsService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ILayoutSettingsService.DetailsViewSize))
+        {
+            // Get current scroll position
+            var previousOffset = ContentScroller?.VerticalOffset;
+
+            NotifyPropertyChanged(nameof(RowHeight));
+
+            // Update the container style to match the item size
+            SetItemContainerStyle();
+
+            // Restore correct scroll position
+            ContentScroller?.ChangeView(null, previousOffset, null);
+        }
+    }
+
+    /// <summary>
+    /// Sets the item size and spacing
+    /// </summary>
+    private void SetItemContainerStyle()
+    {
+        if (UserSettingsService.LayoutSettingsService.DetailsViewSize == DetailsViewSizeKind.Compact)
+        {
+            // Toggle style to force item size to update
+            FileList.ItemContainerStyle = RegularItemContainerStyle;
+
+            // Set correct style
+            FileList.ItemContainerStyle = CompactItemContainerStyle;
+        }
+        else
+        {
+            // Toggle style to force item size to update
+            FileList.ItemContainerStyle = CompactItemContainerStyle;
+
+            // Set correct style
+            FileList.ItemContainerStyle = RegularItemContainerStyle;
+        }
+    }
+
+    private void FileList_LayoutUpdated(object? sender, object e)
 	{
 		FileList.LayoutUpdated -= FileList_LayoutUpdated;
 		TryStartRenameNextItem(_nextItemToSelect!);
@@ -392,7 +459,7 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 				{
 					foreach (var folder in folders)
                     {
-                        await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, folder.ItemPath);
+                        await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, folder.ItemPath, false);
                     }
                 }
 			}
@@ -450,18 +517,6 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 	protected override bool CanGetItemFromElement(object element)
 		=> element is ListViewItem;
 
-	private async void FolderSettings_GridViewSizeChangeRequested(object? sender, EventArgs e)
-	{
-		var requestedIconSize = FolderSettings!.GetIconSize(); // Get new icon size
-
-		// Prevents reloading icons when the icon size hasn't changed
-		if (requestedIconSize != currentIconSize)
-		{
-			currentIconSize = requestedIconSize; // Update icon size before refreshing
-			await ReloadItemIconsAsync();
-		}
-	}
-
 	private async Task ReloadItemIconsAsync()
 	{
 		if (ParentShellPageInstance is null)
@@ -471,16 +526,21 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 
         ParentShellPageInstance.FilesystemViewModel.CancelExtendedPropertiesLoading();
 		var filesAndFolders = ParentShellPageInstance.FilesystemViewModel.FilesAndFolders.ToList();
-		foreach (var listedItem in filesAndFolders)
-		{
-			listedItem.ItemPropertiesInitialized = false;
-			if (FileList.ContainerFromItem(listedItem) is not null)
-            {
-                await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemPropertiesAsync(listedItem, currentIconSize);
-            }
-        }
 
-		if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None)
+        await Task.WhenAll(filesAndFolders.Select(listedItem =>
+        {
+            listedItem.ItemPropertiesInitialized = false;
+            if (FileList.ContainerFromItem(listedItem) is not null)
+            {
+                return ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemPropertiesAsync(listedItem);
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+        }));
+
+        if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None)
 		{
 			await Task.WhenAll(filesAndFolders.Select(item =>
 			{
@@ -947,8 +1007,8 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 		if (tagId is not null)
 		{
 			item.FileTags = item.FileTags
-				.Except(new string[] { tagId })
-				.ToArray();
+                .Except([tagId])
+                .ToArray();
 		}
 
 		e.Handled = true;

@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class SelectAllAction : IAction
+internal sealed class SelectAllAction(IContentPageContext context) : IAction
 {
-	private readonly IContentPageContext context;
+	private readonly IContentPageContext context = context;
 
 	public string Label
 		=> "SelectAll".GetLocalizedResource();
@@ -49,12 +49,7 @@ internal class SelectAllAction : IAction
 		}
 	}
 
-	public SelectAllAction(IContentPageContext context)
-    {
-        this.context = context;
-    }
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		context.ShellPage?.SlimContentPage?.ItemManipulationModel?.SelectAllItems();
 

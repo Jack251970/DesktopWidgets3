@@ -1,11 +1,11 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
 
 namespace Files.App.ViewModels.Previews;
 
-public class MarkdownPreviewViewModel : BasePreviewModel
+public sealed class MarkdownPreviewViewModel(ListedItem item) : BasePreviewModel(item)
 {
 	private string textValue = null!;
 	public string TextValue
@@ -14,12 +14,7 @@ public class MarkdownPreviewViewModel : BasePreviewModel
 		private set => SetProperty(ref textValue, value);
 	}
 
-	public MarkdownPreviewViewModel(ListedItem item)
-		: base(item)
-	{
-	}
-
-	public static bool ContainsExtension(string extension)
+    public static bool ContainsExtension(string extension)
 		=> extension is ".md" or ".markdown";
 
 	public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
@@ -27,6 +22,6 @@ public class MarkdownPreviewViewModel : BasePreviewModel
 		var text = await ReadFileAsTextAsync(Item.ItemFile);
 		TextValue = text.Left(Constants.PreviewPane.TextCharacterLimit);
 
-		return new List<FileProperty>();
+		return [];
 	}
 }

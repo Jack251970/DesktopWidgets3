@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -11,7 +11,7 @@ public static class PropertiesNavigationViewItemFactory
 {
 	public static ObservableCollection<NavigationViewItemButtonStyleItem> Initialize(object item)
 	{
-		ObservableCollection<NavigationViewItemButtonStyleItem> PropertiesNavigationViewItems = new();
+		ObservableCollection<NavigationViewItemButtonStyleItem> PropertiesNavigationViewItems = [];
 
 		var generalItem = new NavigationViewItemButtonStyleItem()
 		{
@@ -73,8 +73,9 @@ public static class PropertiesNavigationViewItemFactory
 
 		if (item is List<ListedItem> listedItems)
 		{
-			var commonFileExt = listedItems.Select(x => x.FileExtension).Distinct().Count() == 1 ? listedItems.First().FileExtension : null;
-			var compatibilityItemEnabled = listedItems.All(listedItem => FileExtensionHelpers.IsExecutableFile(listedItem is ShortcutItem sht ? sht.TargetPath : commonFileExt, true));
+            var firstFileExtension = listedItems.FirstOrDefault()?.FileExtension;
+            var commonFileExt = listedItems.All(x => x.FileExtension == firstFileExtension) ? firstFileExtension : null;
+            var compatibilityItemEnabled = listedItems.All(listedItem => FileExtensionHelpers.IsExecutableFile(listedItem is ShortcutItem sht ? sht.TargetPath : commonFileExt, true));
 			var onlyFiles = listedItems.All(listedItem => listedItem.PrimaryItemAttribute == StorageItemTypes.File || listedItem.IsArchive);
 
 			if (!compatibilityItemEnabled)

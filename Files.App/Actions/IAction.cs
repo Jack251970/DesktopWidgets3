@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
@@ -52,9 +52,9 @@ public interface IAction
 	bool IsExecutable
 		=> true;
 
-	/// <summary>
-	/// Executes the action asynchronously.
-	/// </summary>
-	/// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-	Task ExecuteAsync();
+    /// <summary>
+    /// Executes the action asynchronously.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+    Task ExecuteAsync(object? parameter = null);
 }

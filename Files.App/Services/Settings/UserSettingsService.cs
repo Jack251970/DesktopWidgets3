@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Utils.Serialization.Implementation;
@@ -56,9 +56,9 @@ internal sealed class UserSettingsService : BaseJsonSettings, IUserSettingsServi
 	{
 		var settingsImport = import switch
 		{
-			string s => JsonSettingsSerializer?.DeserializeFromJson<Dictionary<string, object>>(s) ?? new(),
+			string s => JsonSettingsSerializer?.DeserializeFromJson<Dictionary<string, object>>(s) ?? [],
 			Dictionary<string, object> d => d,
-			_ => new(),
+			_ => [],
 		};
 
 		if (!settingsImport.IsEmpty() && base.ImportSettings(settingsImport))

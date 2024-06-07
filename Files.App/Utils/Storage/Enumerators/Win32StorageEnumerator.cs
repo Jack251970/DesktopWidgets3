@@ -1,13 +1,11 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Services.SizeProvider;
+using Files.App.Services.SizeProvider;
 using Files.Shared.Helpers;
-using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
 using Vanara.PInvoke;
 using Windows.Storage;
-using static Files.Core.Helpers.NativeFindStorageItemHelper;
 using FileAttributes = System.IO.FileAttributes;
 
 namespace Files.App.Utils.Storage;
@@ -15,19 +13,17 @@ namespace Files.App.Utils.Storage;
 public static class Win32StorageEnumerator
 {
     /*private static readonly ISizeProvider folderSizeProvider = DependencyExtensions.GetService<ISizeProvider>();*/
+    private static readonly IStorageCacheService fileListCache = DependencyExtensions.GetService<IStorageCacheService>();
 
     private static readonly string folderTypeTextLocalized = "Folder".GetLocalizedResource();
-
-    private static readonly IStorageCacheController fileListCache = StorageCacheController.GetInstance();
 
     public static async Task<List<ListedItem>> ListEntries(
         IFolderViewViewModel folderViewViewModel,
         string path,
         IntPtr hFile,
-        NativeFindStorageItemHelper.WIN32_FIND_DATA findData,
+        Win32PInvoke.WIN32_FIND_DATA findData,
         int countLimit,
         Func<List<ListedItem>, Task> intermediateAction,
-        Dictionary<string, BitmapImage> defaultIconPairs,
         CancellationToken cancellationToken
     )
     {
@@ -55,18 +51,6 @@ public static class Win32StorageEnumerator
                     var file = await GetFile(folderViewViewModel, findData, path, isGitRepo, cancellationToken);
                     if (file is not null)
                     {
-                        if (defaultIconPairs is not null)
-                        {
-                            if (!string.IsNullOrEmpty(file.FileExtension))
-                            {
-                                var lowercaseExtension = file.FileExtension.ToLowerInvariant();
-                                if (defaultIconPairs.TryGetValue(lowercaseExtension, out var value))
-                                {
-                                    file.FileImage = value;
-                                }
-                            }
-                        }
-
                         tempList.Add(file);
                         ++count;
 
@@ -83,12 +67,6 @@ public static class Win32StorageEnumerator
                         var folder = await GetFolder(folderViewViewModel, findData, path, isGitRepo, cancellationToken);
                         if (folder is not null)
                         {
-                            if (defaultIconPairs?.ContainsKey(string.Empty) ?? false)
-                            {
-                                // Set folder icon (found by empty extension string)
-                                folder.FileImage = defaultIconPairs[string.Empty];
-                            }
-
                             tempList.Add(folder);
                             ++count;
 
@@ -125,16 +103,16 @@ public static class Win32StorageEnumerator
                 // clear the temporary list every time we do an intermediate action
                 tempList.Clear();
             }
-        } while (FindNextFile(hFile, out findData));
+        } while (Win32PInvoke.FindNextFile(hFile, out findData));
 
-        FindClose(hFile);
+        Win32PInvoke.FindClose(hFile);
 
         return tempList;
     }
 
     private static IEnumerable<ListedItem> EnumAdsForPath(IFolderViewViewModel folderViewViewModel, string itemPath, ListedItem main)
     {
-        foreach (var ads in NativeFileOperationsHelper.GetAlternateStreams(itemPath))
+        foreach (var ads in Win32Helper.GetAlternateStreams(itemPath))
         {
             yield return GetAlternateStream(folderViewViewModel, ads, main);
         }
@@ -174,7 +152,7 @@ public static class Win32StorageEnumerator
 
     public static async Task<ListedItem> GetFolder(
         IFolderViewViewModel folderViewViewModel,
-        NativeFindStorageItemHelper.WIN32_FIND_DATA findData,
+        Win32PInvoke.WIN32_FIND_DATA findData,
         string pathRoot,
         bool isGitRepo,
         CancellationToken cancellationToken
@@ -190,10 +168,10 @@ public static class Win32StorageEnumerator
 
         try
         {
-            FileTimeToSystemTime(ref findData.ftLastWriteTime, out var systemModifiedTimeOutput);
+            Win32PInvoke.FileTimeToSystemTime(ref findData.ftLastWriteTime, out var systemModifiedTimeOutput);
             itemModifiedDate = systemModifiedTimeOutput.ToDateTime();
 
-            FileTimeToSystemTime(ref findData.ftCreationTime, out var systemCreatedTimeOutput);
+            Win32PInvoke.FileTimeToSystemTime(ref findData.ftCreationTime, out var systemCreatedTimeOutput);
             itemCreatedDate = systemCreatedTimeOutput.ToDateTime();
         }
         catch (ArgumentException)
@@ -204,7 +182,7 @@ public static class Win32StorageEnumerator
 
         var itemPath = Path.Combine(pathRoot, findData.cFileName);
 
-        var itemName = await fileListCache.ReadFileDisplayNameFromCache(itemPath, cancellationToken);
+        var itemName = await fileListCache.GetDisplayName(itemPath, cancellationToken);
         if (string.IsNullOrEmpty(itemName))
         {
             itemName = findData.cFileName;
@@ -258,7 +236,7 @@ public static class Win32StorageEnumerator
 
     public static async Task<ListedItem> GetFile(
         IFolderViewViewModel folderViewViewModel,
-        NativeFindStorageItemHelper.WIN32_FIND_DATA findData,
+        Win32PInvoke.WIN32_FIND_DATA findData,
         string pathRoot,
         bool isGitRepo,
         CancellationToken cancellationToken
@@ -271,13 +249,13 @@ public static class Win32StorageEnumerator
 
         try
         {
-            FileTimeToSystemTime(ref findData.ftLastWriteTime, out var systemModifiedDateOutput);
+            Win32PInvoke.FileTimeToSystemTime(ref findData.ftLastWriteTime, out var systemModifiedDateOutput);
             itemModifiedDate = systemModifiedDateOutput.ToDateTime();
 
-            FileTimeToSystemTime(ref findData.ftCreationTime, out var systemCreatedDateOutput);
+            Win32PInvoke.FileTimeToSystemTime(ref findData.ftCreationTime, out var systemCreatedDateOutput);
             itemCreatedDate = systemCreatedDateOutput.ToDateTime();
 
-            FileTimeToSystemTime(ref findData.ftLastAccessTime, out var systemLastAccessOutput);
+            Win32PInvoke.FileTimeToSystemTime(ref findData.ftLastAccessTime, out var systemLastAccessOutput);
             itemLastAccessDate = systemLastAccessOutput.ToDateTime();
         }
         catch (ArgumentException)
@@ -298,7 +276,7 @@ public static class Win32StorageEnumerator
         }
 
         var itemThumbnailImgVis = false;
-        var itemEmptyImgVis = true;
+        // var itemEmptyImgVis = true;
 
         if (cancellationToken.IsCancellationRequested)
         {
@@ -310,11 +288,11 @@ public static class Win32StorageEnumerator
 
         // https://learn.microsoft.com/openspecs/windows_protocols/ms-fscc/c8e77b37-3909-4fe6-a4ea-2b9d423b1ee4
         var isReparsePoint = ((FileAttributes)findData.dwFileAttributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint;
-        var isSymlink = isReparsePoint && findData.dwReserved0 == NativeFileOperationsHelper.IO_REPARSE_TAG_SYMLINK;
+        var isSymlink = isReparsePoint && findData.dwReserved0 == Win32PInvoke.IO_REPARSE_TAG_SYMLINK;
 
         if (isSymlink)
         {
-            var targetPath = NativeFileOperationsHelper.ParseSymLink(itemPath);
+            var targetPath = Win32Helper.ParseSymLink(itemPath);
 
             return new ShortcutItem(folderViewViewModel, null!)
             {
@@ -324,7 +302,6 @@ public static class Win32StorageEnumerator
                 Opacity = opacity,
                 FileImage = null!,
                 LoadFileIcon = itemThumbnailImgVis,
-                LoadWebShortcutGlyph = false,
                 ItemNameRaw = itemName,
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,
@@ -355,7 +332,6 @@ public static class Win32StorageEnumerator
                 Opacity = opacity,
                 FileImage = null!,
                 LoadFileIcon = !shInfo.IsFolder && itemThumbnailImgVis,
-                LoadWebShortcutGlyph = !shInfo.IsFolder && isUrl && itemEmptyImgVis,
                 ItemNameRaw = itemName,
                 ItemDateModifiedReal = itemModifiedDate,
                 ItemDateAccessedReal = itemLastAccessDate,

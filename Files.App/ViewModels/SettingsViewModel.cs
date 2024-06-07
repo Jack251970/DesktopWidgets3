@@ -1,27 +1,17 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using Windows.Storage;
 
 namespace Files.App.ViewModels;
 
 [Obsolete("Do not use this class as Settings store anymore, settings have been merged to IUserSettingsService.")]
-public class SettingsViewModel : ObservableObject
+public sealed class SettingsViewModel : ObservableObject
 {
 	private readonly ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-
-	public SettingsViewModel()
-	{
-		UpdateThemeElements = new RelayCommand(() => ThemeModeChanged?.Invoke(this, EventArgs.Empty));
-	}
-
-	public event EventHandler? ThemeModeChanged;
-
-	public ICommand UpdateThemeElements { get; }
 
 	#region ReadAndSaveSettings
 

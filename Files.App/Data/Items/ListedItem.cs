@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
@@ -78,13 +78,6 @@ public class ListedItem : ObservableObject, IGroupableItem
 		set => SetProperty(ref loadFileIcon, value);
 	}
 
-	private bool loadWebShortcutGlyph;
-	public bool LoadWebShortcutGlyph
-	{
-		get => loadWebShortcutGlyph;
-		set => SetProperty(ref loadWebShortcutGlyph, value);
-	}
-
 	private bool loadCustomIcon;
 	public bool LoadCustomIcon
 	{
@@ -107,21 +100,30 @@ public class ListedItem : ObservableObject, IGroupableItem
 
 	public ulong? FileFRN { get; set; }
 
-	private string[] fileTags; // FILESTODO: initialize to empty array after UI is done
-	public string[] FileTags
+	private string[] fileTags = null!;
+    public string[] FileTags
 	{
 		get => fileTags;
 		set
 		{
-			if (SetProperty(ref fileTags, value))
-			{
-				var dbInstance = FileTagsHelper.GetDbInstance();
-				dbInstance.SetTags(ItemPath, FileFRN, value);
-				HasTags = !FileTags.IsEmpty();
-				FileTagsHelper.WriteFileTag(FolderViewViewModel, ItemPath, value);
-				OnPropertyChanged(nameof(FileTagsUI));
-			}
-		}
+            // fileTags is null when the item is first created
+            var fileTagsInitialized = fileTags is not null;
+            if (SetProperty(ref fileTags, value))
+            {
+                Debug.Assert(value != null);
+
+                // only set the tags if the file tags have been changed
+                if (fileTagsInitialized)
+                {
+                    var dbInstance = FileTagsHelper.GetDbInstance();
+                    dbInstance.SetTags(ItemPath, FileFRN, value);
+                    FileTagsHelper.WriteFileTag(FolderViewViewModel, ItemPath, value);
+                }
+
+                HasTags = !FileTags.IsEmpty();
+                OnPropertyChanged(nameof(FileTagsUI));
+            }
+        }
 	}
 
     public IList<TagViewModel>? FileTagsUI => fileTagsSettingsService.GetTagsByIds(FileTags);
@@ -178,15 +180,14 @@ public class ListedItem : ObservableObject, IGroupableItem
 				{
 					LoadFileIcon = true;
 					NeedsPlaceholderGlyph = false;
-					LoadWebShortcutGlyph = false;
 				}
 			}
 		}
 	}
 
-	public bool IsItemPinnedToStart => StartMenuService.IsPinned(ItemPath);
+    public bool IsItemPinnedToStart => StartMenuService.IsPinned((this as ShortcutItem)?.TargetPath ?? ItemPath);
 
-	private BitmapImage iconOverlay;
+    private BitmapImage iconOverlay;
 	public BitmapImage IconOverlay
 	{
 		get => iconOverlay;
@@ -385,12 +386,12 @@ public class ListedItem : ObservableObject, IGroupableItem
 	public bool IsAlternateStream => this is AlternateStreamItem;
 	public bool IsGitItem => this is GitItem;
 	public virtual bool IsExecutable => FileExtensionHelpers.IsExecutableFile(ItemPath);
-	public virtual bool IsPythonFile => FileExtensionHelpers.IsPythonFile(ItemPath);
-	public bool IsPinned => App.QuickAccessManager.Model.FavoriteItems.Contains(itemPath);
-	public bool IsDriveRoot => ItemPath == PathNormalization.GetPathRoot(ItemPath);
-	public bool IsElevated => CheckElevationRights();
+    public virtual bool IsScriptFile => FileExtensionHelpers.IsScriptFile(ItemPath);
+    public bool IsPinned => App.QuickAccessManager.Model.PinnedFolders.Contains(itemPath);
+    public bool IsDriveRoot => ItemPath == PathNormalization.GetPathRoot(ItemPath);
+    public bool IsElevationRequired { get; set; }
 
-	private BaseStorageFile itemFile;
+    private BaseStorageFile itemFile;
 	public BaseStorageFile ItemFile
 	{
 		get => itemFile;
@@ -412,28 +413,11 @@ public class ListedItem : ObservableObject, IGroupableItem
 	{
 		ContainsFilesOrFolders = FolderHelpers.CheckForFilesFolders(ItemPath);
 	}
-
-	private bool CheckElevationRights()
-	{
-		// Avoid downloading file to check elevation
-		if (SyncStatusUI.LoadSyncStatus)
-        {
-            return false;
-        }
-
-        return IsShortcut
-			? ElevationHelpers.IsElevationRequired(((ShortcutItem)this).TargetPath)
-			: ElevationHelpers.IsElevationRequired(ItemPath);
-	}
 }
 
-public class RecycleBinItem : ListedItem
+public sealed class RecycleBinItem(IFolderViewViewModel viewModel, string folderRelativeId) : ListedItem(viewModel, folderRelativeId)
 {
-	public RecycleBinItem(IFolderViewViewModel viewModel, string folderRelativeId) : base(viewModel, folderRelativeId)
-	{
-	}
-
-	public string ItemDateDeleted { get; private set; }
+    public string ItemDateDeleted { get; private set; }
 
 	public DateTimeOffset ItemDateDeletedReal
 	{
@@ -456,7 +440,7 @@ public class RecycleBinItem : ListedItem
 	public string ItemOriginalFolderName => Path.GetFileName(ItemOriginalFolder);
 }
 
-public class FtpItem : ListedItem
+public sealed class FtpItem : ListedItem
 {
 	public FtpItem(IFolderViewViewModel viewModel, FtpListItem item, string folder) : base(viewModel, null!)
 	{
@@ -492,7 +476,7 @@ public class FtpItem : ListedItem
 	};
 }
 
-public class ShortcutItem : ListedItem
+public sealed class ShortcutItem : ListedItem
 {
 	public ShortcutItem(IFolderViewViewModel viewModel, string folderRelativeId) : base(viewModel, folderRelativeId)
 	{
@@ -517,7 +501,7 @@ public class ShortcutItem : ListedItem
 	public override bool IsExecutable => FileExtensionHelpers.IsExecutableFile(TargetPath, true);
 }
 
-public class ZipItem : ListedItem
+public sealed class ZipItem : ListedItem
 {
 	public ZipItem(IFolderViewViewModel viewModel, string folderRelativeId) : base(viewModel, folderRelativeId)
 	{
@@ -542,7 +526,7 @@ public class ZipItem : ListedItem
 	}
 }
 
-public class LibraryItem : ListedItem
+public sealed class LibraryItem : ListedItem
 {
 	public LibraryItem(IFolderViewViewModel viewModel, LibraryLocationItem library) : base(viewModel, null!)
 	{
@@ -569,12 +553,8 @@ public class LibraryItem : ListedItem
 	public ReadOnlyCollection<string> Folders { get; }
 }
 
-public class AlternateStreamItem : ListedItem
+public sealed class AlternateStreamItem(IFolderViewViewModel viewModel) : ListedItem(viewModel)
 {
-    public AlternateStreamItem(IFolderViewViewModel viewModel) : base(viewModel)
-    {
-    }
-
     public string MainStreamPath => ItemPath[..ItemPath.LastIndexOf(':')];
 	public string MainStreamName => Path.GetFileName(MainStreamPath);
 
@@ -593,12 +573,8 @@ public class AlternateStreamItem : ListedItem
 	}
 }
 
-public class GitItem : ListedItem
+public sealed class GitItem(IFolderViewViewModel viewModel) : ListedItem(viewModel)
 {
-    public GitItem(IFolderViewViewModel viewModel) : base(viewModel)
-    {
-    }
-
     private volatile int statusPropertiesInitialized = 0;
 	public bool StatusPropertiesInitialized
 	{

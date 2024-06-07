@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal sealed class CompressIntoSevenZipAction : BaseCompressArchiveAction
+internal sealed class CompressIntoSevenZipAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : BaseCompressArchiveAction(folderViewViewModel, context)
 {
 	public override string Label
 		=> string.Format("CreateNamedArchive".GetLocalizedResource(), $"{CompressHelper.DetermineArchiveNameFromSelection(context.SelectedItems)}.7z");
@@ -11,11 +11,7 @@ internal sealed class CompressIntoSevenZipAction : BaseCompressArchiveAction
 	public override string Description
 		=> "CompressIntoSevenZipDescription".GetLocalizedResource();
 
-    public CompressIntoSevenZipAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel, context)
-    {
-	}
-
-	public override Task ExecuteAsync()
+    public override Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage is null)
         {

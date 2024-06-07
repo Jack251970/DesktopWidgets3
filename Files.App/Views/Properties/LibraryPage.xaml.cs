@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
@@ -18,7 +18,7 @@ public sealed partial class LibraryPage : BasePropertiesPage, INotifyPropertyCha
 		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 	}
 
-	public ObservableCollection<LibraryFolder> Folders { get; } = new();
+	public ObservableCollection<LibraryFolder> Folders { get; } = [];
 
 	public bool IsLibraryEmpty => Folders.Count == 0;
 
@@ -190,7 +190,7 @@ public sealed partial class LibraryPage : BasePropertiesPage, INotifyPropertyCha
 
             while (true)
 			{
-				using var dialog = DynamicDialogFactory.GetFor_PropertySaveErrorDialog();
+				using var dialog = DynamicDialogFactory.GetFor_PropertySaveErrorDialog(FolderViewViewModel);
 				try
 				{
 					var library = await Task.Run(() => App.LibraryManager.UpdateLibrary(props.Library.ItemPath, newDefaultSaveFolder, newFolders, newIsPinned));
@@ -226,7 +226,7 @@ public sealed partial class LibraryPage : BasePropertiesPage, INotifyPropertyCha
 
 }
 
-public class LibraryFolder : ObservableObject
+public sealed class LibraryFolder : ObservableObject
 {
     public string Path { get; set; } = null!;
 

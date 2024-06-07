@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
@@ -14,13 +14,13 @@ using Visibility = Microsoft.UI.Xaml.Visibility;
 
 namespace Files.App.Utils.Library;
 
-public class LibraryManager : IDisposable
+public sealed class LibraryManager : IDisposable
 {
 	public EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 
 	private FileSystemWatcher librariesWatcher = null!;
-	private readonly List<LibraryLocationItem> libraries = new();
-	private static readonly Lazy<LibraryManager> lazy = new(() => new LibraryManager());
+    private readonly List<LibraryLocationItem> libraries = [];
+    private static readonly Lazy<LibraryManager> lazy = new(() => new LibraryManager());
 
 	public static LibraryManager Default
 		=> lazy.Value;
@@ -64,23 +64,13 @@ public class LibraryManager : IDisposable
 		librariesWatcher.EnableRaisingEvents = true;
 	}
 
-	public static bool IsDefaultLibrary(string libraryFilePath)
-	{
-        // FILESTODO: try to find a better way for this
-        return Path.GetFileNameWithoutExtension(libraryFilePath) switch
-        {
-            "CameraRoll" or "Documents" or "Music" or "Pictures" or "SavedPictures" or "Videos" => true,
-            _ => false,
-        };
-    }
-
 	/// <summary>
 	/// Get libraries of the current user with the help of the FullTrust process.
 	/// </summary>
 	/// <returns>List of library items</returns>
 	public static async Task<List<LibraryLocationItem>> ListUserLibraries()
 	{
-		var libraries = await Win32API.StartSTATask(() =>
+		var libraries = await Win32Helper.StartSTATask(() =>
 		{
 			try
 			{
@@ -102,7 +92,7 @@ public class LibraryManager : IDisposable
 				App.Logger?.LogWarning(e, null);
 			}
 
-			return new();
+			return [];
 		});
 
 		return libraries!.Select(lib => new LibraryLocationItem(lib)).ToList();
@@ -149,7 +139,7 @@ public class LibraryManager : IDisposable
             return false;
         }
 
-        var newLib = new LibraryLocationItem((await Win32API.StartSTATask(() =>
+        var newLib = new LibraryLocationItem((await Win32Helper.StartSTATask(() =>
 		{
 			try
 			{
@@ -195,7 +185,7 @@ public class LibraryManager : IDisposable
             return null!;
         }
 
-        var item = await Win32API.StartSTATask(() =>
+        var item = await Win32Helper.StartSTATask(() =>
 		{
 			try
 			{
@@ -289,9 +279,9 @@ public class LibraryManager : IDisposable
 		return (true, string.Empty);
 	}
 
-	public static async Task ShowRestoreDefaultLibrariesDialogAsync()
+	public static async Task ShowRestoreDefaultLibrariesDialogAsync(IFolderViewViewModel folderViewViewModel)
 	{
-		var dialog = new DynamicDialog(new DynamicDialogViewModel
+		var dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel
 		{
 			TitleText = "DialogRestoreLibrariesTitleText".GetLocalizedResource(),
 			SubtitleText = "DialogRestoreLibrariesSubtitleText".GetLocalizedResource(),
@@ -327,7 +317,7 @@ public class LibraryManager : IDisposable
 			Visibility = Visibility.Collapsed
 		};
 
-		var dialog = new DynamicDialog(new DynamicDialogViewModel
+		var dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel
 		{
 			DisplayControl = new Grid
 			{

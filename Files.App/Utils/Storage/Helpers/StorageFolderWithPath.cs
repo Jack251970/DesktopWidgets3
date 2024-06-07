@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Windows.Storage;
@@ -6,20 +6,16 @@ using IO = System.IO;
 
 namespace Files.App.Utils;
 
-public class StorageFolderWithPath : IStorageItemWithPath
+public sealed class StorageFolderWithPath(BaseStorageFolder folder, string path) : IStorageItemWithPath
 {
-	public string Path { get; }
-	public string Name => Item?.Name ?? IO.Path.GetFileName(Path);
+    public string Path { get; } = path;
+    public string Name => Item?.Name ?? IO.Path.GetFileName(Path);
 
 	IStorageItem IStorageItemWithPath.Item => Item;
-	public BaseStorageFolder Item { get; }
+    public BaseStorageFolder Item { get; } = folder;
 
-	public FilesystemItemType ItemType => FilesystemItemType.Directory;
+    public FilesystemItemType ItemType => FilesystemItemType.Directory;
 
 	public StorageFolderWithPath(BaseStorageFolder folder)
 		: this(folder, folder.Path) { }
-    public StorageFolderWithPath(BaseStorageFolder folder, string path)
-    {
-        (Item, Path) = (folder, path);
-    }
 }

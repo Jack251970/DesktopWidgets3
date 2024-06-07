@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -70,7 +70,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 	{
         if (ItemDisplayFrame?.Content is HomePage currentPage)
         {
-            currentPage.RefreshWidgetList();
+            currentPage.ViewModel.RefreshWidgetList();
         }
     }
 
@@ -84,7 +84,7 @@ public sealed partial class ModernShellPage : BaseShellPage
         FolderSettings.SetLayoutPreferencesForPath(FilesystemViewModel.WorkingDirectory, e.LayoutPreference);
 		if (e.IsAdaptiveLayoutUpdateRequired)
         {
-            AdaptiveLayoutHelpers.ApplyAdaptativeLayout(FolderViewViewModel, InstanceViewModel.FolderSettings, FilesystemViewModel.WorkingDirectory, FilesystemViewModel.FilesAndFolders);
+            AdaptiveLayoutHelpers.ApplyAdaptativeLayout(FolderViewViewModel, InstanceViewModel.FolderSettings, FilesystemViewModel.WorkingDirectory, FilesystemViewModel.FilesAndFolders.ToList());
         }
     }
 
@@ -165,24 +165,24 @@ public sealed partial class ModernShellPage : BaseShellPage
 		}
 	}
 
-	protected override void ViewModel_WorkingDirectoryModified(object sender, WorkingDirectoryModifiedEventArgs e)
-	{
-		if (string.IsNullOrWhiteSpace(e.Path))
+    protected async override void ViewModel_WorkingDirectoryModified(object sender, WorkingDirectoryModifiedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.Path))
         {
             return;
         }
 
         if (e.IsLibrary)
         {
-            UpdatePathUIToWorkingDirectory(null!, e.Name!);
+            await UpdatePathUIToWorkingDirectoryAsync(null!, e.Name!);
         }
         else
         {
-            UpdatePathUIToWorkingDirectory(e.Path);
+            await UpdatePathUIToWorkingDirectoryAsync(e.Path);
         }
     }
 
-	private async void ItemDisplayFrame_Navigated(object sender, NavigationEventArgs e)
+    private async void ItemDisplayFrame_Navigated(object sender, NavigationEventArgs e)
 	{
 		ContentPage = await GetContentOrNullAsync();
 		if (!ToolbarViewModel.SearchBox.WasQuerySubmitted)

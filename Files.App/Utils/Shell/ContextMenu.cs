@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Drawing;
@@ -38,10 +38,10 @@ public class ContextMenu : Win32ContextMenu, IDisposable
         _hMenu = hMenu;
         _owningThread = owningThread;
         _itemFilter = itemFilter;
-        _loadSubMenuActions = new();
+        _loadSubMenuActions = [];
 
         ItemsPath = itemsPath.ToList();
-        Items = new();
+        Items = [];
     }
 
     public static async Task<bool> InvokeVerb(string verb, params string[] filePaths)
@@ -67,7 +67,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
 
         try
         {
-            var currentWindows = Win32API.GetDesktopWindows();
+            var currentWindows = Win32Helper.GetDesktopWindows();
 
             var pici = new Shell32.CMINVOKECOMMANDINFOEX
             {
@@ -78,7 +78,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
             pici.cbSize = (uint)Marshal.SizeOf(pici);
 
             await _owningThread.PostMethod(() => _cMenu.InvokeCommand(pici));
-            Win32API.BringToForeground(currentWindows);
+            Win32Helper.BringToForeground(currentWindows);
 
             return true;
         }
@@ -99,7 +99,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
 
         try
         {
-            var currentWindows = Win32API.GetDesktopWindows();
+            var currentWindows = Win32Helper.GetDesktopWindows();
             var pici = new Shell32.CMINVOKECOMMANDINFOEX
             {
                 lpVerb = Macros.MAKEINTRESOURCE(itemID),
@@ -109,7 +109,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
             pici.cbSize = (uint)Marshal.SizeOf(pici);
 
             await _owningThread.PostMethod(() => _cMenu.InvokeCommand(pici));
-            Win32API.BringToForeground(currentWindows);
+            Win32Helper.BringToForeground(currentWindows);
 
             return true;
         }
@@ -136,7 +136,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
                     shellItems.Add(ShellFolderExtensions.GetShellItemFromPathOrPIDL(filePathItem));
                 }
 
-                return GetContextMenuForFiles(shellItems.ToArray(), flags, owningThread, itemFilter)!;
+                return GetContextMenuForFiles([.. shellItems], flags, owningThread, itemFilter)!;
             }
             catch
             {
@@ -245,7 +245,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
 
                 if (menuItemInfo.hbmpItem != HBITMAP.NULL && !Enum.IsDefined(typeof(HBITMAP_HMENU), ((IntPtr)menuItemInfo.hbmpItem).ToInt64()))
                 {
-                    using var bitmap = Win32API.GetBitmapFromHBitmap(menuItemInfo.hbmpItem);
+                    using var bitmap = Win32Helper.GetBitmapFromHBitmap(menuItemInfo.hbmpItem);
 
                     if (bitmap is not null)
                     {
@@ -279,6 +279,11 @@ public class ContextMenu : Win32ContextMenu, IDisposable
                         {
                             cMenu2?.HandleMenuMsg((uint)User32.WindowMessage.WM_INITMENUPOPUP, (IntPtr)hSubMenu, new IntPtr(index));
                         }
+                        catch (Exception ex) when (ex is InvalidCastException or ArgumentException)
+                        {
+                            // FILESTODO: Investigate why this exception happen
+                            Debug.WriteLine(ex);
+                        }
                         catch (Exception ex) when (ex is COMException or NotImplementedException)
                         {
                             // Only for dynamic/owner drawn? (open with, etc)
@@ -305,7 +310,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
                     loadSubMenuAction!();
                     return true;
                 }
-                catch (COMException)
+                catch
                 {
                     return false;
                 }

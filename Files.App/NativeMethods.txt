@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 WNDPROC
@@ -31,3 +31,26 @@ LPARAM
 WM_LBUTTONUP
 WM_RBUTTONUP
 WM_DESTROY
+SetForegroundWindow
+GetForegroundWindow
+GetCurrentThreadId
+GetWindowThreadProcessId
+AttachThreadInput
+SetWindowPos
+SetFocus
+SetActiveWindow
+IsIconic
+CopyFileFromApp
+MoveFileFromApp
+DeleteFileFromApp
+RemoveDirectoryFromApp
+GetKeyState
+CreateDirectoryFromApp
+D3D_DRIVER_TYPE
+D3D_FEATURE_LEVEL
+ID3D11Device
+ID3D11DeviceContext
+D3D11CreateDevice
+IDXGIDevice
+DCompositionCreateDevice
+IDCompositionDevice

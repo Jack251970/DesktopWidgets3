@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class SortByNameAction : SortByAction
+internal sealed class SortByNameAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.Name;
@@ -13,13 +13,9 @@ internal class SortByNameAction : SortByAction
 
 	public override string Description
 		=> "SortByNameDescription".GetLocalizedResource();
-
-    public SortByNameAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class SortByDateModifiedAction : SortByAction
+internal sealed class SortByDateModifiedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.DateModified;
@@ -29,13 +25,9 @@ internal class SortByDateModifiedAction : SortByAction
 
 	public override string Description
 		=> "SortByDateModifiedDescription".GetLocalizedResource();
-
-    public SortByDateModifiedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class SortByDateCreatedAction : SortByAction
+internal sealed class SortByDateCreatedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.DateCreated;
@@ -45,13 +37,9 @@ internal class SortByDateCreatedAction : SortByAction
 
 	public override string Description
 		=> "SortByDateCreatedDescription".GetLocalizedResource();
-
-    public SortByDateCreatedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class SortBySizeAction : SortByAction
+internal sealed class SortBySizeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.Size;
@@ -61,13 +49,9 @@ internal class SortBySizeAction : SortByAction
 
 	public override string Description
 		=> "SortBySizeDescription".GetLocalizedResource();
-
-    public SortBySizeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class SortByTypeAction : SortByAction
+internal sealed class SortByTypeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.FileType;
@@ -77,13 +61,9 @@ internal class SortByTypeAction : SortByAction
 
 	public override string Description
 		=> "SortByTypeDescription".GetLocalizedResource();
-
-    public SortByTypeAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class SortBySyncStatusAction : SortByAction
+internal sealed class SortBySyncStatusAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.SyncStatus;
@@ -96,13 +76,9 @@ internal class SortBySyncStatusAction : SortByAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.CloudDrive;
-
-    public SortBySyncStatusAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class SortByTagAction : SortByAction
+internal sealed class SortByTagAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.FileTag;
@@ -112,13 +88,9 @@ internal class SortByTagAction : SortByAction
 
 	public override string Description
 		=> "SortByTagDescription".GetLocalizedResource();
-
-    public SortByTagAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class SortByPathAction : SortByAction
+internal sealed class SortByPathAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.Path;
@@ -131,13 +103,9 @@ internal class SortByPathAction : SortByAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.SearchResults;
-
-    public SortByPathAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class SortByOriginalFolderAction : SortByAction
+internal sealed class SortByOriginalFolderAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.OriginalFolder;
@@ -150,13 +118,9 @@ internal class SortByOriginalFolderAction : SortByAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.RecycleBin;
-
-    public SortByOriginalFolderAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
-internal class SortByDateDeletedAction : SortByAction
+internal sealed class SortByDateDeletedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : SortByAction(contentPageContext, displayPageContext)
 {
     protected override SortOption SortOption
 		=> SortOption.DateDeleted;
@@ -169,10 +133,6 @@ internal class SortByDateDeletedAction : SortByAction
 
 	protected override bool GetIsExecutable(ContentPageTypes pageType)
 		=> pageType is ContentPageTypes.RecycleBin;
-
-    public SortByDateDeletedAction(IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) : base(contentPageContext, displayPageContext)
-    {
-    }
 }
 
 internal abstract class SortByAction : ObservableObject, IToggleAction
@@ -202,7 +162,7 @@ internal abstract class SortByAction : ObservableObject, IToggleAction
 		displayContext.PropertyChanged += DisplayContext_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		displayContext.SortOption = SortOption;
 
@@ -228,7 +188,7 @@ internal abstract class SortByAction : ObservableObject, IToggleAction
     }
 }
 
-internal class SortAscendingAction : ObservableObject, IToggleAction
+internal sealed class SortAscendingAction : ObservableObject, IToggleAction
 {
 	private readonly IDisplayPageContext context;
 
@@ -248,7 +208,7 @@ internal class SortAscendingAction : ObservableObject, IToggleAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		context.SortDirection = SortDirection.Ascending;
 
@@ -264,7 +224,7 @@ internal class SortAscendingAction : ObservableObject, IToggleAction
     }
 }
 
-internal class SortDescendingAction : ObservableObject, IToggleAction
+internal sealed class SortDescendingAction : ObservableObject, IToggleAction
 {
 	private readonly IDisplayPageContext context;
 
@@ -284,7 +244,7 @@ internal class SortDescendingAction : ObservableObject, IToggleAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		context.SortDirection = SortDirection.Descending;
 
@@ -300,9 +260,9 @@ internal class SortDescendingAction : ObservableObject, IToggleAction
     }
 }
 
-internal class ToggleSortDirectionAction : IAction
+internal sealed class ToggleSortDirectionAction(IDisplayPageContext context) : IAction
 {
-	private readonly IDisplayPageContext context;
+	private readonly IDisplayPageContext context = context;
 
 	public string Label
 		=> "ToggleSortDirection".GetLocalizedResource();
@@ -310,12 +270,7 @@ internal class ToggleSortDirectionAction : IAction
 	public string Description
 		=> "ToggleSortDirectionDescription".GetLocalizedResource();
 
-	public ToggleSortDirectionAction(IDisplayPageContext context)
-    {
-        this.context = context;
-    }
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		context.SortDirection =
 			context.SortDirection is SortDirection.Descending

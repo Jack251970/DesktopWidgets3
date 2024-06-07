@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
@@ -10,22 +10,15 @@ using Windows.Storage.Streams;
 
 namespace Files.App.Utils.Storage;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-public class InputStreamWithDisposeCallback : IInputStream
+public sealed class InputStreamWithDisposeCallback(Stream stream) : IInputStream
 {
-	private readonly Stream stream;
-	private readonly IInputStream iStream;
+	private readonly Stream stream = stream;
+	private readonly IInputStream iStream = stream.AsInputStream();
 	public Action DisposeCallback { get; set; }
 
-	public InputStreamWithDisposeCallback(Stream stream)
-	{
-		this.stream = stream;
-		iStream = stream.AsInputStream();
-	}
-
-	public IAsyncOperationWithProgress<IBuffer, uint> ReadAsync(IBuffer buffer, uint count, InputStreamOptions options)
+    public IAsyncOperationWithProgress<IBuffer, uint> ReadAsync(IBuffer buffer, uint count, InputStreamOptions options)
 	{
 		return iStream.ReadAsync(buffer, count, options);
 	}
@@ -38,24 +31,17 @@ public class InputStreamWithDisposeCallback : IInputStream
 	}
 }
 
-public class NonSeekableRandomAccessStreamForWrite : IRandomAccessStream
+public sealed class NonSeekableRandomAccessStreamForWrite(Stream stream) : IRandomAccessStream
 {
-	private readonly Stream stream;
-	private readonly IOutputStream oStream;
-	private readonly IRandomAccessStream imrac;
+	private readonly Stream stream = stream;
+	private readonly IOutputStream oStream = stream.AsOutputStream();
+	private readonly IRandomAccessStream imrac = new InMemoryRandomAccessStream();
 	private ulong byteSize;
 	private bool isWritten;
 
 	public Action DisposeCallback { get; set; }
 
-	public NonSeekableRandomAccessStreamForWrite(Stream stream)
-	{
-		this.stream = stream;
-		oStream = stream.AsOutputStream();
-		imrac = new InMemoryRandomAccessStream();
-	}
-
-	public IInputStream GetInputStreamAt(ulong position)
+    public IInputStream GetInputStreamAt(ulong position)
 	{
 		throw new NotSupportedException();
 	}
@@ -133,26 +119,17 @@ public class NonSeekableRandomAccessStreamForWrite : IRandomAccessStream
 	}
 }
 
-public class NonSeekableRandomAccessStreamForRead : IRandomAccessStream
+public sealed class NonSeekableRandomAccessStreamForRead(Stream baseStream, ulong size) : IRandomAccessStream
 {
-	private readonly Stream stream;
-	private readonly IRandomAccessStream imrac;
-	private ulong virtualPosition;
-	private ulong readToByte;
-	private readonly ulong byteSize;
+	private readonly Stream stream = baseStream;
+	private readonly IRandomAccessStream imrac = new InMemoryRandomAccessStream();
+	private ulong virtualPosition = 0;
+	private ulong readToByte = 0;
+	private readonly ulong byteSize = size;
 
 	public Action DisposeCallback { get; set; }
 
-	public NonSeekableRandomAccessStreamForRead(Stream baseStream, ulong size)
-	{
-		stream = baseStream;
-		imrac = new InMemoryRandomAccessStream();
-		virtualPosition = 0;
-		readToByte = 0;
-		byteSize = size;
-	}
-
-	public IInputStream GetInputStreamAt(ulong position)
+    public IInputStream GetInputStreamAt(ulong position)
 	{
 		Seek(position);
 		return this;
@@ -228,16 +205,11 @@ public class NonSeekableRandomAccessStreamForRead : IRandomAccessStream
 	}
 }
 
-public class StreamWithContentType : IRandomAccessStreamWithContentType
+public sealed class StreamWithContentType(IRandomAccessStream stream) : IRandomAccessStreamWithContentType
 {
-	private readonly IRandomAccessStream baseStream;
+	private readonly IRandomAccessStream baseStream = stream;
 
-	public StreamWithContentType(IRandomAccessStream stream)
-	{
-		baseStream = stream;
-	}
-
-	public IInputStream GetInputStreamAt(ulong position) => baseStream.GetInputStreamAt(position);
+    public IInputStream GetInputStreamAt(ulong position) => baseStream.GetInputStreamAt(position);
 
 	public IOutputStream GetOutputStreamAt(ulong position) => baseStream.GetOutputStreamAt(position);
 
@@ -270,7 +242,7 @@ public class StreamWithContentType : IRandomAccessStreamWithContentType
 	public string ContentType { get; set; } = "application/octet-stream";
 }
 
-public class ComStreamWrapper : Stream
+public sealed class ComStreamWrapper : Stream
 {
 	private readonly IStream iStream;
 	private STATSTG iStreamStat;

@@ -1,7 +1,7 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.ViewModels.Dialogs;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 
@@ -9,14 +9,21 @@ namespace Files.App.Dialogs;
 
 public sealed partial class CreateShortcutDialog : ContentDialog, IDialog<CreateShortcutDialogViewModel>
 {
-	public CreateShortcutDialogViewModel ViewModel
+    private readonly IFolderViewViewModel FolderViewViewModel;
+
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;
+
+    public CreateShortcutDialogViewModel ViewModel
 	{
 		get => (CreateShortcutDialogViewModel)DataContext;
 		set => DataContext = value;
 	}
 
-	public CreateShortcutDialog()
+	public CreateShortcutDialog(IFolderViewViewModel folderViewViewModel)
 	{
+        FolderViewViewModel = folderViewViewModel;
+
 		InitializeComponent();
 		Closing += CreateShortcutDialog_Closing;
 

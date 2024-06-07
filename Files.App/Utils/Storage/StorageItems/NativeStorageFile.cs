@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
+using Windows.Win32;
 using IO = System.IO;
 
 namespace Files.App.Utils.Storage;
@@ -17,249 +18,240 @@ namespace Files.App.Utils.Storage;
 /// Shortcuts and alternate data stream.
 /// Uses *FromApp methods for file operations
 /// </summary>
-public partial class NativeStorageFile : BaseStorageFile
+public sealed class NativeStorageFile(string path, string name, DateTimeOffset dateCreated) : BaseStorageFile
 {
-	public override string Path { get; }
-	public override string Name { get; }
-	public override string DisplayName => Name;
-	public override string ContentType => "application/octet-stream";
-	public override string FileType => IO.Path.GetExtension(Name);
-	public override string FolderRelativeId => $"0\\{Name}";
+    public override string Path { get; } = path;
+    public override string Name { get; } = name;
+    public override string DisplayName => Name;
+    public override string ContentType => "application/octet-stream";
+    public override string FileType => IO.Path.GetExtension(Name);
+    public override string FolderRelativeId => $"0\\{Name}";
 
-	public bool IsShortcut => FileExtensionHelpers.IsShortcutOrUrlFile(FileType);
-	public bool IsAlternateStream => MyRegex().IsMatch(Path);
+    public bool IsShortcut => FileExtensionHelpers.IsShortcutOrUrlFile(FileType);
+    public bool IsAlternateStream => RegexHelpers.AlternateStream().IsMatch(Path);
 
-	public override string DisplayType
-	{
-		get
-		{
-			var itemType = "File".GetLocalizedResource();
+    public override string DisplayType
+    {
+        get
+        {
+            var itemType = "File".GetLocalizedResource();
 
-			if (Name.Contains('.', StringComparison.Ordinal))
+            if (Name.Contains('.', StringComparison.Ordinal))
             {
                 itemType = IO.Path.GetExtension(Name).Trim('.') + " " + itemType;
             }
 
             return itemType;
-		}
-	}
+        }
+    }
 
-	public override DateTimeOffset DateCreated { get; }
-	public override Windows.Storage.FileAttributes Attributes { get; } = Windows.Storage.FileAttributes.Normal;
-	public override IStorageItemExtraProperties Properties => new BaseBasicStorageItemExtraProperties(this);
+    public override DateTimeOffset DateCreated { get; } = dateCreated;
+    public override Windows.Storage.FileAttributes Attributes { get; } = Windows.Storage.FileAttributes.Normal;
+    public override IStorageItemExtraProperties Properties => new BaseBasicStorageItemExtraProperties(this);
 
-	public NativeStorageFile(string path, string name, DateTimeOffset dateCreated)
-	{
-		Path = path;
-		Name = name;
-		DateCreated = dateCreated;
-	}
+    public override IAsyncAction CopyAndReplaceAsync(IStorageFile fileToReplace)
+        => throw new NotSupportedException();
 
-	public override IAsyncAction CopyAndReplaceAsync(IStorageFile fileToReplace)
-		=> throw new NotSupportedException();
+    public override IAsyncOperation<BaseStorageFile> CopyAsync(IStorageFolder destinationFolder)
+        => CopyAsync(destinationFolder, Name, NameCollisionOption.FailIfExists);
 
-	public override IAsyncOperation<BaseStorageFile> CopyAsync(IStorageFolder destinationFolder)
-		=> CopyAsync(destinationFolder, Name, NameCollisionOption.FailIfExists);
+    public override IAsyncOperation<BaseStorageFile> CopyAsync(IStorageFolder destinationFolder, string desiredNewName)
+        => CopyAsync(destinationFolder, desiredNewName, NameCollisionOption.FailIfExists);
 
-	public override IAsyncOperation<BaseStorageFile> CopyAsync(IStorageFolder destinationFolder, string desiredNewName)
-		=> CopyAsync(destinationFolder, desiredNewName, NameCollisionOption.FailIfExists);
-
-	public override IAsyncOperation<BaseStorageFile> CopyAsync(IStorageFolder destinationFolder, string desiredNewName, NameCollisionOption option)
-	{
-		return AsyncInfo.Run<BaseStorageFile>(async (cancellationToken) =>
-		{
-			if (string.IsNullOrEmpty(destinationFolder.Path))
-			{
-				throw new NotSupportedException();
-			}
-			var destination = IO.Path.Combine(destinationFolder.Path, desiredNewName);
-			var destFile = new NativeStorageFile(destination, desiredNewName, DateTime.Now);
-			if (!IsAlternateStream)
-			{
-				if (!await Task.Run(() => NativeFileOperationsHelper.CopyFileFromApp(Path, destination, option != NameCollisionOption.ReplaceExisting)))
-				{
-					throw new Win32Exception(Marshal.GetLastWin32Error());
-				}
-			}
-			else
-			{
-				destFile.CreateFile();
+    public override IAsyncOperation<BaseStorageFile> CopyAsync(IStorageFolder destinationFolder, string desiredNewName, NameCollisionOption option)
+    {
+        return AsyncInfo.Run<BaseStorageFile>(async (cancellationToken) =>
+        {
+            if (string.IsNullOrEmpty(destinationFolder.Path))
+            {
+                throw new NotSupportedException();
+            }
+            var destination = IO.Path.Combine(destinationFolder.Path, desiredNewName);
+            var destFile = new NativeStorageFile(destination, desiredNewName, DateTime.Now);
+            if (!IsAlternateStream)
+            {
+                if (!await Task.Run(() => PInvoke.CopyFileFromApp(Path, destination, option != NameCollisionOption.ReplaceExisting)))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+            }
+            else
+            {
+                destFile.CreateFile();
                 using var inStream = await this.OpenStreamForReadAsync();
                 using var outStream = await destFile.OpenStreamForWriteAsync();
                 await inStream.CopyToAsync(outStream, cancellationToken);
                 await outStream.FlushAsync(cancellationToken);
             }
-			return destFile;
-		});
-	}
+            return destFile;
+        });
+    }
 
-	private void CreateFile()
-	{
-		using var hFile = NativeFileOperationsHelper.CreateFileForWrite(Path, false);
-		if (hFile.IsInvalid)
-		{
-			throw new Win32Exception(Marshal.GetLastWin32Error());
-		}
-	}
+    private void CreateFile()
+    {
+        using var hFile = Win32Helper.CreateFileForWrite(Path, false);
+        if (hFile.IsInvalid)
+        {
+            throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+    }
 
-	public override IAsyncAction DeleteAsync()
-	{
-		return AsyncInfo.Run(async (cancellationToken) =>
-		{
-			if (!NativeFileOperationsHelper.DeleteFileFromApp(Path))
-			{
-				throw new Win32Exception(Marshal.GetLastWin32Error());
-			}
-            await Task.CompletedTask;
-		});
-	}
+    public override IAsyncAction DeleteAsync()
+    {
+        return AsyncInfo.Run(_ =>
+        {
+            if (!PInvoke.DeleteFileFromApp(Path))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
 
-	public override IAsyncAction DeleteAsync(StorageDeleteOption option)
-	{
-		if (option == StorageDeleteOption.PermanentDelete)
-		{
-			return DeleteAsync();
-		}
-		throw new NotSupportedException();
-	}
+            return Task.CompletedTask;
+        });
+    }
 
-	public override IAsyncOperation<BaseBasicProperties> GetBasicPropertiesAsync()
-	{
-		return Task.FromResult(new BaseBasicProperties()).AsAsyncOperation();
-	}
+    public override IAsyncAction DeleteAsync(StorageDeleteOption option)
+    {
+        if (option == StorageDeleteOption.PermanentDelete)
+        {
+            return DeleteAsync();
+        }
+        throw new NotSupportedException();
+    }
 
-	public override IAsyncOperation<BaseStorageFolder> GetParentAsync()
-		=> throw new NotSupportedException();
+    public override IAsyncOperation<BaseBasicProperties> GetBasicPropertiesAsync()
+    {
+        return Task.FromResult(new BaseBasicProperties()).AsAsyncOperation();
+    }
 
-	public override IAsyncOperation<StorageItemThumbnail> GetThumbnailAsync(ThumbnailMode mode)
-		=> throw new NotSupportedException();
+    public override IAsyncOperation<BaseStorageFolder> GetParentAsync()
+        => throw new NotSupportedException();
 
-	public override IAsyncOperation<StorageItemThumbnail> GetThumbnailAsync(ThumbnailMode mode, uint requestedSize)
-		=> throw new NotSupportedException();
+    public override IAsyncOperation<StorageItemThumbnail> GetThumbnailAsync(ThumbnailMode mode)
+        => throw new NotSupportedException();
 
-	public override IAsyncOperation<StorageItemThumbnail> GetThumbnailAsync(ThumbnailMode mode, uint requestedSize, ThumbnailOptions options)
-		=> throw new NotSupportedException();
+    public override IAsyncOperation<StorageItemThumbnail> GetThumbnailAsync(ThumbnailMode mode, uint requestedSize)
+        => throw new NotSupportedException();
 
-	public static IAsyncOperation<BaseStorageFile> FromPathAsync(string path)
-	{
-		if (IsNativePath(path) && CheckAccess(path))
-		{
-			var name = IO.Path.GetFileName(path);
-			return Task.FromResult((BaseStorageFile)new NativeStorageFile(path, name[(name.LastIndexOf(":") + 1)..], DateTime.Now)).AsAsyncOperation();
-		}
-		return Task.FromResult<BaseStorageFile>(null!).AsAsyncOperation();
-	}
+    public override IAsyncOperation<StorageItemThumbnail> GetThumbnailAsync(ThumbnailMode mode, uint requestedSize, ThumbnailOptions options)
+        => throw new NotSupportedException();
 
-	private static bool CheckAccess(string path)
-	{
-		using var hFile = NativeFileOperationsHelper.OpenFileForRead(path);
-		return !hFile.IsInvalid;
-	}
+    public static IAsyncOperation<BaseStorageFile> FromPathAsync(string path)
+    {
+        if (IsNativePath(path) && CheckAccess(path))
+        {
+            var name = IO.Path.GetFileName(path);
+            return Task.FromResult((BaseStorageFile)new NativeStorageFile(path, name[(name.LastIndexOf(':') + 1)..], DateTime.Now)).AsAsyncOperation();
+        }
+        return Task.FromResult<BaseStorageFile>(null!).AsAsyncOperation();
+    }
 
-	private static bool IsNativePath(string path)
-	{
-		var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path);
-		var isAlternateStream = MyRegex().IsMatch(path);
-		return isShortcut || isAlternateStream;
-	}
+    private static bool CheckAccess(string path)
+    {
+        using var hFile = Win32Helper.OpenFileForRead(path);
+        return !hFile.IsInvalid;
+    }
 
-	public override bool IsEqual(IStorageItem item) => item?.Path == Path;
-	public override bool IsOfType(StorageItemTypes type) => type is StorageItemTypes.File;
+    private static bool IsNativePath(string path)
+    {
+        var isShortcut = FileExtensionHelpers.IsShortcutOrUrlFile(path);
+        var isAlternateStream = RegexHelpers.AlternateStream().IsMatch(path);
+        return isShortcut || isAlternateStream;
+    }
 
-	public override IAsyncAction MoveAndReplaceAsync(IStorageFile fileToReplace)
-		=> throw new NotSupportedException();
+    public override bool IsEqual(IStorageItem item) => item?.Path == Path;
+    public override bool IsOfType(StorageItemTypes type) => type is StorageItemTypes.File;
 
-	public override IAsyncAction MoveAsync(IStorageFolder destinationFolder)
-		=> MoveAsync(destinationFolder, Name, NameCollisionOption.FailIfExists);
+    public override IAsyncAction MoveAndReplaceAsync(IStorageFile fileToReplace)
+        => throw new NotSupportedException();
 
-	public override IAsyncAction MoveAsync(IStorageFolder destinationFolder, string desiredNewName)
-		=> MoveAsync(destinationFolder, desiredNewName, NameCollisionOption.FailIfExists);
+    public override IAsyncAction MoveAsync(IStorageFolder destinationFolder)
+        => MoveAsync(destinationFolder, Name, NameCollisionOption.FailIfExists);
 
-	public override IAsyncAction MoveAsync(IStorageFolder destinationFolder, string desiredNewName, NameCollisionOption option)
-	{
-		return AsyncInfo.Run(async (cancellationToken) =>
-		{
-			if (string.IsNullOrEmpty(destinationFolder.Path))
-			{
-				throw new NotSupportedException();
-			}
-			var destination = IO.Path.Combine(destinationFolder.Path, desiredNewName);
-			if (!IsAlternateStream)
-			{
-				if (!await Task.Run(() => NativeFileOperationsHelper.MoveFileFromApp(Path, destination)))
-				{
-					throw new Win32Exception(Marshal.GetLastWin32Error());
-				}
-			}
-			else
-			{
-				await CopyAsync(destinationFolder, desiredNewName, option);
-				await DeleteAsync();
-			}
-		});
-	}
+    public override IAsyncAction MoveAsync(IStorageFolder destinationFolder, string desiredNewName)
+        => MoveAsync(destinationFolder, desiredNewName, NameCollisionOption.FailIfExists);
 
-	public override IAsyncOperation<IRandomAccessStream> OpenAsync(FileAccessMode accessMode)
-	{
-		var hFile = NativeFileOperationsHelper.OpenFileForRead(Path, accessMode == FileAccessMode.ReadWrite);
-		return Task.FromResult(new FileStream(hFile, accessMode == FileAccessMode.ReadWrite ? FileAccess.ReadWrite : FileAccess.Read).AsRandomAccessStream()).AsAsyncOperation();
-	}
+    public override IAsyncAction MoveAsync(IStorageFolder destinationFolder, string desiredNewName, NameCollisionOption option)
+    {
+        return AsyncInfo.Run(async (cancellationToken) =>
+        {
+            if (string.IsNullOrEmpty(destinationFolder.Path))
+            {
+                throw new NotSupportedException();
+            }
+            var destination = IO.Path.Combine(destinationFolder.Path, desiredNewName);
+            if (!IsAlternateStream)
+            {
+                if (!await Task.Run(() => PInvoke.MoveFileFromApp(Path, destination)))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+            }
+            else
+            {
+                await CopyAsync(destinationFolder, desiredNewName, option);
+                await DeleteAsync();
+            }
+        });
+    }
 
-	public override IAsyncOperation<IRandomAccessStream> OpenAsync(FileAccessMode accessMode, StorageOpenOptions options) => OpenAsync(accessMode);
+    public override IAsyncOperation<IRandomAccessStream> OpenAsync(FileAccessMode accessMode)
+    {
+        var hFile = Win32Helper.OpenFileForRead(Path, accessMode == FileAccessMode.ReadWrite);
+        return Task.FromResult(new FileStream(hFile, accessMode == FileAccessMode.ReadWrite ? FileAccess.ReadWrite : FileAccess.Read).AsRandomAccessStream()).AsAsyncOperation();
+    }
 
-	public override IAsyncOperation<IRandomAccessStreamWithContentType> OpenReadAsync()
-	{
-		return AsyncInfo.Run<IRandomAccessStreamWithContentType>(async (cancellationToken) =>
-		{
-			return new StreamWithContentType(await OpenAsync(FileAccessMode.Read));
-		});
-	}
+    public override IAsyncOperation<IRandomAccessStream> OpenAsync(FileAccessMode accessMode, StorageOpenOptions options) => OpenAsync(accessMode);
 
-	public override IAsyncOperation<IInputStream> OpenSequentialReadAsync()
-	{
-		var hFile = NativeFileOperationsHelper.OpenFileForRead(Path);
-		return Task.FromResult(new FileStream(hFile, FileAccess.Read).AsInputStream()).AsAsyncOperation();
-	}
+    public override IAsyncOperation<IRandomAccessStreamWithContentType> OpenReadAsync()
+    {
+        return AsyncInfo.Run<IRandomAccessStreamWithContentType>(async (cancellationToken) =>
+        {
+            return new StreamWithContentType(await OpenAsync(FileAccessMode.Read));
+        });
+    }
 
-	public override IAsyncOperation<StorageStreamTransaction> OpenTransactedWriteAsync()
-		=> throw new NotSupportedException();
+    public override IAsyncOperation<IInputStream> OpenSequentialReadAsync()
+    {
+        var hFile = Win32Helper.OpenFileForRead(Path);
+        return Task.FromResult(new FileStream(hFile, FileAccess.Read).AsInputStream()).AsAsyncOperation();
+    }
 
-	public override IAsyncOperation<StorageStreamTransaction> OpenTransactedWriteAsync(StorageOpenOptions options)
-		=> throw new NotSupportedException();
+    public override IAsyncOperation<StorageStreamTransaction> OpenTransactedWriteAsync()
+        => throw new NotSupportedException();
 
-	public override IAsyncAction RenameAsync(string desiredName)
-		=> RenameAsync(desiredName, NameCollisionOption.FailIfExists);
+    public override IAsyncOperation<StorageStreamTransaction> OpenTransactedWriteAsync(StorageOpenOptions options)
+        => throw new NotSupportedException();
 
-	public override IAsyncAction RenameAsync(string desiredName, NameCollisionOption option)
-	{
-		return AsyncInfo.Run(async (cancellationToken) =>
-		{
-			var destination = IO.Path.Combine(IO.Path.GetDirectoryName(Path)!, desiredName);
-			var destFile = new NativeStorageFile(destination, desiredName, DateTime.Now);
-			if (!IsAlternateStream)
-			{
-				if (!await Task.Run(() => NativeFileOperationsHelper.MoveFileFromApp(Path, destination)))
-				{
-					throw new Win32Exception(Marshal.GetLastWin32Error());
-				}
-			}
-			else
-			{
-				destFile.CreateFile();
-				using (var inStream = await this.OpenStreamForReadAsync())
-				using (var outStream = await destFile.OpenStreamForWriteAsync())
-				{
-					await inStream.CopyToAsync(outStream, cancellationToken);
-					await outStream.FlushAsync(cancellationToken);
-				}
-				await DeleteAsync();
-			}
-		});
-	}
+    public override IAsyncAction RenameAsync(string desiredName)
+        => RenameAsync(desiredName, NameCollisionOption.FailIfExists);
 
-	public override IAsyncOperation<StorageFile> ToStorageFileAsync()
-		=> throw new NotSupportedException();
+    public override IAsyncAction RenameAsync(string desiredName, NameCollisionOption option)
+    {
+        return AsyncInfo.Run(async (cancellationToken) =>
+        {
+            var destination = IO.Path.Combine(IO.Path.GetDirectoryName(Path)!, desiredName);
+            var destFile = new NativeStorageFile(destination, desiredName, DateTime.Now);
+            if (!IsAlternateStream)
+            {
+                if (!await Task.Run(() => PInvoke.MoveFileFromApp(Path, destination)))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+            }
+            else
+            {
+                destFile.CreateFile();
+                using (var inStream = await this.OpenStreamForReadAsync())
+                using (var outStream = await destFile.OpenStreamForWriteAsync())
+                {
+                    await inStream.CopyToAsync(outStream, cancellationToken);
+                    await outStream.FlushAsync(cancellationToken);
+                }
+                await DeleteAsync();
+            }
+        });
+    }
 
-    [System.Text.RegularExpressions.GeneratedRegex("\\w:\\w")]
-    private static partial System.Text.RegularExpressions.Regex MyRegex();
+    public override IAsyncOperation<StorageFile> ToStorageFileAsync()
+        => throw new NotSupportedException();
 }

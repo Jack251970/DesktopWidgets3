@@ -1,10 +1,9 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Dispatching;
 using System.IO;
 using Windows.Storage.FileProperties;
-using static Files.Core.Helpers.NativeFindStorageItemHelper;
 using FileAttributes = System.IO.FileAttributes;
 
 namespace Files.App.ViewModels.Properties;
@@ -28,11 +27,11 @@ public abstract class BaseProperties
 		var dateAccessedProperty = "System.DateAccessed";
         var dateModifiedProperty = "System.DateModified";
 
-        List<string> propertiesName = new()
-		{
+        List<string> propertiesName =
+		[
 			dateAccessedProperty,
             dateModifiedProperty
-        };  // TODO: Remove new() and replace with []
+        ];
 
 		var extraProperties = await properties.RetrievePropertiesAsync(propertiesName);
 
@@ -52,15 +51,15 @@ public abstract class BaseProperties
 
 		long size = 0;
 		long sizeOnDisk = 0;
-		var findInfoLevel = FINDEX_INFO_LEVELS.FindExInfoBasic;
-		var additionalFlags = FIND_FIRST_EX_LARGE_FETCH;
+		var findInfoLevel = Win32PInvoke.FINDEX_INFO_LEVELS.FindExInfoBasic;
+        var additionalFlags = Win32PInvoke.FIND_FIRST_EX_LARGE_FETCH;
 
-		var hFile = FindFirstFileExFromApp(
+        var hFile = Win32PInvoke.FindFirstFileExFromApp(
 			path + "\\*.*",
 			findInfoLevel,
 			out var findData,
-			FINDEX_SEARCH_OPS.FindExSearchNameMatch,
-			IntPtr.Zero,
+            Win32PInvoke.FINDEX_SEARCH_OPS.FindExSearchNameMatch,
+            IntPtr.Zero,
 			additionalFlags);
 
 		var count = 0;
@@ -77,7 +76,7 @@ public abstract class BaseProperties
                 if (((FileAttributes)findData.dwFileAttributes & FileAttributes.Directory) != FileAttributes.Directory)
 				{
 					size += findData.GetSize();
-					var fileSizeOnDisk = NativeFileOperationsHelper.GetFileSizeOnDisk(Path.Combine(path, findData.cFileName));
+					var fileSizeOnDisk = Win32Helper.GetFileSizeOnDisk(Path.Combine(path, findData.cFileName));
 					sizeOnDisk += fileSizeOnDisk ?? 0;
 					++count;
 					ViewModel.FilesCount++;
@@ -111,9 +110,9 @@ public abstract class BaseProperties
                     break;
                 }
             }
-			while (FindNextFile(hFile, out findData));
+			while (Win32PInvoke.FindNextFile(hFile, out findData));
 
-			FindClose(hFile);
+            Win32PInvoke.FindClose(hFile);
 
 			return (size, sizeOnDisk);
 		}

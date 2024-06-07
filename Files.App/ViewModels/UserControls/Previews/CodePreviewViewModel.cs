@@ -1,16 +1,17 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using System.Collections.Frozen;
 using ColorCode;
 using Files.App.ViewModels.Properties;
 
 namespace Files.App.ViewModels.Previews;
 
-public class CodePreviewViewModel : BasePreviewModel
+public sealed class CodePreviewViewModel : BasePreviewModel
 {
-	private static readonly Lazy<IReadOnlyDictionary<string, ILanguage>> extensions = new(GetDictionary);
+    private static readonly FrozenDictionary<string, ILanguage> extensions = GetDictionary();
 
-	private string textValue = null!;
+    private string textValue = null!;
 	public string TextValue
 	{
 		get => textValue;
@@ -29,10 +30,10 @@ public class CodePreviewViewModel : BasePreviewModel
 	{
 	}
 
-	public static bool ContainsExtension(string extension)
-		=> extensions.Value.ContainsKey(extension);
+    public static bool ContainsExtension(string extension)
+        => extensions.ContainsKey(extension);
 
-	public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
+    public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
 	{
 		var details = new List<FileProperty>();
 
@@ -41,8 +42,8 @@ public class CodePreviewViewModel : BasePreviewModel
 			var text = TextValue ?? await ReadFileAsTextAsync(Item.ItemFile);
 			details.Add(GetFileProperty("PropertyLineCount", text.Split('\n').Length));
 
-			CodeLanguage = extensions.Value[Item.FileExtension.ToLowerInvariant()];
-			TextValue = text.Left(Constants.PreviewPane.TextCharacterLimit);
+            CodeLanguage = extensions[Item.FileExtension.ToLowerInvariant()];
+            TextValue = text.Left(Constants.PreviewPane.TextCharacterLimit);
 		}
 		catch (Exception e)
 		{
@@ -52,9 +53,9 @@ public class CodePreviewViewModel : BasePreviewModel
 		return details;
 	}
 
-	private static IReadOnlyDictionary<string, ILanguage> GetDictionary()
-	{
-		var items = new Dictionary<ILanguage, string>
+    private static FrozenDictionary<string, ILanguage> GetDictionary()
+    {
+        var items = new Dictionary<ILanguage, string>
 		{
 			[Languages.Aspx] = "aspx",
 			[Languages.AspxCs] = "acsx",
@@ -84,6 +85,6 @@ public class CodePreviewViewModel : BasePreviewModel
 			}
 		}
 
-		return new ReadOnlyDictionary<string, ILanguage>(dictionary);
-	}
+        return dictionary.ToFrozenDictionary();
+    }
 }

@@ -1,14 +1,20 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Dialogs;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.Dialogs;
 
 public sealed partial class DynamicDialog : ContentDialog, IDisposable
 {
-	public DynamicDialogViewModel ViewModel
+    private readonly IFolderViewViewModel FolderViewViewModel;
+
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;
+
+    public DynamicDialogViewModel ViewModel
 	{
 		get => (DynamicDialogViewModel)DataContext;
 		private set => DataContext = value;
@@ -21,8 +27,10 @@ public sealed partial class DynamicDialog : ContentDialog, IDisposable
 		return this.TryShowAsync(viewModel);
 	}
 
-	public DynamicDialog(DynamicDialogViewModel dynamicDialogViewModel)
+	public DynamicDialog(IFolderViewViewModel folderViewViewModel, DynamicDialogViewModel dynamicDialogViewModel)
 	{
+        FolderViewViewModel = folderViewViewModel;
+
 		InitializeComponent();
 
 		dynamicDialogViewModel.HideDialog = Hide;

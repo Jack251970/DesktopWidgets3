@@ -1,13 +1,13 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Windows.ApplicationModel.DataTransfer;
 
 namespace Files.App.Actions;
 
-internal class CopyPathAction : IAction
+internal sealed class CopyPathAction(IContentPageContext context) : IAction
 {
-	private readonly IContentPageContext context;
+	private readonly IContentPageContext context = context;
 
 	public string Label
 		=> "CopyPath".GetLocalizedResource();
@@ -24,12 +24,7 @@ internal class CopyPathAction : IAction
 	public bool IsExecutable
 		=> context.HasSelection;
 
-	public CopyPathAction(IContentPageContext context)
-    {
-        this.context = context;
-    }
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.ShellPage?.SlimContentPage is not null)
 		{

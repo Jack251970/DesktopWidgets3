@@ -1,21 +1,18 @@
-﻿// Copyright(c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Dispatching;
 
 namespace Files.App.ViewModels.Properties;
 
-internal class CombinedFileProperties : CombinedProperties, IFileProperties
+internal sealed class CombinedFileProperties(
+    SelectedItemsPropertiesViewModel viewModel,
+    CancellationTokenSource tokenSource,
+    DispatcherQueue coreDispatcher,
+    List<ListedItem> listedItems,
+    IShellPage instance) : CombinedProperties(viewModel, tokenSource, coreDispatcher, listedItems, instance), IFileProperties
 {
-	public CombinedFileProperties(
-		SelectedItemsPropertiesViewModel viewModel,
-		CancellationTokenSource tokenSource,
-		DispatcherQueue coreDispatcher,
-		List<ListedItem> listedItems,
-		IShellPage instance)
-		: base(viewModel, tokenSource, coreDispatcher, listedItems, instance) { }
-
-	public async Task GetSystemFilePropertiesAsync()
+    public async Task GetSystemFilePropertiesAsync()
 	{
 		var queries = await Task.WhenAll(List.AsParallel().Select(async item => {
             BaseStorageFile file = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileFromPathAsync(item.ItemPath));
@@ -32,16 +29,6 @@ internal class CombinedFileProperties : CombinedProperties, IFileProperties
 				await LocationHelpers.GetAddressFromCoordinatesAsync((double?)list.Find(
 					x => x.Property == "System.GPS.LatitudeDecimal")!.Value,
 					(double?)list.Find(x => x.Property == "System.GPS.LongitudeDecimal")!.Value);
-
-			// Find Encoding Bitrate property and convert it to kbps
-			var encodingBitrate = list.Find(x => x.Property == "System.Audio.EncodingBitrate");
-			if (encodingBitrate?.Value is not null)
-			{
-				var sizes = new string[] { "Bps", "KBps", "MBps", "GBps" };
-				var order = (int)Math.Floor(Math.Log((uint)encodingBitrate.Value, 1024));
-				var readableSpeed = (uint)encodingBitrate.Value / Math.Pow(1024, order);
-				encodingBitrate.Value = $"{readableSpeed:0.##} {sizes[order]}";
-			}
 
 			return list
 				.Where(fileProp => !(fileProp.Value is null && fileProp.IsReadOnly))
@@ -100,12 +87,12 @@ internal class CombinedFileProperties : CombinedProperties, IFileProperties
 			{
 				if (!prop.IsReadOnly && prop.Modified)
 				{
-					var newDict = new Dictionary<string, object>
+                    var newDict = new Dictionary<string, object>
                     {
                         { prop.Property, prop.Value }
                     };
 
-					foreach (var file in files)
+                    foreach (var file in files)
 					{
 						try
 						{

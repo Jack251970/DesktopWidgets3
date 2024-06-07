@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
@@ -31,7 +31,7 @@ internal abstract class BaseRunAsAction : ObservableObject, IAction
 		_context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public async Task ExecuteAsync()
+	public async Task ExecuteAsync(object? parameter = null)
 	{
 		await ContextMenu.InvokeVerb(_verb, _context.SelectedItem!.ItemPath);
 	}

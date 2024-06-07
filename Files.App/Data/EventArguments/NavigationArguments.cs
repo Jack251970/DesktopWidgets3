@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Data.EventArguments;
@@ -9,7 +9,7 @@ public class NavigationArguments
 
 	public string? NavPathParam { get; set; } = null;
 
-    // CHECK: Required is just for checking.
+    // CHECK: Required is just for final checking.
     public /*required*/ IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     public IShellPage? AssociatedTabInstance { get; set; }

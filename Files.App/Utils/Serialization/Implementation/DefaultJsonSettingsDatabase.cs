@@ -1,26 +1,17 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.Concurrent;
-using System.Text.Json;
 
 namespace Files.App.Utils.Serialization.Implementation;
 
-#pragma warning disable IL2026 // Misuse of dynamic method signature
-
-internal class DefaultJsonSettingsDatabase : IJsonSettingsDatabase
+internal class DefaultJsonSettingsDatabase(ISettingsSerializer settingsSerializer, IJsonSettingsSerializer jsonSettingsSerializer) : IJsonSettingsDatabase
 {
-	protected ISettingsSerializer SettingsSerializer { get; }
+    protected ISettingsSerializer SettingsSerializer { get; } = settingsSerializer;
 
-	protected IJsonSettingsSerializer JsonSettingsSerializer { get; }
+    protected IJsonSettingsSerializer JsonSettingsSerializer { get; } = jsonSettingsSerializer;
 
-	public DefaultJsonSettingsDatabase(ISettingsSerializer settingsSerializer, IJsonSettingsSerializer jsonSettingsSerializer)
-	{
-		SettingsSerializer = settingsSerializer;
-		JsonSettingsSerializer = jsonSettingsSerializer;
-	}
-
-	protected IDictionary<string, object?> GetFreshSettings()
+    protected IDictionary<string, object?> GetFreshSettings()
 	{
 		var data = SettingsSerializer.ReadFromFile();
 
@@ -43,11 +34,9 @@ internal class DefaultJsonSettingsDatabase : IJsonSettingsDatabase
 
 	protected bool SaveSettings(IDictionary<string, object?> data)
 	{
-        // CHANGE: Remove function to save settings to file.
-        /*var jsonData = JsonSettingsSerializer.SerializeToJson(data);
+        var jsonData = JsonSettingsSerializer.SerializeToJson(data);
 
-		return SettingsSerializer.WriteToFile(jsonData);*/
-        return true;
+		return SettingsSerializer.WriteToFile(jsonData);
 	}
 
 	public virtual TValue? GetValue<TValue>(string key, TValue? defaultValue = default)

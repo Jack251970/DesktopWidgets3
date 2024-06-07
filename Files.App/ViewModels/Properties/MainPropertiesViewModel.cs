@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Views.Properties;
@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 
 namespace Files.App.ViewModels.Properties;
 
-public class MainPropertiesViewModel : ObservableObject
+public sealed class MainPropertiesViewModel : ObservableObject
 {
 	public CancellationTokenSource ChangedPropertiesCancellationTokenSource { get; }
 
@@ -21,10 +21,9 @@ public class MainPropertiesViewModel : ObservableObject
 		get => _SelectedNavigationViewItem;
 		set
 		{
-			if (SetProperty(ref _SelectedNavigationViewItem, value) &&
-				!SelectionChangedAutomatically)
-			{
-				var parameter = new PropertiesPageNavigationParameter
+            if (SetProperty(ref _SelectedNavigationViewItem, value))
+            {
+                var parameter = new PropertiesPageNavigationParameter
 				{
                     FolderViewViewModel = FolderViewViewModel,
 					AppInstance = _parameter.AppInstance,
@@ -48,8 +47,6 @@ public class MainPropertiesViewModel : ObservableObject
 
 				_mainFrame?.Navigate(page, parameter, new EntranceNavigationTransitionInfo());
 			}
-
-			SelectionChangedAutomatically = false;
 		}
 	}
 
@@ -89,9 +86,7 @@ public class MainPropertiesViewModel : ObservableObject
 
     private readonly PropertiesPageNavigationParameter _parameter;
 
-    private bool SelectionChangedAutomatically { get; set; }
-
-	public IRelayCommand DoBackwardNavigationCommand { get; }
+    public IRelayCommand DoBackwardNavigationCommand { get; }
 	public IAsyncRelayCommand SaveChangedPropertiesCommand { get; }
 	public IRelayCommand CancelChangedPropertiesCommand { get; }
 
@@ -128,8 +123,6 @@ public class MainPropertiesViewModel : ObservableObject
         }
 
         var pageTag = ((Page)_mainFrame.Content).Tag.ToString();
-
-		SelectionChangedAutomatically = true;
 
 		// Move selection indicator
 		_SelectedNavigationViewItem =

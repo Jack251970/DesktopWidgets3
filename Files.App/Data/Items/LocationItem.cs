@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -78,9 +78,9 @@ public class LocationItem : ObservableObject, INavigationControlItem
 
 	public bool IsInvalid { get; set; } = false;
 
-	public bool IsPinned => App.QuickAccessManager.Model.FavoriteItems.Contains(path);
+    public bool IsPinned => App.QuickAccessManager.Model.PinnedFolders.Contains(path);
 
-	public SectionType Section { get; set; }
+    public SectionType Section { get; set; }
 
     public ContextMenuOptions MenuOptions { get; set; } = null!;
 
@@ -97,8 +97,8 @@ public class LocationItem : ObservableObject, INavigationControlItem
 	{
 		get
 		{
-			if (Section == SectionType.Favorites)
-			{
+            if (Section == SectionType.Pinned)
+            {
 				return new OpacityIcon()
 				{
 					Style = Application.Current.Resources["SidebarFavouritesPinnedIcon"] as Style
@@ -117,7 +117,7 @@ public class LocationItem : ObservableObject, INavigationControlItem
 	}
 }
 
-public class RecycleBinLocationItem : LocationItem
+public sealed class RecycleBinLocationItem : LocationItem
 {
 	public void RefreshSpaceUsed(object sender, FileSystemEventArgs e)
 	{

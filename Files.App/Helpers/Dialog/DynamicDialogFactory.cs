@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
@@ -16,10 +16,10 @@ public static class DynamicDialogFactory
 {
 	public static readonly SolidColorBrush _transparentBrush = new(Colors.Transparent);
 
-	public static DynamicDialog GetFor_PropertySaveErrorDialog()
+	public static DynamicDialog GetFor_PropertySaveErrorDialog(IFolderViewViewModel folderViewViewModel)
 	{
-		var dialog = new DynamicDialog(new DynamicDialogViewModel()
-		{
+		var dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
+        {
 			TitleText = "PropertySaveErrorDialog/Title".GetLocalizedResource(),
 			SubtitleText = "PropertySaveErrorMessage/Text".GetLocalizedResource(), // We can use subtitle here as our content
 			PrimaryButtonText = "Retry".GetLocalizedResource(),
@@ -30,9 +30,9 @@ public static class DynamicDialogFactory
 		return dialog;
 	}
 
-	public static DynamicDialog GetFor_ConsentDialog()
+	public static DynamicDialog GetFor_ConsentDialog(IFolderViewViewModel folderViewViewModel)
 	{
-		var dialog = new DynamicDialog(new DynamicDialogViewModel()
+		var dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
 		{
 			TitleText = "WelcomeDialog/Title".GetLocalizedResource(),
 			SubtitleText = "WelcomeDialogTextBlock/Text".GetLocalizedResource(), // We can use subtitle here as our content
@@ -43,9 +43,9 @@ public static class DynamicDialogFactory
 		return dialog;
 	}
 
-	public static DynamicDialog GetFor_ShortcutNotFound(string targetPath)
+	public static DynamicDialog GetFor_ShortcutNotFound(IFolderViewViewModel folderViewViewModel, string targetPath)
 	{
-		DynamicDialog dialog = new(new DynamicDialogViewModel
+		DynamicDialog dialog = new(folderViewViewModel, new DynamicDialogViewModel
 		{
 			TitleText = "ShortcutCannotBeOpened".GetLocalizedResource(),
 			SubtitleText = string.Format("DeleteShortcutDescription".GetLocalizedResource(), targetPath),
@@ -102,7 +102,7 @@ public static class DynamicDialogFactory
 			_ = inputText.DispatcherQueue.EnqueueOrInvokeAsync(() => inputText.Focus(FocusState.Programmatic));
 		};
 
-		dialog = new DynamicDialog(new DynamicDialogViewModel()
+		dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
 		{
 			TitleText = "EnterAnItemName".GetLocalizedResource(),
 			SubtitleText = null!,
@@ -132,9 +132,9 @@ public static class DynamicDialogFactory
 		return dialog;
 	}
 
-	public static DynamicDialog GetFor_FileInUseDialog(List<Win32Process> lockingProcess = null!)
+	public static DynamicDialog GetFor_FileInUseDialog(IFolderViewViewModel folderViewViewModel, List<Win32Process> lockingProcess = null!)
 	{
-		var dialog = new DynamicDialog(new DynamicDialogViewModel()
+		var dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
 		{
 			TitleText = "FileInUseDialog/Title".GetLocalizedResource(),
 			SubtitleText = lockingProcess.IsEmpty() ? "FileInUseDialog/Text".GetLocalizedResource() :
@@ -145,7 +145,7 @@ public static class DynamicDialogFactory
 		return dialog;
 	}
 
-	public static DynamicDialog GetFor_CredentialEntryDialog(string path)
+	public static DynamicDialog GetFor_CredentialEntryDialog(IFolderViewViewModel folderViewViewModel, string path)
 	{
 		var userAndPass = new string[3];
 		DynamicDialog? dialog = null;
@@ -189,7 +189,7 @@ public static class DynamicDialogFactory
 			dialog!.ViewModel.AdditionalData = userAndPass;
 		};
 
-		dialog = new DynamicDialog(new DynamicDialogViewModel()
+		dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
 		{
 			TitleText = "NetworkAuthenticationDialogTitle".GetLocalizedResource(),
 			PrimaryButtonText = "OK".GetLocalizedResource(),
@@ -223,7 +223,7 @@ public static class DynamicDialogFactory
 		return dialog;
 	}
 
-	public static DynamicDialog GetFor_GitCheckoutConflicts(string checkoutBranchName, string headBranchName)
+	public static DynamicDialog GetFor_GitCheckoutConflicts(IFolderViewViewModel folderViewViewModel, string checkoutBranchName, string headBranchName)
 	{
 		DynamicDialog dialog = null!;
 
@@ -244,7 +244,7 @@ public static class DynamicDialogFactory
 			dialog.ViewModel.AdditionalData = (GitCheckoutOptions)optionsListView.SelectedIndex;
 		};
 
-		dialog = new DynamicDialog(new DynamicDialogViewModel()
+		dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
 		{
 			TitleText = "SwitchBranch".GetLocalizedResource(),
 			PrimaryButtonText = "Switch".GetLocalizedResource(),
@@ -269,9 +269,9 @@ public static class DynamicDialogFactory
 		return dialog;
 	}
 
-	public static DynamicDialog GetFor_GitHubConnectionError()
+	public static DynamicDialog GetFor_GitHubConnectionError(IFolderViewViewModel folderViewViewModel)
 	{
-		var dialog = new DynamicDialog(new DynamicDialogViewModel()
+		var dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
 		{
 			TitleText = "Error".GetLocalizedResource(),
 			SubtitleText = "CannotReachGitHubError".GetLocalizedResource(),
@@ -281,9 +281,9 @@ public static class DynamicDialogFactory
 		return dialog;
 	}
 
-	public static DynamicDialog GetFor_GitCannotInitializeqRepositoryHere()
+	public static DynamicDialog GetFor_GitCannotInitializeqRepositoryHere(IFolderViewViewModel folderViewViewModel)
 	{
-		return new DynamicDialog(new DynamicDialogViewModel()
+		return new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
 		{
 			TitleText = "Error".GetLocalizedResource(),
 			SubtitleText = "CannotInitializeGitRepo".GetLocalizedResource(),
@@ -292,10 +292,10 @@ public static class DynamicDialogFactory
 		});
 	}
 
-	public static DynamicDialog GetFor_DeleteGitBranchConfirmation(string branchName)
+	public static DynamicDialog GetFor_DeleteGitBranchConfirmation(IFolderViewViewModel folderViewViewModel, string branchName)
 	{
 		DynamicDialog dialog = null!;
-		dialog = new DynamicDialog(new DynamicDialogViewModel()
+		dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
 		{
 			TitleText = "GitDeleteBranch".GetLocalizedResource(),
 			SubtitleText = string.Format("GitDeleteBranchSubtitle".GetLocalizedResource(), branchName),
@@ -311,4 +311,28 @@ public static class DynamicDialogFactory
 
 		return dialog;
 	}
+
+    public static DynamicDialog GetFor_RenameRequiresHigherPermissions(IFolderViewViewModel folderViewViewModel, string path)
+    {
+        DynamicDialog dialog = null!;
+        dialog = new DynamicDialog(folderViewViewModel, new DynamicDialogViewModel()
+        {
+            TitleText = "ItemRenameFailed".GetLocalizedResource(),
+            SubtitleText = string.Format("HigherPermissionsRequired".GetLocalizedResource(), path),
+            PrimaryButtonText = "OK".GetLocalizedResource(),
+            SecondaryButtonText = "EditPermissions".GetLocalizedResource(),
+            SecondaryButtonAction = (vm, e) =>
+            {
+                var context = folderViewViewModel.GetService<IContentPageContext>();
+                var item = context.ShellPage?.FilesystemViewModel.FilesAndFolders.FirstOrDefault(li => li.ItemPath.Equals(path));
+
+                if (context.ShellPage is not null && item is not null)
+                {
+                    FilePropertiesHelpers.OpenPropertiesWindow(folderViewViewModel, item, context.ShellPage, PropertiesNavigationViewItemType.Security);
+                }
+            }
+        });
+
+        return dialog;
+    }
 }

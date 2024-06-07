@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal sealed class RunAsAdminAction : BaseRunAsAction
+internal sealed class RunAsAdminAction(IContentPageContext context) : BaseRunAsAction(context, "runas")
 {
 	public override string Label
 		=> "RunAsAdministrator".GetLocalizedResource();
@@ -13,8 +13,4 @@ internal sealed class RunAsAdminAction : BaseRunAsAction
 
 	public override RichGlyph Glyph
 		=> new("\uE7EF");
-
-	public RunAsAdminAction(IContentPageContext context) : base(context, "runas")
-	{
-	}
 }

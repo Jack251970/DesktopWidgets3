@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
 
 namespace Files.App.Actions;
 
-internal class RunWithPowershellAction : ObservableObject, IAction
+internal sealed class RunWithPowershellAction : ObservableObject, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -29,12 +29,12 @@ internal class RunWithPowershellAction : ObservableObject, IAction
 		context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
-		return Win32API.RunPowershellCommandAsync($"{context.ShellPage?.SlimContentPage?.SelectedItem?.ItemPath}", false);
-	}
+        return Win32Helper.RunPowershellCommandAsync($"{context.ShellPage?.SlimContentPage?.SelectedItem?.ItemPath}", false);
+    }
 
-	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		switch (e.PropertyName)
 		{

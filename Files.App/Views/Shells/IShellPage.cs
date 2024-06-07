@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Views.Shells;
@@ -17,7 +17,7 @@ public interface IShellPage : ITabBarItemContent, IMultiPaneInfo, IDisposable, I
 
 	IFilesystemHelpers FilesystemHelpers { get; }
 
-	ToolbarViewModel ToolbarViewModel { get; }
+    AddressToolbarViewModel ToolbarViewModel { get; }
 
 	bool CanNavigateBackward { get; }
 
@@ -44,7 +44,7 @@ public interface IShellPage : ITabBarItemContent, IMultiPaneInfo, IDisposable, I
 
 	void Up_Click();
 
-	void UpdatePathUIToWorkingDirectory(string newWorkingDir, string singleItemOverride = null!);
+    Task UpdatePathUIToWorkingDirectoryAsync(string newWorkingDir, string singleItemOverride = null!);
 
 	void NavigateToPath(string navigationPath, Type sourcePageType, NavigationArguments navArgs = null!);
 

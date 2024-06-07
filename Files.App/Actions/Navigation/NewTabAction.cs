@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class NewTabAction : IAction
+internal sealed class NewTabAction(IFolderViewViewModel folderViewViewModel) : IAction
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private readonly IFolderViewViewModel FolderViewViewModel = folderViewViewModel;
 
     public string Label
 		=> "NewTab".GetLocalizedResource();
@@ -16,12 +16,7 @@ internal class NewTabAction : IAction
 	public HotKey HotKey
 		=> new(Keys.T, KeyModifiers.Ctrl);
 
-	public NewTabAction(IFolderViewViewModel folderViewViewModel)
-	{
-        FolderViewViewModel = folderViewViewModel;
-	}
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		return NavigationHelpers.AddNewTabAsync(FolderViewViewModel);
 	}

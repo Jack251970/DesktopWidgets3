@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
@@ -10,7 +10,7 @@ using Windows.Storage.Streams;
 
 namespace Files.App.ViewModels.Previews;
 
-public class PDFPreviewViewModel : BasePreviewModel
+public sealed class PDFPreviewViewModel(ListedItem item) : BasePreviewModel(item)
 {
 	private Visibility loadingBarVisibility;
 	public Visibility LoadingBarVisibility
@@ -27,14 +27,9 @@ public class PDFPreviewViewModel : BasePreviewModel
 		set => SetProperty(ref pageCount, value);
 	}
 
-	public ObservableCollection<PageViewModel> Pages { get; } = new();
+	public ObservableCollection<PageViewModel> Pages { get; } = [];
 
-	public PDFPreviewViewModel(ListedItem item)
-		: base(item)
-	{
-	}
-
-	public static bool ContainsExtension(string extension)
+    public static bool ContainsExtension(string extension)
 		=> extension is ".pdf";
 
 	public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()

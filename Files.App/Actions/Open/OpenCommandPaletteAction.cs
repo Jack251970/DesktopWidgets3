@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class OpenCommandPaletteAction : IAction
+internal sealed class OpenCommandPaletteAction(IContentPageContext context) : IAction
 {
-	private readonly IContentPageContext _context;
+	private readonly IContentPageContext _context = context;
 
 	public string Label
 		=> "CommandPalette".GetLocalizedResource();
@@ -16,12 +16,7 @@ internal class OpenCommandPaletteAction : IAction
 	public HotKey HotKey
 		=> new(Keys.P, KeyModifiers.CtrlShift);
 
-	public OpenCommandPaletteAction(IContentPageContext context)
-	{
-		_context = context;
-	}
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		_context.ShellPage?.ToolbarViewModel.OpenCommandPalette();
 

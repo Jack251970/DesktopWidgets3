@@ -1,18 +1,13 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.UserControls.Selection;
 
-public abstract class ItemSelectionStrategy
+public abstract class ItemSelectionStrategy(ICollection<object> selectedItems)
 {
-	protected readonly ICollection<object> selectedItems;
+	protected readonly ICollection<object> selectedItems = selectedItems;
 
-	protected ItemSelectionStrategy(ICollection<object> selectedItems)
-	{
-		this.selectedItems = selectedItems;
-	}
-
-	public abstract void HandleIntersectionWithItem(object item);
+    public abstract void HandleIntersectionWithItem(object item);
 
 	public abstract void HandleNoIntersectionWithItem(object item);
 

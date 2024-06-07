@@ -1,17 +1,17 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.Specialized;
 
 namespace Files.App.Utils.Storage;
 
-//[DebuggerTypeProxy(typeof(CollectionDebugView<>))]
+[DebuggerTypeProxy(typeof(CollectionDebugView<>))]
 [DebuggerDisplay("Count = {Count}")]
 public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, INotifyPropertyChanged, ICollection<T>, IList<T>, ICollection, IList
 {
     protected bool isBulkOperationStarted;
     private readonly object syncRoot = new();
-    private readonly List<T> collection = new();
+    private readonly List<T> collection = [];
 
     // When 'GroupOption' is set to 'None' or when a folder is opened, 'GroupedCollection' is assigned 'null' by 'ItemGroupKeySelector'
     public BulkConcurrentObservableCollection<GroupedCollection<T>>? GroupedCollection
@@ -68,13 +68,17 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
         set
         {
             T item;
+            NotifyCollectionChangedEventArgs e;
             lock (syncRoot)
             {
                 item = collection[index];
                 collection[index] = value;
+
+                e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, item, index);
+                OnCollectionChanged(e, false);
             }
 
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, item, index), false);
+            UpdateGroups(e);
         }
     }
 
@@ -92,7 +96,7 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             itemGroupKeySelector = value;
             if (value is not null)
             {
-                GroupedCollection ??= new BulkConcurrentObservableCollection<GroupedCollection<T>>();
+                GroupedCollection ??= [];
             }
             else
             {
@@ -129,9 +133,12 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
 
     public virtual void BeginBulkOperation()
     {
-        isBulkOperationStarted = true;
-        GroupedCollection?.ForEach(gp => gp.BeginBulkOperation());
-        GroupedCollection?.BeginBulkOperation();
+        lock (syncRoot)
+        {
+            isBulkOperationStarted = true;
+            GroupedCollection?.ForEach(gp => gp.BeginBulkOperation());
+            GroupedCollection?.BeginBulkOperation();
+        }
     }
 
     protected void OnCollectionChanged(NotifyCollectionChangedEventArgs e, bool countChanged = true)
@@ -144,16 +151,12 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             }
 
             PropertyChanged?.Invoke(this, EventArgsCache.IndexerPropertyChanged);
-            try
-            {
-                CollectionChanged?.Invoke(this, e);
-            }
-            catch (Exception)
-            {
-
-            }
+            CollectionChanged?.Invoke(this, e);
         }
+    }
 
+    protected void UpdateGroups(NotifyCollectionChangedEventArgs e)
+    {
         if (IsGrouped)
         {
             if (e.NewItems is not null)
@@ -217,9 +220,9 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             else
             {
                 var group = new GroupedCollection<T>(key)
-                    {
-                        item
-                    };
+                {
+                    item
+                };
 
                 group.GetExtendedGroupHeaderInfo = GetExtendedGroupHeaderInfo;
                 GetGroupHeaderInfo?.Invoke(group);
@@ -255,18 +258,21 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
 
     public virtual void EndBulkOperation()
     {
-        if (!isBulkOperationStarted)
+        lock (syncRoot)
         {
-            return;
+            if (!isBulkOperationStarted)
+            {
+                return;
+            }
+
+            isBulkOperationStarted = false;
+            GroupedCollection?.ForEach(gp => gp.EndBulkOperation());
+            GroupedCollection?.EndBulkOperation();
+
+            OnCollectionChanged(EventArgsCache.ResetCollectionChanged);
         }
 
-        isBulkOperationStarted = false;
-        GroupedCollection?.ForEach(gp => gp.EndBulkOperation());
-        GroupedCollection?.EndBulkOperation();
-
-        OnCollectionChanged(EventArgsCache.ResetCollectionChanged);
-        PropertyChanged?.Invoke(this, EventArgsCache.CountPropertyChanged);
-        PropertyChanged?.Invoke(this, EventArgsCache.IndexerPropertyChanged);
+        UpdateGroups(EventArgsCache.ResetCollectionChanged);
     }
 
     public void Add(T? item)
@@ -277,14 +283,18 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
         }
 
         int count;
+        NotifyCollectionChangedEventArgs e;
 
         lock (syncRoot)
         {
             count = collection.Count;
             collection.Add(item);
+
+            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, count);
+            OnCollectionChanged(e);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, count));
+        UpdateGroups(e);
     }
 
     public void Clear()
@@ -292,10 +302,12 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
         lock (syncRoot)
         {
             collection.Clear();
-        }
-        GroupedCollection?.Clear();
+            GroupedCollection?.Clear();
 
-        OnCollectionChanged(EventArgsCache.ResetCollectionChanged);
+            OnCollectionChanged(EventArgsCache.ResetCollectionChanged);
+        }
+
+        UpdateGroups(EventArgsCache.ResetCollectionChanged);
     }
 
     public bool Contains(T? item)
@@ -327,6 +339,7 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
         }
 
         int index;
+        NotifyCollectionChangedEventArgs e;
 
         lock (syncRoot)
         {
@@ -338,9 +351,12 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             }
 
             collection.RemoveAt(index);
+
+            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index);
+            OnCollectionChanged(e);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+        UpdateGroups(e);
         return true;
     }
 
@@ -374,25 +390,35 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             return;
         }
 
+        NotifyCollectionChangedEventArgs e;
+
         lock (syncRoot)
         {
             collection.Insert(index, item);
+
+            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index);
+            OnCollectionChanged(e);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+        UpdateGroups(e);
     }
 
     public void RemoveAt(int index)
     {
         T item;
 
+        NotifyCollectionChangedEventArgs e;
+
         lock (syncRoot)
         {
             item = collection[index];
             collection.RemoveAt(index);
+
+            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index);
+            OnCollectionChanged(e);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+        UpdateGroups(e);
     }
 
     public void AddRange(IEnumerable<T> items)
@@ -403,14 +429,18 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
         }
 
         int count;
+        NotifyCollectionChangedEventArgs e;
 
         lock (syncRoot)
         {
             count = collection.Count;
             collection.AddRange(items);
+
+            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items.ToList(), count);
+            OnCollectionChanged(e);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items.ToList(), count));
+        UpdateGroups(e);
     }
 
     public void InsertRange(int index, IEnumerable<T> items)
@@ -420,12 +450,17 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             return;
         }
 
+        NotifyCollectionChangedEventArgs e;
+
         lock (syncRoot)
         {
             collection.InsertRange(index, items);
+
+            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items.ToList(), index);
+            OnCollectionChanged(e);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items.ToList(), index));
+        UpdateGroups(e);
     }
 
     public void RemoveRange(int index, int count)
@@ -436,14 +471,18 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
         }
 
         List<T> items;
+        NotifyCollectionChangedEventArgs e;
 
         lock (syncRoot)
         {
             items = collection.Skip(index).Take(count).ToList();
             collection.RemoveRange(index, count);
+
+            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index);
+            OnCollectionChanged(e);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, items, index));
+        UpdateGroups(e);
     }
 
     public void ReplaceRange(int index, IEnumerable<T> items)
@@ -457,6 +496,7 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
 
         List<T> oldItems;
         List<T> newItems;
+        NotifyCollectionChangedEventArgs e;
 
         lock (syncRoot)
         {
@@ -464,9 +504,12 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
             newItems = items.ToList();
             collection.RemoveRange(index, count);
             collection.InsertRange(index, newItems);
+
+            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, index);
+            OnCollectionChanged(e, false);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, index), false);
+        UpdateGroups(e);
     }
 
     public void Sort()
@@ -491,24 +534,24 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
         lock (syncRoot)
         {
             result = func.Invoke(collection);
-        }
 
-        ReplaceRange(0, result);
+            ReplaceRange(0, result);
+        }
     }
 
     public void OrderOne(Func<List<T>, IEnumerable<T>> func, T item)
     {
-        IList<T> result;
+        List<T> result;
         lock (syncRoot)
         {
             result = func.Invoke(collection).ToList();
-        }
 
-        Remove(item);
-        var index = result.IndexOf(item);
-        if (index != -1)
-        {
-            Insert(index, item);
+            Remove(item);
+            var index = result.IndexOf(item);
+            if (index != -1)
+            {
+                Insert(index, item);
+            }
         }
     }
 
@@ -521,14 +564,18 @@ public class BulkConcurrentObservableCollection<T> : INotifyCollectionChanged, I
 
         int count;
         int index;
+        NotifyCollectionChangedEventArgs e;
 
         lock (syncRoot)
         {
             count = collection.Count;
             index = ((IList)collection).Add((T)value);
+
+            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value, count);
+            OnCollectionChanged(e);
         }
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value, count));
+        UpdateGroups(e);
         return index;
     }
 

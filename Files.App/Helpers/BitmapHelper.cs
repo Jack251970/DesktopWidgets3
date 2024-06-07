@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Controls;
@@ -29,6 +29,7 @@ internal static class BitmapHelper
                 image.DecodePixelWidth = decodeSize;
                 image.DecodePixelHeight = decodeSize;
             }
+            image.DecodePixelType = DecodePixelType.Logical;
             await image.SetSourceAsync(ms.AsRandomAccessStream());
             return image;
         }

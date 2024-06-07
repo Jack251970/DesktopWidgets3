@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Utils.StatusCenter;
@@ -181,7 +181,7 @@ public static class StatusCenterHelper
 		{
 			return _statusCenterViewModel.AddItem(
                 folderViewViewModel,
-                "StatusCenter_RecycleCanceled_Header",
+                "StatusCenter_DeleteCanceled_Header",
 				string.Empty,
 				ReturnResult.Cancelled,
 				FileOperationType.Recycle,
@@ -195,7 +195,7 @@ public static class StatusCenterHelper
 		{
 			return _statusCenterViewModel.AddItem(
                 folderViewViewModel,
-                "StatusCenter_RecycleInProgress_Header",
+                "StatusCenter_DeleteInProgress_Header",
 				string.Empty,
 				ReturnResult.InProgress,
 				FileOperationType.Recycle,
@@ -210,7 +210,7 @@ public static class StatusCenterHelper
 		{
 			return _statusCenterViewModel.AddItem(
                 folderViewViewModel,
-                "StatusCenter_RecycleComplete_Header",
+                "StatusCenter_DeleteComplete_Header",
 				string.Empty,
 				ReturnResult.Success,
 				FileOperationType.Recycle,
@@ -224,7 +224,7 @@ public static class StatusCenterHelper
 		{
 			return _statusCenterViewModel.AddItem(
                 folderViewViewModel,
-                "StatusCenter_RecycleFailed_Header",
+                "StatusCenter_DeleteFailed_Header",
 				string.Empty,
 				ReturnResult.Failed,
 				FileOperationType.Recycle,

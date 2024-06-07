@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
@@ -31,7 +31,7 @@ public static class StorageHelpers
         }
 
         // Fast get attributes
-        var exists = NativeFileOperationsHelper.GetFileAttributesExFromApp(path, NativeFileOperationsHelper.GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard, out var itemAttributes);
+        var exists = Win32PInvoke.GetFileAttributesExFromApp(path, Win32PInvoke.GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard, out var itemAttributes);
         if (exists) // Exists on local storage
         {
             // Directory
@@ -163,7 +163,7 @@ public static class StorageHelpers
 
     public static bool Exists(string path)
     {
-        return NativeFileOperationsHelper.GetFileAttributesExFromApp(path, NativeFileOperationsHelper.GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard, out _);
+        return Win32PInvoke.GetFileAttributesExFromApp(path, Win32PInvoke.GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard, out _);
     }
 
     public static IStorageItemWithPath FromStorageItem(this IStorageItem item, string customPath = null!, FilesystemItemType? itemType = null)

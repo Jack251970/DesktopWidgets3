@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Utils.Storage.Operations;
@@ -11,7 +11,14 @@ namespace Files.App.Utils.Archives;
 /// <summary>
 /// Provides an archive creation support.
 /// </summary>
-public class CompressArchiveModel : ICompressArchiveModel
+public sealed class CompressArchiveModel(
+    string[] source,
+    string directory,
+    string fileName,
+    string? password = null,
+    ArchiveFormats fileFormat = ArchiveFormats.Zip,
+    ArchiveCompressionLevels compressionLevel = ArchiveCompressionLevels.Normal,
+    ArchiveSplittingSizes splittingSize = ArchiveSplittingSizes.None) : ICompressArchiveModel
 {
 	private StatusCenterItemProgressModel _fileSystemProgress = null!;
 
@@ -65,7 +72,7 @@ public class CompressArchiveModel : ICompressArchiveModel
 		_ => throw new ArgumentOutOfRangeException(nameof(SplittingSize)),
 	};
 
-	private IProgress<StatusCenterItemProgressModel> _Progress;
+	private IProgress<StatusCenterItemProgressModel> _Progress = new Progress<StatusCenterItemProgressModel>();
 	public IProgress<StatusCenterItemProgressModel> Progress
 	{
 		get => _Progress;
@@ -82,56 +89,35 @@ public class CompressArchiveModel : ICompressArchiveModel
 		}
 	}
 
-	/// <inheritdoc/>
-	public string ArchivePath { get; set; }
+    /// <inheritdoc/>
+    public string ArchivePath { get; set; } = string.Empty;
 
-	/// <inheritdoc/>
-	public string Directory { get; init; }
+    /// <inheritdoc/>
+    public string Directory { get; init; } = directory;
 
-	/// <inheritdoc/>
-	public string FileName { get; init; }
+    /// <inheritdoc/>
+    public string FileName { get; init; } = fileName;
 
-	/// <inheritdoc/>
-	public string Password { get; init; }
+    /// <inheritdoc/>
+    public string Password { get; init; } = password ?? string.Empty;
 
-	/// <inheritdoc/>
-	public IEnumerable<string> Sources { get; init; }
+    /// <inheritdoc/>
+    public IEnumerable<string> Sources { get; init; } = source;
 
-	/// <inheritdoc/>
-	public ArchiveFormats FileFormat { get; init; }
+    /// <inheritdoc/>
+    public ArchiveFormats FileFormat { get; init; } = fileFormat;
 
-	/// <inheritdoc/>
-	public ArchiveCompressionLevels CompressionLevel { get; init; }
+    /// <inheritdoc/>
+    public ArchiveCompressionLevels CompressionLevel { get; init; } = compressionLevel;
 
-	/// <inheritdoc/>
-	public ArchiveSplittingSizes SplittingSize { get; init; }
+    /// <inheritdoc/>
+    public ArchiveSplittingSizes SplittingSize { get; init; } = splittingSize;
 
-	/// <inheritdoc/>
-	public CancellationToken CancellationToken { get; set; }
+    /// <inheritdoc/>
+    public CancellationToken CancellationToken { get; set; }
 
-	public CompressArchiveModel(
-		string[] source,
-		string directory,
-		string fileName,
-		string? password = null,
-		ArchiveFormats fileFormat = ArchiveFormats.Zip,
-		ArchiveCompressionLevels compressionLevel = ArchiveCompressionLevels.Normal,
-		ArchiveSplittingSizes splittingSize = ArchiveSplittingSizes.None)
-	{
-		_Progress = new Progress<StatusCenterItemProgressModel>();
-
-		Sources = source;
-		Directory = directory;
-		FileName = fileName;
-		Password = password ?? string.Empty;
-		ArchivePath = string.Empty;
-		FileFormat = fileFormat;
-		CompressionLevel = compressionLevel;
-		SplittingSize = splittingSize;
-	}
-
-	/// <inheritdoc/>
-	public string GetArchivePath(string suffix = "")
+    /// <inheritdoc/>
+    public string GetArchivePath(string suffix = "")
 	{
 		return Path.Combine(Directory, $"{FileName}{suffix}{ArchiveExtension}");
 	}
@@ -163,7 +149,7 @@ public class CompressArchiveModel : ICompressArchiveModel
 			var files = sources.Where(File.Exists).ToArray();
 			var directories = sources.Where(SystemIO.Directory.Exists);
 
-			_sizeCalculator = new FileSizeCalculator(files.Concat(directories).ToArray());
+			_sizeCalculator = new FileSizeCalculator([.. files, .. directories]);
 			var sizeTask = _sizeCalculator.ComputeSizeAsync(cts.Token);
 			_ = sizeTask.ContinueWith(_ =>
 			{

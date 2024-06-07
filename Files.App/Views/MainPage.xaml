@@ -1,4 +1,4 @@
-﻿<!--  Copyright (c) 2023 Files Community. Licensed under the MIT License. See the LICENSE.  -->
+﻿<!--  Copyright (c) 2024 Files Community. Licensed under the MIT License. See the LICENSE.  -->
 <Page
 	x:Class="Files.App.Views.MainPage"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -17,6 +17,7 @@
 	AllowDrop="True"
 	Background="{ThemeResource App.Theme.BackgroundBrush}"
 	DataContext="{x:Bind ViewModel, Mode=OneWay}"
+    HighContrastAdjustment="None"
 	KeyboardAcceleratorPlacementMode="Hidden"
 	Loaded="Page_Loaded"
 	NavigationCacheMode="Required"
@@ -35,8 +36,8 @@
             <wctconverters:BoolNegationConverter x:Key="BoolNegationConverter" />
 
             <MenuFlyout x:Key="SidebarContextMenu">
-				<ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowFavoritesSection, Mode=TwoWay}" Text="{helpers:ResourceString Name=SidebarFavorites}" />
-				<ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowLibrarySection, Mode=TwoWay}" Text="{helpers:ResourceString Name=SidebarLibraries}" />
+                <ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowPinnedFoldersSection, Mode=TwoWay}" Text="{helpers:ResourceString Name=Pinned}" />
+                <ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowLibrarySection, Mode=TwoWay}" Text="{helpers:ResourceString Name=SidebarLibraries}" />
 				<ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowDrivesSection, Mode=TwoWay}" Text="{helpers:ResourceString Name=Drives}" />
 				<ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowCloudDrivesSection, Mode=TwoWay}" Text="{helpers:ResourceString Name=SidebarCloudDrives}" />
 				<ToggleMenuFlyoutItem IsChecked="{x:Bind SidebarAdaptiveViewModel.ShowNetworkDrivesSection, Mode=TwoWay}" Text="{helpers:ResourceString Name=SidebarNetworkDrives}" />
@@ -121,6 +122,15 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!--  Background Image  -->
+        <Image
+			Grid.RowSpan="2"
+			HorizontalAlignment="{x:Bind ViewModel.AppThemeBackgroundImageHorizontalAlignment, Mode=OneWay}"
+			VerticalAlignment="{x:Bind ViewModel.AppThemeBackgroundImageVerticalAlignment, Mode=OneWay}"
+			Opacity="{x:Bind ViewModel.AppThemeBackgroundImageOpacity, Mode=OneWay}"
+			Source="{x:Bind ViewModel.AppThemeBackgroundImageSource, Mode=OneWay}"
+			Stretch="{x:Bind ViewModel.AppThemeBackgroundImageFit, Mode=OneWay}" />
+
         <Grid x:Name="RightMarginGrid" VerticalAlignment="Top">
             <!--<Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -140,13 +150,14 @@
 				TabStripVisibility="Visible"
 				Visibility="Visible">
                 <tabbar:TabBar.FooterElement>
-                    <Button
+					-  Height is not divisble by four in order to properly align the button  -
+					<Button
 						x:Name="HorizontalMultitaskingControlAddButton"
-						Width="32"
-						Height="32"
+						Width="30"
+						Height="30"
 						Padding="8"
 						HorizontalAlignment="Left"
-						VerticalAlignment="Bottom"
+						VerticalAlignment="Center"
 						AllowDrop="True"
 						AutomationProperties.Name="{x:Bind Commands.NewTab.AutomationName}"
 						Background="Transparent"
@@ -267,8 +278,8 @@
 					Unloaded="PreviewPane_Unloaded" />
 
                 <!--  Status Bar  -->
-                <uc:StatusBarControl
-					x:Name="StatusBarControl"
+                <uc:StatusBar
+					x:Name="StatusBar"
 					Grid.Row="4"
 					Grid.ColumnSpan="3"
 					x:Load="False"

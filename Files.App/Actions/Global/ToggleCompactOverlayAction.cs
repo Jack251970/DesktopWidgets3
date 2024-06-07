@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Windowing;
@@ -6,7 +6,7 @@ using Windows.Graphics;
 
 namespace Files.App.Actions;
 
-internal class ToggleCompactOverlayAction : ObservableObject, IToggleAction
+internal sealed class ToggleCompactOverlayAction : ObservableObject, IToggleAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -32,9 +32,9 @@ internal class ToggleCompactOverlayAction : ObservableObject, IToggleAction
         windowContext.PropertyChanged += WindowContext_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
-		var appWindow = FolderViewViewModel.MainWindow.AppWindow;
+		var appWindow = FolderViewViewModel.AppWindow;
 
 		if (windowContext.IsCompactOverlay)
 		{

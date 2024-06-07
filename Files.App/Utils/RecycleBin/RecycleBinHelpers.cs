@@ -1,8 +1,7 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Controls;
-using System.Text.RegularExpressions;
 using Vanara.PInvoke;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
@@ -13,21 +12,19 @@ public static partial class RecycleBinHelpers
 {
     /*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
 
-    private static readonly Regex recycleBinPathRegex = MyRegex();
-
     /*private static readonly IUserSettingsService userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
 
     public static async Task<List<ShellFileItem>> EnumerateRecycleBin()
-	{
-		return (await Win32Shell.GetShellFolderAsync(Constants.UserEnvironmentPaths.RecycleBinPath, "Enumerate", 0, int.MaxValue)).Enumerate;
-	}
+    {
+        return (await Win32Helper.GetShellFolderAsync(Constants.UserEnvironmentPaths.RecycleBinPath, false, true, 0, int.MaxValue)).Enumerate;
+    }
 
-	public static ulong GetSize()
-	{
-		return (ulong)Win32Shell.QueryRecycleBin().BinSize;
-	}
+    public static ulong GetSize()
+    {
+        return (ulong)Win32Helper.QueryRecycleBin().BinSize;
+    }
 
-	public static async Task<bool> IsRecycleBinItem(IStorageItem item)
+    public static async Task<bool> IsRecycleBinItem(IStorageItem item)
 	{
 		var recycleBinItems = await EnumerateRecycleBin();
 		return recycleBinItems.Any((shellItem) => shellItem.RecyclePath == item.Path);
@@ -41,8 +38,8 @@ public static partial class RecycleBinHelpers
 
 	public static bool IsPathUnderRecycleBin(string path)
 	{
-		return !string.IsNullOrWhiteSpace(path) && recycleBinPathRegex.IsMatch(path);
-	}
+        return !string.IsNullOrWhiteSpace(path) && RegexHelpers.RecycleBinPath().IsMatch(path);
+    }
 
     public static async Task EmptyRecycleBinAsync(IFolderViewViewModel folderViewViewModel)
 	{
@@ -171,10 +168,10 @@ public static partial class RecycleBinHelpers
 
 	public static bool RecycleBinHasItems()
 	{
-		return Win32Shell.QueryRecycleBin().NumItems > 0;
-	}
+        return Win32Helper.QueryRecycleBin().NumItems > 0;
+    }
 
-	public static async Task RestoreItemAsync(IShellPage associatedInstance)
+    public static async Task RestoreItemAsync(IShellPage associatedInstance)
 	{
 		var selected = associatedInstance.SlimContentPage.SelectedItems;
 		if (selected == null)
@@ -206,7 +203,4 @@ public static partial class RecycleBinHelpers
 			item.PrimaryItemAttribute == StorageItemTypes.File ? FilesystemItemType.File : FilesystemItemType.Directory));
 		await associatedInstance.FilesystemHelpers.DeleteItemsAsync(items, userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy, false, true);
 	}
-
-    [GeneratedRegex("^[A-Z]:\\\\\\$Recycle\\.Bin\\\\", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
-    private static partial Regex MyRegex();
 }

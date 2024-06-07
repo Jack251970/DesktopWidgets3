@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Text;
@@ -32,7 +32,7 @@ internal class OpenTerminalAction : ObservableObject, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		var terminalStartInfo = GetProcessStartInfo();
 		if (terminalStartInfo is not null)
@@ -87,11 +87,11 @@ internal class OpenTerminalAction : ObservableObject, IAction
 		}
 		else if (context.Folder is not null)
 		{
-			return new string[1] { context.Folder.ItemPath };
+			return [context.Folder.ItemPath];
 		}
 
-		return Array.Empty<string>();
-	}
+		return [];
+    }
 
 	private bool GetIsExecutable()
 	{

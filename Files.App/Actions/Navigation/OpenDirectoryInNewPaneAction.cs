@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class OpenDirectoryInNewPaneAction : ObservableObject, IAction
+internal sealed class OpenDirectoryInNewPaneAction : ObservableObject, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -28,7 +28,7 @@ internal class OpenDirectoryInNewPaneAction : ObservableObject, IAction
 		context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		NavigationHelpers.OpenInSecondaryPane(
 			context.ShellPage!,

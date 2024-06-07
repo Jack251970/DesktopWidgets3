@@ -6,7 +6,7 @@ namespace Files.App.ViewModels.Properties;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-public class CustomizationViewModel : ObservableObject
+public sealed class CustomizationViewModel : ObservableObject
 {
 	private static string DefaultIconDllFilePath
 		=> Path.Combine(Constants.UserEnvironmentPaths.SystemRootPath, "System32", "SHELL32.dll");
@@ -69,7 +69,7 @@ public class CustomizationViewModel : ObservableObject
 		IsShortcut = item.IsShortcut;
 		_selectedItemPath = item.ItemPath;
 
-		DllIcons = new();
+		DllIcons = [];
 
 		// Get default
 		LoadIconsForPath(IconResourceItemPath);
@@ -121,20 +121,20 @@ public class CustomizationViewModel : ObservableObject
 
         var result = false;
 
-		if (SelectedDllIcon is null)
-		{
-			result = IsShortcut
-				? Win32API.SetCustomFileIcon(_selectedItemPath, null)
-				: Win32API.SetCustomDirectoryIcon(_selectedItemPath, null);
-		}
-		else
-		{
-			result = IsShortcut
-				? Win32API.SetCustomFileIcon(_selectedItemPath, IconResourceItemPath, SelectedDllIcon.Index)
-				: Win32API.SetCustomDirectoryIcon(_selectedItemPath, IconResourceItemPath, SelectedDllIcon.Index);
-		}
+        if (SelectedDllIcon is null)
+        {
+            result = IsShortcut
+                ? Win32Helper.SetCustomFileIcon(_selectedItemPath, null)
+                : Win32Helper.SetCustomDirectoryIcon(_selectedItemPath, null);
+        }
+        else
+        {
+            result = IsShortcut
+                ? Win32Helper.SetCustomFileIcon(_selectedItemPath, IconResourceItemPath, SelectedDllIcon.Index)
+                : Win32Helper.SetCustomDirectoryIcon(_selectedItemPath, IconResourceItemPath, SelectedDllIcon.Index);
+        }
 
-		if (!result)
+        if (!result)
         {
             return false;
         }
@@ -152,8 +152,8 @@ public class CustomizationViewModel : ObservableObject
 		IconResourceItemPath = path;
 		DllIcons.Clear();
 
-		var icons = Win32API.ExtractIconsFromDLL(path);
-		if (icons?.Count is null or 0)
+        var icons = Win32Helper.ExtractIconsFromDLL(path);
+        if (icons?.Count is null or 0)
         {
             return;
         }

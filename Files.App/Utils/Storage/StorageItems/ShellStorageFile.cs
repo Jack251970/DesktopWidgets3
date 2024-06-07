@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -10,61 +10,39 @@ using IO = System.IO;
 
 namespace Files.App.Utils.Storage;
 
-public class ShortcutStorageFile : ShellStorageFile, IShortcutStorageItem
+public sealed class ShortcutStorageFile(ShellLinkItem item) : ShellStorageFile(item), IShortcutStorageItem
 {
-	public string TargetPath { get; }
-	public string Arguments { get; }
-	public string WorkingDirectory { get; }
-	public bool RunAsAdmin { get; }
-
-	public ShortcutStorageFile(ShellLinkItem item) : base(item)
-	{
-		TargetPath = item.TargetPath;
-		Arguments = item.Arguments;
-		WorkingDirectory = item.WorkingDirectory;
-		RunAsAdmin = item.RunAsAdmin;
-	}
+    public string TargetPath { get; } = item.TargetPath;
+    public string Arguments { get; } = item.Arguments;
+    public string WorkingDirectory { get; } = item.WorkingDirectory;
+    public bool RunAsAdmin { get; } = item.RunAsAdmin;
 }
 
-public class BinStorageFile : ShellStorageFile, IBinStorageItem
+public sealed class BinStorageFile(ShellFileItem item) : ShellStorageFile(item), IBinStorageItem
 {
-	public string OriginalPath { get; }
-	public DateTimeOffset DateDeleted { get; }
-
-	public BinStorageFile(ShellFileItem item) : base(item)
-	{
-		OriginalPath = item.FilePath;
-		DateDeleted = item.RecycleDate;
-	}
+    public string OriginalPath { get; } = item.FilePath;
+    public DateTimeOffset DateDeleted { get; } = item.RecycleDate;
 }
 
-public class ShellStorageFile : BaseStorageFile
+public class ShellStorageFile(ShellFileItem item) : BaseStorageFile
 {
-	public override string Path { get; }
-	public override string Name { get; }
-	public override string DisplayName => Name;
+    public override string Path { get; } = item.RecyclePath; // True path on disk
+    public override string Name { get; } = item.FileName;
+    public override string DisplayName => Name;
 	public override string ContentType => "application/octet-stream";
 	public override string FileType => IO.Path.GetExtension(Name);
 	public override string FolderRelativeId => $"0\\{Name}";
 
-	public override string DisplayType { get; }
+    public override string DisplayType { get; } = item.FileType;
 
-	public override DateTimeOffset DateCreated { get; }
+    public override DateTimeOffset DateCreated { get; } = item.CreatedDate;
 
-	public override FileAttributes Attributes => FileAttributes.Normal | FileAttributes.ReadOnly;
+    public override FileAttributes Attributes => FileAttributes.Normal | FileAttributes.ReadOnly;
 
 	private IStorageItemExtraProperties properties = null!;
 	public override IStorageItemExtraProperties Properties => properties ??= new BaseBasicStorageItemExtraProperties(this);
 
-	public ShellStorageFile(ShellFileItem item)
-	{
-		Name = item.FileName;
-		Path = item.RecyclePath; // True path on disk
-		DateCreated = item.CreatedDate;
-		DisplayType = item.FileType;
-	}
-
-	public override IAsyncOperation<StorageFile> ToStorageFileAsync() => throw new NotSupportedException();
+    public override IAsyncOperation<StorageFile> ToStorageFileAsync() => throw new NotSupportedException();
 
 	public static ShellStorageFile FromShellItem(ShellFileItem item)
 	{
@@ -181,14 +159,9 @@ public class ShellStorageFile : BaseStorageFile
 		return Task.FromResult(new BaseBasicProperties());
 	}
 
-	private class ShellFileBasicProperties : BaseBasicProperties
+	private sealed class ShellFileBasicProperties(ShellFileItem folder) : BaseBasicProperties
 	{
-		private readonly ShellFileItem file;
-
-        public ShellFileBasicProperties(ShellFileItem folder)
-        {
-            file = folder;
-        }
+		private readonly ShellFileItem file = folder;
 
         public override ulong Size => file.FileSizeBytes;
 

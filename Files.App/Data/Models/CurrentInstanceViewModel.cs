@@ -1,9 +1,9 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Data.Models;
 
-public class CurrentInstanceViewModel : ObservableObject
+public sealed class CurrentInstanceViewModel : ObservableObject
 {
     // FILESTODO:
     //  In the future, we should consolidate these public variables into
@@ -12,7 +12,7 @@ public class CurrentInstanceViewModel : ObservableObject
 
     public LayoutPreferencesManager FolderSettings { get; private set; } = null!;
 
-    private FolderLayoutModes? RootLayoutMode { get; set; }
+    private FolderLayoutModes? RootLayoutMode { get; set; } = null;
 
 	public CurrentInstanceViewModel()
 	{
@@ -129,22 +129,21 @@ public class CurrentInstanceViewModel : ObservableObject
 
     public bool CanTagFilesInPage => !isPageTypeRecycleBin && !isPageTypeFtp && !isPageTypeZipFolder;
 
-    public bool IsGitRepository => !string.IsNullOrWhiteSpace(gitRepositoryPath);
+    private bool isGitRepository;
+    public bool IsGitRepository
+    {
+        get => isGitRepository;
+        set => SetProperty(ref isGitRepository, value);
+    }
 
-	private string? gitRepositoryPath;
+    private string? gitRepositoryPath;
 	public string? GitRepositoryPath
-	{
-		get => gitRepositoryPath;
-		set
-		{
-			if (SetProperty(ref gitRepositoryPath, value))
-            {
-                OnPropertyChanged(nameof(IsGitRepository));
-            }
-        }
-	}
+    {
+        get => gitRepositoryPath;
+        set => SetProperty(ref gitRepositoryPath, value);
+    }
 
-	private string gitBranchName = string.Empty;
+    private string gitBranchName = string.Empty;
 	public string GitBranchName
 	{
 		get => gitBranchName;

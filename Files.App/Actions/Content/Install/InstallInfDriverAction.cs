@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
 
 namespace Files.App.Actions;
 
-internal class InstallInfDriverAction : ObservableObject, IAction
+internal sealed class InstallInfDriverAction : ObservableObject, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -31,15 +31,12 @@ internal class InstallInfDriverAction : ObservableObject, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public async Task ExecuteAsync()
+	public async Task ExecuteAsync(object? parameter = null)
 	{
-		foreach (var selectedItem in context.SelectedItems)
-        {
-            await Win32API.InstallInf(selectedItem.ItemPath);
-        }
+        await Task.WhenAll(context.SelectedItems.Select(selectedItem => Win32Helper.InstallInf(selectedItem.ItemPath)));
     }
 
-	public void Context_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    public void Context_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 	{
 		switch (e.PropertyName)
 		{

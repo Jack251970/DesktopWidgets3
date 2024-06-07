@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 /*using CommunityToolkit.WinUI.UI;
@@ -7,7 +7,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Shapes;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage;*/
+using Windows.Storage;
+using Windows.Win32;*/
 
 namespace Files.App.UserControls.TabBar;
 
@@ -63,7 +64,7 @@ public sealed partial class TabBar : BaseTabBar
 		=> DragAreaRectangle;
 
     /// <summary> Starting position when dragging a tab.</summary>
-    private InteropHelpers.POINT dragStartPoint;
+    private System.Drawing.Point dragStartPoint;
 
 	/// <summary> Starting time when dragging a tab. </summary>
 	private DateTimeOffset dragStartTime;
@@ -161,7 +162,7 @@ public sealed partial class TabBar : BaseTabBar
 		args.Data.RequestedOperation = DataPackageOperation.Move;
 
 		// Get cursor position & time to track how far the tab was dragged.
-		InteropHelpers.GetCursorPos(out dragStartPoint);
+		PInvoke.GetCursorPos(out dragStartPoint);
 		dragStartTime = DateTimeOffset.UtcNow;
 
 		// Focus the UI Element, without this the focus sometimes changes

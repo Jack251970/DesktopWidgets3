@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class NavigateUpAction : ObservableObject, IAction
+internal sealed class NavigateUpAction : ObservableObject, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -14,7 +14,7 @@ internal class NavigateUpAction : ObservableObject, IAction
 		=> "NavigateUpDescription".GetLocalizedResource();
 
 	public HotKey HotKey
-		=> new(Keys.Up, KeyModifiers.Menu);
+		=> new(Keys.Up, KeyModifiers.Alt);
 
 	public RichGlyph Glyph
 		=> new("\uE74A");
@@ -29,7 +29,7 @@ internal class NavigateUpAction : ObservableObject, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		context.ShellPage!.Up_Click();
 

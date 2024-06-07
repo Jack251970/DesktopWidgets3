@@ -2,7 +2,7 @@
 
 namespace Files.App.Helpers;
 
-internal class CredentialsHelpers
+internal sealed class CredentialsHelpers
 {
 	public static void SavePassword(string resourceName, string username, string password)
 	{

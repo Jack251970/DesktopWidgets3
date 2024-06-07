@@ -1,16 +1,14 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
-
-using System.Text.Json;
 
 namespace Files.App.Data.Parameters;
 
-#pragma warning disable IL2026 // Unrecognized escape sequence in XML doc comment
+// TODO(later): Remove this.
 #pragma warning disable IL2057 // Unrecognized escape sequence in XML doc comment
 
 public sealed class CustomTabViewItemParameter
 {
-    // CHECK: Required is just for checking.
+    // CHECK: Required is just for final checking.
     public /*required*/ IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     public Type InitialPageType { get; set; } = null!;

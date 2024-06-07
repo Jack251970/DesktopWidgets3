@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Actions;
@@ -11,53 +11,83 @@ using static Files.App.Data.Commands.CommandManager;
 namespace Files.App.Data.Commands;
 
 [DebuggerDisplay("Command {Code} (Modifiable)")]
-internal class ModifiableCommand : ObservableObject, IRichCommand
+internal sealed class ModifiableCommand : ObservableObject, IRichCommand
 {
-	public event EventHandler? CanExecuteChanged;
+    public event EventHandler? CanExecuteChanged;
 
-	private readonly IRichCommand BaseCommand;
-	private readonly ImmutableDictionary<KeyModifiers, IRichCommand> ModifiedCommands;
+    private readonly IRichCommand BaseCommand;
+    private readonly ImmutableDictionary<KeyModifiers, IRichCommand> ModifiedCommands;
 
-	public CommandCodes Code => BaseCommand.Code;
+    /// <inheritdoc/>
+    public CommandCodes Code => BaseCommand.Code;
 
-	public string Label => BaseCommand.Label;
-	public string LabelWithHotKey => BaseCommand.LabelWithHotKey;
-	public string AutomationName => BaseCommand.AutomationName;
+    /// <inheritdoc/>
+    public string Label => BaseCommand.Label;
 
-	public string Description => BaseCommand.Description;
+    /// <inheritdoc/>
+    public string LabelWithHotKey => BaseCommand.LabelWithHotKey;
 
-	public RichGlyph Glyph => BaseCommand.Glyph;
-	public object? Icon => BaseCommand.Icon;
-	public FontIcon? FontIcon => BaseCommand.FontIcon;
-	public Style? OpacityStyle => BaseCommand.OpacityStyle;
+    /// <inheritdoc/>
+    public string AutomationName => BaseCommand.AutomationName;
 
-	public bool IsCustomHotKeys => BaseCommand.IsCustomHotKeys;
-	public string? HotKeyText => BaseCommand.HotKeyText;
+    /// <inheritdoc/>
+    public string Description => BaseCommand.Description;
 
-	public HotKeyCollection HotKeys
-	{
-		get => BaseCommand.HotKeys;
-		set => BaseCommand.HotKeys = value;
-	}
+    /// <inheritdoc/>
+    public RichGlyph Glyph => BaseCommand.Glyph;
 
-	public bool IsToggle => BaseCommand.IsToggle;
+    /// <inheritdoc/>
+    public object? Icon => BaseCommand.Icon;
 
-	public bool IsOn
-	{
-		get => BaseCommand.IsOn;
-		set => BaseCommand.IsOn = value;
-	}
+    /// <inheritdoc/>
+    public FontIcon? FontIcon => BaseCommand.FontIcon;
 
-	public bool IsExecutable => BaseCommand.IsExecutable;
+    /// <inheritdoc/>
+    public Style? OpacityStyle => BaseCommand.OpacityStyle;
 
-	public ModifiableCommand(IRichCommand baseCommand, Dictionary<KeyModifiers, IRichCommand> modifiedCommands)
-	{
-		BaseCommand = baseCommand;
-		ModifiedCommands = modifiedCommands.ToImmutableDictionary();
+    /// <inheritdoc/>
+    public bool IsCustomHotKeys => BaseCommand.IsCustomHotKeys;
 
-		if (baseCommand is ActionCommand actionCommand)
-		{
-			if (actionCommand.Action is INotifyPropertyChanging notifyPropertyChanging)
+    /// <inheritdoc/>
+    public string? HotKeyText => BaseCommand.HotKeyText;
+
+    /// <inheritdoc/>
+    public HotKeyCollection HotKeys
+    {
+        get => BaseCommand.HotKeys;
+        set => BaseCommand.HotKeys = value;
+    }
+
+    /// <inheritdoc/>
+    public HotKeyCollection DefaultHotKeys
+    {
+        get;
+    }
+
+    /// <inheritdoc/>
+    public bool IsToggle
+        => BaseCommand.IsToggle;
+
+    /// <inheritdoc/>
+    public bool IsOn
+    {
+        get => BaseCommand.IsOn;
+        set => BaseCommand.IsOn = value;
+    }
+
+    /// <inheritdoc/>
+    public bool IsExecutable
+        => BaseCommand.IsExecutable;
+
+    public ModifiableCommand(IRichCommand baseCommand, Dictionary<KeyModifiers, IRichCommand> modifiedCommands)
+    {
+        BaseCommand = baseCommand;
+        ModifiedCommands = modifiedCommands.ToImmutableDictionary();
+        DefaultHotKeys = new(BaseCommand.HotKeys);
+
+        if (baseCommand is ActionCommand actionCommand)
+        {
+            if (actionCommand.Action is INotifyPropertyChanging notifyPropertyChanging)
             {
                 notifyPropertyChanging.PropertyChanging += Action_PropertyChanging;
             }
@@ -67,62 +97,70 @@ internal class ModifiableCommand : ObservableObject, IRichCommand
                 notifyPropertyChanged.PropertyChanged += Action_PropertyChanged;
             }
         }
-	}
+    }
 
-	public bool CanExecute(object? parameter) => BaseCommand.CanExecute(parameter);
-	public async void Execute(object? parameter) => await ExecuteAsync();
+    /// <inheritdoc/>
+    public bool CanExecute(object? parameter)
+    {
+        return BaseCommand.CanExecute(parameter);
+    }
 
-	public Task ExecuteAsync()
-	{
-		if (ModifiedCommands.TryGetValue(HotKeyHelpers.GetCurrentKeyModifiers(), out var modifiedCommand) &&
-			modifiedCommand.IsExecutable)
-        {
-            return modifiedCommand.ExecuteAsync();
-        }
+    /// <inheritdoc/>
+    public async void Execute(object? parameter)
+    {
+        await ExecuteAsync(parameter);
+    }
+
+    /// <inheritdoc/>
+    public Task ExecuteAsync(object? parameter = null)
+    {
+        if (ModifiedCommands.TryGetValue(HotKeyHelpers.GetCurrentKeyModifiers(), out var modifiedCommand) &&
+            modifiedCommand.IsExecutable)
+            return modifiedCommand.ExecuteAsync(parameter);
         else
+            return BaseCommand.ExecuteAsync(parameter);
+    }
+
+    /// <inheritdoc/>
+    public async void ExecuteTapped(object sender, TappedRoutedEventArgs e)
+    {
+        await ExecuteAsync();
+    }
+
+    private void Action_PropertyChanging(object? sender, PropertyChangingEventArgs e)
+    {
+        switch (e.PropertyName)
         {
-            return BaseCommand.ExecuteAsync();
+            case nameof(IAction.Label):
+                OnPropertyChanging(nameof(Label));
+                OnPropertyChanging(nameof(LabelWithHotKey));
+                OnPropertyChanging(nameof(AutomationName));
+                break;
+            case nameof(IToggleAction.IsOn) when IsToggle:
+                OnPropertyChanging(nameof(IsOn));
+                break;
+            case nameof(IAction.IsExecutable):
+                OnPropertyChanging(nameof(IsExecutable));
+                break;
         }
     }
 
-	public async void ExecuteTapped(object sender, TappedRoutedEventArgs e) => await ExecuteAsync();
-
-	public void ResetHotKeys() => BaseCommand.ResetHotKeys();
-
-	private void Action_PropertyChanging(object? sender, PropertyChangingEventArgs e)
-	{
-		switch (e.PropertyName)
-		{
-			case nameof(IAction.Label):
-				OnPropertyChanging(nameof(Label));
-				OnPropertyChanging(nameof(LabelWithHotKey));
-				OnPropertyChanging(nameof(AutomationName));
-				break;
-			case nameof(IToggleAction.IsOn) when IsToggle:
-				OnPropertyChanging(nameof(IsOn));
-				break;
-			case nameof(IAction.IsExecutable):
-				OnPropertyChanging(nameof(IsExecutable));
-				break;
-		}
-	}
-	private void Action_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		switch (e.PropertyName)
-		{
-			case nameof(IAction.Label):
-				OnPropertyChanged(nameof(Label));
-				OnPropertyChanged(nameof(LabelWithHotKey));
-				OnPropertyChanged(nameof(AutomationName));
-				break;
-			case nameof(IToggleAction.IsOn) when IsToggle:
-				OnPropertyChanged(nameof(IsOn));
-				break;
-			case nameof(IAction.IsExecutable):
-				OnPropertyChanged(nameof(IsExecutable));
-				CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-				break;
-		}
-	}
+    private void Action_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(IAction.Label):
+                OnPropertyChanged(nameof(Label));
+                OnPropertyChanged(nameof(LabelWithHotKey));
+                OnPropertyChanged(nameof(AutomationName));
+                break;
+            case nameof(IToggleAction.IsOn) when IsToggle:
+                OnPropertyChanged(nameof(IsOn));
+                break;
+            case nameof(IAction.IsExecutable):
+                OnPropertyChanged(nameof(IsExecutable));
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                break;
+        }
+    }
 }
-

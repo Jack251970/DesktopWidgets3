@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Media;
@@ -8,7 +8,7 @@ namespace Files.App.Utils.Storage;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-public class GroupedHeaderViewModel : ObservableObject
+public sealed class GroupedHeaderViewModel : ObservableObject
 {
     public string Key
     {
@@ -114,7 +114,7 @@ public class GroupedHeaderViewModel : ObservableObject
         }
     }
 
-    private readonly List<string> changedPropQueue = new();
+    private readonly List<string> changedPropQueue = [];
 
     // This is true by default to make it easier to initialize groups from a different thread
     private bool deferPropChangedNotifs = true;

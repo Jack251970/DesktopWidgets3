@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Windows.System;
 
 namespace Files.App.Actions;
 
-internal class OpenHelpAction : IAction
+internal sealed class OpenHelpAction : IAction
 {
 	public string Label
 		=> "Help".GetLocalizedResource();
@@ -16,9 +16,9 @@ internal class OpenHelpAction : IAction
 	public HotKey HotKey
 		=> new(Keys.F1);
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
-		var url = new Uri(Constants.GitHub.DocumentationUrl);
+		var url = new Uri(Constants.ExternalUrl.DocumentationUrl);
 		return Launcher.LaunchUriAsync(url).AsTask();
 	}
 }

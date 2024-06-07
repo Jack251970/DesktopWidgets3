@@ -1,17 +1,17 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Core.Storage;
 
 namespace Files.App.Actions;
 
-internal class UnpinFromStartAction : IAction
+internal sealed class UnpinFromStartAction(IContentPageContext context) : IAction
 {
 	private IStorageService StorageService { get; } = DependencyExtensions.GetService<IStorageService>();
 
 	private IStartMenuService StartMenuService { get; } = DependencyExtensions.GetService<IStartMenuService>();
 
-	public IContentPageContext context;
+	public IContentPageContext context = context;
 
 	public string Label
 		=> "UnpinItemFromStart/Text".GetLocalizedResource();
@@ -20,14 +20,9 @@ internal class UnpinFromStartAction : IAction
 		=> "UnpinFromStartDescription".GetLocalizedResource();
 
 	public RichGlyph Glyph
-		=> new(opacityStyle: "ColorIconUnpinFromFavorites");
+		=> new(opacityStyle: "Icons.Unpin.16x16");
 
-	public UnpinFromStartAction(IContentPageContext context)
-    {
-        this.context = context;
-    }
-
-	public async Task ExecuteAsync()
+    public async Task ExecuteAsync(object? parameter = null)
 	{
 		if (context.SelectedItems.Count > 0)
 		{
@@ -36,7 +31,7 @@ internal class UnpinFromStartAction : IAction
                 IStorable storable = listedItem.IsFolder switch
                 {
                     true => await StorageService.GetFolderAsync(listedItem.ItemPath),
-                    _ => await StorageService.GetFileAsync(listedItem.ItemPath)
+                    _ => await StorageService.GetFileAsync((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath)
                 };
                 await StartMenuService.UnpinAsync(storable);
             }

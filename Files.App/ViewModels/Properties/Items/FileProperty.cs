@@ -1,22 +1,20 @@
-// Copyright(c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Core.Helpers;
 using Files.App.Converters;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
-using System.Text.Json;
 using Windows.Storage;
 
 namespace Files.App.ViewModels.Properties;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning disable IL2026 // Unrecognized escape sequence in XML doc comment
 
 /// <summary>
 /// This class is represents a system file property from the Windows.Storage API
 /// </summary>
-public class FileProperty : ObservableObject
+public sealed class FileProperty : ObservableObject
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
@@ -182,9 +180,9 @@ public class FileProperty : ObservableObject
 		}
 
 		var propsToSave = new Dictionary<string, object>
-    {
-        { Property, Converter.ConvertBack(Value, null, null, null) }
-    };
+        {
+            { Property, Converter.ConvertBack(Value, null, null, null) }
+        };
 
 		return file.Properties.SavePropertiesAsync(propsToSave).AsTask();
 	}
@@ -293,7 +291,7 @@ public class FileProperty : ObservableObject
 		return value!;
 	}
 
-	private static readonly Dictionary<string, string> cachedPropertiesListFiles = new();
+    private static readonly Dictionary<string, string> cachedPropertiesListFiles = [];
 
     /// <summary>
     /// This function retrieves the list of properties to display from the PropertiesInformation.json
@@ -339,9 +337,9 @@ public class FileProperty : ObservableObject
 			{
 				if (file.Properties is not null)
 				{
-					val = (await file.Properties.RetrievePropertiesAsync(new string[] { prop })).First().Value;
-				}
-			}
+                    val = (await file.Properties.RetrievePropertiesAsync([prop])).First().Value;
+                }
+            }
 			catch (ArgumentException e)
 			{
 				Debug.WriteLine($"Unable to retrieve system file property {prop}.\n{e}");
@@ -387,8 +385,23 @@ public class FileProperty : ObservableObject
 		{ "AddISO" , input => $"ISO-{(ushort)input}"},
 		{ "RoundDouble" , input => $"{Math.Round((double)input)}"},
 		{ "UnitMM" , input => $"{(double)input} mm"},
-	};
+        { "FormatEncodingBitrate", FormatEncodingBitrate }
+    };
 
 	private static string TimeSpanToString(TimeSpan t)
 		=> t.Days > 0 ? t.Days * 24 + t.Hours + t.ToString("':'mm':'ss") : t.ToString("hh':'mm':'ss");
+
+    private static string FormatEncodingBitrate(object input)
+    {
+        // For cases when multiple files are selected and it has a string value
+        if (input.GetType() != typeof(uint))
+        {
+            return input?.ToString() ?? string.Empty;
+        }
+
+        var sizes = new string[] { "bps", "kbps", "Mbps", "Gbps" };
+        var order = (int)Math.Floor(Math.Log((uint)input, 1000));
+        var readableSpeed = (uint)input / Math.Pow(1000, order);
+        return $"{readableSpeed:0.##} {sizes[order]}";
+    }
 }

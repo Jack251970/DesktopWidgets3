@@ -1,16 +1,16 @@
-﻿<!--  Copyright (c) 2023 Files Community. Licensed under the MIT License. See the LICENSE.  -->
+﻿<!--  Copyright (c) 2024 Files Community. Licensed under the MIT License. See the LICENSE.  -->
 <vm:BasePropertiesPage
 	x:Class="Files.App.Views.Properties.SecurityAdvancedPage"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:behaviors="using:Files.App.Data.Behaviors"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:extensions="using:Files.App.Extensions"
 	xmlns:helpers="using:Files.App.Helpers"
 	xmlns:i="using:Microsoft.Xaml.Interactivity"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:security="using:Files.App.Utils.Storage"
 	xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
-	xmlns:uc="using:Files.App.UserControls"
 	xmlns:vm="using:Files.App.ViewModels.Properties"
 	xmlns:wctconverters="using:CommunityToolkit.WinUI.UI.Converters"
 	DataContext="{x:Bind SecurityAdvancedViewModel, Mode=OneWay}"
@@ -130,7 +130,7 @@
 						<Image
 							Width="16"
 							Height="16"
-							uc:ImageFromBytes.SourceBytes="{x:Bind SecurityAdvancedViewModel.ShieldIconFileInfo.IconData, Mode=OneWay}" />
+							extensions:ImageFromBytes.SourceBytes="{x:Bind SecurityAdvancedViewModel.ShieldIconFileInfo.IconData, Mode=OneWay}" />
 						<TextBlock Text="{helpers:ResourceString Name=Change}" />
 					</StackPanel>
 				</HyperlinkButton>
@@ -269,81 +269,81 @@
 							<ColumnDefinition Width="{x:Bind SecurityAdvancedViewModel.AccessControlList.IsFolder, Converter={StaticResource BoolToWidthConverter}, Mode=OneWay}" MinWidth="{x:Bind SecurityAdvancedViewModel.AccessControlList.IsFolder, Converter={StaticResource BoolToMinWidthConverter}, Mode=OneWay}" />
 						</Grid.ColumnDefinitions>
 
-						<TextBlock
+                        <TextBlock
 							Grid.Column="1"
 							HorizontalAlignment="Left"
 							VerticalAlignment="Center"
-							Foreground="{ThemeResource TextFillColorSecondary}"
+							Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 							Style="{StaticResource App.Theme.CaptionTextBlockStyle}"
 							Text="{helpers:ResourceString Name=Type}"
 							TextTrimming="CharacterEllipsis"
 							TextWrapping="NoWrap" />
 
-						<toolkit:GridSplitter
+                        <toolkit:GridSplitter
 							Grid.Column="2"
 							Margin="0,0,0,-4"
 							Style="{StaticResource HeaderGridSplitterStyle}" />
 
-						<TextBlock
+                        <TextBlock
 							Grid.Column="3"
 							Margin="4,0"
 							HorizontalAlignment="Left"
 							VerticalAlignment="Center"
-							Foreground="{ThemeResource TextFillColorSecondary}"
+							Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 							Style="{StaticResource App.Theme.CaptionTextBlockStyle}"
 							Text="{helpers:ResourceString Name=Principal}"
 							TextTrimming="CharacterEllipsis"
 							TextWrapping="NoWrap" />
 
-						<toolkit:GridSplitter
+                        <toolkit:GridSplitter
 							Grid.Column="4"
 							Margin="0,0,0,-4"
 							Style="{StaticResource HeaderGridSplitterStyle}" />
 
-						<TextBlock
+                        <TextBlock
 							Grid.Column="5"
 							Margin="4,0"
 							HorizontalAlignment="Left"
 							VerticalAlignment="Center"
-							Foreground="{ThemeResource TextFillColorSecondary}"
+							Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 							Style="{StaticResource App.Theme.CaptionTextBlockStyle}"
 							Text="{helpers:ResourceString Name=Access}"
 							TextTrimming="CharacterEllipsis"
 							TextWrapping="NoWrap" />
 
-						<toolkit:GridSplitter
+                        <toolkit:GridSplitter
 							Grid.Column="6"
 							Margin="0,0,0,-4"
 							Style="{StaticResource HeaderGridSplitterStyle}" />
 
-						<TextBlock
+                        <TextBlock
 							Grid.Column="7"
 							Margin="4,0"
 							HorizontalAlignment="Left"
 							VerticalAlignment="Center"
-							Foreground="{ThemeResource TextFillColorSecondary}"
+							Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 							Style="{StaticResource App.Theme.CaptionTextBlockStyle}"
 							Text="{helpers:ResourceString Name=Inherited}"
 							TextTrimming="CharacterEllipsis"
 							TextWrapping="NoWrap" />
 
-						<toolkit:GridSplitter
+                        <toolkit:GridSplitter
 							Grid.Column="8"
 							Margin="0,0,0,-4"
 							Style="{StaticResource HeaderGridSplitterStyle}" />
 
-						<TextBlock
+                        <TextBlock
 							Grid.Column="9"
 							Margin="4,0"
 							HorizontalAlignment="Left"
 							VerticalAlignment="Center"
-							Foreground="{ThemeResource TextFillColorSecondary}"
+							Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 							Style="{StaticResource App.Theme.CaptionTextBlockStyle}"
 							Text="{helpers:ResourceString Name=SecurityAdvancedAppliesTo}"
 							TextTrimming="CharacterEllipsis"
 							TextWrapping="NoWrap" />
 
-					</Grid>
+                    </Grid>
 				</ListView.Header>
 
 				<ListView.ItemTemplate>

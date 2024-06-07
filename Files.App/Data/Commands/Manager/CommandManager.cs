@@ -1,23 +1,24 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Actions;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
+using System.Collections.Frozen;
 using System.Collections.Immutable;
+using Files.App.Actions;
 
 namespace Files.App.Data.Commands;
 
-internal class CommandManager : ICommandManager
+internal sealed class CommandManager : ICommandManager
 {
     private IFolderViewViewModel FolderViewViewModel = null!;
 
-    private IGeneralSettingsService Settings { get; set; } = null!;
+    // Dependency injections
 
-    private IImmutableDictionary<CommandCodes, IRichCommand> commands = null!;
-	private IImmutableDictionary<HotKey, IRichCommand> hotKeys = new Dictionary<HotKey, IRichCommand>().ToImmutableDictionary();
+    private IActionsSettingsService ActionsSettingsService { get; set; } = null!;
+
+    // Fields
+
+    private FrozenDictionary<CommandCodes, IRichCommand> commands = null!;
+    private ImmutableDictionary<HotKey, IRichCommand> _allKeyBindings = new Dictionary<HotKey, IRichCommand>().ToImmutableDictionary();
 
 	public IRichCommand this[CommandCodes code] => commands.TryGetValue(code, out var command) ? command : None;
 	public IRichCommand this[string code]
@@ -35,11 +36,12 @@ internal class CommandManager : ICommandManager
 		}
 	}
 	public IRichCommand this[HotKey hotKey]
-		=> hotKeys.TryGetValue(hotKey with { IsVisible = true }, out var command) ? command
-		: hotKeys.TryGetValue(hotKey with { IsVisible = false }, out command) ? command
+		=> _allKeyBindings.TryGetValue(hotKey with { IsVisible = true }, out var command) ? command
+		: _allKeyBindings.TryGetValue(hotKey with { IsVisible = false }, out command) ? command
 		: None;
 
-	public IRichCommand None => commands[CommandCodes.None];
+    #region Commands
+    public IRichCommand None => commands[CommandCodes.None];
     public IRichCommand OpenHelp => commands[CommandCodes.OpenHelp];
 	public IRichCommand ToggleFullScreen => commands[CommandCodes.ToggleFullScreen];
 	public IRichCommand EnterCompactOverlay => commands[CommandCodes.EnterCompactOverlay];
@@ -71,12 +73,13 @@ internal class CommandManager : ICommandManager
 	public IRichCommand AddItem => commands[CommandCodes.AddItem];
 	public IRichCommand PinToStart => commands[CommandCodes.PinToStart];
 	public IRichCommand UnpinFromStart => commands[CommandCodes.UnpinFromStart];
-	public IRichCommand PinItemToFavorites => commands[CommandCodes.PinItemToFavorites];
-	public IRichCommand UnpinItemFromFavorites => commands[CommandCodes.UnpinItemFromFavorites];
-	public IRichCommand SetAsWallpaperBackground => commands[CommandCodes.SetAsWallpaperBackground];
+    public IRichCommand PinFolderToSidebar => commands[CommandCodes.PinFolderToSidebar];
+    public IRichCommand UnpinFolderFromSidebar => commands[CommandCodes.UnpinFolderFromSidebar];
+    public IRichCommand SetAsWallpaperBackground => commands[CommandCodes.SetAsWallpaperBackground];
 	public IRichCommand SetAsSlideshowBackground => commands[CommandCodes.SetAsSlideshowBackground];
 	public IRichCommand SetAsLockscreenBackground => commands[CommandCodes.SetAsLockscreenBackground];
-	public IRichCommand CopyItem => commands[CommandCodes.CopyItem];
+    public IRichCommand SetAsAppBackground => commands[CommandCodes.SetAsAppBackground];
+    public IRichCommand CopyItem => commands[CommandCodes.CopyItem];
 	public IRichCommand CopyPath => commands[CommandCodes.CopyPath];
 	public IRichCommand CopyPathWithQuotes => commands[CommandCodes.CopyPathWithQuotes];
 	public IRichCommand CutItem => commands[CommandCodes.CutItem];
@@ -115,10 +118,8 @@ internal class CommandManager : ICommandManager
 	public IRichCommand LayoutDetails => commands[CommandCodes.LayoutDetails];
     public IRichCommand LayoutList => commands[CommandCodes.LayoutList];
     public IRichCommand LayoutTiles => commands[CommandCodes.LayoutTiles];
-	public IRichCommand LayoutGridSmall => commands[CommandCodes.LayoutGridSmall];
-	public IRichCommand LayoutGridMedium => commands[CommandCodes.LayoutGridMedium];
-	public IRichCommand LayoutGridLarge => commands[CommandCodes.LayoutGridLarge];
-	public IRichCommand LayoutColumns => commands[CommandCodes.LayoutColumns];
+    public IRichCommand LayoutGrid => commands[CommandCodes.LayoutGrid];
+    public IRichCommand LayoutColumns => commands[CommandCodes.LayoutColumns];
 	public IRichCommand LayoutAdaptive => commands[CommandCodes.LayoutAdaptive];
 	public IRichCommand SortByName => commands[CommandCodes.SortByName];
 	public IRichCommand SortByDateModified => commands[CommandCodes.SortByDateModified];
@@ -195,41 +196,46 @@ internal class CommandManager : ICommandManager
 	public IRichCommand GitPush => commands[CommandCodes.GitPush];
 	public IRichCommand GitSync => commands[CommandCodes.GitSync];
 	public IRichCommand OpenAllTaggedItems => commands[CommandCodes.OpenAllTaggedItems];
+    #endregion
 
-	public CommandManager()
+    public CommandManager()
     {
         /*commands = CreateActions()
                 .Select(action => new ActionCommand(this, action.Key, action.Value))
                 .Cast<IRichCommand>()
                 .Append(new NoneCommand())
-                .ToImmutableDictionary(command => command.Code);
+                .ToFrozenDictionary(command => command.Code);
 
-        settings.PropertyChanged += Settings_PropertyChanged;
-        UpdateHotKeys();*/
+        ActionsSettingsService.PropertyChanged += (s, e) => { OverwriteKeyBindings(); };
+
+        OverwriteKeyBindings();*/
     }
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        Settings = FolderViewViewModel.GetService<IGeneralSettingsService>();
+        ActionsSettingsService = FolderViewViewModel.GetService<IActionsSettingsService>();
 
         commands = CreateActions(
             FolderViewViewModel, 
             FolderViewViewModel.GetService<IContentPageContext>(),
             FolderViewViewModel.GetService<IDisplayPageContext>())
-            .Select(action => new ActionCommand(this, action.Key, action.Value))
+            .Select(action => new ActionCommand(folderViewViewModel, this, action.Key, action.Value))
             .Cast<IRichCommand>()
             .Append(new NoneCommand())
-            .ToImmutableDictionary(command => command.Code);
+            .ToFrozenDictionary(command => command.Code);
 
-        Settings.PropertyChanged += Settings_PropertyChanged;
-        UpdateHotKeys();
+        ActionsSettingsService.PropertyChanged += (s, e) => { OverwriteKeyBindings(); };
+
+        OverwriteKeyBindings();
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-	public IEnumerator<IRichCommand> GetEnumerator() => commands.Values.GetEnumerator();
 
-	private static IDictionary<CommandCodes, IAction> CreateActions(IFolderViewViewModel folderViewViewModel, IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) => new Dictionary<CommandCodes, IAction>
+    public IEnumerator<IRichCommand> GetEnumerator() =>
+        (commands.Values as IEnumerable<IRichCommand>).GetEnumerator();
+
+    private static Dictionary<CommandCodes, IAction> CreateActions(IFolderViewViewModel folderViewViewModel, IContentPageContext contentPageContext, IDisplayPageContext displayPageContext) => new()
 	{
         [CommandCodes.OpenHelp] = new OpenHelpAction(),
 		[CommandCodes.ToggleFullScreen] = new ToggleFullScreenAction(folderViewViewModel),
@@ -262,12 +268,13 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.AddItem] = new AddItemAction(folderViewViewModel, contentPageContext),
 		[CommandCodes.PinToStart] = new PinToStartAction(folderViewViewModel, contentPageContext),
 		[CommandCodes.UnpinFromStart] = new UnpinFromStartAction(contentPageContext),
-		[CommandCodes.PinItemToFavorites] = new PinItemAction(folderViewViewModel, contentPageContext),
-		[CommandCodes.UnpinItemFromFavorites] = new UnpinItemAction(folderViewViewModel, contentPageContext),
-		[CommandCodes.SetAsWallpaperBackground] = new SetAsWallpaperBackgroundAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.PinFolderToSidebar] = new PinFolderToSidebarAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.UnpinFolderFromSidebar] = new UnpinFolderFromSidebarAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.SetAsWallpaperBackground] = new SetAsWallpaperBackgroundAction(folderViewViewModel, contentPageContext),
 		[CommandCodes.SetAsSlideshowBackground] = new SetAsSlideshowBackgroundAction(folderViewViewModel, contentPageContext),
 		[CommandCodes.SetAsLockscreenBackground] = new SetAsLockscreenBackgroundAction(folderViewViewModel, contentPageContext),
-		[CommandCodes.CopyItem] = new CopyItemAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.SetAsAppBackground] = new SetAsAppBackgroundAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.CopyItem] = new CopyItemAction(folderViewViewModel, contentPageContext),
 		[CommandCodes.CopyPath] = new CopyPathAction(contentPageContext),
 		[CommandCodes.CopyPathWithQuotes] = new CopyPathWithQuotesAction(contentPageContext),
 		[CommandCodes.CutItem] = new CutItemAction(folderViewViewModel, contentPageContext),
@@ -301,14 +308,12 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.OpenTerminal] = new OpenTerminalAction(contentPageContext),
 		[CommandCodes.OpenTerminalAsAdmin] = new OpenTerminalAsAdminAction(contentPageContext),
 		[CommandCodes.OpenCommandPalette] = new OpenCommandPaletteAction(contentPageContext),
-        [CommandCodes.LayoutDecreaseSize] = new LayoutDecreaseSizeAction(displayPageContext),
-		[CommandCodes.LayoutIncreaseSize] = new LayoutIncreaseSizeAction(displayPageContext),
+        [CommandCodes.LayoutDecreaseSize] = new LayoutDecreaseSizeAction(folderViewViewModel, displayPageContext, contentPageContext),
+		[CommandCodes.LayoutIncreaseSize] = new LayoutIncreaseSizeAction(folderViewViewModel, displayPageContext, contentPageContext),
 		[CommandCodes.LayoutDetails] = new LayoutDetailsAction(displayPageContext),
         [CommandCodes.LayoutList] = new LayoutListAction(displayPageContext),
         [CommandCodes.LayoutTiles] = new LayoutTilesAction(displayPageContext),
-		[CommandCodes.LayoutGridSmall] = new LayoutGridSmallAction(displayPageContext),
-		[CommandCodes.LayoutGridMedium] = new LayoutGridMediumAction(displayPageContext),
-		[CommandCodes.LayoutGridLarge] = new LayoutGridLargeAction(displayPageContext),
+		[CommandCodes.LayoutGrid] = new LayoutGridAction(displayPageContext),
 		[CommandCodes.LayoutColumns] = new LayoutColumnsAction(displayPageContext),
 		[CommandCodes.LayoutAdaptive] = new LayoutAdaptiveAction(displayPageContext),
 		[CommandCodes.SortByName] = new SortByNameAction(contentPageContext, displayPageContext),
@@ -388,237 +393,47 @@ internal class CommandManager : ICommandManager
 		[CommandCodes.OpenAllTaggedItems] = new OpenAllTaggedActions(folderViewViewModel, contentPageContext),
 	};
 
-    private void UpdateHotKeys()
-	{
-		ISet<HotKey> useds = new HashSet<HotKey>();
-
-		var customs = new Dictionary<CommandCodes, HotKeyCollection>();
-		foreach (var custom in Settings.Actions)
-		{
-			if (Enum.TryParse(custom.Key, true, out CommandCodes code))
-			{
-				if (code is CommandCodes.None)
-                {
-                    continue;
-                }
-
-                var hotKeys = new HotKeyCollection(HotKeyCollection.Parse(custom.Value).Except(useds));
-				customs.Add(code, new(hotKeys));
-
-				foreach (var hotKey in hotKeys)
-				{
-					useds.Add(hotKey with { IsVisible = true });
-					useds.Add(hotKey with { IsVisible = false });
-				}
-			}
-		}
-
-		foreach (var command in commands.Values.OfType<ActionCommand>())
-		{
-			var isCustom = customs.ContainsKey(command.Code);
-
-			var hotkeys = isCustom
-				? customs[command.Code]
-				: new HotKeyCollection(GetHotKeys(command.Action).Except(useds));
-
-			command.UpdateHotKeys(isCustom, hotkeys);
-		}
-
-		hotKeys = commands.Values
-			.SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
-			.ToImmutableDictionary(item => item.HotKey, item => item.Command);
-	}
-
-	private static HotKeyCollection GetHotKeys(IAction action)
-		=> new(action.HotKey, action.SecondHotKey, action.ThirdHotKey, action.MediaHotKey);
-
-	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		if (e.PropertyName is nameof(IGeneralSettingsService.Actions))
+    /// <summary>
+    /// Replaces default key binding collection with customized one(s) if exists.
+    /// </summary>
+    private void OverwriteKeyBindings()
+    {
+        if (ActionsSettingsService.ActionsV2 is null)
         {
-            UpdateHotKeys();
+            foreach (var command in commands.Values.OfType<ActionCommand>())
+            {
+                command.RestoreKeyBindings();
+            }
         }
-    }
+        else
+        {
+            foreach (var command in commands.Values.OfType<ActionCommand>())
+            {
+                var customizedKeyBindings = ActionsSettingsService.ActionsV2.FindAll(x => x.CommandCode == command.Code.ToString());
 
-    [DebuggerDisplay("Command {Code}")]
-	internal class ActionCommand : ObservableObject, IRichCommand
-	{
-		public event EventHandler? CanExecuteChanged;
-
-		private readonly CommandManager manager;
-
-		public IAction Action { get; }
-		public CommandCodes Code { get; }
-
-		public string Label => Action.Label;
-		public string LabelWithHotKey => HotKeyText is null ? Label : $"{Label} ({HotKeyText})";
-		public string AutomationName => Label;
-
-		public string Description => Action.Description;
-
-		public RichGlyph Glyph => Action.Glyph;
-		public object? Icon { get; }
-		public FontIcon? FontIcon { get; }
-		public Style? OpacityStyle { get; }
-
-        private bool isCustomHotKeys = false;
-		public bool IsCustomHotKeys => isCustomHotKeys;
-
-        public string? HotKeyText
-		{
-			get
-			{
-				var text = HotKeys.Label;
-				if (string.IsNullOrEmpty(text))
+                if (customizedKeyBindings.IsEmpty())
                 {
-                    return null;
+                    command.RestoreKeyBindings();
                 }
-
-                return text;
-			}
-		}
-
-		private HotKeyCollection hotKeys;
-		public HotKeyCollection HotKeys
-		{
-			get => hotKeys;
-			set
-			{
-				if (hotKeys == value)
+                else if (customizedKeyBindings.Count == 1 && customizedKeyBindings[0].KeyBinding == string.Empty)
                 {
-                    return;
-                }
-
-                var code = Code.ToString();
-				var customs = new Dictionary<string, string>(manager.Settings.Actions);
-
-				if (!customs.ContainsKey(code))
-                {
-                    customs.Add(code, value.Code);
-                }
-                else if (value != GetHotKeys(Action))
-                {
-                    customs[code] = value.Code;
+                    command.OverwriteKeyBindings(HotKeyCollection.Empty);
                 }
                 else
                 {
-                    customs.Remove(code);
+                    var keyBindings = new HotKeyCollection(customizedKeyBindings.Select(x => HotKey.Parse(x.KeyBinding, false)));
+                    command.OverwriteKeyBindings(keyBindings);
                 }
-
-                manager.Settings.Actions = customs;
-			}
-		}
-
-        public bool IsToggle => Action is IToggleAction;
-
-		public bool IsOn
-		{
-			get => Action is IToggleAction toggleAction && toggleAction.IsOn;
-			set
-			{
-				if (Action is IToggleAction toggleAction && toggleAction.IsOn != value)
-                {
-                    Execute(null);
-                }
-            }
-		}
-
-		public bool IsExecutable => Action.IsExecutable;
-
-		public ActionCommand(CommandManager manager, CommandCodes code, IAction action)
-		{
-			this.manager = manager;
-			Code = code;
-			Action = action;
-			Icon = action.Glyph.ToIcon();
-			FontIcon = action.Glyph.ToFontIcon();
-			OpacityStyle = action.Glyph.ToOpacityStyle();
-			hotKeys = GetHotKeys(action);
-
-			if (action is INotifyPropertyChanging notifyPropertyChanging)
-            {
-                notifyPropertyChanging.PropertyChanging += Action_PropertyChanging;
-            }
-
-            if (action is INotifyPropertyChanged notifyPropertyChanged)
-            {
-                notifyPropertyChanged.PropertyChanged += Action_PropertyChanged;
             }
         }
 
-		public bool CanExecute(object? parameter) => Action.IsExecutable;
-		public async void Execute(object? parameter) => await ExecuteAsync();
+        _allKeyBindings = commands.Values
+            .SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
+            .ToImmutableDictionary(item => item.HotKey, item => item.Command);
+    }
 
-		public Task ExecuteAsync()
-		{
-			if (IsExecutable)
-			{
-				Analytics.TrackEvent($"Triggered {Code} action");
-				return Action.ExecuteAsync();
-			}
-
-			return Task.CompletedTask;
-		}
-
-		public async void ExecuteTapped(object sender, TappedRoutedEventArgs e) => await ExecuteAsync();
-
-		public void ResetHotKeys()
-		{
-			if (!IsCustomHotKeys)
-            {
-                return;
-            }
-
-            var customs = new Dictionary<string, string>(manager.Settings.Actions);
-			customs.Remove(Code.ToString());
-			manager.Settings.Actions = customs;
-		}
-
-		internal void UpdateHotKeys(bool isCustom, HotKeyCollection hotKeys)
-		{
-			SetProperty(ref isCustomHotKeys, isCustom, nameof(IsCustomHotKeys));
-
-			if (SetProperty(ref this.hotKeys, hotKeys, nameof(HotKeys)))
-			{
-				OnPropertyChanged(nameof(HotKeyText));
-				OnPropertyChanged(nameof(LabelWithHotKey));
-			}
-		}
-
-		private void Action_PropertyChanging(object? sender, PropertyChangingEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(IAction.Label):
-					OnPropertyChanging(nameof(Label));
-					OnPropertyChanging(nameof(LabelWithHotKey));
-					OnPropertyChanging(nameof(AutomationName));
-					break;
-				case nameof(IToggleAction.IsOn) when IsToggle:
-					OnPropertyChanging(nameof(IsOn));
-					break;
-				case nameof(IAction.IsExecutable):
-					OnPropertyChanging(nameof(IsExecutable));
-					break;
-			}
-		}
-		private void Action_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-				case nameof(IAction.Label):
-					OnPropertyChanged(nameof(Label));
-					OnPropertyChanged(nameof(LabelWithHotKey));
-					OnPropertyChanged(nameof(AutomationName));
-					break;
-				case nameof(IToggleAction.IsOn) when IsToggle:
-					OnPropertyChanged(nameof(IsOn));
-					break;
-				case nameof(IAction.IsExecutable):
-					OnPropertyChanged(nameof(IsExecutable));
-					CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-					break;
-			}
-		}
-	}
+    public static HotKeyCollection GetDefaultKeyBindings(IAction action)
+    {
+        return new(action.HotKey, action.SecondHotKey, action.ThirdHotKey, action.MediaHotKey);
+    }
 }

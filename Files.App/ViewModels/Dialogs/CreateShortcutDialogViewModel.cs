@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
@@ -9,7 +9,7 @@ using Windows.Storage.Pickers;
 
 namespace Files.App.ViewModels.Dialogs;
 
-public class CreateShortcutDialogViewModel : ObservableObject
+public sealed class CreateShortcutDialogViewModel : ObservableObject
 {
     // Interface to the folder view view model
     public readonly IFolderViewViewModel FolderViewViewModel;
@@ -99,16 +99,16 @@ public class CreateShortcutDialogViewModel : ObservableObject
 
     private Task SelectDestination()
     {
-        var bi = new InteropHelpers.BROWSEINFO
+        var bi = new Win32PInvoke.BROWSEINFO
         {
             ulFlags = 0x00004000,
             lpszTitle = "Select a folder"
         };
-        var pidl = InteropHelpers.SHBrowseForFolder(ref bi);
+        var pidl = Win32PInvoke.SHBrowseForFolder(ref bi);
         if (pidl != nint.Zero)
         {
             var path = new StringBuilder(260);
-            if (InteropHelpers.SHGetPathFromIDList(pidl, path))
+            if (Win32PInvoke.SHGetPathFromIDList(pidl, path))
             {
                 DestinationItemPath = path.ToString();
             }
@@ -150,8 +150,8 @@ public class CreateShortcutDialogViewModel : ObservableObject
 			destinationName = uri.Host;
 		}
 
-		var shortcutName = string.Format("ShortcutCreateNewSuffix".GetLocalizedResource(), destinationName);
-		ShortcutCompleteName = shortcutName + extension;
+        var shortcutName = FilesystemHelpers.GetShortcutNamingPreference(destinationName);
+        ShortcutCompleteName = shortcutName + extension;
 		var filePath = Path.Combine(WorkingDirectory, ShortcutCompleteName);
 
 		var fileNumber = 1;

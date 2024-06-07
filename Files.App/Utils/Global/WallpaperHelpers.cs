@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Controls;
@@ -45,10 +45,10 @@ public static class WallpaperHelpers
         try
 		{
 			var idList = filePaths.Select(Shell32.IntILCreateFromPath).ToArray();
-			Shell32.SHCreateShellItemArrayFromIDLists((uint)idList.Length, idList.ToArray(), out var shellItemArray);
+            Shell32.SHCreateShellItemArrayFromIDLists((uint)idList.Length, [.. idList], out var shellItemArray);
 
-			// Set SlideShow
-			var wallpaper = (Shell32.IDesktopWallpaper)new Shell32.DesktopWallpaper();
+            // Set SlideShow
+            var wallpaper = (Shell32.IDesktopWallpaper)new Shell32.DesktopWallpaper();
 			wallpaper.SetSlideshow(shellItemArray);
 
 			// Set wallpaper to fill desktop.

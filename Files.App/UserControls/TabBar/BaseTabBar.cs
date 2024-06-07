@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -17,9 +17,9 @@ public abstract class BaseTabBar : ITabBar
 
 	protected ITabBarItemContent CurrentSelectedAppInstance = null!;
 
-    public static event EventHandler<ITabBar>? OnLoaded;  // TODO: Check if can be static.
+    public static event EventHandler<ITabBar>? OnLoaded;  // TODO(Later): Check if can be static.
 
-    public static event PropertyChangedEventHandler? StaticPropertyChanged;  // TODO: Check if can be static.
+    public static event PropertyChangedEventHandler? StaticPropertyChanged;  // TODO(Later): Check if can be static.
 
     public const string TabDropHandledIdentifier = "FilesTabViewItemDropHandled";
 
@@ -162,17 +162,25 @@ public abstract class BaseTabBar : ITabBar
 	}*/
 
     public async void CloseTab(TabBarItem tabItem)
-	{
-		Items.Remove(tabItem);
-		tabItem?.Unload();
-			
-		// Dispose and save tab arguments
-		PushRecentTab(new CustomTabViewItemParameter[]
-		{
-			tabItem!.NavigationParameter,
-		});
+    {
+        if (tabItem is null)
+        {
+            return;
+        }
 
-		if (Items.Count == 0)
+        Items.Remove(tabItem);
+        tabItem.Unload();
+
+        // Dispose and save tab arguments
+        PushRecentTab(
+        [
+        tabItem.NavigationParameter,
+        ]);
+
+        // Save the updated tab list
+        AppLifecycleHelper.SaveSessionTabs(FolderViewViewModel);
+
+        if (Items.Count == 0)
         {
             await WindowsExtensions.CloseWindow(FolderViewViewModel.MainWindow);
         }

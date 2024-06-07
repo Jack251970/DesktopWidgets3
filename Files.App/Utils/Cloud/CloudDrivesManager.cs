@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.Extensions.Logging;
@@ -17,8 +17,8 @@ public static class CloudDrivesManager
 
 	public static EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 
-	private static readonly List<DriveItem> _Drives = [];
-	public static IReadOnlyList<DriveItem> Drives
+    private static readonly List<DriveItem> _Drives = [];
+    public static IReadOnlyList<DriveItem> Drives
 	{
 		get
 		{
@@ -67,16 +67,28 @@ public static class CloudDrivesManager
 				ShowProperties = true,
 			};
 
-            var iconData = provider.IconData ?? await FileThumbnailHelper.LoadIconWithoutOverlayAsync(provider.SyncFolder, Constants.DefaultIconSizes.Large, false, true);
+            var iconData = provider.IconData;
+
+            if (iconData is null)
+            {
+                var result = await FileThumbnailHelper.GetIconAsync(
+                    provider.SyncFolder,
+                    Constants.ShellIconSizes.Small,
+                    false,
+                    IconOptions.ReturnIconOnly | IconOptions.UseCurrentScale);
+
+                iconData = result;
+            }
+
             if (iconData is not null)
-			{
-				cloudProviderItem.IconData = iconData;
+            {
+                cloudProviderItem.IconData = iconData;
 
-				await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async ()
-					=> cloudProviderItem.Icon = (await iconData.ToBitmapAsync())!);
-			}
+                await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async ()
+                    => cloudProviderItem.Icon = (await iconData.ToBitmapAsync())!);
+            }
 
-			lock (_Drives)
+            lock (_Drives)
 			{
 				if (_Drives.Any(x => x.Path == cloudProviderItem.Path))
                 {

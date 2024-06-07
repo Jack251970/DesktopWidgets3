@@ -1,22 +1,21 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Notifications;
-using Files.App.Services.DateTimeFormatter;
-using Files.App.Services.Settings;
 using Files.App.Storage.FtpStorage;
 using Files.App.Storage.NativeStorage;
 using Files.App.ViewModels.Settings;
-using Files.Core.Services.SizeProvider;
-using Files.Core.Storage;
+using Files.App.Services.SizeProvider;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text;
+using Windows.ApplicationModel;
 using Windows.System;
 using Windows.UI.Notifications;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using DesktopWidgets3.Core.Helpers;
 
 namespace Files.App.Helpers;
 
@@ -25,6 +24,39 @@ namespace Files.App.Helpers;
 /// </summary>
 public static class AppLifecycleHelper
 {
+    /// <summary>
+    /// Gets the value that provides application environment or branch name.
+    /// </summary>
+    public static AppEnvironment AppEnvironment { get; } =
+#if STORE
+			AppEnvironment.Store;
+#elif PREVIEW
+			AppEnvironment.Preview;
+#elif STABLE
+			AppEnvironment.Stable;
+#else
+        AppEnvironment.Dev;
+#endif
+
+    /// <summary>
+    /// Gets application package version.
+    /// </summary>
+    // CHANGE: Use InfoHelper instead of Package.Current.
+    public static Version AppVersion { get; } =
+        InfoHelper.GetVersion();
+
+    /// <summary>
+    /// Gets application icon path.
+    /// </summary>
+    // CHANGE: Use InfoHelper instead of Package.Current.
+    public static string AppIconPath { get; } =
+        Path.Combine(InfoHelper.GetInstalledLocation(), AppEnvironment switch
+        {
+            AppEnvironment.Dev => Constants.AssetPaths.DevLogo,
+            AppEnvironment.Preview => Constants.AssetPaths.PreviewLogo,
+            _ => Constants.AssetPaths.StableLogo
+        });
+
     private static bool isInitialized = false;
 
     private static bool isCloudDrivesManagerInitialized = false;
@@ -58,9 +90,10 @@ public static class AppLifecycleHelper
         }
 
         var addItemService = DependencyExtensions.GetService<IAddItemService>();
+        var jumpListService = DependencyExtensions.GetService<IWindowsJumpListService>();
         await Task.WhenAll(
-			JumpListHelper.InitializeUpdatesAsync(),
-			addItemService.InitializeAsync(),
+            jumpListService.InitializeAsync(),
+            addItemService.InitializeAsync(),
 			ContextMenu.WarmUpQueryContextMenuAsync()
 		);
 
@@ -122,7 +155,7 @@ public static class AppLifecycleHelper
     public static IHostBuilder ConfigureHost(this IHostBuilder host)
     {
         return host
-            .UseEnvironment(ApplicationService.AppEnvironment.ToString())
+            .UseEnvironment(AppLifecycleHelper.AppEnvironment.ToString())
             .ConfigureLogging(builder => builder
                     .AddProvider(new FileLoggerProvider(Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), "debug.log")))
                     .SetMinimumLevel(LogLevel.Information))
@@ -136,6 +169,7 @@ public static class AppLifecycleHelper
                 .AddTransient<IInfoPaneSettingsService, InfoPaneSettingsService>()
                 .AddTransient<ILayoutSettingsService, LayoutSettingsService>()
                 .AddTransient<IAppSettingsService, AppSettingsService>()
+                .AddTransient<IActionsSettingsService, ActionsSettingsService>()
                 .AddSingleton<IFileTagsSettingsService, FileTagsSettingsService>()
                 // Contexts
                 .AddTransient<IPageContext, PageContext>()
@@ -146,6 +180,7 @@ public static class AppLifecycleHelper
                 .AddTransient<IMultitaskingContext, MultitaskingContext>()
                 .AddSingleton<ITagsContext, TagsContext>()
                 // Services
+                .AddSingleton<IAppThemeModeService, AppThemeModeService>()
                 .AddTransient<IDialogService, DialogService>()
                 .AddSingleton<IImageService, ImagingService>()
                 .AddSingleton<IThreadingService, ThreadingService>()
@@ -154,7 +189,6 @@ public static class AppLifecycleHelper
                 .AddSingleton<IFileTagsService, FileTagsService>()
                 .AddTransient<ICommandManager, CommandManager>()
                 .AddTransient<IModifiableCommandManager, ModifiableCommandManager>()
-                .AddSingleton<IApplicationService, ApplicationService>()
                 .AddSingleton<IStorageService, NativeStorageService>()
                 .AddSingleton<IFtpStorageService, FtpStorageService>()
                 .AddSingleton<IAddItemService, AddItemService>()
@@ -170,20 +204,25 @@ public static class AppLifecycleHelper
                 .AddTransient<ISizeProvider, UserSizeProvider>()
                 .AddSingleton<IQuickAccessService, QuickAccessService>()
                 .AddSingleton<IResourcesService, ResourcesService>()
-                .AddSingleton<IJumpListService, JumpListService>()
+                .AddSingleton<IWindowsJumpListService, WindowsJumpListService>()
                 .AddSingleton<IRemovableDrivesService, RemovableDrivesService>()
                 .AddSingleton<INetworkDrivesService, NetworkDrivesService>()
                 .AddSingleton<IStartMenuService, StartMenuService>()
+                .AddSingleton<IStorageCacheService, StorageCacheService>()
+                .AddSingleton<IWindowsCompatibilityService, WindowsCompatibilityService>()
                 // ViewModels
                 .AddTransient<MainPageViewModel>()
                 .AddTransient<InfoPaneViewModel>()
                 .AddTransient<SidebarViewModel>()
                 /*.AddSingleton<SettingsViewModel>() // deprecated service*/
                 .AddSingleton<DrivesViewModel>()
-                .AddSingleton<NetworkDrivesViewModel>()
                 .AddTransient<StatusCenterViewModel>()
                 .AddSingleton<AppearanceViewModel>()
                 .AddTransient<HomeViewModel>()
+                .AddTransient<QuickAccessWidgetViewModel>()
+                .AddTransient<DrivesWidgetViewModel>()
+                .AddTransient<FileTagsWidgetViewModel>()
+                .AddTransient<RecentFilesWidgetViewModel>()
                 // Utilities
                 .AddSingleton<QuickAccessManager>()
                 .AddSingleton<StorageHistoryWrapper>()
@@ -280,6 +319,7 @@ public static class AppLifecycleHelper
         // Please check "Output Window" for exception details (View -> Output Window) (CTRL + ALT + O)
         Debugger.Break();
 
+        // Save the current tab list in case it was overwriten by another instance
         SaveSessionTabs();
         App.Logger?.LogError(ex, ex?.Message ?? "An unhandled error occurred.");
 
@@ -288,50 +328,53 @@ public static class AppLifecycleHelper
             return;
         }
 
-        var toastContent = new ToastContent()
-		{
-			Visual = new()
-			{
-				BindingGeneric = new ToastBindingGeneric()
-				{
-					Children =
-					{
-						new AdaptiveText()
-						{
-							Text = "ExceptionNotificationHeader".GetLocalizedResource()
-						},
-						new AdaptiveText()
-						{
-							Text = "ExceptionNotificationBody".GetLocalizedResource()
-						}
-					},
-					AppLogoOverride = new()
-					{
-						Source = "ms-appx:///Files.App/Assets/error.png"
-					}
-				}
-			},
-			Actions = new ToastActionsCustom()
-			{
-				Buttons =
-				{
-					new ToastButton("ExceptionNotificationReportButton".GetLocalizedResource(), Constants.GitHub.BugReportUrl)
-					{
-						ActivationType = ToastActivationType.Protocol
-					}
-				}
-			},
-			ActivationType = ToastActivationType.Protocol
-		};
+        SafetyExtensions.IgnoreExceptions(() =>
+        {
+            var toastContent = new ToastContent()
+		    {
+			    Visual = new()
+			    {
+				    BindingGeneric = new ToastBindingGeneric()
+				    {
+					    Children =
+					    {
+						    new AdaptiveText()
+						    {
+							    Text = "ExceptionNotificationHeader".GetLocalizedResource()
+						    },
+						    new AdaptiveText()
+						    {
+							    Text = "ExceptionNotificationBody".GetLocalizedResource()
+						    }
+					    },
+					    AppLogoOverride = new()
+					    {
+						    Source = "ms-appx:///Files.App/Assets/error.png"
+					    }
+				    }
+			    },
+			    Actions = new ToastActionsCustom()
+			    {
+				    Buttons =
+				    {
+                        new ToastButton("ExceptionNotificationReportButton".GetLocalizedResource(), Constants.ExternalUrl.BugReportUrl)
+                        {
+                            ActivationType = ToastActivationType.Protocol
+					    }
+				    }
+			    },
+			    ActivationType = ToastActivationType.Protocol
+		    };
 
-		// Create the toast notification
-		var toastNotification = new ToastNotification(toastContent.GetXml());
+		    // Create the toast notification
+		    var toastNotification = new ToastNotification(toastContent.GetXml());
 
-		// And send the notification
-		ToastNotificationManager.CreateToastNotifier().Show(toastNotification);
+		    // And send the notification
+		    ToastNotificationManager.CreateToastNotifier().Show(toastNotification);
+        });
 
-		// Restart the app
-		var userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();
+        // Restart the app
+        var userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();
 		var lastSessionTabList = userSettingsService.GeneralSettingsService.LastSessionTabList;
 
 		if (userSettingsService.GeneralSettingsService.LastCrashedTabList?.SequenceEqual(lastSessionTabList) ?? false)

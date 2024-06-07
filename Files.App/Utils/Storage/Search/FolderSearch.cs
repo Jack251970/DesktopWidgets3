@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.Extensions.Logging;
@@ -6,13 +6,12 @@ using System.IO;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
-using static Files.Core.Helpers.NativeFindStorageItemHelper;
 using FileAttributes = System.IO.FileAttributes;
-using WIN32_FIND_DATA = Files.Core.Helpers.NativeFindStorageItemHelper.WIN32_FIND_DATA;
+using WIN32_FIND_DATA = Files.App.Helpers.Win32PInvoke.WIN32_FIND_DATA;
 
 namespace Files.App.Utils.Storage;
 
-public class FolderSearch
+public sealed class FolderSearch
 {
 	/*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
 	private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
@@ -110,9 +109,9 @@ public class FolderSearch
 
 	public async Task<ObservableCollection<ListedItem>> SearchAsync(IFolderViewViewModel folderViewViewModel)
 	{
-		var results = new ObservableCollection<ListedItem>();
-		try
-		{
+        ObservableCollection<ListedItem> results = [];
+        try
+        {
 			var token = CancellationToken.None;
 			if (App.LibraryManager.TryGetLibrary(Folder!, out var library))
 			{
@@ -209,10 +208,10 @@ public class FolderSearch
 		{
 			(var hFile, var findData) = await Task.Run(() =>
 			{
-				var additionalFlags = FIND_FIRST_EX_LARGE_FETCH;
-				var hFileTsk = FindFirstFileExFromApp(match.FilePath, FINDEX_INFO_LEVELS.FindExInfoBasic,
-					out var findDataTsk, FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, additionalFlags);
-				return (hFileTsk, findDataTsk);
+                int additionalFlags = Win32PInvoke.FIND_FIRST_EX_LARGE_FETCH;
+                IntPtr hFileTsk = Win32PInvoke.FindFirstFileExFromApp(match.FilePath, Win32PInvoke.FINDEX_INFO_LEVELS.FindExInfoBasic,
+                    out WIN32_FIND_DATA findDataTsk, Win32PInvoke.FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, additionalFlags);
+                return (hFileTsk, findDataTsk);
 			}).WithTimeoutAsync(TimeSpan.FromSeconds(5));
 
             var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
@@ -236,9 +235,9 @@ public class FolderSearch
 					}
 				}
 
-				FindClose(hFile);
-			}
-			else
+                Win32PInvoke.FindClose(hFile);
+            }
+            else
 			{
 				try
 				{
@@ -297,10 +296,10 @@ public class FolderSearch
 		//var sampler = new IntervalSampler(500);
 		(var hFile, var findData) = await Task.Run(() =>
 		{
-			var additionalFlags = FIND_FIRST_EX_LARGE_FETCH;
-			var hFileTsk = FindFirstFileExFromApp($"{folder}\\{QueryWithWildcard}", FINDEX_INFO_LEVELS.FindExInfoBasic,
-				out var findDataTsk, FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, additionalFlags);
-			return (hFileTsk, findDataTsk);
+            int additionalFlags = Win32PInvoke.FIND_FIRST_EX_LARGE_FETCH;
+            IntPtr hFileTsk = Win32PInvoke.FindFirstFileExFromApp($"{folder}\\{QueryWithWildcard}", Win32PInvoke.FINDEX_INFO_LEVELS.FindExInfoBasic,
+                out WIN32_FIND_DATA findDataTsk, Win32PInvoke.FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, additionalFlags);
+            return (hFileTsk, findDataTsk);
 		}).WithTimeoutAsync(TimeSpan.FromSeconds(5));
 
 		if (hFile != IntPtr.Zero && hFile.ToInt64() != -1)
@@ -345,12 +344,12 @@ public class FolderSearch
 						SearchTick?.Invoke(this, EventArgs.Empty);
 					}
 
-					hasNextFile = FindNextFile(hFile, out findData);
-				} while (hasNextFile);
+                    hasNextFile = Win32PInvoke.FindNextFile(hFile, out findData);
+                } while (hasNextFile);
 
-				FindClose(hFile);
-			}, token);
-		}
+                Win32PInvoke.FindClose(hFile);
+            }, token);
+        }
 	}
 
 	private ListedItem GetListedItemAsync(IFolderViewViewModel folderViewViewModel, string itemPath, WIN32_FIND_DATA findData)
@@ -505,17 +504,22 @@ public class FolderSearch
 		}
 		if (listedItem is not null && MaxItemCount > 0) // Only load icon for searchbox suggestions
 		{
-			var iconData = await FileThumbnailHelper.LoadIconFromStorageItemAsync(item, ThumbnailSize, ThumbnailMode.ListView, ThumbnailOptions.ResizeThumbnail);
-			if (iconData is not null)
-			{
-				listedItem.FileImage = (await iconData.ToBitmapAsync())!;
-			}
-			else
-			{
-				listedItem.NeedsPlaceholderGlyph = true;
-			}
-		}
-		return listedItem!;
+            var iconResult = await FileThumbnailHelper.GetIconAsync(
+                    item.Path,
+                    Constants.ShellIconSizes.Small,
+                    item.IsOfType(StorageItemTypes.Folder),
+                    IconOptions.ReturnIconOnly | IconOptions.UseCurrentScale);
+
+            if (iconResult is not null)
+            {
+                listedItem.FileImage = (await iconResult.ToBitmapAsync())!;
+            }
+            else
+            {
+                listedItem.NeedsPlaceholderGlyph = true;
+            }
+        }
+        return listedItem!;
 	}
 
 	private QueryOptions ToQueryOptions()

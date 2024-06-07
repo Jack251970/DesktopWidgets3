@@ -1,13 +1,13 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Windowing;
 
 namespace Files.App.Actions;
 
-internal class ToggleFullScreenAction : IToggleAction
+internal sealed class ToggleFullScreenAction(IFolderViewViewModel folderViewViewModel) : IToggleAction
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private readonly IFolderViewViewModel FolderViewViewModel = folderViewViewModel;
 
     public string Label
 		=> "FullScreen".GetLocalizedResource();
@@ -22,19 +22,14 @@ internal class ToggleFullScreenAction : IToggleAction
 	{
 		get
 		{
-			var appWindow = FolderViewViewModel.MainWindow.AppWindow;
+			var appWindow = FolderViewViewModel.AppWindow;
 			return appWindow.Presenter.Kind is AppWindowPresenterKind.FullScreen;
 		}
 	}
 
-    public ToggleFullScreenAction(IFolderViewViewModel folderViewViewModel)
-    {
-        FolderViewViewModel = folderViewViewModel;
-    }
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
-		var appWindow = FolderViewViewModel.MainWindow.AppWindow;
+		var appWindow = FolderViewViewModel.AppWindow;
 		var newKind = appWindow.Presenter.Kind is AppWindowPresenterKind.FullScreen
 			? AppWindowPresenterKind.Overlapped
 			: AppWindowPresenterKind.FullScreen;

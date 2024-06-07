@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.Immutable;
 
 namespace Files.App.Data.Contexts;
 
-internal class ContentPageContext : ObservableObject, IContentPageContext
+internal sealed class ContentPageContext : ObservableObject, IContentPageContext
 {
 	private static readonly IReadOnlyList<ListedItem> emptyItems = Enumerable.Empty<ListedItem>().ToImmutableList();
 
@@ -176,18 +176,18 @@ internal class ContentPageContext : ObservableObject, IContentPageContext
 	{
 		switch (e.PropertyName)
 		{
-			case nameof(ToolbarViewModel.CanGoBack):
-			case nameof(ToolbarViewModel.CanGoForward):
-			case nameof(ToolbarViewModel.CanNavigateToParent):
-			case nameof(ToolbarViewModel.HasItem):
-			case nameof(ToolbarViewModel.CanRefresh):
-			case nameof(ToolbarViewModel.IsSearchBoxVisible):
-				OnPropertyChanged(e.PropertyName);
-				break;
-			case nameof(ToolbarViewModel.SelectedItems):
-				UpdateSelectedItems();
-				break;
-		}
+            case nameof(AddressToolbarViewModel.CanGoBack):
+            case nameof(AddressToolbarViewModel.CanGoForward):
+            case nameof(AddressToolbarViewModel.CanNavigateToParent):
+            case nameof(AddressToolbarViewModel.HasItem):
+            case nameof(AddressToolbarViewModel.CanRefresh):
+            case nameof(AddressToolbarViewModel.IsSearchBoxVisible):
+                OnPropertyChanged(e.PropertyName);
+                break;
+            case nameof(AddressToolbarViewModel.SelectedItems):
+                UpdateSelectedItems();
+                break;
+        }
 	}
 
 	private void FilesystemViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

@@ -1,9 +1,9 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Data.Models;
 
-public class ItemManipulationModel
+public sealed class ItemManipulationModel
 {
 	public event EventHandler? FocusFileListInvoked;
 
@@ -23,7 +23,9 @@ public class ItemManipulationModel
 
 	public event EventHandler<ListedItem>? ScrollIntoViewInvoked;
 
-	public event EventHandler? SetDragModeForItemsInvoked;
+    public event EventHandler? ScrollToTopInvoked;
+
+    public event EventHandler? SetDragModeForItemsInvoked;
 
 	public event EventHandler? RefreshItemsOpacityInvoked;
 
@@ -104,7 +106,12 @@ public class ItemManipulationModel
 		ScrollIntoViewInvoked?.Invoke(this, item);
 	}
 
-	public void SetDragModeForItems()
+    public void ScrollToTop()
+    {
+        ScrollToTopInvoked?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void SetDragModeForItems()
 	{
 		SetDragModeForItemsInvoked?.Invoke(this, EventArgs.Empty);
 	}

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -9,20 +9,12 @@ using Windows.Storage.Search;
 
 namespace Files.App.Utils.Storage;
 
-public class ShortcutStorageFolder : ShellStorageFolder, IShortcutStorageItem
+public sealed class ShortcutStorageFolder(ShellLinkItem item) : ShellStorageFolder(item), IShortcutStorageItem
 {
-	public string TargetPath { get; }
-	public string Arguments { get; }
-	public string WorkingDirectory { get; }
-	public bool RunAsAdmin { get; }
-
-	public ShortcutStorageFolder(ShellLinkItem item) : base(item)
-	{
-		TargetPath = item.TargetPath;
-		Arguments = item.Arguments;
-		WorkingDirectory = item.WorkingDirectory;
-		RunAsAdmin = item.RunAsAdmin;
-	}
+    public string TargetPath { get; } = item.TargetPath;
+    public string Arguments { get; } = item.Arguments;
+    public string WorkingDirectory { get; } = item.WorkingDirectory;
+    public bool RunAsAdmin { get; } = item.RunAsAdmin;
 }
 
 public interface IShortcutStorageItem : IStorageItem
@@ -33,16 +25,10 @@ public interface IShortcutStorageItem : IStorageItem
 	bool RunAsAdmin { get; }
 }
 
-public class BinStorageFolder : ShellStorageFolder, IBinStorageItem
+public sealed class BinStorageFolder(ShellFileItem item) : ShellStorageFolder(item), IBinStorageItem
 {
-	public string OriginalPath { get; }
-	public DateTimeOffset DateDeleted { get; }
-
-	public BinStorageFolder(ShellFileItem item) : base(item)
-	{
-		OriginalPath = item.FilePath;
-		DateDeleted = item.RecycleDate;
-	}
+    public string OriginalPath { get; } = item.FilePath;
+    public DateTimeOffset DateDeleted { get; } = item.RecycleDate;
 }
 
 public interface IBinStorageItem : IStorageItem
@@ -51,27 +37,19 @@ public interface IBinStorageItem : IStorageItem
 	DateTimeOffset DateDeleted { get; }
 }
 
-public class ShellStorageFolder : BaseStorageFolder
+public class ShellStorageFolder(ShellFileItem item) : BaseStorageFolder
 {
-	public override string Path { get; }
-	public override string Name { get; }
-	public override string DisplayName => Name;
-	public override string DisplayType { get; }
-	public override string FolderRelativeId => $"0\\{Name}";
+    public override string Path { get; } = item.RecyclePath; // True path on disk
+    public override string Name { get; } = item.FileName;
+    public override string DisplayName => Name;
+    public override string DisplayType { get; } = item.FileType;
+    public override string FolderRelativeId => $"0\\{Name}";
 
-	public override DateTimeOffset DateCreated { get; }
-	public override Windows.Storage.FileAttributes Attributes => Windows.Storage.FileAttributes.Directory;
+    public override DateTimeOffset DateCreated { get; } = item.CreatedDate;
+    public override Windows.Storage.FileAttributes Attributes => Windows.Storage.FileAttributes.Directory;
 	public override IStorageItemExtraProperties Properties => new BaseBasicStorageItemExtraProperties(this);
 
-	public ShellStorageFolder(ShellFileItem item)
-	{
-		Name = item.FileName;
-		Path = item.RecyclePath; // True path on disk
-		DateCreated = item.CreatedDate;
-		DisplayType = item.FileType;
-	}
-
-	public static bool IsShellPath(string path)
+    public static bool IsShellPath(string path)
 	{
 		return path is not null &&
 			path.StartsWith("shell:", StringComparison.OrdinalIgnoreCase) ||
@@ -112,10 +90,10 @@ public class ShellStorageFolder : BaseStorageFolder
 
 	protected static async Task<(ShellFileItem Folder, List<ShellFileItem> Items)> GetFolderAndItems(string path, bool enumerate, int startIndex = 0, int maxItemsToRetrieve = int.MaxValue)
 	{
-		return await Win32Shell.GetShellFolderAsync(path, enumerate ? "Enumerate" : "Query", startIndex, maxItemsToRetrieve);
-	}
+        return await Win32Helper.GetShellFolderAsync(path, !enumerate, enumerate, startIndex, maxItemsToRetrieve);
+    }
 
-	public override IAsyncOperation<StorageFolder> ToStorageFolderAsync() => throw new NotSupportedException();
+    public override IAsyncOperation<StorageFolder> ToStorageFolderAsync() => throw new NotSupportedException();
 
 	public override bool IsEqual(IStorageItem item) => item?.Path == Path;
 	public override bool IsOfType(StorageItemTypes type) => type == StorageItemTypes.Folder;
@@ -296,14 +274,9 @@ public class ShellStorageFolder : BaseStorageFolder
 		});
 	}
 
-	private class ShellFolderBasicProperties : BaseBasicProperties
+	private sealed class ShellFolderBasicProperties(ShellFileItem folder) : BaseBasicProperties
 	{
-		private readonly ShellFileItem folder;
-
-        public ShellFolderBasicProperties(ShellFileItem folder)
-        {
-            this.folder = folder;
-        }
+		private readonly ShellFileItem folder = folder;
 
         public override ulong Size => folder.FileSizeBytes;
 

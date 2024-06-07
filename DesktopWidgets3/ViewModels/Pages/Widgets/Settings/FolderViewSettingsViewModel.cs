@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Files.App.ViewModels.Settings;
-using Files.Core.Data.Enums;
+using Files.App.Data.Enums;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets.Settings;
 

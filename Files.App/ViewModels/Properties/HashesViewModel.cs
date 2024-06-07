@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
@@ -9,7 +9,7 @@ namespace Files.App.ViewModels.Properties;
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
 
-public class HashesViewModel : ObservableObject, IDisposable
+public sealed class HashesViewModel : ObservableObject, IDisposable
 {
     private IUserSettingsService UserSettingsService { get; set; } = null!;
 
@@ -39,19 +39,19 @@ public class HashesViewModel : ObservableObject, IDisposable
 		_item = item;
 		_cancellationTokenSource = new();
 
-		Hashes = new()
-		{
-			new() { Algorithm = "CRC32" },
+		Hashes =
+        [
+            new() { Algorithm = "CRC32" },
 			new() { Algorithm = "MD5" },
 			new() { Algorithm = "SHA1" },
 			new() { Algorithm = "SHA256" },
 			new() { Algorithm = "SHA384" },
 			new() { Algorithm = "SHA512" },
-		};
+		];
 
-		ShowHashes = UserSettingsService.GeneralSettingsService.ShowHashesDictionary ?? new();
-		// Default settings
-		ShowHashes.TryAdd("CRC32", true);
+        ShowHashes = UserSettingsService.GeneralSettingsService.ShowHashesDictionary ?? [];
+        // Default settings
+        ShowHashes.TryAdd("CRC32", true);
 		ShowHashes.TryAdd("MD5", true);
 		ShowHashes.TryAdd("SHA1", true);
 		ShowHashes.TryAdd("SHA256", true);
@@ -63,8 +63,8 @@ public class HashesViewModel : ObservableObject, IDisposable
 
 	private void ToggleIsEnabled(string? algorithm)
 	{
-		var hashInfoItem = Hashes.Where(x => x.Algorithm == algorithm).First();
-		hashInfoItem.IsEnabled = !hashInfoItem.IsEnabled;
+        var hashInfoItem = Hashes.First(x => x.Algorithm == algorithm);
+        hashInfoItem.IsEnabled = !hashInfoItem.IsEnabled;
 
 		if (ShowHashes[hashInfoItem.Algorithm] != hashInfoItem.IsEnabled)
 		{

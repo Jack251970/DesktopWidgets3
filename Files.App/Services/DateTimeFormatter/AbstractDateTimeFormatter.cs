@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Globalization;
@@ -71,7 +71,7 @@ internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
 		return cultureInfo.Calendar.GetWeekOfYear(t.DateTime, CalendarWeekRule.FirstFullWeek, cultureInfo.DateTimeFormat.FirstDayOfWeek);
 	}
 
-    private class Label : ITimeSpanLabel
+    private sealed class Label : ITimeSpanLabel
 	{
 		public string Text { get; }
 

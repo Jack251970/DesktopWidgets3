@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -12,15 +12,22 @@ namespace Files.App.Dialogs;
 
 public sealed partial class ReorderSidebarItemsDialog : ContentDialog, IDialog<ReorderSidebarItemsDialogViewModel>
 {
-	public ReorderSidebarItemsDialogViewModel ViewModel
+    private readonly IFolderViewViewModel FolderViewViewModel;
+
+    private FrameworkElement RootAppElement
+        => (FrameworkElement)FolderViewViewModel.Content;
+
+    public ReorderSidebarItemsDialogViewModel ViewModel
 	{
 		get => (ReorderSidebarItemsDialogViewModel)DataContext;
 		set => DataContext = value;
 	}
 
-	public ReorderSidebarItemsDialog()
-	{
-		InitializeComponent();
+	public ReorderSidebarItemsDialog(IFolderViewViewModel folderViewViewModel)
+    {
+        FolderViewViewModel = folderViewViewModel;
+
+        InitializeComponent();
 	}
 
 	private async void MoveItemAsync(object sender, PointerRoutedEventArgs e)
@@ -94,7 +101,7 @@ public sealed partial class ReorderSidebarItemsDialog : ContentDialog, IDialog<R
 
         if (e.DataView.Properties["sourceLocationItem"] is Grid { DataContext: LocationItem sourceLocationItem })
         {
-            ViewModel.SidebarFavoriteItems.Move(ViewModel.SidebarFavoriteItems.IndexOf(sourceLocationItem), ViewModel.SidebarFavoriteItems.IndexOf(locationItem));
+            ViewModel.SidebarPinnedFolderItems.Move(ViewModel.SidebarPinnedFolderItems.IndexOf(sourceLocationItem), ViewModel.SidebarPinnedFolderItems.IndexOf(locationItem));
         }
     }
 

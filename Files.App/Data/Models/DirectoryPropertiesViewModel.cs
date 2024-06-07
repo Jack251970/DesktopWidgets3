@@ -1,11 +1,11 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Windows.Input;
 
 namespace Files.App.Data.Models;
 
-public class DirectoryPropertiesViewModel : ObservableObject
+public sealed class DirectoryPropertiesViewModel : ObservableObject
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
@@ -16,11 +16,11 @@ public class DirectoryPropertiesViewModel : ObservableObject
 
 	private string? _gitRepositoryPath;
 
-	private readonly ObservableCollection<BranchItem> _localBranches = new();
+    private readonly ObservableCollection<BranchItem> _localBranches = [];
 
-	private readonly ObservableCollection<BranchItem> _remoteBranches = new();
+    private readonly ObservableCollection<BranchItem> _remoteBranches = [];
 
-	public bool IsBranchesFlyoutExpaned { get; set; } = false;
+    public bool IsBranchesFlyoutExpaned { get; set; } = false;
 
 	private string? _DirectoryItemCount;
 	public string? DirectoryItemCount

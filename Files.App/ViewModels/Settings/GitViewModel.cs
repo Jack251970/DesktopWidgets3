@@ -1,15 +1,15 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Windows.Input;
 
 namespace Files.App.ViewModels.Settings;
 
-public class GitViewModel : ObservableObject
+public sealed class GitViewModel : ObservableObject
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
-    protected readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+    public readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
 
 	public ICommand RemoveCredentialsCommand { get; }
 	public ICommand ConnectToGitHubCommand { get; }
@@ -44,6 +44,9 @@ public class GitViewModel : ObservableObject
 	public async void DoConnectToGitHubAsync()
 	{
 		UIHelpers.CloseAllDialogs(FolderViewViewModel);
-		await GitHelpers.RequireGitAuthenticationAsync(FolderViewViewModel);
+
+        await Task.Delay(500);
+
+        await GitHelpers.RequireGitAuthenticationAsync(FolderViewViewModel);
 	}
 }

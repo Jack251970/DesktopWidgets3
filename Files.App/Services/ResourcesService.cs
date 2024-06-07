@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -7,10 +7,12 @@ using System.Drawing;
 namespace Files.App.Services;
 
 /// <inheritdoc cref="IResourcesService"/>
-public class ResourcesService : IResourcesService
+public sealed class ResourcesService : IResourcesService
 {
-	/// <inheritdoc/>
-	public void SetAppThemeBackgroundColor(Color appThemeBackgroundColor)
+    /*private IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetService<IAppThemeModeService>();*/
+
+    /// <inheritdoc/>
+    public void SetAppThemeBackgroundColor(Color appThemeBackgroundColor)
 	{
 		Application.Current.Resources["App.Theme.BackgroundBrush"] = appThemeBackgroundColor.ToWindowsColor();
 	}
@@ -42,21 +44,11 @@ public class ResourcesService : IResourcesService
 		Application.Current.Resources["ContentControlThemeFontFamily"] = contentControlThemeFontFamily;
 	}
 
-	/// <inheritdoc/>
-	public void SetCompactSpacing(bool useCompactSpacing)
-	{
-		var listItemHeight = useCompactSpacing ? 28 : 36;
-		var listItemMargin = useCompactSpacing ? "-2" : "0";
-
-		Application.Current.Resources["ListItemHeight"] = listItemHeight;
-		Application.Current.Resources["ListItemMargin"] = listItemMargin;
-	}
-
-	/// <inheritdoc/>
-	public void ApplyResources()
-	{
+    /// <inheritdoc/>
+    public void ApplyResources()
+    {
         // CHNAGE: Don't apply resources.
-		/*ThemeHelper.ApplyResources();*/
-	}
+        /*AppThemeModeService.ApplyResources();*/
+    }
 }
 

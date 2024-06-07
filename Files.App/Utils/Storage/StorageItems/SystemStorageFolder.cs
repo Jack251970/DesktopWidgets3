@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.Extensions.Logging;
@@ -12,13 +12,13 @@ using Windows.Storage.Search;
 
 namespace Files.App.Utils.Storage;
 
-#pragma warning disable CA2254 // Template types should be used for parameters
+#pragma warning disable CA2254 // Template should be a static expression
 
-public sealed class SystemStorageFolder : BaseStorageFolder
+public sealed class SystemStorageFolder(StorageFolder folder) : BaseStorageFolder
 {
-	public StorageFolder Folder { get; }
+    public StorageFolder Folder { get; } = folder;
 
-	public override string Path => Folder.Path;
+    public override string Path => Folder.Path;
 	public override string Name => Folder.Name;
 	public override string DisplayName => Folder.DisplayName;
 	public override string DisplayType => Folder.DisplayType;
@@ -27,11 +27,6 @@ public sealed class SystemStorageFolder : BaseStorageFolder
 	public override DateTimeOffset DateCreated => Folder.DateCreated;
 	public override FileAttributes Attributes => Folder.Attributes;
 	public override IStorageItemExtraProperties Properties => Folder.Properties;
-
-    public SystemStorageFolder(StorageFolder folder)
-    {
-        Folder = folder;
-    }
 
     public static IAsyncOperation<BaseStorageFolder> FromPathAsync(string path)
     {
@@ -156,23 +151,17 @@ public sealed class SystemStorageFolder : BaseStorageFolder
 	public override IAsyncOperation<StorageItemThumbnail> GetThumbnailAsync(ThumbnailMode mode, uint requestedSize, ThumbnailOptions options)
 		=> Folder.GetThumbnailAsync(mode, requestedSize, options);
 
-	private class SystemFolderBasicProperties : BaseBasicProperties
+	private sealed class SystemFolderBasicProperties(IStorageItemExtraProperties basicProps, DateTimeOffset dateCreated) : BaseBasicProperties
 	{
-		private readonly IStorageItemExtraProperties basicProps;
-		private readonly DateTimeOffset? dateCreated;
+		private readonly IStorageItemExtraProperties basicProps = basicProps;
+		private readonly DateTimeOffset? dateCreated = dateCreated;
 
 		public override ulong Size => (basicProps as BasicProperties)?.Size ?? 0;
 
 		public override DateTimeOffset DateCreated => dateCreated ?? DateTimeOffset.Now;
 		public override DateTimeOffset DateModified => (basicProps as BasicProperties)?.DateModified ?? DateTimeOffset.Now;
 
-		public SystemFolderBasicProperties(IStorageItemExtraProperties basicProps, DateTimeOffset dateCreated)
-		{
-			this.basicProps = basicProps;
-			this.dateCreated = dateCreated;
-		}
-
-		public override IAsyncOperation<IDictionary<string, object>> RetrievePropertiesAsync(IEnumerable<string> propertiesToRetrieve)
+        public override IAsyncOperation<IDictionary<string, object>> RetrievePropertiesAsync(IEnumerable<string> propertiesToRetrieve)
 			=> basicProps.RetrievePropertiesAsync(propertiesToRetrieve);
 
 		public override IAsyncAction SavePropertiesAsync()

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.UserControls.FilePreviews;
@@ -6,7 +6,7 @@ using Files.App.ViewModels.Properties;
 
 namespace Files.App.ViewModels.Previews;
 
-public class TextPreviewViewModel : BasePreviewModel
+public sealed class TextPreviewViewModel(ListedItem item) : BasePreviewModel(item)
 {
 	private string textValue = null!;
     public string TextValue
@@ -15,15 +15,12 @@ public class TextPreviewViewModel : BasePreviewModel
         private set => SetProperty(ref textValue, value);
     }
 
-	public TextPreviewViewModel(ListedItem item)
-		: base(item)
-	{
-	}
-
-	public static bool ContainsExtension(string extension)
+    public static bool ContainsExtension(string extension)
 		=> extension is ".txt";
 
-	public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
+    private static readonly char[] separator = [' ', '\n'];
+
+    public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
 	{
 		var details = new List<FileProperty>();
 
@@ -32,7 +29,7 @@ public class TextPreviewViewModel : BasePreviewModel
 			var text = TextValue ?? await ReadFileAsTextAsync(Item.ItemFile);
 
 			details.Add(GetFileProperty("PropertyLineCount", text.Split('\n').Length));
-			details.Add(GetFileProperty("PropertyWordCount", text.Split(new[] { ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).Length));
+			details.Add(GetFileProperty("PropertyWordCount", text.Split(separator, StringSplitOptions.RemoveEmptyEntries).Length));
 
 			TextValue = text.Left(Constants.PreviewPane.TextCharacterLimit);
 		}

@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Core.Helpers;
@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Navigation;
 using System.IO;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
+using WinUIEx;
 
 namespace Files.App;
 
@@ -17,11 +18,7 @@ public sealed partial class MainWindow
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
-    private readonly IApplicationService ApplicationService;
-
-    /*private MainPageViewModel mainPageViewModel;
-
-    private static MainWindow? _Instance;
+    /*private static MainWindow? _Instance;
 	public static MainWindow Instance => _Instance ??= new();*/
 
     public IntPtr WindowHandle { get; }
@@ -29,8 +26,6 @@ public sealed partial class MainWindow
     public MainWindow(IFolderViewViewModel folderViewViewModel)
 	{
         FolderViewViewModel = folderViewViewModel;
-
-        ApplicationService = new ApplicationService();
 
         WindowHandle = folderViewViewModel.WindowHandle;
 
@@ -48,13 +43,13 @@ public sealed partial class MainWindow
         folderViewViewModel.MainWindow.MinHeight = 416;
         folderViewViewModel.MainWindow.MinWidth = 516;
 
-        folderViewViewModel.MainWindow.AppWindow.Title = "Files";
-        folderViewViewModel.MainWindow.AppWindow.SetIcon(Path.Combine(InfoHelper.GetInstalledLocation(), ApplicationService.AppIcoPath));
+        folderViewViewModel.AppWindow.Title = "Files";
+        folderViewViewModel.AppWindow.SetIcon(Path.Combine(InfoHelper.GetInstalledLocation(), AppLifecycleHelper.AppIconPath));
 
         // CHANGE: Don't set title bar.
-        /*folderViewViewModel.MainWindow.AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
-        folderViewViewModel.MainWindow.AppWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
-        folderViewViewModel.MainWindow.AppWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;*/
+        /*folderViewViewModel.AppWindow.TitleBar.ExtendsContentIntoTitleBar = true;
+        folderViewViewModel.AppWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
+        folderViewViewModel.AppWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;*/
 
         // Workaround for full screen window messing up the taskbar
         // https://github.com/microsoft/microsoft-ui-xaml/issues/8431
@@ -63,7 +58,7 @@ public sealed partial class MainWindow
         // Setting this property when the setting is disabled will result in the taskbar overlapping the application
         if (AppLifecycleHelper.IsAutoHideTaskbarEnabled())
         {
-            InteropHelpers.SetPropW(WindowHandle, "NonRudeHWND", new IntPtr(1));
+            Win32PInvoke.SetPropW(WindowHandle, "NonRudeHWND", new IntPtr(1));
         }
     }
 
@@ -116,21 +111,29 @@ public sealed partial class MainWindow
 				}
 				else if (!(string.IsNullOrEmpty(launchArgs.Arguments) && MainPageViewModel.AppInstances[FolderViewViewModel].Count > 0))
 				{
-					InteropHelpers.SwitchToThisWindow(FolderViewViewModel.WindowHandle, true);
-					await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), launchArgs.Arguments);
-				}
-				else
+                    // Bring to foreground (#14730)
+                    Win32Helper.BringToForegroundEx(new(WindowHandle));
+
+                    await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), launchArgs.Arguments, true);
+                }
+                else
 				{
 					rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
 				}
 				break;
 
 			case IProtocolActivatedEventArgs eventArgs:
-				if (eventArgs.Uri.AbsoluteUri == "files-uwp:")
-				{
-					rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
-				}
-				else
+                if (eventArgs.Uri.AbsoluteUri == "files-uwp:")
+                {
+                    rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
+
+                    if (MainPageViewModel.AppInstances.Count > 0)
+                    {
+                        // Bring to foreground (#14730)
+                        Win32Helper.BringToForegroundEx(new(WindowHandle));
+                    }
+                }
+                else
 				{
 					var parsedArgs = eventArgs.Uri.Query.TrimStart('?').Split('=');
 					var unescapedValue = Uri.UnescapeDataString(parsedArgs[1]);
@@ -198,16 +201,17 @@ public sealed partial class MainWindow
 					rootFrame.Navigate(typeof(MainPage), fileArgs.Files[0].Path, new SuppressNavigationTransitionInfo());
 					index = 1;
 				}
-				else
+                else
                 {
-                    InteropHelpers.SwitchToThisWindow(FolderViewViewModel.WindowHandle, true);
+                    // Bring to foreground (#14730)
+                    Win32Helper.BringToForegroundEx(new(WindowHandle));
                 }
 
                 for (; index < fileArgs.Files.Count; index++)
 				{
-					await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), fileArgs.Files[index].Path);
-				}
-				break;
+                    await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), fileArgs.Files[index].Path, true);
+                }
+                break;
 
 			case IStartupTaskActivatedEventArgs startupArgs:
 				// Just launch the app with no arguments
@@ -220,13 +224,18 @@ public sealed partial class MainWindow
 				break;
 		}
 
-		if (!FolderViewViewModel.MainWindow.AppWindow.IsVisible)
+		if (!FolderViewViewModel.AppWindow.IsVisible)
 		{
             // When resuming the cached instance
-            FolderViewViewModel.MainWindow.AppWindow.Show();
+            FolderViewViewModel.AppWindow.Show();
             FolderViewViewModel.MainWindow.Activate();
 		}
-	}
+
+        if (Windows.Win32.PInvoke.IsIconic(new(WindowHandle)))
+        {
+            FolderViewViewModel.MainWindow.Restore(); // Restore window if minimized
+        }
+    }
 
 	public Frame EnsureWindowIsInitialized()
 	{
@@ -234,7 +243,7 @@ public sealed partial class MainWindow
 		//  Do not repeat app initialization when the Window already has content,
 		//  just ensure that the window is active
         // CHANGE: Use folder view page to replace main window.
-		if (FolderViewViewModel.Page.Content is not Frame rootFrame)
+		if (FolderViewViewModel.Content is not Frame rootFrame)
 		{
 			// Create a Frame to act as the navigation context and navigate to the first page
 			rootFrame = new() { CacheSize = 1 };
@@ -275,15 +284,17 @@ public sealed partial class MainWindow
                 FolderViewViewModel = FolderViewViewModel,
 				LeftPaneNavPathParam = payload,
 				LeftPaneSelectItemParam = selectItem,
-				RightPaneNavPathParam = FolderViewViewModel.MainWindow.Bounds.Width > PaneHolderPage.DualPaneWidthThreshold && (generalSettingsService?.AlwaysOpenDualPaneInNewTab ?? false) ? "Home" : null,
+				RightPaneNavPathParam = FolderViewViewModel.Bounds.Width > PaneHolderPage.DualPaneWidthThreshold && (generalSettingsService?.AlwaysOpenDualPaneInNewTab ?? false) ? "Home" : null,
 			};
 
             if (rootFrame.Content is MainPage && MainPageViewModel.AppInstances[FolderViewViewModel].Any())
 			{
-				InteropHelpers.SwitchToThisWindow(FolderViewViewModel.WindowHandle, true);
-				await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, typeof(PaneHolderPage), paneNavigationArgs);
-			}
-			else
+                // Bring to foreground (#14730)
+                Win32Helper.BringToForegroundEx(new(WindowHandle));
+
+                await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, typeof(PaneHolderPage), paneNavigationArgs);
+            }
+            else
             {
                 rootFrame.Navigate(typeof(MainPage), paneNavigationArgs, new SuppressNavigationTransitionInfo());
             }
@@ -316,8 +327,8 @@ public sealed partial class MainWindow
 							.OnSuccess(FileTagsHelper.GetFileFRN);
 						if (fileFRN is not null)
 						{
-							var tagUid = tag is not null ? new[] { tag.Uid } : null;
-							var dbInstance = FileTagsHelper.GetDbInstance();
+                            var tagUid = tag is not null ? new[] { tag.Uid } : [];
+                            var dbInstance = FileTagsHelper.GetDbInstance();
 							dbInstance.SetTags(file, fileFRN, tagUid);
 							FileTagsHelper.WriteFileTag(FolderViewViewModel, file, tagUid!);
 						}

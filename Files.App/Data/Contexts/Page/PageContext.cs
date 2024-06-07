@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Data.Contexts;
 
-internal class PageContext : IPageContext
+internal sealed class PageContext : IPageContext
 {
 	public event EventHandler? Changing;
 	public event EventHandler? Changed;

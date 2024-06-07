@@ -1,11 +1,11 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Windows.System;
 
 namespace Files.App.Data.Models;
 
-public class ContextMenuFlyoutItemViewModelBuilder
+public sealed class ContextMenuFlyoutItemViewModelBuilder(IRichCommand command)
 {
 	private static readonly ContextMenuFlyoutItemViewModel none = new()
 	{
@@ -13,7 +13,7 @@ public class ContextMenuFlyoutItemViewModelBuilder
 		IsHidden = true,
 	};
 
-	private readonly IRichCommand command;
+	private readonly IRichCommand command = command;
 
 	private bool? isVisible = null;
 	public bool IsVisible
@@ -31,12 +31,7 @@ public class ContextMenuFlyoutItemViewModelBuilder
 
 	public List<ContextMenuFlyoutItemViewModel>? Items { get; init; } = null;
 
-	public ContextMenuFlyoutItemViewModelBuilder(IRichCommand command)
-	{
-		this.command = command;
-	}
-
-	public ContextMenuFlyoutItemViewModel Build()
+    public ContextMenuFlyoutItemViewModel Build()
 	{
 		if (isVisible is false)
         {
@@ -93,7 +88,7 @@ public class ContextMenuFlyoutItemViewModelBuilder
 				Key = (VirtualKey)command.HotKeys[0].Key,
 				Modifiers = (VirtualKeyModifiers)command.HotKeys[0].Modifier
 			};
-			viewModel.KeyboardAcceleratorTextOverride = command.HotKeys[0].Label;
+			viewModel.KeyboardAcceleratorTextOverride = command.HotKeys[0].LocalizedLabel;
 		}
 
 		return viewModel;

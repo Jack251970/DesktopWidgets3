@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
@@ -6,25 +6,14 @@ using Windows.Storage;
 
 namespace Files.App.Utils.Storage;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-
-public class StorageHistoryOperations : IStorageHistoryOperations
+public sealed class StorageHistoryOperations(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, CancellationToken cancellationToken) : IStorageHistoryOperations
 {
-    private readonly StorageHistoryWrapper HistoryWrapper = App.HistoryWrapper;
+    private IFilesystemHelpers helpers = associatedInstance.FilesystemHelpers;
+	private ShellFilesystemOperations operations = new(folderViewViewModel, associatedInstance);
 
-	private IFilesystemHelpers helpers;
-	private IFilesystemOperations operations;
+	private readonly CancellationToken cancellationToken = cancellationToken;
 
-	private readonly CancellationToken cancellationToken;
-
-	public StorageHistoryOperations(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, CancellationToken cancellationToken)
-	{
-		this.cancellationToken = cancellationToken;
-		helpers = associatedInstance.FilesystemHelpers;
-		operations = new ShellFilesystemOperations(folderViewViewModel, associatedInstance);
-	}
-
-	public async Task<ReturnResult> Undo(IStorageHistory history)
+    public async Task<ReturnResult> Undo(IStorageHistory history)
 	{
 		var returnStatus = ReturnResult.InProgress;
 		Progress<StatusCenterItemProgressModel> progress = new();
@@ -51,9 +40,9 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 				if (!IsHistoryNull(history))
 				{
 					var collision = NameCollisionOption.GenerateUniqueName;
-					for (var i = 0; i < history.Destination.Count; i++)
-					{
-						var name = Path.GetFileName(history.Source[i].Path);
+                    for (var i = 0; i < history.Destination.Count; i++)
+                    {
+                        var name = Path.GetFileName(history.Source[i].Path);
 						await operations.RenameAsync(history.Destination[i], name, collision, progress, cancellationToken);
 					}
 				}
@@ -81,7 +70,7 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 					returnStatus = await helpers.RestoreItemsFromTrashAsync(history.Destination, history.Source.Select(item => item.Path), false);
 					if (returnStatus is ReturnResult.IntegrityCheckFailed) // Not found, corrupted
 					{
-						HistoryWrapper.RemoveHistory(history, false);
+						App.HistoryWrapper.RemoveHistory(history, false);
 					}
 				}
 				break;
@@ -91,12 +80,12 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 					var newHistory = await operations.DeleteItemsAsync(history.Destination, progress, false, cancellationToken);
 					if (newHistory is null)
 					{
-						HistoryWrapper.RemoveHistory(history, false);
+						App.HistoryWrapper.RemoveHistory(history, false);
 					}
 					else
 					{
 						// We need to change the recycled item paths (since IDs are different) - for Redo() to work
-						HistoryWrapper.ModifyCurrentHistory(newHistory);
+						App.HistoryWrapper.ModifyCurrentHistory(newHistory);
 					}
 				}
 				break;
@@ -166,12 +155,12 @@ public class StorageHistoryOperations : IStorageHistoryOperations
 					var newHistory = await operations.DeleteItemsAsync(history.Source, progress, false, cancellationToken);
 					if (newHistory is null)
 					{
-						HistoryWrapper.RemoveHistory(history, true);
+						App.HistoryWrapper.RemoveHistory(history, true);
 					}
 					else
 					{
 						// We need to change the recycled item paths (since IDs are different) - for Undo() to work
-						HistoryWrapper.ModifyCurrentHistory(newHistory);
+						App.HistoryWrapper.ModifyCurrentHistory(newHistory);
 					}
 				}
 				break;

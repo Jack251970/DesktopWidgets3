@@ -1,8 +1,6 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.UserControls.Widgets;
-using Files.App.ViewModels.Widgets;
 using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.Data.Contexts;
@@ -19,13 +17,13 @@ public interface IHomePageContext
 	/// </summary>
 	CommandBarFlyout? ItemContextFlyoutMenu { get; }
 
-	/// <summary>
-	/// An list containing all the selected tagged items
-	/// </summary>
-	IReadOnlyList<FileTagsItemViewModel> SelectedTaggedItems { get; }
+    /// <summary>
+    /// An list containing all the selected tagged items
+    /// </summary>
+    IReadOnlyList<WidgetFileTagCardItem> SelectedTaggedItems { get; }
 
-	/// <summary>
-	/// Tells whether any item has been right clicked
-	/// </summary>
-	bool IsAnyItemRightClicked { get; }
+    /// <summary>
+    /// Tells whether any item has been right clicked
+    /// </summary>
+    bool IsAnyItemRightClicked { get; }
 }

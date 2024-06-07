@@ -1,14 +1,13 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
-using Windows.Storage.FileProperties;
 
 namespace Files.App.ViewModels.Previews;
 
-public class FolderPreviewViewModel
+public sealed class FolderPreviewViewModel
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -36,22 +35,26 @@ public class FolderPreviewViewModel
 		Folder = await StorageFileExtensions.DangerousGetFolderFromPathAsync(Item.ItemPath, rootItem);
 		var items = await Folder.GetItemsAsync();
 
-        // Requesting sizes larger than 220 may result in a thumbnail with a small folder
-        var iconData = await FileThumbnailHelper.LoadIconWithoutOverlayAsync(Item.ItemPath, Constants.DefaultIconSizes.Jumbo, true, false);
-        if (iconData is not null)
+        var result = await FileThumbnailHelper.GetIconAsync(
+                Item.ItemPath,
+                Constants.ShellIconSizes.Jumbo,
+                true,
+                IconOptions.None);
+
+        if (result is not null)
         {
-            Thumbnail = (await iconData.ToBitmapAsync())!;
+            Thumbnail = (await result.ToBitmapAsync())!;
         }
 
         var info = await Folder.GetBasicPropertiesAsync();
 
-		Item.FileDetails = new()
-		{
-			GetFileProperty("PropertyItemCount", items.Count),
+		Item.FileDetails =
+        [
+            GetFileProperty("PropertyItemCount", items.Count),
 			GetFileProperty("PropertyDateModified", info.DateModified),
 			GetFileProperty("PropertyDateCreated", info.DateCreated),
 			GetFileProperty("PropertyParsingPath", Folder.Path),
-		};
+		];
 
 		if (GitHelpers.IsRepositoryEx(Item.ItemPath, out var repoPath) &&
 			!string.IsNullOrEmpty(repoPath))

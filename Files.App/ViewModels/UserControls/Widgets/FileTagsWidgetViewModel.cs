@@ -1,35 +1,225 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace Files.App.ViewModels.Widgets;
+using Microsoft.UI.Xaml.Controls;
+using System.IO;
+using System.Windows.Input;
+using Windows.Storage;
 
-public sealed partial class FileTagsWidgetViewModel : ObservableObject
+namespace Files.App.ViewModels.UserControls.Widgets;
+
+/// <summary>
+/// Represents view model of <see cref="FileTagsWidget"/>.
+/// </summary>
+public sealed partial class FileTagsWidgetViewModel : BaseWidgetViewModel, IWidgetViewModel
 {
-	private readonly Func<string, Task> _openAction;
+	// Properties
 
-	private IFileTagsService FileTagsService { get; } = DependencyExtensions.GetService<IFileTagsService>();
+	public ObservableCollection<WidgetFileTagsContainerItem> Containers { get; } = [];
 
-	public ObservableCollection<FileTagsContainerViewModel> Containers { get; }
+	public string WidgetName => nameof(FileTagsWidget);
+	public string WidgetHeader => "FileTags".GetLocalizedResource();
+	public string AutomationProperties => "FileTags".GetLocalizedResource();
+	public bool IsWidgetSettingEnabled => UserSettingsService.GeneralSettingsService.ShowFileTagsWidget;
+	public bool ShowMenuFlyout => false;
+	public MenuFlyoutItem? MenuFlyoutItem => null;
 
-	public FileTagsWidgetViewModel(Func<string, Task> openAction)
+	// Events
+
+	public static event EventHandler<IEnumerable<WidgetFileTagCardItem>>? SelectedTaggedItemsChanged;
+
+	// Commands
+
+	private ICommand OpenInNewPaneCommand { get; set; } = null!;
+
+	// Constructor
+
+	public FileTagsWidgetViewModel()
 	{
-		_openAction = openAction;
-		Containers = new();
+		/*_ = InitializeWidget();*/
+
+		OpenInNewTabCommand = new AsyncRelayCommand<WidgetCardItem>(ExecuteOpenInNewTabCommand);
+		OpenInNewWindowCommand = new AsyncRelayCommand<WidgetCardItem>(ExecuteOpenInNewWindowCommand);
+		PinToSidebarCommand = new AsyncRelayCommand<WidgetCardItem>(ExecutePinToSidebarCommand);
+		UnpinFromSidebarCommand = new AsyncRelayCommand<WidgetCardItem>(ExecuteUnpinFromSidebarCommand);
+		OpenFileLocationCommand = new RelayCommand<WidgetCardItem>(ExecuteOpenFileLocationCommand);
+		OpenInNewPaneCommand = new RelayCommand<WidgetCardItem>(ExecuteOpenInNewPaneCommand);
+		OpenPropertiesCommand = new RelayCommand<WidgetCardItem>(ExecuteOpenPropertiesCommand);
 	}
 
-	/// <inheritdoc/>
-	public async Task InitAsync(IFolderViewViewModel folderViewViewModel, CancellationToken cancellationToken = default)
+    public new void Initialize(IFolderViewViewModel folderViewViewModel)
+    {
+        base.Initialize(folderViewViewModel);
+
+        // CHANGE: Initialize widget after folder view view model is initialized.
+        _ = InitializeWidget();
+    }
+
+	// Methods
+
+	public async Task InitializeWidget()
 	{
-		await foreach (var item in FileTagsService.GetTagsAsync(cancellationToken))
+		await foreach (var item in FileTagsService.GetTagsAsync())
 		{
-			var container = new FileTagsContainerViewModel(folderViewViewModel, item.Uid, _openAction)
+			var container = new WidgetFileTagsContainerItem(FolderViewViewModel, item.Uid)
 			{
 				Name = item.Name,
 				Color = item.Color
 			};
-			Containers.Add(container);
 
-			_ = container.InitAsync(cancellationToken);
+			Containers.Add(container);
+			_ = container.InitAsync();
 		}
+	}
+
+	public Task RefreshWidgetAsync()
+	{
+		return Task.CompletedTask;
+	}
+
+	public override List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false)
+	{
+		return new List<ContextMenuFlyoutItemViewModel>()
+		{
+			new()
+			{
+				Text = "OpenWith".GetLocalizedResource(),
+				OpacityIcon = new() { OpacityIconStyle = "ColorIconOpenWith" },
+				Tag = "OpenWithPlaceholder",
+				ShowItem = !isFolder
+			},
+			new()
+			{
+				Text = "OpenInNewTab".GetLocalizedResource(),
+				OpacityIcon = new() { OpacityIconStyle = "ColorIconOpenInNewTab" },
+				Command = OpenInNewTabCommand,
+				CommandParameter = item,
+				ShowItem = isFolder
+			},
+			new()
+			{
+				Text = "OpenInNewWindow".GetLocalizedResource(),
+				OpacityIcon = new() { OpacityIconStyle = "ColorIconOpenInNewWindow" },
+				Command = OpenInNewWindowCommand,
+				CommandParameter = item,
+				ShowItem = isFolder
+			},
+			new()
+			{
+				Text = "OpenFileLocation".GetLocalizedResource(),
+				Glyph = "\uED25",
+				Command = OpenFileLocationCommand,
+				CommandParameter = item,
+				ShowItem = !isFolder
+			},
+			new()
+			{
+				Text = "OpenInNewPane".GetLocalizedResource(),
+				Command = OpenInNewPaneCommand,
+				CommandParameter = item,
+				ShowItem = UserSettingsService.GeneralSettingsService.ShowOpenInNewPane && isFolder
+			},
+			new()
+			{
+				Text = "PinFolderToSidebar".GetLocalizedResource(),
+				OpacityIcon = new() { OpacityIconStyle = "Icons.Pin.16x16" },
+				Command = PinToSidebarCommand,
+				CommandParameter = item,
+				ShowItem = !isPinned && isFolder
+			},
+			new()
+			{
+				Text = "UnpinFolderFromSidebar".GetLocalizedResource(),
+				OpacityIcon = new() { OpacityIconStyle = "Icons.Unpin.16x16" },
+				Command = UnpinFromSidebarCommand,
+				CommandParameter = item,
+				ShowItem = isPinned && isFolder
+			},
+			new()
+			{
+				Text = "SendTo".GetLocalizedResource(),
+				Tag = "SendToPlaceholder",
+				ShowItem = UserSettingsService.GeneralSettingsService.ShowSendToMenu
+			},
+			new()
+			{
+				Text = "Properties".GetLocalizedResource(),
+				OpacityIcon = new() { OpacityIconStyle = "ColorIconProperties" },
+				Command = OpenPropertiesCommand,
+				CommandParameter = item,
+				ShowItem = isFolder
+			},
+			new()
+			{
+				ItemType = ContextMenuFlyoutItemType.Separator,
+				Tag = "OverflowSeparator",
+			},
+			new()
+			{
+				Text = "Loading".GetLocalizedResource(),
+				Glyph = "\xE712",
+				Items = [],
+				ID = "ItemOverflow",
+				Tag = "ItemOverflow",
+				IsEnabled = false,
+			}
+		}.Where(x => x.ShowItem).ToList();
+	}
+
+	// Command methods
+
+	private void ExecuteOpenPropertiesCommand(WidgetCardItem? item)
+	{
+		if (!HomePageContext.IsAnyItemRightClicked || item is null)
+        {
+            return;
+        }
+
+        var flyout = HomePageContext.ItemContextFlyoutMenu;
+
+		EventHandler<object> flyoutClosed = null!;
+		flyoutClosed = (s, e) =>
+		{
+			flyout!.Closed -= flyoutClosed;
+
+			ListedItem listedItem = new(null!)
+			{
+				ItemPath = (item.Item as WidgetFileTagCardItem)?.Path ?? string.Empty,
+				ItemNameRaw = (item.Item as WidgetFileTagCardItem)?.Name ?? string.Empty,
+				PrimaryItemAttribute = StorageItemTypes.Folder,
+				ItemType = "Folder".GetLocalizedResource(),
+			};
+
+			FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, listedItem, ContentPageContext.ShellPage!);
+		};
+
+		flyout!.Closed += flyoutClosed;
+	}
+
+	private void ExecuteOpenInNewPaneCommand(WidgetCardItem? item)
+	{
+		ContentPageContext.ShellPage!.PaneHolder?.OpenPathInNewPane(item?.Path ?? string.Empty);
+	}
+
+	private void ExecuteOpenFileLocationCommand(WidgetCardItem? item)
+	{
+		var itemPath = Directory.GetParent(item?.Path ?? string.Empty)?.FullName ?? string.Empty;
+		var itemName = Path.GetFileName(item?.Path ?? string.Empty);
+
+		ContentPageContext.ShellPage!.NavigateWithArguments(
+			ContentPageContext.ShellPage!.InstanceViewModel.FolderSettings.GetLayoutType(itemPath),
+			new NavigationArguments()
+			{
+                FolderViewViewModel = FolderViewViewModel,
+				NavPathParam = itemPath,
+				SelectItems = [itemName],
+				AssociatedTabInstance = ContentPageContext.ShellPage!
+			});
+	}
+
+	// Disposer
+
+	public void Dispose()
+	{
 	}
 }

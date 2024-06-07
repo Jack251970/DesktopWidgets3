@@ -1,18 +1,19 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
-
-// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Files.App.UserControls;
 
 public sealed partial class InnerNavigationToolbar : UserControl
 {
+    private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
+
 	public InnerNavigationToolbar()
 	{
 		InitializeComponent();
@@ -33,17 +34,17 @@ public sealed partial class InnerNavigationToolbar : UserControl
 
 	public static AppModel AppModel => App.AppModel;
 
-	public ToolbarViewModel? ViewModel
-	{
-		get => (ToolbarViewModel)GetValue(ViewModelProperty);
-		set => SetValue(ViewModelProperty, value);
-	}
+    public AddressToolbarViewModel? ViewModel
+    {
+        get => (AddressToolbarViewModel)GetValue(ViewModelProperty);
+        set => SetValue(ViewModelProperty, value);
+    }
 
-	// Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
-	public static readonly DependencyProperty ViewModelProperty =
-		DependencyProperty.Register(nameof(ViewModel), typeof(ToolbarViewModel), typeof(InnerNavigationToolbar), new PropertyMetadata(null));
+    // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty ViewModelProperty =
+        DependencyProperty.Register(nameof(ViewModel), typeof(AddressToolbarViewModel), typeof(InnerNavigationToolbar), new PropertyMetadata(null));
 
-	public bool ShowViewControlButton
+    public bool ShowViewControlButton
     {
         get => (bool)GetValue(ShowViewControlButtonProperty);
         set => SetValue(ShowViewControlButtonProperty, value);
@@ -117,7 +118,6 @@ public sealed partial class InnerNavigationToolbar : UserControl
 		}
 	}
 
-#pragma warning disable CA1822 // Mark members as static
     private void SortGroup_AccessKeyInvoked(UIElement sender, AccessKeyInvokedEventArgs args)
 	{
 		if (sender is MenuFlyoutSubItem menu)
@@ -135,5 +135,13 @@ public sealed partial class InnerNavigationToolbar : UserControl
 			}
 		}
 	}
-#pragma warning restore CA1822 // Mark members as static
+
+    private void AppBarButton_AccessKeyInvoked(UIElement sender, AccessKeyInvokedEventArgs args)
+    {
+        // Suppress access key invocation if any dialog is open
+        if (VisualTreeHelper.GetOpenPopupsForXamlRoot(FolderViewViewModel.XamlRoot).Any())
+        {
+            args.Handled = true;
+        }
+    }
 }

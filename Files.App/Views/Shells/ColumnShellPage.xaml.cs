@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -112,16 +112,16 @@ public sealed partial class ColumnShellPage : BaseShellPage
 		NotifyPropertyChanged(nameof(FilesystemViewModel));
 	}
 
-	protected override void ViewModel_WorkingDirectoryModified(object sender, WorkingDirectoryModifiedEventArgs e)
-	{
-		var value = e.Path;
-		if (!string.IsNullOrWhiteSpace(value))
+    protected async override void ViewModel_WorkingDirectoryModified(object sender, WorkingDirectoryModifiedEventArgs e)
+    {
+        var value = e.Path;
+        if (!string.IsNullOrWhiteSpace(value))
         {
-            UpdatePathUIToWorkingDirectory(value);
+            await UpdatePathUIToWorkingDirectoryAsync(value);
         }
     }
 
-	private async void ItemDisplayFrame_Navigated(object sender, NavigationEventArgs e)
+    private async void ItemDisplayFrame_Navigated(object sender, NavigationEventArgs e)
 	{
 		ContentPage = await GetContentOrNullAsync();
 

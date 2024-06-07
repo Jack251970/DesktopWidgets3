@@ -1,9 +1,10 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Utils.Serialization.Implementation;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using Windows.Storage;
 
 namespace Files.App.Services.Settings;
 
@@ -13,13 +14,13 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 
 	public event EventHandler? OnTagsUpdated;
 
-	private static readonly List<TagViewModel> DefaultFileTags = new()
-	{
-		new("Home", "#0072BD", "f7e0e137-2eb5-4fa4-a50d-ddd65df17c34"),
+	private static readonly List<TagViewModel> DefaultFileTags =
+    [
+        new("Home", "#0072BD", "f7e0e137-2eb5-4fa4-a50d-ddd65df17c34"),
 		new("Work", "#D95319", "c84a8131-c4de-47d9-9440-26e859d14b3d"),
 		new("Photos", "#EDB120", "d4b8d4bd-ceaf-4e58-ac61-a185fcf96c5d"),
 		new("Important", "#77AC30", "79376daf-c44a-4fe4-aa3b-8b30baea453e")
-	};
+	];
 
 	public FileTagsSettingsService()
 	{
@@ -98,25 +99,22 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 
 	public void EditTag(string uid, string name, string color)
 	{
-		var (tag, index) = GetTagAndIndex(uid);
-		if (tag is null)
+        var index = GetTagIndex(uid);
+        if (index == -1)
         {
             return;
         }
 
-        tag.Name = name;
-		tag.Color = color;
+        var oldTags = FileTagList.ToList();
+        oldTags.RemoveAt(index);
+        oldTags.Insert(index, new TagViewModel(name, color, uid));
+        FileTagList = oldTags;
+    }
 
-		var oldTags = FileTagList.ToList();
-		oldTags.RemoveAt(index);
-		oldTags.Insert(index, tag);
-		FileTagList = oldTags;
-	}
-
-	public void DeleteTag(IFolderViewViewModel folderViewViewModel, string uid)
+    public void DeleteTag(IFolderViewViewModel folderViewViewModel, string uid)
 	{
-		var (_, index) = GetTagAndIndex(uid);
-		if (index == -1)
+        var index = GetTagIndex(uid);
+        if (index == -1)
         {
             return;
         }
@@ -152,29 +150,29 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 
 	public override object ExportSettings()
 	{
-		// Return string in Json format
-		return JsonSettingsSerializer!.SerializeToJson(FileTagList)!;
-	}
+        var settings = new Dictionary<string, object>
+        {
+            { "FileTagList", FileTagList }
+        };
 
-	private (TagViewModel?, int) GetTagAndIndex(string uid)
-	{
-		TagViewModel? tag = null;
-		var index = -1;
+        // Serialize settings to JSON format
+        return JsonSettingsSerializer!.SerializeToJson(settings)!;
+    }
 
-		for (var i = 0; i < FileTagList.Count; i++)
-		{
-			if (FileTagList[i].Uid == uid)
-			{
-				tag = FileTagList[i];
-				index = i;
-				break;
-			}
-		}
+    private int GetTagIndex(string uid)
+    {
+        for (var i = 0; i < FileTagList.Count; i++)
+        {
+            if (FileTagList[i].Uid == uid)
+            {
+                return i;
+            }
+        }
 
-		return (tag, index);
-	}
+        return -1;
+    }
 
-	private static void UntagAllFiles(IFolderViewViewModel folderViewViewModel, string uid)
+    private static void UntagAllFiles(IFolderViewViewModel folderViewViewModel, string uid)
 	{
 		var tagDoDelete = new string[] { uid };
 

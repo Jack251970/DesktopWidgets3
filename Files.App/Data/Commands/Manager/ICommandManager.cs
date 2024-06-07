@@ -1,8 +1,11 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Data.Commands;
 
+/// <summary>
+/// Represents a collection of <see cref="IRichCommand"/> and provides manager classes.
+/// </summary>
 public interface ICommandManager : IEnumerable<IRichCommand>
 {
     void Initialize(IFolderViewViewModel folderViewViewModel);
@@ -53,12 +56,13 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 
     IRichCommand PinToStart { get; }
     IRichCommand UnpinFromStart { get; }
-    IRichCommand PinItemToFavorites { get; }
-    IRichCommand UnpinItemFromFavorites { get; }
+    IRichCommand PinFolderToSidebar { get; }
+    IRichCommand UnpinFolderFromSidebar { get; }
 
     IRichCommand SetAsWallpaperBackground { get; }
     IRichCommand SetAsSlideshowBackground { get; }
     IRichCommand SetAsLockscreenBackground { get; }
+    IRichCommand SetAsAppBackground { get; }
 
     IRichCommand CopyItem { get; }
 	IRichCommand CopyPath { get; }
@@ -109,9 +113,7 @@ public interface ICommandManager : IEnumerable<IRichCommand>
 	IRichCommand LayoutDetails { get; }
     IRichCommand LayoutList { get; }
     IRichCommand LayoutTiles { get; }
-	IRichCommand LayoutGridSmall { get; }
-	IRichCommand LayoutGridMedium { get; }
-	IRichCommand LayoutGridLarge { get; }
+    IRichCommand LayoutGrid { get; }
 	IRichCommand LayoutColumns { get; }
 	IRichCommand LayoutAdaptive { get; }
 

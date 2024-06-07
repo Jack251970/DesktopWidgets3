@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
@@ -32,7 +32,6 @@ public sealed partial class MainPage : Page
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     public IUserSettingsService UserSettingsService { get; private set; } = null!;
-    public IApplicationService ApplicationService { get; }
 
 	public ICommandManager Commands { get; private set; } = null!;
 
@@ -64,10 +63,9 @@ public sealed partial class MainPage : Page
         TabControl.Loaded += HorizontalMultitaskingControl_Loaded;
 
 		// Dependency Injection
-		/*UserSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
-		ApplicationService = DependencyExtensions.GetService<IApplicationService>();
-        /*Commands = DependencyExtensions.GetService<ICommandManager>();*/
-        /*WindowContext = DependencyExtensions.GetService<IWindowContext>();*/
+		/*UserSettingsService = DependencyExtensions.GetService<IUserSettingsService>();
+        Commands = DependencyExtensions.GetService<ICommandManager>();
+        WindowContext = DependencyExtensions.GetService<IWindowContext>();*/
         SidebarAdaptiveViewModel = DependencyExtensions.GetService<SidebarViewModel>();
         SidebarAdaptiveViewModel.PaneFlyout = (MenuFlyout)Resources["SidebarContextMenu"];
         ViewModel = DependencyExtensions.GetService<MainPageViewModel>();
@@ -86,7 +84,8 @@ public sealed partial class MainPage : Page
 		_updateDateDisplayTimer.Tick += UpdateDateDisplayTimer_Tick;
 	}
 
-	private async Task PromptForReviewAsync()
+    // CHANGE: Remove review prompt.
+	/*private async Task PromptForReviewAsync()
 	{
 		var promptForReviewDialog = new ContentDialog
 		{
@@ -117,7 +116,7 @@ public sealed partial class MainPage : Page
 			}
 			catch (Exception) { }
 		}
-	}
+	}*/
 
 	private async Task AppRunningAsAdminPromptAsync()
 	{
@@ -193,9 +192,12 @@ public sealed partial class MainPage : Page
 		LoadPaneChanged();
 		UpdateNavToolbarProperties();
 		await NavigationHelpers.UpdateInstancePropertiesAsync(FolderViewViewModel, paneArgs);
-	}
 
-	public void MultitaskingControl_CurrentInstanceChanged(object? sender, CurrentInstanceChangedEventArgs e)
+        // Save the updated tab list
+        AppLifecycleHelper.SaveSessionTabs(FolderViewViewModel);
+    }
+
+	public async void MultitaskingControl_CurrentInstanceChanged(object? sender, CurrentInstanceChangedEventArgs e)
 	{
 		if (SidebarAdaptiveViewModel.PaneHolder is not null)
         {
@@ -218,11 +220,12 @@ public sealed partial class MainPage : Page
         UpdateStatusBarProperties();
 		UpdateNavToolbarProperties();
 		LoadPaneChanged();
-		_ = NavigationHelpers.UpdateInstancePropertiesAsync(FolderViewViewModel, navArgs);
 
 		e.CurrentInstance.ContentChanged -= TabItemContent_ContentChanged;
 		e.CurrentInstance.ContentChanged += TabItemContent_ContentChanged;
-	}
+
+        await NavigationHelpers.UpdateInstancePropertiesAsync(FolderViewViewModel, navArgs);
+    }
 
 	private void PaneHolder_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
@@ -234,10 +237,10 @@ public sealed partial class MainPage : Page
 
     private void UpdateStatusBarProperties()
 	{
-		if (StatusBarControl is not null)
+		if (StatusBar is not null)
 		{
-			StatusBarControl.DirectoryPropertiesViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.SlimContentPage?.DirectoryPropertiesViewModel;
-			StatusBarControl.SelectedItemsPropertiesViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.SlimContentPage?.SelectedItemsPropertiesViewModel;
+			StatusBar.DirectoryPropertiesViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.SlimContentPage?.DirectoryPropertiesViewModel;
+			StatusBar.SelectedItemsPropertiesViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.SlimContentPage?.SelectedItemsPropertiesViewModel;
 		}
 	}
 
@@ -350,8 +353,8 @@ public sealed partial class MainPage : Page
         /*FolderViewViewModel.MainWindow.AppWindow.Changed += (_, _) => FolderViewViewModel.MainWindow.RaiseSetTitleBarDragRegion(SetTitleBarDragRegion);*/
 
         // Defers the status bar loading until after the page has loaded to improve startup perf
-        FindName(nameof(StatusBarControl));
-		FindName(nameof(InnerNavigationToolbar));
+        FindName(nameof(StatusBar));
+        FindName(nameof(InnerNavigationToolbar));
 		FindName(nameof(TabControl));
 		FindName(nameof(NavToolbar));
 
@@ -360,8 +363,8 @@ public sealed partial class MainPage : Page
 		// FILESTODO: put this in a StartupPromptService
 		if
 		(
-			ApplicationService.Environment is not AppEnvironment.Dev &&
-			IsAppRunningAsAdmin &&
+            AppLifecycleHelper.AppEnvironment is not AppEnvironment.Dev &&
+            IsAppRunningAsAdmin &&
 			UserSettingsService.ApplicationSettingsService.ShowRunningAsAdminPrompt
 		)
 		{
@@ -374,12 +377,13 @@ public sealed partial class MainPage : Page
             return;
         }
 
-        var totalLaunchCount = SystemInformation.Instance.TotalLaunchCount;
+        // CHANGE: Remove review prompt.
+        /*var totalLaunchCount = SystemInformation.Instance.TotalLaunchCount;
 		if (totalLaunchCount is 15 or 30 or 60)
 		{
 			// Prompt user to review app in the Store
 			DispatcherQueue.TryEnqueue(async () => await PromptForReviewAsync());
-		}
+		}*/
 	}
 
     private void PreviewPane_Loaded(object sender, RoutedEventArgs e)
@@ -507,7 +511,8 @@ public sealed partial class MainPage : Page
     {
         var isHomePage = !(SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false);
         var isMultiPane = SidebarAdaptiveViewModel.PaneHolder?.IsMultiPaneActive ?? false;
-        var isBigEnough = FolderViewViewModel.MainWindow.Bounds.Width > 450 && FolderViewViewModel.MainWindow.Bounds.Height > 450 || RootGrid.ActualWidth > 700 && FolderViewViewModel.MainWindow.Bounds.Height > 360;
+        var isBigEnough = !App.AppModel.IsMainWindowClosed &&
+                (FolderViewViewModel.Bounds.Width > 450 && FolderViewViewModel.Bounds.Height > 450 || RootGrid.ActualWidth > 700 && FolderViewViewModel.Bounds.Height > 360);
 
         ViewModel.ShouldPreviewPaneBeDisplayed = (!isHomePage || isMultiPane) && isBigEnough;
         ViewModel.ShouldPreviewPaneBeActive = UserSettingsService.InfoPaneSettingsService.IsEnabled && ViewModel.ShouldPreviewPaneBeDisplayed;
@@ -570,7 +575,7 @@ public sealed partial class MainPage : Page
         {
             foreach (var item in items)
             {
-                await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, item.Path);
+                await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, item.Path, true);
             }
 
             deferral.Complete();
@@ -629,7 +634,7 @@ public sealed partial class MainPage : Page
     private void StatusBar_Loaded(object sender, RoutedEventArgs e)
     {
         // CHANGE: Initalize folder view view model.
-        StatusBarControl.Initialize(FolderViewViewModel);
+        StatusBar.Initialize(FolderViewViewModel);
     }
 
     private void PaneSplitter_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)

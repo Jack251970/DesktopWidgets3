@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App;
@@ -64,8 +64,8 @@ public static class Constants
 	public static class FluentIconsPaths
 	{
 		public const string CloudDriveIcon = "ms-appx:///Files.App/Assets/FluentIcons/CloudDrive.png";
-		public const string FavoritesIcon = "ms-appx:///Files.App/Assets/FluentIcons/Favorites.png";
-		public const string FileTagsIcon = "ms-appx:///Files.App/Assets/FluentIcons/FileTags.png";
+        public const string StarIcon = "ms-appx:///Assets/FluentIcons/Star.png";
+        public const string FileTagsIcon = "ms-appx:///Files.App/Assets/FluentIcons/FileTags.png";
 		public const string HomeIcon = "ms-appx:///Files.App/Assets/FluentIcons/Home.png";
 	}
 
@@ -118,24 +118,8 @@ public static class Constants
 		public const string StandardFont = "Segoe UI Variable";
 	}
 
-	public static class Browser
-	{
-		public static class GridViewBrowser
-		{
-			public const int GridViewIncrement = 20;
-
-			public const int GridViewSizeLarge = 220;
-
-			public const int GridViewSizeMedium = 160;
-
-			public const int GridViewSizeSmall = 100;
-
-            public const int TilesView = 100;
-        }
-	}
-
     // Default icon sizes that are available for files and folders
-    public static class DefaultIconSizes
+    public static class ShellIconSizes
     {
         public const int Small = 16;
 
@@ -163,9 +147,13 @@ public static class Constants
 		public const string UserSettingsFileName = "user_settings.json";
 
 		public const string FileTagSettingsFileName = "filetags.json";
-	}
 
-	public static class PreviewPane
+        public const string UserSettingsDatabaseFileName = "user_settings.db";
+
+        public const string FileTagSettingsDatabaseFileName = "filetags.db";
+    }
+
+    public static class PreviewPane
 	{
 		/// <summary>
 		/// The maximum number of characters that should be loaded into the preview.
@@ -186,16 +174,18 @@ public static class Constants
 
 	public static class ResourceFilePaths
 	{
-		/// <summary>
-		/// The path to the json file containing a list of file properties to be loaded in the properties window details page.
-		/// </summary>
-		public const string DetailsPagePropertiesJsonUriPath = @"ms-appx:///Resources/PropertiesInformation.json";
-        
-		/// <summary>
-		/// The path to the json file containing a list of file properties to be loaded in the preview pane.
-		/// </summary>
-		public const string PreviewPaneDetailsPropertiesJsonUriPath = @"ms-appx:///Resources/PreviewPanePropertiesInformation.json";
-	}
+        /// <summary>
+        /// The path to the json file containing a list of file properties to be loaded in the properties window details page.
+        /// </summary>
+        // CHANGE: Change name to UriPath.
+        public const string DetailsPagePropertiesJsonUriPath = @"ms-appx:///Assets/Resources/PropertiesInformation.json";
+
+        /// <summary>
+        /// The path to the json file containing a list of file properties to be loaded in the preview pane.
+        /// </summary>
+        // CHANGE: Change name to UriPath.
+        public const string PreviewPaneDetailsPropertiesJsonUriPath = @"ms-appx:///Assets/Resources/PreviewPanePropertiesInformation.json";
+    }
 
 	public static class Filesystem
 	{
@@ -204,15 +194,17 @@ public static class Constants
 		public const string CachedEmptyItemName = "fileicon_cache";
 	}
 
-	public static class GitHub
-	{
-		public const string GitHubRepoUrl = @"https://github.com/files-community/Files";
-		public const string DocumentationUrl = @"https://files.community/docs";
-		public const string FeatureRequestUrl = @"https://github.com/files-community/Files/issues/new?labels=feature+request&template=feature_request.yml";
-		public const string BugReportUrl = @"https://github.com/files-community/Files/issues/new?labels=bug&template=bug_report.yml";
-		public const string PrivacyPolicyUrl = @"https://github.com/files-community/Files/blob/main/Privacy.md";
-		public const string SupportUsUrl = @"https://github.com/sponsors/yaira2";
-	}
+    public static class ExternalUrl
+    {
+        public const string GitHubRepoUrl = @"https://github.com/files-community/Files";
+        public const string DocumentationUrl = @"https://files.community/docs";
+        public const string DiscordUrl = @"https://discord.gg/files";
+        public const string FeatureRequestUrl = @"https://github.com/files-community/Files/issues/new?labels=feature+request&template=feature_request.yml";
+        public const string BugReportUrl = @"https://github.com/files-community/Files/issues/new?labels=bug&template=bug_report.yml";
+        public const string PrivacyPolicyUrl = @"https://github.com/files-community/Files/blob/main/.github/PRIVACY.md";
+        public const string SupportUsUrl = @"https://github.com/sponsors/yaira2";
+        public const string CrowdinUrl = @"https://crowdin.com/project/files-app";
+    }
 
     public static class DocsPath
     {

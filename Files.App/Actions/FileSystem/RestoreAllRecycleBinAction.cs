@@ -1,10 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
-
 
 namespace Files.App.Actions;
 
-internal class RestoreAllRecycleBinAction : BaseUIAction, IAction
+internal sealed class RestoreAllRecycleBinAction(IFolderViewViewModel folderViewViewModel) : BaseUIAction(folderViewViewModel), IAction
 {
     public string Label
 		=> "RestoreAllItems".GetLocalizedResource();
@@ -19,11 +18,7 @@ internal class RestoreAllRecycleBinAction : BaseUIAction, IAction
 		FolderViewViewModel.CanShowDialog &&
 		RecycleBinHelpers.RecycleBinHasItems();
 
-    public RestoreAllRecycleBinAction(IFolderViewViewModel folderViewViewModel) : base(folderViewViewModel)
-    {
-    }
-
-    public async Task ExecuteAsync()
+    public async Task ExecuteAsync(object? parameter = null)
 	{
 		await RecycleBinHelpers.RestoreRecycleBinAsync(FolderViewViewModel);
 	}

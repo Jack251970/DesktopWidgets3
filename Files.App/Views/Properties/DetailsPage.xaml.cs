@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.ViewModels.Properties;
@@ -40,7 +40,7 @@ public sealed partial class DetailsPage : BasePropertiesPage
 	{
 		while (true)
 		{
-			using var dialog = DynamicDialogFactory.GetFor_PropertySaveErrorDialog();
+			using var dialog = DynamicDialogFactory.GetFor_PropertySaveErrorDialog(FolderViewViewModel);
 			try
 			{
 				if (BaseProperties is IFileProperties fileProps)

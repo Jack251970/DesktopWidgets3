@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
@@ -34,18 +34,29 @@ internal sealed class OpenAllTaggedActions: ObservableObject, IAction
 		_tagsContext.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public async Task ExecuteAsync()
+	public async Task ExecuteAsync(object? parameter = null)
 	{
-		var files = _tagsContext.TaggedItems.Where(item => !item.isFolder);
-		var folders = _tagsContext.TaggedItems.Where(item => item.isFolder);
+        var filePaths = _tagsContext.TaggedItems
+                .Where(item => !item.isFolder)
+                .Select(f => f.path)
+                .ToList();
 
-		await Task.WhenAll(files.Select(file 
-			=> NavigationHelpers.OpenPath(FolderViewViewModel, file.path, _pageContext.ShellPage!)));
+        var folderPaths = _tagsContext
+            .TaggedItems
+            .Where(item => item.isFolder)
+            .Select(f => f.path)
+            .ToList();
 
-		folders.ForEach(async folder => await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, folder.path));
-	}
+        // TODO(Later): Check if we open many items.
+        await Task.WhenAll(filePaths.Select(path => NavigationHelpers.OpenPath(FolderViewViewModel, path, _pageContext.ShellPage!)));
 
-	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        foreach (var path in folderPaths)
+        {
+            await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, path, false);
+        }
+    }
+
+    private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		switch (e.PropertyName)
 		{

@@ -1,20 +1,15 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Runtime.InteropServices;
 
 namespace Files.App.UserControls.Selection;
 
-internal class InvertPreviousItemSelectionStrategy : ItemSelectionStrategy
+internal sealed class InvertPreviousItemSelectionStrategy(ICollection<object> selectedItems, List<object> prevSelectedItems) : ItemSelectionStrategy(selectedItems)
 {
-	private readonly List<object> prevSelectedItems;
+	private readonly List<object> prevSelectedItems = prevSelectedItems;
 
-	public InvertPreviousItemSelectionStrategy(ICollection<object> selectedItems, List<object> prevSelectedItems) : base(selectedItems)
-	{
-		this.prevSelectedItems = prevSelectedItems;
-	}
-
-	public override void HandleIntersectionWithItem(object item)
+    public override void HandleIntersectionWithItem(object item)
 	{
 		try
 		{

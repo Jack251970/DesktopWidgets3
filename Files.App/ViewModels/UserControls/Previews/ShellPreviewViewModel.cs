@@ -1,30 +1,27 @@
-﻿using DirectN;
-using Files.App.ViewModels.Properties;
+﻿using Files.App.ViewModels.Properties;
 using Microsoft.UI.Content;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
 using System.Runtime.InteropServices;
 using System.Text;
 using Vanara.PInvoke;
+using Windows.Win32;
+using Windows.Win32.Graphics.Direct3D;
+using Windows.Win32.Graphics.Direct3D11;
+using Windows.Win32.Graphics.Dxgi;
+using Windows.Win32.Graphics.DirectComposition;
 using WinRT;
 using static Vanara.PInvoke.ShlwApi;
 using static Vanara.PInvoke.User32;
 
 namespace Files.App.ViewModels.Previews;
 
-#pragma warning disable CS8305 // Feature is for evaluation purposes only and is subject to change or removal in future updates.
-
-public class ShellPreviewViewModel : BasePreviewModel
+public sealed class ShellPreviewViewModel(ListedItem item) : BasePreviewModel(item)
 {
-	public ShellPreviewViewModel(ListedItem item)
-		: base(item)
-	{
-	}
-
     public async override Task<List<FileProperty>> LoadPreviewAndDetailsAsync()
     {
         await Task.CompletedTask;
-        return new List<FileProperty>();
+        return [];
     }
 
 	private const string IPreviewHandlerIid = "{8895b1c6-b41f-4c1c-a562-0d564250836f}";
@@ -132,82 +129,82 @@ public class ShellPreviewViewModel : BasePreviewModel
 		_ = ChildWindowToXaml(parent, presenter);
 	}
 
-	private bool ChildWindowToXaml(IntPtr parent, UIElement presenter)
-	{
-		D3D_DRIVER_TYPE[] driverTypes =
-		{
-			D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_HARDWARE,
-			D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_WARP,
-		};
+    private unsafe bool ChildWindowToXaml(IntPtr parent, UIElement presenter)
+    {
+        D3D_DRIVER_TYPE[] driverTypes =
+        [
+            D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_HARDWARE,
+            D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_WARP,
+        ];
 
-		ID3D11Device? d3d11Device = null;
-		ID3D11DeviceContext? d3d11DeviceContext = null;
-		D3D_FEATURE_LEVEL featureLevelSupported;
+        ID3D11Device? d3d11Device = null;
+        ID3D11DeviceContext? d3d11DeviceContext = null;
 
-		foreach (var driveType in driverTypes)
-		{
-			var hr = D3D11Functions.D3D11CreateDevice(
-				null,
-				driveType,
-				IntPtr.Zero,
-				(uint)D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-				null,
-				0,
-				7,
-				out d3d11Device,
-				out featureLevelSupported,
-				out d3d11DeviceContext);
+        foreach (var driveType in driverTypes)
+        {
+            var hr = PInvoke.D3D11CreateDevice(
+                null,
+                driveType,
+                new(IntPtr.Zero),
+                D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+                null,
+                0,
+                7,
+                out d3d11Device,
+                null,
+                out d3d11DeviceContext);
 
-			if (hr.IsSuccess)
+            if (hr.Succeeded)
             {
                 break;
             }
         }
 
-		if (d3d11Device is null)
+        if (d3d11Device is null)
         {
             return false;
         }
 
         var dxgiDevice = (IDXGIDevice)d3d11Device;
-		if (Functions.DCompositionCreateDevice(dxgiDevice, typeof(IDCompositionDevice).GUID, out var compDevicePtr).IsError)
+        if (PInvoke.DCompositionCreateDevice(dxgiDevice, typeof(IDCompositionDevice).GUID, out var compDevicePtr).Failed)
         {
             return false;
         }
 
-        var compDevice = (IDCompositionDevice)Marshal.GetObjectForIUnknown(compDevicePtr);
+        var compDevice = (IDCompositionDevice)compDevicePtr;
 
-		if (compDevice.CreateVisual(out var childVisual).IsError ||
-			compDevice.CreateSurfaceFromHwnd(hwnd.DangerousGetHandle(), out var controlSurface).IsError ||
-			childVisual.SetContent(controlSurface).IsError)
+        compDevice.CreateVisual(out var childVisual);
+        compDevice.CreateSurfaceFromHwnd(new(hwnd.DangerousGetHandle()), out var controlSurface);
+        childVisual.SetContent(controlSurface);
+        if (childVisual is null || controlSurface is null)
         {
             return false;
         }
 
         var compositor = ElementCompositionPreview.GetElementVisual(presenter).Compositor;
-		outputLink = ContentExternalOutputLink.Create(compositor);
-		var target = outputLink.As<IDCompositionTarget>();
-		target.SetRoot(childVisual);
+        outputLink = ContentExternalOutputLink.Create(compositor);
+        IDCompositionTarget target = outputLink.As<IDCompositionTarget>();
+        target.SetRoot(childVisual);
 
-		outputLink.PlacementVisual.Size = new(0, 0);
-		outputLink.PlacementVisual.Scale = new(1/(float)presenter.XamlRoot.RasterizationScale);
-		ElementCompositionPreview.SetElementChildVisual(presenter, outputLink.PlacementVisual);
+        outputLink.PlacementVisual.Size = new(0, 0);
+        outputLink.PlacementVisual.Scale = new(1 / (float)presenter.XamlRoot.RasterizationScale);
+        ElementCompositionPreview.SetElementChildVisual(presenter, outputLink.PlacementVisual);
 
-		compDevice.Commit();
+        compDevice.Commit();
 
-		Marshal.ReleaseComObject(target);
-		Marshal.ReleaseComObject(childVisual);
-		Marshal.ReleaseComObject(controlSurface);
-		Marshal.ReleaseComObject(compDevice);
-		Marshal.Release(compDevicePtr);
-		Marshal.ReleaseComObject(dxgiDevice);
-		Marshal.ReleaseComObject(d3d11Device);
-		Marshal.ReleaseComObject(d3d11DeviceContext!);
+        Marshal.ReleaseComObject(target);
+        Marshal.ReleaseComObject(childVisual);
+        Marshal.ReleaseComObject(controlSurface);
+        Marshal.ReleaseComObject(compDevice);
+        Marshal.ReleaseComObject(compDevicePtr);
+        Marshal.ReleaseComObject(dxgiDevice);
+        Marshal.ReleaseComObject(d3d11Device);
+        Marshal.ReleaseComObject(d3d11DeviceContext!);
 
-		return DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, true).Succeeded;
-	}
+        return DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, true).Succeeded;
+    }
 
-	public void UnloadPreview()
+    public void UnloadPreview()
 	{
 		if (hwnd != HWND.NULL)
         {
@@ -229,16 +226,14 @@ public class ShellPreviewViewModel : BasePreviewModel
 			DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, false);
 			if (isOfficePreview)
             {
-                InteropHelpers.SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE, 0);
+                Win32Helper.SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE, 0);
             }
         }
 		else
 		{
-			InteropHelpers.SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE,
+            Win32Helper.SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE,
 				(nint)(WindowStylesEx.WS_EX_LAYERED | WindowStylesEx.WS_EX_COMPOSITED));
 			DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, true);
 		}
 	}
 }
-
-#pragma warning restore CS8305 // Feature is for evaluation purposes only and is subject to change or removal in future updates.

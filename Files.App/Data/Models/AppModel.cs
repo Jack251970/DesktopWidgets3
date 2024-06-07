@@ -1,12 +1,13 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Controls;
 using Windows.ApplicationModel.DataTransfer;
+using WinUIEx;
 
 namespace Files.App.Data.Models;
 
-public class AppModel : ObservableObject
+public sealed class AppModel : ObservableObject
 {
 	public AppModel()
 	{
@@ -28,13 +29,13 @@ public class AppModel : ObservableObject
 	}
 
     // CHANGE: Move this property to FolderViewViewModel
-    /*private int tabStripSelectedIndex = 0;
+    /*private int _TabStripSelectedIndex = 0;
     public int TabStripSelectedIndex
     {
-        get => tabStripSelectedIndex;
+        get => _TabStripSelectedIndex;
         set
         {
-            SetProperty(ref tabStripSelectedIndex, value);
+            SetProperty(ref _TabStripSelectedIndex, value);
 
             if (value >= 0 && value < MainPageViewModel.AppInstances.Count)
             {
@@ -45,68 +46,86 @@ public class AppModel : ObservableObject
         }
     }*/
 
-    private bool isAppElevated = false;
-	public bool IsAppElevated
-	{
-		get => isAppElevated;
-		set => SetProperty(ref isAppElevated, value);
-	}
+    private bool _IsAppElevated = false;
+    public bool IsAppElevated
+    {
+        get => _IsAppElevated;
+        set => SetProperty(ref _IsAppElevated, value);
+    }
 
-	private bool isPasteEnabled = false;
-	public bool IsPasteEnabled
-	{
-		get => isPasteEnabled;
-		set => SetProperty(ref isPasteEnabled, value);
-	}
+    private bool _IsPasteEnabled = false;
+    public bool IsPasteEnabled
+    {
+        get => _IsPasteEnabled;
+        set => SetProperty(ref _IsPasteEnabled, value);
+    }
 
-	private bool isMainWindowClosed = false;
-	public bool IsMainWindowClosed
-	{
-		get => isMainWindowClosed;
-		set => SetProperty(ref isMainWindowClosed, value);
-	}
+    private volatile int _IsMainWindowClosed = 0;
+    public bool IsMainWindowClosed
+    {
+        get => _IsMainWindowClosed == 1;
+        set
+        {
+            var orig = Interlocked.Exchange(ref _IsMainWindowClosed, value ? 1 : 0);
+            if (_IsMainWindowClosed != orig)
+            {
+                OnPropertyChanged();
+            }
+        }
+    }
 
-	private int propertiesWindowCount = 0;
-    public int PropertiesWindowCount => propertiesWindowCount;
+    private int _PropertiesWindowCount = 0;
+    public int PropertiesWindowCount => _PropertiesWindowCount;
 
     public int IncrementPropertiesWindowCount()
-	{
-		var result = Interlocked.Increment(ref propertiesWindowCount);
-		OnPropertyChanged(nameof(PropertiesWindowCount));
-		return result;
-	}
+    {
+        var result = Interlocked.Increment(ref _PropertiesWindowCount);
+        OnPropertyChanged(nameof(PropertiesWindowCount));
+        return result;
+    }
 
-	public int DecrementPropertiesWindowCount()
-	{
-		var result = Interlocked.Decrement(ref propertiesWindowCount);
-		OnPropertyChanged(nameof(PropertiesWindowCount));
-		return result;
-	}
+    public int DecrementPropertiesWindowCount()
+    {
+        var result = Interlocked.Decrement(ref _PropertiesWindowCount);
+        OnPropertyChanged(nameof(PropertiesWindowCount));
+        return result;
+    }
 
-	private bool forceProcessTermination = false;
-	public bool ForceProcessTermination
-	{
-		get => forceProcessTermination;
-		set => SetProperty(ref forceProcessTermination, value);
-	}
+    private bool _ForceProcessTermination = false;
+    public bool ForceProcessTermination
+    {
+        get => _ForceProcessTermination;
+        set => SetProperty(ref _ForceProcessTermination, value);
+    }
 
-	private string googleDrivePath = string.Empty;
-	/// <summary>
-	/// Gets or sets a value indicating the path for Google Drive.
-	/// </summary>
-	public string GoogleDrivePath
-	{
-		get => googleDrivePath;
-		set => SetProperty(ref googleDrivePath, value);
-	}
+    private string _GoogleDrivePath = string.Empty;
+    /// <summary>
+    /// Gets or sets a value indicating the path for Google Drive.
+    /// </summary>
+    public string GoogleDrivePath
+    {
+        get => _GoogleDrivePath;
+        set => SetProperty(ref _GoogleDrivePath, value);
+    }
 
-	private string pCloudDrivePath = string.Empty;
-	/// <summary>
-	/// Gets or sets a value indicating the path for pCloud Drive.
-	/// </summary>
-	public string PCloudDrivePath
-	{
-		get => pCloudDrivePath;
-		set => SetProperty(ref pCloudDrivePath, value);
-	}
+    private string _PCloudDrivePath = string.Empty;
+    /// <summary>
+    /// Gets or sets a value indicating the path for pCloud Drive.
+    /// </summary>
+    public string PCloudDrivePath
+    {
+        get => _PCloudDrivePath;
+        set => SetProperty(ref _PCloudDrivePath, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating the AppWindow DPI.
+    /// FILESTODO update value if the DPI changes
+    /// </summary>
+    private float _AppWindowDPI = Win32PInvoke.GetDpiForWindow(WindowsExtensions.MainWindow.GetWindowHandle()) / 96f;
+    public float AppWindowDPI
+    {
+        get => _AppWindowDPI;
+        set => SetProperty(ref _AppWindowDPI, value);
+    }
 }

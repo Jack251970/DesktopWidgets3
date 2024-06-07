@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -6,9 +6,9 @@ using Microsoft.UI.Xaml.Input;
 
 namespace Files.App.Actions;
 
-internal class ToggleSelectAction : IAction
+internal sealed class ToggleSelectAction(IFolderViewViewModel folderViewViewModel) : IAction
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private readonly IFolderViewViewModel FolderViewViewModel = folderViewViewModel;
 
     public string Label
 		=> "ToggleSelect".GetLocalizedResource();
@@ -22,12 +22,7 @@ internal class ToggleSelectAction : IAction
 	public bool IsExecutable
 		=> GetFocusedElement(FolderViewViewModel) is not null;
 
-    public ToggleSelectAction(IFolderViewViewModel folderViewViewModel)
-    {
-        FolderViewViewModel = folderViewViewModel;
-    }
-
-	public Task ExecuteAsync()
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		if (GetFocusedElement(FolderViewViewModel) is SelectorItem item)
         {

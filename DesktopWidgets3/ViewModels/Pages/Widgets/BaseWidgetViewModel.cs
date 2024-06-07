@@ -27,7 +27,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     protected readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-    private bool _isInitialized;
+    protected bool _isInitialized;
 
     public BaseWidgetViewModel()
     {
@@ -56,7 +56,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     #region navigation aware
 
-    public event Action<object?, bool>? NavigatedTo;
+    public event Action<object?>? NavigatedTo;
     public event Action? NavigatedFrom;
 
     public void OnNavigatedTo(object parameter)
@@ -81,7 +81,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
             _isInitialized = true;
         }
 
-        NavigatedTo?.Invoke(parameter, isInitialized);
+        NavigatedTo?.Invoke(parameter);
     }
 
     public void OnNavigatedFrom()

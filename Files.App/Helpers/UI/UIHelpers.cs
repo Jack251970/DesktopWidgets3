@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Notifications;
@@ -44,38 +44,41 @@ public static class UIHelpers
 		{
 			Debug.WriteLine("Device successfully ejected");
 
-			var toastContent = new ToastContent()
-			{
-				Visual = new ToastVisual()
-				{
-					BindingGeneric = new ToastBindingGeneric()
-					{
-						Children =
-						{
-							new AdaptiveText()
-							{
-								Text = "EjectNotificationHeader".GetLocalizedResource()
-							},
-							new AdaptiveText()
-							{
-								Text = "EjectNotificationBody".GetLocalizedResource()
-							}
-						},
-						Attribution = new ToastGenericAttributionText()
-						{
-							Text = "SettingsAboutAppName".GetLocalizedResource()
-						}
-					}
-				},
-				ActivationType = ToastActivationType.Protocol
-			};
+            SafetyExtensions.IgnoreExceptions(() =>
+            {
+                var toastContent = new ToastContent()
+                {
+                    Visual = new ToastVisual()
+                    {
+                        BindingGeneric = new ToastBindingGeneric()
+                        {
+                            Children =
+                            {
+                                new AdaptiveText()
+                                {
+                                    Text = "EjectNotificationHeader".GetLocalizedResource()
+                                },
+                                new AdaptiveText()
+                                {
+                                    Text = "EjectNotificationBody".GetLocalizedResource()
+                                }
+                            },
+                            Attribution = new ToastGenericAttributionText()
+                            {
+                                Text = "SettingsAboutAppName".GetLocalizedResource()
+                            }
+                        }
+                    },
+                    ActivationType = ToastActivationType.Protocol
+                };
 
-			// Create the toast notification
-			var toastNotif = new ToastNotification(toastContent.GetXml());
+                // Create the toast notification
+                var toastNotif = new ToastNotification(toastContent.GetXml());
 
-			// And send the notification
-			ToastNotificationManager.CreateToastNotifier().Show(toastNotif);
-		}
+                // And send the notification
+                ToastNotificationManager.CreateToastNotifier().Show(toastNotif);
+            });
+        }
 		else if (!result)
 		{
 			Debug.WriteLine("Can't eject device");
@@ -167,7 +170,7 @@ public static class UIHelpers
 	private static IEnumerable<IconFileInfo> LoadSidebarIconResources()
 	{
 		var imageres = Path.Combine(Constants.UserEnvironmentPaths.SystemRootPath, "System32", "imageres.dll");
-		var imageResList = Win32API.ExtractSelectedIconsFromDLL(imageres, new List<int>() {
+		var imageResList = Win32Helper.ExtractSelectedIconsFromDLL(imageres, [
 				Constants.ImageRes.RecycleBin,
 				Constants.ImageRes.NetworkDrives,
 				Constants.ImageRes.Libraries,
@@ -175,7 +178,7 @@ public static class UIHelpers
 				Constants.ImageRes.CloudDrives,
 				Constants.ImageRes.Folder,
 				Constants.ImageRes.OneDrive
-			}, 32);
+			], 32);
 
 		return imageResList;
 	}
@@ -183,9 +186,9 @@ public static class UIHelpers
 	private static IconFileInfo LoadShieldIconResource()
 	{
 		var imageres = Path.Combine(Constants.UserEnvironmentPaths.SystemRootPath, "System32", "imageres.dll");
-		var imageResList = Win32API.ExtractSelectedIconsFromDLL(imageres, new List<int>() {
+		var imageResList = Win32Helper.ExtractSelectedIconsFromDLL(imageres, [
 				Constants.ImageRes.ShieldIcon
-			}, 16);
+			], 16);
 
 		return imageResList.First();
 	}

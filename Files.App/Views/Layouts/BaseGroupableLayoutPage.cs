@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Windows.System;
 using Windows.UI.Core;
+using Windows.Win32;
 
 namespace Files.App.Views.Layouts;
 
@@ -47,7 +48,8 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 	protected abstract void ItemManipulationModel_RemoveSelectedItemInvoked(object? sender, ListedItem e);
 	protected abstract void ItemManipulationModel_FocusSelectedItemsInvoked(object? sender, EventArgs e);
 	protected abstract void ItemManipulationModel_ScrollIntoViewInvoked(object? sender, ListedItem e);
-	protected abstract void FileList_PreviewKeyDown(object sender, KeyRoutedEventArgs e);
+    protected abstract void ItemManipulationModel_ScrollToTopInvoked(object? sender, EventArgs e);
+    protected abstract void FileList_PreviewKeyDown(object sender, KeyRoutedEventArgs e);
 	protected abstract void EndRename(TextBox textBox);
 
 	// Overridden methods
@@ -70,7 +72,8 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 		ItemManipulationModel.FocusSelectedItemsInvoked += ItemManipulationModel_FocusSelectedItemsInvoked;
 		ItemManipulationModel.StartRenameItemInvoked += ItemManipulationModel_StartRenameItemInvoked;
 		ItemManipulationModel.ScrollIntoViewInvoked += ItemManipulationModel_ScrollIntoViewInvoked;
-		ItemManipulationModel.RefreshItemThumbnailInvoked += ItemManipulationModel_RefreshItemThumbnail;
+        ItemManipulationModel.ScrollToTopInvoked += ItemManipulationModel_ScrollToTopInvoked;
+        ItemManipulationModel.RefreshItemThumbnailInvoked += ItemManipulationModel_RefreshItemThumbnail;
 		ItemManipulationModel.RefreshItemsThumbnailInvoked += ItemManipulationModel_RefreshItemsThumbnail;
 	}
 
@@ -90,7 +93,8 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 		ItemManipulationModel.FocusSelectedItemsInvoked -= ItemManipulationModel_FocusSelectedItemsInvoked;
 		ItemManipulationModel.StartRenameItemInvoked -= ItemManipulationModel_StartRenameItemInvoked;
 		ItemManipulationModel.ScrollIntoViewInvoked -= ItemManipulationModel_ScrollIntoViewInvoked;
-		ItemManipulationModel.RefreshItemThumbnailInvoked -= ItemManipulationModel_RefreshItemThumbnail;
+        ItemManipulationModel.ScrollToTopInvoked -= ItemManipulationModel_ScrollToTopInvoked;
+        ItemManipulationModel.RefreshItemThumbnailInvoked -= ItemManipulationModel_RefreshItemThumbnail;
 		ItemManipulationModel.RefreshItemsThumbnailInvoked -= ItemManipulationModel_RefreshItemsThumbnail;
 	}
 
@@ -140,7 +144,7 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
         ParentShellPageInstance.FilesystemViewModel.CancelExtendedPropertiesLoading();
 		ParentShellPageInstance.SlimContentPage.SelectedItem.ItemPropertiesInitialized = false;
 
-		await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemPropertiesAsync(ParentShellPageInstance.SlimContentPage.SelectedItem, IconSize);
+		await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemPropertiesAsync(ParentShellPageInstance.SlimContentPage.SelectedItem);
 
 		if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None &&
 			ParentShellPageInstance.SlimContentPage.SelectedItem is GitItem gitItem)
@@ -161,7 +165,7 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 		foreach (var selectedItem in ParentShellPageInstance.SlimContentPage.SelectedItems)
 		{
 			selectedItem.ItemPropertiesInitialized = false;
-			await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemPropertiesAsync(selectedItem, IconSize);
+			await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemPropertiesAsync(selectedItem);
 		}
 
 		if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None)
@@ -309,7 +313,7 @@ public abstract class BaseGroupableLayoutPage : BaseLayoutPage
 	protected async void RenameTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
 	{
 		var textBox = (TextBox)sender;
-        var isShiftPressed = (InteropHelpers.GetKeyState((int)VirtualKey.Shift) & KEY_DOWN_MASK) != 0;
+        var isShiftPressed = (PInvoke.GetKeyState((int)VirtualKey.Shift) & KEY_DOWN_MASK) != 0;
 
         switch (e.Key)
 		{

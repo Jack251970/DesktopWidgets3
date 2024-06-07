@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Data.Contexts;
@@ -19,7 +19,4 @@ public interface IDisplayPageContext : INotifyPropertyChanging, INotifyPropertyC
 
 	bool SortDirectoriesAlongsideFiles { get; set; }
     bool SortFilesFirst { get; set; }
-
-    void DecreaseLayoutSize();
-	void IncreaseLayoutSize();
 }

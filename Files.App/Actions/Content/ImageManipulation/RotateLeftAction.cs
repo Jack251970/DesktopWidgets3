@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Windows.Graphics.Imaging;
 
 namespace Files.App.Actions;
 
-internal class RotateLeftAction : BaseRotateAction
+internal sealed class RotateLeftAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : BaseRotateAction(folderViewViewModel, context)
 {
     public override string Label
 		=> "RotateLeft".GetLocalizedResource();
@@ -18,8 +18,4 @@ internal class RotateLeftAction : BaseRotateAction
 
 	protected override BitmapRotation Rotation
 		=> BitmapRotation.Clockwise270Degrees;
-
-    public RotateLeftAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel, context)
-    {
-    }
 }

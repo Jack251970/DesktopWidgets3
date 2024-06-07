@@ -1,63 +1,55 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
-
-using Files.App.UserControls.Widgets;
-using Files.App.ViewModels.Widgets;
 
 namespace Files.App.Helpers;
 
 public static class WidgetsHelpers
 {
-	public static TWidget? TryGetWidget<TWidget>(IFolderViewViewModel folderViewViewModel, IGeneralSettingsService generalSettingsService, HomeViewModel widgetsViewModel, out bool shouldReload, TWidget? defaultValue = default) where TWidget : IWidgetItem, new()
-	{
-		var canAddWidget = widgetsViewModel.CanAddWidget(typeof(TWidget).Name);
-		var isWidgetSettingEnabled = TryGetIsWidgetSettingEnabled<TWidget>(generalSettingsService);
+	public static bool TryGetWidget<TWidget>(HomeViewModel widgetsViewModel) where TWidget : IWidgetViewModel, new()
+    {
+        var canAddWidget = widgetsViewModel.CanAddWidget(typeof(TWidget).Name);
+        var isWidgetSettingEnabled = TryGetIsWidgetSettingEnabled<TWidget>(widgetsViewModel.FolderViewViewModel);
 
-		if (canAddWidget && isWidgetSettingEnabled)
-		{
-			shouldReload = true;
-            var widget = new TWidget();
-            // CHANGE: Initialize widget with folder view view model.
-            widget.Initialize(folderViewViewModel);
-            return widget;
-		}
-		else if (!canAddWidget && !isWidgetSettingEnabled) // The widgets exists but the setting has been disabled for it
-		{
-			// Remove the widget
-			widgetsViewModel.RemoveWidget<TWidget>();
-			shouldReload = false;
-			return default;
-		}
-		else if (!isWidgetSettingEnabled)
-		{
-			shouldReload = false;
-			return default;
-		}
+        if (canAddWidget && isWidgetSettingEnabled)
+        {
+            return true;
+        }
+        // The widgets exists but the setting has been disabled for it
+        else if (!canAddWidget && !isWidgetSettingEnabled)
+        {
+            // Remove the widget
+            widgetsViewModel.RemoveWidget<TWidget>();
+            return false;
+        }
+        else if (!isWidgetSettingEnabled)
+        {
+            return false;
+        }
 
-		shouldReload = EqualityComparer<TWidget>.Default.Equals(defaultValue, default);
+        return true;
+    }
 
-		return (defaultValue);
-	}
+    public static bool TryGetIsWidgetSettingEnabled<TWidget>(IFolderViewViewModel folderViewViewModel) where TWidget : IWidgetViewModel
+    {
+        var generalSettingsService = folderViewViewModel.GetService<IGeneralSettingsService>();
 
-	public static bool TryGetIsWidgetSettingEnabled<TWidget>(IGeneralSettingsService generalSettingsService) where TWidget : IWidgetItem
-	{
-		if (typeof(TWidget) == typeof(QuickAccessWidget))
-		{
-			return generalSettingsService.ShowQuickAccessWidget;
-		}
-		if (typeof(TWidget) == typeof(DrivesWidget))
-		{
-			return generalSettingsService.ShowDrivesWidget;
-		}
-		if (typeof(TWidget) == typeof(FileTagsWidget))
-		{
-			return generalSettingsService.ShowFileTagsWidget;
-		}
-		if (typeof(TWidget) == typeof(RecentFilesWidget))
-		{
-			return generalSettingsService.ShowRecentFilesWidget;
-		}
+        if (typeof(TWidget) == typeof(QuickAccessWidgetViewModel))
+        {
+            return generalSettingsService.ShowQuickAccessWidget;
+        }
+        if (typeof(TWidget) == typeof(DrivesWidgetViewModel))
+        {
+            return generalSettingsService.ShowDrivesWidget;
+        }
+        if (typeof(TWidget) == typeof(FileTagsWidgetViewModel))
+        {
+            return generalSettingsService.ShowFileTagsWidget;
+        }
+        if (typeof(TWidget) == typeof(RecentFilesWidgetViewModel))
+        {
+            return generalSettingsService.ShowRecentFilesWidget;
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.Foundation;
 
 namespace DesktopWidgets3.Core.Contracts.Widgets;
 
@@ -24,9 +26,13 @@ public partial interface IFolderViewViewModel
 
     IntPtr WindowHandle { get; }
 
+    AppWindow AppWindow { get; }
+
+    Rect Bounds { get; }
+
     Page Page { get; }
 
-    UIElement MainWindowContent { get; }
+    UIElement Content { get; }
 
     XamlRoot XamlRoot { get; }
     

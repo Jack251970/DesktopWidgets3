@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal sealed class RunAsAnotherUserAction : BaseRunAsAction
+internal sealed class RunAsAnotherUserAction(IContentPageContext context) : BaseRunAsAction(context, "runasuser")
 {
 	public override string Label
 		=> "BaseLayoutContextFlyoutRunAsAnotherUser/Text".GetLocalizedResource();
@@ -13,8 +13,4 @@ internal sealed class RunAsAnotherUserAction : BaseRunAsAction
 
 	public override RichGlyph Glyph
 		=> new("\uE7EE");
-
-	public RunAsAnotherUserAction(IContentPageContext context) : base(context, "runasuser")
-	{
-	}
 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Windows.Input;
@@ -220,9 +220,9 @@ public sealed class StatusCenterItem : ObservableObject
 		TotalSize = totalSize;
 		IconBackgroundCircleBorderOpacity = 1;
 		AnimatedIconState = "NormalOff";
-		SpeedGraphValues = new();
-		SpeedGraphBackgroundValues = new();
-		CancelCommand = new RelayCommand(ExecuteCancelCommand);
+		SpeedGraphValues = [];
+		SpeedGraphBackgroundValues = [];
+        CancelCommand = new RelayCommand(ExecuteCancelCommand);
 		Message = "ProcessingItems".GetLocalizedResource();
 		Source = source;
 		Destination = destination;
@@ -234,105 +234,105 @@ public sealed class StatusCenterItem : ObservableObject
         }
 
         // Initialize graph background fill series
-        SpeedGraphBackgroundSeries = new()
-		{
-			new LineSeries<ObservablePoint>
-			{
-				Values = SpeedGraphBackgroundValues,
-				GeometrySize = 0d,
-				DataPadding = new(0, 0),
-				IsHoverable = false,
+        SpeedGraphBackgroundSeries =
+        [
+            new LineSeries<ObservablePoint>
+            {
+                Values = SpeedGraphBackgroundValues,
+                GeometrySize = 0d,
+                DataPadding = new(0, 0),
+                IsHoverable = false,
 					
 				// Stroke
 				Stroke = new SolidColorPaint(
-					new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B, 40),
-					0.1f),
+                    new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B, 40),
+                    0.1f),
 
 				// Fill under the stroke
 				Fill = new LinearGradientPaint(
-					new SKColor[] {
-						new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B, 40)
-					},
-					new(0f, 0f),
-					new(0f, 0f)),
-			}
-		};
+                    [
+                        new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B, 40)
+                    ],
+                    new(0f, 0f),
+                    new(0f, 0f)),
+            }
+        ];
 
-		// Initialize graph series
-		SpeedGraphSeries = new()
-		{
-			new LineSeries<ObservablePoint>
-			{
-				Values = SpeedGraphValues,
-				GeometrySize = 0d,
-				DataPadding = new(0, 0),
-				IsHoverable = false,
+        // Initialize graph series
+        SpeedGraphSeries =
+        [
+            new LineSeries<ObservablePoint>
+            {
+                Values = SpeedGraphValues,
+                GeometrySize = 0d,
+                DataPadding = new(0, 0),
+                IsHoverable = false,
 
 				// Stroke
 				Stroke = new SolidColorPaint(
-					new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B),
-					1f),
+                    new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B),
+                    1f),
 
 				// Fill under the stroke
 				Fill = new LinearGradientPaint(
-					new SKColor[] {
-						new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B, 50),
-						new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B, 10)
-					},
-					new(0f, 0f),
-					new(0f, 0f),
-					new[] { 0.1f, 1.0f }),
-			},
-		};
+                    [
+                        new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B, 50),
+                        new(accentBrush.Color.R, accentBrush.Color.G, accentBrush.Color.B, 10)
+                    ],
+                    new(0f, 0f),
+                    new(0f, 0f),
+                    [0.1f, 1.0f]),
+            },
+        ];
 
-		// Initialize X axes of the graph background fill
-		SpeedGraphBackgroundXAxes = new()
-		{
-			new Axis
-			{
-				Padding = new Padding(0, 0),
-				Labels = new List<string>(),
-				MaxLimit = 100,
-				ShowSeparatorLines = false,
-			}
-		};
+        // Initialize X axes of the graph background fill
+        SpeedGraphBackgroundXAxes =
+        [
+            new Axis
+            {
+                Padding = new Padding(0, 0),
+                Labels = new List<string>(),
+                MaxLimit = 100,
+                ShowSeparatorLines = false,
+            }
+        ];
 
-		// Initialize X axes of the graph
-		SpeedGraphXAxes = new()
-		{
-			new Axis
-			{
-				Padding = new Padding(0, 0),
-				Labels = new List<string>(),
-				MaxLimit = 100,
-				ShowSeparatorLines = false,
-			}
-		};
+        // Initialize X axes of the graph
+        SpeedGraphXAxes =
+        [
+            new Axis
+            {
+                Padding = new Padding(0, 0),
+                Labels = new List<string>(),
+                MaxLimit = 100,
+                ShowSeparatorLines = false,
+            }
+        ];
 
-		// Initialize Y axes of the graph background fill
-		SpeedGraphBackgroundYAxes = new()
-		{
-			new Axis
-			{
-				Padding = new Padding(0, 0),
-				Labels = new List<string>(),
-				ShowSeparatorLines = false,
-				MaxLimit = 100,
-			}
-		};
+        // Initialize Y axes of the graph background fill
+        SpeedGraphBackgroundYAxes =
+        [
+            new Axis
+            {
+                Padding = new Padding(0, 0),
+                Labels = new List<string>(),
+                ShowSeparatorLines = false,
+                MaxLimit = 100,
+            }
+        ];
 
-		// Initialize Y axes of the graph
-		SpeedGraphYAxes = new()
-		{
-			new Axis
-			{
-				Padding = new Padding(0, 0),
-				Labels = new List<string>(),
-				ShowSeparatorLines = false,
-			}
-		};
+        // Initialize Y axes of the graph
+        SpeedGraphYAxes =
+        [
+            new Axis
+            {
+                Padding = new Padding(0, 0),
+                Labels = new List<string>(),
+                ShowSeparatorLines = false,
+            }
+        ];
 
-		SpeedGraphXAxes[0].SharedWith = SpeedGraphBackgroundXAxes;
+        SpeedGraphXAxes[0].SharedWith = SpeedGraphBackgroundXAxes;
 		SpeedGraphBackgroundXAxes[0].SharedWith = SpeedGraphXAxes;
 
 		// Set icon and initialize string resources

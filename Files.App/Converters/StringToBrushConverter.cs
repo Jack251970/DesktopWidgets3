@@ -1,7 +1,8 @@
-﻿ // Copyright (c) 2023 Files Community
+﻿ // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
+using Microsoft.UI;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 
@@ -16,10 +17,17 @@ public sealed class StringToBrushConverter : IValueConverter
             return null;
         }
 
-        return new SolidColorBrush(strValue.ToColor());
-	}
+        try
+        {
+            return new SolidColorBrush(strValue.ToColor());
+        }
+        catch (FormatException)
+        {
+            return new SolidColorBrush(Colors.Transparent);
+        }
+    }
 
-	public object ConvertBack(object value, Type targetType, object parameter, string language)
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
 	{
 		throw new NotImplementedException();
 	}

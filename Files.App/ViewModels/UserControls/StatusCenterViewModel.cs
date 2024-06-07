@@ -1,13 +1,13 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.ViewModels.UserControls;
 
-public class StatusCenterViewModel : ObservableObject
+public sealed class StatusCenterViewModel : ObservableObject
 {
-	public ObservableCollection<StatusCenterItem> StatusCenterItems { get; } = new();
+    public ObservableCollection<StatusCenterItem> StatusCenterItems { get; } = [];
 
-	private int _AverageOperationProgressValue = 0;
+    private int _AverageOperationProgressValue = 0;
 	public int AverageOperationProgressValue
 	{
 		get => _AverageOperationProgressValue;

@@ -1,4 +1,4 @@
-<!--  Copyright (c) 2023 Files Community. Licensed under the MIT License. See the LICENSE.  -->
+<!--  Copyright (c) 2024 Files Community. Licensed under the MIT License. See the LICENSE.  -->
 <local:BaseGroupableLayoutPage
 	x:Class="Files.App.Views.Layouts.DetailsLayoutPage"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,8 +6,8 @@
 	xmlns:behaviors="using:Files.App.Data.Behaviors"
 	xmlns:converters="using:Files.App.Converters"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:datamodels="using:Files.App.Data.Models"
 	xmlns:filesystem="using:Files.App.Utils"
-	xmlns:filetags="using:Files.Core.ViewModels.FileTags"
 	xmlns:helpers="using:Files.App.Helpers"
 	xmlns:i="using:Microsoft.Xaml.Interactivity"
 	xmlns:icore="using:Microsoft.Xaml.Interactions.Core"
@@ -22,61 +22,61 @@
 	NavigationCacheMode="Enabled"
 	mc:Ignorable="d">
 
-	<i:Interaction.Behaviors>
-		<icore:EventTriggerBehavior EventName="PointerWheelChanged">
-			<icore:InvokeCommandAction Command="{x:Bind CommandsViewModel.PointerWheelChangedCommand}" />
-		</icore:EventTriggerBehavior>
-		<icore:EventTriggerBehavior EventName="PointerPressed">
-			<icore:InvokeCommandAction Command="{x:Bind CommandsViewModel.ItemPointerPressedCommand}" />
-		</icore:EventTriggerBehavior>
-	</i:Interaction.Behaviors>
+    <i:Interaction.Behaviors>
+        <icore:EventTriggerBehavior EventName="PointerWheelChanged">
+            <icore:InvokeCommandAction Command="{x:Bind CommandsViewModel.PointerWheelChangedCommand}" />
+        </icore:EventTriggerBehavior>
+        <icore:EventTriggerBehavior EventName="PointerPressed">
+            <icore:InvokeCommandAction Command="{x:Bind CommandsViewModel.ItemPointerPressedCommand}" />
+        </icore:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
 
-	<local:BaseGroupableLayoutPage.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
+    <local:BaseGroupableLayoutPage.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/DefaultGridSplitterStyle.xaml" />
-			</ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary.MergedDictionaries>
 
-			<wctconverters:BoolNegationConverter x:Key="BoolNegationConverter" />
-			<wctconverters:BoolToVisibilityConverter
+            <wctconverters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <wctconverters:BoolToVisibilityConverter
 				x:Key="NegatedBoolToVisibilityConverter"
 				FalseValue="Visible"
 				TrueValue="Collapsed" />
-			<wctconverters:EmptyObjectToObjectConverter
+            <wctconverters:EmptyObjectToObjectConverter
 				x:Key="EmptyObjectToObjectConverter"
 				EmptyValue="Collapsed"
 				NotEmptyValue="Visible" />
-			<converters:StringToBrushConverter x:Key="StringToBrushConverter" />
-			<converters:BoolToSelectionModeConverter x:Key="BoolToSelectionModeConverter" />
-			<wctconverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:StringToBrushConverter x:Key="StringToBrushConverter" />
+            <converters:BoolToSelectionModeConverter x:Key="BoolToSelectionModeConverter" />
+            <wctconverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
-			<Style
+            <Style
 				x:Name="HeaderGridSplitterStyle"
 				BasedOn="{StaticResource DefaultGridSplitterStyle}"
 				TargetType="toolkit:GridSplitter">
-				<Setter Property="Background" Value="Transparent" />
-				<Setter Property="Width" Value="12" />
-				<Setter Property="Margin" Value="0" />
-				<Setter Property="Opacity" Value="0.8" />
-				<Setter Property="Canvas.ZIndex" Value="1" />
-			</Style>
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Width" Value="12" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Opacity" Value="0.8" />
+                <Setter Property="Canvas.ZIndex" Value="1" />
+            </Style>
 
-			<Style TargetType="ListViewHeaderItem">
-				<Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
-				<Setter Property="FontSize" Value="{ThemeResource GridViewHeaderItemThemeFontSize}" />
-				<Setter Property="Background" Value="{ThemeResource GridViewHeaderItemBackground}" />
-				<Setter Property="Margin" Value="0,0,0,4" />
-				<Setter Property="Padding" Value="12,8,12,0" />
-				<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-				<Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
-				<Setter Property="VerticalContentAlignment" Value="Stretch" />
-				<Setter Property="MinHeight" Value="{ThemeResource GridViewHeaderItemMinHeight}" />
-				<Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
-				<Setter Property="HorizontalAlignment" Value="Stretch" />
-				<Setter Property="Template">
-					<Setter.Value>
-						<ControlTemplate TargetType="ListViewHeaderItem">
-							<Grid
+            <Style TargetType="ListViewHeaderItem">
+                <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                <Setter Property="FontSize" Value="{ThemeResource GridViewHeaderItemThemeFontSize}" />
+                <Setter Property="Background" Value="{ThemeResource GridViewHeaderItemBackground}" />
+                <Setter Property="Margin" Value="0,0,0,4" />
+                <Setter Property="Padding" Value="12,8,12,0" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="MinHeight" Value="{ThemeResource GridViewHeaderItemMinHeight}" />
+                <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListViewHeaderItem">
+                            <Grid
 								x:Name="HeaderItemRootGrid"
 								Margin="0,0,4,0"
 								HorizontalAlignment="Stretch"
@@ -89,12 +89,12 @@
 								PointerExited="StackPanel_PointerCanceled"
 								PointerPressed="RootPanel_PointerPressed"
 								PointerReleased="StackPanel_PointerCanceled">
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition Width="*" />
-								</Grid.ColumnDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-								<ContentPresenter
+                                <ContentPresenter
 									x:Name="ContentPresenter"
 									Grid.Column="0"
 									Margin="{TemplateBinding Padding}"
@@ -104,7 +104,7 @@
 									ContentTemplate="{TemplateBinding ContentTemplate}"
 									ContentTransitions="{TemplateBinding ContentTransitions}" />
 
-								<Rectangle
+                                <Rectangle
 									Grid.Column="1"
 									Height="1"
 									HorizontalAlignment="Stretch"
@@ -112,69 +112,86 @@
 									Stroke="{ThemeResource GridViewHeaderItemDividerStroke}"
 									StrokeThickness="0.5" />
 
-								<VisualStateManager.VisualStateGroups>
-									<VisualStateGroup x:Name="CommonStates">
-										<VisualState x:Name="Normal" />
-										<VisualState x:Name="PointerOver">
-											<Storyboard>
-												<ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderItemRootGrid" Storyboard.TargetProperty="Background">
-													<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBackgroundPointerOver}" />
-												</ObjectAnimationUsingKeyFrames>
-												<ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderItemRootGrid" Storyboard.TargetProperty="BorderBrush">
-													<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushPointerOver}" />
-												</ObjectAnimationUsingKeyFrames>
-											</Storyboard>
-											<VisualState.Setters>
-												<!--<Setter Target="ContentPresenter.(local:AnimatedIcon.State)" Value="PointerOver" />-->
-											</VisualState.Setters>
-										</VisualState>
-										<VisualState x:Name="Pressed">
-											<Storyboard>
-												<ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderItemRootGrid" Storyboard.TargetProperty="Background">
-													<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBackgroundPressed}" />
-												</ObjectAnimationUsingKeyFrames>
-												<ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderItemRootGrid" Storyboard.TargetProperty="BorderBrush">
-													<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushPressed}" />
-												</ObjectAnimationUsingKeyFrames>
-											</Storyboard>
-											<VisualState.Setters>
-												<!--<Setter Target="ContentPresenter.(local:AnimatedIcon.State)" Value="Pressed" />-->
-											</VisualState.Setters>
-										</VisualState>
-									</VisualStateGroup>
-								</VisualStateManager.VisualStateGroups>
-							</Grid>
-						</ControlTemplate>
-					</Setter.Value>
-				</Setter>
-			</Style>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderItemRootGrid" Storyboard.TargetProperty="Background">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBackgroundPointerOver}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderItemRootGrid" Storyboard.TargetProperty="BorderBrush">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushPointerOver}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="ContentPresenter.(local:AnimatedIcon.State)" Value="PointerOver" />-->
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderItemRootGrid" Storyboard.TargetProperty="Background">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBackgroundPressed}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderItemRootGrid" Storyboard.TargetProperty="BorderBrush">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushPressed}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="ContentPresenter.(local:AnimatedIcon.State)" Value="Pressed" />-->
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
-			<Style TargetType="uc:DataGridHeader">
-				<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-				<Setter Property="Margin" Value="-4,0" />
-			</Style>
+            <Style TargetType="uc:DataGridHeader">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="-4,0" />
+            </Style>
 
-			<Style
+            <Style
 				x:Key="ColumnContentTextBlock"
 				BasedOn="{StaticResource App.Theme.CaptionTextBlockStyle}"
 				TargetType="TextBlock">
-				<Setter Property="TextWrapping" Value="NoWrap" />
-				<Setter Property="TextTrimming" Value="CharacterEllipsis" />
-				<Setter Property="VerticalAlignment" Value="Center" />
-				<Setter Property="HorizontalAlignment" Value="Stretch" />
-				<Setter Property="Opacity" Value="0.6" />
-			</Style>
+                <Setter Property="TextWrapping" Value="NoWrap" />
+                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="Opacity" Value="0.6" />
+            </Style>
 
-		</ResourceDictionary>
-	</local:BaseGroupableLayoutPage.Resources>
+            <Style
+				x:Name="CompactItemContainerStyle"
+				BasedOn="{StaticResource DefaultListViewItemStyle}"
+				TargetType="ListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="MinHeight" Value="1" />
+                <Setter Property="Margin" Value="-2" />
+            </Style>
 
-	<Grid
+            <Style
+				x:Name="RegularItemContainerStyle"
+				BasedOn="{StaticResource DefaultListViewItemStyle}"
+				TargetType="ListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="MinHeight" Value="1" />
+                <Setter Property="Margin" Value="0" />
+            </Style>
+        </ResourceDictionary>
+    </local:BaseGroupableLayoutPage.Resources>
+
+    <Grid
 		x:Name="RootGrid"
 		ContextFlyout="{x:Bind BaseContextMenuFlyout}"
 		SizeChanged="RootGrid_SizeChanged">
 
-		<!--  Empty Indicator  -->
-		<uc:FolderEmptyIndicator
+        <!--  Empty Indicator  -->
+        <uc:FolderEmptyIndicator
 			Grid.Row="3"
 			Margin="0,125,0,0"
 			HorizontalAlignment="Center"
@@ -182,15 +199,15 @@
 			Canvas.ZIndex="0"
 			EmptyTextType="{x:Bind ParentShellPageInstance.FilesystemViewModel.EmptyTextType, Mode=OneWay}" />
 
-		<!--  Invalid Item Name Tip  -->
-		<TeachingTip
+        <!--  Invalid Item Name Tip  -->
+        <TeachingTip
 			x:Name="FileNameTeachingTip"
 			CloseButtonContent="{helpers:ResourceString Name=OK}"
 			PreferredPlacement="Auto"
 			Subtitle="{helpers:ResourceString Name=FileNameTeachingTip/Subtitle}"
 			Visibility="Collapsed" />
 
-		<!--  Semantic Zooming  -->
+        <!--  Semantic Zooming  -->
         <SemanticZoom
 			x:Name="RootGridZoom"
 			CanChangeViews="{x:Bind CollectionViewSource.IsSourceGrouped, Mode=OneWay}"
@@ -218,6 +235,7 @@
 					FocusVisualSecondaryThickness="0"
 					IsDoubleTapEnabled="True"
 					IsTabStop="True"
+					ItemContainerTransitions="{x:Null}"
 					ItemsSource="{x:Bind CollectionViewSource.View, Mode=OneWay}"
 					Loaded="FileList_Loaded"
 					LosingFocus="FileList_LosingFocus"
@@ -228,13 +246,6 @@
 					SelectionMode="Extended"
 					Tapped="FileList_ItemTapped"
 					Visibility="{x:Bind FolderSettings.IsLayoutModeChanging, Converter={StaticResource NegatedBoolToVisibilityConverter}, Mode=OneWay}">
-
-                    <!--  ListView Item Transitions  -->
-                    <ListView.ItemContainerTransitions>
-                        <TransitionCollection>
-                            <AddDeleteThemeTransition />
-                        </TransitionCollection>
-                    </ListView.ItemContainerTransitions>
 
                     <!--  ListView Header  -->
                     <ListView.Header>
@@ -883,22 +894,20 @@
                         <DataTemplate x:DataType="filesystem:ListedItem">
                             <UserControl>
                                 <StackPanel
+									Height="{Binding RowHeight, ElementName=PageRoot, Mode=OneWay}"
 									HorizontalAlignment="Stretch"
 									AutomationProperties.Name="{x:Bind Name, Mode=OneWay}"
 									IsRightTapEnabled="True"
 									Loaded="StackPanel_Loaded"
 									Orientation="Horizontal">
                                     <!--  Item Thumbnail  -->
-                                    <Grid
-										Width="24"
-										HorizontalAlignment="Left"
-										VerticalAlignment="Stretch">
+                                    <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch">
 
                                         <!--  Thumbnail  -->
                                         <Grid
 											x:Name="IconBox"
-											Width="20"
-											Height="Auto"
+											Width="24"
+											Height="24"
 											HorizontalAlignment="Center"
 											VerticalAlignment="Center"
 											AutomationProperties.Name="{helpers:ResourceString Name=FileBrowserThumbnailIconColumnGrid/AutomationProperties/Name}"
@@ -918,21 +927,15 @@
 													Source="{x:Bind FileImage, Mode=OneWay}"
 													Stretch="Uniform" />
                                             </ContentPresenter>
-                                            <Border
+
+                                            <!--  Loading indicator  -->
+                                            <uc:Shimmer
 												x:Name="TypeUnknownGlyph"
-												Width="20"
-												Height="20"
-												HorizontalAlignment="Stretch"
-												VerticalAlignment="Stretch"
-												x:Load="{x:Bind NeedsPlaceholderGlyph, Mode=OneWay}"
-												Background="{ThemeResource SystemChromeHighColor}"
-												CornerRadius="4" />
-                                            <FontIcon
-												x:Name="WebShortcutGlyph"
-												x:Load="{x:Bind LoadWebShortcutGlyph, Mode=OneWay}"
-												Glyph="&#xE71B;" />
+												Margin="2"
+												x:Load="{x:Bind NeedsPlaceholderGlyph, Mode=OneWay}" />
+
                                             <Image
-												x:Name="_IconOverlay"
+												x:Name="IconOverlay"
 												Width="16"
 												Height="16"
 												Margin="2"
@@ -954,7 +957,7 @@
 												Height="8"
 												HorizontalAlignment="Right"
 												VerticalAlignment="Bottom"
-												x:Load="{x:Bind IsElevated}"
+												x:Load="{x:Bind IsElevationRequired}"
 												Source="{x:Bind ShieldIcon, Mode=OneWay}"
 												Stretch="Uniform" />
                                         </Grid>
@@ -1098,7 +1101,7 @@
                                                 <StackLayout Orientation="Horizontal" Spacing="4" />
                                             </ItemsRepeater.Layout>
                                             <ItemsRepeater.ItemTemplate>
-                                                <DataTemplate x:DataType="filetags:TagViewModel">
+                                                <DataTemplate x:DataType="datamodels:TagViewModel">
                                                     <UserControl PointerEntered="FileTag_PointerEntered" PointerExited="FileTag_PointerExited">
                                                         <StackPanel
 															x:Name="TagPill"
@@ -1153,7 +1156,7 @@
 
                                     <!--  Item Path  -->
                                     <TextBlock
-										x:Name="_ItemPath"
+										x:Name="ItemPath"
 										Width="{Binding ColumnsViewModel.PathColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
 										Padding="10,0,0,0"
 										HorizontalAlignment="Stretch"
@@ -1194,7 +1197,7 @@
 
                                     <!--  Item Modified Date  -->
                                     <TextBlock
-										x:Name="_ItemDateModified"
+										x:Name="ItemDateModified"
 										Width="{Binding ColumnsViewModel.DateModifiedColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
 										Padding="10,0,0,0"
 										HorizontalAlignment="Stretch"
@@ -1207,7 +1210,7 @@
 
                                     <!--  Item Created Date  -->
                                     <TextBlock
-										x:Name="_ItemDateCreated"
+										x:Name="ItemDateCreated"
 										Width="{Binding ColumnsViewModel.DateCreatedColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
 										Padding="10,0,0,0"
 										HorizontalAlignment="Stretch"
@@ -1220,7 +1223,7 @@
 
                                     <!--  Item Type  -->
                                     <TextBlock
-										x:Name="_ItemType"
+										x:Name="ItemType"
 										Width="{Binding ColumnsViewModel.ItemTypeColumn.LengthIncludingGridSplitter.Value, ElementName=PageRoot, Mode=OneWay}"
 										Padding="10,0,0,0"
 										HorizontalAlignment="Stretch"
@@ -1267,7 +1270,7 @@
                                             <VisualState x:Name="ShowCheckbox">
                                                 <VisualState.Setters>
                                                     <Setter Target="SelectionCheckbox.Opacity" Value="1" />
-                                                    <Setter Target="IconBox.Visibility" Value="Collapsed" />
+                                                    <Setter Target="IconBox.Opacity" Value="0" />
                                                 </VisualState.Setters>
                                             </VisualState>
                                         </VisualStateGroup>
@@ -1278,9 +1281,9 @@
                     </ListView.ItemTemplate>
 
                     <!--  ListView Sticky Header  -->
-                    <!--<i:Interaction.Behaviors>
-						<behaviors:StickyHeaderBehavior />
-					</i:Interaction.Behaviors>-->
+                    <i:Interaction.Behaviors>
+                        <behaviors:StickyHeaderBehavior />
+                    </i:Interaction.Behaviors>
 
                     <!--  ListView Control Styles  -->
                     <ListView.Resources>
@@ -1415,16 +1418,6 @@
                         </GroupStyle>
                     </ListView.GroupStyle>
 
-                    <!--  ListView Control Property Customizing  -->
-                    <ListView.ItemContainerStyle>
-                        <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            <Setter Property="MinHeight" Value="1" />
-                            <Setter Property="Margin" Value="{ThemeResource ListItemMargin}" />
-                            <Setter Property="Height" Value="{ThemeResource ListItemHeight}" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
-
                     <!--  ListView Item Displaying Style  -->
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -1510,8 +1503,8 @@
         </SemanticZoom>
 
         <!--  Selector  -->
-		<Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-			<Rectangle
+        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Rectangle
 				Name="SelectionRectangle"
 				Canvas.Left="0"
 				Canvas.Top="0"
@@ -1521,7 +1514,7 @@
 				Opacity=".5"
 				Stroke="{ThemeResource SystemAccentColorLight1}"
 				StrokeThickness="1" />
-		</Canvas>
+        </Canvas>
 
-	</Grid>
+    </Grid>
 </local:BaseGroupableLayoutPage>

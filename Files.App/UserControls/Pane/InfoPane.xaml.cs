@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Xaml;
@@ -30,6 +30,8 @@ public sealed partial class InfoPane : UserControl
         set => SetValue(CommandsProperty, value);
     }
 
+    private IContentPageContext ContentPageContext { get; set; } = null!;
+
     // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(nameof(ViewModel), typeof(InfoPaneViewModel), typeof(InfoPane), new PropertyMetadata(null));
@@ -44,16 +46,18 @@ public sealed partial class InfoPane : UserControl
 	public InfoPane()
 	{
 		InitializeComponent();
-		/*PaneSettingsService = DependencyExtensions.GetService<IInfoPaneSettingsService>();
+        /*PaneSettingsService = DependencyExtensions.GetService<IInfoPaneSettingsService>();
 		Commands = DependencyExtensions.GetService<ICommandManager>();
-		ViewModel = DependencyExtensions.GetService<InfoPaneViewModel>();*/
-	}
+		ViewModel = DependencyExtensions.GetService<InfoPaneViewModel>();
+        ContentPageContext = DependencyExtensions.GetService<IContentPageContext>()*/
+    }
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         PaneSettingsService = folderViewViewModel.GetService<IInfoPaneSettingsService>();
         Commands = folderViewViewModel.GetService<ICommandManager>();
         ViewModel = folderViewViewModel.GetService<InfoPaneViewModel>();
+        ContentPageContext = folderViewViewModel.GetService<IContentPageContext>();
     }
 
 	public void UpdatePosition(double panelWidth, double panelHeight)
@@ -94,7 +98,7 @@ public sealed partial class InfoPane : UserControl
 		VisualStateManager.GoToState((UserControl)sender, "Normal", true);
 	}
 
-	private class ObservableContext : ObservableObject
+	private sealed class ObservableContext : ObservableObject
 	{
 		private bool isHorizontal = false;
 		public bool IsHorizontal
@@ -103,4 +107,15 @@ public sealed partial class InfoPane : UserControl
 			set => SetProperty(ref isHorizontal, value);
 		}
 	}
+
+    private void TagItem_Tapped(object sender, TappedRoutedEventArgs e)
+    {
+        var tagName = ((sender as StackPanel)?.Children[1] as TextBlock)?.Text;
+        if (tagName is null)
+        {
+            return;
+        }
+
+        ContentPageContext.ShellPage?.SubmitSearch($"tag:{tagName}");
+    }
 }

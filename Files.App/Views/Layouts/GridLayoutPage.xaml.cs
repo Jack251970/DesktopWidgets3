@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.UI;
@@ -24,29 +24,35 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
 	// Fields
 
 	private uint currentIconSize;
+    private volatile bool shouldSetVerticalScrollMode;
 
-	// Properties
+    // Properties
 
-	protected override uint IconSize => currentIconSize;
-	protected override ListViewBase ListViewBase => FileList;
+    public ScrollViewer? ContentScroller { get; private set; }
+
+    protected override ListViewBase ListViewBase => FileList;
 	protected override SemanticZoom RootZoom => RootGridZoom;
 
     /// <summary>
-    /// Width of the GridItem in the selected layout.
+    /// Row height in the List View layout
     /// </summary>
-    public int GridViewItemWidth =>
-        FolderSettings!.LayoutMode == FolderLayoutModes.ListView ||
-        FolderSettings.LayoutMode == FolderLayoutModes.TilesView
-            ? 260
-            : FolderSettings.GridViewSize;
+    public int RowHeightListView => LayoutSizeKindHelper.GetListViewRowHeight(UserSettingsService.LayoutSettingsService.ListViewSize);
+
+    /// <summary>
+    /// Item width in the Tiles View layout
+    /// </summary>
+    public int ItemWidthTilesView => LayoutSizeKindHelper.GetTilesViewItemWidth(UserSettingsService.LayoutSettingsService.TilesViewSize);
+
+    /// <summary>
+    /// Item width in the Grid View layout
+    /// </summary>
+    public int ItemWidthGridView => LayoutSizeKindHelper.GetGridViewItemWidth(UserSettingsService.LayoutSettingsService.GridViewSize);
 
     public bool IsPointerOver
 	{
 		get => (bool)GetValue(IsPointerOverProperty);
 		set => SetValue(IsPointerOverProperty, value);
 	}
-
-    private IAppearanceSettingsService AppearanceSettingsService { get; set; } = null!;
 
     public static readonly DependencyProperty IsPointerOverProperty =
 		DependencyProperty.Register(
@@ -73,7 +79,19 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
 		FileList.ScrollIntoView(e);
 	}
 
-	protected override void ItemManipulationModel_FocusSelectedItemsInvoked(object? sender, EventArgs e)
+    protected override void ItemManipulationModel_ScrollToTopInvoked(object? sender, EventArgs e)
+    {
+        if (FolderSettings?.LayoutMode is FolderLayoutModes.ListView)
+        {
+            ContentScroller?.ChangeView(0, null, null, true);
+        }
+        else
+        {
+            ContentScroller?.ChangeView(null, 0, null, true);
+        }
+    }
+
+    protected override void ItemManipulationModel_FocusSelectedItemsInvoked(object? sender, EventArgs e)
 	{
 		if (SelectedItems!.Count != 0)
 		{
@@ -109,20 +127,18 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
 
         base.OnNavigatedTo(eventArgs);
 
-        // CHANGE: Initialize related services.
-        AppearanceSettingsService = FolderViewViewModel.GetService<IAppearanceSettingsService>();
+        currentIconSize = FolderSettings!.GetRoundedIconSize();
 
-		currentIconSize = FolderSettings!.GetIconSize();
-		FolderSettings.GroupOptionPreferenceUpdated -= ZoomIn;
+        FolderSettings.GroupOptionPreferenceUpdated -= ZoomIn;
 		FolderSettings.GroupOptionPreferenceUpdated += ZoomIn;
 		FolderSettings.LayoutModeChangeRequested -= FolderSettings_LayoutModeChangeRequested;
 		FolderSettings.LayoutModeChangeRequested += FolderSettings_LayoutModeChangeRequested;
-        AppearanceSettingsService.PropertyChanged -= AppearanceSettingsService_PropertyChanged;
-        AppearanceSettingsService.PropertyChanged += AppearanceSettingsService_PropertyChanged;
+        UserSettingsService.LayoutSettingsService.PropertyChanged += LayoutSettingsService_PropertyChanged;
 
         // Set ItemTemplate
         SetItemTemplate();
-		FileList.ItemsSource ??= ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders;
+        SetItemContainerStyle();
+        FileList.ItemsSource ??= ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders;
 
 		var parameters = (NavigationArguments)eventArgs.Parameter;
 		if (parameters.IsLayoutSwitch)
@@ -131,24 +147,53 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
         }
     }
 
-    private void AppearanceSettingsService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(IAppearanceSettingsService.UseCompactStyles))
-        {
-            SetItemContainerStyle();
-        }
-    }
-
     protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-	{
-		base.OnNavigatingFrom(e);
+    {
+        base.OnNavigatingFrom(e);
 
         if (FolderSettings != null)
         {
             FolderSettings.LayoutModeChangeRequested -= FolderSettings_LayoutModeChangeRequested;
-            FolderSettings.GridViewSizeChangeRequested -= FolderSettings_GridViewSizeChangeRequested;
         }
-        AppearanceSettingsService.PropertyChanged -= AppearanceSettingsService_PropertyChanged;
+
+        UserSettingsService.LayoutSettingsService.PropertyChanged -= LayoutSettingsService_PropertyChanged;
+    }
+
+    private void LayoutSettingsService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Get current scroll position
+        var previousHorizontalOffset = ContentScroller?.HorizontalOffset;
+        var previousVerticalOffset = ContentScroller?.VerticalOffset;
+
+        if (e.PropertyName == nameof(ILayoutSettingsService.ListViewSize))
+        {
+            NotifyPropertyChanged(nameof(RowHeightListView));
+
+            // Update the container style to match the item size
+            SetItemContainerStyle();
+
+            FolderSettings_IconHeightChanged();
+        }
+        if (e.PropertyName == nameof(ILayoutSettingsService.TilesViewSize))
+        {
+            NotifyPropertyChanged(nameof(ItemWidthTilesView));
+
+            // Update the container style to match the item size
+            SetItemContainerStyle();
+            FolderSettings_IconHeightChanged();
+        }
+        if (e.PropertyName == nameof(ILayoutSettingsService.GridViewSize))
+        {
+            NotifyPropertyChanged(nameof(ItemWidthGridView));
+
+            // Update the container style to match the item size
+            SetItemContainerStyle();
+
+            FolderSettings_IconHeightChanged();
+        }
+
+        // Restore correct scroll position
+        ContentScroller?.ChangeView(previousHorizontalOffset, previousVerticalOffset, null);
     }
 
     private async void FolderSettings_LayoutModeChangeRequested(object? sender, LayoutModeEventArgs e)
@@ -159,9 +204,10 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
         {
             // Set ItemTemplate
             SetItemTemplate();
+            SetItemContainerStyle();
 
-			var requestedIconSize = FolderSettings.GetIconSize();
-			if (requestedIconSize != currentIconSize)
+            var requestedIconSize = FolderSettings.GetRoundedIconSize();
+            if (requestedIconSize != currentIconSize)
 			{
 				currentIconSize = requestedIconSize;
 				await ReloadItemIconsAsync();
@@ -171,58 +217,54 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
 
 	private void SetItemTemplate()
 	{
-        switch (FolderSettings!.LayoutMode)
+        var newFileListStyle = FolderSettings!.LayoutMode switch
         {
-            case FolderLayoutModes.ListView:
-                FileList.ItemTemplate = ListViewBrowserTemplate;
-                FileList.ItemsPanel = (ItemsPanelTemplate)Resources["VerticalItemsTemplate"];
-                break;
-            case FolderLayoutModes.TilesView:
-                FileList.ItemTemplate = TilesBrowserTemplate;
-                FileList.ItemsPanel = (ItemsPanelTemplate)Resources["HorizontalItemsTemplate"];
-                break;
-            default:
-                FileList.ItemTemplate = GridViewBrowserTemplate;
-                FileList.ItemsPanel = (ItemsPanelTemplate)Resources["HorizontalItemsTemplate"];
-                break;
+            FolderLayoutModes.ListView => (Style)Resources["VerticalLayoutGridView"],
+            FolderLayoutModes.TilesView => (Style)Resources["HorizontalLayoutGridView"],
+            _ => (Style)Resources["HorizontalLayoutGridView"]
+        };
+
+        if (FileList.Style != newFileListStyle)
+        {
+            var oldSource = FileList.ItemsSource;
+            FileList.ItemsSource = null;
+            FileList.Style = newFileListStyle;
+            FileList.ItemsSource = oldSource;
         }
 
-        SetItemContainerStyle();
-        SetItemMinWidth();
+        shouldSetVerticalScrollMode = true;
 
-        // Set GridViewSize event handlers
-        if (FolderSettings.LayoutMode == FolderLayoutModes.ListView)
+        FileList.ItemTemplate = FolderSettings.LayoutMode switch
         {
-            FolderSettings.GridViewSizeChangeRequested -= FolderSettings_GridViewSizeChangeRequested;
-            FolderSettings.GridViewSizeChangeRequested += FolderSettings_GridViewSizeChangeRequested;
-        }
-        else if (FolderSettings.LayoutMode == FolderLayoutModes.TilesView)
-        {
-            FolderSettings.GridViewSizeChangeRequested -= FolderSettings_GridViewSizeChangeRequested;
-            FolderSettings.GridViewSizeChangeRequested += FolderSettings_GridViewSizeChangeRequested;
-        }
-        else if (FolderSettings.LayoutMode == FolderLayoutModes.GridView)
-        {
-            FolderSettings.GridViewSizeChangeRequested -= FolderSettings_GridViewSizeChangeRequested;
-            FolderSettings.GridViewSizeChangeRequested += FolderSettings_GridViewSizeChangeRequested;
-        }
+            FolderLayoutModes.ListView => ListViewBrowserTemplate,
+            FolderLayoutModes.TilesView => TilesBrowserTemplate,
+            _ => GridViewBrowserTemplate,
+        };
     }
 
     private void SetItemContainerStyle()
     {
-        if (FolderSettings?.LayoutMode == FolderLayoutModes.ListView && AppearanceSettingsService.UseCompactStyles)
+        if (FolderSettings?.LayoutMode == FolderLayoutModes.ListView && UserSettingsService.LayoutSettingsService.ListViewSize == ListViewSizeKind.Compact)
         {
+            // Toggle style to force item size to update
+            FileList.ItemContainerStyle = DefaultItemContainerStyle;
+
+            // Set correct style
             FileList.ItemContainerStyle = CompactListItemContainerStyle;
         }
         else
         {
+            // Toggle style to force item size to update
+            FileList.ItemContainerStyle = CompactListItemContainerStyle;
+
+            // Set correct style
             FileList.ItemContainerStyle = DefaultItemContainerStyle;
         }
     }
 
-    private void SetItemMinWidth()
-	{
-        NotifyPropertyChanged(nameof(GridViewItemWidth));
+    private void FileList_Loaded(object sender, RoutedEventArgs e)
+    {
+        ContentScroller = FileList.FindDescendant<ScrollViewer>(x => x.Name == "ScrollViewer");
     }
 
     protected override void FileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -434,7 +476,7 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
 				{
 					if (folder is not null)
                     {
-                        await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, folder.ItemPath);
+                        await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, folder.ItemPath, false);
                     }
                 }
 			}
@@ -481,23 +523,21 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
 	protected override bool CanGetItemFromElement(object element)
 		=> element is GridViewItem;
 
-	private async void FolderSettings_GridViewSizeChangeRequested(object? sender, EventArgs e)
-	{
-		SetItemMinWidth();
+    private async void FolderSettings_IconHeightChanged()
+    {
+        // Get new icon size
+        var requestedIconSize = FolderSettings!.GetRoundedIconSize();
 
-		// Get new icon size
-		var requestedIconSize = FolderSettings!.GetIconSize();
+        // Prevents reloading icons when the icon size hasn't changed
+        if (requestedIconSize != currentIconSize)
+        {
+            // Update icon size before refreshing
+            currentIconSize = requestedIconSize;
+            await ReloadItemIconsAsync();
+        }
+    }
 
-		// Prevents reloading icons when the icon size hasn't changed
-		if (requestedIconSize != currentIconSize)
-		{
-			// Update icon size before refreshing
-			currentIconSize = requestedIconSize;
-			await ReloadItemIconsAsync();
-		}
-	}
-
-	private async Task ReloadItemIconsAsync()
+    private async Task ReloadItemIconsAsync()
 	{
 		if (ParentShellPageInstance is null)
         {
@@ -511,9 +551,9 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
 			listedItem.ItemPropertiesInitialized = false;
             if (FileList.ContainerFromItem(listedItem) is not null)
             {
-                await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemPropertiesAsync(listedItem, currentIconSize);
+                await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemPropertiesAsync(listedItem);
             }
-		}
+        }
 
 		if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None)
 		{
@@ -675,6 +715,21 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
         {
             itemContainer.ContextFlyout = ItemContextMenuFlyout;
         }
+
+        // Set VerticalScrollMode after an item has been loaded (#14785)
+        if (shouldSetVerticalScrollMode)
+        {
+            shouldSetVerticalScrollMode = false;
+
+            if (FolderSettings?.LayoutMode is FolderLayoutModes.ListView)
+            {
+                ScrollViewer.SetVerticalScrollMode(FileList, ScrollMode.Disabled);
+            }
+            else
+            {
+                ScrollViewer.SetVerticalScrollMode(FileList, ScrollMode.Enabled);
+            }
+        }
     }
 
 	private void Grid_PointerEntered(object sender, PointerRoutedEventArgs e)
@@ -701,7 +756,63 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
 		UpdateCheckboxVisibility((sender as FrameworkElement)!.FindAscendant<GridViewItem>()!, false);
 	}
 
-	private void UpdateCheckboxVisibility(object sender, bool isPointerOver)
+    // To avoid crashes, disable scrolling when drag-and-drop if grouped. (#14484)
+    private bool ShouldDisableScrollingWhenDragAndDrop =>
+        FolderSettings?.LayoutMode is FolderLayoutModes.GridView or FolderLayoutModes.TilesView &&
+        (ParentShellPageInstance?.FilesystemViewModel.FilesAndFolders.IsGrouped ?? false);
+
+    protected override void FileList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+    {
+        if (ShouldDisableScrollingWhenDragAndDrop)
+        {
+            ScrollViewer.SetVerticalScrollMode(FileList, ScrollMode.Disabled);
+        }
+
+        base.FileList_DragItemsStarting(sender, e);
+
+        if (ShouldDisableScrollingWhenDragAndDrop && e.Cancel)
+        {
+            ScrollViewer.SetVerticalScrollMode(FileList, ScrollMode.Enabled);
+        }
+    }
+
+    private void ItemsLayout_DragEnter(object sender, DragEventArgs e)
+    {
+        if (ShouldDisableScrollingWhenDragAndDrop)
+        {
+            ScrollViewer.SetVerticalScrollMode(FileList, ScrollMode.Disabled);
+        }
+    }
+
+    private void ItemsLayout_DragLeave(object sender, DragEventArgs e)
+    {
+        if (ShouldDisableScrollingWhenDragAndDrop)
+        {
+            ScrollViewer.SetVerticalScrollMode(FileList, ScrollMode.Enabled);
+        }
+    }
+
+    protected override void ItemsLayout_Drop(object sender, DragEventArgs e)
+    {
+        if (ShouldDisableScrollingWhenDragAndDrop)
+        {
+            ScrollViewer.SetVerticalScrollMode(FileList, ScrollMode.Enabled);
+        }
+
+        base.ItemsLayout_Drop(sender, e);
+    }
+
+    protected override void Item_Drop(object sender, DragEventArgs e)
+    {
+        if (ShouldDisableScrollingWhenDragAndDrop)
+        {
+            ScrollViewer.SetVerticalScrollMode(FileList, ScrollMode.Enabled);
+        }
+
+        base.Item_Drop(sender, e);
+    }
+
+    private void UpdateCheckboxVisibility(object sender, bool isPointerOver)
 	{
 		if (sender is GridViewItem control && control.FindDescendant<UserControl>() is UserControl userControl)
 		{

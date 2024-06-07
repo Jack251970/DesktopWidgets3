@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.Extensions.Logging;
@@ -8,9 +8,9 @@ using ByteSize = ByteSizeLib.ByteSize;
 
 namespace Files.App.ViewModels.Properties;
 
-#pragma warning disable CA2254 // Template should be a static or read-only constant
+#pragma warning disable CA2254 // Template should be a static expression
 
-internal class FolderProperties : BaseProperties
+internal sealed class FolderProperties : BaseProperties
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -65,9 +65,9 @@ internal class FolderProperties : BaseProperties
 				ViewModel.ShortcutItemOpenLinkCommand = new RelayCommand(async () =>
 				{
 					await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(
-						() => NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(ViewModel.ShortcutItemPath))));
-				},
-				() =>
+                        () => NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(ViewModel.ShortcutItemPath)), true));
+                },
+                () =>
 				{
 					return !string.IsNullOrWhiteSpace(ViewModel.ShortcutItemPath);
 				});
@@ -77,18 +77,23 @@ internal class FolderProperties : BaseProperties
 
 	public async override Task GetSpecialPropertiesAsync()
 	{
-		ViewModel.IsHidden = NativeFileOperationsHelper.HasFileAttribute(
-			Item.ItemPath, FileAttributes.Hidden);
+        ViewModel.IsHidden = Win32Helper.HasFileAttribute(
+                Item.ItemPath, FileAttributes.Hidden);
 
-		var fileIconData = await FileThumbnailHelper.LoadIconFromPathAsync(Item.ItemPath, 80, Windows.Storage.FileProperties.ThumbnailMode.SingleItem, Windows.Storage.FileProperties.ThumbnailOptions.UseCurrentScale, true);
-		if (fileIconData is not null)
-		{
-			ViewModel.IconData = fileIconData;
-			ViewModel.LoadFolderGlyph = false;
-			ViewModel.LoadFileIcon = true;
-		}
+        var result = await FileThumbnailHelper.GetIconAsync(
+            Item.ItemPath,
+            Constants.ShellIconSizes.ExtraLarge,
+            true,
+            IconOptions.UseCurrentScale);
 
-		if (Item.IsShortcut)
+        if (result is not null)
+        {
+            ViewModel.IconData = result;
+            ViewModel.LoadFolderGlyph = false;
+            ViewModel.LoadFileIcon = true;
+        }
+
+        if (Item.IsShortcut)
 		{
 			ViewModel.ItemSizeVisibility = true;
 			ViewModel.ItemSize = Item.FileSizeBytes.ToLongSizeString();
@@ -96,8 +101,8 @@ internal class FolderProperties : BaseProperties
 			// Only load the size for items on the device
 			if (Item.SyncStatusUI.SyncStatus is not CloudDriveSyncStatus.FileOnline and not CloudDriveSyncStatus.FolderOnline)
             {
-                ViewModel.ItemSizeOnDisk = NativeFileOperationsHelper.GetFileSizeOnDisk(Item.ItemPath)?.ToLongSizeString() ??
-					string.Empty;
+                ViewModel.ItemSizeOnDisk = Win32Helper.GetFileSizeOnDisk(Item.ItemPath)?.ToLongSizeString() ??
+                    string.Empty;
             }
 
             ViewModel.ItemCreatedTimestampReal = Item.ItemDateCreatedReal;
@@ -130,8 +135,8 @@ internal class FolderProperties : BaseProperties
         }
 		else if (Item.ItemPath.Equals(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
 		{
-			var (_, NumItems, BinSize) = Win32Shell.QueryRecycleBin();
-			if (BinSize is long binSize)
+			var (_, NumItems, BinSize) = Win32Helper.QueryRecycleBin();
+            if (BinSize is long binSize)
 			{
 				ViewModel.ItemSizeBytes = binSize;
 				ViewModel.ItemSize = ByteSize.FromBytes(binSize).ToString();
@@ -207,17 +212,18 @@ internal class FolderProperties : BaseProperties
 		switch (e.PropertyName)
 		{
 			case "IsHidden":
-				if (ViewModel.IsHidden)
-				{
-					NativeFileOperationsHelper.SetFileAttribute(
-						Item.ItemPath, FileAttributes.Hidden);
-				}
-				else
-				{
-					NativeFileOperationsHelper.UnsetFileAttribute(
-						Item.ItemPath, FileAttributes.Hidden);
-				}
-				break;
+                if (ViewModel.IsHidden is not null)
+                {
+                    if ((bool)ViewModel.IsHidden)
+                    {
+                        Win32Helper.SetFileAttribute(Item.ItemPath, FileAttributes.Hidden);
+                    }
+                    else
+                    {
+                        Win32Helper.UnsetFileAttribute(Item.ItemPath, FileAttributes.Hidden);
+                    }
+                }
+                break;
 
 			case "ShortcutItemPath":
 			case "ShortcutItemWorkingDir":

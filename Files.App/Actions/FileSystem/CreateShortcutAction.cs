@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 namespace Files.App.Actions;
 
-internal class CreateShortcutAction : BaseUIAction, IAction
+internal sealed class CreateShortcutAction : BaseUIAction, IAction
 {
 	private readonly IContentPageContext context;
 
@@ -28,7 +28,7 @@ internal class CreateShortcutAction : BaseUIAction, IAction
         context.PropertyChanged += Context_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
 		return UIFilesystemHelpers.CreateShortcutAsync(FolderViewViewModel, context.ShellPage, context.SelectedItems);
 	}

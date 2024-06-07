@@ -1,7 +1,8 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using DesktopWidgets3.Core.Views.Windows;
+using Files.App.Views.Properties;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -10,20 +11,20 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Windows.ApplicationModel.Resources;
 using System.Collections.Concurrent;
 using Windows.Graphics;
+using Windows.Win32;
 
 namespace Files.App.Utils.Storage;
-
-#pragma warning disable CS0618 // Type or member is obsolete
-
 /// <summary>
 /// Represents a helper class that helps users open and handle item properties window
 /// </summary>
 public static class FilePropertiesHelpers
 {
-	/// <summary>
-	/// Whether LayoutDirection (FlowDirection) is set to right-to-left (RTL)
-	/// </summary>
-	public static readonly bool FlowDirectionSettingIsRightToLeft =
+    private static IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetService<IAppThemeModeService>();
+
+    /// <summary>
+    /// Whether LayoutDirection (FlowDirection) is set to right-to-left (RTL)
+    /// </summary>
+    public static readonly bool FlowDirectionSettingIsRightToLeft =
 		new ResourceManager().CreateResourceContext().QualifierValues["LayoutDirection"] == "RTL";
 
 	/// <summary>
@@ -35,7 +36,7 @@ public static class FilePropertiesHelpers
 		=> WinRT.Interop.WindowNative.GetWindowHandle(w);
 
 	private static TaskCompletionSource? PropertiesWindowsClosingTCS;
-	private static readonly BlockingCollection<WinUIEx.WindowEx> WindowCache = new();
+	private static readonly BlockingCollection<WinUIEx.WindowEx> WindowCache = [];
 
 	/// <summary>
 	/// Open properties window
@@ -88,15 +89,14 @@ public static class FilePropertiesHelpers
 		OpenPropertiesWindow(folderViewViewModel, item, associatedInstance);
 	}
 
-	/// <summary>
-	/// Open properties window with an explicitly specified item
-	/// </summary>
-	/// <param name="item">An item to view properties</param>
-	/// <param name="associatedInstance">Associated main window instance</param>
-	public static async void OpenPropertiesWindow(IFolderViewViewModel folderViewViewModel, object item, IShellPage associatedInstance)
-	{
-		var applicationService = DependencyExtensions.GetService<IApplicationService>();
-
+    /// <summary>
+    /// Open properties window with an explicitly specified item
+    /// </summary>
+    /// <param name="item">An item to view properties</param>
+    /// <param name="associatedInstance">Associated main window instance</param>
+    /// <param name="defaultPage">The page to show when opening the window</param>
+    public static async void OpenPropertiesWindow(IFolderViewViewModel folderViewViewModel, object item, IShellPage associatedInstance, PropertiesNavigationViewItemType defaultPage = PropertiesNavigationViewItemType.General)
+    {
 		if (item is null)
         {
             return;
@@ -104,10 +104,10 @@ public static class FilePropertiesHelpers
 
         var frame = new Frame
 		{
-			RequestedTheme = ThemeHelper.RootTheme
-		};
+            RequestedTheme = AppThemeModeService.AppThemeMode
+        };
 
-		WinUIEx.WindowEx propertiesWindow;
+        WinUIEx.WindowEx propertiesWindow;
 		if (!WindowCache.TryTake(out propertiesWindow!))
 		{
             propertiesWindow = await WindowsExtensions.GetWindow<BlankWindow>(ActivationType.Blank);
@@ -129,10 +129,10 @@ public static class FilePropertiesHelpers
 		appWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
 		appWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
 
-		appWindow.SetIcon(applicationService.AppIcoPath);
+        appWindow.SetIcon(AppLifecycleHelper.AppIconPath);
 
         frame.Navigate(
-			typeof(Views.Properties.MainPropertiesPage),
+			typeof(MainPropertiesPage),
 			new PropertiesPageNavigationParameter
 			{
                 FolderViewViewModel = folderViewViewModel,
@@ -142,8 +142,8 @@ public static class FilePropertiesHelpers
 			},
 			new SuppressNavigationTransitionInfo());
 
-		// WINUI3: Move window to cursor position
-		InteropHelpers.GetCursorPos(out var pointerPosition);
+        // WINUI3: Move window to cursor position
+        PInvoke.GetCursorPos(out var pointerPosition);
 		var displayArea = DisplayArea.GetFromPoint(new PointInt32(pointerPosition.X, pointerPosition.Y), DisplayAreaFallback.Nearest);
 		var appWindowPos = new PointInt32
 		{
@@ -160,7 +160,9 @@ public static class FilePropertiesHelpers
 
         appWindow.Move(appWindowPos);
 		appWindow.Show();
-	}
+
+        (frame.Content as MainPropertiesPage)?.TryNavigateToPage(defaultPage);
+    }
 
 	// Destruction of Window objects seems to cause access violation. (#12057)
 	// So instead of destroying the Window object, cache it and reuse it as a workaround.

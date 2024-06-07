@@ -55,7 +55,7 @@ public static class FileSecurityHelpers
 		// Run PowerShell as Admin
 		if (result.Failed)
 		{
-			return Win32API.RunPowershellCommand(
+			return Win32Helper.RunPowershellCommand(
 				$"-command \"try {{ $path = '{path}'; $ID = new-object System.Security.Principal.SecurityIdentifier('{sid}'); $acl = get-acl $path; $acl.SetOwner($ID); set-acl -path $path -aclObject $acl }} catch {{ exit 1; }}\"",
 				true);
 		}
@@ -102,7 +102,7 @@ public static class FileSecurityHelpers
 
 		var isValidAcl = IsValidAcl(pDacl);
 
-		List<AccessControlEntry> aces = new();
+		List<AccessControlEntry> aces = [];
 
 		// Get ACEs
 		for (uint i = 0; i < aclSize.AceCount; i++)
@@ -217,7 +217,7 @@ public static class FileSecurityHelpers
 		};
 
 		// Add an new ACE and get a new ACL
-		result = SetEntriesInAcl(1, new[] { explicitAccess }, pDACL, out var pNewDACL);
+		result = SetEntriesInAcl(1, [explicitAccess], pDACL, out var pNewDACL);
 
 		if (result.Failed)
         {

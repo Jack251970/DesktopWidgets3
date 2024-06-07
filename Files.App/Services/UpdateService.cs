@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
@@ -16,9 +16,9 @@ namespace Files.App.Services;
 internal sealed class UpdateService : ObservableObject, IUpdateService
 {
 	private StoreContext? _storeContext;
-	private IList<StorePackageUpdate>? _updatePackages;
+    private List<StorePackageUpdate>? _updatePackages;
 
-	private bool IsMandatory => _updatePackages?.Where(e => e.Mandatory).ToList().Count >= 1;
+    private bool IsMandatory => _updatePackages?.Where(e => e.Mandatory).ToList().Count >= 1;
 
 	private bool _isUpdateAvailable;
 	public bool IsUpdateAvailable
@@ -45,8 +45,8 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 
     public UpdateService()
 	{
-		_updatePackages = new List<StorePackageUpdate>();
-	}
+		_updatePackages = [];
+    }
 
 	public async Task DownloadUpdatesAsync(IFolderViewViewModel folderViewViewModel)
 	{
@@ -106,9 +106,12 @@ internal sealed class UpdateService : ObservableObject, IUpdateService
 
 	private async Task DownloadAndInstallAsync()
 	{
-		AppLifecycleHelper.SaveSessionTabs();
-		App.AppModel.ForceProcessTermination = true;
-		var downloadOperation = _storeContext?.RequestDownloadAndInstallStorePackageUpdatesAsync(_updatePackages);
+        // Save the updated tab list before installing the update
+        AppLifecycleHelper.SaveSessionTabs();
+
+        App.AppModel.ForceProcessTermination = true;
+
+        var downloadOperation = _storeContext?.RequestDownloadAndInstallStorePackageUpdatesAsync(_updatePackages);
 		var result = await downloadOperation.AsTask();
 
 		if (result.OverallState == StorePackageUpdateState.Canceled)

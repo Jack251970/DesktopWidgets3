@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Security.Principal;
@@ -12,9 +12,9 @@ public sealed class RecycleBinManager
 {
 	private static readonly Lazy<RecycleBinManager> lazy = new(() => new RecycleBinManager());
 
-	private IList<SystemIO.FileSystemWatcher>? binWatchers;
+    private List<SystemIO.FileSystemWatcher>? binWatchers;
 
-	public event SystemIO.FileSystemEventHandler? RecycleBinItemCreated;
+    public event SystemIO.FileSystemEventHandler? RecycleBinItemCreated;
 
 	public event SystemIO.FileSystemEventHandler? RecycleBinItemDeleted;
 
@@ -40,7 +40,7 @@ public sealed class RecycleBinManager
 	{
 		// NOTE: SHChangeNotifyRegister only works if recycle bin is open in explorer
 		// Create file system watcher to monitor recycle bin folder(s)
-		binWatchers = new List<SystemIO.FileSystemWatcher>();
+		binWatchers = [];
 
 		var sid = WindowsIdentity.GetCurrent().User!.ToString();
 

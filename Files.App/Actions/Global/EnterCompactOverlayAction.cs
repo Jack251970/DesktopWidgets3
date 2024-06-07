@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.UI.Windowing;
@@ -6,7 +6,7 @@ using Windows.Graphics;
 
 namespace Files.App.Actions;
 
-internal class EnterCompactOverlayAction : ObservableObject, IAction
+internal sealed class EnterCompactOverlayAction : ObservableObject, IAction
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
@@ -19,7 +19,7 @@ internal class EnterCompactOverlayAction : ObservableObject, IAction
 		=> new(opacityStyle: "ColorIconEnterCompactOverlay");
 
 	public HotKey HotKey
-		=> new(Keys.Up, KeyModifiers.MenuCtrl);
+		=> new(Keys.Up, KeyModifiers.CtrlAlt);
 
 	public string Description
 		=> "EnterCompactOverlayDescription".GetLocalizedResource();
@@ -35,9 +35,9 @@ internal class EnterCompactOverlayAction : ObservableObject, IAction
 		windowContext.PropertyChanged += WindowContext_PropertyChanged;
 	}
 
-	public Task ExecuteAsync()
+	public Task ExecuteAsync(object? parameter = null)
 	{
-		var appWindow = FolderViewViewModel.MainWindow.AppWindow;
+		var appWindow = FolderViewViewModel.AppWindow;
 		appWindow.SetPresenter(AppWindowPresenterKind.CompactOverlay);
 		appWindow.Resize(new SizeInt32(400, 350));
 

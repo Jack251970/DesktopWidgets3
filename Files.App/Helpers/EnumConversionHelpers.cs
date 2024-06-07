@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Windows.Storage;
@@ -18,7 +18,18 @@ public static class EnumConversionHelpers
 		};
 	}
 
-	public static NameCollisionOption Convert(this FileNameConflictResolveOptionType option)
+    public static NameCollisionOption ConvertBack(this CreationCollisionOption option)
+    {
+        return option switch
+        {
+            CreationCollisionOption.FailIfExists => NameCollisionOption.FailIfExists,
+            CreationCollisionOption.GenerateUniqueName => NameCollisionOption.GenerateUniqueName,
+            CreationCollisionOption.ReplaceExisting => NameCollisionOption.ReplaceExisting,
+            _ => NameCollisionOption.GenerateUniqueName,
+        };
+    }
+
+    public static NameCollisionOption Convert(this FileNameConflictResolveOptionType option)
 	{
 		return option switch
 		{

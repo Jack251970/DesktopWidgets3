@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.UserControls.FilePreviews;
@@ -12,7 +12,7 @@ namespace Files.App.ViewModels.UserControls;
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
 
-public class InfoPaneViewModel : ObservableObject, IDisposable
+public sealed class InfoPaneViewModel : ObservableObject, IDisposable
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
@@ -40,8 +40,8 @@ public class InfoPaneViewModel : ObservableObject, IDisposable
 	/// Current selected item in the file list.
 	/// FILESTODO: see about removing this and accessing it from the page context instead
 	/// </summary>
-	private ListedItem selectedItem = null!;
-	public ListedItem SelectedItem
+	private ListedItem? selectedItem;
+	public ListedItem? SelectedItem
 	{
 		get => selectedItem;
 		set
@@ -117,7 +117,7 @@ public class InfoPaneViewModel : ObservableObject, IDisposable
 		PreviewPaneState is PreviewPaneStates.NoPreviewAvailable ||
 		PreviewPaneState is PreviewPaneStates.PreviewAndDetailsAvailable;
 
-	public ObservableCollection<TagsListItem> Items { get; } = new();
+	public ObservableCollection<TagsListItem> Items { get; } = [];
 
 	public InfoPaneViewModel()
 	{
@@ -140,34 +140,44 @@ public class InfoPaneViewModel : ObservableObject, IDisposable
         IsEnabled = InfoPaneSettingsService.IsEnabled;
     }
 
-	private void ContentPageContext_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		switch (e.PropertyName)
-		{
-			case nameof(IContentPageContext.Folder):
-			case nameof(IContentPageContext.SelectedItem):
+    private async void ContentPageContext_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(IContentPageContext.Folder):
+            case nameof(IContentPageContext.SelectedItem):
 
-				if (ContentPageContext.SelectedItems.Count == 1)
+                ListedItem? tempSelectedItem = null;
+                if (ContentPageContext.SelectedItems.Count == 1)
                 {
-                    SelectedItem = ContentPageContext.SelectedItems[0];
-                }
-                else
-                {
-                    SelectedItem = null!;
-                }
-                var shouldUpdatePreview = ((FolderViewViewModel.MainWindowContent as Frame)?.Content as MainPage)?.ViewModel.ShouldPreviewPaneBeActive;
-				if (shouldUpdatePreview == true)
-                {
-                    _ = UpdateSelectedItemPreviewAsync();
+                    tempSelectedItem = ContentPageContext.SelectedItems[0];
                 }
 
+                // Don't update preview pane when the selected item changes too frequently
+                const int delayBeforeUpdatingPreviewPane = 100;
+                await Task.Delay(delayBeforeUpdatingPreviewPane);
+                if (tempSelectedItem is not null && !tempSelectedItem.Equals(ContentPageContext.SelectedItem))
+                {
+                    return;
+                }
+
+                SelectedItem = tempSelectedItem;
+
+                if (!App.AppModel.IsMainWindowClosed)
+                {
+                    var shouldUpdatePreview = ((FolderViewViewModel.Content as Frame)?.Content as MainPage)?.ViewModel.ShouldPreviewPaneBeActive;
+                    if (shouldUpdatePreview == true)
+                    {
+                        _ = UpdateSelectedItemPreviewAsync();
+                    }
+                }
                 break;
-		}
-	}
+        }
+    }
 
-	private async Task LoadPreviewControlAsync(bool downloadItem, CancellationToken token)
+    private async Task LoadPreviewControlAsync(bool downloadItem, CancellationToken token)
 	{
-		if (SelectedItem.IsHiddenItem && !SelectedItem.ItemPath.EndsWith("\\"))
+		if (SelectedItem!.IsHiddenItem && !SelectedItem.ItemPath.EndsWith('\\'))
 		{
 			PreviewPaneState = PreviewPaneStates.NoPreviewOrDetailsAvailable;
 
@@ -337,9 +347,10 @@ public class InfoPaneViewModel : ObservableObject, IDisposable
 		if
 		(
 			ShellPreviewViewModel.FindPreviewHandlerFor(item.FileExtension, 0) is not null &&
-			!FileExtensionHelpers.IsFontFile(item.FileExtension)
-		)
-		{
+            !FileExtensionHelpers.IsFontFile(item.FileExtension) &&
+            !FileExtensionHelpers.IsExecutableFile(item.FileExtension)
+        )
+        {
 			var model = new ShellPreviewViewModel(item);
 			await model.LoadAsync();
 
@@ -463,7 +474,7 @@ public class InfoPaneViewModel : ObservableObject, IDisposable
 	{
 		try
 		{
-			var basicModel = new BasicPreviewViewModel(SelectedItem);
+			var basicModel = new BasicPreviewViewModel(SelectedItem!);
 			await basicModel.LoadAsync();
 
 			PreviewPaneContent = new BasicPreview(basicModel);

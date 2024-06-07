@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Files Community
+// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.AppCenter.Analytics;
@@ -24,9 +24,15 @@ internal sealed class AppSettingsService : BaseObservableJsonSettings, IAppSetti
 	{
 		get => Get(true);
 		set => Set(value);
-	}
+    }  // TODO(Later): Store this property.
 
-	public bool RestoreTabsOnStartup
+    public bool ShowBackgroundRunningNotification
+    {
+        get => Get(true);
+        set => Set(value);
+    }
+
+    public bool RestoreTabsOnStartup
 	{
 		get => Get(false);
 		set => Set(value);
