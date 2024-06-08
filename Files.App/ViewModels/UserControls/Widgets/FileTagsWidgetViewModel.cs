@@ -182,7 +182,7 @@ public sealed partial class FileTagsWidgetViewModel : BaseWidgetViewModel, IWidg
 		{
 			flyout!.Closed -= flyoutClosed;
 
-			ListedItem listedItem = new(null!)
+			ListedItem listedItem = new(FolderViewViewModel, null!)
 			{
 				ItemPath = (item.Item as WidgetFileTagCardItem)?.Path ?? string.Empty,
 				ItemNameRaw = (item.Item as WidgetFileTagCardItem)?.Name ?? string.Empty,

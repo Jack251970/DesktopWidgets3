@@ -17,6 +17,7 @@ using Windows.Storage;
 using Windows.System;
 using Windows.UI.Core;
 using Files.Core.Storage.Extensions;
+using DesktopWidgets3.Core.Contracts.Widgets;
 
 namespace Files.App.ViewModels.UserControls;
 
@@ -984,7 +985,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
             }
             else if (rightClickedItem is LocationItem locationItem)
             {
-                var listedItem = new ListedItem(null!)
+                var listedItem = new ListedItem(FolderViewViewModel, null!)
                 {
                     ItemPath = locationItem.Path,
                     ItemNameRaw = locationItem.Text,

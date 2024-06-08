@@ -319,7 +319,7 @@ public sealed class QuickAccessWidgetViewModel : BaseWidgetViewModel, IWidgetVie
 		{
 			flyout!.Closed -= flyoutClosed;
 
-			ListedItem listedItem = new(null!)
+			ListedItem listedItem = new(FolderViewViewModel, null!)
 			{
 				ItemPath = item.Item.Path,
 				ItemNameRaw = item.Item.Text,

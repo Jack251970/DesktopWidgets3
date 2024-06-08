@@ -264,7 +264,7 @@ public static class ShellContextFlyoutFactory
             var shiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
 			var shellMenuItems = await ContentPageContextFlyoutFactory.GetItemContextShellCommandsAsync(
 				workingDir: null!,
-				[new ListedItem(null!) { ItemPath = path }],
+				[new ListedItem(folderViewViewModel, null!) { ItemPath = path }],
 				shiftPressed: shiftPressed,
 				showOpenMenu: false,
 				default);

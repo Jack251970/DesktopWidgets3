@@ -280,7 +280,7 @@ public static class UniversalStorageEnumerator
         // FILESTODO: is this needed to be handled here?
         if (App.LibraryManager.TryGetLibrary(file.Path, out var library))
 		{
-			return new LibraryItem(folderViewViewModel,library)
+			return new LibraryItem(folderViewViewModel, library)
 			{
 				Opacity = 1,
 				ItemDateModifiedReal = itemModifiedDate,
