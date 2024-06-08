@@ -17,9 +17,11 @@ public abstract class BaseTabBar : ITabBar
 
 	protected ITabBarItemContent CurrentSelectedAppInstance = null!;
 
-    public static event EventHandler<ITabBar>? OnLoaded;  // TODO(Later): Check if can be static.
+    // CHANGE: Non-static event handler instead of static one.
+    public event EventHandler<ITabBar>? OnLoaded;
 
-    public static event PropertyChangedEventHandler? StaticPropertyChanged;  // TODO(Later): Check if can be static.
+    // CHANGE: Non-static event handler instead of static one.
+    public event PropertyChangedEventHandler? StaticPropertyChanged;
 
     public const string TabDropHandledIdentifier = "FilesTabViewItemDropHandled";
 
@@ -33,8 +35,9 @@ public abstract class BaseTabBar : ITabBar
 
 	public event EventHandler<CurrentInstanceChangedEventArgs>? CurrentInstanceChanged;
 
-	private static bool _IsRestoringClosedTab;
-	public static bool IsRestoringClosedTab
+    // CHANGE: Non-static property instead of static one.
+    private bool _IsRestoringClosedTab;
+	public bool IsRestoringClosedTab
 	{
 		get => _IsRestoringClosedTab;
 		private set
@@ -129,7 +132,8 @@ public abstract class BaseTabBar : ITabBar
 		TabView_SelectionChanged(null!, null!);
 	}
 
-	public static void PushRecentTab(CustomTabViewItemParameter[] tab)
+    // CHANGE: Non-static function instead of static one.
+    public void PushRecentTab(CustomTabViewItemParameter[] tab)
 	{
 		RecentlyClosedTabs.Push(tab);
 		StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(RecentlyClosedTabs)));
@@ -174,7 +178,7 @@ public abstract class BaseTabBar : ITabBar
         // Dispose and save tab arguments
         PushRecentTab(
         [
-        tabItem.NavigationParameter,
+            tabItem.NavigationParameter,
         ]);
 
         // Save the updated tab list

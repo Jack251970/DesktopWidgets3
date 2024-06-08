@@ -174,7 +174,8 @@ public sealed class MainPageViewModel : ObservableObject
                         items[i] = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, UserSettingsService.GeneralSettingsService.LastSessionTabList[i]);
                     }
 
-                    BaseTabBar.PushRecentTab(items);
+                    // CHANGE: Non-static function instead of static one.
+                    MultitaskingControl!.PushRecentTab(items);
 				}
 
 				if (UserSettingsService.AppSettingsService.RestoreTabsOnStartup)

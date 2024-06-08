@@ -14,7 +14,10 @@ public interface ITabBar
 
 	public ITabBarItemContent GetCurrentSelectedTabInstance();
 
-	public List<ITabBarItemContent> GetAllTabInstances();
+    // CHANGE: Add push recent tab interface.
+    public void PushRecentTab(CustomTabViewItemParameter[] tab);
+
+    public List<ITabBarItemContent> GetAllTabInstances();
 
     public Task ReopenClosedTabAsync();
 
