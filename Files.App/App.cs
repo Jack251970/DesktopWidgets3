@@ -1,6 +1,7 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using CommunityToolkit.WinUI.Notifications;
 using DesktopWidgets3.Core.Helpers;
 using Files.App.Services.SizeProvider;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.UI.Notifications;
 
 namespace Files.App;
 
@@ -319,8 +321,7 @@ public partial class App
         // Method can take a long time, make sure the window is hidden
         await Task.Yield();
 
-        // CHANGE: Remove background running notification.
-        /*// Displays a notification the first time the app goes to the background
+        // Displays a notification the first time the app goes to the background
         if (userSettingsService.AppSettingsService.ShowBackgroundRunningNotification)
         {
             SafetyExtensions.IgnoreExceptions(() =>
@@ -355,7 +356,7 @@ public partial class App
 
                 userSettingsService.AppSettingsService.ShowBackgroundRunningNotification = false;
             });
-        }*/
+        }
 
         // CHANGE: Unregister folder view view model and its app instances.
         MainPageViewModel.AppInstances.Remove(FolderViewViewModel);

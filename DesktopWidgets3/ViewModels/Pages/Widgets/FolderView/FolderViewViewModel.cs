@@ -99,16 +99,22 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public Page WidgetPage { get; set; } = null!;
 
-    private void FolderViewViewModel_NavigatedTo(object? parameter)
+    private async void FolderViewViewModel_NavigatedTo(object? parameter)
     {
         if (_isInitialized)
         {
             var userSettingsService = App.GetService<IUserSettingsService>();
 
-            // No need to leave the app running in background
+            // Don't leave the app running in background
             userSettingsService.GeneralSettingsService.LeaveAppRunning = false;
 
-            // All callback of user settings service after setting initialization
+            // Don't show background running notification
+            userSettingsService.AppSettingsService.ShowBackgroundRunningNotification = false;
+
+            // Load StatusCenterTeachingTip settings
+            userSettingsService.AppSettingsService.ShowStatusCenterTeachingTip = await LocalSettingsExtensions.ReadLocalSettingAsync("ShowStatusCenterTeachingTip", true);
+
+            // Register callback of user settings service after setting initialization
             userSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
 
             App.OnLaunched(FolderPath);
@@ -313,6 +319,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             case nameof(IApplicationSettingsService.ShowRunningAsAdminPrompt):
                 Settings.ShowRunningAsAdminPrompt = (bool)e.NewValue!;
                 break;
+            case nameof(Files.App.Services.Settings.IAppSettingsService.ShowStatusCenterTeachingTip):
+                await LocalSettingsExtensions.SaveLocalSettingAsync("ShowStatusCenterTeachingTip", (bool)e.NewValue!);
+                return;
             default:
                 return;
 		}
