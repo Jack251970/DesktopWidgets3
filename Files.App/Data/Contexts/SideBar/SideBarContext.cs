@@ -29,7 +29,7 @@ internal class SidebarContext : ObservableObject, ISidebarContext
 
 	public SidebarContext()
 	{
-        // TODO(Later): Check if can be static.
+        // CHANGE: Sidebar context only need one intance and event handlers can be static.
         SidebarViewModel.RightClickedItemChanged += SidebarControl_RightClickedItemChanged;
 	}
 

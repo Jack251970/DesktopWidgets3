@@ -47,7 +47,6 @@ internal sealed class OpenAllTaggedActions: ObservableObject, IAction
             .Select(f => f.path)
             .ToList();
 
-        // TODO(Later): Check if we open many items.
         await Task.WhenAll(filePaths.Select(path => NavigationHelpers.OpenPath(FolderViewViewModel, path, _pageContext.ShellPage!)));
 
         foreach (var path in folderPaths)

@@ -57,8 +57,6 @@ internal sealed class Program
     {
         WinRT.ComWrappersSupport.InitializeComWrappers();
 
-        // TODO(Later): Check if this is still needed.
-
         // We are about to do the first WinRT server call, in case the WinRT server is hanging
         // we need to kill the server if there is no other Files instances already running
 

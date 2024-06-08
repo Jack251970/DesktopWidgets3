@@ -24,7 +24,7 @@ internal sealed class AppSettingsService : BaseObservableJsonSettings, IAppSetti
 	{
 		get => Get(true);
 		set => Set(value);
-    }  // TODO(Later): Store this property.
+    }
 
     public bool ShowBackgroundRunningNotification
     {

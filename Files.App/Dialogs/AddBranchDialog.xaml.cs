@@ -11,7 +11,7 @@ public sealed partial class AddBranchDialog : ContentDialog, IDialog<AddBranchDi
     private readonly IFolderViewViewModel FolderViewViewModel;
 
     private FrameworkElement RootAppElement
-        => (FrameworkElement)FolderViewViewModel.Content;  // TODO(Later): Check if this can follow system theme change.
+        => (FrameworkElement)FolderViewViewModel.Content;
 
     public AddBranchDialogViewModel ViewModel
 	{

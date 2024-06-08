@@ -27,7 +27,7 @@ public sealed class HomePageContext : ObservableObject, IHomePageContext
 
 	public HomePageContext()
 	{
-        // TODO(Later): Check if can use static event handlers.
+        // CHANGE: Home page context only need one intance and event handlers can be static.
         BaseWidgetViewModel.RightClickedItemChanged += HomePageWidget_RightClickedItemChanged;
         FileTagsWidgetViewModel.SelectedTaggedItemsChanged += FileTagsWidget_SelectedTaggedItemsChanged;
     }
