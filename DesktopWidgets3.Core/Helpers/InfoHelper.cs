@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Globalization;
+using System.Reflection;
 
 using Windows.ApplicationModel;
 
@@ -9,95 +10,7 @@ namespace DesktopWidgets3.Core.Helpers;
 /// </summary>
 public static class InfoHelper
 {
-    public static string GetDisplayName()
-    {
-        if (RuntimeHelper.IsMSIX)
-        {
-            return Package.Current.DisplayName;
-        }
-        else
-        {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-            if (attributes.Length > 0)
-            {
-                var titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                if (titleAttribute.Title != "")
-                {
-                    return titleAttribute.Title;
-                }
-            }
-            return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
-        }
-    }
-
-    public static string GetDisplayName(this Package package)
-    {
-        if (RuntimeHelper.IsMSIX)
-        {
-            return package.DisplayName;
-        }
-        else
-        {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-            if (attributes.Length > 0)
-            {
-                var titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                if (titleAttribute.Title != "")
-                {
-                    return titleAttribute.Title;
-                }
-            }
-            return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
-        }
-    }
-
-    public static string GetFamilyName()
-    {
-        if (RuntimeHelper.IsMSIX)
-        {
-            return Package.Current.Id.FamilyName;
-        }
-        else
-        {
-            return GetDisplayName();
-        }
-    }
-
-    public static string GetFamilyName(this Package package)
-    {
-        if (RuntimeHelper.IsMSIX)
-        {
-            return package.Id.FamilyName;
-        }
-        else
-        {
-            return package.GetDisplayName();
-        }
-    }
-
-    public static string GetFullName()
-    {
-        if (RuntimeHelper.IsMSIX)
-        {
-            return Package.Current.Id.FullName;
-        }
-        else
-        {
-            return GetDisplayName();
-        }
-    }
-
-    public static string GetFullName(this Package package)
-    {
-        if (RuntimeHelper.IsMSIX)
-        {
-            return package.Id.FullName;
-        }
-        else
-        {
-            return package.GetDisplayName();
-        }
-    }
+    #region name
 
     public static string GetName()
     {
@@ -107,7 +20,7 @@ public static class InfoHelper
         }
         else
         {
-            return GetDisplayName();
+            return GetAssemblyName();
         }
     }
 
@@ -119,9 +32,99 @@ public static class InfoHelper
         }
         else
         {
-            return package.GetDisplayName();
+            return GetAssemblyName();
         }
     }
+
+    public static string GetDisplayName()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return Package.Current.DisplayName;
+        }
+        else
+        {
+            return GetAssemblyName();
+        }
+    }
+
+    public static string GetDisplayName(this Package package)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return package.DisplayName;
+        }
+        else
+        {
+            return GetAssemblyName();
+        }
+    }
+
+    public static string GetFamilyName()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return Package.Current.Id.FamilyName;
+        }
+        else
+        {
+            return GetAssemblyName();
+        }
+    }
+
+    public static string GetFamilyName(this Package package)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return package.Id.FamilyName;
+        }
+        else
+        {
+            return GetAssemblyName();
+        }
+    }
+
+    public static string GetFullName()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return Package.Current.Id.FullName;
+        }
+        else
+        {
+            return GetAssemblyName();
+        }
+    }
+
+    public static string GetFullName(this Package package)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return package.Id.FullName;
+        }
+        else
+        {
+            return GetAssemblyName();
+        }
+    }
+
+    private static string GetAssemblyName()
+    {
+        var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+        if (attributes.Length > 0)
+        {
+            var titleAttribute = (AssemblyTitleAttribute)attributes[0];
+            if (titleAttribute.Title != "")
+            {
+                return titleAttribute.Title;
+            }
+        }
+        return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
+    }
+
+    #endregion
+
+    #region version
 
     public static Version GetVersion()
     {
@@ -132,7 +135,7 @@ public static class InfoHelper
         }
         else
         {
-            return Assembly.GetExecutingAssembly().GetName().Version!;
+            return GetAssemblyVersion();
         }
     }
 
@@ -145,9 +148,18 @@ public static class InfoHelper
         }
         else
         {
-            return GetVersion();
+            return GetAssemblyVersion();
         }
     }
+
+    private static Version GetAssemblyVersion()
+    {
+        return Assembly.GetExecutingAssembly().GetName().Version!;
+    }
+
+    #endregion
+
+    #region description
 
     public static string GetDescription()
     {
@@ -157,8 +169,7 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyDescriptionAttribute)attributes[0]).Description;
+            return GetAssemblyDescription();
         }
     }
 
@@ -170,10 +181,19 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyDescriptionAttribute)attributes[0]).Description;
+            return GetAssemblyDescription();
         }
     }
+
+    private static string GetAssemblyDescription()
+    {
+        var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+        return (attributes.Length == 0) ? "" : ((AssemblyDescriptionAttribute)attributes[0]).Description;
+    }
+
+    #endregion
+
+    #region product
 
     public static string GetProduct()
     {
@@ -183,8 +203,7 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyProductAttribute)attributes[0]).Product;
+            return GetAssemblyProduct();
         }
     }
 
@@ -196,10 +215,19 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyProductAttribute)attributes[0]).Product;
+            return GetAssemblyProduct();
         }
     }
+
+    private static string GetAssemblyProduct()
+    {
+        var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+        return (attributes.Length == 0) ? "" : ((AssemblyProductAttribute)attributes[0]).Product;
+    }
+
+    #endregion
+
+    #region copyright
 
     public static string GetCopyright()
     {
@@ -209,8 +237,7 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+            return GetAssemblyCopyright();
         }
     }
 
@@ -222,10 +249,19 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+            return GetAssemblyCopyright();
         }
     }
+
+    private static string GetAssemblyCopyright()
+    {
+        var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+        return (attributes.Length == 0) ? "" : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+    }
+
+    #endregion
+
+    #region company
 
     public static string GetCompany()
     {
@@ -235,8 +271,7 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyCompanyAttribute)attributes[0]).Company;
+            return GetAssemblyCompany();
         }
     }
 
@@ -248,10 +283,19 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyCompanyAttribute)attributes[0]).Company;
+            return GetAssemblyCompany();
         }
     }
+
+    private static string GetAssemblyCompany()
+    {
+        var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+        return (attributes.Length == 0) ? "" : ((AssemblyCompanyAttribute)attributes[0]).Company;
+    }
+
+    #endregion
+
+    #region configuration
 
     public static string GetConfiguration()
     {
@@ -261,8 +305,7 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyConfigurationAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyConfigurationAttribute)attributes[0]).Configuration;
+            return GetAssemblyConfiguration();
         }
     }
 
@@ -274,10 +317,19 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyConfigurationAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyConfigurationAttribute)attributes[0]).Configuration;
+            return GetAssemblyConfiguration();
         }
     }
+
+    private static string GetAssemblyConfiguration()
+    {
+        var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyConfigurationAttribute), false);
+        return (attributes.Length == 0) ? "" : ((AssemblyConfigurationAttribute)attributes[0]).Configuration;
+    }
+
+    #endregion
+
+    #region trademark
 
     public static string GetTrademark()
     {
@@ -287,8 +339,7 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTrademarkAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyTrademarkAttribute)attributes[0]).Trademark;
+            return GetAssemblyTrademark();
         }
     }
 
@@ -300,23 +351,41 @@ public static class InfoHelper
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTrademarkAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyTrademarkAttribute)attributes[0]).Trademark;
+            return GetAssemblyTrademark();
         }
     }
+
+    private static string GetAssemblyTrademark()
+    {
+        var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTrademarkAttribute), false);
+        return (attributes.Length == 0) ? "" : ((AssemblyTrademarkAttribute)attributes[0]).Trademark;
+    }
+
+    #endregion
+
+    #region culture
 
     public static string GetCulture()
     {
         if (RuntimeHelper.IsMSIX)
         {
-            return "";
+            return CultureInfo.CurrentCulture.ToString();
         }
         else
         {
-            var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCultureAttribute), false);
-            return (attributes.Length == 0) ? "" : ((AssemblyCultureAttribute)attributes[0]).Culture;
+            return GetAssemblyCulture();
         }
     }
+
+    private static string GetAssemblyCulture()
+    {
+        var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCultureAttribute), false);
+        return (attributes.Length == 0) ? "" : ((AssemblyCultureAttribute)attributes[0]).Culture;
+    }
+
+    #endregion
+
+    #region path
 
     public static string GetInstalledLocation()
     {
@@ -326,7 +395,7 @@ public static class InfoHelper
         }
         else
         {
-            return AppContext.BaseDirectory; //Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            return GetAssemblyPath();
         }
     }
 
@@ -338,7 +407,7 @@ public static class InfoHelper
         }
         else
         {
-            return AppContext.BaseDirectory; //Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            return GetAssemblyPath();
         }
     }
 
@@ -350,7 +419,7 @@ public static class InfoHelper
         }
         else
         {
-            return GetInstalledLocation();
+            return GetAssemblyPath();
         }
     }
 
@@ -362,7 +431,14 @@ public static class InfoHelper
         }
         else
         {
-            return GetInstalledLocation(package);
+            return GetAssemblyPath();
         }
     }
+
+    private static string GetAssemblyPath()
+    {
+        return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppContext.BaseDirectory;
+    }
+
+    #endregion
 }
