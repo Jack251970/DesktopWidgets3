@@ -24,7 +24,11 @@ internal sealed class CachingJsonSettingsDatabase : DefaultJsonSettingsDatabase
 		{
 			if (base.SetValue(key, defaultValue))
             {
-                _settingsCache.TryAdd(key, defaultValue);
+                // CHANGE: Fix for key already existed argument exception.
+                if (!_settingsCache.ContainsKey(key))
+                {
+                    _settingsCache.TryAdd(key, defaultValue);
+                }
             }
 
             return defaultValue;
