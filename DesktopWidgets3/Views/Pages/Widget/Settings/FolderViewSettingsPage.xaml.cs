@@ -11,10 +11,7 @@ namespace DesktopWidgets3.Views.Pages.Widgets.Settings;
 
 public sealed partial class FolderViewSettingsPage : Page
 {
-    public FolderViewSettingsViewModel ViewModel
-    {
-        get;
-    }
+    public FolderViewSettingsViewModel ViewModel { get; }
 
     public FolderViewSettingsPage()
     {
@@ -31,9 +28,13 @@ public sealed partial class FolderViewSettingsPage : Page
 
     private FlyoutBase? deleteItemFlyout;
 
+#pragma warning disable CA1822 // Mark members as static
+
     // See issue #12390 on Github. Dragging makes the app crash when run as admin.
     // Further reading: https://github.com/microsoft/terminal/issues/12017#issuecomment-1004129669
     public bool AllowItemsDrag => !ElevationHelpers.IsAppRunAsAdmin();
+
+#pragma warning restore CA1822 // Mark members as static
 
     private void RenameTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {

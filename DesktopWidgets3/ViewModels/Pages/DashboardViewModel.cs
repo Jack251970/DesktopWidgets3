@@ -11,13 +11,13 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         Delete
     }
 
-    public ObservableCollection<DashboardWidgetItem> AllWidgets { get; set; } = new();
-    public ObservableCollection<DashboardWidgetItem> EnabledWidgets { get; set; } = new();
-    public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = new();
+    public ObservableCollection<DashboardWidgetItem> AllWidgets { get; set; } = [];
+    public ObservableCollection<DashboardWidgetItem> EnabledWidgets { get; set; } = [];
+    public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = [];
 
     private readonly IWidgetManagerService _widgetManagerService;
 
-    private List<DashboardWidgetItem> yourWidgetItems = new();
+    private List<DashboardWidgetItem> yourWidgetItems = [];
 
     private bool _isInitialized;
 

@@ -4,15 +4,9 @@ namespace DesktopWidgets3.Contracts.Services;
 
 public interface IShellService
 {
-    IList<object>? MenuItems
-    {
-        get;
-    }
+    IList<object>? MenuItems { get; }
 
-    object? SettingsItem
-    {
-        get;
-    }
+    object? SettingsItem { get; }
 
     void Initialize(NavigationView navigationView);
 

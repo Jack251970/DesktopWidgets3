@@ -7,9 +7,9 @@ namespace DesktopWidgets3.Services.Widgets;
 
 // For more information on navigation between pages see
 // https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/navigation.md
-internal class WidgetNavigationService : IWidgetNavigationService
+internal class WidgetNavigationService(IWidgetPageService widgetPageService) : IWidgetNavigationService
 {
-    private readonly IWidgetPageService _widgetPageService;
+    private readonly IWidgetPageService _widgetPageService = widgetPageService;
     private object? _lastParameter;
     private Frame? _frame;
 
@@ -38,11 +38,6 @@ internal class WidgetNavigationService : IWidgetNavigationService
 
     [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
     public bool CanGoBack => Frame != null && Frame.CanGoBack;
-
-    public WidgetNavigationService(IWidgetPageService widgetPageService)
-    {
-        _widgetPageService = widgetPageService;
-    }
 
     private void RegisterFrameEvents()
     {

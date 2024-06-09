@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetPageService : IWidgetPageService
 {
-    private readonly Dictionary<WidgetType, Type> _pages = new();
+    private readonly Dictionary<WidgetType, Type> _pages = [];
 
     public WidgetPageService()
     {

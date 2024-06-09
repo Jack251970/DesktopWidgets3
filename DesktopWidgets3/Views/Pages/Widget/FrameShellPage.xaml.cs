@@ -4,20 +4,11 @@ namespace DesktopWidgets3.Views.Pages.Widgets;
 
 public sealed partial class FrameShellPage : Page
 {
-    public FrameShellViewModel ViewModel
-    {
-        get;
-    }
+    public FrameShellViewModel ViewModel { get; }
 
-    public Frame NavigationFrame
-    {
-        get;
-    }
+    public Frame NavigationFrame { get; }
 
-    private WidgetWindow WidgetWindow
-    {
-        get; set;
-    } = null!;
+    private WidgetWindow WidgetWindow { get; set; } = null!;
 
     public FrameShellPage(FrameShellViewModel viewModel)
     {

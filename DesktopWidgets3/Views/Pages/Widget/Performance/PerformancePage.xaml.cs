@@ -4,10 +4,7 @@ namespace DesktopWidgets3.Views.Pages.Widgets;
 
 public sealed partial class PerformancePage : Page
 {
-    public PerformanceViewModel ViewModel
-    {
-        get;
-    }
+    public PerformanceViewModel ViewModel { get; }
 
     public PerformancePage()
     {

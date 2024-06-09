@@ -3,21 +3,13 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services;
 
-internal class ActivationService : IActivationService
+internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService) : IActivationService
 {
-    private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
-    private readonly IEnumerable<IActivationHandler> _activationHandlers;
-    private readonly IAppSettingsService _appSettingsService;
-    private readonly IThemeSelectorService _themeSelectorService;
+    private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler = defaultHandler;
+    private readonly IEnumerable<IActivationHandler> _activationHandlers = activationHandlers;
+    private readonly IAppSettingsService _appSettingsService = appSettingsService;
+    private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
     private UIElement? _shell = null;
-
-    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService)
-    {
-        _defaultHandler = defaultHandler;
-        _activationHandlers = activationHandlers;
-        _appSettingsService = appSettingsService;
-        _themeSelectorService = themeSelectorService;
-    }
 
     public async Task ActivateMainWindowAsync(object activationArgs)
     {

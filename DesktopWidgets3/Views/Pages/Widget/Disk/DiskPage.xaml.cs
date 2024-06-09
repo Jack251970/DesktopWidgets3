@@ -4,10 +4,7 @@ namespace DesktopWidgets3.Views.Pages.Widgets;
 
 public sealed partial class DiskPage : Page
 {
-    public DiskViewModel ViewModel
-    {
-        get;
-    }
+    public DiskViewModel ViewModel { get; }
 
     public DiskPage()
     {

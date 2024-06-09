@@ -2,18 +2,12 @@
 
 namespace DesktopWidgets3.Services;
 
-internal class AppSettingsService : IAppSettingsService
+internal class AppSettingsService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys) : IAppSettingsService
 {
-    private readonly ILocalSettingsService _localSettingsService;
-    private readonly LocalSettingsKeys _localSettingsKeys;
+    private readonly ILocalSettingsService _localSettingsService = localSettingsService;
+    private readonly LocalSettingsKeys _localSettingsKeys = localSettingsKeys.Value;
 
     private bool _isInitialized;
-
-    public AppSettingsService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys)
-    {
-        _localSettingsService = localSettingsService;
-        _localSettingsKeys = localSettingsKeys.Value;
-    }
 
     public async Task InitializeAsync()
     {

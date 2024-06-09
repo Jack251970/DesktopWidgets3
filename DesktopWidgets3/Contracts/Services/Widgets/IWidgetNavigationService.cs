@@ -7,15 +7,9 @@ public interface IWidgetNavigationService
 {
     event NavigatedEventHandler Navigated;
 
-    bool CanGoBack
-    {
-        get;
-    }
+    bool CanGoBack { get; }
 
-    Frame? Frame
-    {
-        get; set;
-    }
+    Frame? Frame { get; set; }
 
     bool NavigateTo(WidgetType widgetType, object? parameter = null, bool clearNavigation = false);
 

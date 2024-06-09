@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Models.Widget.HardwareInfo;
 
 public class NetworkSpeedInfo
 {
-    private readonly List<NetworkSpeedInfoItem> networkSpeedInfoItems = new();
+    private readonly List<NetworkSpeedInfoItem> networkSpeedInfoItems = [];
 
     public void AddItem(string hardwareName, string hardwareIdentifier, string uploadSpeed, string downloadSpeed)
     {
@@ -73,7 +73,7 @@ public class NetworkSpeedInfo
 
 public class DiskInfo
 {
-    private readonly List<PartitionSpaceInfoItem> diskSpaceInfoItems = new();
+    private readonly List<PartitionSpaceInfoItem> diskSpaceInfoItems = [];
 
     public void AddItem(string partitionName, string partitionIdentifier, string partitionLoad, float partitionLoadValue, string partitionUsedInfo)
     {

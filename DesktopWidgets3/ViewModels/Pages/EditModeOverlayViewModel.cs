@@ -4,20 +4,11 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class EditModeOverlayViewModel : ObservableRecipient
 {
-    public ClickCommand SaveCommand
-    {
-        get; set;
-    }
+    public ClickCommand SaveCommand { get; }
 
-    public ClickCommand SettingCommand
-    {
-        get; set;
-    }
+    public ClickCommand SettingCommand { get; }
 
-    public ClickCommand CancelCommand
-    {
-        get; set;
-    }
+    public ClickCommand CancelCommand { get; }
 
     private readonly INavigationService _navigationService;
     private readonly IWidgetManagerService _widgetManagerService;

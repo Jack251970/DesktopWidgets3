@@ -4,10 +4,7 @@ namespace DesktopWidgets3.Views.Pages.Widgets.Settings;
 
 public sealed partial class NetworkSettingsPage : Page
 {
-    public NetworkSettingsViewModel ViewModel
-    {
-        get;
-    }
+    public NetworkSettingsViewModel ViewModel { get; }
 
     public NetworkSettingsPage()
     {

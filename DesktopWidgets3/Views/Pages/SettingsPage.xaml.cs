@@ -4,10 +4,7 @@ namespace DesktopWidgets3.Views.Pages;
 
 public sealed partial class SettingsPage : Page
 {
-    public SettingsViewModel ViewModel
-    {
-        get;
-    }
+    public SettingsViewModel ViewModel { get; }
 
     public SettingsPage()
     {

@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Services.Widgets;
 
 internal class TimersService : ITimersService
 {
-    private readonly Dictionary<WidgetType, Timer> TimersDict = new();
+    private readonly Dictionary<WidgetType, Timer> TimersDict = [];
 
     public TimersService()
     {

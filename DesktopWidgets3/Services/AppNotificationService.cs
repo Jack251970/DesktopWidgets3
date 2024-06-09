@@ -5,14 +5,9 @@ using Microsoft.Windows.AppNotifications;
 
 namespace DesktopWidgets3.Services;
 
-internal class AppNotificationService : IAppNotificationService
+internal class AppNotificationService(INavigationService navigationService) : IAppNotificationService
 {
-    private readonly INavigationService _navigationService;
-
-    public AppNotificationService(INavigationService navigationService)
-    {
-        _navigationService = navigationService;
-    }
+    private readonly INavigationService _navigationService = navigationService;
 
     ~AppNotificationService()
     {

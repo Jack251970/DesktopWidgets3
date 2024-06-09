@@ -11,10 +11,7 @@ public class NavigationViewHeaderBehavior : Behavior<NavigationView>
 
     private Page? _currentPage;
 
-    public DataTemplate? DefaultHeaderTemplate
-    {
-        get; set;
-    }
+    public DataTemplate? DefaultHeaderTemplate { get; set; }
 
     public object DefaultHeader
     {

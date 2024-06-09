@@ -4,10 +4,7 @@ namespace DesktopWidgets3.Views.Pages.Widgets.Settings;
 
 public sealed partial class DiskSettingsPage : Page
 {
-    public DiskSettingsViewModel ViewModel
-    {
-        get;
-    }
+    public DiskSettingsViewModel ViewModel { get; }
 
     public DiskSettingsPage()
     {

@@ -197,20 +197,21 @@ internal partial class SystemHelper
     internal const uint SWP_NOZORDER = 0x0004;
     internal const uint SWP_NOACTIVATE = 0x0010;
 
-    [DllImport("user32.dll")]
-    internal static extern IntPtr GetDesktopWindow();
+    [LibraryImport("user32.dll")]
+    internal static partial IntPtr GetDesktopWindow();
 
-    [DllImport("user32.dll")]
-    internal static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
+    [LibraryImport("user32.dll")]
+    internal static partial IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
 
-    [DllImport("user32.dll")]
-    internal static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+    [LibraryImport("user32.dll")]
+    internal static partial int GetWindowLong(IntPtr hWnd, int nIndex);
 
-    [DllImport("user32.dll")]
-    internal static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+    [LibraryImport("user32.dll")]
+    internal static partial IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
-    [DllImport("user32.dll")]
-    internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
 
     /// <summary>
     /// Set window Z position.

@@ -4,10 +4,7 @@ namespace DesktopWidgets3.Views.Pages.Widgets;
 
 public sealed partial class ClockPage : Page
 {
-    public ClockViewModel ViewModel
-    {
-        get;
-    }
+    public ClockViewModel ViewModel { get; }
 
     public ClockPage()
     {

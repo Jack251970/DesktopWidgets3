@@ -12,15 +12,9 @@ public partial class NavShellViewModel : ObservableRecipient
     [ObservableProperty]
     private object? selected;
 
-    public INavigationService NavigationService
-    {
-        get;
-    }
+    public INavigationService NavigationService { get; }
 
-    public IShellService ShellService
-    {
-        get;
-    }
+    public IShellService ShellService { get; }
 
     public NavShellViewModel(INavigationService navigationService, IShellService shellService)
     {

@@ -6,11 +6,9 @@ using System.Windows.Input;
 
 namespace DesktopWidgets3.ViewModels.Commands;
 
-public class ClickCommand : ICommand
+public class ClickCommand(Action execute) : ICommand
 {
-    private readonly Action _execute;
-
-    public ClickCommand(Action execute) { _execute = execute; }
+    private readonly Action _execute = execute;
 
     // Occurs when changes occur that affect whether or not the command should execute.
     public event EventHandler? CanExecuteChanged;
@@ -24,14 +22,9 @@ public class ClickCommand : ICommand
     public void OnCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
 
-public class ClickCommandWithParam : ICommand
+public class ClickCommandWithParam(Action<object?> execute) : ICommand
 {
-    private readonly Action<object?> _execute;
-
-    public ClickCommandWithParam(Action<object?> execute)
-    {
-        _execute = execute;
-    }
+    private readonly Action<object?> _execute = execute;
 
     public event EventHandler? CanExecuteChanged;
 
@@ -44,12 +37,7 @@ public class ClickCommandWithParam : ICommand
 
 public class WidgetParameter
 {
-    public WidgetType WidgetType
-    {
-        get; set;
-    }
-    public int IndexTag
-    {
-        get; set;
-    }
+    public WidgetType WidgetType { get; set; }
+
+    public int IndexTag { get; set;  }
 }

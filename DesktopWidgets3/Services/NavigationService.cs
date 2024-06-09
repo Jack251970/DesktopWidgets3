@@ -7,13 +7,13 @@ namespace DesktopWidgets3.Services;
 
 // For more information on navigation between pages see
 // https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/navigation.md
-internal class NavigationService : INavigationService
+internal class NavigationService(IPageService pageService) : INavigationService
 {
-    private readonly IPageService _pageService;
+    private readonly IPageService _pageService = pageService;
     private object? _lastParameter;
     private Frame? _frame;
 
-    private readonly Dictionary<string, object?> _nextParameter = new();
+    private readonly Dictionary<string, object?> _nextParameter = [];
 
     public event NavigatedEventHandler? Navigated;
 
@@ -40,11 +40,6 @@ internal class NavigationService : INavigationService
 
     [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
     public bool CanGoBack => Frame != null && Frame.CanGoBack;
-
-    public NavigationService(IPageService pageService)
-    {
-        _pageService = pageService;
-    }
 
     private void RegisterFrameEvents()
     {
@@ -81,9 +76,9 @@ internal class NavigationService : INavigationService
 
     public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
     {
-        if (_nextParameter.ContainsKey(pageKey) && parameter == null)
+        if (_nextParameter.TryGetValue(pageKey, out var value) && parameter == null)
         {
-            parameter = _nextParameter[pageKey];
+            parameter = value;
             _nextParameter.Remove(pageKey);
         }
 

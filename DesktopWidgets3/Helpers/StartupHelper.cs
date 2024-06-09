@@ -107,14 +107,14 @@ internal class StartupHelper
                 // check if the startup register key exists
                 foreach (var keyName in keyNames)
                 {
-                    if (keyName.ToLower() == RegistryKey.ToLower())
+                    if (keyName.Equals(RegistryKey, StringComparison.CurrentCultureIgnoreCase))
                     {
                         startup = true;
                         // check if the startup register value is valid
                         if (startup)
                         {
                             var value = path.GetValue(keyName)!.ToString()!;
-                            if (!value.ToLower().Contains(@appPath.ToLower()))
+                            if (!value.Contains(@appPath, StringComparison.CurrentCultureIgnoreCase))
                             {
                                 startup = false;
                                 path.DeleteValue(RegistryKey);
@@ -140,7 +140,7 @@ internal class StartupHelper
                         keyNames = path.GetValueNames();
                         foreach (var keyName in keyNames)
                         {
-                            if (keyName.ToLower() == RegistryKey.ToLower())
+                            if (keyName.Equals(RegistryKey, StringComparison.CurrentCultureIgnoreCase))
                             {
                                 var value = (byte[])path.GetValue(keyName)!;
                                 if (!(value.SequenceEqual(ApprovalValue1) || value.SequenceEqual(ApprovalValue2)))
@@ -201,7 +201,7 @@ internal class StartupHelper
                 var keyNames = path.GetValueNames();
                 foreach (var keyName in keyNames)
                 {
-                    if (keyName.ToLower() == RegistryKey.ToLower())
+                    if (keyName.Equals(RegistryKey, StringComparison.CurrentCultureIgnoreCase))
                     {
                         path.DeleteValue(RegistryKey);
                         path.Close();

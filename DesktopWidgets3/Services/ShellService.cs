@@ -4,23 +4,17 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services;
 
-internal class ShellService : IShellService
+internal class ShellService(INavigationService navigationService, IPageService pageService) : IShellService
 {
-    private readonly INavigationService _navigationService;
+    private readonly INavigationService _navigationService = navigationService;
 
-    private readonly IPageService _pageService;
+    private readonly IPageService _pageService = pageService;
 
     private NavigationView? _navigationView;
 
     public IList<object>? MenuItems => _navigationView?.MenuItems;
 
     public object? SettingsItem => _navigationView?.SettingsItem;
-
-    public ShellService(INavigationService navigationService, IPageService pageService)
-    {
-        _navigationService = navigationService;
-        _pageService = pageService;
-    }
 
     [MemberNotNull(nameof(_navigationView))]
     public void Initialize(NavigationView navigationView)

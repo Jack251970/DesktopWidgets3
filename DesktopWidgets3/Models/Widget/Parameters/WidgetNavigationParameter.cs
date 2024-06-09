@@ -2,13 +2,7 @@
 
 internal class WidgetNavigationParameter
 {
-    public WidgetWindow? Window
-    {
-        get; set; 
-    }
+    public WidgetWindow? Window { get; set; }
 
-    public BaseWidgetSettings? Settings
-    {
-        get; set; 
-    }
+    public BaseWidgetSettings? Settings { get; set; }
 }

@@ -5,25 +5,17 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService : IWidgetManagerService
+internal class WidgetManagerService(IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, ITimersService timersService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
-    private readonly List<WidgetWindow> WidgetsList = new();
+    private readonly List<WidgetWindow> WidgetsList = [];
 
-    private readonly IAppSettingsService _appSettingsService;
-    private readonly ISystemInfoService _systemInfoService;
-    private readonly ITimersService _timersService;
-    private readonly IWidgetResourceService _widgetResourceService;
+    private readonly IAppSettingsService _appSettingsService = appSettingsService;
+    private readonly ISystemInfoService _systemInfoService = systemInfoService;
+    private readonly ITimersService _timersService = timersService;
+    private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     private WidgetType currentWidgetType;
     private int currentIndexTag = -1;
-
-    public WidgetManagerService(IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, ITimersService timersService, IWidgetResourceService widgetResourceService)
-    {
-        _appSettingsService = appSettingsService;
-        _systemInfoService = systemInfoService;
-        _timersService = timersService;
-        _widgetResourceService = widgetResourceService;
-    }
 
     #region widget window
 
@@ -307,7 +299,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
     public List<DashboardWidgetItem> GetAllWidgetItems()
     {
-        List<DashboardWidgetItem> dashboardItemList = new();
+        List<DashboardWidgetItem> dashboardItemList = [];
 
         foreach (WidgetType widgetType in Enum.GetValues(typeof(WidgetType)))
         {
@@ -327,7 +319,7 @@ internal class WidgetManagerService : IWidgetManagerService
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
 
-        List<DashboardWidgetItem> dashboardItemList = new();
+        List<DashboardWidgetItem> dashboardItemList = [];
         foreach (var widget in widgetList)
         {
             var widgetType = widget.Type;
@@ -364,7 +356,7 @@ internal class WidgetManagerService : IWidgetManagerService
     private const int EditModeOverlayWindowXamlHeight = 48;
 
     private OverlayWindow EditModeOverlayWindow = null!;
-    private readonly List<JsonWidgetItem> originalWidgetList = new();
+    private readonly List<JsonWidgetItem> originalWidgetList = [];
     private bool restoreMainWindow = false;
 
     public async void EnterEditMode()
@@ -412,7 +404,7 @@ internal class WidgetManagerService : IWidgetManagerService
 
     public async void SaveAndExitEditMode()
     {
-        List<JsonWidgetItem> widgetList = new();
+        List<JsonWidgetItem> widgetList = [];
 
         foreach (var widgetWindow in WidgetsList)
         {

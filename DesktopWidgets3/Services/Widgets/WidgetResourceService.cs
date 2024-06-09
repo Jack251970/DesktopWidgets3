@@ -2,14 +2,9 @@
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetResourceService : IWidgetResourceService
+internal class WidgetResourceService(IAppSettingsService appSettingsService) : IWidgetResourceService
 {
-    private readonly IAppSettingsService _appSettingsService;
-
-    public WidgetResourceService(IAppSettingsService appSettingsService)
-    {
-        _appSettingsService = appSettingsService;
-    }
+    private readonly IAppSettingsService _appSettingsService = appSettingsService;
 
     public string GetWidgetLabel(WidgetType widgetType)
     {

@@ -7,15 +7,11 @@ namespace DesktopWidgets3.Views.Pages;
 
 public sealed partial class DashboardPage : Page
 {
-    public DashboardViewModel ViewModel
-    {
-        get;
-    }
+    public DashboardViewModel ViewModel { get; }
 
     private WidgetType _widgetType;
     private int _indexTag = -1;
 
-    private readonly IWidgetDialogService _dialogService;
     private readonly INavigationService _navigationService;
 
     public DashboardPage()
@@ -23,7 +19,6 @@ public sealed partial class DashboardPage : Page
         ViewModel = App.GetService<DashboardViewModel>();
         InitializeComponent();
 
-        _dialogService = App.GetService<IWidgetDialogService>();
         _navigationService = App.GetService<INavigationService>();
     }
 

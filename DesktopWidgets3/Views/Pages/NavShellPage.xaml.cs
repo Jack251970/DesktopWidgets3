@@ -6,10 +6,7 @@ namespace DesktopWidgets3.Views.Pages;
 
 public sealed partial class NavShellPage : Page
 {
-    public NavShellViewModel ViewModel
-    {
-        get;
-    }
+    public NavShellViewModel ViewModel { get; }
 
     public NavShellPage(NavShellViewModel viewModel)
     {
@@ -32,6 +29,7 @@ public sealed partial class NavShellPage : Page
     {
         TitleBarHelper.UpdateTitleBar(App.MainWindow, RequestedTheme);
 
+        // Initialize widgets after the navigation frame is loaded.
         App.GetService<IWidgetManagerService>().Initialize();
     }
 
