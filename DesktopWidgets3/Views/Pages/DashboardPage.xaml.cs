@@ -89,7 +89,7 @@ public sealed partial class DashboardPage : Page
                     _navigationService.NavigateTo(typeof(NetworkSettingsViewModel).FullName!, parameter);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(sender), sender, null);
             }
 
             _indexTag = -1;
