@@ -52,65 +52,52 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
             var dataCount = progressCardData.Count;
             var itemsCount = ProgressCardItems.Count;
 
-            // Remove extra items
-            if (dataCount < itemsCount)
+            RunOnDispatcherQueue(() =>
             {
-                var start = dataCount;
-                var end = itemsCount;
-                RunOnDispatcherQueue(() =>
-                {       
+                // Remove extra items
+                if (dataCount < itemsCount)
+                {
+                    var start = dataCount;
+                    var end = itemsCount;
                     for (var i = start; i < end; i++)
-                    {      
-                        // TODO: Fix Index out of range exception.
+                    {
                         ProgressCardItems.RemoveAt(i);
                     }
-                });
 
-                itemsCount = dataCount;
-            }
+                    itemsCount = dataCount;
+                }
 
-            // Update items
-            for (var i = 0; i < itemsCount; i++)
-            {
-                var index = i;
-                if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
+                // Update items
+                for (var i = 0; i < itemsCount; i++)
                 {
-                    var data = progressCardData[index].LeftTitle;
-                    RunOnDispatcherQueue(() =>
+                    var index = i;
+                    if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
                     {
+                        var data = progressCardData[index].LeftTitle;
                         ProgressCardItems[index].LeftTitle = data;
-                    });
-                }
-                if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
-                {
-                    var data = progressCardData[index].RightTitle;
-                    RunOnDispatcherQueue(() =>
+                    }
+                    if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
                     {
+                        var data = progressCardData[index].RightTitle;
                         ProgressCardItems[index].RightTitle = data;
-                    });
-                }
-                if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
-                {
-                    var data = progressCardData[index].ProgressValue;
-                    RunOnDispatcherQueue(() =>
+                    }
+                    if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
                     {
+                        var data = progressCardData[index].ProgressValue;
                         ProgressCardItems[index].ProgressValue = data;
-                    });
+                    }
                 }
-            }
 
-            // Add extra items
-            if (dataCount > itemsCount)
-            {
-                var data = progressCardData.Skip(itemsCount).ToList();
-                RunOnDispatcherQueue(() =>
+                // Add extra items
+                if (dataCount > itemsCount)
                 {
+                    var data = progressCardData.Skip(itemsCount).ToList();
                     foreach (var item in data)
                     {
                         ProgressCardItems.Add(item);
                     }
-                });
-            }
+                }
+            });
         }
     }
 
