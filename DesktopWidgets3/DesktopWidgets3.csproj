@@ -19,7 +19,7 @@
     <Version>3.0.0</Version>
     <Authors>Jack251970</Authors>
     <Description>A app for many useful desktop widgets.</Description>
-    <Copyright>Copyright © 2023 Jack251970</Copyright>
+    <Copyright>Copyright © 2024 Jack251970</Copyright>
     <PackageIcon>PackageIcon.png</PackageIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PackageReadmeFile>README.md</PackageReadmeFile>
