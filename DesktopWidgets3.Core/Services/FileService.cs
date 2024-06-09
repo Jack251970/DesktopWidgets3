@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Core.Services;
 
 public class FileService : IFileService
 {
-    private readonly Dictionary<string, SaveTaskParameters> lastSaveTaskParameters = new() { };
+    private readonly Dictionary<string, SaveTaskParameters> lastSaveTaskParameters = [];
 
     public T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null!)
     {

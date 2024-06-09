@@ -13,18 +13,14 @@ namespace CommunityToolkit.WinUI.Controls;
 /// <summary>
 /// Exposes <see cref="RadialGauge"/> to Microsoft UI Automation.
 /// </summary>
-public class RadialGaugeAutomationPeer :
-        RangeBaseAutomationPeer,
+/// <remarks>
+/// Initializes a new instance of the <see cref="RadialGaugeAutomationPeer"/> class.
+/// </remarks>
+/// <param name="owner">The owner element to create for.</param>
+public class RadialGaugeAutomationPeer(RadialGauge owner) :
+        RangeBaseAutomationPeer(owner),
         IRangeValueProvider
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RadialGaugeAutomationPeer"/> class.
-    /// </summary>
-    /// <param name="owner">The owner element to create for.</param>
-    public RadialGaugeAutomationPeer(RadialGauge owner)
-        : base(owner)
-    {
-    }
 
     /// <inheritdoc/>
     public new bool IsReadOnly => !((RadialGauge)Owner).IsInteractive;

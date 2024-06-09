@@ -11,7 +11,7 @@ public static class WindowsExtensions
 {
     public static WindowEx MainWindow { get; private set; } = null!;
 
-    private static readonly Dictionary<Window, WindowLifecycleHandler> WindowsAndLifecycle = new();
+    private static readonly Dictionary<Window, WindowLifecycleHandler> WindowsAndLifecycle = [];
 
     private static IWindowService? FallbackWindowService;
 
@@ -22,7 +22,7 @@ public static class WindowsExtensions
 
     public static List<Window> GetAllWindows()
     {
-        return WindowsAndLifecycle.Keys.ToList();
+        return new List<Window>(WindowsAndLifecycle.Keys);
     }
 
     public static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null, bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null) where T : Window, new()
@@ -187,9 +187,8 @@ public static class WindowsExtensions
 
     private static void RegisterWindow(Window window, WindowLifecycleHandler lifecycleHandler)
     {
-        if (!WindowsAndLifecycle.ContainsKey(window))
+        if (WindowsAndLifecycle.TryAdd(window, lifecycleHandler))
         {
-            WindowsAndLifecycle.Add(window, lifecycleHandler);
             window.Closed += (sender, args) => UnregisterWindow(window);
         }
     }

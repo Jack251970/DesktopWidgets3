@@ -6,16 +6,11 @@ using System.Threading.Tasks;
 
 namespace Files.Shared;
 
-public sealed class FileLoggerProvider : ILoggerProvider
+public sealed class FileLoggerProvider(string path) : ILoggerProvider
 {
-	private readonly string path;
+	private readonly string path = path;
 
-	public FileLoggerProvider(string path)
-	{
-		this.path = path;
-	}
-
-	public ILogger CreateLogger(string categoryName)
+    public ILogger CreateLogger(string categoryName)
 	{
 		var logger = new FileLogger(path);
 		_ = Task.Run(() => logger.PurgeLogs(100));

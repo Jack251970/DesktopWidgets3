@@ -26,7 +26,7 @@ public static class PathHelpers
 		if (rootPath == path && path.StartsWith(@"\\"))
 		{
 			// Network Share path
-			fileName = path[(path.LastIndexOf(@"\", StringComparison.Ordinal) + 1)..];
+			fileName = path[(path.LastIndexOf('\\') + 1)..];
 		}
 		else if (rootPath == path)
 		{

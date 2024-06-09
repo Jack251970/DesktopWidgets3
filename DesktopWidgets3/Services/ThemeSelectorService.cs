@@ -44,7 +44,17 @@ internal class ThemeSelectorService : IThemeSelectorService
 
     public async Task SetRequestedThemeAsync(Window window)
     {
-        await ThemeHelper.SetRequestedThemeAsync(window, Theme);
+        if (App.MainWindow is null || window == App.MainWindow)
+        {
+            await ThemeHelper.SetRequestedThemeAsync(window, Theme);
+        }
+        else
+        {
+            await window.EnqueueOrInvokeAsync(async(window) =>
+            {
+                await ThemeHelper.SetRequestedThemeAsync(window, Theme);
+            });
+        }
     }
 
     public async Task SetThemeAsync(ElementTheme theme)

@@ -5,7 +5,8 @@ namespace DesktopWidgets3.Core.Helpers;
 
 public class StorageHelper
 {
-    private static readonly string[] UriPrefixes = {
+    private static readonly string[] UriPrefixes = 
+    [
         "ms-appx://", "ms-appdata://", "ms-appdata:///", "ms-appx:///",
         "ms-appx-web://", "ms-appx-web:///",
         "ms-appdata:///local/", "ms-appdata:///temp/", "ms-appdata:///roaming/",
@@ -13,7 +14,7 @@ public class StorageHelper
         "ms-appdata:///roamingstate/", "ms-appdata:///localcache/", "ms-appdata:///tempstate/",
         "ms-appdata:///localstate/", "ms-appdata:///roamingstate/", "ms-appdata:///localcache/",
         "ms-appdata:///tempstate/", "ms-appdata:///localstate/", "ms-appdata:///roamingstate/"
-    };
+    ];
 
     public static Task<StorageFile> GetStorageFile(string uriPath, string? path = null)
     {
@@ -35,7 +36,7 @@ public class StorageHelper
             }
 
             path = path.Replace('/', '\\');
-            if (path.StartsWith("\\"))
+            if (path.StartsWith('\\'))
             {
                 path = path[1..];
             }
@@ -46,7 +47,6 @@ public class StorageHelper
         }
     }
 
-    // Picked from: https://github.com/files-community/Files.
     public static async Task<string?> PickSingleFolderDialog(IntPtr windowHandle)
     {
         // WINUI3

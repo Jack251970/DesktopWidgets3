@@ -195,7 +195,7 @@ public class HardwareMonitor
     /// </summary>
     public List<NetworkInfoItem> GetNetworkInfo()
     {
-        List<NetworkInfoItem> networkInfoItems = new();
+        List<NetworkInfoItem> networkInfoItems = [];
 
         if (NetworkEnabled)
         {
@@ -261,15 +261,12 @@ public class HardwareMonitor
 
     #region disk info
 
-    private readonly string PartitionUsedSensorName = "Used Space";
-    private readonly string PartitionAvailableSensorName = "Available Space";
-
     /// <summary>
     /// Get disk infomation in byte/B unit.
     /// </summary>
     public List<DiskInfoItem> GetDiskInfo()
     {
-        List<DiskInfoItem> diskInfoItems = new();
+        List<DiskInfoItem> diskInfoItems = [];
 
         if (DiskEnabled)
         {
@@ -277,52 +274,7 @@ public class HardwareMonitor
             string hardwareIdentifier;
 
             float? diskUsed = null;
-            float? diskTotal = null;
-
-            foreach (var hardware in Hardware)
-            {
-                if (hardware.HardwareType == HardwareType.Storage)
-                {
-                    hardwareName = hardware.Name;
-                    hardwareIdentifier = hardware.Identifier.ToString();
-
-                    List<PartitionInfoItem> partitionInfoItems = new();
-
-                    float? partitionUsed = null;
-                    float? partitionAvailable = null;
-
-                    foreach (var sensor in hardware.Sensors)
-                    {
-                        // TODO: Fix here if needed.
-                        if (sensor.Name == PartitionUsedSensorName)
-                        {
-                            partitionUsed = sensor.Value;
-                        }
-                        else if (sensor.Name == PartitionAvailableSensorName)
-                        {
-                            partitionAvailable = sensor.Value;
-                        }
-                        // Remember in bytes unit.
-
-                        partitionInfoItems.Add(new PartitionInfoItem
-                        {
-                            Name = sensor.Name,
-                            Identifier = sensor.Identifier.ToString(),
-                            PartitionUsed = partitionUsed,
-                            PartitionTotal = partitionUsed + partitionAvailable
-                        });
-                    }
-
-                    diskInfoItems.Add(new DiskInfoItem
-                    {
-                        Name = hardwareName,
-                        Identifier = hardwareIdentifier,
-                        DiskUsed = diskUsed,
-                        DiskTotal = diskTotal,
-                        PartitionInfoItems = partitionInfoItems
-                    });
-                }
-            }
+            float? diskTotal;
 
             if (diskInfoItems.Count == 0)
             {
@@ -333,7 +285,7 @@ public class HardwareMonitor
                     hardwareIdentifier = disk["DeviceID"].ToString()!;
                     diskTotal = Convert.ToSingle(disk["Size"]);
 
-                    List<PartitionInfoItem> partitionInfoItems = new();
+                    List<PartitionInfoItem> partitionInfoItems = [];
 
                     var partitionSearcher = new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" + hardwareIdentifier + "'} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
                     foreach (var partition in partitionSearcher.Get().Cast<ManagementObject>())
@@ -396,9 +348,11 @@ internal class UpdateVisitor : IVisitor
 
     public void VisitSensor(ISensor sensor)
     {
+
     }
 
     public void VisitParameter(IParameter parameter)
     {
+
     }
 }

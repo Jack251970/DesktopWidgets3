@@ -60,7 +60,8 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                 RunOnDispatcherQueue(() =>
                 {       
                     for (var i = start; i < end; i++)
-                    {         
+                    {      
+                        // TODO: Fix Index out of range exception.
                         ProgressCardItems.RemoveAt(i);
                     }
                 });

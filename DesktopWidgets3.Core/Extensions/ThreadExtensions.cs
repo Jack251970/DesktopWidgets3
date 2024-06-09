@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.WinUI;
+﻿using System.Runtime.InteropServices;
+using CommunityToolkit.WinUI;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
@@ -10,9 +12,10 @@ namespace DesktopWidgets3.Core.Extensions;
 public static class ThreadExtensions
 {
     public static DispatcherQueue? MainDispatcherQueue { get; private set; }
+
     public static int MainDispatcherThreadId { get; private set; }
 
-    private static readonly Dictionary<Window, int> WindowsAndDispatcherThreads = new();
+    private static readonly Dictionary<Window, int> WindowsAndDispatcherThreads = [];
 
     public static void Initialize(DispatcherQueue dispatcherQueue)
     {
@@ -23,11 +26,7 @@ public static class ThreadExtensions
     public static void RegisterWindow(Window window)
     {
         var threadId = Environment.CurrentManagedThreadId;
-        if (!WindowsAndDispatcherThreads.ContainsKey(window))
-        {
-            WindowsAndDispatcherThreads.Add(window, threadId);
-        }
-        else
+        if (!WindowsAndDispatcherThreads.TryAdd(window, threadId))
         {
             WindowsAndDispatcherThreads[window] = threadId;
         }
@@ -56,129 +55,191 @@ public static class ThreadExtensions
 
     public static Task EnqueueOrInvokeAsync(this Window window, Func<Window, Task> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
     {
-        var dispatcher = window.DispatcherQueue;
-        if (dispatcher is not null && window.IsDispatcherThreadDifferent())
+        return IgnoreExceptions(() =>
         {
-            return dispatcher.EnqueueAsync(() => function(window), priority);
-        }
-        else
-        {
-            return function(window);
-        }
+            var dispatcher = window.DispatcherQueue;
+            if (dispatcher is not null && window.IsDispatcherThreadDifferent())
+            {
+                return dispatcher.EnqueueAsync(() => function(window), priority);
+            }
+            else
+            {
+                return function(window);
+            }
+        }, null, typeof(COMException));
     }
 
-    public static Task<T> EnqueueOrInvokeAsync<T>(this Window window, Func<Window, Task<T>> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+    public static Task<T?> EnqueueOrInvokeAsync<T>(this Window window, Func<Window, Task<T>> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
     {
-        var dispatcher = window.DispatcherQueue;
-        if (dispatcher is not null && window.IsDispatcherThreadDifferent())
+        return IgnoreExceptions(() =>
         {
-            return dispatcher.EnqueueAsync(() => function(window), priority);
-        }
-        else
-        {
-            return function(window);
-        }
+            var dispatcher = window.DispatcherQueue;
+            if (dispatcher is not null && window.IsDispatcherThreadDifferent())
+            {
+                return dispatcher.EnqueueAsync(() => function(window), priority);
+            }
+            else
+            {
+                return function(window);
+            }
+        }, null, typeof(COMException));
     }
 
     public static Task EnqueueOrInvokeAsync(this Window window, Action<Window> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
     {
-        var dispatcher = window.DispatcherQueue;
-        if (dispatcher is not null && window.IsDispatcherThreadDifferent())
+        return IgnoreExceptions(() =>
         {
-            return dispatcher.EnqueueAsync(() => function(window), priority);
-        }
-        else
-        {
-            function(window);
-            return Task.CompletedTask;
-        }
+            var dispatcher = window.DispatcherQueue;
+            if (dispatcher is not null && window.IsDispatcherThreadDifferent())
+            {
+                return dispatcher.EnqueueAsync(() => function(window), priority);
+            }
+            else
+            {
+                function(window);
+                return Task.CompletedTask;
+            }
+        }, null, typeof(COMException));
     }
 
-    public static Task<T> EnqueueOrInvokeAsync<T>(this Window window, Func<Window, T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+    public static Task<T?> EnqueueOrInvokeAsync<T>(this Window window, Func<Window, T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
     {
-        var dispatcher = window.DispatcherQueue;
-        if (dispatcher is not null && window.IsDispatcherThreadDifferent())
+        return IgnoreExceptions(() =>
         {
-            return dispatcher.EnqueueAsync(() => function(window), priority);
-        }
-        else
-        {
-            return Task.FromResult(function(window));
-        }
+            var dispatcher = window.DispatcherQueue;
+            if (dispatcher is not null && window.IsDispatcherThreadDifferent())
+            {
+                return dispatcher.EnqueueAsync(() => function(window), priority);
+            }
+            else
+            {
+                return Task.FromResult(function(window));
+            }
+        }, null, typeof(COMException));
     }
 
     // for multiple windows
 
     public static Task EnqueueOrInvokeAsync(this List<Window> windows, Func<Window, Task> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
     {
-        var (ThreadSameWindows, ThreadDifferentWindows) = windows.GetThreadInfo();
-
-        var tasks = new List<Task>();
-
-        foreach (var window in ThreadSameWindows)
+        return IgnoreExceptions(() =>
         {
-            tasks.Add(function(window));
-        }
+            var (ThreadSameWindows, ThreadDifferentWindows) = windows.GetThreadInfo();
 
-        foreach (var (dispatcherThreadInfo, windowList) in ThreadDifferentWindows)
-        {
-            var dispatcher = dispatcherThreadInfo.DispatcherQueue;
+            var tasks = new List<Task>();
 
-            if (dispatcher is not null)
+            foreach (var window in ThreadSameWindows)
             {
-                tasks.Add(dispatcher.EnqueueAsync(() =>
+                tasks.Add(function(window));
+            }
+
+            foreach (var (dispatcherThreadInfo, windowList) in ThreadDifferentWindows)
+            {
+                var dispatcher = dispatcherThreadInfo.DispatcherQueue;
+
+                if (dispatcher is not null)
+                {
+                    tasks.Add(dispatcher.EnqueueAsync(() =>
+                    {
+                        foreach (var window in windowList)
+                        {
+                            function(window);
+                        }
+                    }, priority));
+                }
+                else
                 {
                     foreach (var window in windowList)
                     {
-                        function(window);
+                        tasks.Add(function(window));
                     }
-                }, priority));
-            }
-            else
-            {
-                foreach (var window in windowList)
-                {
-                    tasks.Add(function(window));
                 }
             }
-        }
 
-        return Task.WhenAll(tasks);
+            return Task.WhenAll(tasks);
+        }, null, typeof(COMException));
     }
 
     public static Task EnqueueOrInvokeAsync(this List<Window> windows, Action<Window> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
     {
-        var (ThreadSameWindows, ThreadDifferentWindows) = windows.GetThreadInfo();
-
-        foreach (var window in ThreadSameWindows)
+        return IgnoreExceptions(() =>
         {
-            function(window);
-        }
+            var (ThreadSameWindows, ThreadDifferentWindows) = windows.GetThreadInfo();
 
-        foreach (var (dispatcherThreadInfo, windowList) in ThreadDifferentWindows)
-        {
-            var dispatcher = dispatcherThreadInfo.DispatcherQueue;
-
-            if (dispatcher is not null)
+            foreach (var window in ThreadSameWindows)
             {
-                dispatcher.EnqueueAsync(() =>
+                function(window);
+            }
+
+            foreach (var (dispatcherThreadInfo, windowList) in ThreadDifferentWindows)
+            {
+                var dispatcher = dispatcherThreadInfo.DispatcherQueue;
+
+                if (dispatcher is not null)
+                {
+                    dispatcher.EnqueueAsync(() =>
+                    {
+                        foreach (var window in windowList)
+                        {
+                            function(window);
+                        }
+                    }, priority);
+                }
+                else
                 {
                     foreach (var window in windowList)
                     {
                         function(window);
                     }
-                }, priority);
+                }
+            }
+
+            return Task.CompletedTask;
+        }, null, typeof(COMException));
+    }
+
+    private static async Task<bool> IgnoreExceptions(Func<Task> action, ILogger? logger = null, Type? exceptionToIgnore = null)
+    {
+        try
+        {
+            await action();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (exceptionToIgnore is null || exceptionToIgnore.IsAssignableFrom(ex.GetType()))
+            {
+                logger?.LogInformation(ex, ex.Message);
+
+                return false;
             }
             else
             {
-                foreach (var window in windowList)
-                {
-                    function(window);
-                }
+                throw;
             }
         }
+    }
 
-        return Task.CompletedTask;
+    private static async Task<T?> IgnoreExceptions<T>(Func<Task<T>> action, ILogger? logger = null, Type? exceptionToIgnore = null)
+    {
+        try
+        {
+            return await action();
+        }
+        catch (Exception ex)
+        {
+            if (exceptionToIgnore is null || exceptionToIgnore.IsAssignableFrom(ex.GetType()))
+            {
+                logger?.LogInformation(ex, ex.Message);
+
+                return default;
+            }
+            else
+            {
+                throw;
+            }
+        }
     }
 
     #endregion
@@ -200,7 +261,7 @@ public static class ThreadExtensions
                 }
                 else
                 {
-                    threadDifferentWindows.Add(dispatcherThreadInfo, new List<Window> { window });
+                    threadDifferentWindows.Add(dispatcherThreadInfo, [window]);
                 }
             }
             else

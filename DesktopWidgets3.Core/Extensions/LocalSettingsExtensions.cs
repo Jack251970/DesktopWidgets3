@@ -14,7 +14,7 @@ public static class LocalSettingsExtensions
     private static readonly string DefaultApplicationDataFolder = "DesktopWidgets3/ApplicationData";
 #endif
     private static string ApplicationDataFolder { get; set; } = null!;
-    private static readonly List<string> SubFolders = new();
+    private static readonly List<string> SubFolders = [];
 
     private static ILocalSettingsService? FallbackLocalSettingsService;
 

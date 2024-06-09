@@ -1,7 +1,4 @@
-﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
-
-using Windows.UI.ViewManagement;
+﻿using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Core.Views.Windows;
 

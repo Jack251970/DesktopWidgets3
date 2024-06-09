@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace Files.Shared.Extensions;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 public static class SafetyExtensions
 {
     public static bool IgnoreExceptions(Action action, ILogger? logger = null, Type? exceptionToIgnore = null)
