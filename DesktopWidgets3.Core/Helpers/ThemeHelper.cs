@@ -10,7 +10,7 @@ public static class ThemeHelper
         {
             rootElement.RequestedTheme = theme;
 
-            TitleBarHelper.UpdateTitleBar(window, theme);
+            TitleBarHelper.UpdateTitleBar(window, window.AppWindow.TitleBar, theme);
         }
 
         await Task.CompletedTask;

@@ -27,7 +27,7 @@ public sealed partial class NavShellPage : Page
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        TitleBarHelper.UpdateTitleBar(App.MainWindow, RequestedTheme);
+        TitleBarHelper.UpdateTitleBar(null, null, RequestedTheme);
 
         // Initialize widgets after the navigation frame is loaded.
         App.GetService<IWidgetManagerService>().Initialize();
@@ -35,9 +35,6 @@ public sealed partial class NavShellPage : Page
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        var resource = args.WindowActivationState == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
-
-        AppTitleBarText.Foreground = (SolidColorBrush)Application.Current.Resources[resource];
         App.MainWindow.TitleBarText = AppTitleBarText;
     }
 

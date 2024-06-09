@@ -22,9 +22,6 @@ public sealed partial class FrameShellPage : Page
     public void InitializeWindow(WidgetWindow window)
     {
         WidgetWindow = window;
-
-        // initialize title bar
-        TitleBarHelper.UpdateTitleBar(WidgetWindow, RequestedTheme);
         SetCustomTitleBar(false);
     }
 
