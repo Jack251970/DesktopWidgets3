@@ -130,7 +130,6 @@ public sealed class MainPageViewModel : ObservableObject
             UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
         }
 
-        // TODO(Later): Check if need
         AppearanceSettingsService.PropertyChanged += (s, e) =>
         {
             switch (e.PropertyName)
