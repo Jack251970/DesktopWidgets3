@@ -7,8 +7,6 @@ using Windows.System;
 
 namespace Files.App.Helpers;
 
-#pragma warning disable CA2253 // Do not raise reserved exception types
-
 /// <summary>
 /// Provides static helper for Win32.
 /// </summary>
@@ -24,7 +22,8 @@ public static partial class Win32Helper
 			if (isRunningOnArm is null)
 			{
 				isRunningOnArm = IsArmProcessor();
-				App.Logger.LogInformation("Running on ARM: {0}", isRunningOnArm);
+                // CHANGE: Use named placeholder instead of numeric values.
+                App.Logger.LogInformation("Running on ARM: {isRunningOnArm}", isRunningOnArm);
 			}
 
 			return isRunningOnArm ?? false;

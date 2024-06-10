@@ -3,8 +3,7 @@
 
 namespace Files.App.Data.Parameters;
 
-// TODO(later): Remove this.
-#pragma warning disable IL2057 // Unrecognized escape sequence in XML doc comment
+#pragma warning disable IL2057 // Unrecognized value passed to the typeName parameter of 'System.Type.GetType(String)'
 
 public sealed class CustomTabViewItemParameter
 {

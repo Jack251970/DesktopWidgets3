@@ -5,9 +5,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace Files.App.Data.Items;
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-#pragma warning disable CS8766 // Nullability of reference types in value of type
-
 public sealed class WidgetFolderCardItem : WidgetCardItem, IWidgetCardItem<LocationItem>
 {
 	// Fields

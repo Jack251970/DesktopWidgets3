@@ -6,8 +6,6 @@ using Microsoft.UI.Dispatching;
 
 namespace Files.App.ViewModels.Properties;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 internal sealed class LibraryProperties : BaseProperties
 {
 	public LibraryItem Library { get; private set; }

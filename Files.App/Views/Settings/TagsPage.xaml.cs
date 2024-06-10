@@ -22,13 +22,9 @@ public sealed partial class TagsPage : Page
 
 	private FlyoutBase? deleteItemFlyout;
 
-#pragma warning disable CA1822 // Mark members as static
-
     // See issue #12390 on Github. Dragging makes the app crash when run as admin.
     // Further reading: https://github.com/microsoft/terminal/issues/12017#issuecomment-1004129669
     public bool AllowItemsDrag => !ElevationHelpers.IsAppRunAsAdmin();
-
-#pragma warning restore CA1822 // Mark members as static
 
     public TagsPage()
 	{

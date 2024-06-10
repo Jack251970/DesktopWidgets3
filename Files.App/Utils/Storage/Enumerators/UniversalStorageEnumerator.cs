@@ -9,19 +9,16 @@ using Windows.Storage;
 
 namespace Files.App.Utils.Storage;
 
-#pragma warning disable CA1068 // CancellationToken parameters must come last
-#pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections
-
 public static class UniversalStorageEnumerator
 {
 	public static async Task<List<ListedItem>> ListEntries(
         IFolderViewViewModel folderViewViewModel,
         BaseStorageFolder rootFolder,
 		StorageFolderWithPath currentStorageFolder,
-		CancellationToken cancellationToken,
 		int countLimit,
 		Func<List<ListedItem>, Task> intermediateAction,
-		Dictionary<string, BitmapImage> defaultIconPairs = null!)
+		Dictionary<string, BitmapImage> defaultIconPairs,
+        CancellationToken cancellationToken)
 	{
 		var sampler = new IntervalSampler(500);
 		var tempList = new List<ListedItem>();
@@ -151,8 +148,9 @@ public static class UniversalStorageEnumerator
 			{
 				var results = await rootFolder.GetItemsAsync(i, 1);
 
-				item = results?.FirstOrDefault()!;
-				if (item is null)
+                // CHANGE: Use property instead of Linq Enumerable method FirstOrDefault().
+                item = (results?.Count > 0 ? results[0] : default)!;
+                if (item == default)
                 {
                     break;
                 }

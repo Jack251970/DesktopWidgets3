@@ -16,8 +16,6 @@ using Windows.System;
 
 namespace Files.App.Helpers;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 /// <summary>
 /// Provides static helper for Win32.
 /// </summary>

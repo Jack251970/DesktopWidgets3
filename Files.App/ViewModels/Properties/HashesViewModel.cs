@@ -7,8 +7,6 @@ using System.Windows.Input;
 
 namespace Files.App.ViewModels.Properties;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-
 public sealed class HashesViewModel : ObservableObject, IDisposable
 {
     private IUserSettingsService UserSettingsService { get; set; } = null!;

@@ -1048,8 +1048,6 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
         }
 	}
 
-#pragma warning disable CA1822 // Mark members as static
-
     // Workaround for https://github.com/microsoft/microsoft-ui-xaml/issues/170
     private void TextBlock_IsTextTrimmedChanged(TextBlock sender, IsTextTrimmedChangedEventArgs e)
 	{
@@ -1063,8 +1061,6 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
             SetToolTip(textBlock);
         }
     }
-
-#pragma warning restore CA1822 // Mark members as static
 
     private static void SetToolTip(TextBlock textBlock)
 	{

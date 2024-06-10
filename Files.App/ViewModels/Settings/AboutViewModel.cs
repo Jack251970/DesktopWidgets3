@@ -10,8 +10,6 @@ using Windows.System;
 
 namespace Files.App.ViewModels.Settings;
 
-#pragma warning disable CA1822 // Mark members as static
-
 public sealed class AboutViewModel : ObservableObject
 {
     public readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();

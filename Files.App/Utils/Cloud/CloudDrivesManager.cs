@@ -7,8 +7,6 @@ using Windows.Storage;
 
 namespace Files.App.Utils.Cloud;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 public static class CloudDrivesManager
 {
 	private static readonly ILogger _logger = App.Logger;

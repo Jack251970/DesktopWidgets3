@@ -24,9 +24,6 @@ using FileAttributes = System.IO.FileAttributes;
 
 namespace Files.App.Data.Models;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning disable CA2254 // Template should be a static expression
-
 public sealed class ItemViewModel : ObservableObject, IDisposable
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
@@ -1861,7 +1858,6 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
                 FolderViewViewModel,
 				rootFolder,
 				currentStorageFolder,
-				cancellationToken,
 				-1,
 				async (intermediateList) =>
 				{
@@ -1869,7 +1865,9 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
 					await OrderFilesAndFoldersAsync();
 					await ApplyFilesAndFoldersChangesAsync();
-				});
+				},
+                null!,
+                cancellationToken);
 
 			filesAndFolders.AddRange(finalList);
 

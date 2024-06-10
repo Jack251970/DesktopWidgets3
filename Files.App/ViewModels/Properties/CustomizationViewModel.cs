@@ -4,8 +4,6 @@ using Microsoft.UI.Windowing;
 
 namespace Files.App.ViewModels.Properties;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 public sealed class CustomizationViewModel : ObservableObject
 {
 	private static string DefaultIconDllFilePath

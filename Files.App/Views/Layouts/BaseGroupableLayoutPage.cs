@@ -14,8 +14,6 @@ using Windows.Win32;
 
 namespace Files.App.Views.Layouts;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-
 /// <summary>
 /// Represents layout page that can be grouped by.
 /// </summary>

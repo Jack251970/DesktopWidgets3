@@ -9,8 +9,6 @@ using System.Windows.Input;
 
 namespace Files.App.UserControls.Settings;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 [ContentProperty(Name = nameof(SettingsActionableElement))]
 public sealed partial class SettingsBlockControl : UserControl
 {

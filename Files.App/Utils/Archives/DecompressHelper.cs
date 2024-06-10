@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
-using Files.App.ViewModels.Dialogs;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using SevenZip;
@@ -12,8 +11,6 @@ using Windows.Foundation.Metadata;
 using Windows.Storage;
 
 namespace Files.App.Utils.Archives;
-
-#pragma warning disable CA2254 // Template should be a static expression
 
 public static class DecompressHelper
 {

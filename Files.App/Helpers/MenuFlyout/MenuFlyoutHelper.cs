@@ -7,8 +7,6 @@ using System.Windows.Input;
 
 namespace Files.App.Helpers;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 [Obsolete("Must not use this helper to generate menu flyout any longer.")]
 public sealed class MenuFlyoutHelper : DependencyObject
 {

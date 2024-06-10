@@ -505,7 +505,7 @@ public static class ContentPageContextFlyoutFactory
 			{
 				IsVisible = Commands.UnpinFolderFromSidebar.IsExecutable && UserSettingsService.GeneralSettingsService.ShowPinnedSection,
 			}.Build(),
-            // TODO(later): Check if disable start menu pinning commands, which will cause context menu blank.
+            // CHANGE: Remove start menu pinning commands, which will cause context menu loading issue.
 			/*new ContextMenuFlyoutItemViewModelBuilder(Commands.PinToStart)
 			{
 				IsVisible = selectedItems.All(x => (x.PrimaryItemAttribute == StorageItemTypes.Folder || x.IsExecutable || (x is ShortcutItem shortcutItem && FileExtensionHelpers.IsExecutableFile(shortcutItem.TargetPath))) && !x.IsArchive && !x.IsItemPinnedToStart),

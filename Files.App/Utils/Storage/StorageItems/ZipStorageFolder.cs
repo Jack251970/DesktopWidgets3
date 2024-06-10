@@ -16,8 +16,6 @@ using IO = System.IO;
 
 namespace Files.App.Utils.Storage;
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-
 public sealed class ZipStorageFolder : BaseStorageFolder, ICreateFileWithStream, IPasswordProtectedItem
 {
 	private readonly string containerPath;

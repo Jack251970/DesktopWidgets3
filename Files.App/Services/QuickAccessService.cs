@@ -3,9 +3,6 @@
 
 namespace Files.App.Services;
 
-#pragma warning disable IL2072 // Unrecognized escape sequence in cref attribute
-#pragma warning disable IL2075 // Unrecognized escape sequence in cref attribute
-
 public sealed class QuickAccessService : IQuickAccessService
 {
     // Quick access shell folder (::{679f85cb-0220-4080-b29b-5540cc05aab6}) contains recent files

@@ -42,11 +42,7 @@ public sealed partial class MainPage : Page
 
     private bool keyReleased = true;
 
-#pragma warning disable CA1822 // Mark members as static
-
     private bool IsAppRunningAsAdmin => ElevationHelpers.IsAppRunAsAdmin();
-
-#pragma warning restore CA1822 // Mark members as static
 
     private readonly DispatcherQueueTimer _updateDateDisplayTimer;
 

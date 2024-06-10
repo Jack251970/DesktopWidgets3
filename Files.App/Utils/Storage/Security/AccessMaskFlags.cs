@@ -3,7 +3,7 @@
 
 namespace Files.App.Utils.Storage;
 
-#pragma warning disable CA1069 // Enums values should not be duplicated
+#pragma warning disable CA1069 // Enums should not have duplicate values
 
 /// <summary>
 /// Represents access mask flags of an ACE.

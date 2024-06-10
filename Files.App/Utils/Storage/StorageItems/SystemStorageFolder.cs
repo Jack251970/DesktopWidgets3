@@ -12,8 +12,6 @@ using Windows.Storage.Search;
 
 namespace Files.App.Utils.Storage;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 public sealed class SystemStorageFolder(StorageFolder folder) : BaseStorageFolder
 {
     public StorageFolder Folder { get; } = folder;

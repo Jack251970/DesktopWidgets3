@@ -72,7 +72,6 @@ public class AppThemeModeService : IAppThemeModeService
 	public void ApplyResources()
 	{
         // Toggle between the themes to force reload the resource styles
-        // TODO(Later): Add theme resource reloading function.
         SetAppThemeMode(null, null, ElementTheme.Dark);
 		SetAppThemeMode(null, null, ElementTheme.Light);
 

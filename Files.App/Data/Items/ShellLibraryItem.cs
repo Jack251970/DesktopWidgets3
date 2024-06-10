@@ -5,8 +5,6 @@ using System.IO;
 
 namespace Files.App.Data.Items;
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-
 public sealed class ShellLibraryItem
 {
 	public const string EXTENSION = ".library-ms";

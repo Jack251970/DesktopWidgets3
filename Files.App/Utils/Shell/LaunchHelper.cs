@@ -3,14 +3,12 @@
 
 using Files.Shared.Helpers;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32.SafeHandles;
 using System.IO;
 using Vanara.PInvoke;
 using Vanara.Windows.Shell;
 
 namespace Files.App.Utils.Shell;
-
-#pragma warning disable CS0618 // Type or member is obsolete
-#pragma warning disable CA2254 // Template should be a static expression
 
 /// <summary>
 /// Provides static helper for launching external executable files.
@@ -211,9 +209,10 @@ public static partial class LaunchHelper
 
 							if (!hFileSrc.IsInvalid && !hFileDst.IsInvalid)
 							{
-								// Copy ADS to temp folder and open
-								using (var inStream = new FileStream(hFileSrc.DangerousGetHandle(), FileAccess.Read))
-								using (var outStream = new FileStream(hFileDst.DangerousGetHandle(), FileAccess.Write))
+                                // Copy ADS to temp folder and open
+                                // CHANGE: Use FileStream(SafeFileHandle handle, FileAccess access) instead of obsoleted FileStream.FileStream(nint, FileAccess)
+                                using (var inStream = new FileStream(new SafeFileHandle(hFileSrc.DangerousGetHandle(), ownsHandle: false), FileAccess.Read))
+								using (var outStream = new FileStream(new SafeFileHandle(hFileDst.DangerousGetHandle(), ownsHandle: false), FileAccess.Write))
 								{
 									await inStream.CopyToAsync(outStream);
 									await outStream.FlushAsync();

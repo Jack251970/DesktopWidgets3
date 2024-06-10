@@ -6,8 +6,6 @@ using Windows.Services.Maps;
 
 namespace Files.App.Helpers;
 
-#pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections. Instead use the collection directly
-
 public static class LocationHelpers
 {
     public static async Task<string> GetAddressFromCoordinatesAsync(double? Lat, double? Lon)
@@ -39,6 +37,7 @@ public static class LocationHelpers
         // Reverse geocode the specified geographic location.
 
         var result = await MapLocationFinder.FindLocationsAtAsync(pointToReverseGeocode);
-        return result?.Locations?.FirstOrDefault()?.DisplayName!;
+        // CHANGE: Use property instead of Linq Enumerable method FirstOrDefault().
+        return result?.Locations?.Count > 0 ? result.Locations[0].DisplayName : default!;
     }
 }

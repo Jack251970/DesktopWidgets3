@@ -9,8 +9,6 @@ using Windows.Storage;
 
 namespace Files.App.ViewModels.Properties;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 /// <summary>
 /// This class is represents a system file property from the Windows.Storage API
 /// </summary>

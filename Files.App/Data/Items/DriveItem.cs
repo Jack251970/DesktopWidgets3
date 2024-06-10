@@ -11,11 +11,9 @@ using ByteSize = ByteSizeLib.ByteSize;
 
 namespace Files.App.Data.Items;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 public sealed class DriveItem : ObservableObject, INavigationControlItem, ILocatableFolder
 {
-	private BitmapImage icon;
+	private BitmapImage icon = null!;
 	public BitmapImage Icon
 	{
 		get => icon;
@@ -26,20 +24,20 @@ public sealed class DriveItem : ObservableObject, INavigationControlItem, ILocat
 		}
 	}
 
-	public byte[] IconData { get; set; }
+	public byte[] IconData { get; set; } = null!;
 
-	private string path;
-	public string Path
+    private string path = null!;
+    public string Path
 	{
 		get => path;
 		set => path = value;
 	}
 
-	public string DeviceID { get; set; }
+	public string DeviceID { get; set; } = null!;
 
-	public StorageFolder Root { get; set; }
+    public StorageFolder Root { get; set; } = null!;
 
-	public NavigationControlItemType ItemType { get; set; } = NavigationControlItemType.Drive;
+    public NavigationControlItemType ItemType { get; set; } = NavigationControlItemType.Drive;
 
 	public Visibility ItemVisibility { get; set; } = Visibility.Visible;
 
@@ -127,15 +125,15 @@ public sealed class DriveItem : ObservableObject, INavigationControlItem, ILocat
 		}
 	}
 
-	private string text;
-	public string Text
+	private string text = null!;
+    public string Text
 	{
 		get => text;
 		set => SetProperty(ref text, value);
 	}
 
-	private string spaceText;
-	public string SpaceText
+	private string spaceText = null!;
+    public string SpaceText
 	{
 		get => spaceText;
 		set => SetProperty(ref spaceText, value);
@@ -143,9 +141,9 @@ public sealed class DriveItem : ObservableObject, INavigationControlItem, ILocat
 
 	public SectionType Section { get; set; }
 
-	public ContextMenuOptions MenuOptions { get; set; }
+	public ContextMenuOptions MenuOptions { get; set; } = null!;
 
-	private float percentageUsed = 0.0f;
+    private float percentageUsed = 0.0f;
 	public float PercentageUsed
 	{
 		get => percentageUsed;
@@ -332,7 +330,9 @@ public sealed class DriveItem : ObservableObject, INavigationControlItem, ILocat
         }
 
         if (string.Equals(DeviceID, "network-folder"))
+        {
             IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.NetworkDrives).IconData;
+        }
 
         IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.Folder).IconData;
 

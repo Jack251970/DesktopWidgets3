@@ -8,8 +8,6 @@ using ByteSize = ByteSizeLib.ByteSize;
 
 namespace Files.App.ViewModels.Properties;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 internal sealed class FolderProperties : BaseProperties
 {
     private readonly IFolderViewViewModel FolderViewViewModel;

@@ -9,8 +9,6 @@ using Windows.System;
 
 namespace Files.App.ViewModels.Dialogs;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
 public sealed class DynamicDialogViewModel : ObservableObject, IDisposable
 {
 	#region Public Properties

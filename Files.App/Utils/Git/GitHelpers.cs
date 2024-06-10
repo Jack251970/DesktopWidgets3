@@ -12,8 +12,6 @@ using System.Text;
 
 namespace Files.App.Utils.Git;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 internal static partial class GitHelpers
 {
 	private const string GIT_RESOURCE_NAME = "Files:https://github.com";

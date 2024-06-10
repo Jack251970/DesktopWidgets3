@@ -5,8 +5,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace Files.App.Data.Items;
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-
 public sealed class WidgetDriveCardItem : WidgetCardItem, IWidgetCardItem<DriveItem>, IComparable<WidgetDriveCardItem>
 {
 	private byte[] thumbnailData;

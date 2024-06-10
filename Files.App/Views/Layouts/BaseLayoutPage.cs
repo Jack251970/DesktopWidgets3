@@ -28,8 +28,6 @@ using VanaraWindowsShell = Vanara.Windows.Shell;
 
 namespace Files.App.Views.Layouts;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-
 /// <summary>
 /// Represents the base class which every layout page must derive from
 /// </summary>
@@ -86,14 +84,10 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 	public static AppModel AppModel
 		=> App.AppModel;
 
-#pragma warning disable CA1822 // Mark members as static
-
     // NOTE: Dragging makes the app crash when run as admin. (#12390)
     // For more information, visit https://github.com/microsoft/terminal/issues/12017#issuecomment-1004129669
     public bool AllowItemDrag
         => !ElevationHelpers.IsAppRunAsAdmin();
-
-#pragma warning restore CA1822 // Mark members as static
 
     public CommandBarFlyout ItemContextMenuFlyout { get; set; } = new()
 	{

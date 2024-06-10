@@ -30,7 +30,7 @@ public static class FileTagsHelper
         {
             Win32Helper.UnsetFileAttribute(filePath, IO.FileAttributes.ReadOnly);
         }
-        if (!tag.Any())  // TODO(Later): Optimize .Any() function.
+        if (tag.Length == 0)
         {
             PInvoke.DeleteFileFromApp($"{filePath}:files");
         }

@@ -4,7 +4,6 @@
 using Files.App.Utils.Storage.Operations;
 using Files.Shared.Helpers;
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -15,8 +14,6 @@ using Vanara.Windows.Shell;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace Files.App.Utils.Storage;
-
-#pragma warning disable CA2254 // Template should be a static expression
 
 public sealed class FileOperationsHelpers
 {

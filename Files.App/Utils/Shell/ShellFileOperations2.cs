@@ -5,8 +5,6 @@ using static Vanara.Windows.Shell.ShellFileOperations;
 
 namespace Vanara.Windows.Shell;
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-
 /// <summary>Queued and static file operations using the Shell.</summary>
 /// <seealso cref="IDisposable"/>
 /// https://github.com/dahall/Vanara/blob/master/Windows.Shell.Common/ShellFileOperations/ShellFileOperations.cs

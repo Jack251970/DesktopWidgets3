@@ -3,8 +3,6 @@
 
 namespace Files.App.Data.Models;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-
 public abstract class FreeableStore<TImplementation>
 	: IDisposable, IEquatable<TImplementation> where TImplementation : class
 {

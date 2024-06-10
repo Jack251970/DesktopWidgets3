@@ -10,9 +10,6 @@ using System.IO;
 using System.Text;
 using Windows.Storage;
 
-#pragma warning disable CS0618 // Type or member is obsolete
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-
 namespace Files.App.Utils;
 
 public class ListedItem : ObservableObject, IGroupableItem

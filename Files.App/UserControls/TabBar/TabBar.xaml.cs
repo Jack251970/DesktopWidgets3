@@ -40,16 +40,12 @@ public sealed partial class TabBar : BaseTabBar
 		set => SetValue(TabStripVisibilityProperty, value);
 	}
 
-#pragma warning disable CA1822 // Mark members as static
-
     // Dragging makes the app crash when run as admin.
     // For more information:
     // - https://github.com/files-community/Files/issues/12390
     // - https://github.com/microsoft/terminal/issues/12017#issuecomment-1004129669
     public bool AllowTabsDrag
 		=> !ElevationHelpers.IsAppRunAsAdmin();
-
-#pragma warning restore CA1822 // Mark members as static
 
 	public Rectangle DragArea
 		=> DragAreaRectangle;

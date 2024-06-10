@@ -8,9 +8,6 @@ using Vanara.Windows.Shell;
 
 namespace Files.App.Utils.Shell;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-#pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
-
 /// <summary>
 /// Represents an encapsulated item for shell library.
 /// </summary>
@@ -116,10 +113,10 @@ public sealed class ShellLibraryEx : ShellFolder
 	/// <summary>
 	/// Gets the name relative to the parent for the item.
 	/// </summary>
-	public override string Name
+	public override string? Name
 	{
 		get => _name;
-		protected set => _name = value;
+		protected set => _name = value!;
 	}
 
 	/// <summary>

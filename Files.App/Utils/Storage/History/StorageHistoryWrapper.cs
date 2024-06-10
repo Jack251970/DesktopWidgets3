@@ -3,8 +3,6 @@
 
 namespace Files.App.Utils.Storage;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-
 public sealed class StorageHistoryWrapper : IDisposable
 {
 	private int index = -1;

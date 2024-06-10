@@ -8,8 +8,6 @@ using TagLib;
 
 namespace Files.App.Data.Models;
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-
 public sealed class SelectedItemsPropertiesViewModel : ObservableObject
 {
 	private IDateTimeFormatter DateTimeFormatter { get; set; } = null!;

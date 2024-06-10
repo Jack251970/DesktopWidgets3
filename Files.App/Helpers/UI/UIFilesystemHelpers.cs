@@ -3,7 +3,6 @@
 
 using DesktopWidgets3.Core.Helpers;
 using Files.App.Storage.FtpStorage;
-using Files.App.ViewModels.Dialogs;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.IO;
@@ -14,8 +13,6 @@ using Windows.Storage;
 using Windows.System;
 
 namespace Files.App.Helpers;
-
-#pragma warning disable CA2254 // Template should be a static expression
 
 public static class UIFilesystemHelpers
 {

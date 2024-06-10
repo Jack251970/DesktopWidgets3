@@ -10,9 +10,6 @@ using Vanara.Windows.Shell;
 
 namespace Files.App.Utils.RecentItem;
 
-#pragma warning disable CA1822 // Mark members as static
-#pragma warning disable CA2254 // Template should be a static expression
-
 public sealed class RecentItems : IDisposable
 {
 	private const string QuickAccessGuid = "::{679f85cb-0220-4080-b29b-5540cc05aab6}";

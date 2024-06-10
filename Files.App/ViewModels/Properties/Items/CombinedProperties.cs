@@ -5,8 +5,6 @@ using Windows.Storage;
 
 namespace Files.App.ViewModels.Properties;
 
-#pragma warning disable CA2254 // Template should be a static expression
-
 internal class CombinedProperties : BaseProperties
 {
 	public List<ListedItem> List { get; }

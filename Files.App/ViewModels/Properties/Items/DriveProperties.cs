@@ -1,9 +1,6 @@
 using Microsoft.Extensions.Logging;
-using Windows.Storage.FileProperties;
 
 namespace Files.App.ViewModels.Properties;
-
-#pragma warning disable CA2254 // Template should be a static expression
 
 internal sealed class DriveProperties : BaseProperties
 {

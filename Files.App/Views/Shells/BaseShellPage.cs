@@ -17,8 +17,6 @@ using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
 
 namespace Files.App.Views.Shells;
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-
 public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 {
     protected IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
