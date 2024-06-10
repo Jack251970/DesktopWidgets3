@@ -220,7 +220,7 @@ internal sealed class CommandManager : ICommandManager
             FolderViewViewModel, 
             FolderViewViewModel.GetRequiredService<IContentPageContext>(),
             FolderViewViewModel.GetRequiredService<IDisplayPageContext>())
-            .Select(action => new ActionCommand(folderViewViewModel, this, action.Key, action.Value))
+            .Select(action => new ActionCommand(folderViewViewModel, action.Key, action.Value))
             .Cast<IRichCommand>()
             .Append(new NoneCommand())
             .ToFrozenDictionary(command => command.Code);
@@ -358,7 +358,7 @@ internal sealed class CommandManager : ICommandManager
 		[CommandCodes.GroupByYear] = new GroupByYearAction(displayPageContext),
 		[CommandCodes.GroupByMonth] = new GroupByMonthAction(displayPageContext),
 		[CommandCodes.ToggleGroupByDateUnit] = new ToggleGroupByDateUnitAction(displayPageContext),
-        [CommandCodes.FormatDrive] = new FormatDriveAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.FormatDrive] = new FormatDriveAction(contentPageContext),
         [CommandCodes.NavigateBack] = new NavigateBackAction(contentPageContext),
 		[CommandCodes.NavigateForward] = new NavigateForwardAction(contentPageContext),
 		[CommandCodes.NavigateUp] = new NavigateUpAction(contentPageContext),

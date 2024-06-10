@@ -191,8 +191,8 @@ public sealed class FolderSearch
         //var sampler = new IntervalSampler(500);
         var tags = AQSQuery["tag:".Length..]?.Split(',').Where(t => !string.IsNullOrWhiteSpace(t))
 			.SelectMany(t => fileTagsSettingsService.GetTagsByName(t), (_, t) => t.Uid).ToHashSet();
-		if (tags?.Any() != true)
-		{
+        if (tags == null || tags.Count == 0)
+        {
 			return;
 		}
 
@@ -208,9 +208,9 @@ public sealed class FolderSearch
 		{
 			(var hFile, var findData) = await Task.Run(() =>
 			{
-                int additionalFlags = Win32PInvoke.FIND_FIRST_EX_LARGE_FETCH;
-                IntPtr hFileTsk = Win32PInvoke.FindFirstFileExFromApp(match.FilePath, Win32PInvoke.FINDEX_INFO_LEVELS.FindExInfoBasic,
-                    out WIN32_FIND_DATA findDataTsk, Win32PInvoke.FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, additionalFlags);
+                var additionalFlags = Win32PInvoke.FIND_FIRST_EX_LARGE_FETCH;
+                var hFileTsk = Win32PInvoke.FindFirstFileExFromApp(match.FilePath, Win32PInvoke.FINDEX_INFO_LEVELS.FindExInfoBasic,
+                    out var findDataTsk, Win32PInvoke.FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, additionalFlags);
                 return (hFileTsk, findDataTsk);
 			}).WithTimeoutAsync(TimeSpan.FromSeconds(5));
 
@@ -296,9 +296,9 @@ public sealed class FolderSearch
 		//var sampler = new IntervalSampler(500);
 		(var hFile, var findData) = await Task.Run(() =>
 		{
-            int additionalFlags = Win32PInvoke.FIND_FIRST_EX_LARGE_FETCH;
-            IntPtr hFileTsk = Win32PInvoke.FindFirstFileExFromApp($"{folder}\\{QueryWithWildcard}", Win32PInvoke.FINDEX_INFO_LEVELS.FindExInfoBasic,
-                out WIN32_FIND_DATA findDataTsk, Win32PInvoke.FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, additionalFlags);
+            var additionalFlags = Win32PInvoke.FIND_FIRST_EX_LARGE_FETCH;
+            var hFileTsk = Win32PInvoke.FindFirstFileExFromApp($"{folder}\\{QueryWithWildcard}", Win32PInvoke.FINDEX_INFO_LEVELS.FindExInfoBasic,
+                out var findDataTsk, Win32PInvoke.FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, additionalFlags);
             return (hFileTsk, findDataTsk);
 		}).WithTimeoutAsync(TimeSpan.FromSeconds(5));
 

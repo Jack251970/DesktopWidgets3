@@ -87,7 +87,7 @@ public static class DriveHelpers
 					try
 					{
 						var root = StorageDevice.FromId(item.Id);
-						if (normalizedRootPath == root.Name.ToUpperInvariant())
+						if (normalizedRootPath.Equals(root.Name, StringComparison.InvariantCultureIgnoreCase))
 						{
 							matchingDrive = root;
 							break;
@@ -108,7 +108,7 @@ public static class DriveHelpers
 		else if (devicePath.StartsWith(@"\\", StringComparison.Ordinal) &&
 			!devicePath.StartsWith(@"\\SHELL\", StringComparison.Ordinal))
 		{
-			var lastSepIndex = rootPath!.LastIndexOf(@"\", StringComparison.Ordinal);
+			var lastSepIndex = rootPath!.LastIndexOf('\\');
 			rootPath = lastSepIndex > 1 ? rootPath[..lastSepIndex] : rootPath; // Remove share name
 			return new StorageFolderWithPath(await StorageFolder.GetFolderFromPathAsync(rootPath), rootPath);
 		}

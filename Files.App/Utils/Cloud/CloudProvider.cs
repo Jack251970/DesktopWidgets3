@@ -14,11 +14,11 @@ public sealed class CloudProvider(CloudProviders id) : ICloudProvider
 	public byte[]? IconData { get; init; }
 
     public override int GetHashCode()
-	{
-		return (ID, SyncFolder).GetHashCode();
-	}
+    {
+        return HashCode.Combine(ID, SyncFolder);
+    }
 
-	public override bool Equals(object? o)
+    public override bool Equals(object? o)
 	{
 		return o is ICloudProvider other && Equals(other);
 	}

@@ -63,7 +63,7 @@ public sealed partial class WidgetFileTagCardItem : WidgetCardItem
 		ClickCommand = new AsyncRelayCommand(ClickAsync);
 	}
 
-	private Task ClickAsync()
+	private Task<bool> ClickAsync()
 	{
 		return NavigationHelpers.OpenPath(FolderViewViewModel, _associatedStorable.Id, ContentPageContext.ShellPage!);
 	}

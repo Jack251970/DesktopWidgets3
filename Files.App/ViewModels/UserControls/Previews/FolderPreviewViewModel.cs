@@ -7,24 +7,17 @@ using System.IO;
 
 namespace Files.App.ViewModels.Previews;
 
-public sealed class FolderPreviewViewModel
+public sealed class FolderPreviewViewModel(ListedItem item)
 {
-    private readonly IFolderViewViewModel FolderViewViewModel;
+    private readonly IFolderViewViewModel FolderViewViewModel = item.FolderViewViewModel;
 
     /*private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetRequiredService<IDateTimeFormatter>();*/
 
-    public ListedItem Item { get; }
+    public ListedItem Item { get; } = item;
 
-	public BitmapImage Thumbnail { get; set; } = new();
+    public BitmapImage Thumbnail { get; set; } = new();
 
 	private BaseStorageFolder Folder { get; set; } = null!;
-
-    public FolderPreviewViewModel(ListedItem item)
-    {
-        Item = item;
-
-        FolderViewViewModel = item.FolderViewViewModel;
-    }
 
     public Task LoadAsync()
 		=> LoadPreviewAndDetailsAsync();

@@ -25,7 +25,7 @@ internal class CombinedProperties : BaseProperties
 		ViewModel.PropertyChanged += ViewModel_PropertyChanged;
 	}
 
-	public sealed override void GetBaseProperties()
+	public override sealed void GetBaseProperties()
 	{
 		if (List is not null)
 		{

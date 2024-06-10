@@ -27,35 +27,30 @@ namespace Files.App.Data.Attributes;
 /// </code>
 /// <typeparam name="T">property type (nullable value type are not allowed)</typeparam>
 /// </remarks>
+/// <inheritdoc cref="DependencyPropertyAttribute{T}"/>
+/// <param name="name">The name of the property.</param>
+/// <param name="propertyChanged">The name of the method, which called when property changed.</param>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-public sealed class DependencyPropertyAttribute<T> : Attribute where T : notnull
+public sealed class DependencyPropertyAttribute<T>(string name, string propertyChanged = "") : Attribute where T : notnull
 {
-	/// <inheritdoc cref="DependencyPropertyAttribute{T}"/>
-	/// <param name="name">The name of the property.</param>
-	/// <param name="propertyChanged">The name of the method, which called when property changed.</param>
-	public DependencyPropertyAttribute(string name, string propertyChanged = "")
-	{
-		Name = name;
-		PropertyChanged = propertyChanged;
-	}
 
-	/// <summary>
-	/// Gets the name of the property.
-	/// </summary>
-	public string Name { get; }
+    /// <summary>
+    /// Gets the name of the property.
+    /// </summary>
+    public string Name { get; } = name;
 
-	/// <summary>
-	/// Gets the name of the method, which called when property changed.
-	/// </summary>
-	public string PropertyChanged { get; }
+    /// <summary>
+    /// Gets the name of the method, which called when property changed.
+    /// </summary>
+    public string PropertyChanged { get; } = propertyChanged;
 
-	/// <summary>
-	/// Gets or initializes a value whether property setter is private.
-	/// </summary>
-	/// <remarks>
-	/// Default value is <see langword="false"/>.
-	/// </remarks>
-	public bool IsSetterPrivate { get; init; }
+    /// <summary>
+    /// Gets or initializes a value whether property setter is private.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false"/>.
+    /// </remarks>
+    public bool IsSetterPrivate { get; init; }
 
 	/// <summary>
 	/// Gets or initializes a value whether property type is nullable (nullable value type are not allowed).

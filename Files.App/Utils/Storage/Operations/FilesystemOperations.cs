@@ -229,7 +229,7 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 			{
 				Debug.WriteLine(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
 
-				var destinationResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+				var destinationResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 				var sourceResult = await source.ToStorageItemResult();
 				fsResult = sourceResult.ErrorCode | destinationResult.ErrorCode;
 
@@ -400,7 +400,7 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 					Debug.WriteLine(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
 
 					var fsSourceFolder = await source.ToStorageItemResult();
-					var fsDestinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination));
+					var fsDestinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 					fsResult = fsSourceFolder.ErrorCode | fsDestinationFolder.ErrorCode;
 
 					if (fsResult)

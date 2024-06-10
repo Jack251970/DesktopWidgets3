@@ -166,7 +166,7 @@ public sealed class CompressArchiveModel(
 				compressor.CompressionMode = CompressionMode.Append;
 			}
 
-			if (files.Any())
+			if (files.Length != 0)
 			{
 				if (string.IsNullOrEmpty(Password))
                 {

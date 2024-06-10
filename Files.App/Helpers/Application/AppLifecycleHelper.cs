@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text;
-using Windows.ApplicationModel;
 using Windows.System;
 using Windows.UI.Notifications;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;

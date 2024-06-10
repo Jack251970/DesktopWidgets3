@@ -2,12 +2,7 @@
 
 namespace Files.App.Data.Exceptions;
 
-public sealed class FileAlreadyExistsException : IOException
+public sealed class FileAlreadyExistsException(string message, string fileName) : IOException(message)
 {
-	public string FileName { get; private set; }
-
-	public FileAlreadyExistsException(string message, string fileName) : base(message)
-	{
-		FileName = fileName;
-	}
+    public string FileName { get; private set; } = fileName;
 }

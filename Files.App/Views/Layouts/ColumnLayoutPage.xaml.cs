@@ -164,7 +164,7 @@ public sealed partial class ColumnLayoutPage : BaseGroupableLayoutPage
 		if (args.Item is ListedItem item && columnsOwner?.OwnerPath is string ownerPath
 			&& (ownerPath == item.ItemPath || ownerPath.StartsWith(item.ItemPath) && ownerPath[item.ItemPath.Length] is '/' or '\\'))
 		{
-            SetFolderBackground(args.ItemContainer as ListViewItem, this.Resources["ListViewItemBackgroundSelected"] as SolidColorBrush);
+            SetFolderBackground(args.ItemContainer as ListViewItem, Resources["ListViewItemBackgroundSelected"] as SolidColorBrush);
 
             openedFolderPresenter = FileList.ContainerFromItem(item) as ListViewItem;
 			FileList.ContainerContentChanging -= HighlightPathDirectory;
@@ -290,7 +290,7 @@ public sealed partial class ColumnLayoutPage : BaseGroupableLayoutPage
 
         if (e.RemovedItems.Count > 0 && openedFolderPresenter != null)
 		{
-            SetFolderBackground(openedFolderPresenter, this.Resources["ListViewItemBackgroundSelected"] as SolidColorBrush);
+            SetFolderBackground(openedFolderPresenter, Resources["ListViewItemBackgroundSelected"] as SolidColorBrush);
         }
 
         if (SelectedItems?.Count == 1 && SelectedItem?.PrimaryItemAttribute is StorageItemTypes.Folder)
@@ -502,7 +502,7 @@ public sealed partial class ColumnLayoutPage : BaseGroupableLayoutPage
         }
 
         var isItemFile = item?.PrimaryItemAttribute is StorageItemTypes.File;
-		var isItemFolder = item?.PrimaryItemAttribute is StorageItemTypes.Folder;
+		//var isItemFolder = item?.PrimaryItemAttribute is StorageItemTypes.Folder;
 
 		// Check if the setting to open items with a single click is turned on
 		if (UserSettingsService.FoldersSettingsService.OpenItemsWithOneClick && isItemFile)

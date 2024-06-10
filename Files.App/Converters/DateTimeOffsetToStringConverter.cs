@@ -5,16 +5,11 @@ using Microsoft.UI.Xaml.Data;
 
 namespace Files.App.Converters;
 
-internal sealed class DateTimeOffsetToStringConverter : IValueConverter
+internal sealed class DateTimeOffsetToStringConverter(IFolderViewViewModel folderViewViewModel) : IValueConverter
 {
-	private readonly IDateTimeFormatter formatter;
+	private readonly IDateTimeFormatter formatter = folderViewViewModel.GetRequiredService<IDateTimeFormatter>();
 
-    public DateTimeOffsetToStringConverter(IFolderViewViewModel folderViewViewModel)
-    {
-        formatter = folderViewViewModel.GetRequiredService<IDateTimeFormatter>();
-    }
-
-	public object Convert(object value, Type targetType, object parameter, string language)
+    public object Convert(object value, Type targetType, object parameter, string language)
 	{
 		return value is null
 			? string.Empty

@@ -3,16 +3,11 @@
 
 namespace Files.App.Helpers;
 
-internal sealed class CollectionDebugView<T>
+internal sealed class CollectionDebugView<T>(ICollection<T> collection)
 {
-	private readonly ICollection<T> _collection;
+	private readonly ICollection<T> _collection = collection ?? throw new ArgumentNullException(nameof(collection));
 
-	public CollectionDebugView(ICollection<T> collection)
-	{
-		_collection = collection ?? throw new ArgumentNullException(nameof(collection));
-	}
-
-	[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+    [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 	public T[] Items
 	{
 		get

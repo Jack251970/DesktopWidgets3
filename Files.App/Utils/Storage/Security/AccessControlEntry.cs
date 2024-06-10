@@ -127,7 +127,7 @@ public sealed class AccessControlEntry : ObservableObject
             }
 
             // Capitalize the first letter
-            if (inheritanceStrings.Any())
+            if (inheritanceStrings.Count != 0)
             {
                 inheritanceStrings[0] = char.ToUpperInvariant(inheritanceStrings[0].First()) + inheritanceStrings[0][1..];
             }

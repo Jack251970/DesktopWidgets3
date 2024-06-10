@@ -495,9 +495,9 @@ internal sealed class GroupDescendingAction : ObservableObject, IToggleAction
 	}
 }
 
-internal sealed class ToggleGroupDirectionAction : IAction
+internal sealed class ToggleGroupDirectionAction(IDisplayPageContext context) : IAction
 {
-	private readonly IDisplayPageContext context;
+	private readonly IDisplayPageContext context = context;
 
 	public string Label
 		=> "ToggleSortDirection".GetLocalizedResource();
@@ -505,12 +505,7 @@ internal sealed class ToggleGroupDirectionAction : IAction
 	public string Description
 		=> "ToggleGroupDirectionDescription".GetLocalizedResource();
 
-	public ToggleGroupDirectionAction(IDisplayPageContext context)
-    {
-        this.context = context;
-    }
-
-	public Task ExecuteAsync(object? parameter = null)
+    public Task ExecuteAsync(object? parameter = null)
 	{
 		context.GroupDirection = context.SortDirection is SortDirection.Descending ? SortDirection.Ascending : SortDirection.Descending;
 

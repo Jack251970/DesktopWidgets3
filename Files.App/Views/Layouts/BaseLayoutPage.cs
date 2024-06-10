@@ -334,7 +334,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			? (CollectionViewSource.Source as BulkConcurrentObservableCollection<GroupedCollection<ListedItem>>)?.SelectMany(g => g) // add all items from each group to the new list
 			: CollectionViewSource.Source as IEnumerable<ListedItem>;
 
-		return items ?? new List<ListedItem>();
+		return items ?? [];
 	}
 
 	public virtual void ResetItemOpacity()
@@ -712,7 +712,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			if (!InstanceViewModel!.IsPageTypeSearchResults && !InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
 			{
                 var shellMenuItems = await ContentPageContextFlyoutFactory.GetItemContextShellCommandsAsync(workingDir: ParentShellPageInstance.FilesystemViewModel.WorkingDirectory, selectedItems: [], shiftPressed: shiftPressed, showOpenMenu: false, shellContextMenuItemCancellationToken.Token);
-                if (shellMenuItems.Any())
+                if (shellMenuItems.Count != 0)
                 {
                     await AddShellMenuItemsAsync(shellMenuItems, BaseContextMenuFlyout, shiftPressed);
                 }
@@ -734,7 +734,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
 	public void UpdateSelectionSize()
 	{
-        var items = (selectedItems?.Any() ?? false) ? selectedItems : SafetyExtensions.IgnoreExceptions(GetAllItems, App.Logger);
+        var items = (selectedItems != null && selectedItems.Count > 0) ? selectedItems : SafetyExtensions.IgnoreExceptions(GetAllItems, App.Logger);
         if (items is null)
         {
             return;

@@ -742,7 +742,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			newCollisions.Add(fileNameConflictResolveOptionType);
 		}
 
-		return (newCollisions, false, itemsResult ?? new List<IFileSystemDialogConflictItemViewModel>());
+		return (newCollisions, false, itemsResult ?? []);
 	}
 
 	public static bool HasDraggedStorageItems(DataPackageView packageView)

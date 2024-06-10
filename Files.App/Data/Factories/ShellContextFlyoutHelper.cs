@@ -183,7 +183,7 @@ public static class ShellContextFlyoutFactory
 			}
 		}
 
-        async Task InvokeShellMenuItemAsync(ContextMenu contextMenu, object? tag)
+        static async Task InvokeShellMenuItemAsync(ContextMenu contextMenu, object? tag)
 		{
 			if (tag is not Win32ContextMenuItem menuItem)
             {
@@ -363,8 +363,8 @@ public static class ShellContextFlyoutFactory
                     overflowItems?.ForEach(flyoutItems.Add);
                 }
 
-                overflowItem.Visibility = overflowItems?.Any() ?? false ? Visibility.Visible : Visibility.Collapsed;
-				overflowSeparator.Visibility = overflowItems?.Any() ?? false ? Visibility.Visible : Visibility.Collapsed;
+                overflowItem.Visibility = (overflowItems != null && overflowItems.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+				overflowSeparator.Visibility = (overflowItems != null && overflowItems.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
 
 				overflowItem.Label = "ShowMoreOptions".GetLocalizedResource();
 				overflowItem.IsEnabled = true;

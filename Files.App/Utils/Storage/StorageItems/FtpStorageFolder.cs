@@ -370,19 +370,11 @@ public sealed class FtpStorageFolder : BaseStorageFolder, IPasswordProtectedItem
 		return new(host, credentials, port);
 	}
 
-	private sealed class FtpFolderBasicProperties : BaseBasicProperties
+	private sealed class FtpFolderBasicProperties(FtpListItem item) : BaseBasicProperties
 	{
-		public override ulong Size { get; }
+        public override ulong Size { get; } = (ulong)item.Size;
 
-		public override DateTimeOffset DateCreated { get; }
-		public override DateTimeOffset DateModified { get; }
-
-		public FtpFolderBasicProperties(FtpListItem item)
-		{
-			Size = (ulong)item.Size;
-
-			DateCreated = item.RawCreated < DateTime.FromFileTimeUtc(0) ? DateTimeOffset.MinValue : item.RawCreated;
-			DateModified = item.RawModified < DateTime.FromFileTimeUtc(0) ? DateTimeOffset.MinValue : item.RawModified;
-		}
-	}
+        public override DateTimeOffset DateCreated { get; } = item.RawCreated < DateTime.FromFileTimeUtc(0) ? DateTimeOffset.MinValue : item.RawCreated;
+        public override DateTimeOffset DateModified { get; } = item.RawModified < DateTime.FromFileTimeUtc(0) ? DateTimeOffset.MinValue : item.RawModified;
+    }
 }

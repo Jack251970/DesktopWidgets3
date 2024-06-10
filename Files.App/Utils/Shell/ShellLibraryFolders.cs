@@ -38,10 +38,7 @@ public sealed class ShellLibraryFolders : ShellItemArray, ICollection<ShellItem>
 	/// <exception cref="ArgumentNullException">location</exception>
 	public void Add(ShellItem location)
 	{
-		if (location is null)
-        {
-            throw new ArgumentNullException(nameof(location));
-        }
+        ArgumentNullException.ThrowIfNull(location);
 
         _lib.AddFolder(location.IShellItem);
 	}
@@ -54,10 +51,7 @@ public sealed class ShellLibraryFolders : ShellItemArray, ICollection<ShellItem>
 	/// <exception cref="ArgumentNullException">location</exception>
 	public bool Remove(ShellItem location)
 	{
-		if (location is null)
-        {
-            throw new ArgumentNullException(nameof(location));
-        }
+        ArgumentNullException.ThrowIfNull(location);
 
         try
 		{

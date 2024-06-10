@@ -78,7 +78,7 @@ public static class PathNormalization
             return string.Empty;
         }
 
-        var index = path.Contains('/', StringComparison.Ordinal) ? path.LastIndexOf("/", StringComparison.Ordinal) : path.LastIndexOf("\\", StringComparison.Ordinal);
+        var index = path.Contains('/', StringComparison.Ordinal) ? path.LastIndexOf('/') : path.LastIndexOf('\\');
         return path[..(index != -1 ? index : path.Length)];
     }
 

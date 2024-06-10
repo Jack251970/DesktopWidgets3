@@ -980,9 +980,9 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 
 				if (suggestions is null || suggestions.Count == 0)
 				{
-					suggestions = new List<NavigationBarSuggestionItem>() { new() {
+					suggestions = [ new() {
 					Text = shellpage.FilesystemViewModel.WorkingDirectory,
-					PrimaryDisplay = "NavigationToolbarVisiblePathNoResults".GetLocalizedResource() } };
+					PrimaryDisplay = "NavigationToolbarVisiblePathNoResults".GetLocalizedResource() } ];
 				}
 
 				// NavigationBarSuggestions becoming empty causes flickering of the suggestion box

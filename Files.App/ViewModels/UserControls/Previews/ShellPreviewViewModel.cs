@@ -183,7 +183,7 @@ public sealed class ShellPreviewViewModel(ListedItem item) : BasePreviewModel(it
 
         var compositor = ElementCompositionPreview.GetElementVisual(presenter).Compositor;
         outputLink = ContentExternalOutputLink.Create(compositor);
-        IDCompositionTarget target = outputLink.As<IDCompositionTarget>();
+        var target = outputLink.As<IDCompositionTarget>();
         target.SetRoot(childVisual);
 
         outputLink.PlacementVisual.Size = new(0, 0);

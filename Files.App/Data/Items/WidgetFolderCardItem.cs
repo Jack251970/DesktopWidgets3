@@ -15,7 +15,7 @@ public sealed class WidgetFolderCardItem : WidgetCardItem, IWidgetCardItem<Locat
 
 	public string? AutomationProperties { get; set; }
 
-	public new LocationItem? Item { get; private set; }
+	public new LocationItem Item { get; private set; }
 
 	public string? Text { get; set; }
 
@@ -24,8 +24,8 @@ public sealed class WidgetFolderCardItem : WidgetCardItem, IWidgetCardItem<Locat
 	public bool HasPath
 		=> !string.IsNullOrEmpty(Path);
 
-	private BitmapImage? _Thumbnail;
-	public BitmapImage? Thumbnail
+	private BitmapImage _Thumbnail;
+	public BitmapImage Thumbnail
 	{
 		get => _Thumbnail;
 		set => SetProperty(ref _Thumbnail, value);
@@ -59,7 +59,7 @@ public sealed class WidgetFolderCardItem : WidgetCardItem, IWidgetCardItem<Locat
 		_thumbnailData = result!;
 		if (_thumbnailData is not null)
         {
-            Thumbnail = await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => _thumbnailData.ToBitmapAsync(), Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal);
+            Thumbnail = (await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() => _thumbnailData.ToBitmapAsync(), Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal))!;
         }
     }
 }

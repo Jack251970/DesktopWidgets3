@@ -291,7 +291,7 @@ public sealed class StatusCenterItem : ObservableObject
             new Axis
             {
                 Padding = new Padding(0, 0),
-                Labels = new List<string>(),
+                Labels = [],
                 MaxLimit = 100,
                 ShowSeparatorLines = false,
             }
@@ -303,7 +303,7 @@ public sealed class StatusCenterItem : ObservableObject
             new Axis
             {
                 Padding = new Padding(0, 0),
-                Labels = new List<string>(),
+                Labels = [],
                 MaxLimit = 100,
                 ShowSeparatorLines = false,
             }
@@ -315,7 +315,7 @@ public sealed class StatusCenterItem : ObservableObject
             new Axis
             {
                 Padding = new Padding(0, 0),
-                Labels = new List<string>(),
+                Labels = [],
                 ShowSeparatorLines = false,
                 MaxLimit = 100,
             }
@@ -327,7 +327,7 @@ public sealed class StatusCenterItem : ObservableObject
             new Axis
             {
                 Padding = new Padding(0, 0),
-                Labels = new List<string>(),
+                Labels = [],
                 ShowSeparatorLines = false,
             }
         ];

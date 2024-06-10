@@ -502,7 +502,7 @@ public sealed class InfoPaneViewModel : ObservableObject, IDisposable
 
 		SelectedItem?.FileTagsUI?.ForEach(tag => Items.Add(new TagItem(tag)));
 
-		Items.Add(new FlyoutItem(new Files.App.UserControls.Menus.FileTagsContextMenu(new List<ListedItem>() { SelectedItem! })));
+		Items.Add(new FlyoutItem(new Files.App.UserControls.Menus.FileTagsContextMenu([SelectedItem!])));
 	}
 
 	public void Dispose()

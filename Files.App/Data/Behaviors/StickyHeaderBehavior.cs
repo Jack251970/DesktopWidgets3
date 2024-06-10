@@ -8,10 +8,6 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Windows.Foundation;
-using Windows.Foundation.Metadata;
 
 namespace Files.App.Data.Behaviors;
 
@@ -23,8 +19,8 @@ namespace Files.App.Data.Behaviors;
 /// </remarks>
 public sealed class StickyHeaderBehavior : BehaviorBase<FrameworkElement>
 {
-	private static readonly bool IsXamlRootAvailable =
-		ApiInformation.IsPropertyPresent("Microsoft.UI.Xaml.UIElement", "XamlRoot");
+	/*private static readonly bool IsXamlRootAvailable =
+		ApiInformation.IsPropertyPresent("Microsoft.UI.Xaml.UIElement", "XamlRoot");*/
 
 	private ScrollViewer? _scrollViewer;
 

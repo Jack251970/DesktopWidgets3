@@ -42,6 +42,6 @@ internal sealed class DecompressArchiveToChildFolderAction(IFolderViewViewModel 
 
         return context.SelectedItems.Count > 1
 			? string.Format("BaseLayoutItemContextFlyoutExtractToChildFolder".GetLocalizedResource(), "*")
-			: string.Format("BaseLayoutItemContextFlyoutExtractToChildFolder".GetLocalizedResource(), SystemIO.Path.GetFileNameWithoutExtension(context.SelectedItems.First().Name));
+			: string.Format("BaseLayoutItemContextFlyoutExtractToChildFolder".GetLocalizedResource(), SystemIO.Path.GetFileNameWithoutExtension(context.SelectedItems[0].Name));
 	}
 }

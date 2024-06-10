@@ -307,10 +307,10 @@ public sealed partial class ModernShellPage : BaseShellPage
 		{
 			var parentDirectoryOfPath = FilesystemViewModel.WorkingDirectory.TrimEnd('\\', '/');
 
-			var lastSlashIndex = parentDirectoryOfPath.LastIndexOf("\\", StringComparison.Ordinal);
+			var lastSlashIndex = parentDirectoryOfPath.LastIndexOf('\\');
 			if (lastSlashIndex == -1)
             {
-                lastSlashIndex = parentDirectoryOfPath.LastIndexOf("/", StringComparison.Ordinal);
+                lastSlashIndex = parentDirectoryOfPath.LastIndexOf('\\');
             }
 
             if (lastSlashIndex != -1)

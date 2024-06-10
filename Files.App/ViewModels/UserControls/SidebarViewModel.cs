@@ -17,7 +17,6 @@ using Windows.Storage;
 using Windows.System;
 using Windows.UI.Core;
 using Files.Core.Storage.Extensions;
-using DesktopWidgets3.Core.Contracts.Widgets;
 
 namespace Files.App.ViewModels.UserControls;
 

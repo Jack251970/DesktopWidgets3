@@ -8,8 +8,8 @@ using Windows.Foundation;
 
 namespace Files.App.UserControls.Sidebar;
 
-public record ItemDroppedEventArgs(object DropTarget, DataPackageView DroppedItem, SidebarItemDropPosition dropPosition, DragEventArgs RawEvent) { }
-public record ItemDragOverEventArgs(object DropTarget, DataPackageView DroppedItem, SidebarItemDropPosition dropPosition, DragEventArgs RawEvent) { }
+public record ItemDroppedEventArgs(object DropTarget, DataPackageView DroppedItem, SidebarItemDropPosition DropPosition, DragEventArgs RawEvent) { }
+public record ItemDragOverEventArgs(object DropTarget, DataPackageView DroppedItem, SidebarItemDropPosition DropPosition, DragEventArgs RawEvent) { }
 public record ItemContextInvokedArgs(object? Item, Point Position) { }
 
 public interface ISidebarViewModel

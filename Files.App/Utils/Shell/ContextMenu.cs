@@ -162,7 +162,7 @@ public class ContextMenu : Win32ContextMenu, IDisposable
 
     private static ContextMenu? GetContextMenuForFiles(ShellItem[] shellItems, Shell32.CMF flags, ThreadWithMessageQueue owningThread, Func<string, bool>? itemFilter = null)
     {
-        if (!shellItems.Any())
+        if (shellItems.Length == 0)
         {
             return null;
         }
@@ -187,9 +187,11 @@ public class ContextMenu : Win32ContextMenu, IDisposable
         }
     }
 
+    private static readonly string[] stringArray = ["C:\\"];
+
     public static async Task WarmUpQueryContextMenuAsync()
     {
-        using var cMenu = await GetContextMenuForFiles(new string[] { "C:\\" }, Shell32.CMF.CMF_NORMAL);
+        using var cMenu = await GetContextMenuForFiles(stringArray, Shell32.CMF.CMF_NORMAL);
     }
 
     private void EnumMenuItems(HMENU hMenu, List<Win32ContextMenuItem> menuItemsResult, bool loadSubenus = false)

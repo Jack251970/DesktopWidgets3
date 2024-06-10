@@ -34,7 +34,7 @@ public sealed class QuickAccessService : IQuickAccessService
         }
     }
 
-	public Task UnpinFromSidebarAsync(string folderPath) => UnpinFromSidebarAsync(new[] { folderPath }); 
+	public Task UnpinFromSidebarAsync(string folderPath) => UnpinFromSidebarAsync([folderPath]); 
 
 	public Task UnpinFromSidebarAsync(string[] folderPaths) => UnpinFromSidebarAsync(folderPaths, true);
 

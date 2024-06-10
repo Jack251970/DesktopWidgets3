@@ -12,8 +12,8 @@ namespace Files.App.Helpers;
 
 public static class AdaptiveLayoutHelpers
 {
-    /*private static IFoldersSettingsService FoldersSettingsService { get; } = DependencyExtensions.GetRequiredService<IFoldersSettingsService>();*/
-    private static ILayoutSettingsService LayoutSettingsService { get; } = DependencyExtensions.GetRequiredService<ILayoutSettingsService>();
+    /*private static IFoldersSettingsService FoldersSettingsService { get; } = DependencyExtensions.GetRequiredService<IFoldersSettingsService>();
+    private static ILayoutSettingsService LayoutSettingsService { get; } = DependencyExtensions.GetRequiredService<ILayoutSettingsService>();*/
 
     public static void ApplyAdaptativeLayout(IFolderViewViewModel folderViewViewModel, LayoutPreferencesManager folderSettings, string path, IList<ListedItem> filesAndFolders)
 	{

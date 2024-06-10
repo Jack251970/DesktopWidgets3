@@ -37,7 +37,7 @@ public static class WallpaperHelpers
 
 	public static void SetSlideshow(IFolderViewViewModel folderViewViewModel, string[] filePaths)
 	{
-		if (filePaths is null || !filePaths.Any())
+		if (filePaths is null || filePaths.Length == 0)
         {
             return;
         }

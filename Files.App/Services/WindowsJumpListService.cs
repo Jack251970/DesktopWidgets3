@@ -170,7 +170,7 @@ public sealed class WindowsJumpListService : IWindowsJumpListService
                 {
                     displayName = "SidebarNetworkDrives".GetLocalizedResource();
                 }
-                else if (App.LibraryManager.TryGetLibrary(path, out LibraryLocationItem library))
+                else if (App.LibraryManager.TryGetLibrary(path, out var library))
                 {
                     var libName = Path.GetFileNameWithoutExtension(library.Path);
                     displayName = libName switch

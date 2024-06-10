@@ -10,9 +10,11 @@ internal sealed class EnumToBoolConverter : IValueConverter
 	public object Convert(object value, Type targetType, object parameter, string language)
 	{
 		if (value == null)
-			return false;
+        {
+            return false;
+        }
 
-		return value.ToString() == parameter.ToString();
+        return value.ToString() == parameter.ToString();
 	}
 
 	public object ConvertBack(object value, Type targetType, object parameter, string language)

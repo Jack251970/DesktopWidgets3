@@ -13,7 +13,6 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using System.Data;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation.Metadata;
 using VirtualKey = Windows.System.VirtualKey;
 
 namespace Files.App.Views;
@@ -127,7 +126,7 @@ public sealed partial class MainPage : Page
     }
 
     // WINUI3
-    private ContentDialog SetContentDialogRoot(ContentDialog contentDialog)
+    /*private ContentDialog SetContentDialogRoot(ContentDialog contentDialog)
     {
         if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
@@ -135,7 +134,7 @@ public sealed partial class MainPage : Page
         }
 
         return contentDialog;
-    }
+    }*/
 
     private void UserSettingsService_OnSettingChangedEvent(object? sender, SettingChangedEventArgs e)
 	{
@@ -543,7 +542,8 @@ public sealed partial class MainPage : Page
 		}
 	}
 
-    private bool lockFlag = false;
+    // CHANGE: Remove horizontal multitasking control drag and drop events.
+    /*private bool lockFlag = false;
     //private string[] dropableArchiveTypes = { "zip", "rar", "7z", "tar" };
 
     private async void HorizontalMultitaskingControlAddButton_Drop(object sender, DragEventArgs e)
@@ -603,7 +603,7 @@ public sealed partial class MainPage : Page
             deferral.Complete();
         }
         catch { }
-    }
+    }*/
 
     private void NavToolbar_Loaded(object sender, RoutedEventArgs e)
     {

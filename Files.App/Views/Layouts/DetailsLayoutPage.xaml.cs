@@ -103,8 +103,8 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 
     protected override void ItemManipulationModel_FocusSelectedItemsInvoked(object? sender, EventArgs e)
 	{
-		if (SelectedItems?.Any() ?? false)
-		{
+        if (SelectedItems != null && SelectedItems.Count > 0)
+        {
 			FileList.ScrollIntoView(SelectedItems.Last());
             ContentScroller?.ChangeView(null, FileList.Items.IndexOf(SelectedItems.Last()) * RowHeight, null, false);
             (FileList.ContainerFromItem(SelectedItems.Last()) as ListViewItem)?.Focus(FocusState.Keyboard);
@@ -727,7 +727,7 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 	private void SizeAllColumnsToFit_Click(object sender, RoutedEventArgs e)
 	{
 		// If there aren't items, do not make columns fit
-		if (!FileList.Items.Any())
+		if (FileList.Items.Count == 0)
         {
             return;
         }
@@ -742,7 +742,7 @@ public sealed partial class DetailsLayoutPage : BaseGroupableLayoutPage
 
 	private void ResizeColumnToFit(int columnToResize)
 	{
-		if (!FileList.Items.Any())
+		if (FileList.Items.Count == 0)
         {
             return;
         }

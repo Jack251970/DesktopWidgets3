@@ -6,19 +6,14 @@ using Microsoft.UI.Xaml.Automation.Provider;
 
 namespace Files.App.UserControls.Sidebar;
 
-internal class SidebarViewAutomationPeer : FrameworkElementAutomationPeer, ISelectionProvider
+internal class SidebarViewAutomationPeer(SidebarView owner) : FrameworkElementAutomationPeer(owner), ISelectionProvider
 {
 	public bool CanSelectMultiple => false;
 	public bool IsSelectionRequired => true;
 
-	private new SidebarView Owner { get; init; }
+    private new SidebarView Owner { get; init; } = owner;
 
-	public SidebarViewAutomationPeer(SidebarView owner) : base(owner)
-	{
-		Owner = owner;
-	}
-
-	protected override object GetPatternCore(PatternInterface patternInterface)
+    protected override object GetPatternCore(PatternInterface patternInterface)
 	{
 		if (patternInterface == PatternInterface.Selection)
 		{

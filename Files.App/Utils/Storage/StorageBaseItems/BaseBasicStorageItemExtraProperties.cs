@@ -7,16 +7,11 @@ using Windows.Storage;
 
 namespace Files.App.Utils.Storage;
 
-public sealed class BaseBasicStorageItemExtraProperties : BaseStorageItemExtraProperties
+public sealed class BaseBasicStorageItemExtraProperties(IStorageItem item) : BaseStorageItemExtraProperties
 {
-	private readonly IStorageItem _item;
+	private readonly IStorageItem _item = item;
 
-	public BaseBasicStorageItemExtraProperties(IStorageItem item)
-	{
-		_item = item;
-	}
-
-	public override IAsyncOperation<IDictionary<string, object>> RetrievePropertiesAsync(IEnumerable<string> propertiesToRetrieve)
+    public override IAsyncOperation<IDictionary<string, object>> RetrievePropertiesAsync(IEnumerable<string> propertiesToRetrieve)
 	{
 		return AsyncInfo.Run<IDictionary<string, object>>(async (cancellationToken) =>
 		{

@@ -112,7 +112,7 @@ internal sealed class ActionCommand : ObservableObject, IRichCommand
 	public bool IsExecutable
 		=> Action.IsExecutable;
 
-	public ActionCommand(IFolderViewViewModel folderViewViewModel, CommandManager manager, CommandCodes code, IAction action)
+	public ActionCommand(IFolderViewViewModel folderViewViewModel, CommandCodes code, IAction action)
 	{
         ActionsSettingsService = folderViewViewModel.GetRequiredService<IActionsSettingsService>();
         Code = code;

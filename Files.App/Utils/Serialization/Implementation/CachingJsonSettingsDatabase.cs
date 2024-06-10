@@ -3,16 +3,11 @@
 
 namespace Files.App.Utils.Serialization.Implementation;
 
-internal sealed class CachingJsonSettingsDatabase : DefaultJsonSettingsDatabase
+internal sealed class CachingJsonSettingsDatabase(ISettingsSerializer settingsSerializer, IJsonSettingsSerializer jsonSettingsSerializer) : DefaultJsonSettingsDatabase(settingsSerializer, jsonSettingsSerializer)
 {
 	private IDictionary<string, object?>? _settingsCache;
 
-	public CachingJsonSettingsDatabase(ISettingsSerializer settingsSerializer, IJsonSettingsSerializer jsonSettingsSerializer)
-		: base(settingsSerializer, jsonSettingsSerializer)
-	{
-	}
-
-	public override TValue? GetValue<TValue>(string key, TValue? defaultValue = default) where TValue : default
+    public override TValue? GetValue<TValue>(string key, TValue? defaultValue = default) where TValue : default
 	{
 		_settingsCache ??= GetFreshSettings();
 

@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
-using Files.App.ViewModels.Dialogs;
 
 namespace Files.App.Helpers;
 

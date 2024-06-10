@@ -48,8 +48,8 @@ public partial class BaseStorageItemQueryResult(BaseStorageFolder folder, QueryO
 					}
 				}
 			}
-			return items.ToList();
-		});
+            return new List<IStorageItem>(items);
+        });
 	}
 
 	public virtual StorageItemQueryResult ToStorageItemQueryResult() => null!;
@@ -94,8 +94,8 @@ public partial class BaseStorageFileQueryResult(BaseStorageFolder folder, QueryO
 					}
 				}
 			}
-			return items.ToList();
-		});
+            return new List<BaseStorageFile>(items);
+        });
 	}
 
 	public virtual StorageFileQueryResult ToStorageFileQueryResult() => null!;
@@ -140,8 +140,8 @@ public partial class BaseStorageFolderQueryResult(BaseStorageFolder folder, Quer
 					}
 				}
 			}
-			return items.ToList();
-		});
+            return new List<BaseStorageFolder>(items);
+        });
 	}
 
 	public virtual StorageFolderQueryResult ToStorageFolderQueryResult() => null!;

@@ -116,9 +116,13 @@ internal sealed class ModifiableCommand : ObservableObject, IRichCommand
     {
         if (ModifiedCommands.TryGetValue(HotKeyHelpers.GetCurrentKeyModifiers(), out var modifiedCommand) &&
             modifiedCommand.IsExecutable)
+        {
             return modifiedCommand.ExecuteAsync(parameter);
+        }
         else
+        {
             return BaseCommand.ExecuteAsync(parameter);
+        }
     }
 
     /// <inheritdoc/>
