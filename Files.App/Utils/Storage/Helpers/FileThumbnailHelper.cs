@@ -26,7 +26,8 @@ public static class FileThumbnailHelper
     public static async Task<byte[]?> GetIconOverlayAsync(string path, bool isFolder)
         => await Win32Helper.StartSTATask(() => Win32Helper.GetIconOverlay(path, isFolder));
 
-    [Obsolete]
+    // CHANGE: Remove obsolete attribute.
+    /*[Obsolete]*/
     public static async Task<byte[]?> LoadIconFromPathAsync(string filePath, uint thumbnailSize, ThumbnailMode thumbnailMode, ThumbnailOptions thumbnailOptions, bool isFolder = false)
     {
         var result = await GetIconAsync(filePath, thumbnailSize, isFolder, IconOptions.None);

@@ -18,9 +18,11 @@ public interface IImageService
 	/// <returns>A <see cref="Task"/> that represents the asynchronous operation. If successful, value is <see cref="IImage"/> representation of the icon, otherwise null.</returns>
 	Task<IImage?> GetIconAsync(IStorable storable, CancellationToken cancellationToken);
 
-	[Obsolete("Use GetIconAsync() instead.")]
+    // CHANGE: Remove obsolete attribute.
+    /*[Obsolete("Use GetIconAsync() instead.")]*/
 	Task<IImage?> GetImageModelFromDataAsync(byte[]? rawData);
 
-	[Obsolete("Use GetIconAsync() instead.")]
+    // CHANGE: Remove obsolete attribute.
+    /*[Obsolete("Use GetIconAsync() instead.")]*/
 	Task<IImage?> GetImageModelFromPathAsync(string filePath, uint thumbnailSize = 64u);
 }

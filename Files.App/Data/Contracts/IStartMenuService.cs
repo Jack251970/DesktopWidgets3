@@ -5,9 +5,10 @@
 /// </summary>
 public interface IStartMenuService
 {
-	// FILESTODO(s)
-	[Obsolete("Use IsPinnedAsync instead. This method is used for a workaround in ListedItem class to avoid major refactoring.")]
-	bool IsPinned(string itemPath);
+    // CHANGE: Remove obsolete attribute.
+    /*// FILESTODO(s)
+	[Obsolete("Use IsPinnedAsync instead. This method is used for a workaround in ListedItem class to avoid major refactoring.")]*/
+    bool IsPinned(string itemPath);
 
 	/// <summary>
 	/// Checks if the provided <paramref name="storable"/> is pinned to the Start Menu.
