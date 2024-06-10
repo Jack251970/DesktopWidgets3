@@ -37,7 +37,7 @@ public sealed class LayoutPreferencesItem
 
     public LayoutPreferencesItem(IFolderViewViewModel folderViewViewModel)
 	{
-        var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
         var defaultLayout = UserSettingsService.LayoutSettingsService.DefaultLayoutMode;
 

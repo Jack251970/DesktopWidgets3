@@ -7,11 +7,11 @@ namespace Files.App.Utils.Storage;
 
 public static class GroupingHelper
 {
-	/*private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();*/
+	/*private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetRequiredService<IDateTimeFormatter>();*/
 
 	public static Func<ListedItem, string> GetItemGroupKeySelector(IFolderViewViewModel folderViewViewModel, GroupOption option, GroupByDateUnit unit)
 	{
-        var dateTimeFormatter = folderViewViewModel.GetService<IDateTimeFormatter>();
+        var dateTimeFormatter = folderViewViewModel.GetRequiredService<IDateTimeFormatter>();
 		return option switch
 		{
 			GroupOption.Name => x => new string(x.Name.Take(1).ToArray()).ToUpperInvariant(),
@@ -30,7 +30,7 @@ public static class GroupingHelper
 
 	public static (Action<GroupedCollection<ListedItem>>, Action<GroupedCollection<ListedItem>>) GetGroupInfoSelector(IFolderViewViewModel folderViewViewModel, GroupOption option, GroupByDateUnit unit)
 	{
-        var dateTimeFormatter = folderViewViewModel.GetService<IDateTimeFormatter>();
+        var dateTimeFormatter = folderViewViewModel.GetRequiredService<IDateTimeFormatter>();
 		return option switch
 		{
 			GroupOption.FileType => (x =>

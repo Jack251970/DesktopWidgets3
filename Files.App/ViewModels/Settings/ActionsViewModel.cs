@@ -93,8 +93,8 @@ public sealed class ActionsViewModel : ObservableObject
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        ActionsSettingsService = folderViewViewModel.GetService<IActionsSettingsService>();
-        CommandManager = folderViewViewModel.GetService<ICommandManager>();
+        ActionsSettingsService = folderViewViewModel.GetRequiredService<IActionsSettingsService>();
+        CommandManager = folderViewViewModel.GetRequiredService<ICommandManager>();
     }
 
     // Command methods

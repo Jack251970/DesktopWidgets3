@@ -122,7 +122,7 @@ public sealed class GeneralViewModel : ObservableObject, IDisposable
     {
         FolderViewViewModel = folderViewViewModel;
 
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
         SelectedDateTimeFormatIndex = (int)Enum.Parse(typeof(DateTimeFormats), DateTimeFormat.ToString());
 
@@ -625,7 +625,7 @@ public sealed class DateTimeFormatItem
 
 	public DateTimeFormatItem(DateTimeFormats style, DateTimeOffset sampleDate1, DateTimeOffset sampleDate2)
 	{
-		var factory = DependencyExtensions.GetService<IDateTimeFormatterFactory>();
+		var factory = DependencyExtensions.GetRequiredService<IDateTimeFormatterFactory>();
 		var formatter = factory.GetDateTimeFormatter(style);
 
 		Label = formatter.Name;

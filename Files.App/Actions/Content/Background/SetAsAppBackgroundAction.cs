@@ -5,7 +5,7 @@ namespace Files.App.Actions;
 
 internal sealed class SetAsAppBackgroundAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : BaseSetAsAction(context)
 {
-	private IAppearanceSettingsService AppearanceSettingsService { get; } = folderViewViewModel.GetService<IAppearanceSettingsService>();
+	private IAppearanceSettingsService AppearanceSettingsService { get; } = folderViewViewModel.GetRequiredService<IAppearanceSettingsService>();
 
     public override string Label
 		=> "SetAsAppBackground".GetLocalizedResource();

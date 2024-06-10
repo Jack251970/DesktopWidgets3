@@ -76,8 +76,8 @@ public sealed partial class AddressToolbar : UserControl
 
         FolderViewViewModel = folderViewViewModel;
 
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-        Commands ??= folderViewViewModel.GetService<ICommandManager>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        Commands ??= folderViewViewModel.GetRequiredService<ICommandManager>();
     }
 
     private void NavToolbar_Loading(FrameworkElement _, object e)

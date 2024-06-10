@@ -19,7 +19,7 @@ internal sealed class AppSystemBackdrop : SystemBackdrop
 	public AppSystemBackdrop(IFolderViewViewModel folderViewViewModel, bool isSecondaryWindow = false)
 	{
 		this.isSecondaryWindow = isSecondaryWindow;
-		userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+		userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 		userSettingsService.OnSettingChangedEvent += OnSettingChanged;
 	}
 

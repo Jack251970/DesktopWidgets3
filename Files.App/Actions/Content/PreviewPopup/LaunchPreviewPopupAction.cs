@@ -26,7 +26,7 @@ internal sealed class LaunchPreviewPopupAction : ObservableObject, IAction
 	public LaunchPreviewPopupAction(IContentPageContext context)
     {
 		this.context = context;
-		previewPopupService = DependencyExtensions.GetService<IPreviewPopupService>();
+		previewPopupService = DependencyExtensions.GetRequiredService<IPreviewPopupService>();
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}

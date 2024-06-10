@@ -12,7 +12,7 @@ namespace Files.App.UserControls.Menus;
 public sealed class FileTagsContextMenu : MenuFlyout
 {
 	private IFileTagsSettingsService FileTagsSettingsService { get; } =
-		DependencyExtensions.GetService<IFileTagsSettingsService>();
+		DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
 	public IEnumerable<ListedItem> SelectedItems { get; }
 

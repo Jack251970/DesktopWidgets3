@@ -21,7 +21,7 @@ public sealed class AdvancedViewModel : ObservableObject
 
     private IUserSettingsService UserSettingsService { get; set; } = null!;
 
-	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
 	public ICommand SetAsDefaultExplorerCommand { get; }
 	public ICommand SetAsOpenFileDialogCommand { get; }
@@ -49,7 +49,7 @@ public sealed class AdvancedViewModel : ObservableObject
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
     }
 
 	private async Task OpenSettingsJsonAsync()

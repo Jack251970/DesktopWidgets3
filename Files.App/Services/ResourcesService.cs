@@ -9,7 +9,7 @@ namespace Files.App.Services;
 /// <inheritdoc cref="IResourcesService"/>
 public sealed class ResourcesService : IResourcesService
 {
-    /*private IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetService<IAppThemeModeService>();*/
+    /*private IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetRequiredService<IAppThemeModeService>();*/
 
     /// <inheritdoc/>
     public void SetAppThemeBackgroundColor(Color appThemeBackgroundColor)

@@ -8,7 +8,7 @@ public sealed partial class TabBar : BaseTabBar
     // CHANGE: Model instead of components.
     /*public event EventHandler<TabBarItem?>? SelectedTabItemChanged;
 
-    private ICommandManager Commands { get; set; } = DependencyExtensions.GetService<ICommandManager>();
+    private ICommandManager Commands { get; set; } = DependencyExtensions.GetRequiredService<ICommandManager>();
 
 	private readonly DispatcherTimer tabHoverTimer = new();
 

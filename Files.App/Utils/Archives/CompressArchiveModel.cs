@@ -24,7 +24,7 @@ public sealed class CompressArchiveModel(
 
 	private FileSizeCalculator _sizeCalculator = null!;
 
-	private readonly IThreadingService _threadingService = DependencyExtensions.GetService<IThreadingService>();
+	private readonly IThreadingService _threadingService = DependencyExtensions.GetRequiredService<IThreadingService>();
 
 	private string ArchiveExtension => FileFormat switch
 	{

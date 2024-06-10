@@ -12,7 +12,7 @@ namespace Files.App.UserControls.Widgets;
 /// </summary>
 public sealed partial class QuickAccessWidget : UserControl
 {
-    public QuickAccessWidgetViewModel ViewModel { get; set; } = DependencyExtensions.GetService<QuickAccessWidgetViewModel>();
+    public QuickAccessWidgetViewModel ViewModel { get; set; } = DependencyExtensions.GetRequiredService<QuickAccessWidgetViewModel>();
 
     public QuickAccessWidget(IFolderViewViewModel folderViewViewModel)
     {

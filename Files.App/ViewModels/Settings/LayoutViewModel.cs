@@ -27,7 +27,7 @@ public sealed class LayoutViewModel : ObservableObject
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
         // Layout mode
         SelectedDefaultLayoutModeIndex = (int)DefaultLayoutMode;

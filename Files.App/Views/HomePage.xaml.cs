@@ -10,7 +10,7 @@ public sealed partial class HomePage : Page, IDisposable
 {
     // Dependency injections
 
-	public HomeViewModel ViewModel { get; } = DependencyExtensions.GetService<HomeViewModel>();
+	public HomeViewModel ViewModel { get; } = DependencyExtensions.GetRequiredService<HomeViewModel>();
 
     // Properties
 

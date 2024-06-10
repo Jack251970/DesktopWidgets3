@@ -28,7 +28,7 @@ internal static partial class GitHelpers
 
 	private static readonly ILogger? _logger = App.Logger;
 
-	/*private static readonly IDialogService _dialogService = DependencyExtensions.GetService<IDialogService>();*/
+	/*private static readonly IDialogService _dialogService = DependencyExtensions.GetRequiredService<IDialogService>();*/
 
 	private static readonly FetchOptions _fetchOptions = new()
 	{
@@ -273,7 +273,7 @@ internal static partial class GitHelpers
 
 		var viewModel = new AddBranchDialogViewModel(repositoryPath, activeBranch);
 		var loadBranchesTask = viewModel.LoadBranches();
-        var dialogService = folderViewViewModel.GetService<IDialogService>();
+        var dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
         var dialog = dialogService.GetDialog(viewModel);
 
 		await loadBranchesTask;
@@ -613,7 +613,7 @@ internal static partial class GitHelpers
 		var loginCTS = new CancellationTokenSource();
 		var viewModel = new GitHubLoginDialogViewModel(userCode, "ConnectGitHubDescription".GetLocalizedResource(), loginCTS);
 
-        var dialogService = folderViewViewModel.GetService<IDialogService>();
+        var dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
         var dialog = dialogService.GetDialog(viewModel);
 		var loginDialogTask = dialog.TryShowAsync(folderViewViewModel);
 

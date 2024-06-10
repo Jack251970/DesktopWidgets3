@@ -19,7 +19,7 @@ namespace Files.App.Utils.Storage;
 /// </summary>
 public static class FilePropertiesHelpers
 {
-    private static IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetService<IAppThemeModeService>();
+    private static IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetRequiredService<IAppThemeModeService>();
 
     /// <summary>
     /// Whether LayoutDirection (FlowDirection) is set to right-to-left (RTL)
@@ -73,7 +73,7 @@ public static class FilePropertiesHelpers
 
             item = folder;
 
-			var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+			var drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 			var drives = drivesViewModel.Drives;
 			foreach (var drive in drives)
 			{

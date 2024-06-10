@@ -8,7 +8,7 @@ namespace Files.App.Utils.StatusCenter;
 /// </summary>
 public static class StatusCenterHelper
 {
-	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
+	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetRequiredService<StatusCenterViewModel>();*/
 
 	public static StatusCenterItem AddCard_Copy(
         IFolderViewViewModel folderViewViewModel,
@@ -31,7 +31,7 @@ public static class StatusCenterHelper
             destinationDir = PathNormalization.GetParentDir(destination.First());
         }
 
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
@@ -102,7 +102,7 @@ public static class StatusCenterHelper
 		var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()?.Path!);
 		var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
 
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
@@ -176,7 +176,7 @@ public static class StatusCenterHelper
             sourceDir = PathNormalization.GetParentDir(source.First().Path);
         }
 
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
@@ -250,7 +250,7 @@ public static class StatusCenterHelper
             sourceDir = PathNormalization.GetParentDir(source.First().Path);
         }
 
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
@@ -323,7 +323,7 @@ public static class StatusCenterHelper
 		//var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()!);
 		//var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
 
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
@@ -396,7 +396,7 @@ public static class StatusCenterHelper
 		//var sourceDir = PathNormalization.GetParentDir(source.FirstOrDefault()!);
 		//var destinationDir = PathNormalization.GetParentDir(destination.FirstOrDefault()!);
 
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
@@ -464,7 +464,7 @@ public static class StatusCenterHelper
 	{
         // Currently not supported accurate progress report for emptying the recycle bin
 
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
         if (returnStatus == ReturnResult.Cancelled)
 		{
 			return _statusCenterViewModel.AddItem(
@@ -526,7 +526,7 @@ public static class StatusCenterHelper
 
 	public static StatusCenterItem AddCard_Prepare(IFolderViewViewModel folderViewViewModel)
 	{
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
         return _statusCenterViewModel.AddItem(
             folderViewViewModel,
             "StatusCenter_Prepare_Header",

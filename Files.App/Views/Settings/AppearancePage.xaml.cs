@@ -13,7 +13,7 @@ public sealed partial class AppearancePage : Page
 
 	public AppearancePage()
 	{
-		DataContext = DependencyExtensions.GetService<AppearanceViewModel>();
+		DataContext = DependencyExtensions.GetRequiredService<AppearanceViewModel>();
 
 		InitializeComponent();
 	}

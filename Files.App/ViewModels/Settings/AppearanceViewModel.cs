@@ -13,7 +13,7 @@ public sealed class AppearanceViewModel : ObservableObject
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
-    private IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetService<IAppThemeModeService>();
+    private IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetRequiredService<IAppThemeModeService>();
     private IUserSettingsService UserSettingsService { get; set; } = null!;
     private IResourcesService ResourcesService { get; set; } = null!;
 
@@ -33,8 +33,8 @@ public sealed class AppearanceViewModel : ObservableObject
 
     public AppearanceViewModel()
 	{
-        /*UserSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
-        ResourcesService = DependencyExtensions.GetService<IResourcesService>();
+        /*UserSettingsService = DependencyExtensions.GetRequiredService<IUserSettingsService>();*/
+        ResourcesService = DependencyExtensions.GetRequiredService<IResourcesService>();
 
 		Themes =
         [
@@ -85,7 +85,7 @@ public sealed class AppearanceViewModel : ObservableObject
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
         selectedBackdropMaterial = BackdropMaterialTypes[UserSettingsService.AppearanceSettingsService.AppThemeBackdropMaterial];
 

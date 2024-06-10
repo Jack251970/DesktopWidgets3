@@ -32,7 +32,7 @@ public sealed class HomeViewModel : ObservableObject, IDisposable
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
     }
 
     // Methods

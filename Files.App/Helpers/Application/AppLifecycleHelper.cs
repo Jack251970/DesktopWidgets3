@@ -68,7 +68,7 @@ public static class AppLifecycleHelper
 	/// </summary>
 	public static async Task InitializeAppComponentsAsync(IFolderViewViewModel folderViewViewModel)
 	{
-        var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 		var generalSettingsService = userSettingsService.GeneralSettingsService;
 
         // Start off a list of tasks we need to run before we can continue startup
@@ -89,8 +89,8 @@ public static class AppLifecycleHelper
             return;
         }
 
-        var addItemService = DependencyExtensions.GetService<IAddItemService>();
-        var jumpListService = DependencyExtensions.GetService<IWindowsJumpListService>();
+        var addItemService = DependencyExtensions.GetRequiredService<IAddItemService>();
+        var jumpListService = DependencyExtensions.GetRequiredService<IWindowsJumpListService>();
         await Task.WhenAll(
             jumpListService.InitializeAsync(),
             addItemService.InitializeAsync(),
@@ -120,7 +120,7 @@ public static class AppLifecycleHelper
 	/// </summary>
 	public static async Task CheckAppUpdate(IFolderViewViewModel folderViewViewModel)
 	{
-        var updateService = DependencyExtensions.GetService<IUpdateService>();
+        var updateService = DependencyExtensions.GetRequiredService<IUpdateService>();
 
 		await updateService.CheckForUpdatesAsync(folderViewViewModel);
 		await updateService.DownloadMandatoryUpdatesAsync(folderViewViewModel);
@@ -247,7 +247,7 @@ public static class AppLifecycleHelper
             return;
         }
 
-		var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+		var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		userSettingsService.GeneralSettingsService.LastSessionTabList = MainPageViewModel.AppInstances[folderViewViewModel].DefaultIfEmpty().Select(tab =>
 		{
@@ -374,7 +374,7 @@ public static class AppLifecycleHelper
         });
 
         // Restart the app
-        var userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();
+        var userSettingsService = DependencyExtensions.GetRequiredService<IUserSettingsService>();
 		var lastSessionTabList = userSettingsService.GeneralSettingsService.LastSessionTabList;
 
 		if (userSettingsService.GeneralSettingsService.LastCrashedTabList?.SequenceEqual(lastSessionTabList) ?? false)

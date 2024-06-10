@@ -13,7 +13,7 @@ public static class CloudDrivesManager
 {
 	private static readonly ILogger _logger = App.Logger;
 
-	private static readonly ICloudDetector _detector = DependencyExtensions.GetService<ICloudDetector>();
+	private static readonly ICloudDetector _detector = DependencyExtensions.GetRequiredService<ICloudDetector>();
 
 	public static EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 

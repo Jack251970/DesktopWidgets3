@@ -9,7 +9,7 @@ public sealed class GitViewModel : ObservableObject
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
-    public readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+    public readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
 	public ICommand RemoveCredentialsCommand { get; }
 	public ICommand ConnectToGitHubCommand { get; }

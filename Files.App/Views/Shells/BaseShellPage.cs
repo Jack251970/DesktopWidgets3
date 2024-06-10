@@ -42,13 +42,13 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 
 	protected readonly CancellationTokenSource cancellationTokenSource;
 
-	protected readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+	protected readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
     protected IDialogService DialogService { get; set; } = null!;
 
 	protected IUserSettingsService UserSettingsService { get; set; } = null!;
 
-    protected readonly IUpdateService updateSettingsService = DependencyExtensions.GetService<IUpdateService>();
+    protected readonly IUpdateService updateSettingsService = DependencyExtensions.GetRequiredService<IUpdateService>();
 
     protected ICommandManager Commands { get; set; } = null!;
 
@@ -237,10 +237,10 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
     // CHANGE: Initialize folder view view model and related services.
     protected void InitializeBaseShellPage()
     {
-        DialogService = FolderViewViewModel.GetService<IDialogService>();
-        UserSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
+        DialogService = FolderViewViewModel.GetRequiredService<IDialogService>();
+        UserSettingsService = FolderViewViewModel.GetRequiredService<IUserSettingsService>();
 
-        Commands = FolderViewViewModel.GetService<ICommandManager>();
+        Commands = FolderViewViewModel.GetRequiredService<ICommandManager>();
 
         InstanceViewModel.Initialize(FolderViewViewModel);
         InstanceViewModel.FolderSettings.LayoutPreferencesUpdateRequired += FolderSettings_LayoutPreferencesUpdateRequired;
@@ -407,7 +407,7 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		{
 			// Ctrl + Space, toggle media playback
 			case (true, false, false, true, VirtualKey.Space):
-				if (FolderViewViewModel.GetService<InfoPaneViewModel>().PreviewPaneContent is UserControls.FilePreviews.MediaPreview mediaPreviewContent)
+				if (FolderViewViewModel.GetRequiredService<InfoPaneViewModel>().PreviewPaneContent is UserControls.FilePreviews.MediaPreview mediaPreviewContent)
 				{
 					mediaPreviewContent.ViewModel.TogglePlayback();
 					args.Handled = true;

@@ -80,7 +80,7 @@ public sealed partial class MainWindow
 		{
             // CHANGE: Use string & startup tabs function to navigate to specific path.
             case string folderPath:
-                var _userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
+                var _userSettingsService = FolderViewViewModel.GetRequiredService<IUserSettingsService>();
                 _userSettingsService.GeneralSettingsService.OpenSpecificPageOnStartup = true;
                 _userSettingsService.GeneralSettingsService.TabsOnStartupList = [folderPath];
                 rootFrame.Navigate(typeof(MainPage), FolderViewViewModel, new SuppressNavigationTransitionInfo());
@@ -276,7 +276,7 @@ public sealed partial class MainWindow
                 }
             }
 
-			var generalSettingsService = FolderViewViewModel.GetService<IGeneralSettingsService>();
+			var generalSettingsService = FolderViewViewModel.GetRequiredService<IGeneralSettingsService>();
 			var paneNavigationArgs = new PaneNavigationArguments
 			{
                 FolderViewViewModel = FolderViewViewModel,
@@ -317,7 +317,7 @@ public sealed partial class MainWindow
                     break;
 
 				case ParsedCommandType.TagFiles:
-					var tagService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+					var tagService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 					var tag = tagService.GetTagsByName(command.Payload).FirstOrDefault();
 					foreach (var file in command.Args.Skip(1))
 					{

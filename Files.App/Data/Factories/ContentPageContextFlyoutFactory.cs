@@ -18,10 +18,10 @@ public static class ContentPageContextFlyoutFactory
 {
 	// Dependency injections
 
-	/*private static readonly IUserSettingsService UserSettingsService = DependencyExtensions.GetService<IUserSettingsService>();
-	private static readonly IModifiableCommandManager ModifiableCommands = DependencyExtensions.GetService<IModifiableCommandManager>();*/
-	private static readonly IAddItemService AddItemService = DependencyExtensions.GetService<IAddItemService>();
-	/*private static readonly ICommandManager Commands = DependencyExtensions.GetService<ICommandManager>();*/
+	/*private static readonly IUserSettingsService UserSettingsService = DependencyExtensions.GetRequiredService<IUserSettingsService>();
+	private static readonly IModifiableCommandManager ModifiableCommands = DependencyExtensions.GetRequiredService<IModifiableCommandManager>();*/
+	private static readonly IAddItemService AddItemService = DependencyExtensions.GetRequiredService<IAddItemService>();
+	/*private static readonly ICommandManager Commands = DependencyExtensions.GetRequiredService<ICommandManager>();*/
 
 	public static List<ContextMenuFlyoutItemViewModel> GetItemContextCommandsWithoutShellItems(IFolderViewViewModel folderViewViewModel, CurrentInstanceViewModel currentInstanceViewModel, List<ListedItem> selectedItems, BaseLayoutViewModel commandsViewModel, bool shiftPressed, SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel, ItemViewModel? itemViewModel = null)
 	{
@@ -37,7 +37,7 @@ public static class ContentPageContextFlyoutFactory
 
 	public static List<ContextMenuFlyoutItemViewModel> Filter(IFolderViewViewModel folderViewViewModel, List<ContextMenuFlyoutItemViewModel> items, List<ListedItem> selectedItems, bool shiftPressed, CurrentInstanceViewModel currentInstanceViewModel, bool removeOverflowMenu = true)
 	{
-        var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		items = items.Where(x => Check(item: x, currentInstanceViewModel: currentInstanceViewModel, selectedItems: selectedItems)).ToList();
 		items.ForEach(x => x.Items = x.Items?.Where(y => Check(item: y, currentInstanceViewModel: currentInstanceViewModel, selectedItems: selectedItems)).ToList()!);
@@ -88,9 +88,9 @@ public static class ContentPageContextFlyoutFactory
 		CurrentInstanceViewModel currentInstanceViewModel,
 		ItemViewModel? itemViewModel = null)
 	{
-        var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-        var ModifiableCommands = folderViewViewModel.GetService<IModifiableCommandManager>();
-        var Commands = folderViewViewModel.GetService<ICommandManager>();
+        var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        var ModifiableCommands = folderViewViewModel.GetRequiredService<IModifiableCommandManager>();
+        var Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
 
 		var itemsSelected = itemViewModel is null;
 		var canDecompress = selectedItems.Count != 0 && selectedItems.All(x => x.IsArchive)
@@ -620,7 +620,7 @@ public static class ContentPageContextFlyoutFactory
 
 	public static List<ContextMenuFlyoutItemViewModel> GetNewItemItems(IFolderViewViewModel folderViewViewModel, BaseLayoutViewModel commandsViewModel, bool canCreateFileInPage)
 	{
-        var Commands = folderViewViewModel.GetService<ICommandManager>();
+        var Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
 
 		var list = new List<ContextMenuFlyoutItemViewModel>()
 		{

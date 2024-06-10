@@ -17,9 +17,9 @@ namespace Files.App.Utils.Archives;
 
 public static class DecompressHelper
 {
-	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
+	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetRequiredService<StatusCenterViewModel>();*/
 
-	private static readonly IThreadingService _threadingService = DependencyExtensions.GetService<IThreadingService>();
+	private static readonly IThreadingService _threadingService = DependencyExtensions.GetRequiredService<IThreadingService>();
 
 	public static async Task<bool> DecompressArchiveAsync(BaseStorageFile archive, BaseStorageFolder destinationFolder, string password, IProgress<StatusCenterItemProgressModel> progress, CancellationToken cancellationToken)
 	{
@@ -116,7 +116,7 @@ public static class DecompressHelper
 			DecompressArchiveAsync(archive, destinationFolder, password, statusCard.ProgressEventSource, statusCard.CancellationToken));
 
 		// Remove the in-progress status card
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
 		_statusCenterViewModel.RemoveItem(statusCard);
 
 		if (result.Result)

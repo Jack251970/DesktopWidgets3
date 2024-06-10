@@ -15,7 +15,7 @@ namespace Files.App.Views.Properties;
 
 public sealed partial class MainPropertiesPage : BasePropertiesPage
 {
-    /*private IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetService<IAppThemeModeService>();
+    /*private IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetRequiredService<IAppThemeModeService>();
 
     private AppWindow AppWindow => Window.AppWindow;*/
 

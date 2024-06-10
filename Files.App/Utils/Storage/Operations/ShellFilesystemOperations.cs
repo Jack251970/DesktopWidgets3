@@ -176,7 +176,7 @@ public sealed class ShellFilesystemOperations(IFolderViewViewModel folderViewVie
 					.Where(x => CopyEngineResult.Convert(x.HResult) == FileSystemStatusCode.FileTooLarge)
 					.Select(item => item.Source);
 
-				await _folderViewViewModel.GetService<IDialogService>().ShowDialogAsync(new FileTooLargeDialogViewModel(failingItems));
+				await _folderViewViewModel.GetRequiredService<IDialogService>().ShowDialogAsync(new FileTooLargeDialogViewModel(failingItems));
 			}
 			// ADS
 			else if (copyResult.Items.All(x => x.HResult == -1))
@@ -833,7 +833,7 @@ public sealed class ShellFilesystemOperations(IFolderViewViewModel folderViewVie
 
 	private async Task<bool> RequestAdminOperation()
 	{
-		var dialogService = _folderViewViewModel.GetService<IDialogService>();
+		var dialogService = _folderViewViewModel.GetRequiredService<IDialogService>();
 		return await dialogService.ShowDialogAsync(new ElevateConfirmDialogViewModel()) == DialogResult.Primary;
 	}
 
@@ -875,7 +875,7 @@ public sealed class ShellFilesystemOperations(IFolderViewViewModel folderViewVie
 		var dialogViewModel = FileSystemDialogViewModel.GetDialogViewModel(
             _folderViewViewModel, incomingItems, titleText, descriptionText, primaryButtonText, secondaryButtonText);
 
-		var dialogService = _folderViewViewModel.GetService<IDialogService>();
+		var dialogService = _folderViewViewModel.GetRequiredService<IDialogService>();
 
 		return await dialogService.ShowDialogAsync(dialogViewModel);
 	}

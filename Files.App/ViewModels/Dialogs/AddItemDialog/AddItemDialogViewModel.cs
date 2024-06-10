@@ -16,7 +16,7 @@ public sealed class AddItemDialogViewModel : ObservableObject
 	public AddItemDialogViewModel()
 	{
 		// Dependency injection
-		_imagingService = DependencyExtensions.GetService<IImageService>();
+		_imagingService = DependencyExtensions.GetRequiredService<IImageService>();
 
 		// Initialize
 		AddItemsList = [];

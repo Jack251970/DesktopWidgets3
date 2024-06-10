@@ -46,18 +46,18 @@ public sealed partial class InfoPane : UserControl
 	public InfoPane()
 	{
 		InitializeComponent();
-        /*PaneSettingsService = DependencyExtensions.GetService<IInfoPaneSettingsService>();
-		Commands = DependencyExtensions.GetService<ICommandManager>();
-		ViewModel = DependencyExtensions.GetService<InfoPaneViewModel>();
-        ContentPageContext = DependencyExtensions.GetService<IContentPageContext>()*/
+        /*PaneSettingsService = DependencyExtensions.GetRequiredService<IInfoPaneSettingsService>();
+		Commands = DependencyExtensions.GetRequiredService<ICommandManager>();
+		ViewModel = DependencyExtensions.GetRequiredService<InfoPaneViewModel>();
+        ContentPageContext = DependencyExtensions.GetRequiredService<IContentPageContext>()*/
     }
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        PaneSettingsService = folderViewViewModel.GetService<IInfoPaneSettingsService>();
-        Commands = folderViewViewModel.GetService<ICommandManager>();
-        ViewModel = folderViewViewModel.GetService<InfoPaneViewModel>();
-        ContentPageContext = folderViewViewModel.GetService<IContentPageContext>();
+        PaneSettingsService = folderViewViewModel.GetRequiredService<IInfoPaneSettingsService>();
+        Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
+        ViewModel = folderViewViewModel.GetRequiredService<InfoPaneViewModel>();
+        ContentPageContext = folderViewViewModel.GetRequiredService<IContentPageContext>();
     }
 
 	public void UpdatePosition(double panelWidth, double panelHeight)

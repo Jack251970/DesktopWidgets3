@@ -130,7 +130,7 @@ public sealed class WindowsJumpListService : IWindowsJumpListService
 
             if (path.EndsWith('\\'))
             {
-                var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+                var drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
                 // Jumplist item argument can't end with a slash so append a character that can't exist in a directory name to support listing drives.
                 var drive = drivesViewModel.Drives.FirstOrDefault(drive => drive.Path == path);

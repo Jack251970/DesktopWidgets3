@@ -12,7 +12,7 @@ public sealed partial class AddItemDialog : ContentDialog, IDialog<AddItemDialog
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
-	private readonly IAddItemService addItemService = DependencyExtensions.GetService<IAddItemService>();
+	private readonly IAddItemService addItemService = DependencyExtensions.GetRequiredService<IAddItemService>();
 
     private FrameworkElement RootAppElement
         => (FrameworkElement)FolderViewViewModel.Content;

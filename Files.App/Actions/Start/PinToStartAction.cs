@@ -9,9 +9,9 @@ internal sealed class PinToStartAction(IFolderViewViewModel folderViewViewModel,
 {
     private readonly IFolderViewViewModel FolderViewViewModel = folderViewViewModel;
 
-    private IStorageService StorageService { get; } = DependencyExtensions.GetService<IStorageService>();
+    private IStorageService StorageService { get; } = DependencyExtensions.GetRequiredService<IStorageService>();
 
-	private IStartMenuService StartMenuService { get; } = DependencyExtensions.GetService<IStartMenuService>();
+	private IStartMenuService StartMenuService { get; } = DependencyExtensions.GetRequiredService<IStartMenuService>();
 
 	public IContentPageContext context = context;
 

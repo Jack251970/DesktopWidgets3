@@ -40,7 +40,7 @@ public static class DriveHelpers
             return false;
         }
 
-        var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+        var drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
 		var matchingDrive = drivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(x => drivePath.StartsWith(x.Path, StringComparison.Ordinal));
 		if (matchingDrive is null || matchingDrive.Type != Data.Items.DriveType.CDRom || matchingDrive.MaxSpace != ByteSizeLib.ByteSize.FromBytes(0))
@@ -69,7 +69,7 @@ public static class DriveHelpers
             return null!;
         }
 
-        var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+        var drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
 		var rootPath = Path.GetPathRoot(devicePath);
 		if (devicePath.StartsWith(@"\\?\", StringComparison.Ordinal)) // USB device

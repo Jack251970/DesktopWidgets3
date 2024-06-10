@@ -17,7 +17,7 @@ namespace Files.App.Helpers;
 
 public static class ShellContextFlyoutFactory
 {
-	/*public static IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
+	/*public static IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetRequiredService<IUserSettingsService>();*/
 
 	public static async Task<List<ContextMenuFlyoutItemViewModel>> GetShellContextmenuAsync(bool showOpenMenu, bool shiftPressed, string workingDirectory, List<ListedItem>? selectedItems, CancellationToken cancellationToken)
 	{
@@ -252,7 +252,7 @@ public static class ShellContextFlyoutFactory
 		bool showOpenWithMenu = false,
 		bool showSendToMenu = false)
 	{
-        var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
         try
 		{

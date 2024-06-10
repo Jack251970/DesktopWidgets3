@@ -24,7 +24,7 @@ internal sealed class FormatDriveAction : ObservableObject, IAction
 	public FormatDriveAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         this.context = context;
-        drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+        drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}

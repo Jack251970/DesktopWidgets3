@@ -45,7 +45,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
     }*/
     private static char[] GetRestrictedCharacters(IFolderViewViewModel folderViewViewModel)
     {
-        var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
         return userSettingsService.FoldersSettingsService.AreAlternateStreamsVisible
             ? ['\\', '/', '*', '?', '"', '<', '>', '|'] // Allow ":" char
             : ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
@@ -67,12 +67,12 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 	{
         // CHANGE: Initialize folder view view model and related services.
         FolderViewViewModel = folderViewViewModel;
-        StatusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        StatusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		this.associatedInstance = associatedInstance;
 		this.cancellationToken = cancellationToken;
-		jumpListService = DependencyExtensions.GetService<IWindowsJumpListService>();
+		jumpListService = DependencyExtensions.GetRequiredService<IWindowsJumpListService>();
 		filesystemOperations = new ShellFilesystemOperations(folderViewViewModel, this.associatedInstance);
 	}
 	public async Task<(ReturnResult, IStorageItem?)> CreateAsync(IStorageItemWithPath source, bool registerHistory)
@@ -145,7 +145,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 				incomingItems,
                 []);
 
-			var dialogService = FolderViewViewModel.GetService<IDialogService>();
+			var dialogService = FolderViewViewModel.GetRequiredService<IDialogService>();
 
 			// Return if the result isn't delete
 			if (await dialogService.ShowDialogAsync(dialogViewModel) != DialogResult.Primary)
@@ -691,7 +691,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 				// Same item names in both directories
 				if (StorageHelpers.Exists(item.dest) || 
 					(FtpHelpers.IsFtpPath(item.dest) && 
-					await DependencyExtensions.GetService<IFtpStorageService>().TryGetFileAsync(item.dest) is not null))
+					await DependencyExtensions.GetRequiredService<IFtpStorageService>().TryGetFileAsync(item.dest) is not null))
 				{
 					(incomingItems[item.index] as FileSystemDialogConflictItemViewModel)!.ConflictResolveOption = FileNameConflictResolveOptionType.GenerateNewName;
 					conflictingItems.Add(incomingItems.ElementAt(item.index));
@@ -704,7 +704,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 		var mustResolveConflicts = !conflictingItems.IsEmpty();
 		if (mustResolveConflicts || forceDialog)
 		{
-			var dialogService = folderViewViewModel.GetService<IDialogService>();
+			var dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
 
 			var dialogViewModel = FileSystemDialogViewModel.GetDialogViewModel(
                 folderViewViewModel,

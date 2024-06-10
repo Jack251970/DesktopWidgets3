@@ -24,7 +24,7 @@ internal sealed class ToggleInfoPaneAction : ObservableObject, IToggleAction
 
 	public ToggleInfoPaneAction(IFolderViewViewModel folderViewViewModel)
     {
-        viewModel = folderViewViewModel.GetService<InfoPaneViewModel>();
+        viewModel = folderViewViewModel.GetRequiredService<InfoPaneViewModel>();
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
 	}
 

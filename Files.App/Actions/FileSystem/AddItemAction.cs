@@ -33,7 +33,7 @@ internal sealed class AddItemAction : ObservableObject, IAction
         FolderViewViewModel = folderViewViewModel;
 
         this.context = context;
-        dialogService = folderViewViewModel.GetService<IDialogService>();
+        dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}
@@ -44,7 +44,7 @@ internal sealed class AddItemAction : ObservableObject, IAction
 
 		if (viewModel.ResultType.ItemType == AddItemDialogItemType.Shortcut)
 		{
-			await FolderViewViewModel.GetService<ICommandManager>().CreateShortcutFromDialog.ExecuteAsync();
+			await FolderViewViewModel.GetRequiredService<ICommandManager>().CreateShortcutFromDialog.ExecuteAsync();
 		}
 		else if (viewModel.ResultType.ItemType != AddItemDialogItemType.Cancel)
 		{

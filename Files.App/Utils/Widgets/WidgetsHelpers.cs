@@ -31,7 +31,7 @@ public static class WidgetsHelpers
 
     public static bool TryGetIsWidgetSettingEnabled<TWidget>(IFolderViewViewModel folderViewViewModel) where TWidget : IWidgetViewModel
     {
-        var generalSettingsService = folderViewViewModel.GetService<IGeneralSettingsService>();
+        var generalSettingsService = folderViewViewModel.GetRequiredService<IGeneralSettingsService>();
 
         if (typeof(TWidget) == typeof(QuickAccessWidgetViewModel))
         {

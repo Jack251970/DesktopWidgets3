@@ -18,7 +18,7 @@ public sealed partial class StatusCenter : UserControl
 
     public void Initialize(IFolderViewViewModel folderViewModel)
     {
-        ViewModel = folderViewModel.GetService<StatusCenterViewModel>();
+        ViewModel = folderViewModel.GetRequiredService<StatusCenterViewModel>();
     }
 
 	private void CloseAllItemsButton_Click(object sender, RoutedEventArgs e)

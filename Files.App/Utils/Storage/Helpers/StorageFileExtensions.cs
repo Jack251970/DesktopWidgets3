@@ -317,7 +317,7 @@ public static class StorageFileExtensions
 		}
         else if (component.EndsWith(':'))
         {
-			var drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+			var drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
 			var drives = drivesViewModel.Drives.Cast<DriveItem>();
 			var drive = drives.FirstOrDefault(y => y.ItemType is NavigationControlItemType.Drive && y.Path.Contains(component, StringComparison.OrdinalIgnoreCase));
@@ -439,7 +439,7 @@ public static class StorageFileExtensions
 
 	private static void SetCurrentWorkingDirectory(IFolderViewViewModel folderViewViewModel, StringBuilder path, char separator, int substringIndex, ref int i)
 	{
-        var context = folderViewViewModel.GetService<IContentPageContext>();
+        var context = folderViewViewModel.GetRequiredService<IContentPageContext>();
         var subPath = path.ToString()[substringIndex..];
 
         path.Clear();

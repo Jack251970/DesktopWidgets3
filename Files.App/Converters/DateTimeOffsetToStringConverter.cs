@@ -11,7 +11,7 @@ internal sealed class DateTimeOffsetToStringConverter : IValueConverter
 
     public DateTimeOffsetToStringConverter(IFolderViewViewModel folderViewViewModel)
     {
-        formatter = folderViewViewModel.GetService<IDateTimeFormatter>();
+        formatter = folderViewViewModel.GetRequiredService<IDateTimeFormatter>();
     }
 
 	public object Convert(object value, Type targetType, object parameter, string language)

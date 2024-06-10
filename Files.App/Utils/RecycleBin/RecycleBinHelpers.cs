@@ -10,9 +10,9 @@ namespace Files.App.Utils.RecycleBin;
 
 public static partial class RecycleBinHelpers
 {
-    /*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
+    /*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetRequiredService<StatusCenterViewModel>();*/
 
-    /*private static readonly IUserSettingsService userSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
+    /*private static readonly IUserSettingsService userSettingsService = DependencyExtensions.GetRequiredService<IUserSettingsService>();*/
 
     public static async Task<List<ShellFileItem>> EnumerateRecycleBin()
     {
@@ -58,8 +58,8 @@ public static partial class RecycleBinHelpers
             ConfirmEmptyBinDialog.XamlRoot = folderViewViewModel.XamlRoot;
         }
 
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
-        var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
+        var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
         // If the operation is approved by the user
         if (userSettingsService.FoldersSettingsService.DeleteConfirmationPolicy is DeleteConfirmationPolicies.Never ||
 			await ConfirmEmptyBinDialog.TryShowAsync(folderViewViewModel) == ContentDialogResult.Primary)
@@ -197,7 +197,7 @@ public static partial class RecycleBinHelpers
             return;
         }
 
-        var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
         var items = selected.ToList().Select((item) => StorageHelpers.FromPathAndType(
 			item.ItemPath,
 			item.PrimaryItemAttribute == StorageItemTypes.File ? FilesystemItemType.File : FilesystemItemType.Directory));

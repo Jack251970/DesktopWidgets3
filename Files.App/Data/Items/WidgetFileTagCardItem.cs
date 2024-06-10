@@ -52,7 +52,7 @@ public sealed partial class WidgetFileTagCardItem : WidgetCardItem
 	public WidgetFileTagCardItem(IFolderViewViewModel folderViewViewModel, IStorable associatedStorable, IImage? icon)
 	{
         FolderViewViewModel = folderViewViewModel;
-        ContentPageContext = folderViewViewModel.GetService<IContentPageContext>();
+        ContentPageContext = folderViewViewModel.GetRequiredService<IContentPageContext>();
 
         _associatedStorable = associatedStorable;
 		_Icon = icon;

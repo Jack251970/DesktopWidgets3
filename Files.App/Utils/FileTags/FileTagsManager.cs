@@ -9,7 +9,7 @@ namespace Files.App.Utils.FileTags;
 public sealed class FileTagsManager
 {
 	private readonly ILogger logger = App.Logger;
-	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
 	public EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 

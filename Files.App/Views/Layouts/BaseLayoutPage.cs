@@ -39,7 +39,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
     // Dependency injections
 
-	protected IFileTagsSettingsService FileTagsSettingsService { get; } = DependencyExtensions.GetService<IFileTagsSettingsService>()!;
+	protected IFileTagsSettingsService FileTagsSettingsService { get; } = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>()!;
     protected IUserSettingsService UserSettingsService { get; private set; } = null!;
     protected ICommandManager Commands { get; private set; } = null!;
 	public InfoPaneViewModel InfoPaneViewModel { get; private set; } = null!;
@@ -415,9 +415,9 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
         // CHANGE: Initialize folder view view model and related services.
         FolderViewViewModel = navigationArguments.FolderViewViewModel;
-        UserSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
-        Commands = FolderViewViewModel.GetService<ICommandManager>();
-        InfoPaneViewModel = FolderViewViewModel.GetService<InfoPaneViewModel>();
+        UserSettingsService = FolderViewViewModel.GetRequiredService<IUserSettingsService>();
+        Commands = FolderViewViewModel.GetRequiredService<ICommandManager>();
+        InfoPaneViewModel = FolderViewViewModel.GetRequiredService<InfoPaneViewModel>();
 
         SelectedItemsPropertiesViewModel.Initialize(FolderViewViewModel);
         DirectoryPropertiesViewModel.Initialize(FolderViewViewModel);

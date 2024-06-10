@@ -21,7 +21,7 @@ internal sealed class UserDateTimeFormatter : IDateTimeFormatter
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
         UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
 
@@ -40,7 +40,7 @@ internal sealed class UserDateTimeFormatter : IDateTimeFormatter
 	private void Update()
 	{
         var dateTimeFormat = UserSettingsService is null ? DateTimeFormats.Application : UserSettingsService.GeneralSettingsService.DateTimeFormat;
-        var factory = DependencyExtensions.GetService<IDateTimeFormatterFactory>();
+        var factory = DependencyExtensions.GetRequiredService<IDateTimeFormatterFactory>();
 
 		formatter = factory.GetDateTimeFormatter(dateTimeFormat);
 	}

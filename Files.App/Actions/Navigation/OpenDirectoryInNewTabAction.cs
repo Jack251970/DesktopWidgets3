@@ -32,7 +32,7 @@ internal sealed class OpenDirectoryInNewTabAction : ObservableObject, IAction
         FolderViewViewModel = folderViewViewModel;
 
         this.context = context;
-		userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+		userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}

@@ -7,9 +7,9 @@ namespace Files.App.Actions;
 
 internal sealed class UnpinFromStartAction(IContentPageContext context) : IAction
 {
-	private IStorageService StorageService { get; } = DependencyExtensions.GetService<IStorageService>();
+	private IStorageService StorageService { get; } = DependencyExtensions.GetRequiredService<IStorageService>();
 
-	private IStartMenuService StartMenuService { get; } = DependencyExtensions.GetService<IStartMenuService>();
+	private IStartMenuService StartMenuService { get; } = DependencyExtensions.GetRequiredService<IStartMenuService>();
 
 	public IContentPageContext context = context;
 

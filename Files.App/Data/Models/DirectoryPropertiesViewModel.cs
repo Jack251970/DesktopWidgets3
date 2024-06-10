@@ -101,7 +101,7 @@ public sealed class DirectoryPropertiesViewModel : ObservableObject
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        ContentPageContext = folderViewViewModel.GetService<IContentPageContext>();
+        ContentPageContext = folderViewViewModel.GetRequiredService<IContentPageContext>();
 
         NewBranchCommand = new AsyncRelayCommand(()
             => GitHelpers.CreateNewBranchAsync(FolderViewViewModel, _gitRepositoryPath!, _localBranches[ACTIVE_BRANCH_INDEX].Name));

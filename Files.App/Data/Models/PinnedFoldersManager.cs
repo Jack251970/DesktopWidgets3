@@ -8,8 +8,8 @@ namespace Files.App.Data.Models;
 
 public sealed class PinnedFoldersManager
 {
-    /*private IUserSettingsService userSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
-    private IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetService<IQuickAccessService>();
+    /*private IUserSettingsService userSettingsService { get; } = DependencyExtensions.GetRequiredService<IUserSettingsService>();*/
+    private IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetRequiredService<IQuickAccessService>();
 
     public EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 

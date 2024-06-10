@@ -23,7 +23,7 @@ public sealed class UserSizeProvider : ISizeProvider
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        FolderPreferences = folderViewViewModel.GetService<IFoldersSettingsService>();
+        FolderPreferences = folderViewViewModel.GetRequiredService<IFoldersSettingsService>();
 
         provider.SizeChanged -= Provider_SizeChanged;
         provider = GetProvider();

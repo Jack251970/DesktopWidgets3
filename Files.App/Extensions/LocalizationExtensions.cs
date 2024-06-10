@@ -14,7 +14,7 @@ public static class LocalizationExtensions
 	{
 		if (localizationService is null)
 		{
-			FallbackLocalizationService ??= DependencyExtensions.GetService<ILocalizationService>();
+			FallbackLocalizationService ??= DependencyExtensions.GetRequiredService<ILocalizationService>();
 
 			return FallbackLocalizationService?.LocalizeFromResourceKey(resourceKey) ?? string.Empty;
 		}

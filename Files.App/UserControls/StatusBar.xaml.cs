@@ -46,7 +46,7 @@ public sealed partial class StatusBar : UserControl
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        Commands = folderViewViewModel.GetService<ICommandManager>();
+        Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
     }
 
 	private async void BranchesFlyout_Opening(object _, object e)

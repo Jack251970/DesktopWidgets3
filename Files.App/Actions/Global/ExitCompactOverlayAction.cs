@@ -29,7 +29,7 @@ internal sealed class ExitCompactOverlayAction : ObservableObject, IAction
 	public ExitCompactOverlayAction(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        windowContext = folderViewViewModel.GetService<IWindowContext>();
+        windowContext = folderViewViewModel.GetRequiredService<IWindowContext>();
 
         windowContext.PropertyChanged += WindowContext_PropertyChanged;
 	}

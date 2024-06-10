@@ -14,7 +14,7 @@ public sealed class FoldersViewModel : ObservableObject
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
         SelectedDeleteConfirmationPolicyIndex = (int)DeleteConfirmationPolicy;
     }

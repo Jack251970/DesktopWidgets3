@@ -515,7 +515,7 @@ public sealed class SelectedItemsPropertiesViewModel : ObservableObject
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        DateTimeFormatter = folderViewViewModel.GetService<IDateTimeFormatter>();
+        DateTimeFormatter = folderViewViewModel.GetRequiredService<IDateTimeFormatter>();
     }
 
 	private bool isSelectedItemImage = false;

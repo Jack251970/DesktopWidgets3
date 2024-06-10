@@ -21,16 +21,16 @@ public sealed partial class InnerNavigationToolbar : UserControl
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-        Commands = folderViewViewModel.GetService<ICommandManager>();
-        ModifiableCommands = folderViewViewModel.GetService<IModifiableCommandManager>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
+        ModifiableCommands = folderViewViewModel.GetRequiredService<IModifiableCommandManager>();
     }
 
     public IUserSettingsService UserSettingsService { get; set; } = null!;
 	public ICommandManager Commands { get; set; } = null!;
     public IModifiableCommandManager ModifiableCommands { get; set; } = null!;
 
-    private readonly IAddItemService addItemService = DependencyExtensions.GetService<IAddItemService>();
+    private readonly IAddItemService addItemService = DependencyExtensions.GetRequiredService<IAddItemService>();
 
 	public static AppModel AppModel => App.AppModel;
 

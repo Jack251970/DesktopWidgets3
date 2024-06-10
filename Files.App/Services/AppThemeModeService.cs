@@ -11,7 +11,7 @@ namespace Files.App.Services;
 public class AppThemeModeService : IAppThemeModeService
 {
     // CHANGE: Use theme extensions instead of theme setting.
-    /*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();
+    /*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetRequiredService<IUserSettingsService>();
 
 	private UISettings UISettings { get; } = new();
 

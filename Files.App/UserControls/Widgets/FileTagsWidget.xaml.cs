@@ -12,7 +12,7 @@ namespace Files.App.UserControls.Widgets;
 /// </summary>
 public sealed partial class FileTagsWidget : UserControl
 {
-    public FileTagsWidgetViewModel ViewModel { get; set; } = DependencyExtensions.GetService<FileTagsWidgetViewModel>();
+    public FileTagsWidgetViewModel ViewModel { get; set; } = DependencyExtensions.GetRequiredService<FileTagsWidgetViewModel>();
 
     public FileTagsWidget(IFolderViewViewModel folderViewViewModel)
     {

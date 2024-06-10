@@ -13,7 +13,7 @@ namespace Files.App.Utils.Archives;
 /// </summary>
 public static class CompressHelper
 {
-	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
+	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetRequiredService<StatusCenterViewModel>();*/
 
 	public static bool CanDecompress(IReadOnlyList<ListedItem> selectedItems)
 	{
@@ -90,7 +90,7 @@ public static class CompressHelper
 
 		var isSuccess = await creator.RunCreationAsync();
 
-        var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
 		_statusCenterViewModel.RemoveItem(banner);
 
 		if (isSuccess)

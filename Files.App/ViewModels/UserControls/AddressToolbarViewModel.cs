@@ -26,9 +26,9 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 
     private IDialogService _dialogService { get; set; } = null!;
 
-    private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+    private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
-	public IUpdateService UpdateService { get; } = DependencyExtensions.GetService<IUpdateService>()!;
+	public IUpdateService UpdateService { get; } = DependencyExtensions.GetRequiredService<IUpdateService>()!;
 
 	public ICommandManager Commands { get; set; } = null!;
 
@@ -224,9 +224,9 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-        _dialogService = folderViewViewModel.GetService<IDialogService>();
-        Commands = folderViewViewModel.GetService<ICommandManager>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        _dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
+        Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
 
         UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
 
@@ -626,7 +626,7 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 			{
 				SearchBox.Query = string.Empty;
 
-				var page = FolderViewViewModel.GetService<IContentPageContext>().ShellPage?.SlimContentPage;
+				var page = FolderViewViewModel.GetRequiredService<IContentPageContext>().ShellPage?.SlimContentPage;
 
 				if (page is BaseGroupableLayoutPage svb && svb.IsLoaded)
                 {

@@ -213,7 +213,7 @@ public sealed class LayoutPreferencesManager : ObservableObject
     public void Initialize(IFolderViewViewModel folderViewViewModel, FolderLayoutModes? modeOverride)
     {
         FolderViewViewModel = folderViewViewModel;
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
         LayoutPreferencesItem = new LayoutPreferencesItem(folderViewViewModel);
         if (modeOverride is not null)
         {

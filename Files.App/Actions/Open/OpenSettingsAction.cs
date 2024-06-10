@@ -5,7 +5,7 @@ namespace Files.App.Actions;
 
 internal sealed class OpenSettingsAction(IFolderViewViewModel folderViewViewModel) : BaseUIAction(folderViewViewModel), IAction
 {
-	private readonly IDialogService dialogService = folderViewViewModel.GetService<IDialogService>();
+	private readonly IDialogService dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
 
 	private readonly SettingsDialogViewModel viewModel = new();
 

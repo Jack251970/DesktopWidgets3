@@ -24,10 +24,10 @@ namespace Files.App.ViewModels.UserControls;
 public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
-    private INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetService<INetworkDrivesService>();
+    private INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
     private IUserSettingsService UserSettingsService { get; set; } = null!;
     private ICommandManager Commands { get; set; } = null!;
-    private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+    private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
     private readonly IFileTagsService fileTagsService;
 
     private IPaneHolder paneHolder = null!;
@@ -48,7 +48,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
     public object SidebarItems => sidebarItems;
     public BulkConcurrentObservableCollection<INavigationControlItem> sidebarItems { get; init; }
     public static PinnedFoldersManager SidebarPinnedModel => App.QuickAccessManager.Model;
-    public IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetService<IQuickAccessService>();
+    public IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetRequiredService<IQuickAccessService>();
 
     private SidebarDisplayMode sidebarDisplayMode;
     public SidebarDisplayMode SidebarDisplayMode
@@ -254,7 +254,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
     public SidebarViewModel()
     {
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        fileTagsService = DependencyExtensions.GetService<IFileTagsService>();
+        fileTagsService = DependencyExtensions.GetRequiredService<IFileTagsService>();
 
         sidebarItems = [];
         /*UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
@@ -293,8 +293,8 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
     {
         FolderViewViewModel = folderViewViewModel;
 
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-        Commands = folderViewViewModel.GetService<ICommandManager>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
 
         UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
         CreateItemHomeAsync();
@@ -965,7 +965,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
     private async Task ReorderItemsAsync()
     {
         var dialog = new ReorderSidebarItemsDialogViewModel();
-		var dialogService = FolderViewViewModel.GetService<IDialogService>();
+		var dialogService = FolderViewViewModel.GetRequiredService<IDialogService>();
         await dialogService.ShowDialogAsync(dialog);
     }
 

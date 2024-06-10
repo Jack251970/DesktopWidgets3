@@ -12,7 +12,7 @@ public sealed class CompatibilityViewModel : ObservableObject
 {
     // Dependency injections
 
-    private IWindowsCompatibilityService WindowsCompatibilityService { get; } = DependencyExtensions.GetService<IWindowsCompatibilityService>();
+    private IWindowsCompatibilityService WindowsCompatibilityService { get; } = DependencyExtensions.GetRequiredService<IWindowsCompatibilityService>();
 
     // Properties
 

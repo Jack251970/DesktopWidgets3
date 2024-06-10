@@ -12,8 +12,8 @@ namespace Files.App.Utils.Storage;
 
 public static class Win32StorageEnumerator
 {
-    /*private static readonly ISizeProvider folderSizeProvider = DependencyExtensions.GetService<ISizeProvider>();*/
-    private static readonly IStorageCacheService fileListCache = DependencyExtensions.GetService<IStorageCacheService>();
+    /*private static readonly ISizeProvider folderSizeProvider = DependencyExtensions.GetRequiredService<ISizeProvider>();*/
+    private static readonly IStorageCacheService fileListCache = DependencyExtensions.GetRequiredService<IStorageCacheService>();
 
     private static readonly string folderTypeTextLocalized = "Folder".GetLocalizedResource();
 
@@ -31,7 +31,7 @@ public static class Win32StorageEnumerator
         var tempList = new List<ListedItem>();
         var count = 0;
 
-        var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
         var CalculateFolderSizes = userSettingsService.FoldersSettingsService.CalculateFolderSizes;
 
         var isGitRepo = GitHelpers.IsRepositoryEx(path, out var repoPath) && !string.IsNullOrEmpty((await GitHelpers.GetRepositoryHead(repoPath))?.Name);
@@ -77,7 +77,7 @@ public static class Win32StorageEnumerator
 
                             if (CalculateFolderSizes)
                             {
-                                var folderSizeProvider = folderViewViewModel.GetService<ISizeProvider>();
+                                var folderSizeProvider = folderViewViewModel.GetRequiredService<ISizeProvider>();
                                 if (folderSizeProvider.TryGetSize(folder.ItemPath, out var size))
                                 {
                                     folder.FileSizeBytes = (long)size;

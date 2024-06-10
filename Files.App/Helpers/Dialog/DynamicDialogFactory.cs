@@ -323,7 +323,7 @@ public static class DynamicDialogFactory
             SecondaryButtonText = "EditPermissions".GetLocalizedResource(),
             SecondaryButtonAction = (vm, e) =>
             {
-                var context = folderViewViewModel.GetService<IContentPageContext>();
+                var context = folderViewViewModel.GetRequiredService<IContentPageContext>();
                 var item = context.ShellPage?.FilesystemViewModel.FilesAndFolders.FirstOrDefault(li => li.ItemPath.Equals(path));
 
                 if (context.ShellPage is not null && item is not null)

@@ -18,7 +18,7 @@ internal sealed class ToggleShowFileExtensionsAction : ObservableObject, IToggle
 
 	public ToggleShowFileExtensionsAction(IFolderViewViewModel folderViewViewModel)
     {
-		settings = folderViewViewModel.GetService<IFoldersSettingsService>();
+		settings = folderViewViewModel.GetRequiredService<IFoldersSettingsService>();
 
 		settings.PropertyChanged += Settings_PropertyChanged;
 	}

@@ -12,7 +12,7 @@ namespace Files.App.UserControls.Widgets;
 /// </summary>
 public sealed partial class DrivesWidget : UserControl
 {
-    public DrivesWidgetViewModel ViewModel { get; set; } = DependencyExtensions.GetService<DrivesWidgetViewModel>();
+    public DrivesWidgetViewModel ViewModel { get; set; } = DependencyExtensions.GetRequiredService<DrivesWidgetViewModel>();
 
     public DrivesWidget(IFolderViewViewModel folderViewViewModel)
     {

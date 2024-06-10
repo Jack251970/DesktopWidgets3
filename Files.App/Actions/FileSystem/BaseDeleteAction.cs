@@ -19,7 +19,7 @@ internal abstract class BaseDeleteAction : BaseUIAction
 	public BaseDeleteAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context) : base(folderViewViewModel)
     {
         this.context = context;
-        settings = folderViewViewModel.GetService<IFoldersSettingsService>();
+        settings = folderViewViewModel.GetRequiredService<IFoldersSettingsService>();
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}

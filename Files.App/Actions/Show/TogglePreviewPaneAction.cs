@@ -25,8 +25,8 @@ internal sealed class TogglePreviewPaneAction : ObservableObject, IToggleAction
 
 	public TogglePreviewPaneAction(IFolderViewViewModel folderViewViewModel)
     {
-        viewModel = folderViewViewModel.GetService<InfoPaneViewModel>();
-        infoPaneSettingsService = folderViewViewModel.GetService<IInfoPaneSettingsService>();
+        viewModel = folderViewViewModel.GetRequiredService<InfoPaneViewModel>();
+        infoPaneSettingsService = folderViewViewModel.GetRequiredService<IInfoPaneSettingsService>();
 
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
 	}

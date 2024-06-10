@@ -80,7 +80,7 @@ internal sealed class UserSettingsService : BaseJsonSettings, IUserSettingsServi
         // CHANGE: Initialize setting sharing context of settings members.
         if (settingsServiceMember is null)
         {
-            settingsServiceMember = DependencyExtensions.GetService<TSettingsService>()!;
+            settingsServiceMember = DependencyExtensions.GetRequiredService<TSettingsService>()!;
             settingsServiceMember.Initialize(this);
         }
 

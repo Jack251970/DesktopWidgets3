@@ -23,7 +23,7 @@ internal sealed class OpenDirectoryInNewPaneAction : ObservableObject, IAction
 	public OpenDirectoryInNewPaneAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         this.context = context;
-		userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+		userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}

@@ -40,7 +40,7 @@ public sealed class BaseLayoutViewModel : IDisposable
 	public BaseLayoutViewModel(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, ItemManipulationModel itemManipulationModel)
 	{
         _folderViewViewModel = folderViewViewModel;
-        Commands = _folderViewViewModel.GetService<ICommandManager>();
+        Commands = _folderViewViewModel.GetRequiredService<ICommandManager>();
 
         _associatedInstance = associatedInstance;
 		_itemManipulationModel = itemManipulationModel;

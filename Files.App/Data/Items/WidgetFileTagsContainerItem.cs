@@ -12,8 +12,8 @@ public sealed partial class WidgetFileTagsContainerItem : ObservableObject, IAsy
 
 	// Fields
 
-	private readonly IFileTagsService FileTagsService = DependencyExtensions.GetService<IFileTagsService>();
-	private readonly IImageService ImageService = DependencyExtensions.GetService<IImageService>();
+	private readonly IFileTagsService FileTagsService = DependencyExtensions.GetRequiredService<IFileTagsService>();
+	private readonly IImageService ImageService = DependencyExtensions.GetRequiredService<IImageService>();
 	private readonly ICommandManager Commands;
 	private readonly IContentPageContext ContentPageContext ;
 
@@ -50,8 +50,8 @@ public sealed partial class WidgetFileTagsContainerItem : ObservableObject, IAsy
 	public WidgetFileTagsContainerItem(IFolderViewViewModel folderViewViewModel, string tagUid)
 	{
         FolderViewViewModel = folderViewViewModel;
-        Commands = folderViewViewModel.GetService<ICommandManager>();
-        ContentPageContext = folderViewViewModel.GetService<IContentPageContext>();
+        Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
+        ContentPageContext = folderViewViewModel.GetRequiredService<IContentPageContext>();
 
 		_tagUid = tagUid;
 		Tags = [];

@@ -14,7 +14,7 @@ public sealed partial class MediaPreview : UserControl
 
     public MediaPreview(IFolderViewViewModel folderViewViewModel, MediaPreviewViewModel model)
 	{
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		ViewModel = model;
 		InitializeComponent();

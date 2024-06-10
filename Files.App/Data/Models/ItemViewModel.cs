@@ -49,13 +49,13 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
 
 	// Files and folders list for manipulating
 	private ConcurrentCollection<ListedItem> filesAndFolders;
-    private readonly IWindowsJumpListService jumpListService = DependencyExtensions.GetService<IWindowsJumpListService>();
+    private readonly IWindowsJumpListService jumpListService = DependencyExtensions.GetRequiredService<IWindowsJumpListService>();
     private readonly IDialogService DialogService;
 	private readonly IUserSettingsService UserSettingsService;
-    private readonly INetworkDrivesService NetworkDrivesService = DependencyExtensions.GetService<INetworkDrivesService>();
-    private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+    private readonly INetworkDrivesService NetworkDrivesService = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
+    private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 	private readonly ISizeProvider folderSizeProvider;
-    private readonly IStorageCacheService fileListCache = DependencyExtensions.GetService<IStorageCacheService>();
+    private readonly IStorageCacheService fileListCache = DependencyExtensions.GetRequiredService<IStorageCacheService>();
 
     // Only used for Binding and ApplyFilesAndFoldersChangesAsync, don't manipulate on this!
     public BulkConcurrentObservableCollection<ListedItem> FilesAndFolders { get; }
@@ -489,10 +489,10 @@ public sealed class ItemViewModel : ObservableObject, IDisposable
         // CHANGE: Initialize folder view view model and related services.
         FolderViewViewModel = folderViewViewModel;
 
-        DialogService = folderViewViewModel.GetService<IDialogService>();
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        DialogService = folderViewViewModel.GetRequiredService<IDialogService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
-        folderSizeProvider = folderViewViewModel.GetService<ISizeProvider>();
+        folderSizeProvider = folderViewViewModel.GetRequiredService<ISizeProvider>();
 
         folderSettings = folderSettingsViewModel;
         filesAndFolders = [];

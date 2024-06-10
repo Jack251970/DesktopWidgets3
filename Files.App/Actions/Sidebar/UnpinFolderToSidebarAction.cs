@@ -23,7 +23,7 @@ internal sealed class UnpinFolderFromSidebarAction : ObservableObject, IAction
 	public UnpinFolderFromSidebarAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         this.context = context;
-        service = folderViewViewModel.GetService<IQuickAccessService>();
+        service = folderViewViewModel.GetRequiredService<IQuickAccessService>();
 
         context.PropertyChanged += Context_PropertyChanged;
 		App.QuickAccessManager.UpdateQuickAccessWidget += QuickAccessManager_DataChanged;

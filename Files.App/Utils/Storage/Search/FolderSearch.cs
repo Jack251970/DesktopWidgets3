@@ -13,10 +13,10 @@ namespace Files.App.Utils.Storage;
 
 public sealed class FolderSearch
 {
-	/*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetService<IUserSettingsService>();*/
-	private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetService<DrivesViewModel>();
+	/*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetRequiredService<IUserSettingsService>();*/
+	private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
-	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
 	private const uint defaultStepSize = 500;
 
@@ -155,7 +155,7 @@ public sealed class FolderSearch
 
 				try
 				{
-                    var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+                    var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
                     if (!item.Name.StartsWith('.') || UserSettingsService.FoldersSettingsService.ShowDotFiles)
                     {
                         results.Add(await GetListedItemAsync(folderViewViewModel, item));
@@ -214,7 +214,7 @@ public sealed class FolderSearch
                 return (hFileTsk, findDataTsk);
 			}).WithTimeoutAsync(TimeSpan.FromSeconds(5));
 
-            var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+            var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
             if (hFile != IntPtr.Zero && hFile.ToInt64() != -1)
 			{
 				var isSystem = ((FileAttributes)findData.dwFileAttributes & FileAttributes.System) == FileAttributes.System;
@@ -283,7 +283,7 @@ public sealed class FolderSearch
 				hiddenOnlyFromWin32 = (results.Count != 0);
             }
 
-            var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+            var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
             if (!IsAQSQuery && (!hiddenOnlyFromWin32 || UserSettingsService.FoldersSettingsService.ShowHiddenItems))
 			{
 				await SearchWithWin32Async(folderViewViewModel, folder, hiddenOnlyFromWin32, UsedMaxItemCount - (uint)results.Count, results, token);
@@ -319,7 +319,7 @@ public sealed class FolderSearch
 					var isHidden = ((FileAttributes)findData.dwFileAttributes & FileAttributes.Hidden) == FileAttributes.Hidden;
 					var startWithDot = findData.cFileName.StartsWith('.');
 
-                    var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+                    var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
                     var shouldBeListed = (hiddenOnly ?
 						isHidden && (!isSystem || !UserSettingsService.FoldersSettingsService.ShowProtectedSystemFiles) :
 						!isHidden || (UserSettingsService.FoldersSettingsService.ShowHiddenItems && (!isSystem || UserSettingsService.FoldersSettingsService.ShowProtectedSystemFiles))) &&

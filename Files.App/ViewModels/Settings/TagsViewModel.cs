@@ -7,7 +7,7 @@ namespace Files.App.ViewModels.Settings;
 
 public sealed class TagsViewModel : ObservableObject
 {
-	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
 	private bool isBulkOperation = true;
 

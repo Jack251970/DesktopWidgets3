@@ -19,7 +19,7 @@ public sealed class QuickAccessManager
 
     public QuickAccessManager()
 	{
-		QuickAccessService = DependencyExtensions.GetService<IQuickAccessService>();
+		QuickAccessService = DependencyExtensions.GetRequiredService<IQuickAccessService>();
 		Model = new();
 		Initialize();
 	}

@@ -31,7 +31,7 @@ internal sealed class OpenInNewWindowItemAction : ObservableObject, IAction
 	public OpenInNewWindowItemAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
 		this.context = context;
-		userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+		userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}

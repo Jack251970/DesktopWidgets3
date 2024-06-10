@@ -14,7 +14,7 @@ public static class DependencyExtensions
         FallbackDependencyService = dependencyService;
     }
 
-    public static T GetService<T>() where T : class
+    public static T GetRequiredService<T>() where T : class
     {
         if (FallbackDependencyService is null)
         {

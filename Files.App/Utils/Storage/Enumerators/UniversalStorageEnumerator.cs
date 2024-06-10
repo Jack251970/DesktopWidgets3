@@ -28,7 +28,7 @@ public static class UniversalStorageEnumerator
 		uint count = 0;
 		var firstRound = true;
 
-		var userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+		var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		while (true)
 		{

@@ -228,7 +228,7 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
 	{
 		InitializeComponent();
 
-        /*UserSettingsService = DependencyExtensions.GetService<IUserSettingsService>();*/
+        /*UserSettingsService = DependencyExtensions.GetRequiredService<IUserSettingsService>();*/
 
         /*MainWindow.Instance.SizeChanged += Current_SizeChanged;
 		ActivePane = PaneLeft;
@@ -261,11 +261,11 @@ public sealed partial class PaneHolderPage : Page, IPaneHolder, ITabBarItemConte
                 FolderViewViewModel = paneArgs.FolderViewViewModel;
             }
 
-            UserSettingsService = FolderViewViewModel!.GetService<IUserSettingsService>();
+            UserSettingsService = FolderViewViewModel!.GetRequiredService<IUserSettingsService>();
 
             // CHANGE: Initialize context services.
-            var pageContext = FolderViewViewModel.GetService<IPageContext>();
-            var contentPageContext = FolderViewViewModel.GetService<IContentPageContext>();
+            var pageContext = FolderViewViewModel.GetRequiredService<IPageContext>();
+            var contentPageContext = FolderViewViewModel.GetRequiredService<IContentPageContext>();
             contentPageContext.Initialize(pageContext);
             pageContext.Initialize(this);
 

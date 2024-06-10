@@ -34,7 +34,7 @@ public abstract class BasePreviewModel : ObservableObject
         Item = item;
 
         FolderViewViewModel = item.FolderViewViewModel;
-        userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
+        userSettingsService = FolderViewViewModel.GetRequiredService<IUserSettingsService>();
     }
 
     public delegate void LoadedEventHandler(object sender, EventArgs e);

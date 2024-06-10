@@ -103,7 +103,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
     {
         if (_isInitialized)
         {
-            var userSettingsService = App.GetService<IUserSettingsService>();
+            var userSettingsService = App.GetRequiredService<IUserSettingsService>();
 
             // Don't leave the app running in background
             userSettingsService.GeneralSettingsService.LeaveAppRunning = false;
@@ -127,7 +127,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     protected override void LoadSettings(FolderViewWidgetSettings settings)
     {
-        var _userSettingsService = App.GetService<IUserSettingsService>();
+        var _userSettingsService = App.GetRequiredService<IUserSettingsService>();
 
         if (AllowNavigation != settings.AllowNavigation)
         {
@@ -236,7 +236,8 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
 
     public override FolderViewWidgetSettings GetSettings()
     {
-        var _userSettingsService = App.GetService<IUserSettingsService>();
+        var _userSettingsService = App.GetRequiredService<IUserSettingsService>();
+
         return new FolderViewWidgetSettings()
         {
             FolderPath = FolderPath,
@@ -343,7 +344,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         NavigatedTo -= FolderViewViewModel_NavigatedTo;
     }
 
-    T IFolderViewViewModel.GetService<T>() where T : class => App.GetService<T>();
+    T IFolderViewViewModel.GetRequiredService<T>() where T : class => App.GetRequiredService<T>();
 
     #endregion
 }

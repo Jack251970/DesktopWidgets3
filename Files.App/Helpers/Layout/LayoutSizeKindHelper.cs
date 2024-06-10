@@ -5,7 +5,7 @@ namespace Files.App.Helpers;
 
 public static class LayoutSizeKindHelper
 {
-	/*private static ILayoutSettingsService LayoutSettingsService { get; } = DependencyExtensions.GetService<ILayoutSettingsService>();*/
+	/*private static ILayoutSettingsService LayoutSettingsService { get; } = DependencyExtensions.GetRequiredService<ILayoutSettingsService>();*/
 
 	/// <summary>
 	/// Gets the desired height for items in the Details View

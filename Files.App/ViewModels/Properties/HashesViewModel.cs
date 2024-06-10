@@ -32,7 +32,7 @@ public sealed class HashesViewModel : ObservableObject, IDisposable
 
 	public HashesViewModel(IFolderViewViewModel folderViewViewModel, ListedItem item)
 	{
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		ToggleIsEnabledCommand = new RelayCommand<string>(ToggleIsEnabled);
 

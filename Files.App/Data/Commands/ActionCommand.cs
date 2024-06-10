@@ -114,7 +114,7 @@ internal sealed class ActionCommand : ObservableObject, IRichCommand
 
 	public ActionCommand(IFolderViewViewModel folderViewViewModel, CommandManager manager, CommandCodes code, IAction action)
 	{
-        ActionsSettingsService = folderViewViewModel.GetService<IActionsSettingsService>();
+        ActionsSettingsService = folderViewViewModel.GetRequiredService<IActionsSettingsService>();
         Code = code;
 		Action = action;
 		Icon = action.Glyph.ToIcon();

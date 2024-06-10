@@ -21,10 +21,10 @@ public sealed class MainPageViewModel : ObservableObject
     // Dependency injections
 
     private IAppearanceSettingsService AppearanceSettingsService { get; set; } = null!;
-    private INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetService<INetworkDrivesService>();
+    private INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
     private IUserSettingsService UserSettingsService { get; set; } = null!;
-	private IResourcesService ResourcesService { get; } = DependencyExtensions.GetService<IResourcesService>();
-	private DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetService<DrivesViewModel>();
+	private IResourcesService ResourcesService { get; } = DependencyExtensions.GetRequiredService<IResourcesService>();
+	private DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
     // Properties
 
@@ -126,8 +126,8 @@ public sealed class MainPageViewModel : ObservableObject
         {
             FolderViewViewModel = folderViewViewModel;
 
-            AppearanceSettingsService = folderViewViewModel.GetService<IAppearanceSettingsService>();
-            UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+            AppearanceSettingsService = folderViewViewModel.GetRequiredService<IAppearanceSettingsService>();
+            UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
         }
 
         AppearanceSettingsService.PropertyChanged += (s, e) =>

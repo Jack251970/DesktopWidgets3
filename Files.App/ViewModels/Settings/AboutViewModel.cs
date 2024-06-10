@@ -14,7 +14,7 @@ namespace Files.App.ViewModels.Settings;
 
 public sealed class AboutViewModel : ObservableObject
 {
-    public readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+    public readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
 	public ICommand CopyAppVersionCommand { get; }
 	public ICommand CopyWindowsVersionCommand { get; }

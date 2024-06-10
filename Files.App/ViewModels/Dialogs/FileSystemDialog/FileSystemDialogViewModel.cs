@@ -52,7 +52,7 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 	private FileSystemDialogViewModel(IFolderViewViewModel folderViewViewModel, FileSystemDialogMode fileSystemDialogMode, IEnumerable<BaseFileSystemDialogItemViewModel> items)
 	{
         // Dependency injection
-        _userSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        _userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
         FileSystemDialogMode = fileSystemDialogMode;
 
@@ -268,8 +268,8 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 
 	private static Task LoadItemsIcon(IEnumerable<BaseFileSystemDialogItemViewModel> items, CancellationToken token)
 	{
-		var imagingService = DependencyExtensions.GetService<IImageService>();
-		var threadingService = DependencyExtensions.GetService<IThreadingService>();
+		var imagingService = DependencyExtensions.GetRequiredService<IImageService>();
+		var threadingService = DependencyExtensions.GetRequiredService<IThreadingService>();
 
 		var task = items.ParallelForEachAsync(async (item) =>
 		{

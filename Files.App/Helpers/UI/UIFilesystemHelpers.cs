@@ -19,7 +19,7 @@ namespace Files.App.Helpers;
 
 public static class UIFilesystemHelpers
 {
-	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
+	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetRequiredService<StatusCenterViewModel>();*/
 
 	public static async Task CutItemAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
 	{
@@ -36,7 +36,7 @@ public static class UIFilesystemHelpers
 
 			var itemsCount = associatedInstance.SlimContentPage.SelectedItems!.Count;
 
-            var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+            var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
             var banner = itemsCount > 50 ? StatusCenterHelper.AddCard_Prepare(folderViewViewModel) : null;
 
 			try
@@ -155,7 +155,7 @@ public static class UIFilesystemHelpers
 
             var itemsCount = associatedInstance.SlimContentPage.SelectedItems!.Count;
 
-            var _statusCenterViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+            var _statusCenterViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
             var banner = itemsCount > 50 ? StatusCenterHelper.AddCard_Prepare(folderViewViewModel) : null;
 
 			try
@@ -440,7 +440,7 @@ public static class UIFilesystemHelpers
 		}
 
 		var viewModel = new CreateShortcutDialogViewModel(folderViewViewModel, currentPath);
-		var dialogService = folderViewViewModel.GetService<IDialogService>();
+		var dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
 		var result = await dialogService.ShowDialogAsync(viewModel);
 
 		if (result != DialogResult.Primary || viewModel.ShortcutCreatedSuccessfully)
@@ -495,7 +495,7 @@ public static class UIFilesystemHelpers
 		var isFtp = FtpHelpers.IsFtpPath(path);
 
 		var credentialDialogViewModel = new CredentialDialogViewModel() { CanBeAnonymous = isFtp, PasswordOnly = !isFtp };
-		var dialogService = folderViewViewModel.GetService<IDialogService>();
+		var dialogService = folderViewViewModel.GetRequiredService<IDialogService>();
 		var dialogResult = await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 			dialogService.ShowDialogAsync(credentialDialogViewModel));
 

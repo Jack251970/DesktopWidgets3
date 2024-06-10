@@ -7,7 +7,7 @@ namespace Files.App.Data.Commands;
 
 internal sealed class ModifiableCommandManager : IModifiableCommandManager
 {
-    /*private readonly ICommandManager Commands = DependencyExtensions.GetService<ICommandManager>();*/
+    /*private readonly ICommandManager Commands = DependencyExtensions.GetRequiredService<ICommandManager>();*/
 
     private FrozenDictionary<CommandCodes, IRichCommand> ModifiableCommands = null!;
 
@@ -24,7 +24,7 @@ internal sealed class ModifiableCommandManager : IModifiableCommandManager
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        ModifiableCommands = CreateModifiableCommands(folderViewViewModel.GetService<ICommandManager>());
+        ModifiableCommands = CreateModifiableCommands(folderViewViewModel.GetRequiredService<ICommandManager>());
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

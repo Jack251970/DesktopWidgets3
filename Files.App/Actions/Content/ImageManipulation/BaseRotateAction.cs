@@ -29,7 +29,7 @@ internal abstract class BaseRotateAction : ObservableObject, IAction
     {
         FolderViewViewModel = folderViewViewModel;
         this.context = context;
-        _infoPaneViewModel = folderViewViewModel.GetService<InfoPaneViewModel>();
+        _infoPaneViewModel = folderViewViewModel.GetRequiredService<InfoPaneViewModel>();
 
 		context.PropertyChanged += Context_PropertyChanged;
 	}

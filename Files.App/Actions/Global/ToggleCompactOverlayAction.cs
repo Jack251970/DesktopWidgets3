@@ -27,7 +27,7 @@ internal sealed class ToggleCompactOverlayAction : ObservableObject, IToggleActi
 	public ToggleCompactOverlayAction(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        windowContext = folderViewViewModel.GetService<IWindowContext>();
+        windowContext = folderViewViewModel.GetRequiredService<IWindowContext>();
 
         windowContext.PropertyChanged += WindowContext_PropertyChanged;
 	}

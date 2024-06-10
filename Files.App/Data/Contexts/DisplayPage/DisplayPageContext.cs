@@ -146,9 +146,9 @@ internal sealed class DisplayPageContext : ObservableObject, IDisplayPageContext
 
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        Context = folderViewViewModel.GetService<IPageContext>();
-        Settings = folderViewViewModel.GetService<IFoldersSettingsService>();
-        LayoutSettingsService = folderViewViewModel.GetService<ILayoutSettingsService>();
+        Context = folderViewViewModel.GetRequiredService<IPageContext>();
+        Settings = folderViewViewModel.GetRequiredService<IFoldersSettingsService>();
+        LayoutSettingsService = folderViewViewModel.GetRequiredService<ILayoutSettingsService>();
 
         Context.Changing += Context_Changing;
         Context.Changed += Context_Changed;

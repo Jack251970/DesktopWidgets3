@@ -205,7 +205,7 @@ public sealed class StatusCenterItem : ObservableObject
 		long totalSize = 0,
 		CancellationTokenSource? operationCancellationToken = default)
 	{
-        _viewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+        _viewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
 		_operationCancellationToken = operationCancellationToken;
 		Header = headerResource == string.Empty ? headerResource : headerResource.GetLocalizedResource();
 		HeaderStringResource = headerResource;

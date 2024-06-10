@@ -214,12 +214,12 @@ internal sealed class CommandManager : ICommandManager
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        ActionsSettingsService = FolderViewViewModel.GetService<IActionsSettingsService>();
+        ActionsSettingsService = FolderViewViewModel.GetRequiredService<IActionsSettingsService>();
 
         commands = CreateActions(
             FolderViewViewModel, 
-            FolderViewViewModel.GetService<IContentPageContext>(),
-            FolderViewViewModel.GetService<IDisplayPageContext>())
+            FolderViewViewModel.GetRequiredService<IContentPageContext>(),
+            FolderViewViewModel.GetRequiredService<IDisplayPageContext>())
             .Select(action => new ActionCommand(folderViewViewModel, this, action.Key, action.Value))
             .Cast<IRichCommand>()
             .Append(new NoneCommand())

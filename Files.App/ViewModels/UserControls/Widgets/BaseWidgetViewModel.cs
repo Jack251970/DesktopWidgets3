@@ -20,13 +20,13 @@ public abstract class BaseWidgetViewModel : ObservableObject
 	// Dependency injections
 
 	protected IUserSettingsService UserSettingsService { get; private set; } = null!;
-    protected IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetService<IQuickAccessService>();
-	protected IStorageService StorageService { get; } = DependencyExtensions.GetService<IStorageService>();
-	protected IHomePageContext HomePageContext { get; } = DependencyExtensions.GetService<IHomePageContext>();
+    protected IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetRequiredService<IQuickAccessService>();
+	protected IStorageService StorageService { get; } = DependencyExtensions.GetRequiredService<IStorageService>();
+	protected IHomePageContext HomePageContext { get; } = DependencyExtensions.GetRequiredService<IHomePageContext>();
 	protected IContentPageContext ContentPageContext { get; private set; } = null!;
-	protected IFileTagsService FileTagsService { get; } = DependencyExtensions.GetService<IFileTagsService>();
-	protected DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetService<DrivesViewModel>();
-	protected INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetService<INetworkDrivesService>();
+	protected IFileTagsService FileTagsService { get; } = DependencyExtensions.GetRequiredService<IFileTagsService>();
+	protected DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetRequiredService<DrivesViewModel>();
+	protected INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
 
 	// Fields
 
@@ -52,8 +52,8 @@ public abstract class BaseWidgetViewModel : ObservableObject
     public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModel = folderViewViewModel;
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-        ContentPageContext = folderViewViewModel.GetService<IContentPageContext>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        ContentPageContext = folderViewViewModel.GetRequiredService<IContentPageContext>();
     }
 
 	public abstract List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false);

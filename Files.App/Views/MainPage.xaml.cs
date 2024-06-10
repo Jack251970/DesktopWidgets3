@@ -57,13 +57,13 @@ public sealed partial class MainPage : Page
         TabControl.Loaded += HorizontalMultitaskingControl_Loaded;
 
 		// Dependency Injection
-		/*UserSettingsService = DependencyExtensions.GetService<IUserSettingsService>();
-        Commands = DependencyExtensions.GetService<ICommandManager>();
-        WindowContext = DependencyExtensions.GetService<IWindowContext>();*/
-        SidebarAdaptiveViewModel = DependencyExtensions.GetService<SidebarViewModel>();
+		/*UserSettingsService = DependencyExtensions.GetRequiredService<IUserSettingsService>();
+        Commands = DependencyExtensions.GetRequiredService<ICommandManager>();
+        WindowContext = DependencyExtensions.GetRequiredService<IWindowContext>();*/
+        SidebarAdaptiveViewModel = DependencyExtensions.GetRequiredService<SidebarViewModel>();
         SidebarAdaptiveViewModel.PaneFlyout = (MenuFlyout)Resources["SidebarContextMenu"];
-        ViewModel = DependencyExtensions.GetService<MainPageViewModel>();
-		/*OngoingTasksViewModel = DependencyExtensions.GetService<StatusCenterViewModel>();*/
+        ViewModel = DependencyExtensions.GetRequiredService<MainPageViewModel>();
+		/*OngoingTasksViewModel = DependencyExtensions.GetRequiredService<StatusCenterViewModel>();*/
 
 		if (FilePropertiesHelpers.FlowDirectionSettingIsRightToLeft)
         {
@@ -261,13 +261,13 @@ public sealed partial class MainPage : Page
             FolderViewViewModel = folderViewViewModel;
             FolderViewViewModel.RegisterRightTappedMenu(RightMarginGrid);
 
-            UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
-            Commands = folderViewViewModel.GetService<ICommandManager>();
-            WindowContext = folderViewViewModel.GetService<IWindowContext>();
+            UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+            Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
+            WindowContext = folderViewViewModel.GetRequiredService<IWindowContext>();
 
             SidebarAdaptiveViewModel.Initialize(folderViewViewModel);
 
-            OngoingTasksViewModel = folderViewViewModel.GetService<StatusCenterViewModel>();
+            OngoingTasksViewModel = folderViewViewModel.GetRequiredService<StatusCenterViewModel>();
 
             UserSettingsService.OnSettingChangedEvent += UserSettingsService_OnSettingChangedEvent;
         }
@@ -519,7 +519,7 @@ public sealed partial class MainPage : Page
     {
         if (e.PropertyName == nameof(ViewModel.ShouldPreviewPaneBeActive) && ViewModel.ShouldPreviewPaneBeActive)
         {
-            await FolderViewViewModel.GetService<InfoPaneViewModel>().UpdateSelectedItemPreviewAsync();
+            await FolderViewViewModel.GetRequiredService<InfoPaneViewModel>().UpdateSelectedItemPreviewAsync();
         }
     }
 

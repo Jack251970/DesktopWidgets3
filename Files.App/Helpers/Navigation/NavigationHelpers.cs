@@ -12,9 +12,9 @@ namespace Files.App.Helpers;
 
 public static class NavigationHelpers
 {
-	/*private static MainPageViewModel MainPageViewModel { get; } = DependencyExtensions.GetService<MainPageViewModel>();*/
-	private static DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetService<DrivesViewModel>();
-    private static INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetService<INetworkDrivesService>();
+	/*private static MainPageViewModel MainPageViewModel { get; } = DependencyExtensions.GetRequiredService<MainPageViewModel>();*/
+	private static DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetRequiredService<DrivesViewModel>();
+    private static INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
 
     // CHANGE: Opening in explorer functions.
     public static async Task OpenInExplorerAsync(string path) => await OpenInExplorerAsync(path, string.Empty);
@@ -520,7 +520,7 @@ public static class NavigationHelpers
 
 	private static async Task<FilesystemResult> OpenLibrary(IFolderViewViewModel folderViewViewModel, string path, IShellPage associatedInstance, IEnumerable<string>? selectItems, bool forceOpenInNewTab)
 	{
-		var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+		var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		var opened = (FilesystemResult)false;
 		var isHiddenItem = Win32Helper.HasFileAttribute(path, SystemIO.FileAttributes.Hidden);
@@ -542,7 +542,7 @@ public static class NavigationHelpers
 
 	private static async Task<FilesystemResult> OpenDirectory(IFolderViewViewModel folderViewViewModel, string path, IShellPage associatedInstance, IEnumerable<string>? selectItems, ShellLinkItem shortcutInfo, bool forceOpenInNewTab)
 	{
-		var UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+		var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
 		var opened = (FilesystemResult)false;
 		var isHiddenItem = Win32Helper.HasFileAttribute(path, System.IO.FileAttributes.Hidden);

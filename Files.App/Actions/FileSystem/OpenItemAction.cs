@@ -85,7 +85,7 @@ internal sealed class OpenItemWithApplicationPickerAction : ObservableObject, IA
     {
         FolderViewViewModel = folderViewViewModel;
 
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        context = folderViewViewModel.GetRequiredService<IContentPageContext>();
 
         context.PropertyChanged += Context_PropertyChanged;
 	}
@@ -133,7 +133,7 @@ internal sealed class OpenParentFolderAction : ObservableObject, IAction
     {
         FolderViewViewModel = folderViewViewModel;
 
-        context = folderViewViewModel.GetService<IContentPageContext>();
+        context = folderViewViewModel.GetRequiredService<IContentPageContext>();
 
         context.PropertyChanged += Context_PropertyChanged;
 	}

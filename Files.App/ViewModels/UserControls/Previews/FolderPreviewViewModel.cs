@@ -11,7 +11,7 @@ public sealed class FolderPreviewViewModel
 {
     private readonly IFolderViewViewModel FolderViewViewModel;
 
-    /*private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetService<IDateTimeFormatter>();*/
+    /*private static readonly IDateTimeFormatter dateTimeFormatter = DependencyExtensions.GetRequiredService<IDateTimeFormatter>();*/
 
     public ListedItem Item { get; }
 

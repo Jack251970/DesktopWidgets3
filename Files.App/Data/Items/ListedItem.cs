@@ -21,9 +21,9 @@ public class ListedItem : ObservableObject, IGroupableItem
 
     protected readonly IUserSettingsService UserSettingsService;
 
-    protected static readonly IStartMenuService StartMenuService = DependencyExtensions.GetService<IStartMenuService>();
+    protected static readonly IStartMenuService StartMenuService = DependencyExtensions.GetRequiredService<IStartMenuService>();
 
-    protected static readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetService<IFileTagsSettingsService>();
+    protected static readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
     protected readonly IDateTimeFormatter dateTimeFormatter;
 
@@ -342,8 +342,8 @@ public class ListedItem : ObservableObject, IGroupableItem
     public ListedItem(IFolderViewViewModel viewModel) 
     {
         FolderViewViewModel = viewModel;
-        UserSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
-        dateTimeFormatter = FolderViewViewModel.GetService<IDateTimeFormatter>();
+        UserSettingsService = FolderViewViewModel.GetRequiredService<IUserSettingsService>();
+        dateTimeFormatter = FolderViewViewModel.GetRequiredService<IDateTimeFormatter>();
     }
 
 	private ObservableCollection<FileProperty> fileDetails;

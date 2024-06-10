@@ -30,7 +30,7 @@ internal sealed class EnterCompactOverlayAction : ObservableObject, IAction
 	public EnterCompactOverlayAction(IFolderViewViewModel folderViewViewModel)
 	{
         FolderViewViewModel = folderViewViewModel;
-		windowContext = folderViewViewModel.GetService<IWindowContext>();
+		windowContext = folderViewViewModel.GetRequiredService<IWindowContext>();
 
 		windowContext.PropertyChanged += WindowContext_PropertyChanged;
 	}

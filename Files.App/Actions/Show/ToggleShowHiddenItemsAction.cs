@@ -21,7 +21,7 @@ internal sealed class ToggleShowHiddenItemsAction : ObservableObject, IToggleAct
 
 	public ToggleShowHiddenItemsAction(IFolderViewViewModel folderViewViewModel)
 	{
-		settings = folderViewViewModel.GetService<IFoldersSettingsService>();
+		settings = folderViewViewModel.GetRequiredService<IFoldersSettingsService>();
 
 		settings.PropertyChanged += Settings_PropertyChanged;
 	}

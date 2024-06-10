@@ -131,8 +131,8 @@ public sealed class InfoPaneViewModel : ObservableObject, IDisposable
     {
         FolderViewViewModel = folderViewViewModel;
 
-        InfoPaneSettingsService = folderViewViewModel.GetService<IInfoPaneSettingsService>();
-        ContentPageContext = folderViewViewModel.GetService<IContentPageContext>();
+        InfoPaneSettingsService = folderViewViewModel.GetRequiredService<IInfoPaneSettingsService>();
+        ContentPageContext = folderViewViewModel.GetRequiredService<IContentPageContext>();
 
         InfoPaneSettingsService.PropertyChanged += PreviewSettingsService_OnPropertyChangedEvent;
         ContentPageContext.PropertyChanged += ContentPageContext_PropertyChanged;

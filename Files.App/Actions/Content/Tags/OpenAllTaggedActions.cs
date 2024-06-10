@@ -28,7 +28,7 @@ internal sealed class OpenAllTaggedActions: ObservableObject, IAction
 	{
         FolderViewViewModel = folderViewViewModel;
         _pageContext = context;
-		_tagsContext = DependencyExtensions.GetService<ITagsContext>();
+		_tagsContext = DependencyExtensions.GetRequiredService<ITagsContext>();
 
 		_pageContext.PropertyChanged += Context_PropertyChanged;
 		_tagsContext.PropertyChanged += Context_PropertyChanged;

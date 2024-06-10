@@ -63,7 +63,7 @@ public partial class App
         /*InitializeComponent();*/
         FolderViewViewModel = folderViewViewModel;
 
-        UserSettingsService ??= DependencyExtensions.GetService<IUserSettingsService>();
+        UserSettingsService ??= DependencyExtensions.GetRequiredService<IUserSettingsService>();
         
         // CHANGE: Regiter folder view view model and its app instances.
         FolderViewViewModels.Add(folderViewViewModel);
@@ -90,13 +90,13 @@ public partial class App
 #endif
 
         // FILESTODO: Replace with DI
-        QuickAccessManager = DependencyExtensions.GetService<QuickAccessManager>();
-        HistoryWrapper = DependencyExtensions.GetService<StorageHistoryWrapper>();
-        FileTagsManager = DependencyExtensions.GetService<FileTagsManager>();
-        RecentItemsManager = DependencyExtensions.GetService<RecentItems>();
-        LibraryManager = DependencyExtensions.GetService<LibraryManager>();
-        Logger = DependencyExtensions.GetService<ILogger<App>>();
-        AppModel = DependencyExtensions.GetService<AppModel>();
+        QuickAccessManager = DependencyExtensions.GetRequiredService<QuickAccessManager>();
+        HistoryWrapper = DependencyExtensions.GetRequiredService<StorageHistoryWrapper>();
+        FileTagsManager = DependencyExtensions.GetRequiredService<FileTagsManager>();
+        RecentItemsManager = DependencyExtensions.GetRequiredService<RecentItems>();
+        LibraryManager = DependencyExtensions.GetRequiredService<LibraryManager>();
+        Logger = DependencyExtensions.GetRequiredService<ILogger<App>>();
+        AppModel = DependencyExtensions.GetRequiredService<AppModel>();
 
         // Configure resouces dispose handler
         ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closed += MainWindow_Closed;
@@ -144,7 +144,7 @@ public partial class App
             // Configure the DI (dependency injection) container
             InitializeServices();
 
-            var userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
+            var userSettingsService = FolderViewViewModel.GetRequiredService<IUserSettingsService>();
             var isLeaveAppRunning = userSettingsService.GeneralSettingsService.LeaveAppRunning;
 
             if (isStartupTask && !isLeaveAppRunning)
@@ -239,8 +239,8 @@ public partial class App
     private async void Window_Closed(object sender, WindowEventArgs args)
 	{
 		// Save application state and stop any background activity
-		var userSettingsService = FolderViewViewModel.GetService<IUserSettingsService>();
-		var statusCenterViewModel = FolderViewViewModel.GetService<StatusCenterViewModel>();
+		var userSettingsService = FolderViewViewModel.GetRequiredService<IUserSettingsService>();
+		var statusCenterViewModel = FolderViewViewModel.GetRequiredService<StatusCenterViewModel>();
 
         // A Workaround for the crash (#10110)
         if (_LastOpenedFlyout?.IsOpen ?? false)
@@ -430,23 +430,23 @@ public partial class App
         // Create services
 
         // Settings services
-        UserSettingsService ??= DependencyExtensions.GetService<IUserSettingsService>();
-        ActionsSettingsService ??= DependencyExtensions.GetService<IActionsSettingsService>();
+        UserSettingsService ??= DependencyExtensions.GetRequiredService<IUserSettingsService>();
+        ActionsSettingsService ??= DependencyExtensions.GetRequiredService<IActionsSettingsService>();
         // Contexts
-        PageContext ??= DependencyExtensions.GetService<IPageContext>();
-        ContentPageContext ??= DependencyExtensions.GetService<IContentPageContext>();
-        DisplayPageContext ??= DependencyExtensions.GetService<IDisplayPageContext>();
-        WindowContext ??= DependencyExtensions.GetService<IWindowContext>();
-        MultitaskingContext ??= DependencyExtensions.GetService<IMultitaskingContext>();
+        PageContext ??= DependencyExtensions.GetRequiredService<IPageContext>();
+        ContentPageContext ??= DependencyExtensions.GetRequiredService<IContentPageContext>();
+        DisplayPageContext ??= DependencyExtensions.GetRequiredService<IDisplayPageContext>();
+        WindowContext ??= DependencyExtensions.GetRequiredService<IWindowContext>();
+        MultitaskingContext ??= DependencyExtensions.GetRequiredService<IMultitaskingContext>();
         // Services
-        DialogService ??= DependencyExtensions.GetService<IDialogService>();
-        CommandManager ??= DependencyExtensions.GetService<ICommandManager>();
-        ModifiableCommandManager ??= DependencyExtensions.GetService<IModifiableCommandManager>();
-        DateTimeFormatter ??= DependencyExtensions.GetService<IDateTimeFormatter>();
-        SizeProvider ??= DependencyExtensions.GetService<ISizeProvider>();
+        DialogService ??= DependencyExtensions.GetRequiredService<IDialogService>();
+        CommandManager ??= DependencyExtensions.GetRequiredService<ICommandManager>();
+        ModifiableCommandManager ??= DependencyExtensions.GetRequiredService<IModifiableCommandManager>();
+        DateTimeFormatter ??= DependencyExtensions.GetRequiredService<IDateTimeFormatter>();
+        SizeProvider ??= DependencyExtensions.GetRequiredService<ISizeProvider>();
         // ViewModels
-        StatusCenterViewModel ??= DependencyExtensions.GetService<StatusCenterViewModel>();
-        InfoPaneViewModel ??= DependencyExtensions.GetService<InfoPaneViewModel>();
+        StatusCenterViewModel ??= DependencyExtensions.GetRequiredService<StatusCenterViewModel>();
+        InfoPaneViewModel ??= DependencyExtensions.GetRequiredService<InfoPaneViewModel>();
 
         // Initialize services
 
@@ -465,7 +465,7 @@ public partial class App
         InfoPaneViewModel.Initialize(FolderViewViewModel);
     }
 
-    public T GetService<T>() where T : class
+    public T GetRequiredService<T>() where T : class
     {
         return typeof(T) switch
         {

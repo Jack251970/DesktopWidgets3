@@ -201,7 +201,7 @@ internal sealed class LayoutDecreaseSizeAction : ObservableObject, IAction
 
     public LayoutDecreaseSizeAction(IFolderViewViewModel folderViewViewModel, IDisplayPageContext context, IContentPageContext contentPageContext)
     {
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
         DisplayPageContext = context;
         ContentPageContext = contentPageContext;
         ContentPageContext.PropertyChanged += ContentPageContext_PropertyChanged;
@@ -305,7 +305,7 @@ internal sealed class LayoutIncreaseSizeAction : ObservableObject, IAction
 
     public LayoutIncreaseSizeAction(IFolderViewViewModel folderViewViewModel, IDisplayPageContext context, IContentPageContext contentPageContext)
     {
-        UserSettingsService = folderViewViewModel.GetService<IUserSettingsService>();
+        UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
         DisplayPageContext = context;
         ContentPageContext = contentPageContext;
         ContentPageContext.PropertyChanged += ContentPageContext_PropertyChanged;
