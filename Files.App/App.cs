@@ -23,7 +23,7 @@ public partial class App
     private readonly IFolderViewViewModel FolderViewViewModel;
     private MainWindow Instance { get; set; } = null!;
 
-    private static bool isInitialized;
+    private static bool isInitialized = false;
 
     // CHANGE: Remove system tray icon.
     /*private static SystemTrayIcon? SystemTrayIcon { get; set; }*/
@@ -61,47 +61,21 @@ public partial class App
 	{
         // CHANGE: Model instead of component.
         /*InitializeComponent();*/
+
+        if (!isInitialized)
+        {
+            // Configure exception handlers
+            ApplicationLifecycleExtensions.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.ExceptionObject as Exception, false);
+            TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);
+
+            // CHANGE: Configure resouces dispose handler
+            ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closed += MainWindow_Closed;
+        }
+
         FolderViewViewModel = folderViewViewModel;
 
         UserSettingsService ??= DependencyExtensions.GetRequiredService<IUserSettingsService>();
-        
-        // CHANGE: Regiter folder view view model and its app instances.
-        FolderViewViewModels.Add(folderViewViewModel);
-        MainPageViewModel.AppInstances.Add(folderViewViewModel, []);
-
-		Initialize();
-    }
-
-    private static void Initialize()
-    {
-        if (isInitialized)
-        {
-            return;
-        }
-
-        // Configure exception handlers
-        ApplicationLifecycleExtensions.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
-        AppDomain.CurrentDomain.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.ExceptionObject as Exception, false);
-        TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);
-
-#if STORE || STABLE || PREVIEW
-		// Configure AppCenter
-		AppLifecycleHelper.ConfigureAppCenter();
-#endif
-
-        // FILESTODO: Replace with DI
-        QuickAccessManager = DependencyExtensions.GetRequiredService<QuickAccessManager>();
-        HistoryWrapper = DependencyExtensions.GetRequiredService<StorageHistoryWrapper>();
-        FileTagsManager = DependencyExtensions.GetRequiredService<FileTagsManager>();
-        RecentItemsManager = DependencyExtensions.GetRequiredService<RecentItems>();
-        LibraryManager = DependencyExtensions.GetRequiredService<LibraryManager>();
-        Logger = DependencyExtensions.GetRequiredService<ILogger<App>>();
-        AppModel = DependencyExtensions.GetRequiredService<AppModel>();
-
-        // Configure resouces dispose handler
-        ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closed += MainWindow_Closed;
-
-        isInitialized = true;
     }
 
     /// <summary>
@@ -141,8 +115,17 @@ public partial class App
                 SystemInformation.Instance.TrackAppUse(activationEventArgs);
             }*/
 
-            // Configure the DI (dependency injection) container
-            InitializeServices();
+            /*// Configure the DI (dependency injection) container
+            var host = AppLifecycleHelper.ConfigureHost();
+            Ioc.Default.ConfigureServices(host.Services);*/
+
+#if STORE || STABLE || PREVIEW
+            if (!isInitialized)
+            {
+                // Configure AppCenter
+                AppLifecycleHelper.ConfigureAppCenter();
+            }
+#endif
 
             var userSettingsService = FolderViewViewModel.GetRequiredService<IUserSettingsService>();
             var isLeaveAppRunning = userSettingsService.GeneralSettingsService.LeaveAppRunning;
@@ -158,6 +141,24 @@ public partial class App
                 SplashScreenLoadingTCS = new TaskCompletionSource();
                 Instance.ShowSplashScreen();
             }
+
+            if (!isInitialized)
+            {
+                // FILESTODO: Replace with DI
+                QuickAccessManager = DependencyExtensions.GetRequiredService<QuickAccessManager>();
+                HistoryWrapper = DependencyExtensions.GetRequiredService<StorageHistoryWrapper>();
+                FileTagsManager = DependencyExtensions.GetRequiredService<FileTagsManager>();
+                RecentItemsManager = DependencyExtensions.GetRequiredService<RecentItems>();
+                LibraryManager = DependencyExtensions.GetRequiredService<LibraryManager>();
+                Logger = DependencyExtensions.GetRequiredService<ILogger<App>>();
+                AppModel = DependencyExtensions.GetRequiredService<AppModel>();
+            }
+
+            // CHANGE: Initialize service instance.
+            InitializeServices();
+
+            // CHANGE: Regiter folder view view model and other dictionaries.
+            Register(FolderViewViewModel);
 
             // Hook events for the window
             MainWindow.Closed += Window_Closed;
@@ -197,8 +198,14 @@ public partial class App
             }
 
             await AppLifecycleHelper.InitializeAppComponentsAsync(FolderViewViewModel);
-		}
-	}
+
+            // CHANGE: Set initialized flag.
+            if (!isInitialized)
+            {
+                isInitialized = true;
+            }
+        }
+    }
 
     //// <summary>
     /// Gets invoked when the application is activated.
@@ -302,6 +309,46 @@ public partial class App
 
             Thread.Yield();
 
+            // Method can take a long time, make sure the window is hidden
+            await Task.Yield();
+
+            // Displays a notification the first time the app goes to the background
+            if (userSettingsService.AppSettingsService.ShowBackgroundRunningNotification)
+            {
+                SafetyExtensions.IgnoreExceptions(() =>
+                {
+                    var toastContent = new ToastContent()
+                    {
+                        Visual = new()
+                        {
+                            BindingGeneric = new ToastBindingGeneric()
+                            {
+                                Children =
+                            {
+                                new AdaptiveText()
+                                {
+                                    Text = "BackgroundRunningNotificationHeader".GetLocalizedResource()
+                                },
+                                new AdaptiveText()
+                                {
+                                    Text = "BackgroundRunningNotificationBody".GetLocalizedResource()
+                                }
+                            },
+                            }
+                        },
+                        ActivationType = ToastActivationType.Protocol
+                    };
+
+                    // Create the toast notification
+                    var toastNotification = new ToastNotification(toastContent.GetXml());
+
+                    // And send the notification
+                    ToastNotificationManager.CreateToastNotifier().Show(toastNotification);
+
+                    userSettingsService.AppSettingsService.ShowBackgroundRunningNotification = false;
+                });
+            }
+
             if (Program.Pool.WaitOne())
             {
                 // Resume the instance
@@ -318,54 +365,39 @@ public partial class App
             }
         }
 
-        // Method can take a long time, make sure the window is hidden
+        // CHANGE: Unregister folder view view model and other dictionaries.
+        Unregister(FolderViewViewModel);
+
+        /*// Method can take a long time, make sure the window is hidden
         await Task.Yield();
 
-        // Displays a notification the first time the app goes to the background
-        if (userSettingsService.AppSettingsService.ShowBackgroundRunningNotification)
+        // Try to maintain clipboard data after app close
+        SafetyExtensions.IgnoreExceptions(() =>
         {
-            SafetyExtensions.IgnoreExceptions(() =>
+            var dataPackage = Clipboard.GetContent();
+            if (dataPackage.Properties.PackageFamilyName == InfoHelper.GetFamilyName())
             {
-                var toastContent = new ToastContent()
+                if (dataPackage.Contains(StandardDataFormats.StorageItems))
                 {
-                    Visual = new()
-                    {
-                        BindingGeneric = new ToastBindingGeneric()
-                        {
-                            Children =
-                            {
-                                new AdaptiveText()
-                                {
-                                    Text = "BackgroundRunningNotificationHeader".GetLocalizedResource()
-                                },
-                                new AdaptiveText()
-                                {
-                                    Text = "BackgroundRunningNotificationBody".GetLocalizedResource()
-                                }
-                            },
-                        }
-                    },
-                    ActivationType = ToastActivationType.Protocol
-                };
+                    Clipboard.Flush();
+                }
+            }
+        },
+        Logger);
 
-                // Create the toast notification
-                var toastNotification = new ToastNotification(toastContent.GetXml());
+        // Destroy cached properties windows
+        FilePropertiesHelpers.DestroyCachedWindows();
+        AppModel.IsMainWindowClosed = true;
 
-                // And send the notification
-                ToastNotificationManager.CreateToastNotifier().Show(toastNotification);
-
-                userSettingsService.AppSettingsService.ShowBackgroundRunningNotification = false;
-            });
-        }
-
-        // CHANGE: Unregister folder view view model and its app instances.
-        MainPageViewModel.AppInstances.Remove(FolderViewViewModel);
-        FolderViewViewModels.Remove(FolderViewViewModel);
+        // Wait for ongoing file operations
+        FileOperationsHelpers.WaitForCompletion();*/
     }
 
+    // CHANGE: Dispose all resources after main window is closed.
     private static void MainWindow_Closed(object sender, WindowEventArgs e)
     {
         // Try to maintain clipboard data after app close
+        // TODO: Fix PackageFamilyName and InfoHelper.
         SafetyExtensions.IgnoreExceptions(() =>
         {
             var dataPackage = Clipboard.GetContent();
@@ -403,6 +435,22 @@ public partial class App
             _LastOpenedFlyout = null;
         }
     }
+
+    #region register & unregister
+
+    private void Register(IFolderViewViewModel folderViewViewModel)
+    {
+        FolderViewViewModels.Add(folderViewViewModel);
+        MainPageViewModel.AppInstances.Add(folderViewViewModel, []);
+    }
+
+    private void Unregister(IFolderViewViewModel folderViewViewModel)
+    {
+        FolderViewViewModels.Remove(folderViewViewModel);
+        MainPageViewModel.AppInstances.Remove(folderViewViewModel);
+    }
+
+    #endregion
 
     #region Services & Interfaces
 

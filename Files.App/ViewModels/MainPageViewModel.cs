@@ -28,6 +28,7 @@ public sealed class MainPageViewModel : ObservableObject
 
     // Properties
 
+    // CHANGE: Use dictionary to support multiple folder view view models.
     public static Dictionary<IFolderViewViewModel, ObservableCollection<TabBarItem>> AppInstances { get; private set; } = [];
 
     public List<ITabBar> MultitaskingControls { get; } = [];
