@@ -17,12 +17,12 @@ public sealed class RecentItems : IDisposable
     // CHANGE: Use dictionary to support multiple folder view view models.
     /*public EventHandler<NotifyCollectionChangedEventArgs>? RecentFilesChanged;*/
     private readonly Dictionary<IFolderViewViewModel, EventHandler<NotifyCollectionChangedEventArgs>?> MultiRecentFilesChanged = [];
-    public DictionaryManagerDefault<EventHandler<NotifyCollectionChangedEventArgs>?> RecentFilesChangedManager;
+    public DictionaryManager<EventHandler<NotifyCollectionChangedEventArgs>?> RecentFilesChangedManager;
 
     // CHANGE: Use dictionary to support multiple folder view view models.
     /*public EventHandler<NotifyCollectionChangedEventArgs>? RecentFoldersChanged;*/
     private readonly Dictionary<IFolderViewViewModel, EventHandler<NotifyCollectionChangedEventArgs>?> MultiRecentFoldersChanged = [];
-    public DictionaryManagerDefault<EventHandler<NotifyCollectionChangedEventArgs>?> RecentFoldersChangedManager;
+    public DictionaryManager<EventHandler<NotifyCollectionChangedEventArgs>?> RecentFoldersChangedManager;
 
     // CHANGE: Use dictionary to support multiple folder view view models.
     /*// recent files
@@ -38,7 +38,7 @@ public sealed class RecentItems : IDisposable
         }
     }*/
     private readonly Dictionary<IFolderViewViewModel, List<RecentItem>> MultiRecentFiles = [];
-    private readonly DictionaryManagerNew<List<RecentItem>> MultiRecentFilesManager;
+    private readonly DictionaryManager<List<RecentItem>> MultiRecentFilesManager;
     public IReadOnlyList<RecentItem> GetRecentFiles(IFolderViewViewModel folderViewViewModel)
     {
         var recentFiles = MultiRecentFilesManager.Get(folderViewViewModel);
@@ -62,7 +62,7 @@ public sealed class RecentItems : IDisposable
         }
     }*/
     private readonly Dictionary<IFolderViewViewModel, List<RecentItem>> MultiRecentFolders = [];
-    private readonly DictionaryManagerNew<List<RecentItem>> MultiRecentFoldersManager;
+    private readonly DictionaryManager<List<RecentItem>> MultiRecentFoldersManager;
     public IReadOnlyList<RecentItem> GetRecentFolders(IFolderViewViewModel folderViewViewModel)
     {
         var recentFolders = MultiRecentFoldersManager.Get(folderViewViewModel);
@@ -80,10 +80,10 @@ public sealed class RecentItems : IDisposable
     public RecentItems(/*IUserSettingsService userSettingsService*/)
     {
         // CHANGE: Initialize dictionary managers.
-        RecentFilesChangedManager = new(MultiRecentFilesChanged);
-        RecentFoldersChangedManager = new(MultiRecentFoldersChanged);
-        MultiRecentFilesManager = new(MultiRecentFiles);
-        MultiRecentFoldersManager = new(MultiRecentFolders);
+        RecentFilesChangedManager = new(MultiRecentFilesChanged, () => null!);
+        RecentFoldersChangedManager = new(MultiRecentFoldersChanged, () => null!);
+        MultiRecentFilesManager = new(MultiRecentFiles, () => []);
+        MultiRecentFoldersManager = new(MultiRecentFolders, () => []);
 
         RecentItemsManager.Default.RecentItemsChanged += OnRecentItemsChangedAsync;
         /*UserSettingsService = userSettingsService;*/

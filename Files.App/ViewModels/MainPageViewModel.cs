@@ -31,7 +31,7 @@ public sealed class MainPageViewModel : ObservableObject
     // CHANGE: Use dictionary to support multiple folder view view models.
     /*public static ObservableCollection<TabBarItem> AppInstances { get; private set; } = [];*/
     private static readonly Dictionary<IFolderViewViewModel, ObservableCollection<TabBarItem>> MultiAppInstances = [];
-    public static readonly DictionaryManagerNew<ObservableCollection<TabBarItem>> AppInstancesManager = new(MultiAppInstances);
+    public static readonly DictionaryManager<ObservableCollection<TabBarItem>> AppInstancesManager = new(MultiAppInstances, () => []);
 
     public List<ITabBar> MultitaskingControls { get; } = [];
 
@@ -90,7 +90,7 @@ public sealed class MainPageViewModel : ObservableObject
 
 	public MainPageViewModel()
 	{
-		NavigateToNumberedTabKeyboardAcceleratorCommand = new RelayCommand<KeyboardAcceleratorInvokedEventArgs>(ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand);
+        NavigateToNumberedTabKeyboardAcceleratorCommand = new RelayCommand<KeyboardAcceleratorInvokedEventArgs>(ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand);
 
         /*AppearanceSettingsService.PropertyChanged += (s, e) =>
         {
