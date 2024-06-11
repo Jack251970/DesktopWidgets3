@@ -194,7 +194,7 @@ public static class AppLifecycleHelper
 #if STABLE || PREVIEW
 			    .AddSingleton<IUpdateService, SideloadUpdateService>()
 #else
-                .AddSingleton<IUpdateService, SideloadUpdateService>()
+                .AddSingleton<IUpdateService, UpdateService>()
 #endif
                 .AddSingleton<IPreviewPopupService, PreviewPopupService>()
                 .AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>()

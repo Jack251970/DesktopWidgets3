@@ -2,16 +2,17 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Globalization;
-using Windows.Globalization;
 
 namespace Files.App.Services.DateTimeFormatter;
 
 internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
 {
-	private static readonly CultureInfo cultureInfo
-		= ApplicationLanguages.PrimaryLanguageOverride == string.Empty ? CultureInfo.CurrentCulture : new(ApplicationLanguages.PrimaryLanguageOverride);
+    // CHANGE: Remove ApplicationLanguages.PrimaryLanguageOverride, which is unsupported in unpackaged mode.
+    /*private static readonly CultureInfo cultureInfo
+		= ApplicationLanguages.PrimaryLanguageOverride == string.Empty ? CultureInfo.CurrentCulture : new(ApplicationLanguages.PrimaryLanguageOverride);*/
+    private static readonly CultureInfo cultureInfo = CultureInfo.CurrentCulture;
 
-	public abstract string Name { get; }
+    public abstract string Name { get; }
 
 	public abstract string ToShortLabel(DateTimeOffset offset);
 
@@ -63,9 +64,8 @@ internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
         };
     }
 
-    // CHANGE: Remove cultureInfo.
     protected static string ToString(DateTimeOffset offset, string format)
-        => offset.ToLocalTime().ToString(format);//, cultureInfo);
+        => offset.ToLocalTime().ToString(format, cultureInfo);
 
     private static int GetWeekOfYear(DateTimeOffset t)
 	{

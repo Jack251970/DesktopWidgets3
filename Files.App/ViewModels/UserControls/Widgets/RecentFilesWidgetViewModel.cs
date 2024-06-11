@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Microsoft.Extensions.Logging;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Specialized;
 using System.IO;
@@ -53,7 +52,7 @@ public sealed class RecentFilesWidgetViewModel : BaseWidgetViewModel, IWidgetVie
 		_refreshRecentFilesCTS = new CancellationTokenSource();
 
 		// recent files could have changed while widget wasn't loaded
-		_ = RefreshWidgetAsync();
+		/*_ = RefreshWidgetAsync();*/
 
 		App.RecentItemsManager.RecentFilesChanged += Manager_RecentFilesChanged;
 
@@ -62,6 +61,14 @@ public sealed class RecentFilesWidgetViewModel : BaseWidgetViewModel, IWidgetVie
 		OpenFileLocationCommand = new RelayCommand<RecentItem>(ExecuteOpenFileLocationCommand);
 		OpenPropertiesCommand = new RelayCommand<RecentItem>(ExecuteOpenPropertiesCommand);
 	}
+
+    // CHANGE: Refresh widget after initialization.
+    public async new void Initialize(IFolderViewViewModel folderViewViewModel)
+    {
+        base.Initialize(folderViewViewModel);
+
+        await RefreshWidgetAsync();
+    }
 
 	// Methods
 

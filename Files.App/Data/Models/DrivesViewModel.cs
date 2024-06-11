@@ -24,14 +24,15 @@ public sealed class DrivesViewModel : ObservableObject, IDisposable
 	private bool showUserConsentOnInit;
 	private ObservableCollection<ILocatableFolder> drives;
 	private readonly IRemovableDrivesService removableDrivesService;
-	private readonly ISizeProvider folderSizeProvider;
+	/*private readonly ISizeProvider folderSizeProvider;*/
 	private readonly IStorageDeviceWatcher watcher;
 	private readonly ILogger? logger;
 
-	public DrivesViewModel(IRemovableDrivesService removableDrivesService, ISizeProvider folderSizeProvider, ILogger? logger = null)
+    // CHANGE: Remove folderSizeProvider from the constructor
+    public DrivesViewModel(IRemovableDrivesService removableDrivesService, /*ISizeProvider folderSizeProvider, */ILogger? logger = null)
 	{
 		this.removableDrivesService = removableDrivesService;
-		this.folderSizeProvider = folderSizeProvider;
+		/*this.folderSizeProvider = folderSizeProvider;*/
 		this.logger = logger;
 
 		drives = [];
@@ -43,10 +44,14 @@ public sealed class DrivesViewModel : ObservableObject, IDisposable
 		watcher.EnumerationCompleted += Watcher_EnumerationCompleted;
 	}
 
-	private async void Watcher_EnumerationCompleted(object? sender, System.EventArgs e)
+	private async void Watcher_EnumerationCompleted(object? sender, EventArgs e)
 	{
 		logger?.LogDebug("Watcher_EnumerationCompleted");
-		await folderSizeProvider.CleanAsync();
+        foreach (var folderViewViewModel in App.FolderViewViewModels)
+        {
+            var folderSizeProvider = folderViewViewModel.GetRequiredService<ISizeProvider>();
+            await folderSizeProvider.CleanAsync();
+        }
 	}
 
 	private async void Watcher_DeviceModified(object? sender, string e)

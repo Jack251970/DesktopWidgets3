@@ -99,7 +99,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
         }
     }
 
-	public async Task CheckForUpdatesAsync(IFolderViewViewModel _)
+	public async Task CheckForUpdatesAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		IsUpdateAvailable = false;
 		try
