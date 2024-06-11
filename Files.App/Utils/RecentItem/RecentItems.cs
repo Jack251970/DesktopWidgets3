@@ -12,102 +12,153 @@ namespace Files.App.Utils.RecentItem;
 
 public sealed class RecentItems : IDisposable
 {
-	private const string QuickAccessGuid = "::{679f85cb-0220-4080-b29b-5540cc05aab6}";
+    private const string QuickAccessGuid = "::{679f85cb-0220-4080-b29b-5540cc05aab6}";
 
-	public EventHandler<NotifyCollectionChangedEventArgs>? RecentFilesChanged;
-	public EventHandler<NotifyCollectionChangedEventArgs>? RecentFoldersChanged;
+    // CHANGE: Use dictionary to support multiple folder view view models.
+    public Dictionary<IFolderViewViewModel, EventHandler<NotifyCollectionChangedEventArgs>?> RecentFilesChanged = [];
+    public Dictionary<IFolderViewViewModel, EventHandler<NotifyCollectionChangedEventArgs>?> RecentFoldersChanged = [];
 
-    // recent files
+    // CHANGE: Use dictionary to support multiple folder view view models.
+    /*// recent files
     private readonly List<RecentItem> recentFiles = [];
     public IReadOnlyList<RecentItem> RecentFiles    // already sorted
-	{
-		get
-		{
-			lock (recentFiles)
-			{
-				return recentFiles.ToList().AsReadOnly();
-			}
-		}
-	}
+    {
+        get
+        {
+            lock (recentFiles)
+            {
+                return recentFiles.ToList().AsReadOnly();
+            }
+        }
+    }*/
+    private readonly Dictionary<IFolderViewViewModel, List<RecentItem>> multiRecentFiles = [];
+    public IReadOnlyList<RecentItem> GetRecentFiles(IFolderViewViewModel folderViewViewModel)
+    {
+        var recentFiles = multiRecentFiles[folderViewViewModel];
+        lock (recentFiles)
+        {
+            return recentFiles.ToList().AsReadOnly();
+        }
+    }
 
-    // recent folders
+    // CHANGE: Use dictionary to support multiple folder view view models.
+    /*// recent folders
     private readonly List<RecentItem> recentFolders = [];
     public IReadOnlyList<RecentItem> RecentFolders  // already sorted
-	{
-		get
-		{
-			lock (recentFolders)
-			{
-				return recentFolders.ToList().AsReadOnly();
-			}
-		}
-	}
+    {
+        get
+        {
+            lock (recentFolders)
+            {
+                return recentFolders.ToList().AsReadOnly();
+            }
+        }
+    }*/
+    private readonly Dictionary<IFolderViewViewModel, List<RecentItem>> multiRecentFolders = [];
+    public IReadOnlyList<RecentItem> GetRecentFolders(IFolderViewViewModel folderViewViewModel)
+    {
+        var recentFolders = multiRecentFolders[folderViewViewModel];
+        lock (recentFolders)
+        {
+            return recentFolders.ToList().AsReadOnly();
+        }
+    }
 
-    private readonly IUserSettingsService UserSettingsService;
+    /*private readonly IUserSettingsService UserSettingsService;
 
-    private bool ShowFileExtensions => UserSettingsService.FoldersSettingsService.ShowFileExtensions;
+    private bool ShowFileExtensions => UserSettingsService.FoldersSettingsService.ShowFileExtensions;*/
 
-    public RecentItems(IUserSettingsService userSettingsService)
+    // CHANGE: Remove userSettingsService from constructor.
+    public RecentItems(/*IUserSettingsService userSettingsService*/)
     {
         RecentItemsManager.Default.RecentItemsChanged += OnRecentItemsChangedAsync;
-        UserSettingsService = userSettingsService;
+        /*UserSettingsService = userSettingsService;*/
+    }
+
+    public void Register(IFolderViewViewModel folderViewViewModel)
+    {
+        if (!multiRecentFiles.ContainsKey(folderViewViewModel))
+        {
+            RecentFilesChanged[folderViewViewModel] = null;
+            RecentFoldersChanged[folderViewViewModel] = null;
+            multiRecentFiles[folderViewViewModel] = [];
+            multiRecentFolders[folderViewViewModel] = [];
+        }
+    }
+
+    public void Unregister(IFolderViewViewModel folderViewViewModel)
+    {
+        RecentFilesChanged.Remove(folderViewViewModel);
+        RecentFoldersChanged.Remove(folderViewViewModel);
+        multiRecentFiles.Remove(folderViewViewModel);
+        multiRecentFolders.Remove(folderViewViewModel);
     }
 
     private async void OnRecentItemsChangedAsync(object? sender, EventArgs e)
-	{
-		await UpdateRecentFilesAsync();
-	}
+    {
+        // CHANGE: Update recent files for all folder view models.
+        foreach (var folderViewViewModel in App.FolderViewViewModels)
+        {
+            await UpdateRecentFilesAsync(folderViewViewModel);
+        }
+    }
 
-	/// <summary>
-	/// Refetch recent files to `recentFiles`.
-	/// </summary>
-	public async Task UpdateRecentFilesAsync()
-	{
-		// enumerate with fulltrust process
-		var enumeratedFiles = await ListRecentFilesAsync();
-		if (enumeratedFiles is not null)
-		{
-			var recentFilesSnapshot = RecentFiles;
+    /// <summary>
+    /// Refetch recent files to `recentFiles`.
+    /// </summary>
+    public async Task UpdateRecentFilesAsync(IFolderViewViewModel folderViewViewModel)
+    {
+        // enumerate with fulltrust process
+        var enumeratedFiles = await ListRecentFilesAsync(folderViewViewModel);
+        if (enumeratedFiles is not null)
+        {
+            var recentFilesSnapshot = GetRecentFiles(folderViewViewModel);
+            var recentFiles = multiRecentFiles[folderViewViewModel];
 
-			lock (recentFiles)
-			{
-				recentFiles.Clear();
-				recentFiles.AddRange(enumeratedFiles);
-				// do not sort here, enumeration order *is* the correct order since we get it from Quick Access
-			}
+            lock (recentFiles)
+            {
+                recentFiles.Clear();
+                recentFiles.AddRange(enumeratedFiles);
+                // do not sort here, enumeration order *is* the correct order since we get it from Quick Access
+            }
 
-			var changedActionEventArgs = GetChangedActionEventArgs(recentFilesSnapshot, enumeratedFiles);
-			RecentFilesChanged?.Invoke(this, changedActionEventArgs);
-		}
-	}
+            var changedActionEventArgs = GetChangedActionEventArgs(recentFilesSnapshot, enumeratedFiles);
+            RecentFilesChanged[folderViewViewModel]?.Invoke(this, changedActionEventArgs);
+        }
+    }
 
-	/// <summary>
-	/// Refetch recent folders to `recentFolders`.
-	/// </summary>
-	public async Task UpdateRecentFoldersAsync()
-	{
-		var enumeratedFolders = await Task.Run(ListRecentFoldersAsync); // run off the UI thread
-		if (enumeratedFolders is not null)
-		{
-			lock (recentFolders)
-			{
-				recentFolders.Clear();
-				recentFolders.AddRange(enumeratedFolders);
+    /// <summary>
+    /// Refetch recent folders to `recentFolders`.
+    /// </summary>
+    public async Task UpdateRecentFoldersAsync(IFolderViewViewModel folderViewViewModel)
+    {
+        var enumeratedFolders = await Task.Run(() => ListRecentFoldersAsync(folderViewViewModel)); // run off the UI thread
+        if (enumeratedFolders is not null)
+        {
+            var recentFolders = multiRecentFolders[folderViewViewModel];
 
-				// shortcut modifications in `Windows\Recent` consist of a delete + add operation;
-				// thus, last modify date is reset and we can sort off it
-				recentFolders.Sort((x, y) => y.LastModified.CompareTo(x.LastModified));
-			}
+            lock (recentFolders)
+            {
+                recentFolders.Clear();
+                recentFolders.AddRange(enumeratedFolders);
 
-			RecentFoldersChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-		}
-	}
+                // shortcut modifications in `Windows\Recent` consist of a delete + add operation;
+                // thus, last modify date is reset and we can sort off it
+                recentFolders.Sort((x, y) => y.LastModified.CompareTo(x.LastModified));
+            }
+
+            RecentFoldersChanged[folderViewViewModel]?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+    }
 
     /// <summary>
     /// Enumerate recently accessed files via `Quick Access`.
     /// </summary>
-    public async Task<List<RecentItem>> ListRecentFilesAsync()
+    public async Task<List<RecentItem>> ListRecentFilesAsync(IFolderViewViewModel folderViewViewModel)
     {
+        var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        var ShowFileExtensions = UserSettingsService.FoldersSettingsService.ShowFileExtensions;
+
         // Since the maximum number of recent files is 20, we set the count to 20 to avoid loading of unnecessary shell items.
         return (await Win32Helper.GetShellFolderAsync(QuickAccessGuid, false, true, 0, 20)).Enumerate
             .Where(link => !link.IsFolder)
@@ -117,195 +168,197 @@ public sealed class RecentItems : IDisposable
     /// <summary>
     /// Enumerate recently accessed folders via `Windows\Recent`.
     /// </summary>
-    public async Task<List<RecentItem>> ListRecentFoldersAsync()
-	{
-		var excludeMask = FileAttributes.Hidden;
-		var linkFilePaths = Directory.EnumerateFiles(Constants.UserEnvironmentPaths.RecentItemsPath).Where(f => (new FileInfo(f).Attributes & excludeMask) == 0);
+    public async Task<List<RecentItem>> ListRecentFoldersAsync(IFolderViewViewModel folderViewViewModel)
+    {
+        var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
+        var ShowFileExtensions = UserSettingsService.FoldersSettingsService.ShowFileExtensions;
+        var excludeMask = FileAttributes.Hidden;
+        var linkFilePaths = Directory.EnumerateFiles(Constants.UserEnvironmentPaths.RecentItemsPath).Where(f => (new FileInfo(f).Attributes & excludeMask) == 0);
 
-		Task<RecentItem?> GetRecentItemFromLink(string linkPath)
-		{
-			return Task.Run(() =>
-			{
-				try
-				{
-					using var link = new ShellLink(linkPath, LinkResolution.NoUIWithMsgPump, default, TimeSpan.FromMilliseconds(100));
+        Task<RecentItem?> GetRecentItemFromLink(string linkPath)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    using var link = new ShellLink(linkPath, LinkResolution.NoUIWithMsgPump, default, TimeSpan.FromMilliseconds(100));
 
-					if (!string.IsNullOrEmpty(link.TargetPath) && link.Target.IsFolder)
-					{
-						var shellLinkItem = ShellFolderExtensions.GetShellLinkItem(link);
+                    if (!string.IsNullOrEmpty(link.TargetPath) && link.Target.IsFolder)
+                    {
+                        var shellLinkItem = ShellFolderExtensions.GetShellLinkItem(link);
                         return new RecentItem(shellLinkItem, ShowFileExtensions);
                     }
                 }
-				catch (FileNotFoundException)
-				{
-					// occurs when shortcut or shortcut target is deleted and accessed (link.Target)
-					// consequently, we shouldn't include the item as a recent item
-				}
-				catch (Exception)
-				{
-					// other error (usually a COMException)
-				}
+                catch (FileNotFoundException)
+                {
+                    // occurs when shortcut or shortcut target is deleted and accessed (link.Target)
+                    // consequently, we shouldn't include the item as a recent item
+                }
+                catch (Exception)
+                {
+                    // other error (usually a COMException)
+                }
 
-				return null;
-			});
-		}
+                return null;
+            });
+        }
 
-		var recentItems = await Task.WhenAll(linkFilePaths.Select(GetRecentItemFromLink));
-		return recentItems.OfType<RecentItem>().ToList();
-	}
+        var recentItems = await Task.WhenAll(linkFilePaths.Select(GetRecentItemFromLink));
+        return recentItems.OfType<RecentItem>().ToList();
+    }
 
-	/// <summary>
-	/// Adds a shortcut to `Windows\Recent`. The path can be to a file or folder.
-	/// It will update to `recentFiles` or `recentFolders` respectively.
-	/// </summary>
-	/// <param name="path">Path to a file or folder</param>
-	/// <returns>Whether the action was successfully handled or not</returns>
-	public bool AddToRecentItems(string path)
-	{
-		try
-		{
-			Shell32.SHAddToRecentDocs(Shell32.SHARD.SHARD_PATHW, path);
-			return true;
-		}
-		catch (Exception ex)
-		{
-			App.Logger.LogWarning(ex, ex.Message);
-			return false;
-		}
-	}
+    /// <summary>
+    /// Adds a shortcut to `Windows\Recent`. The path can be to a file or folder.
+    /// It will update to `recentFiles` or `recentFolders` respectively.
+    /// </summary>
+    /// <param name="path">Path to a file or folder</param>
+    /// <returns>Whether the action was successfully handled or not</returns>
+    public bool AddToRecentItems(string path)
+    {
+        try
+        {
+            Shell32.SHAddToRecentDocs(Shell32.SHARD.SHARD_PATHW, path);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            App.Logger.LogWarning(ex, ex.Message);
+            return false;
+        }
+    }
 
-	/// <summary>
-	/// Clears both `recentFiles` and `recentFolders`.
-	/// This will also clear the Recent Files (and its jumplist) in File Explorer.
-	/// </summary>
-	/// <returns>Whether the action was successfully handled or not</returns>
-	public bool ClearRecentItems()
-	{
-		try
-		{
-			Shell32.SHAddToRecentDocs(Shell32.SHARD.SHARD_PIDL, (string)null!);
-			return true;
-		}
-		catch (Exception ex)
-		{
-			App.Logger.LogWarning(ex, ex.Message);
-			return false;
-		}
-	}
+    /// <summary>
+    /// Clears both `recentFiles` and `recentFolders`.
+    /// This will also clear the Recent Files (and its jumplist) in File Explorer.
+    /// </summary>
+    /// <returns>Whether the action was successfully handled or not</returns>
+    public bool ClearRecentItems()
+    {
+        try
+        {
+            Shell32.SHAddToRecentDocs(Shell32.SHARD.SHARD_PIDL, (string)null!);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            App.Logger.LogWarning(ex, ex.Message);
+            return false;
+        }
+    }
 
-	/// <summary>
-	/// Unpin (or remove) a file from `recentFiles`.
-	/// This will also unpin the item from the Recent Files in File Explorer.
-	/// </summary>
-	/// <returns>Whether the action was successfully handled or not</returns>
-	public Task<bool> UnpinFromRecentFiles(RecentItem item)
-	{
-		return SafetyExtensions.IgnoreExceptions(() => Task.Run(async () =>
-		{
-			using var pidl = new Shell32.PIDL(item.PIDL);
-			using var shellItem = ShellItem.Open(pidl);
-			using var cMenu = await ContextMenu.GetContextMenuForFiles(new[] { shellItem }, Shell32.CMF.CMF_NORMAL);
-			if (cMenu is not null)
+    /// <summary>
+    /// Unpin (or remove) a file from `recentFiles`.
+    /// This will also unpin the item from the Recent Files in File Explorer.
+    /// </summary>
+    /// <returns>Whether the action was successfully handled or not</returns>
+    public Task<bool> UnpinFromRecentFiles(RecentItem item)
+    {
+        return SafetyExtensions.IgnoreExceptions(() => Task.Run(async () =>
+        {
+            using var pidl = new Shell32.PIDL(item.PIDL);
+            using var shellItem = ShellItem.Open(pidl);
+            using var cMenu = await ContextMenu.GetContextMenuForFiles(new[] { shellItem }, Shell32.CMF.CMF_NORMAL);
+            if (cMenu is not null)
             {
                 return await cMenu.InvokeVerb("remove");
             }
 
             return false;
-		}));
-	}
+        }));
+    }
 
-	private NotifyCollectionChangedEventArgs GetChangedActionEventArgs(IReadOnlyList<RecentItem> oldItems, IList<RecentItem> newItems)
-	{
-		// a single item was added
-		if (newItems.Count == oldItems.Count + 1)
-		{
-			var differences = newItems.Except(oldItems);
-			if (differences.Take(2).Count() == 1)
-			{
-				return new(NotifyCollectionChangedAction.Add, newItems.First());
-			}
-		}
-		// a single item was removed
-		else if (newItems.Count == oldItems.Count - 1)
-		{
-			var differences = oldItems.Except(newItems);
-			if (differences.Take(2).Count() == 1)
-			{
-				for (var i = 0; i < oldItems.Count; i++)
-				{
-					if (i >= newItems.Count || !newItems[i].Equals(oldItems[i]))
-					{
-						return new(NotifyCollectionChangedAction.Remove, oldItems[i], index: i);
-					}
-				}
-			}
-		}
-		// a single item was moved
-		else if (newItems.Count == oldItems.Count)
-		{
-			var differences = oldItems.Except(newItems);
-			// desync due to skipped/batched calls, reset the list
-			if (differences.Any())
-			{
-				return new(NotifyCollectionChangedAction.Reset);
-			}
+    private NotifyCollectionChangedEventArgs GetChangedActionEventArgs(IReadOnlyList<RecentItem> oldItems, IList<RecentItem> newItems)
+    {
+        // a single item was added
+        if (newItems.Count == oldItems.Count + 1)
+        {
+            var differences = newItems.Except(oldItems);
+            if (differences.Take(2).Count() == 1)
+            {
+                return new(NotifyCollectionChangedAction.Add, newItems.First());
+            }
+        }
+        // a single item was removed
+        else if (newItems.Count == oldItems.Count - 1)
+        {
+            var differences = oldItems.Except(newItems);
+            if (differences.Take(2).Count() == 1)
+            {
+                for (var i = 0; i < oldItems.Count; i++)
+                {
+                    if (i >= newItems.Count || !newItems[i].Equals(oldItems[i]))
+                    {
+                        return new(NotifyCollectionChangedAction.Remove, oldItems[i], index: i);
+                    }
+                }
+            }
+        }
+        // a single item was moved
+        else if (newItems.Count == oldItems.Count)
+        {
+            var differences = oldItems.Except(newItems);
+            // desync due to skipped/batched calls, reset the list
+            if (differences.Any())
+            {
+                return new(NotifyCollectionChangedAction.Reset);
+            }
 
-			// first diff from reversed is the designated item
-			for (var i = oldItems.Count - 1; i >= 0; i--)
-			{
-				if (!oldItems[i].Equals(newItems[i]))
-				{
-					return new(NotifyCollectionChangedAction.Move, oldItems[i], index: 0, oldIndex: i);
-				}
-			}
-		}
+            // first diff from reversed is the designated item
+            for (var i = oldItems.Count - 1; i >= 0; i--)
+            {
+                if (!oldItems[i].Equals(newItems[i]))
+                {
+                    return new(NotifyCollectionChangedAction.Move, oldItems[i], index: 0, oldIndex: i);
+                }
+            }
+        }
 
-		return new(NotifyCollectionChangedAction.Reset);
-	}
+        return new(NotifyCollectionChangedAction.Reset);
+    }
 
-	public bool CheckIsRecentFilesEnabled()
-	{
-		using var subkey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer");
-		using var advSubkey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced");
-		using var userPolicySubkey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer");
-		using var sysPolicySubkey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer");
+    public bool CheckIsRecentFilesEnabled()
+    {
+        using var subkey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer");
+        using var advSubkey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced");
+        using var userPolicySubkey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer");
+        using var sysPolicySubkey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer");
 
-		if (subkey is not null)
-		{
-			// quick access: show recent files option
-			var showRecentValue = Convert.ToBoolean(subkey.GetValue("ShowRecent", true)); // 1 by default
-			if (!showRecentValue)
-			{
-				return false;
-			}
-		}
+        if (subkey is not null)
+        {
+            // quick access: show recent files option
+            var showRecentValue = Convert.ToBoolean(subkey.GetValue("ShowRecent", true)); // 1 by default
+            if (!showRecentValue)
+            {
+                return false;
+            }
+        }
 
-		if (advSubkey is not null)
-		{
-			// settings: personalization > start > show recently opened items
-			var startTrackDocsValue = Convert.ToBoolean(advSubkey.GetValue("Start_TrackDocs", true)); // 1 by default
-			if (!startTrackDocsValue)
-			{
-				return false;
-			}
-		}
+        if (advSubkey is not null)
+        {
+            // settings: personalization > start > show recently opened items
+            var startTrackDocsValue = Convert.ToBoolean(advSubkey.GetValue("Start_TrackDocs", true)); // 1 by default
+            if (!startTrackDocsValue)
+            {
+                return false;
+            }
+        }
 
-		// for users in group policies
-		var policySubkey = userPolicySubkey ?? sysPolicySubkey;
-		if (policySubkey is not null)
-		{
-			var noRecentDocsHistoryValue = Convert.ToBoolean(policySubkey.GetValue("NoRecentDocsHistory", false)); // 0 by default
-			if (noRecentDocsHistoryValue)
-			{
-				return false;
-			}
-		}
+        // for users in group policies
+        var policySubkey = userPolicySubkey ?? sysPolicySubkey;
+        if (policySubkey is not null)
+        {
+            var noRecentDocsHistoryValue = Convert.ToBoolean(policySubkey.GetValue("NoRecentDocsHistory", false)); // 0 by default
+            if (noRecentDocsHistoryValue)
+            {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public void Dispose()
-	{
-		RecentItemsManager.Default.RecentItemsChanged -= OnRecentItemsChangedAsync;
-	}
+    public void Dispose()
+    {
+        RecentItemsManager.Default.RecentItemsChanged -= OnRecentItemsChangedAsync;
+    }
 }

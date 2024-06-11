@@ -441,13 +441,18 @@ public partial class App
     private void Register(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModels.Add(folderViewViewModel);
-        MainPageViewModel.AppInstances.Add(folderViewViewModel, []);
+        if (!MainPageViewModel.AppInstances.ContainsKey(folderViewViewModel))
+        {
+            MainPageViewModel.AppInstances[folderViewViewModel] = [];
+        }
+        RecentItemsManager.Register(folderViewViewModel);
     }
 
     private void Unregister(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModels.Remove(folderViewViewModel);
         MainPageViewModel.AppInstances.Remove(folderViewViewModel);
+        RecentItemsManager.Unregister(folderViewViewModel);
     }
 
     #endregion
