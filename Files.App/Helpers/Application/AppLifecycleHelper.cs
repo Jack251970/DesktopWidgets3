@@ -248,7 +248,7 @@ public static class AppLifecycleHelper
 
 		var userSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
 
-		userSettingsService.GeneralSettingsService.LastSessionTabList = MainPageViewModel.AppInstances[folderViewViewModel].DefaultIfEmpty().Select(tab =>
+		userSettingsService.GeneralSettingsService.LastSessionTabList = MainPageViewModel.AppInstancesManager.Get(folderViewViewModel).DefaultIfEmpty().Select(tab =>
 		{
 			if (tab is not null && tab.NavigationParameter is not null)
 			{

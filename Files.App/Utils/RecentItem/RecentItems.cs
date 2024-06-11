@@ -15,8 +15,14 @@ public sealed class RecentItems : IDisposable
     private const string QuickAccessGuid = "::{679f85cb-0220-4080-b29b-5540cc05aab6}";
 
     // CHANGE: Use dictionary to support multiple folder view view models.
-    public Dictionary<IFolderViewViewModel, EventHandler<NotifyCollectionChangedEventArgs>?> RecentFilesChanged = [];
-    public Dictionary<IFolderViewViewModel, EventHandler<NotifyCollectionChangedEventArgs>?> RecentFoldersChanged = [];
+    /*public EventHandler<NotifyCollectionChangedEventArgs>? RecentFilesChanged;*/
+    private readonly Dictionary<IFolderViewViewModel, EventHandler<NotifyCollectionChangedEventArgs>?> MultiRecentFilesChanged = [];
+    public DictionaryManagerDefault<EventHandler<NotifyCollectionChangedEventArgs>?> RecentFilesChangedManager;
+
+    // CHANGE: Use dictionary to support multiple folder view view models.
+    /*public EventHandler<NotifyCollectionChangedEventArgs>? RecentFoldersChanged;*/
+    private readonly Dictionary<IFolderViewViewModel, EventHandler<NotifyCollectionChangedEventArgs>?> MultiRecentFoldersChanged = [];
+    public DictionaryManagerDefault<EventHandler<NotifyCollectionChangedEventArgs>?> RecentFoldersChangedManager;
 
     // CHANGE: Use dictionary to support multiple folder view view models.
     /*// recent files
@@ -31,10 +37,11 @@ public sealed class RecentItems : IDisposable
             }
         }
     }*/
-    private readonly Dictionary<IFolderViewViewModel, List<RecentItem>> multiRecentFiles = [];
+    private readonly Dictionary<IFolderViewViewModel, List<RecentItem>> MultiRecentFiles = [];
+    private readonly DictionaryManagerNew<List<RecentItem>> MultiRecentFilesManager;
     public IReadOnlyList<RecentItem> GetRecentFiles(IFolderViewViewModel folderViewViewModel)
     {
-        var recentFiles = multiRecentFiles[folderViewViewModel];
+        var recentFiles = MultiRecentFilesManager.Get(folderViewViewModel);
         lock (recentFiles)
         {
             return recentFiles.ToList().AsReadOnly();
@@ -54,10 +61,11 @@ public sealed class RecentItems : IDisposable
             }
         }
     }*/
-    private readonly Dictionary<IFolderViewViewModel, List<RecentItem>> multiRecentFolders = [];
+    private readonly Dictionary<IFolderViewViewModel, List<RecentItem>> MultiRecentFolders = [];
+    private readonly DictionaryManagerNew<List<RecentItem>> MultiRecentFoldersManager;
     public IReadOnlyList<RecentItem> GetRecentFolders(IFolderViewViewModel folderViewViewModel)
     {
-        var recentFolders = multiRecentFolders[folderViewViewModel];
+        var recentFolders = MultiRecentFoldersManager.Get(folderViewViewModel);
         lock (recentFolders)
         {
             return recentFolders.ToList().AsReadOnly();
@@ -71,27 +79,30 @@ public sealed class RecentItems : IDisposable
     // CHANGE: Remove userSettingsService from constructor.
     public RecentItems(/*IUserSettingsService userSettingsService*/)
     {
+        // CHANGE: Initialize dictionary managers.
+        RecentFilesChangedManager = new(MultiRecentFilesChanged);
+        RecentFoldersChangedManager = new(MultiRecentFoldersChanged);
+        MultiRecentFilesManager = new(MultiRecentFiles);
+        MultiRecentFoldersManager = new(MultiRecentFolders);
+
         RecentItemsManager.Default.RecentItemsChanged += OnRecentItemsChangedAsync;
         /*UserSettingsService = userSettingsService;*/
     }
 
     public void Register(IFolderViewViewModel folderViewViewModel)
     {
-        if (!multiRecentFiles.ContainsKey(folderViewViewModel))
-        {
-            RecentFilesChanged[folderViewViewModel] = null;
-            RecentFoldersChanged[folderViewViewModel] = null;
-            multiRecentFiles[folderViewViewModel] = [];
-            multiRecentFolders[folderViewViewModel] = [];
-        }
+        RecentFilesChangedManager.Set(folderViewViewModel, null);
+        RecentFoldersChangedManager.Set(folderViewViewModel, null);
+        MultiRecentFilesManager.Set(folderViewViewModel, []);
+        MultiRecentFoldersManager.Set(folderViewViewModel, []);
     }
 
     public void Unregister(IFolderViewViewModel folderViewViewModel)
     {
-        RecentFilesChanged.Remove(folderViewViewModel);
-        RecentFoldersChanged.Remove(folderViewViewModel);
-        multiRecentFiles.Remove(folderViewViewModel);
-        multiRecentFolders.Remove(folderViewViewModel);
+        RecentFilesChangedManager.Remove(folderViewViewModel);
+        RecentFoldersChangedManager.Remove(folderViewViewModel);
+        MultiRecentFilesManager.Remove(folderViewViewModel);
+        MultiRecentFoldersManager.Remove(folderViewViewModel);
     }
 
     private async void OnRecentItemsChangedAsync(object? sender, EventArgs e)
@@ -113,7 +124,7 @@ public sealed class RecentItems : IDisposable
         if (enumeratedFiles is not null)
         {
             var recentFilesSnapshot = GetRecentFiles(folderViewViewModel);
-            var recentFiles = multiRecentFiles[folderViewViewModel];
+            var recentFiles = MultiRecentFilesManager.Get(folderViewViewModel);
 
             lock (recentFiles)
             {
@@ -123,7 +134,7 @@ public sealed class RecentItems : IDisposable
             }
 
             var changedActionEventArgs = GetChangedActionEventArgs(recentFilesSnapshot, enumeratedFiles);
-            RecentFilesChanged[folderViewViewModel]?.Invoke(this, changedActionEventArgs);
+            RecentFilesChangedManager.Get(folderViewViewModel)?.Invoke(this, changedActionEventArgs);
         }
     }
 
@@ -135,7 +146,7 @@ public sealed class RecentItems : IDisposable
         var enumeratedFolders = await Task.Run(() => ListRecentFoldersAsync(folderViewViewModel)); // run off the UI thread
         if (enumeratedFolders is not null)
         {
-            var recentFolders = multiRecentFolders[folderViewViewModel];
+            var recentFolders = MultiRecentFoldersManager.Get(folderViewViewModel);
 
             lock (recentFolders)
             {
@@ -147,7 +158,7 @@ public sealed class RecentItems : IDisposable
                 recentFolders.Sort((x, y) => y.LastModified.CompareTo(x.LastModified));
             }
 
-            RecentFoldersChanged[folderViewViewModel]?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            RecentFoldersChangedManager.Get(folderViewViewModel)?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
     }
 

@@ -67,11 +67,11 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
         {
             SetProperty(ref tabStripSelectedIndex, value);
 
-            if (value >= 0 && value < MainPageViewModel.AppInstances[this].Count)
+            if (value >= 0 && value < MainPageViewModel.AppInstancesManager.Get(this).Count)
             {
                 var rootFrame = (Frame)WidgetPage.Content;
                 var mainView = (MainPage)rootFrame.Content;
-                mainView.ViewModel.SelectedTabItem = MainPageViewModel.AppInstances[this][value];
+                mainView.ViewModel.SelectedTabItem = MainPageViewModel.AppInstancesManager.Get(this)[value];
             }
         }
     }

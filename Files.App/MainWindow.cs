@@ -102,13 +102,13 @@ public sealed partial class MainWindow
                         await InitializeFromCmdLineArgsAsync(rootFrame, ppm);
                     }
                 }
-				else if (rootFrame.Content is null || rootFrame.Content is SplashScreenPage || !MainPageViewModel.AppInstances[FolderViewViewModel].Any())
+				else if (rootFrame.Content is null || rootFrame.Content is SplashScreenPage || !MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).Any())
 				{
 					// When the navigation stack isn't restored navigate to the first page,
 					// configuring the new page by passing required information as a navigation parameter
 					rootFrame.Navigate(typeof(MainPage), launchArgs.Arguments, new SuppressNavigationTransitionInfo());
 				}
-				else if (!(string.IsNullOrEmpty(launchArgs.Arguments) && MainPageViewModel.AppInstances[FolderViewViewModel].Count > 0))
+				else if (!(string.IsNullOrEmpty(launchArgs.Arguments) && MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).Count > 0))
 				{
                     // Bring to foreground (#14730)
                     Win32Helper.BringToForegroundEx(new(WindowHandle));
@@ -126,7 +126,7 @@ public sealed partial class MainWindow
                 {
                     rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
 
-                    if (MainPageViewModel.AppInstances[FolderViewViewModel].Count > 0)
+                    if (MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).Count > 0)
                     {
                         // Bring to foreground (#14730)
                         Win32Helper.BringToForegroundEx(new(WindowHandle));
@@ -193,7 +193,7 @@ public sealed partial class MainWindow
 
 			case IFileActivatedEventArgs fileArgs:
 				var index = 0;
-				if (rootFrame.Content is null || rootFrame.Content is SplashScreenPage || !MainPageViewModel.AppInstances[FolderViewViewModel].Any())
+				if (rootFrame.Content is null || rootFrame.Content is SplashScreenPage || !MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).Any())
 				{
 					// When the navigation stack isn't restored navigate to the first page,
 					// configuring the new page by passing required information as a navigation parameter
@@ -285,7 +285,7 @@ public sealed partial class MainWindow
 				RightPaneNavPathParam = FolderViewViewModel.Bounds.Width > PaneHolderPage.DualPaneWidthThreshold && (generalSettingsService?.AlwaysOpenDualPaneInNewTab ?? false) ? "Home" : null,
 			};
 
-            if (rootFrame.Content is MainPage && MainPageViewModel.AppInstances[FolderViewViewModel].Any())
+            if (rootFrame.Content is MainPage && MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).Any())
 			{
                 // Bring to foreground (#14730)
                 Win32Helper.BringToForegroundEx(new(WindowHandle));

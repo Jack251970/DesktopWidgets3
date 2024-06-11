@@ -69,7 +69,10 @@ public sealed class RecentFilesWidgetViewModel : BaseWidgetViewModel, IWidgetVie
 
         await RefreshWidgetAsync();
 
-        App.RecentItemsManager.RecentFilesChanged[FolderViewViewModel] += Manager_RecentFilesChanged;
+        if (App.RecentItemsManager.RecentFilesChangedManager.Get(folderViewViewModel) is EventHandler<NotifyCollectionChangedEventArgs> eventHandler)
+        {
+            eventHandler += Manager_RecentFilesChanged;
+        }
 
         // CHANGE: Mannuly trigger reset event.
         Manager_RecentFilesChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
@@ -364,6 +367,10 @@ public sealed class RecentFilesWidgetViewModel : BaseWidgetViewModel, IWidgetVie
 
     public void Dispose()
     {
-        App.RecentItemsManager.RecentFilesChanged[FolderViewViewModel] -= Manager_RecentFilesChanged;
+        // CHANGE: Remove event handler dispostion, which will be handled in the unregister method.
+        /*if (App.RecentItemsManager.RecentFilesChangedManager.Get(FolderViewViewModel) is EventHandler<NotifyCollectionChangedEventArgs> eventHandler)
+        {
+            eventHandler -= Manager_RecentFilesChanged;
+        }*/
     }
 }

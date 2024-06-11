@@ -19,8 +19,8 @@ internal sealed class MultitaskingContext : ObservableObject, IMultitaskingConte
 	private readonly ushort tabCount = 0;
 	public ushort TabCount => tabCount;
 
-	public TabBarItem CurrentTabItem => MainPageViewModel.AppInstances[FolderViewViewModel].ElementAtOrDefault(currentTabIndex)!;
-	public TabBarItem SelectedTabItem => MainPageViewModel.AppInstances[FolderViewViewModel].ElementAtOrDefault(selectedTabIndex)!;
+	public TabBarItem CurrentTabItem => MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).ElementAtOrDefault(currentTabIndex)!;
+	public TabBarItem SelectedTabItem => MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).ElementAtOrDefault(selectedTabIndex)!;
 
 	private ushort currentTabIndex = 0;
 	public ushort CurrentTabIndex => currentTabIndex;
@@ -76,7 +76,7 @@ internal sealed class MultitaskingContext : ObservableObject, IMultitaskingConte
 	private void HorizontalMultitaskingControl_SelectedTabItemChanged(object? sender, TabBarItem? e)
 	{
 		isPopupOpen = e is not null;
-		var newSelectedIndex = e is null ? currentTabIndex : MainPageViewModel.AppInstances[FolderViewViewModel].IndexOf(e);
+		var newSelectedIndex = e is null ? currentTabIndex : MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).IndexOf(e);
 		UpdateSelectedTabIndex(newSelectedIndex);
 	}*/
 
@@ -89,7 +89,7 @@ internal sealed class MultitaskingContext : ObservableObject, IMultitaskingConte
 
         if (e.NewFocusedElement is FrameworkElement element && element.DataContext is TabBarItem tabItem)
 		{
-			var newSelectedIndex = MainPageViewModel.AppInstances[FolderViewViewModel].IndexOf(tabItem);
+			var newSelectedIndex = MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).IndexOf(tabItem);
 			UpdateSelectedTabIndex(newSelectedIndex);
 		}
 	}

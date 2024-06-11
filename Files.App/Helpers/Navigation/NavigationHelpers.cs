@@ -88,9 +88,9 @@ public static class NavigationHelpers
 
 		await UpdateTabInfoAsync(folderViewViewModel, tabItem, path);
 
-        var index = atIndex == -1 ? MainPageViewModel.AppInstances[folderViewViewModel].Count : atIndex;
+        var index = atIndex == -1 ? MainPageViewModel.AppInstancesManager.Get(folderViewViewModel).Count : atIndex;
 
-        MainPageViewModel.AppInstances[folderViewViewModel].Insert(index, tabItem);
+        MainPageViewModel.AppInstancesManager.Get(folderViewViewModel).Insert(index, tabItem);
 
         if (focusNewTab)
         {
@@ -118,8 +118,8 @@ public static class NavigationHelpers
 
 		await UpdateTabInfoAsync(folderViewViewModel, tabItem, tabViewItemArgs);
 
-        var index = atIndex == -1 ? MainPageViewModel.AppInstances[folderViewViewModel].Count : atIndex;
-        MainPageViewModel.AppInstances[folderViewViewModel].Insert(index, tabItem);
+        var index = atIndex == -1 ? MainPageViewModel.AppInstancesManager.Get(folderViewViewModel).Count : atIndex;
+        MainPageViewModel.AppInstancesManager.Get(folderViewViewModel).Insert(index, tabItem);
         folderViewViewModel.TabStripSelectedIndex = index;
     }
 
@@ -275,9 +275,9 @@ public static class NavigationHelpers
 				(windowTitle, _, _) = await GetSelectedTabInfoAsync(pathArgs);
 			}
 
-			if (MainPageViewModel.AppInstances[folderViewViewModel].Count > 1)
+			if (MainPageViewModel.AppInstancesManager.Get(folderViewViewModel).Count > 1)
             {
-                windowTitle = $"{windowTitle} ({MainPageViewModel.AppInstances[folderViewViewModel].Count})";
+                windowTitle = $"{windowTitle} ({MainPageViewModel.AppInstancesManager.Get(folderViewViewModel).Count})";
             }
 
             /*if (navigationArg == folderViewViewModel.SelectedTabItem?.NavigationParameter?.NavigationParameter)
@@ -294,7 +294,7 @@ public static class NavigationHelpers
             return;
         }
 
-        var matchingTabItem = MainPageViewModel.AppInstances[e.FolderViewViewModel].SingleOrDefault(x => x == (TabBarItem)sender);
+        var matchingTabItem = MainPageViewModel.AppInstancesManager.Get(e.FolderViewViewModel).SingleOrDefault(x => x == (TabBarItem)sender);
         if (matchingTabItem is null)
         {
             return;

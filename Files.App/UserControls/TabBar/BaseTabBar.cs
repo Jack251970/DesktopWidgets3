@@ -31,7 +31,7 @@ public abstract class BaseTabBar : ITabBar
 	public static Stack<CustomTabViewItemParameter[]> RecentlyClosedTabs { get; private set; } = new();
 
     public ObservableCollection<TabBarItem> Items
-		=> MainPageViewModel.AppInstances[FolderViewViewModel];
+		=> MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel);
 
 	public event EventHandler<CurrentInstanceChangedEventArgs>? CurrentInstanceChanged;
 
@@ -124,7 +124,7 @@ public abstract class BaseTabBar : ITabBar
 
 	public ITabBarItemContent GetCurrentSelectedTabInstance()
 	{
-		return MainPageViewModel.AppInstances[FolderViewViewModel][FolderViewViewModel.TabStripSelectedIndex].TabItemContent;
+		return MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel)[FolderViewViewModel.TabStripSelectedIndex].TabItemContent;
 	}
 
     public void SelectionChanged()
@@ -141,7 +141,7 @@ public abstract class BaseTabBar : ITabBar
 
     public List<ITabBarItemContent> GetAllTabInstances()
 	{
-		return MainPageViewModel.AppInstances[FolderViewViewModel].Select(x => x.TabItemContent).ToList();
+		return MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).Select(x => x.TabItemContent).ToList();
 	}
 
     public async Task ReopenClosedTabAsync()

@@ -263,7 +263,7 @@ public partial class App
 
         if (OutputPath is not null)
         {
-            var instance = MainPageViewModel.AppInstances[FolderViewViewModel].FirstOrDefault(x => x.TabItemContent.IsCurrentInstance);
+            var instance = MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).FirstOrDefault(x => x.TabItemContent.IsCurrentInstance);
             if (instance is null)
             {
                 return;
@@ -298,8 +298,8 @@ public partial class App
             FolderViewViewModel.AppWindow.Hide();
 
             // Close all tabs
-            MainPageViewModel.AppInstances[FolderViewViewModel].ForEach(tabItem => tabItem.Unload());
-            MainPageViewModel.AppInstances[FolderViewViewModel].Clear();
+            MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).ForEach(tabItem => tabItem.Unload());
+            MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).Clear();
 
             // Wait for all properties windows to close
             await FilePropertiesHelpers.WaitClosingAll();
@@ -440,18 +440,18 @@ public partial class App
 
     private void Register(IFolderViewViewModel folderViewViewModel)
     {
-        FolderViewViewModels.Add(folderViewViewModel);
-        if (!MainPageViewModel.AppInstances.ContainsKey(folderViewViewModel))
+        if (!FolderViewViewModels.Contains(folderViewViewModel))
         {
-            MainPageViewModel.AppInstances[folderViewViewModel] = [];
+            FolderViewViewModels.Add(folderViewViewModel);
         }
+        MainPageViewModel.AppInstancesManager.Set(folderViewViewModel, []);
         RecentItemsManager.Register(folderViewViewModel);
     }
 
     private void Unregister(IFolderViewViewModel folderViewViewModel)
     {
         FolderViewViewModels.Remove(folderViewViewModel);
-        MainPageViewModel.AppInstances.Remove(folderViewViewModel);
+        MainPageViewModel.AppInstancesManager.Remove(folderViewViewModel);
         RecentItemsManager.Unregister(folderViewViewModel);
     }
 

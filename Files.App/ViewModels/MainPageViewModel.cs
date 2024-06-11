@@ -23,13 +23,15 @@ public sealed class MainPageViewModel : ObservableObject
     private IAppearanceSettingsService AppearanceSettingsService { get; set; } = null!;
     private INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
     private IUserSettingsService UserSettingsService { get; set; } = null!;
-	private IResourcesService ResourcesService { get; } = DependencyExtensions.GetRequiredService<IResourcesService>();
+	/*private IResourcesService ResourcesService { get; } = DependencyExtensions.GetRequiredService<IResourcesService>();*/
 	private DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
     // Properties
 
     // CHANGE: Use dictionary to support multiple folder view view models.
-    public static Dictionary<IFolderViewViewModel, ObservableCollection<TabBarItem>> AppInstances { get; private set; } = [];
+    /*public static ObservableCollection<TabBarItem> AppInstances { get; private set; } = [];*/
+    private static readonly Dictionary<IFolderViewViewModel, ObservableCollection<TabBarItem>> MultiAppInstances = [];
+    public static readonly DictionaryManagerNew<ObservableCollection<TabBarItem>> AppInstancesManager = new(MultiAppInstances);
 
     public List<ITabBar> MultitaskingControls { get; } = [];
 
@@ -206,7 +208,7 @@ public sealed class MainPageViewModel : ObservableObject
 				else if (UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp &&
 					UserSettingsService.GeneralSettingsService.LastSessionTabList is not null)
 				{
-                    if (AppInstances[FolderViewViewModel].Count == 0)
+                    if (AppInstancesManager.Get(FolderViewViewModel).Count == 0)
                     {
                         foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
                         {
@@ -241,7 +243,7 @@ public sealed class MainPageViewModel : ObservableObject
                     }
                     else if (UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp &&
                             UserSettingsService.GeneralSettingsService.LastSessionTabList is not null &&
-                            AppInstances[FolderViewViewModel].Count == 0)
+                            AppInstancesManager.Get(FolderViewViewModel).Count == 0)
                     {
                         foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 						{
@@ -290,12 +292,12 @@ public sealed class MainPageViewModel : ObservableObject
 			VirtualKey.Number6 => 5,
 			VirtualKey.Number7 => 6,
 			VirtualKey.Number8 => 7,
-			VirtualKey.Number9 => AppInstances[FolderViewViewModel].Count - 1,
-			_ => AppInstances[FolderViewViewModel].Count - 1,
+			VirtualKey.Number9 => AppInstancesManager.Get(FolderViewViewModel).Count - 1,
+			_ => AppInstancesManager.Get(FolderViewViewModel).Count - 1,
 		};
 
 		// Only select the tab if it is in the list
-		if (indexToSelect < AppInstances[FolderViewViewModel].Count)
+		if (indexToSelect < AppInstancesManager.Get(FolderViewViewModel).Count)
         {
             FolderViewViewModel.TabStripSelectedIndex = indexToSelect;
         }
