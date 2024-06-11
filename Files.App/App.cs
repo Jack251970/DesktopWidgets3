@@ -397,7 +397,6 @@ public partial class App
     private static void MainWindow_Closed(object sender, WindowEventArgs e)
     {
         // Try to maintain clipboard data after app close
-        // TODO: Fix PackageFamilyName and InfoHelper.
         SafetyExtensions.IgnoreExceptions(() =>
         {
             var dataPackage = Clipboard.GetContent();

@@ -111,6 +111,9 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             // Don't show background running notification
             userSettingsService.AppSettingsService.ShowBackgroundRunningNotification = false;
 
+            // Show favorites section in sidebar
+            userSettingsService.GeneralSettingsService.ShowPinnedSection = true;
+
             // Load StatusCenterTeachingTip settings
             userSettingsService.AppSettingsService.ShowStatusCenterTeachingTip = await LocalSettingsExtensions.ReadLocalSettingAsync("ShowStatusCenterTeachingTip", true);
 

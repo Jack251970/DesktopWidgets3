@@ -28,11 +28,11 @@ public static class AppLifecycleHelper
     /// </summary>
     public static AppEnvironment AppEnvironment { get; } =
 #if STORE
-			AppEnvironment.Store;
+		AppEnvironment.Store;
 #elif PREVIEW
-			AppEnvironment.Preview;
+		AppEnvironment.Preview;
 #elif STABLE
-			AppEnvironment.Stable;
+		AppEnvironment.Stable;
 #else
         AppEnvironment.Dev;
 #endif

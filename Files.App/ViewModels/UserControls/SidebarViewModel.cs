@@ -639,7 +639,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
                 SectionType.WSL when generalSettingsService.ShowWslSection => WSLDistroManager.UpdateDrivesAsync,
                 SectionType.FileTag when generalSettingsService.ShowFileTagsSection => App.FileTagsManager.UpdateFileTagsAsync,
                 SectionType.Library => App.LibraryManager.UpdateLibrariesAsync,
-                SectionType.Pinned => () => App.QuickAccessManager.Model.AddAllItemsToSidebarAsync(true),
+                SectionType.Pinned => () => App.QuickAccessManager.Model.AddAllItemsToSidebarAsync(),
                 _ => () => Task.CompletedTask
             };
 

@@ -8,7 +8,7 @@ namespace Files.App.Data.Models;
 
 public sealed class PinnedFoldersManager
 {
-    /*private IUserSettingsService userSettingsService { get; } = DependencyExtensions.GetRequiredService<IUserSettingsService>();*/
+    private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetRequiredService<IUserSettingsService>();
     private IQuickAccessService QuickAccessService { get; } = DependencyExtensions.GetRequiredService<IQuickAccessService>();
 
     public EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
@@ -44,8 +44,7 @@ public sealed class PinnedFoldersManager
 				.Where(link => (bool?)link.Properties["System.Home.IsPinned"] ?? false)
 				.Select(link => link.FilePath).ToList();
 			RemoveStaleSidebarItems();
-            // TODO: Add setting support.
-            await AddAllItemsToSidebarAsync(true);
+            await AddAllItemsToSidebarAsync();
 		}
 		finally
 		{
@@ -170,10 +169,9 @@ public sealed class PinnedFoldersManager
 	/// <summary>
 	/// Adds all items to the navigation sidebar
 	/// </summary>
-	public async Task AddAllItemsToSidebarAsync(bool showFavoritesSection)
+	public async Task AddAllItemsToSidebarAsync()
 	{
-        // TODO(Later): Add userSettingsService.GeneralSettingsService.ShowPinnedSection.
-        if (showFavoritesSection)
+        if (UserSettingsService.GeneralSettingsService.ShowPinnedSection)
         {
             foreach (var path in PinnedFolders)
             {
