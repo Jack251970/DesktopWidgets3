@@ -126,7 +126,7 @@ public sealed partial class MainWindow
                 {
                     rootFrame.Navigate(typeof(MainPage), null, new SuppressNavigationTransitionInfo());
 
-                    if (MainPageViewModel.AppInstances.Count > 0)
+                    if (MainPageViewModel.AppInstances[FolderViewViewModel].Count > 0)
                     {
                         // Bring to foreground (#14730)
                         Win32Helper.BringToForegroundEx(new(WindowHandle));
