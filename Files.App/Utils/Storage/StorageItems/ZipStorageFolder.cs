@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Core.Helpers;
 using Files.Shared.Helpers;
 using SevenZip;
 using System.Collections.Concurrent;

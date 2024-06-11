@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Notifications;
-using DesktopWidgets3.Core.Helpers;
 using Files.App.Services.SizeProvider;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;

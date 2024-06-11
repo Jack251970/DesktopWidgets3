@@ -3,7 +3,6 @@
 
 using CommunityToolkit.WinUI.UI;
 using CommunityToolkit.WinUI.UI.Controls;
-using DesktopWidgets3.Core.Helpers;
 using Files.App.UserControls.Sidebar;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
@@ -11,8 +10,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
-using System.Data;
-using Windows.ApplicationModel.DataTransfer;
 using VirtualKey = Windows.System.VirtualKey;
 
 namespace Files.App.Views;

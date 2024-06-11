@@ -1,12 +1,13 @@
 ﻿// Copyright (c) 2024 Jack251970
 // Licensed under the GPL License. See the LICENSE.
 
+using System.IO;
 using System.Globalization;
 using System.Reflection;
-
+using DesktopWidgets3.Core.Helpers;
 using Windows.ApplicationModel;
 
-namespace DesktopWidgets3.Helpers;
+namespace Files.App.Helpers;
 
 /// <summary>
 /// Helper for getting assembly/package information, supports packaged mode(MSIX)/unpackaged mode.

@@ -14,7 +14,6 @@ using System.Text;
 using Windows.System;
 using Windows.UI.Notifications;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using DesktopWidgets3.Core.Helpers;
 
 namespace Files.App.Helpers;
 

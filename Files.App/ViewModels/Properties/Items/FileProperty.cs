@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Core.Helpers;
 using Files.App.Converters;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
@@ -309,7 +308,7 @@ public sealed class FileProperty : ObservableObject
 		if (!cachedPropertiesListFiles.TryGetValue(uriPath, out text!))
 		{
             // CHANGE: Use StorageHelper to get StorageFile.
-            var propertiesJsonFile = await StorageHelper.GetStorageFile(uriPath);
+            var propertiesJsonFile = await DesktopWidgets3.Core.Helpers.StorageHelper.GetStorageFile(uriPath);
 			text = await FileIO.ReadTextAsync(propertiesJsonFile);
 			cachedPropertiesListFiles[uriPath] = text;
 		}

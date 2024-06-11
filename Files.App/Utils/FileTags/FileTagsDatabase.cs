@@ -9,7 +9,6 @@ using System.Text;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using static Files.App.Helpers.RegistryHelpers;
 using static Files.App.Utils.FileTags.TaggedFileRegistry;
-using DesktopWidgets3.Core.Helpers;
 
 namespace Files.App.Utils.FileTags;
 

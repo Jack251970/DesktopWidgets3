@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
-using DesktopWidgets3.Core.Helpers;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Http;

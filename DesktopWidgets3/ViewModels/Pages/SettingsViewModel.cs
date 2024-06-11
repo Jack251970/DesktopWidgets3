@@ -23,7 +23,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     private bool _multiThread;
 
     [ObservableProperty]
-    private string _version = $"v{InfoHelper.GetVersion()}";
+    private string _version = $"v{Helpers.InfoHelper.GetVersion()}";
 
     #endregion
 

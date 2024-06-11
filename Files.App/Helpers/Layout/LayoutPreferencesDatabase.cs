@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using DesktopWidgets3.Core.Helpers;
 using LiteDB;
 using Microsoft.Win32;
 using System.IO;

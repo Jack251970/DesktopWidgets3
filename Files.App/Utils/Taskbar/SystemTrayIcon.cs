@@ -9,7 +9,6 @@ using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Windows.System;
-using DesktopWidgets3.Core.Helpers;
 
 namespace Files.App.Utils.Taskbar;
 
