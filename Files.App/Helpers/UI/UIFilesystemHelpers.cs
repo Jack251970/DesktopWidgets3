@@ -121,7 +121,7 @@ public static class UIFilesystemHelpers
             items = new ConcurrentBag<IStorageItem>(await items.ToStandardStorageItemsAsync());
         }
 
-        if (!items.Any())
+        if (items.IsEmpty)
         {
             return;
         }
@@ -227,7 +227,7 @@ public static class UIFilesystemHelpers
             items = new ConcurrentBag<IStorageItem>(await items.ToStandardStorageItemsAsync());
         }
 
-        if (!items.Any())
+        if (items.IsEmpty)
         {
             return;
         }
