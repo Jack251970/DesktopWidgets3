@@ -55,12 +55,17 @@ internal class ThemeSelectorService(ILocalSettingsService localSettingsService, 
     {
         Theme = theme;
 
-        await SetRequestedThemeAsync(App.MainWindow);
+        var tasks = new List<Task>
+        {
+            SetRequestedThemeAsync(App.MainWindow)
+        };
 
         foreach (var window in WindowsExtensions.GetAllWindows())
         {
-            await SetRequestedThemeAsync(window);
+            tasks.Add(SetRequestedThemeAsync(window));
         }
+
+        await Task.WhenAll(tasks);
 
         await SaveThemeInSettingsAsync(Theme);
     }
