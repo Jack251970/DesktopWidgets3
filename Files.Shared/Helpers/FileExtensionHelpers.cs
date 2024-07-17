@@ -38,6 +38,16 @@ public static class FileExtensionHelpers
     }
 
     /// <summary>
+    /// Checks if the file can be set as wallpaper.
+    /// </summary>
+    /// <param name="fileExtensionToCheck">The file extension to check.</param>
+    /// <returns><c>true</c> if the fileExtensionToCheck is an image; otherwise, <c>false</c>.</returns>
+    public static bool IsCompatibleToSetAsWindowsWallpaper(string? fileExtensionToCheck)
+    {
+        return HasExtension(fileExtensionToCheck, ".png", ".bmp", ".jpg", ".jpeg", ".jfif", ".gif", ".tiff", ".tif");
+    }
+
+    /// <summary>
     /// Check if the file extension is an audio file.
     /// </summary>
     /// <param name="fileExtensionToCheck">The file extension to check.</param>
@@ -67,12 +77,22 @@ public static class FileExtensionHelpers
 		return HasExtension(fileExtensionToCheck, ".ps1");
 	}
 
-	/// <summary>
-	/// Check if the file extension is a zip file.
-	/// </summary>
-	/// <param name="fileExtensionToCheck">The file extension to check.</param>
-	/// <returns><c>true</c> if the fileExtensionToCheck is a zip bundle file; otherwise, <c>false</c>.</returns>
-	public static bool IsZipFile(string? fileExtensionToCheck)
+    /// <summary>
+    /// Check if the file extension is a Batch file.
+    /// </summary>
+    /// <param name="fileExtensionToCheck">The file extension to check.</param>
+    /// <returns><c>true</c> if the fileExtensionToCheck is a Batch file; otherwise, <c>false</c>.</returns>
+    public static bool IsBatchFile(string fileExtensionToCheck)
+    {
+        return HasExtension(fileExtensionToCheck, ".bat");
+    }
+
+    /// <summary>
+    /// Check if the file extension is a zip file.
+    /// </summary>
+    /// <param name="fileExtensionToCheck">The file extension to check.</param>
+    /// <returns><c>true</c> if the fileExtensionToCheck is a zip bundle file; otherwise, <c>false</c>.</returns>
+    public static bool IsZipFile(string? fileExtensionToCheck)
 	{
         return HasExtension(fileExtensionToCheck, ".zip", ".msix", ".appx", ".msixbundle", ".appxbundle", ".7z", ".rar", ".tar", ".mcpack", ".mcworld", ".mrpack", ".jar", ".gz", ".lzh");
     }
@@ -142,26 +162,46 @@ public static class FileExtensionHelpers
 		return HasExtension(filePathToCheck, ".lnk", ".url");
 	}
 
-	/// <summary>
-	/// Check if the file path is an executable file.
-	/// </summary>
-	/// <param name="filePathToCheck">The file path to check.</param>
-	/// <returns><c>true</c> if the filePathToCheck is an executable file; otherwise, <c>false</c>.</returns>
-	/// /// <remarks>Executable file types are; exe, bat, cmd</remarks>
-	public static bool IsExecutableFile(string? filePathToCheck, bool exeOnly = false)
-	{
-		return
-			exeOnly
-				? HasExtension(filePathToCheck, ".exe")
-				: HasExtension(filePathToCheck, ".exe", ".bat", ".cmd");
-	}
+    /// <summary>
+    /// Check if the file path is an executable file.
+    /// </summary>
+    /// <param name="filePathToCheck">The file path to check.</param>
+    /// <returns><c>true</c> if the filePathToCheck is an executable file; otherwise, <c>false</c>.</returns>
+    /// /// <remarks>Executable file types are; exe, bat, cmd</remarks>
+    public static bool IsExecutableFile(string? filePathToCheck, bool exeOnly = false)
+    {
+        return
+            exeOnly
+                ? HasExtension(filePathToCheck, ".exe")
+                : HasExtension(filePathToCheck, ".exe", ".bat", ".cmd", ".ahk");
+    }
 
-	/// <summary>
-	/// Check if the file path is an msi installer file.
-	/// </summary>
-	/// <param name="filePathToCheck">The file path to check.</param>
-	/// <returns><c>true</c> if the filePathToCheck is an msi installer file; otherwise, <c>false</c>.</returns>
-	public static bool IsMsiFile(string? filePathToCheck)
+    /// <summary>
+    /// Check if the file path is an Auto Hot Key file.
+    /// </summary>
+    /// <param name="filePathToCheck">The file path to check.</param>
+    /// <returns><c>true</c> if the filePathToCheck is an Auto Hot Key file; otherwise, <c>false</c>.</returns>
+    public static bool IsAhkFile(string? filePathToCheck)
+    {
+        return HasExtension(filePathToCheck, ".ahk");
+    }
+
+    /// <summary>
+    /// Check if the file path is a cmd file.
+    /// </summary>
+    /// <param name="filePathToCheck">The file path to check.</param>
+    /// <returns><c>true</c> if the filePathToCheck is a cmd file; otherwise, <c>false</c>.</returns>
+    public static bool IsCmdFile(string? filePathToCheck)
+    {
+        return HasExtension(filePathToCheck, ".cmd");
+    }
+
+    /// <summary>
+    /// Check if the file path is an msi installer file.
+    /// </summary>
+    /// <param name="filePathToCheck">The file path to check.</param>
+    /// <returns><c>true</c> if the filePathToCheck is an msi installer file; otherwise, <c>false</c>.</returns>
+    public static bool IsMsiFile(string? filePathToCheck)
 	{
 		return HasExtension(filePathToCheck, ".msi");
 	}
