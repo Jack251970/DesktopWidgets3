@@ -15,7 +15,7 @@
     <tb:TaskbarIcon 
         x:Name="TrayIcon"
         x:Uid="TrayMenu_TaskBarIcon"
-        ContextMenuMode="PopupMenu"
+        ContextMenuMode="SecondWindow"
         IconSource="/Assets/WindowIcon.ico"
         DoubleClickCommand="{StaticResource ShowCommand}"
         NoLeftClickDelay="True"

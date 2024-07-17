@@ -11,6 +11,9 @@ public sealed partial class TrayMenuControl : UserControl
     public TrayMenuControl()
     {
         InitializeComponent();
+#if DEBUG
+        TrayIcon.ToolTipText += " (Debug)";
+#endif
     }
 
     private void ShowWindow(XamlUICommand sender, ExecuteRequestedEventArgs args)
