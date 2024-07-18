@@ -1,7 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿// Copyright (c) 2024 Files Community
+// Licensed under the MIT License. See the LICENSE.
 
-namespace Files.Core.Storage.NestedStorage;
+namespace Files.Core.Storage.Storables;
 
 /// <summary>
 /// Represents a storable resource that resides within a traversable folder structure.

@@ -1,9 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace Files.Core.Storage;
 
 /// <summary>
