@@ -1,15 +1,11 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
 using Files.Shared.Helpers;
-using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace Files.App.Storage.NativeStorage;
+namespace Files.App.Storage.Storables;
 
 /// <inheritdoc cref="IStorageService"/>
 public sealed class NativeStorageService : IStorageService

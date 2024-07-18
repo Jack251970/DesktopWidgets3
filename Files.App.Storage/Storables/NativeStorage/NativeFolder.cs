@@ -1,23 +1,10 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using Files.Core.Storage.DirectStorage;
-using Files.Core.Storage.Enums;
-using Files.Core.Storage.ExtendableStorage;
-using Files.Core.Storage.Extensions;
-using Files.Core.Storage.LocatableStorage;
-using Files.Core.Storage.ModifiableStorage;
-using Files.Core.Storage.MutableStorage;
-using Files.Core.Storage.NestedStorage;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Files.App.Storage.NativeStorage;
+namespace Files.App.Storage.Storables;
 
 /// <inheritdoc cref="IFolder"/>
 public class NativeFolder(DirectoryInfo directoryInfo, string? name = null) : NativeStorable<DirectoryInfo>(directoryInfo, name), ILocatableFolder, IModifiableFolder, IMutableFolder, IFolderExtended, INestedFolder, IDirectCopy, IDirectMove
@@ -81,7 +68,7 @@ public class NativeFolder(DirectoryInfo directoryInfo, string? name = null) : Na
                 {
                     yield return new NativeFolder(item);
                 }
-            }
+			}
 		}
 
 		await Task.CompletedTask;
@@ -128,7 +115,7 @@ public class NativeFolder(DirectoryInfo directoryInfo, string? name = null) : Na
 		}
 		else if (itemToCopy is IFolder sourceFolder)
 		{
-			// FILESTODO: Implement folder copy
+			// TODO: Implement folder copy
 			_ = sourceFolder;
 			throw new NotSupportedException();
 		}
@@ -139,7 +126,7 @@ public class NativeFolder(DirectoryInfo directoryInfo, string? name = null) : Na
 	/// <inheritdoc/>
 	public async virtual Task<INestedStorable> MoveFromAsync(INestedStorable itemToMove, IModifiableFolder source, bool overwrite = default, CancellationToken cancellationToken = default)
 	{
-        if (itemToMove is IFile sourceFile)
+		if (itemToMove is IFile sourceFile)
 		{
 			if (itemToMove is ILocatableFile sourceLocatableFile)
 			{
@@ -189,10 +176,4 @@ public class NativeFolder(DirectoryInfo directoryInfo, string? name = null) : Na
         _ = Directory.CreateDirectory(path);
 		return Task.FromResult<INestedFolder>(new NativeFolder(path));
 	}
-
-	/// <inheritdoc/>
-	public Task<IFolderWatcher> GetFolderWatcherAsync(CancellationToken cancellationToken = default)
-    {
-        return Task.FromResult<IFolderWatcher>(new NativeFolderWatcher(this));
-    }
 }

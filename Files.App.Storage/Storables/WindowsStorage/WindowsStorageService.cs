@@ -1,13 +1,9 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace Files.App.Storage.WindowsStorage;
+namespace Files.App.Storage.Storables;
 
 /// <inheritdoc cref="IStorageService"/>
 internal sealed class WindowsStorageService : IStorageService

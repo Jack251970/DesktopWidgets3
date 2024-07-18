@@ -1,16 +1,9 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using Files.Core.Storage.LocatableStorage;
-using Files.Core.Storage.ModifiableStorage;
-using Files.Core.Storage.NestedStorage;
-using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Files.App.Storage.FtpStorage;
+namespace Files.App.Storage.Storables;
 
 public sealed class FtpStorageFile(string path, string name, IFolder? parent) : FtpStorable(path, name, parent), IModifiableFile, ILocatableFile, INestedFile
 {
@@ -28,9 +21,9 @@ public sealed class FtpStorageFile(string path, string name, IFolder? parent) : 
         {
             return await ftpClient.OpenRead(Path, token: cancellationToken);
         }
-        else
+		else
         {
             throw new ArgumentException($"Invalid {nameof(access)} flag.");
         }
-    }
+	}
 }

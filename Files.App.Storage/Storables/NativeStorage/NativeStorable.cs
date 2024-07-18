@@ -1,14 +1,9 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using Files.Core.Storage.LocatableStorage;
-using Files.Core.Storage.NestedStorage;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Files.App.Storage.NativeStorage;
+namespace Files.App.Storage.Storables;
 
 /// <inheritdoc cref="IStorable"/>
 public abstract class NativeStorable<TStorage>(TStorage storage, string? name = null) : ILocatableStorable, INestedStorable
@@ -46,14 +41,14 @@ public abstract class NativeStorable<TStorage>(TStorage storage, string? name = 
 	{
 		path = path.Replace("file:///", string.Empty);
 
-		if ('/' != System.IO.Path.DirectorySeparatorChar)
+		if ('/' != SystemIO.Path.DirectorySeparatorChar)
         {
-            return path.Replace('/', System.IO.Path.DirectorySeparatorChar);
+            return path.Replace('/', SystemIO.Path.DirectorySeparatorChar);
         }
 
-        if ('\\' != System.IO.Path.DirectorySeparatorChar)
+        if ('\\' != SystemIO.Path.DirectorySeparatorChar)
         {
-            return path.Replace('\\', System.IO.Path.DirectorySeparatorChar);
+            return path.Replace('\\', SystemIO.Path.DirectorySeparatorChar);
         }
 
         return path;

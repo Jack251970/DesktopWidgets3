@@ -3,11 +3,8 @@
 
 using Files.Shared.Extensions;
 using FluentFTP;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Files.App.Storage.FtpStorage;
+namespace Files.App.Storage.Storables;
 
 internal static class FtpHelpers
 {

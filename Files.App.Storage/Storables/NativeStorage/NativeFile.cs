@@ -1,16 +1,9 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using Files.Core.Storage.ExtendableStorage;
-using Files.Core.Storage.LocatableStorage;
-using Files.Core.Storage.ModifiableStorage;
-using Files.Core.Storage.NestedStorage;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Files.App.Storage.NativeStorage;
+namespace Files.App.Storage.Storables;
 
 /// <inheritdoc cref="IFile"/>
 public class NativeFile(FileInfo fileInfo, string? name = null) : NativeStorable<FileInfo>(fileInfo, name), ILocatableFile, IModifiableFile, IFileExtended, INestedFile
