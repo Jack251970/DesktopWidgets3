@@ -213,13 +213,14 @@
                     </Grid.ColumnDefinitions>
 
                     <!--  File Navigation Toolbar  -->
+                    <!-- // CHANGE: Register inner navigation toolbar loaded event. -->
                     <uc:InnerNavigationToolbar
 						x:Name="InnerNavigationToolbar"
 						Grid.Row="0"
 						Grid.ColumnSpan="3"
 						Margin="0,0,0,4"
 						x:Load="False"
-						Loaded="NavToolbar_Loaded"
+						Loaded="InnerNavToolbar_Loaded"
 						ShowPreviewPaneButton="{x:Bind ViewModel.ShouldPreviewPaneBeDisplayed, Mode=OneWay}"
 						ShowViewControlButton="{x:Bind ViewModel.ShouldViewControlBeDisplayed, Mode=OneWay}"
 						TabIndex="2"
