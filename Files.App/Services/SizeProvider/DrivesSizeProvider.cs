@@ -12,7 +12,9 @@ public sealed class DrivesSizeProvider : ISizeProvider
 
 	public event EventHandler<SizeChangedEventArgs>? SizeChanged;
 
-	public async Task CleanAsync()
+    public void Initialize(IFolderViewViewModel folderViewViewModel) => throw new NotImplementedException();
+
+    public async Task CleanAsync()
 	{
 		var currentDrives = DriveInfo.GetDrives().Select(x => x.Name).ToArray();
 		var oldDriveNames = providers.Keys.Except(currentDrives).ToArray();

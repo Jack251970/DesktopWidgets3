@@ -118,8 +118,6 @@ public sealed partial class ModernShellPage : BaseShellPage
             ShellViewModel.PageTypeUpdated += FilesystemViewModel_PageTypeUpdated;
             ShellViewModel.OnSelectionRequestedEvent += FilesystemViewModel_OnSelectionRequestedEvent;
             ShellViewModel.GitDirectoryUpdated += FilesystemViewModel_GitDirectoryUpdated;
-
-            ToolbarViewModel.PathControlDisplayText = "Home".GetLocalizedResource();
         }
 
 		if (string.IsNullOrEmpty(NavParams?.NavPath) || NavParams.NavPath == "Home")

@@ -124,17 +124,6 @@ public sealed partial class MainPage : Page
         }
     }
 
-    // WINUI3
-    /*private ContentDialog SetContentDialogRoot(ContentDialog contentDialog)
-    {
-        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-        {
-            contentDialog.XamlRoot = FolderViewViewModel.XamlRoot;
-        }
-
-        return contentDialog;
-    }*/
-
     private void UserSettingsService_OnSettingChangedEvent(object? sender, SettingChangedEventArgs e)
 	{
 		switch (e.SettingName)

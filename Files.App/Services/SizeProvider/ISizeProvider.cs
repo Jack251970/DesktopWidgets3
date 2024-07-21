@@ -5,7 +5,9 @@ namespace Files.App.Services.SizeProvider;
 
 public interface ISizeProvider : IDisposable
 {
-	event EventHandler<SizeChangedEventArgs> SizeChanged;
+    void Initialize(IFolderViewViewModel folderViewViewModel);
+
+    event EventHandler<SizeChangedEventArgs> SizeChanged;
 
 	Task CleanAsync();
 	Task ClearAsync();

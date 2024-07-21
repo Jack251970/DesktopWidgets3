@@ -493,15 +493,31 @@ public sealed partial class ShellPanesPage : Page, IShellPanesPage, ITabBarItemC
 
         Initialize(eventArgs);
 
-        if (eventArgs.Parameter is string navPath)
+        // CHANGE: Remove support for string.
+        /*if (eventArgs.Parameter is string navPath)
         {
             NavParamsLeft = new() { NavPath = navPath };
             NavParamsRight = new() { NavPath = "Home" };
+        }*/
+        // CHANGE: Support PanePathNavigationArguments and PaneNavigationArguments.
+        if (eventArgs.Parameter is PanePathNavigationArguments panePathArgs)
+        {
+            NavParamsLeft = new()
+            {
+                FolderViewViewModel = panePathArgs.FolderViewViewModel,
+                NavPath = panePathArgs.NavPathParam 
+            };
+            NavParamsRight = new()
+            {
+                FolderViewViewModel = panePathArgs.FolderViewViewModel,
+                NavPath = "Home" 
+            };
         }
         else if (eventArgs.Parameter is PaneNavigationArguments paneArgs)
         {
             NavParamsLeft = new()
             {
+                FolderViewViewModel = paneArgs.FolderViewViewModel,
                 NavPath = paneArgs.LeftPaneNavPathParam,
                 SelectItem = paneArgs.LeftPaneSelectItemParam
             };
@@ -511,6 +527,7 @@ public sealed partial class ShellPanesPage : Page, IShellPanesPage, ITabBarItemC
 
             NavParamsRight = new()
             {
+                FolderViewViewModel = paneArgs.FolderViewViewModel,
                 NavPath = paneArgs.RightPaneNavPathParam,
                 SelectItem = paneArgs.RightPaneSelectItemParam
             };
@@ -518,6 +535,7 @@ public sealed partial class ShellPanesPage : Page, IShellPanesPage, ITabBarItemC
 
         TabBarItemParameter = new()
         {
+            FolderViewViewModel = FolderViewViewModel,
             InitialPageType = typeof(ShellPanesPage),
             NavigationParameter = new PaneNavigationArguments()
             {
@@ -551,6 +569,7 @@ public sealed partial class ShellPanesPage : Page, IShellPanesPage, ITabBarItemC
     {
         TabBarItemParameter = new()
         {
+            FolderViewViewModel = FolderViewViewModel,
             InitialPageType = typeof(ShellPanesPage),
             NavigationParameter = new PaneNavigationArguments()
             {

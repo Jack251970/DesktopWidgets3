@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Helpers.Application;
+using Files.App.Services.SizeProvider;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -89,7 +90,7 @@ public partial class App
             var MainWindow = FolderViewViewModel.MainWindow;
 
             // Get AppActivationArguments
-            var appActivationArguments = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
+            var appActivationArguments = AppInstance.GetCurrent().GetActivatedEventArgs();
             // TODO(Later): Add start up argument function.
             var isStartupTask = appActivationArguments.Data is Windows.ApplicationModel.Activation.IStartupTaskActivatedEventArgs;
 
@@ -442,6 +443,7 @@ public partial class App
     public ICommandManager CommandManager { get; private set; }
     public IModifiableCommandManager ModifiableCommandManager { get; private set; }
     public IDateTimeFormatter DateTimeFormatter { get; private set; }
+    public ISizeProvider SizeProvider { get; private set; } = null!;
     // ViewModels
     public StatusCenterViewModel StatusCenterViewModel { get; private set; }
     public InfoPaneViewModel InfoPaneViewModel { get; private set; }
@@ -465,6 +467,7 @@ public partial class App
         CommandManager ??= DependencyExtensions.GetRequiredService<ICommandManager>();
         ModifiableCommandManager ??= DependencyExtensions.GetRequiredService<IModifiableCommandManager>();
         DateTimeFormatter ??= DependencyExtensions.GetRequiredService<IDateTimeFormatter>();
+        SizeProvider ??= DependencyExtensions.GetRequiredService<ISizeProvider>();
         // ViewModels
         StatusCenterViewModel ??= DependencyExtensions.GetRequiredService<StatusCenterViewModel>();
         InfoPaneViewModel ??= DependencyExtensions.GetRequiredService<InfoPaneViewModel>();
@@ -483,6 +486,7 @@ public partial class App
         CommandManager.Initialize(FolderViewViewModel);
         ModifiableCommandManager.Initialize(FolderViewViewModel);
         DateTimeFormatter.Initialize(FolderViewViewModel);
+        SizeProvider.Initialize(FolderViewViewModel);
         // ViewModels
         InfoPaneViewModel.Initialize(FolderViewViewModel);
     }
@@ -513,6 +517,7 @@ public partial class App
             Type t when t == typeof(ICommandManager) => (CommandManager as T)!,
             Type t when t == typeof(IModifiableCommandManager) => (ModifiableCommandManager as T)!,
             Type t when t == typeof(IDateTimeFormatter) => (DateTimeFormatter as T)!,
+            Type t when t == typeof(ISizeProvider) => (SizeProvider as T)!,
             // ViewModels
             Type t when t == typeof(StatusCenterViewModel) => (StatusCenterViewModel as T)!,
             Type t when t == typeof(InfoPaneViewModel) => (InfoPaneViewModel as T)!,

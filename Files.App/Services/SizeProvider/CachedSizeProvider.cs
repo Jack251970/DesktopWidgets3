@@ -12,7 +12,9 @@ public sealed class CachedSizeProvider : ISizeProvider
 
 	public event EventHandler<SizeChangedEventArgs>? SizeChanged;
 
-	public Task CleanAsync() => Task.CompletedTask;
+    public void Initialize(IFolderViewViewModel folderViewViewModel) => throw new NotImplementedException();
+
+    public Task CleanAsync() => Task.CompletedTask;
 
 	public Task ClearAsync()
 	{

@@ -156,7 +156,7 @@ public static class AppLifecycleHelper
     public static IHostBuilder ConfigureHost(this IHostBuilder host)
     {
         return host
-            .UseEnvironment(AppLifecycleHelper.AppEnvironment.ToString())
+            .UseEnvironment(AppEnvironment.ToString())
             .ConfigureLogging(builder => builder
                     .AddProvider(new FileLoggerProvider(Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), "debug.log")))
                     .AddProvider(new SentryLoggerProvider())

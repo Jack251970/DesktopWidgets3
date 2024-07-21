@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Jeffijoe.MessageFormat;
-using Microsoft.Windows.ApplicationModel.Resources;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 
@@ -11,14 +10,13 @@ namespace Files.App.Extensions;
 /// <summary>
 /// Extension methods for working with localized resources and message formatting.
 /// </summary>
-// TODO: Fix cultrueInfo and locale.
 public static class MessageFormatExtensions
 {
 	/// <summary>
 	/// Resource map for accessing localized strings.
 	/// It is initialized with the main resource map of the application's resources and the subtree "Resources".
 	/// </summary>
-	private static readonly ResourceMap _resourcesTree = new ResourceManager().MainResourceMap.TryGetSubtree("Resources");
+	/*private static readonly ResourceMap _resourcesTree = new ResourceManager().MainResourceMap.TryGetSubtree("Resources");*/
 
 	/// <summary>
 	/// CultureInfo based on the application's primary language override.
@@ -78,12 +76,14 @@ public static class MessageFormatExtensions
 	/// <returns>The formatted localized resource string.</returns>
 	public static string GetLocalizedFormatResource(this string resourceKey, IReadOnlyDictionary<string, object?> pairs)
 	{
-		var value = _resourcesTree?.TryGetValue(resourceKey)?.ValueAsString;
+        // CHANGE: Use ResourcesExtensions instead.
+		/*var value = _resourcesTree?.TryGetValue(resourceKey)?.ValueAsString;
 
 		if (value is null)
         {
             return string.Empty;
-        }
+        }*/
+        var value = resourceKey.GetLocalized("FilesResources");
 
         try
 		{
