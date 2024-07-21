@@ -92,7 +92,7 @@ public sealed class NetworkLocationsWidgetViewModel : BaseWidgetViewModel, IWidg
 
 		ContentPageContext.ShellPage!.NavigateWithArguments(
 			ContentPageContext.ShellPage!.InstanceViewModel.FolderSettings.GetLayoutType(path),
-			new() { NavPathParam = path });
+			new() { FolderViewViewModel = FolderViewViewModel, NavPathParam = path });
 	}
 
 	public override List<ContextMenuFlyoutItemViewModel> GetItemMenuItems(WidgetCardItem item, bool isPinned, bool isFolder = false)

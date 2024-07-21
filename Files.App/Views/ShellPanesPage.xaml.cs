@@ -324,7 +324,7 @@ public sealed partial class ShellPanesPage : Page, IShellPanesPage, ITabBarItemC
         // Add right pane within this property's setter
         IsRightPaneVisible = true;
 
-        NavParamsRight = new() { NavPath = path };
+        NavParamsRight = new() { FolderViewViewModel = FolderViewViewModel, NavPath = path };
         ActivePane = GetPane(1);
     }
 
@@ -440,7 +440,7 @@ public sealed partial class ShellPanesPage : Page, IShellPanesPage, ITabBarItemC
                 RootGrid.Children.RemoveAt(0);
                 RootGrid.ColumnDefinitions.RemoveAt(0);
                 RootGrid.Children[0].SetValue(Grid.ColumnProperty, 0);
-                _NavParamsLeft = new() { NavPath = GetPane(0)?.TabBarItemParameter?.NavigationParameter as string ?? string.Empty };
+                _NavParamsLeft = new() { FolderViewViewModel = FolderViewViewModel, NavPath = GetPane(0)?.TabBarItemParameter?.NavigationParameter as string ?? string.Empty };
                 IsRightPaneVisible = false;
                 ActivePane = GetPane(0);
             }
