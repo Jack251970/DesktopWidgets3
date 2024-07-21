@@ -1,18 +1,20 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.Notifications;
-using Files.App.Storage.FtpStorage;
-using Files.App.Storage.NativeStorage;
-using Files.App.ViewModels.Settings;
+using CommunityToolkit.WinUI.Helpers;
+using Files.App.Helpers.Application;
 using Files.App.Services.SizeProvider;
+using Files.App.Storage.Storables;
+using Files.App.Utils.Logger;
+using Files.App.ViewModels.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sentry;
+using Sentry.Protocol;
 using System.IO;
 using System.Text;
 using Windows.System;
-using Windows.UI.Notifications;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Files.App.Helpers;
@@ -126,26 +128,27 @@ public static class AppLifecycleHelper
 		await updateService.CheckLatestReleaseNotesAsync();
 	}
 
-	/// <summary>
-	/// Configures AppCenter service, such as Analytics and Crash Report.
-	/// </summary>
-	public static void ConfigureAppCenter()
-	{
-		try
-		{
-			if (!Microsoft.AppCenter.AppCenter.Configured)
-			{
-				Microsoft.AppCenter.AppCenter.Start(
-					Constants.AutomatedWorkflowInjectionKeys.AppCenterSecret,
-					typeof(Microsoft.AppCenter.Analytics.Analytics),
-					typeof(Microsoft.AppCenter.Crashes.Crashes));
-			}
-		}
-		catch (Exception ex)
-		{
-			App.Logger?.LogWarning(ex, "Failed to start AppCenter service.");
-		}
-	}
+    /// <summary>
+    /// Configures Sentry service, such as Analytics and Crash Report.
+    /// </summary>
+    public static void ConfigureSentry()
+    {
+        SentrySdk.Init(options =>
+        {
+            options.Dsn = Constants.AutomatedWorkflowInjectionKeys.SentrySecret;
+            options.AutoSessionTracking = true;
+            options.Release = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";
+            options.TracesSampleRate = 0.80;
+            options.ProfilesSampleRate = 0.40;
+            options.Environment = AppEnvironment == AppEnvironment.Preview ? "preview" : "production";
+            options.ExperimentalMetrics = new ExperimentalMetricsOptions
+            {
+                EnableCodeLocations = true
+            };
+
+            options.DisableWinUiUnhandledExceptionIntegration();
+        });
+    }
 
     /// <summary>
 	/// Configures DI (dependency injection) container.
@@ -156,6 +159,7 @@ public static class AppLifecycleHelper
             .UseEnvironment(AppLifecycleHelper.AppEnvironment.ToString())
             .ConfigureLogging(builder => builder
                     .AddProvider(new FileLoggerProvider(Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), "debug.log")))
+                    .AddProvider(new SentryLoggerProvider())
                     .SetMinimumLevel(LogLevel.Information))
             .ConfigureServices(services => services
                 // Settings services
@@ -163,6 +167,7 @@ public static class AppLifecycleHelper
                 .AddTransient<IAppearanceSettingsService, AppearanceSettingsService>()
                 .AddTransient<IGeneralSettingsService, GeneralSettingsService>()
                 .AddTransient<IFoldersSettingsService, FoldersSettingsService>()
+                .AddTransient<IDevToolsSettingsService, DevToolsSettingsService>()
                 .AddTransient<IApplicationSettingsService, ApplicationSettingsService>()
                 .AddTransient<IInfoPaneSettingsService, InfoPaneSettingsService>()
                 .AddTransient<ILayoutSettingsService, LayoutSettingsService>()
@@ -170,16 +175,18 @@ public static class AppLifecycleHelper
                 .AddTransient<IActionsSettingsService, ActionsSettingsService>()
                 .AddSingleton<IFileTagsSettingsService, FileTagsSettingsService>()
                 // Contexts
-                .AddTransient<IPageContext, PageContext>()
+                .AddTransient<IMultiPanesContext, MultiPanesContext>()
                 .AddTransient<IContentPageContext, ContentPageContext>()
                 .AddTransient<IDisplayPageContext, DisplayPageContext>()
                 .AddSingleton<IHomePageContext, HomePageContext>()
                 .AddTransient<IWindowContext, WindowContext>()
                 .AddTransient<IMultitaskingContext, MultitaskingContext>()
                 .AddSingleton<ITagsContext, TagsContext>()
+                .AddSingleton<ISidebarContext, SidebarContext>()
                 // Services
                 .AddSingleton<IAppThemeModeService, AppThemeModeService>()
                 .AddTransient<IDialogService, DialogService>()
+                .AddSingleton<ICommonDialogService, CommonDialogService>()
                 .AddSingleton<IImageService, ImagingService>()
                 .AddSingleton<IThreadingService, ThreadingService>()
                 .AddSingleton<ILocalizationService, LocalizationService>()
@@ -192,21 +199,23 @@ public static class AppLifecycleHelper
                 .AddSingleton<IAddItemService, AddItemService>()
 #if STABLE || PREVIEW
 			    .AddSingleton<IUpdateService, SideloadUpdateService>()
+#elif STORE
+				.AddSingleton<IUpdateService, StoreUpdateService>()
 #else
-                .AddSingleton<IUpdateService, UpdateService>()
+                .AddSingleton<IUpdateService, DummyUpdateService>()
 #endif
                 .AddSingleton<IPreviewPopupService, PreviewPopupService>()
                 .AddSingleton<IDateTimeFormatterFactory, DateTimeFormatterFactory>()
                 .AddTransient<IDateTimeFormatter, UserDateTimeFormatter>()
-                .AddSingleton<IVolumeInfoFactory, VolumeInfoFactory>()
                 .AddTransient<ISizeProvider, UserSizeProvider>()
                 .AddSingleton<IQuickAccessService, QuickAccessService>()
                 .AddSingleton<IResourcesService, ResourcesService>()
                 .AddSingleton<IWindowsJumpListService, WindowsJumpListService>()
                 .AddSingleton<IRemovableDrivesService, RemovableDrivesService>()
-                .AddSingleton<INetworkDrivesService, NetworkDrivesService>()
+                .AddSingleton<INetworkService, NetworkService>()
                 .AddSingleton<IStartMenuService, StartMenuService>()
                 .AddSingleton<IStorageCacheService, StorageCacheService>()
+                .AddSingleton<IStorageArchiveService, StorageArchiveService>()
                 .AddSingleton<IWindowsCompatibilityService, WindowsCompatibilityService>()
                 // ViewModels
                 .AddTransient<MainPageViewModel>()
@@ -219,6 +228,7 @@ public static class AppLifecycleHelper
                 .AddTransient<HomeViewModel>()
                 .AddTransient<QuickAccessWidgetViewModel>()
                 .AddTransient<DrivesWidgetViewModel>()
+                .AddTransient<NetworkLocationsWidgetViewModel>()
                 .AddTransient<FileTagsWidgetViewModel>()
                 .AddTransient<RecentFilesWidgetViewModel>()
                 // Utilities
@@ -255,10 +265,10 @@ public static class AppLifecycleHelper
 			}
 			else
 			{
-				var defaultArg = new CustomTabViewItemParameter()
+				var defaultArg = new TabBarItemParameter()
 				{
                     FolderViewViewModel = folderViewViewModel,
-					InitialPageType = typeof(PaneHolderPage),
+					InitialPageType = typeof(ShellPanesPage),
 					NavigationParameter = "Home"
 				};
 
@@ -273,7 +283,9 @@ public static class AppLifecycleHelper
 	/// </summary>
 	public static void HandleAppUnhandledException(Exception? ex, bool showToastNotification)
 	{
-		StringBuilder formattedException = new()
+        var generalSettingsService = DependencyExtensions.GetRequiredService<IGeneralSettingsService>();
+
+        StringBuilder formattedException = new()
 		{
 			Capacity = 200
 		};
@@ -282,7 +294,16 @@ public static class AppLifecycleHelper
 
 		if (ex is not null)
 		{
-			formattedException.AppendLine($">>>> HRESULT: {ex.HResult}");
+            ex.Data[Mechanism.HandledKey] = false;
+            ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
+
+            SentrySdk.CaptureException(ex, scope =>
+            {
+                scope.User.Id = generalSettingsService?.UserId;
+                scope.Level = SentryLevel.Fatal;
+            });
+
+            formattedException.AppendLine($">>>> HRESULT: {ex.HResult}");
 
 			if (ex.Message is not null)
 			{
@@ -328,47 +349,7 @@ public static class AppLifecycleHelper
 
         SafetyExtensions.IgnoreExceptions(() =>
         {
-            var toastContent = new ToastContent()
-		    {
-			    Visual = new()
-			    {
-				    BindingGeneric = new ToastBindingGeneric()
-				    {
-					    Children =
-					    {
-						    new AdaptiveText()
-						    {
-							    Text = "ExceptionNotificationHeader".GetLocalizedResource()
-						    },
-						    new AdaptiveText()
-						    {
-							    Text = "ExceptionNotificationBody".GetLocalizedResource()
-						    }
-					    },
-					    AppLogoOverride = new()
-					    {
-						    Source = "ms-appx:///Files.App/Assets/error.png"
-					    }
-				    }
-			    },
-			    Actions = new ToastActionsCustom()
-			    {
-				    Buttons =
-				    {
-                        new ToastButton("ExceptionNotificationReportButton".GetLocalizedResource(), Constants.ExternalUrl.BugReportUrl)
-                        {
-                            ActivationType = ToastActivationType.Protocol
-					    }
-				    }
-			    },
-			    ActivationType = ToastActivationType.Protocol
-		    };
-
-		    // Create the toast notification
-		    var toastNotification = new ToastNotification(toastContent.GetXml());
-
-		    // And send the notification
-		    ToastNotificationManager.CreateToastNotifier().Show(toastNotification);
+            AppToastNotificationHelper.ShowUnhandledExceptionToast();
         });
 
         // Restart the app

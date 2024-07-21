@@ -127,10 +127,10 @@ public sealed class FileOperationsHelpers
 				{
 					using var shi = new ShellItem(fileToDeletePath[i]);
 					using var file = SafetyExtensions.IgnoreExceptions(() => GetFirstFile(shi)) ?? shi;
-					if (file.Properties.GetProperty<uint>(PKEY_FilePlaceholderStatus) == PS_CLOUDFILE_PLACEHOLDER)
-					{
-						// Online only files cannot be tried for deletion, so they are treated as to be permanently deleted.
-						shellOperationResult.Items.Add(new ShellOperationItemResult()
+                    if ((uint?)file.Properties.GetValueOrDefault(PKEY_FilePlaceholderStatus) == PS_CLOUDFILE_PLACEHOLDER)
+                    {
+                        // Online only files cannot be tried for deletion, so they are treated as to be permanently deleted.
+                        shellOperationResult.Items.Add(new ShellOperationItemResult()
 						{
 							Succeeded = false,
 							Source = fileToDeletePath[i],
@@ -279,8 +279,8 @@ public sealed class FileOperationsHelpers
                     throw new Win32Exception(HRESULT.COPYENGINE_E_RECYCLE_BIN_NOT_FOUND);
                 }
 
-                sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath!);
-				fsProgress.FileName = e.SourceItem.Name;
+                sizeCalculator.ForceComputeFileSize(e.SourceItem.GetParsingPath());
+                fsProgress.FileName = e.SourceItem.Name;
 				fsProgress.Report();
 			};
 
@@ -289,7 +289,7 @@ public sealed class FileOperationsHelpers
 			{
 				if (!e.SourceItem.IsFolder)
 				{
-					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath!, out _))
+                    if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.GetParsingPath(), out _))
                     {
                         fsProgress.AddProcessedItemsCount(1);
                     }
@@ -479,8 +479,8 @@ public sealed class FileOperationsHelpers
 
 			op.PreMoveItem += (s, e) =>
 			{
-				sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath!);
-				fsProgress.FileName = e.SourceItem.Name;
+                sizeCalculator.ForceComputeFileSize(e.SourceItem.GetParsingPath());
+                fsProgress.FileName = e.SourceItem.Name;
 				fsProgress.Report();
 			};
 
@@ -488,7 +488,7 @@ public sealed class FileOperationsHelpers
 			{
 				if (!e.SourceItem.IsFolder)
 				{
-					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath!, out _))
+                    if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.GetParsingPath(), out _))
                     {
                         fsProgress.AddProcessedItemsCount(1);
                     }
@@ -614,7 +614,7 @@ public sealed class FileOperationsHelpers
 
 			op.PreCopyItem += (s, e) =>
 			{
-				sizeCalculator.ForceComputeFileSize(e.SourceItem.FileSystemPath!);
+				sizeCalculator.ForceComputeFileSize(e.SourceItem.GetParsingPath());
 				fsProgress.FileName = e.SourceItem.Name;
 				fsProgress.Report();
 			};
@@ -623,7 +623,7 @@ public sealed class FileOperationsHelpers
 			{
 				if (!e.SourceItem.IsFolder)
 				{
-					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.FileSystemPath!, out _))
+					if (sizeCalculator.TryGetComputedFileSize(e.SourceItem.GetParsingPath(), out _))
                     {
                         fsProgress.AddProcessedItemsCount(1);
                     }
@@ -791,7 +791,39 @@ public sealed class FileOperationsHelpers
 			link.SaveAs(filePath); // Overwrite if exists
 			return true;
 		}
-		catch (Exception ex)
+        catch (UnauthorizedAccessException)
+        {
+            var psScript = $@"
+					$FilePath = '{filePath}'
+					$IconFile = '{iconFile}'
+					$IconIndex = '{iconIndex}'
+
+					$Shell = New-Object -ComObject WScript.Shell
+					$Shortcut = $Shell.CreateShortcut($FilePath)
+					$Shortcut.IconLocation = ""$IconFile, $IconIndex""
+					$Shortcut.Save()
+				";
+
+            var base64EncodedScript = Convert.ToBase64String(System.Text.Encoding.Unicode.GetBytes(psScript));
+
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = "powershell.exe",
+                Arguments = $"-NoProfile -EncodedCommand {base64EncodedScript}",
+                Verb = "runas",
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                UseShellExecute = true
+            };
+
+            // Start the process
+            var process = new Process() { StartInfo = startInfo };
+            process.Start();
+            process.WaitForExit();
+
+            return true;
+        }
+        catch (Exception ex)
 		{
 			// Could not create shortcut
 			App.Logger?.LogWarning(ex, ex.Message);

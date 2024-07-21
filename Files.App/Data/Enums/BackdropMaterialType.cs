@@ -23,8 +23,13 @@ public enum BackdropMaterialType
 	/// </summary>
 	MicaAlt,
 
-	/// <summary>
-	/// Arcylic backdrop.
-	/// </summary>
-	Acrylic
+    /// <summary>
+    /// Arcylic backdrop.
+    /// </summary>
+    Acrylic,
+
+    /// <summary>
+    /// Thin Acrylic backdrop.
+    /// </summary>
+    ThinAcrylic
 }

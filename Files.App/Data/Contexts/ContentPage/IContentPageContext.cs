@@ -5,7 +5,7 @@ namespace Files.App.Data.Contexts;
 
 public interface IContentPageContext : INotifyPropertyChanged
 {
-    void Initialize(IPageContext context);
+    void Initialize(IMultiPanesContext context);
 
     IShellPage? ShellPage { get; }
 

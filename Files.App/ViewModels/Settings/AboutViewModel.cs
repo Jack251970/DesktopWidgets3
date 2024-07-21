@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using CommunityToolkit.WinUI.Helpers;
+using Microsoft.Win32;
 using System.Windows.Input;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
@@ -10,9 +11,31 @@ using Windows.System;
 
 namespace Files.App.ViewModels.Settings;
 
+/// <summary>
+/// Represents view model of <see cref="Views.Settings.AboutPage"/>.
+/// </summary>
 public sealed class AboutViewModel : ObservableObject
 {
-    public readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
+    // Properties
+
+    private IFolderViewViewModel FolderViewViewModel { get; set; }
+
+    // CHECK: Update AppVersion and Commits info.
+    public string Version
+        => string.Format($"{"SettingsAboutVersionTitle".GetLocalizedResource()} {AppVersion.Major}.{AppVersion.Minor}.{AppVersion.Build}.{AppVersion.Revision} ({Commits})");
+
+    public string AppName
+        => "Files";
+
+    public PackageVersion AppVersion
+        => new(3, 5, 0, 0);
+
+    // CHANGE: Add commit info here.
+    public string Commits => "8f3370a3";
+
+    public ObservableCollection<OpenSourceLibraryItem> OpenSourceLibraries { get; }
+
+    // Commands
 
 	public ICommand CopyAppVersionCommand { get; }
 	public ICommand CopyWindowsVersionCommand { get; }
@@ -26,16 +49,42 @@ public sealed class AboutViewModel : ObservableObject
 	public ICommand OpenPrivacyPolicyCommand { get; }
 	public ICommand OpenCrowdinCommand { get; }
 
-	private string _ThirdPartyNotices = string.Empty;
-	public string ThirdPartyNotices
-	{
-		get => _ThirdPartyNotices;
-		set => SetProperty(ref _ThirdPartyNotices, value);
-	}
+    // Constructor
 
-	public AboutViewModel()
-	{
-		CopyAppVersionCommand = new RelayCommand(CopyAppVersion);
+    /// <summary>
+    /// Initializes an instance of <see cref="AboutViewModel"/> class.
+    /// </summary>
+    public AboutViewModel()
+    {
+        OpenSourceLibraries =
+        [
+            new ("https://github.com/omar/ByteSize", "ByteSize"),
+            new ("https://github.com/CommunityToolkit/dotnet", "CommunityToolkit.Mvvm"),
+            new ("https://github.com/DiscUtils/DiscUtils", "DiscUtils.Udf"),
+            new ("https://github.com/robinrodricks/FluentFTP", "FluentFTP"),
+            new ("https://github.com/rickyah/ini-parser", "INI File Parser"),
+            new ("https://github.com/libgit2/libgit2sharp", "libgit2sharp"),
+            new ("https://github.com/beto-rodriguez/LiveCharts2", "LiveCharts2"),
+            new ("https://github.com/jeffijoe/messageformat.net", "MessageFormat"),
+            new ("https://github.com/dotnet/efcore", "EF Core for SQLite"),
+            new ("https://github.com/dotnet/runtime", "Microsoft.Extensions"),
+            new ("https://github.com/files-community/SevenZipSharp", "SevenZipSharp"),
+            new ("https://sourceforge.net/projects/sevenzip", "7zip"),
+            new ("https://github.com/ericsink/SQLitePCL.raw", "PCL for SQLite"),
+            new ("https://github.com/microsoft/WindowsAppSDK", "WindowsAppSDK"),
+            new ("https://github.com/microsoft/microsoft-ui-xaml", "WinUI 3"),
+            new ("https://github.com/microsoft/Win2D", "Win2D"),
+            new ("https://github.com/CommunityToolkit/WindowsCommunityToolkit", "Windows Community Toolkit 7.x"),
+            new ("https://github.com/mono/taglib-sharp", "TagLibSharp"),
+            new ("https://github.com/Tulpep/Active-Directory-Object-Picker", "ActiveDirectoryObjectPicker"),
+            new ("https://github.com/dotMorten/WinUIEx", "WinUIEx"),
+            new ("https://github.com/dahall/Vanara", "Vanara"),
+            new ("https://github.com/PowerShell/MMI", "MMI"),
+            new ("https://github.com/microsoft/CsWin32", "CsWin32"),
+            new ("https://github.com/microsoft/CsWinRT", "CsWinRT"),
+        ];
+
+        CopyAppVersionCommand = new RelayCommand(CopyAppVersion);
 		CopyWindowsVersionCommand = new RelayCommand(CopyWindowsVersion);
 		SupportUsCommand = new AsyncRelayCommand(SupportUs);
 		OpenDocumentationCommand = new AsyncRelayCommand(DoOpenDocumentation);
@@ -48,9 +97,29 @@ public sealed class AboutViewModel : ObservableObject
 		OpenCrowdinCommand = new AsyncRelayCommand(DoOpenCrowdin);
 	}
 
-    private Task<bool> OpenLogLocation()
+    public void Initialize(IFolderViewViewModel folderViewViewModel)
     {
-        return Launcher.LaunchFolderAsync(ApplicationData.Current.LocalFolder).AsTask();
+        FolderViewViewModel = folderViewViewModel;
+    }
+
+    // Methods
+
+    private async Task<bool> OpenLogLocation()
+    {
+        await Launcher.LaunchFolderAsync(ApplicationData.Current.LocalFolder).AsTask();
+
+        // FILESTODO: Move this to an application service
+        // Detect if Files is set as the default file manager
+        using var subkey = Registry.ClassesRoot.OpenSubKey(@"Folder\shell\open\command");
+        var command = (string?)subkey?.GetValue(string.Empty);
+
+        // Close the settings dialog if Files is the deault file manager
+        if (!string.IsNullOrEmpty(command) && command.Contains("Files.App.Launcher.exe"))
+        {
+            UIHelpers.CloseAllDialogs(FolderViewViewModel);
+        }
+
+        return true;
     }
 
     public Task DoOpenDocumentation()
@@ -119,12 +188,6 @@ public sealed class AboutViewModel : ObservableObject
         return Launcher.LaunchUriAsync(new Uri(Constants.ExternalUrl.SupportUsUrl)).AsTask();
     }
 
-    public async Task LoadThirdPartyNoticesAsync()
-	{
-		var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(Constants.DocsPath.ThirdPartyNoticePath));
-        ThirdPartyNotices = await FileIO.ReadTextAsync(file);
-	}
-
 	public string GetAppVersion()
 	{
 		return string.Format($"{AppVersion.Major}.{AppVersion.Minor}.{AppVersion.Build}.{AppVersion.Revision}");
@@ -142,13 +205,4 @@ public sealed class AboutViewModel : ObservableObject
 		query["windows_version"] = GetWindowsVersion();
 		return query.ToString() ?? string.Empty;
 	}
-
-    // CHECK: Update AppVersion and Commits info.
-    public string Version => string.Format($"{"SettingsAboutVersionTitle".GetLocalizedResource()} {AppVersion.Major}.{AppVersion.Minor}.{AppVersion.Build}.{AppVersion.Revision} ({Commits})");
-
-    public string AppName => "Files";
-	public PackageVersion AppVersion => new(3, 4, 1, 0);
-
-    // CHANGE: Add commit info here.
-    public string Commits => "c1187f12";
 }

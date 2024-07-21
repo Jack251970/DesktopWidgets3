@@ -18,7 +18,7 @@
 	<Page.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/RightAlignedToggleSwitchStyle.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/RightAlignedToggleSwitchStyle.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
 			<wctconverters:BoolNegationConverter x:Key="BoolNegationConverter" />
@@ -243,5 +243,16 @@
                 </local:SettingsBlockControl.ExpandableContent>
             </local:SettingsBlockControl>
         </StackPanel>
-	</Grid>
+
+        <!--  Show toolbar  -->
+        <local:SettingsBlockControl Title="{helpers:ResourceString Name=ShowToolbar}" HorizontalAlignment="Stretch">
+            <local:SettingsBlockControl.Icon>
+                <PathIcon Data="{StaticResource App.Theme.PathIcon.WebAsset}" />
+            </local:SettingsBlockControl.Icon>
+            <ToggleSwitch
+				AutomationProperties.Name="{helpers:ResourceString Name=ShowToolbar}"
+				IsOn="{x:Bind ViewModel.ShowToolbar, Mode=TwoWay}"
+				Style="{StaticResource RightAlignedToggleSwitchStyle}" />
+        </local:SettingsBlockControl>
+    </Grid>
 </Page>

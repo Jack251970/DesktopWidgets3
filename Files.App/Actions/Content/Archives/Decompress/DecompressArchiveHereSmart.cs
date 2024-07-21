@@ -15,7 +15,7 @@ internal sealed class DecompressArchiveHereSmart(IFolderViewViewModel folderView
 		=> new(Keys.E, KeyModifiers.CtrlShift);
 
     public override Task ExecuteAsync(object? parameter = null)
-	{
-		return DecompressHelper.DecompressArchiveHereAsync(FolderViewViewModel, context.ShellPage!, true);
-	}
+    {
+        return DecompressArchiveHereAsync(true);
+    }
 }

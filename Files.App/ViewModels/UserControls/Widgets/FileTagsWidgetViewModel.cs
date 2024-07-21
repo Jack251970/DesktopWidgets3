@@ -81,7 +81,10 @@ public sealed partial class FileTagsWidgetViewModel : BaseWidgetViewModel, IWidg
 	{
 		return new List<ContextMenuFlyoutItemViewModel>()
 		{
-			new()
+            new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewTabFromHomeAction).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewWindowFromHomeAction).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewPaneFromHomeAction).Build(),
+            new()
 			{
 				Text = "OpenWith".GetLocalizedResource(),
 				OpacityIcon = new() { OpacityIconStyle = "ColorIconOpenWith" },
@@ -90,34 +93,11 @@ public sealed partial class FileTagsWidgetViewModel : BaseWidgetViewModel, IWidg
 			},
 			new()
 			{
-				Text = "OpenInNewTab".GetLocalizedResource(),
-				OpacityIcon = new() { OpacityIconStyle = "ColorIconOpenInNewTab" },
-				Command = OpenInNewTabCommand,
-				CommandParameter = item,
-				ShowItem = isFolder
-			},
-			new()
-			{
-				Text = "OpenInNewWindow".GetLocalizedResource(),
-				OpacityIcon = new() { OpacityIconStyle = "ColorIconOpenInNewWindow" },
-				Command = OpenInNewWindowCommand,
-				CommandParameter = item,
-				ShowItem = isFolder
-			},
-			new()
-			{
 				Text = "OpenFileLocation".GetLocalizedResource(),
 				Glyph = "\uED25",
 				Command = OpenFileLocationCommand,
 				CommandParameter = item,
 				ShowItem = !isFolder
-			},
-			new()
-			{
-				Text = "OpenInNewPane".GetLocalizedResource(),
-				Command = OpenInNewPaneCommand,
-				CommandParameter = item,
-				ShowItem = UserSettingsService.GeneralSettingsService.ShowOpenInNewPane && isFolder
 			},
 			new()
 			{
@@ -198,7 +178,7 @@ public sealed partial class FileTagsWidgetViewModel : BaseWidgetViewModel, IWidg
 
 	private void ExecuteOpenInNewPaneCommand(WidgetCardItem? item)
 	{
-		ContentPageContext.ShellPage!.PaneHolder?.OpenPathInNewPane(item?.Path ?? string.Empty);
+		ContentPageContext.ShellPage!.PaneHolder?.OpenSecondaryPane(item?.Path ?? string.Empty);
 	}
 
 	private void ExecuteOpenFileLocationCommand(WidgetCardItem? item)

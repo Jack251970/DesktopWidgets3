@@ -93,7 +93,7 @@ public static class ContextFlyoutModelToElementHelper
 
 			if (item.BitmapIcon is not null)
 			{
-				flyoutSubItem.Style = Application.Current.Resources["MenuFlyoutSubItemWithImageStyle"] as Style;
+				flyoutSubItem.Style = Microsoft.UI.Xaml.Application.Current.Resources["MenuFlyoutSubItemWithImageStyle"] as Style;
 				try
 				{
 					MenuFlyoutSubItemCustomProperties.SetBitmapIcon(flyoutSubItem, item.BitmapIcon);
@@ -164,7 +164,7 @@ public static class ContextFlyoutModelToElementHelper
 
 			if (icon is not null && !string.IsNullOrEmpty(i.GlyphFontFamilyName))
 			{
-				var fontFamily = Application.Current.Resources[i.GlyphFontFamilyName] as FontFamily;
+				var fontFamily = Microsoft.UI.Xaml.Application.Current.Resources[i.GlyphFontFamilyName] as FontFamily;
 				icon.FontFamily = fontFamily;
 			}
 
@@ -220,7 +220,7 @@ public static class ContextFlyoutModelToElementHelper
 
 			if (!string.IsNullOrEmpty(item.GlyphFontFamilyName))
 			{
-				var fontFamily = Application.Current.Resources[item.GlyphFontFamilyName] as FontFamily;
+				var fontFamily = Microsoft.UI.Xaml.Application.Current.Resources[item.GlyphFontFamilyName] as FontFamily;
 				icon.FontFamily = fontFamily;
 			}
 		}

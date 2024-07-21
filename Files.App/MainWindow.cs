@@ -112,7 +112,7 @@ public sealed partial class MainWindow
                     // Bring to foreground (#14730)
                     Win32Helper.BringToForegroundEx(new(WindowHandle));
 
-                    await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), launchArgs.Arguments, true);
+                    await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(ShellPanesPage), launchArgs.Arguments, true);
                 }
                 else
 				{
@@ -145,7 +145,7 @@ public sealed partial class MainWindow
 					{
 						case "tab":
 							rootFrame.Navigate(typeof(MainPage),
-								new MainPageNavigationArguments() { Parameter = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, unescapedValue), IgnoreStartupSettings = true },
+								new MainPageNavigationArguments() { Parameter = TabBarItemParameter.Deserialize(FolderViewViewModel, unescapedValue), IgnoreStartupSettings = true },
 								new SuppressNavigationTransitionInfo());
 							break;
 
@@ -207,7 +207,7 @@ public sealed partial class MainWindow
 
                 for (; index < fileArgs.Files.Count; index++)
 				{
-                    await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), fileArgs.Files[index].Path, true);
+                    await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(ShellPanesPage), fileArgs.Files[index].Path, true);
                 }
                 break;
 
@@ -281,15 +281,15 @@ public sealed partial class MainWindow
                 FolderViewViewModel = FolderViewViewModel,
 				LeftPaneNavPathParam = payload,
 				LeftPaneSelectItemParam = selectItem,
-				RightPaneNavPathParam = FolderViewViewModel.Bounds.Width > PaneHolderPage.DualPaneWidthThreshold && (generalSettingsService?.AlwaysOpenDualPaneInNewTab ?? false) ? "Home" : null,
-			};
+                RightPaneNavPathParam = FolderViewViewModel.Bounds.Width > Constants.UI.MultiplePaneWidthThreshold && (generalSettingsService?.AlwaysOpenDualPaneInNewTab ?? false) ? "Home" : null,
+            };
 
             if (rootFrame.Content is MainPage && MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel).Any())
 			{
                 // Bring to foreground (#14730)
                 Win32Helper.BringToForegroundEx(new(WindowHandle));
 
-                await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, typeof(PaneHolderPage), paneNavigationArgs);
+                await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, typeof(ShellPanesPage), paneNavigationArgs);
             }
             else
             {

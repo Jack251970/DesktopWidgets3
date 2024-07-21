@@ -32,7 +32,7 @@ internal sealed class OpenInVSCodeAction : ObservableObject, IAction
 
 	public Task ExecuteAsync(object? parameter = null)
 	{
-        return Win32Helper.RunPowershellCommandAsync($"code \'{_context.ShellPage?.FilesystemViewModel.WorkingDirectory}\'", false);
+        return Win32Helper.RunPowershellCommandAsync($"code \'{_context.ShellPage?.ShellViewModel.WorkingDirectory}\'", false);
     }
 
     private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)

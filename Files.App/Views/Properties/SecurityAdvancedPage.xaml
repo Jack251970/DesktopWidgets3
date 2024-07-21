@@ -21,8 +21,8 @@
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/PropertiesStyles.xaml" />
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/DefaultGridSplitterStyle.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/PropertiesStyles.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/DefaultGridSplitterStyle.xaml" />
 
 				<ResourceDictionary>
 

@@ -4,6 +4,7 @@
 using Files.App.UserControls.FilePreviews;
 using Files.App.ViewModels.Previews;
 using Files.Shared.Helpers;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
@@ -12,10 +13,11 @@ namespace Files.App.ViewModels.UserControls;
 
 public sealed class InfoPaneViewModel : ObservableObject, IDisposable
 {
-    private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
+    private IFolderViewViewModel FolderViewViewModel { get; set; }
 
-    private IInfoPaneSettingsService InfoPaneSettingsService { get; set; } = null!;
-	private IContentPageContext ContentPageContext { get; set; } = null!;
+    private IInfoPaneSettingsService InfoPaneSettingsService { get; set; }
+    private IGeneralSettingsService generalSettingsService { get; set; }
+    private IContentPageContext ContentPageContext { get; set; }
 
     private CancellationTokenSource loadCancellationTokenSource = null!;
 
@@ -130,6 +132,7 @@ public sealed class InfoPaneViewModel : ObservableObject, IDisposable
         FolderViewViewModel = folderViewViewModel;
 
         InfoPaneSettingsService = folderViewViewModel.GetRequiredService<IInfoPaneSettingsService>();
+        generalSettingsService = folderViewViewModel.GetRequiredService<IGeneralSettingsService>();
         ContentPageContext = folderViewViewModel.GetRequiredService<IContentPageContext>();
 
         InfoPaneSettingsService.PropertyChanged += PreviewSettingsService_OnPropertyChangedEvent;
@@ -161,14 +164,25 @@ public sealed class InfoPaneViewModel : ObservableObject, IDisposable
 
                 SelectedItem = tempSelectedItem;
 
-                if (!App.AppModel.IsMainWindowClosed)
+                try
                 {
-                    var shouldUpdatePreview = ((FolderViewViewModel.Content as Frame)?.Content as MainPage)?.ViewModel.ShouldPreviewPaneBeActive;
-                    if (shouldUpdatePreview == true)
+                    if (!App.AppModel.IsMainWindowClosed)
                     {
-                        _ = UpdateSelectedItemPreviewAsync();
+                        var shouldUpdatePreview = ((FolderViewViewModel.Content as Frame)?.Content as MainPage)?.ViewModel.ShouldPreviewPaneBeActive;
+                        if (shouldUpdatePreview == true)
+                        {
+                            _ = UpdateSelectedItemPreviewAsync();
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    // Handle exception in case WinUI Windows is closed
+                    // (see https://github.com/files-community/Files/issues/15599)
+
+                    App.Logger.LogWarning(ex, ex.Message);
+                }
+                
                 break;
         }
     }

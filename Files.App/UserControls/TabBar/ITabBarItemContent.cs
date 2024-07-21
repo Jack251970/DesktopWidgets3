@@ -12,9 +12,9 @@ public interface ITabBarItemContent
 {
 	public bool IsCurrentInstance { get; set; }
 
-	public CustomTabViewItemParameter TabItemParameter { get; }
+	public TabBarItemParameter TabBarItemParameter { get; }
 
-	public event EventHandler<CustomTabViewItemParameter> ContentChanged;
+	public event EventHandler<TabBarItemParameter> ContentChanged;
 
 	public Task TabItemDragOver(object sender, DragEventArgs e);
 

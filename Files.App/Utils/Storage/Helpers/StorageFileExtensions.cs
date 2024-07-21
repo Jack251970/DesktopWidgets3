@@ -313,8 +313,8 @@ public static class StorageFileExtensions
 		}
 		else if (component.StartsWith(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.Ordinal))
 		{
-			title = "SidebarNetworkDrives".GetLocalizedResource();
-		}
+            title = "Network".GetLocalizedResource();
+        }
         else if (component.EndsWith(':'))
         {
 			var drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
@@ -443,7 +443,7 @@ public static class StorageFileExtensions
         var subPath = path.ToString()[substringIndex..];
 
         path.Clear();
-        path.Append(context.ShellPage?.FilesystemViewModel.WorkingDirectory);
+        path.Append(context.ShellPage?.ShellViewModel.WorkingDirectory);
         path.Append(separator);
         path.Append(subPath);
         i = -1;

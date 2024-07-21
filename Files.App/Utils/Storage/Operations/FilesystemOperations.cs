@@ -36,7 +36,7 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 						var newEntryInfo = await ShellNewEntryExtensions.GetNewContextMenuEntryForType(Path.GetExtension(source.Path));
 						if (newEntryInfo is null)
 						{
-							var fsFolderResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(source.Path));
+							var fsFolderResult = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(source.Path));
 							fsResult = fsFolderResult;
 							if (fsResult)
 							{
@@ -68,7 +68,7 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 
 				case FilesystemItemType.Directory:
 					{
-						var fsFolderResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(source.Path));
+						var fsFolderResult = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(source.Path));
 						fsResult = fsFolderResult;
 						if (fsResult)
 						{
@@ -168,7 +168,7 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 			{
 				// CopyFileFromApp only works on file not directories
 				var fsSourceFolder = await source.ToStorageItemResult();
-				var fsDestinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
+				var fsDestinationFolder = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 				var fsResult = (FilesystemResult)(fsSourceFolder.ErrorCode | fsDestinationFolder.ErrorCode);
 
 				if (fsResult)
@@ -229,7 +229,7 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 			{
 				Debug.WriteLine(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
 
-				var destinationResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
+				var destinationResult = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 				var sourceResult = await source.ToStorageItemResult();
 				fsResult = sourceResult.ErrorCode | destinationResult.ErrorCode;
 
@@ -400,7 +400,7 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 					Debug.WriteLine(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
 
 					var fsSourceFolder = await source.ToStorageItemResult();
-					var fsDestinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
+					var fsDestinationFolder = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 					fsResult = fsSourceFolder.ErrorCode | fsDestinationFolder.ErrorCode;
 
 					if (fsResult)
@@ -467,7 +467,7 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 			{
 				Debug.WriteLine(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
 
-				var destinationResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
+				var destinationResult = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 				var sourceResult = await source.ToStorageItemResult();
 				fsResult = sourceResult.ErrorCode | destinationResult.ErrorCode;
 
@@ -515,12 +515,12 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 			return null!;
 		}
 
-		var sourceInCurrentFolder = PathNormalization.TrimPath(_associatedInstance.FilesystemViewModel.CurrentFolder!.ItemPath) ==
+		var sourceInCurrentFolder = PathNormalization.TrimPath(_associatedInstance.ShellViewModel.CurrentFolder!.ItemPath) ==
 			PathNormalization.GetParentDir(source.Path);
 		if (fsProgress.Status == FileSystemStatusCode.Success && sourceInCurrentFolder)
 		{
-			await _associatedInstance.FilesystemViewModel.RemoveFileOrFolderAsync(source.Path);
-			await _associatedInstance.FilesystemViewModel.ApplyFilesAndFoldersChangesAsync();
+			await _associatedInstance.ShellViewModel.RemoveFileOrFolderAsync(source.Path);
+			await _associatedInstance.ShellViewModel.ApplyFilesAndFoldersChangesAsync();
 		}
 
 		var pathWithType = movedItem.FromStorageItem(destination, source.ItemType);
@@ -554,12 +554,12 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 		{
 			if (source.ItemType == FilesystemItemType.File)
 			{
-				fsResult = await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path, CancellationToken.None)
+				fsResult = await _associatedInstance.ShellViewModel.GetFileFromPathAsync(source.Path, CancellationToken.None)
 					.OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
 			}
 			else if (source.ItemType == FilesystemItemType.Directory)
 			{
-				fsResult = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path, CancellationToken.None)
+				fsResult = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(source.Path, CancellationToken.None)
 					.OnSuccess((t) => t.DeleteAsync(permanently ? StorageDeleteOption.PermanentDelete : StorageDeleteOption.Default).AsTask());
 			}
 		}
@@ -581,14 +581,14 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 			// Recycle bin also stores a file starting with $I for each item
 			var iFilePath = Path.Combine(Path.GetDirectoryName(source.Path)!, Path.GetFileName(source.Path).Replace("$R", "$I", StringComparison.Ordinal));
 
-			await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(iFilePath, CancellationToken.None)
+			await _associatedInstance.ShellViewModel.GetFileFromPathAsync(iFilePath, CancellationToken.None)
 				.OnSuccess(iFile => iFile.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask());
 		}
 		fsProgress.ReportStatus(fsResult);
 
 		if (fsResult)
 		{
-			await _associatedInstance.FilesystemViewModel.RemoveFileOrFolderAsync(source.Path);
+			await _associatedInstance.ShellViewModel.RemoveFileOrFolderAsync(source.Path);
 
 			if (!permanently)
 			{
@@ -790,8 +790,8 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 		{
 			if (source.ItemType == FilesystemItemType.Directory)
 			{
-				var sourceFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(source.Path, CancellationToken.None);
-				var destinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
+				var sourceFolder = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(source.Path, CancellationToken.None);
+				var destinationFolder = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 
 				fsResult = sourceFolder.ErrorCode | destinationFolder.ErrorCode;
 				fsProgress.ReportStatus(fsResult);
@@ -813,8 +813,8 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 			}
 			else
 			{
-				var sourceFile = await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(source.Path, CancellationToken.None);
-				var destinationFolder = await _associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
+				var sourceFile = await _associatedInstance.ShellViewModel.GetFileFromPathAsync(source.Path, CancellationToken.None);
+				var destinationFolder = await _associatedInstance.ShellViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(destination), CancellationToken.None);
 
 				fsResult = sourceFile.ErrorCode | destinationFolder.ErrorCode;
 				fsProgress.ReportStatus(fsResult);
@@ -838,7 +838,7 @@ public sealed class FilesystemOperations(IFolderViewViewModel folderViewViewMode
 			// Recycle bin also stores a file starting with $I for each item
 			var iFilePath = Path.Combine(Path.GetDirectoryName(source.Path)!, Path.GetFileName(source.Path).Replace("$R", "$I", StringComparison.Ordinal));
 
-			await _associatedInstance.FilesystemViewModel.GetFileFromPathAsync(iFilePath, CancellationToken.None)
+			await _associatedInstance.ShellViewModel.GetFileFromPathAsync(iFilePath, CancellationToken.None)
 				.OnSuccess(iFile => iFile.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask());
 		}
 

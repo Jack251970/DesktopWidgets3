@@ -1,8 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.AppCenter.Analytics;
-
 namespace Files.App.Services.Settings;
 
 internal sealed class InfoPaneSettingsService : BaseObservableJsonSettings, IInfoPaneSettingsService
@@ -52,11 +50,6 @@ internal sealed class InfoPaneSettingsService : BaseObservableJsonSettings, IInf
 
 	protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)
 	{
-		if (e.SettingName is nameof(SelectedTab))
-		{
-			Analytics.TrackEvent($"Set {e.SettingName} to {e.NewValue}");
-		}
-
 		base.RaiseOnSettingChangedEvent(sender, e);
 	}
 }

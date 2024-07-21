@@ -231,7 +231,40 @@ public static partial class Win32PInvoke
 		uint flags
 	);
 
-	[DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern int ToUnicodeEx(
+            uint virtualKeyCode,
+            uint scanCode,
+            byte[] keyboardState,
+            [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder receivingBuffer,
+            int bufferSize,
+            uint flags,
+            IntPtr keyboardLayout
+        );
+
+    [DllImport("user32.dll")]
+    public static extern bool GetKeyboardState(
+        byte[] lpKeyState
+    );
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern IntPtr GetKeyboardLayout
+    (
+        uint idThread
+    );
+
+    [DllImport("user32.dll")]
+    public static extern uint MapVirtualKey(
+        uint code,
+        uint mapType
+    );
+
+    [DllImport("user32.dll")]
+    public static extern bool TranslateMessage(
+        ref MSG lpMsg
+    );
+
+    [DllImport("api-ms-win-core-file-fromapp-l1-1-0.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
 	public static extern IntPtr CreateFileFromApp(
 		string lpFileName,
 		uint dwDesiredAccess,
@@ -469,4 +502,21 @@ public static partial class Win32PInvoke
 		string pszRootPath,
 		ref SHQUERYRBINFO pSHQueryRBInfo
 	);
+
+    [DllImport("shell32.dll")]
+    static extern int SHGetKnownFolderPath(
+        [MarshalAs(UnmanagedType.LPStruct)] Guid rfid,
+        uint dwFlags,
+        IntPtr hToken,
+        out IntPtr pszPath
+    );
+
+    public static string GetFolderFromKnownFolderGUID(Guid guid)
+    {
+        IntPtr pPath;
+        SHGetKnownFolderPath(guid, 0, IntPtr.Zero, out pPath);
+        var path = Marshal.PtrToStringUni(pPath);
+        Marshal.FreeCoTaskMem(pPath);
+        return path!;
+    }
 }

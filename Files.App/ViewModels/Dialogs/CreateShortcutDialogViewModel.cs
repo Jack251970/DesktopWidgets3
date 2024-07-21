@@ -118,13 +118,7 @@ public sealed class CreateShortcutDialogViewModel : ObservableObject
         return Task.CompletedTask;
     }
 
-    private FolderPicker InitializeWithWindow(FolderPicker obj)
-	{
-		WinRT.Interop.InitializeWithWindow.Initialize(obj, FolderViewViewModel.WindowHandle);
-		return obj;
-	}
-
-	private async Task CreateShortcutAsync()
+    private async Task CreateShortcutAsync()
 	{
 		string? destinationName;
 		var extension = DestinationPathExists ? ".lnk" : ".url";

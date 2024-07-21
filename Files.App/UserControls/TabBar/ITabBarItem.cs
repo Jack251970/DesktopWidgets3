@@ -18,5 +18,5 @@ public interface ITabBarItem
 
 	bool AllowStorageItemDrop { get; }
 
-	public CustomTabViewItemParameter NavigationParameter { get; }
+	public TabBarItemParameter NavigationParameter { get; }
 }

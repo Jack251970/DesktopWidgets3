@@ -15,10 +15,6 @@
 	xmlns:usercontrols="using:Files.App.UserControls"
 	x:Name="Root"
 	MinWidth="90"
-	HorizontalAlignment="Stretch"
-	VerticalAlignment="Stretch"
-	d:DesignHeight="300"
-	d:DesignWidth="400"
 	AutomationProperties.Name="{helpers:ResourceString Name=SelectedFilePreviewPane/AutomationProperties/Name}"
 	SizeChanged="Root_SizeChanged"
 	Unloaded="Root_Unloaded"
@@ -27,7 +23,7 @@
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/PropertiesStyles.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/PropertiesStyles.xaml" />
 
 				<ResourceDictionary>
 					<converters:BoolNegationConverter x:Key="BoolNegationConverter" />
@@ -138,9 +134,11 @@
 	</UserControl.Resources>
 
 	<Grid
-		HorizontalAlignment="Stretch"
-		BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
-		BorderThickness="0,0,0,1">
+		Background="{ThemeResource App.Theme.InfoPane.BackgroundBrush}"
+		BackgroundSizing="InnerBorderEdge"
+		BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+		BorderThickness="1"
+		CornerRadius="8">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="2*" />
@@ -372,8 +370,8 @@
 												<VisualState x:Name="Normal" />
 												<VisualState x:Name="PointerOver">
 													<VisualState.Setters>
-														<Setter Target="TagPill.Background" Value="{ThemeResource SubtleFillColorSecondary}" />
-													</VisualState.Setters>
+                                                        <Setter Target="TagPill.Background" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                                    </VisualState.Setters>
 												</VisualState>
 											</VisualStateGroup>
 										</VisualStateManager.VisualStateGroups>

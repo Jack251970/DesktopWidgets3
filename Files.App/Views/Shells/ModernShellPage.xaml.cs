@@ -42,19 +42,6 @@ public sealed partial class ModernShellPage : BaseShellPage
 		}
 	}
 
-	public Thickness CurrentInstanceBorderThickness
-	{
-		get => (Thickness)GetValue(CurrentInstanceBorderThicknessProperty);
-		set => SetValue(CurrentInstanceBorderThicknessProperty, value);
-	}
-
-	public static readonly DependencyProperty CurrentInstanceBorderThicknessProperty =
-		DependencyProperty.Register(
-			nameof(CurrentInstanceBorderThickness),
-			typeof(Thickness),
-			typeof(ModernShellPage),
-			new PropertyMetadata(null));
-
 	public ModernShellPage() : base(new CurrentInstanceViewModel())
 	{
 		InitializeComponent();
@@ -76,15 +63,15 @@ public sealed partial class ModernShellPage : BaseShellPage
 
 	protected override void FolderSettings_LayoutPreferencesUpdateRequired(object? sender, LayoutPreferenceEventArgs e)
 	{
-		if (FilesystemViewModel is null)
+		if (ShellViewModel is null)
         {
             return;
         }
 
-        FolderSettings.SetLayoutPreferencesForPath(FilesystemViewModel.WorkingDirectory, e.LayoutPreference);
+        FolderSettings.SetLayoutPreferencesForPath(ShellViewModel.WorkingDirectory, e.LayoutPreference);
 		if (e.IsAdaptiveLayoutUpdateRequired)
         {
-            AdaptiveLayoutHelpers.ApplyAdaptativeLayout(FolderViewViewModel, InstanceViewModel.FolderSettings, FilesystemViewModel.WorkingDirectory, FilesystemViewModel.FilesAndFolders.ToList());
+            AdaptiveLayoutHelpers.ApplyAdaptativeLayout(FolderViewViewModel, InstanceViewModel.FolderSettings, ShellViewModel.WorkingDirectory, ShellViewModel.FilesAndFolders.ToList());
         }
     }
 
@@ -124,13 +111,13 @@ public sealed partial class ModernShellPage : BaseShellPage
 
             InitializeBaseShellPage();
 
-            FilesystemViewModel = new ItemViewModel(FolderViewViewModel, InstanceViewModel.FolderSettings);
-            FilesystemViewModel.WorkingDirectoryModified += ViewModel_WorkingDirectoryModified;
-            FilesystemViewModel.ItemLoadStatusChanged += FilesystemViewModel_ItemLoadStatusChanged;
-            FilesystemViewModel.DirectoryInfoUpdated += FilesystemViewModel_DirectoryInfoUpdated;
-            FilesystemViewModel.PageTypeUpdated += FilesystemViewModel_PageTypeUpdated;
-            FilesystemViewModel.OnSelectionRequestedEvent += FilesystemViewModel_OnSelectionRequestedEvent;
-            FilesystemViewModel.GitDirectoryUpdated += FilesystemViewModel_GitDirectoryUpdated;
+            ShellViewModel = new ShellViewModel(FolderViewViewModel, InstanceViewModel.FolderSettings);
+            ShellViewModel.WorkingDirectoryModified += ViewModel_WorkingDirectoryModified;
+            ShellViewModel.ItemLoadStatusChanged += FilesystemViewModel_ItemLoadStatusChanged;
+            ShellViewModel.DirectoryInfoUpdated += FilesystemViewModel_DirectoryInfoUpdated;
+            ShellViewModel.PageTypeUpdated += FilesystemViewModel_PageTypeUpdated;
+            ShellViewModel.OnSelectionRequestedEvent += FilesystemViewModel_OnSelectionRequestedEvent;
+            ShellViewModel.GitDirectoryUpdated += FilesystemViewModel_GitDirectoryUpdated;
 
             ToolbarViewModel.PathControlDisplayText = "Home".GetLocalizedResource();
         }
@@ -201,7 +188,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 
 		var parameters = e.Parameter as NavigationArguments;
 		var isTagSearch = parameters!.NavPathParam is not null && parameters.NavPathParam.StartsWith("tag:");
-		TabItemParameter = new()
+		TabBarItemParameter = new()
 		{
             FolderViewViewModel = FolderViewViewModel,
 			InitialPageType = typeof(ModernShellPage),
@@ -234,7 +221,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 			case (true, false, false, true, VirtualKey.V):
 				if (!ToolbarViewModel.IsEditModeEnabled && !ContentPage.IsRenamingItem && !InstanceViewModel.IsPageTypeSearchResults && !ToolbarViewModel.SearchHasFocus)
                 {
-                    await UIFilesystemHelpers.PasteItemAsync(FilesystemViewModel.WorkingDirectory, this);
+                    await UIFilesystemHelpers.PasteItemAsync(ShellViewModel.WorkingDirectory, this);
                 }
 
                 break;
@@ -285,12 +272,12 @@ public sealed partial class ModernShellPage : BaseShellPage
         }
 
         ToolbarViewModel.CanNavigateToParent = false;
-		if (string.IsNullOrEmpty(FilesystemViewModel?.WorkingDirectory))
+		if (string.IsNullOrEmpty(ShellViewModel?.WorkingDirectory))
         {
             return;
         }
 
-        var isPathRooted = string.Equals(FilesystemViewModel.WorkingDirectory, PathNormalization.GetPathRoot(FilesystemViewModel.WorkingDirectory), StringComparison.OrdinalIgnoreCase);
+        var isPathRooted = string.Equals(ShellViewModel.WorkingDirectory, PathNormalization.GetPathRoot(ShellViewModel.WorkingDirectory), StringComparison.OrdinalIgnoreCase);
 		if (isPathRooted)
 		{
 			ItemDisplayFrame.Navigate(
@@ -305,7 +292,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 		}
 		else
 		{
-			var parentDirectoryOfPath = FilesystemViewModel.WorkingDirectory.TrimEnd('\\', '/');
+			var parentDirectoryOfPath = ShellViewModel.WorkingDirectory.TrimEnd('\\', '/');
 
 			var lastSlashIndex = parentDirectoryOfPath.LastIndexOf('\\');
 			if (lastSlashIndex == -1)
@@ -315,7 +302,7 @@ public sealed partial class ModernShellPage : BaseShellPage
 
             if (lastSlashIndex != -1)
             {
-                parentDirectoryOfPath = FilesystemViewModel.WorkingDirectory.Remove(lastSlashIndex);
+                parentDirectoryOfPath = ShellViewModel.WorkingDirectory.Remove(lastSlashIndex);
             }
 
             if (parentDirectoryOfPath.EndsWith(':'))
@@ -360,7 +347,9 @@ public sealed partial class ModernShellPage : BaseShellPage
 
 	public override void NavigateToPath(string? navigationPath, Type? sourcePageType, NavigationArguments? navArgs = null)
 	{
-		if (sourcePageType is null && !string.IsNullOrEmpty(navigationPath))
+        ShellViewModel.FilesAndFoldersFilter = null;
+
+        if (sourcePageType is null && !string.IsNullOrEmpty(navigationPath))
         {
             sourcePageType = InstanceViewModel.FolderSettings.GetLayoutType(navigationPath);
         }
@@ -375,11 +364,11 @@ public sealed partial class ModernShellPage : BaseShellPage
 		else
 		{
 			if ((string.IsNullOrEmpty(navigationPath) ||
-				string.IsNullOrEmpty(FilesystemViewModel?.WorkingDirectory) ||
+				string.IsNullOrEmpty(ShellViewModel?.WorkingDirectory) ||
 				navigationPath.TrimEnd(Path.DirectorySeparatorChar).Equals(
-					FilesystemViewModel.WorkingDirectory.TrimEnd(Path.DirectorySeparatorChar),
+					ShellViewModel.WorkingDirectory.TrimEnd(Path.DirectorySeparatorChar),
 					StringComparison.OrdinalIgnoreCase)) &&
-				(TabItemParameter?.NavigationParameter is not string navArg ||
+				(TabBarItemParameter?.NavigationParameter is not string navArg ||
 				string.IsNullOrEmpty(navArg) ||
 				!navArg.StartsWith("tag:"))) // Return if already selected
 			{
@@ -416,6 +405,6 @@ public sealed partial class ModernShellPage : BaseShellPage
 				transition);
 		}
 
-		ToolbarViewModel.PathControlDisplayText = FilesystemViewModel!.WorkingDirectory;
+		ToolbarViewModel.PathControlDisplayText = ShellViewModel!.WorkingDirectory;
 	}
 }

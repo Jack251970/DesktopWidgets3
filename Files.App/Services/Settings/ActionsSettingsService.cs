@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.AppCenter.Analytics;
-
 namespace Files.App.Services.Settings;
 
 internal sealed class ActionsSettingsService : BaseObservableJsonSettings, IActionsSettingsService
@@ -29,13 +27,6 @@ internal sealed class ActionsSettingsService : BaseObservableJsonSettings, IActi
 
     protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)
 	{
-		switch (e.SettingName)
-		{
-			case nameof(ActionsV2):
-				Analytics.TrackEvent($"Set {e.SettingName} to {e.NewValue}");
-				break;
-		}
-
 		base.RaiseOnSettingChangedEvent(sender, e);
 	}
 }

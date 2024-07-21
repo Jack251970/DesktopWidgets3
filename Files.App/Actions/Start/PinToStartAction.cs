@@ -41,9 +41,9 @@ internal sealed class PinToStartAction(IFolderViewViewModel folderViewViewModel,
                 await StartMenuService.PinAsync(FolderViewViewModel, storable, listedItem.Name);
             }
         }
-		else if (context.ShellPage?.FilesystemViewModel?.CurrentFolder is not null)
+		else if (context.ShellPage?.ShellViewModel?.CurrentFolder is not null)
 		{
-			var currentFolder = context.ShellPage.FilesystemViewModel.CurrentFolder;
+			var currentFolder = context.ShellPage.ShellViewModel.CurrentFolder;
 			var folder = await StorageService.GetFolderAsync(currentFolder.ItemPath);
 
 			await StartMenuService.PinAsync(FolderViewViewModel, folder, currentFolder.Name);

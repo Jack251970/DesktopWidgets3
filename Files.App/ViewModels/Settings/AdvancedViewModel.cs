@@ -19,8 +19,9 @@ public sealed class AdvancedViewModel : ObservableObject
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     private IUserSettingsService UserSettingsService { get; set; } = null!;
+    private ICommonDialogService CommonDialogService { get; } = DependencyExtensions.GetRequiredService<ICommonDialogService>();
 
-	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
+    private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
 	public ICommand SetAsDefaultExplorerCommand { get; }
 	public ICommand SetAsOpenFileDialogCommand { get; }
@@ -186,97 +187,103 @@ public sealed class AdvancedViewModel : ObservableObject
 
 	private async Task ImportSettingsAsync()
 	{
-		var filePicker = InitializeWithWindow(new FileOpenPicker());
-		filePicker.FileTypeFilter.Add(".zip");
+        string[] extensions = ["ZipFileCapitalized".GetLocalizedResource(), "*.zip"];
+        CommonDialogService.Open_FileOpenDialog(FolderViewViewModel.WindowHandle, false, extensions, Environment.SpecialFolder.Desktop, out var filePath);
 
-		var file = await filePicker.PickSingleFileAsync();
-		if (file is not null)
-		{
-			try
-			{
-				var zipFolder = await ZipStorageFolder.FromStorageFileAsync(file);
-				if (zipFolder is null)
-                {
-                    return;
-                }
+        try
+        {
+            var file = await StorageHelpers.ToStorageItem<BaseStorageFile>(filePath);
 
-                // CHANGE: Use LocalSettingsExtensions instead of Package.Current.
-                var localFolderPath = LocalSettingsExtensions.GetApplicationDataFolder("Files");
-				var settingsFolder = await StorageFolder.GetFolderFromPathAsync(Path.Combine(localFolderPath, Constants.LocalSettings.SettingsFolderName));
-
-				// Import user settings
-				var userSettingsFile = await zipFolder.GetFileAsync(Constants.LocalSettings.UserSettingsFileName);
-				var importSettings = await userSettingsFile.ReadTextAsync();
-				UserSettingsService.ImportSettings(importSettings);
-
-                // Import file tags list and DB
-                var fileTagsList = await zipFolder.GetFileAsync(Constants.LocalSettings.FileTagSettingsFileName);
-                var importTags = await fileTagsList.ReadTextAsync();
-                fileTagsSettingsService.ImportSettings(importTags);
-                var fileTagsDB = await zipFolder.GetFileAsync(Constants.LocalSettings.FileTagSettingsDatabaseFileName);
-                var importTagsDB = await fileTagsDB.ReadTextAsync();
-                var tagDbInstance = FileTagsHelper.GetDbInstance();
-                tagDbInstance.Import(importTagsDB);
-
-                // Import layout preferences and DB
-                var layoutPrefsDB = await zipFolder.GetFileAsync(Constants.LocalSettings.UserSettingsDatabaseFileName);
-                var importPrefsDB = await layoutPrefsDB.ReadTextAsync();
-                var layoutDbInstance = LayoutPreferencesManager.GetDatabaseManagerInstance();
-                layoutDbInstance.Import(importPrefsDB);
+            var zipFolder = await ZipStorageFolder.FromStorageFileAsync(file);
+            if (zipFolder is null)
+            {
+                return;
             }
-            catch (Exception ex)
-			{
-				App.Logger.LogWarning(ex, "Error importing settings");
-				UIHelpers.CloseAllDialogs(FolderViewViewModel);
-				await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "SettingsImportErrorTitle".GetLocalizedResource(), "SettingsImportErrorDescription".GetLocalizedResource());
-			}
-		}
-	}
+
+            // CHANGE: Use LocalSettingsExtensions instead of Package.Current.
+            var localFolderPath = LocalSettingsExtensions.GetApplicationDataFolder("Files");
+            var settingsFolder = await StorageFolder.GetFolderFromPathAsync(Path.Combine(localFolderPath, Constants.LocalSettings.SettingsFolderName));
+
+            // Import user settings
+            var userSettingsFile = await zipFolder.GetFileAsync(Constants.LocalSettings.UserSettingsFileName);
+            var importSettings = await userSettingsFile.ReadTextAsync();
+            UserSettingsService.ImportSettings(importSettings);
+
+            // Import file tags list and DB
+            var fileTagsList = await zipFolder.GetFileAsync(Constants.LocalSettings.FileTagSettingsFileName);
+            var importTags = await fileTagsList.ReadTextAsync();
+            fileTagsSettingsService.ImportSettings(importTags);
+            var fileTagsDB = await zipFolder.GetFileAsync(Constants.LocalSettings.FileTagSettingsDatabaseFileName);
+            var importTagsDB = await fileTagsDB.ReadTextAsync();
+            var tagDbInstance = FileTagsHelper.GetDbInstance();
+            tagDbInstance.Import(importTagsDB);
+
+            // Import layout preferences and DB
+            var layoutPrefsDB = await zipFolder.GetFileAsync(Constants.LocalSettings.UserSettingsDatabaseFileName);
+            var importPrefsDB = await layoutPrefsDB.ReadTextAsync();
+            var layoutDbInstance = LayoutPreferencesManager.GetDatabaseManagerInstance();
+            layoutDbInstance.Import(importPrefsDB);
+        }
+        catch (Exception ex)
+        {
+            App.Logger.LogWarning(ex, "Error importing settings");
+            UIHelpers.CloseAllDialogs(FolderViewViewModel);
+            await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "SettingsImportErrorTitle".GetLocalizedResource(), "SettingsImportErrorDescription".GetLocalizedResource());
+        }
+    }
 
 	private async Task ExportSettingsAsync()
 	{
-        var filePicker = InitializeWithWindow(new FileSavePicker());
-        filePicker.FileTypeChoices.Add("Zip File", [".zip"]);
-        filePicker.SuggestedFileName = $"Files_{AppLifecycleHelper.AppVersion}";
+        string[] extensions = ["ZipFileCapitalized".GetLocalizedResource(), "*.zip"];
+        CommonDialogService.Open_FileSaveDialog(FolderViewViewModel.WindowHandle, false, extensions, Environment.SpecialFolder.Desktop, out var filePath);
 
-        var file = await filePicker.PickSaveFileAsync();
-		if (file is not null)
-		{
-			try
-			{
-				await ZipStorageFolder.InitArchive(file, OutArchiveFormat.Zip);
+        try
+        {
+            var handle = Win32PInvoke.CreateFileFromAppW(
+                filePath,
+                Win32PInvoke.GENERIC_READ | Win32PInvoke.GENERIC_WRITE,
+                Win32PInvoke.FILE_SHARE_READ | Win32PInvoke.FILE_SHARE_WRITE,
+                nint.Zero,
+                Win32PInvoke.CREATE_NEW,
+                0,
+                nint.Zero);
 
-				var zipFolder = (ZipStorageFolder)await ZipStorageFolder.FromStorageFileAsync(file);
-				if (zipFolder is null)
-                {
-                    return;
-                }
+            Win32PInvoke.CloseHandle(handle);
 
-                // CHANGE: Use LocalSettingsExtensions instead of Package.Current.
-                var localFolderPath = LocalSettingsExtensions.GetApplicationDataFolder("Files");
+            var file = await StorageHelpers.ToStorageItem<BaseStorageFile>(filePath);
 
-                // Export user settings
-                var exportSettings = UTF8Encoding.UTF8.GetBytes((string)UserSettingsService.ExportSettings());
-                await zipFolder.CreateFileAsync(new MemoryStream(exportSettings), Constants.LocalSettings.UserSettingsFileName, CreationCollisionOption.ReplaceExisting);
+            await ZipStorageFolder.InitArchive(file, OutArchiveFormat.Zip);
 
-                // Export file tags list and DB
-                var exportTags = UTF8Encoding.UTF8.GetBytes((string)fileTagsSettingsService.ExportSettings());
-                await zipFolder.CreateFileAsync(new MemoryStream(exportTags), Constants.LocalSettings.FileTagSettingsFileName, CreationCollisionOption.ReplaceExisting);
-                var tagDbInstance = FileTagsHelper.GetDbInstance();
-                var exportTagsDB = UTF8Encoding.UTF8.GetBytes(tagDbInstance.Export());
-                await zipFolder.CreateFileAsync(new MemoryStream(exportTagsDB), Constants.LocalSettings.FileTagSettingsDatabaseFileName, CreationCollisionOption.ReplaceExisting);
-
-                // Export layout preferences DB
-                var layoutDbInstance = LayoutPreferencesManager.GetDatabaseManagerInstance();
-                var exportPrefsDB = UTF8Encoding.UTF8.GetBytes(layoutDbInstance.Export(FolderViewViewModel));
-                await zipFolder.CreateFileAsync(new MemoryStream(exportPrefsDB), Constants.LocalSettings.UserSettingsDatabaseFileName, CreationCollisionOption.ReplaceExisting);
+            var zipFolder = (ZipStorageFolder)await ZipStorageFolder.FromStorageFileAsync(file);
+            if (zipFolder is null)
+            {
+                return;
             }
-            catch (Exception ex)
-			{
-				App.Logger.LogWarning(ex, "Error exporting settings");
-			}
-		}
-	}
+
+            // CHANGE: Use LocalSettingsExtensions instead of Package.Current.
+            var localFolderPath = LocalSettingsExtensions.GetApplicationDataFolder("Files");
+
+            // Export user settings
+            var exportSettings = UTF8Encoding.UTF8.GetBytes((string)UserSettingsService.ExportSettings());
+            await zipFolder.CreateFileAsync(new MemoryStream(exportSettings), Constants.LocalSettings.UserSettingsFileName, CreationCollisionOption.ReplaceExisting);
+
+            // Export file tags list and DB
+            var exportTags = UTF8Encoding.UTF8.GetBytes((string)fileTagsSettingsService.ExportSettings());
+            await zipFolder.CreateFileAsync(new MemoryStream(exportTags), Constants.LocalSettings.FileTagSettingsFileName, CreationCollisionOption.ReplaceExisting);
+            var tagDbInstance = FileTagsHelper.GetDbInstance();
+            var exportTagsDB = UTF8Encoding.UTF8.GetBytes(tagDbInstance.Export());
+            await zipFolder.CreateFileAsync(new MemoryStream(exportTagsDB), Constants.LocalSettings.FileTagSettingsDatabaseFileName, CreationCollisionOption.ReplaceExisting);
+
+            // Export layout preferences DB
+            var layoutDbInstance = LayoutPreferencesManager.GetDatabaseManagerInstance();
+            var exportPrefsDB = UTF8Encoding.UTF8.GetBytes(layoutDbInstance.Export(FolderViewViewModel));
+            await zipFolder.CreateFileAsync(new MemoryStream(exportPrefsDB), Constants.LocalSettings.UserSettingsDatabaseFileName, CreationCollisionOption.ReplaceExisting);
+        }
+        catch (Exception ex)
+        {
+            App.Logger.LogWarning(ex, "Error exporting settings");
+        }
+    }
 
 	private static bool DetectIsSetAsDefaultFileManager()
 	{

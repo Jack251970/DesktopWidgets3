@@ -3,6 +3,7 @@
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.System;
 
 namespace Files.App.Dialogs;
 
@@ -64,4 +65,12 @@ public sealed partial class ReleaseNotesDialog : ContentDialog, IDialog<ReleaseN
 
         return contentDialog;
 	}
+
+    private async void ReleaseNotesMarkdownTextBlock_LinkClicked(object sender, CommunityToolkit.WinUI.UI.Controls.LinkClickedEventArgs e)
+    {
+        if (Uri.TryCreate(e.Link, UriKind.Absolute, out var link))
+        {
+            await Launcher.LaunchUriAsync(link);
+        }
+    }
 }

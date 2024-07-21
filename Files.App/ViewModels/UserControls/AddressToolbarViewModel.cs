@@ -285,7 +285,8 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 			// FILESTODO: Move this to the widget page, it doesn't belong here.
 			case nameof(UserSettingsService.GeneralSettingsService.ShowQuickAccessWidget):
 			case nameof(UserSettingsService.GeneralSettingsService.ShowDrivesWidget):
-			case nameof(UserSettingsService.GeneralSettingsService.ShowFileTagsWidget):
+            case nameof(UserSettingsService.GeneralSettingsService.ShowNetworkLocationsWidget):
+            case nameof(UserSettingsService.GeneralSettingsService.ShowFileTagsWidget):
 			case nameof(UserSettingsService.GeneralSettingsService.ShowRecentFilesWidget):
 				RefreshWidgetsRequested?.Invoke(this, EventArgs.Empty);
 				OnPropertyChanged(e.SettingName);
@@ -562,7 +563,7 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 		{
 			await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(async () =>
 			{
-				await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), itemTappedPath, true);
+				await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(ShellPanesPage), itemTappedPath, true);
 			}, DispatcherQueuePriority.Low);
 			e.Handled = true;
 			pointerRoutedEventArgs = null;
@@ -675,7 +676,7 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 		var nextPathItemTitle = PathComponents[PathComponents.IndexOf(pathItem) + 1].Title;
 		IList<StorageFolderWithPath>? childFolders = null;
 
-		StorageFolderWithPath folder = await shellPage.FilesystemViewModel.GetFolderWithPathFromPathAsync(pathItem.Path!);
+		StorageFolderWithPath folder = await shellPage.ShellViewModel.GetFolderWithPathFromPathAsync(pathItem.Path!);
 		if (folder is not null)
         {
             childFolders = (await FilesystemTasks.Wrap(() => folder.GetFoldersWithPathAsync(string.Empty))).Result;
@@ -777,96 +778,96 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 
 		var isFtp = FtpHelpers.IsFtpPath(currentInput);
 
-		currentInput = NormalizePathInput(currentInput, isFtp);
+        var normalizedInput = NormalizePathInput(currentInput, isFtp);
 
-		if (currentSelectedPath == currentInput || string.IsNullOrWhiteSpace(currentInput))
+        if (currentSelectedPath == normalizedInput || string.IsNullOrWhiteSpace(normalizedInput))
         {
             return;
         }
 
-        if (currentInput != shellPage.FilesystemViewModel.WorkingDirectory || shellPage.CurrentPageType == typeof(HomePage))
-		{
-			if (currentInput.Equals("Home", StringComparison.OrdinalIgnoreCase) || currentInput.Equals("Home".GetLocalizedResource(), StringComparison.OrdinalIgnoreCase))
-			{
-				SavePathToHistory("Home");
-				shellPage.NavigateHome();
-			}
-			else
-			{
-				currentInput = StorageFileExtensions.GetResolvedPath(FolderViewViewModel, currentInput, isFtp);
-				if (currentSelectedPath == currentInput)
+        if (normalizedInput != shellPage.ShellViewModel.WorkingDirectory || shellPage.CurrentPageType == typeof(HomePage))
+        {
+            if (normalizedInput.Equals("Home", StringComparison.OrdinalIgnoreCase) || normalizedInput.Equals("Home".GetLocalizedResource(), StringComparison.OrdinalIgnoreCase))
+            {
+                SavePathToHistory("Home");
+                shellPage.NavigateHome();
+            }
+            else
+            {
+                normalizedInput = StorageFileExtensions.GetResolvedPath(FolderViewViewModel, normalizedInput, isFtp);
+                if (currentSelectedPath == normalizedInput)
                 {
                     return;
                 }
 
-                var item = await FilesystemTasks.Wrap(() => DriveHelpers.GetRootFromPathAsync(currentInput));
+                var item = await FilesystemTasks.Wrap(() => DriveHelpers.GetRootFromPathAsync(normalizedInput));
 
-				var resFolder = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderWithPathFromPathAsync(currentInput, item));
-				if (resFolder || FolderHelpers.CheckFolderAccessWithWin32(currentInput))
-				{
-					var matchingDrive = drivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(x => PathNormalization.NormalizePath(currentInput).StartsWith(PathNormalization.NormalizePath(x.Path), StringComparison.Ordinal));
-					if (matchingDrive is not null && matchingDrive.Type == Data.Items.DriveType.CDRom && matchingDrive.MaxSpace == ByteSizeLib.ByteSize.FromBytes(0))
-					{
-						var ejectButton = await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InsertDiscDialog/Title".GetLocalizedResource(), string.Format("InsertDiscDialog/Text".GetLocalizedResource(), matchingDrive.Path), "InsertDiscDialog/OpenDriveButton".GetLocalizedResource(), "Close".GetLocalizedResource());
-						if (ejectButton)
-						{
-							var result = await DriveHelpers.EjectDeviceAsync(matchingDrive.Path);
-							await UIHelpers.ShowDeviceEjectResultAsync(FolderViewViewModel, matchingDrive.Type, result);
-						}
-						return;
-					}
-					var pathToNavigate = resFolder.Result?.Path ?? currentInput;
-					SavePathToHistory(pathToNavigate);
-					shellPage.NavigateToPath(pathToNavigate);
-				}
-				else if (isFtp)
-				{
-					SavePathToHistory(currentInput);
-					shellPage.NavigateToPath(currentInput);
-				}
-				else // Not a folder or inaccessible
-				{
-					var resFile = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileWithPathFromPathAsync(currentInput, item));
-					if (resFile)
-					{
-						var pathToInvoke = resFile.Result.Path;
-						await Win32Helper.InvokeWin32ComponentAsync(pathToInvoke, shellPage);
-					}
-					else // Not a file or not accessible
-					{
-						var workingDir =
-							string.IsNullOrEmpty(shellPage.FilesystemViewModel.WorkingDirectory) ||
-							shellPage.CurrentPageType == typeof(HomePage) ?
-								Constants.UserEnvironmentPaths.HomePath :
-								shellPage.FilesystemViewModel.WorkingDirectory;
+                var resFolder = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFolderWithPathFromPathAsync(normalizedInput, item));
+                if (resFolder || FolderHelpers.CheckFolderAccessWithWin32(normalizedInput))
+                {
+                    var matchingDrive = drivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(x => PathNormalization.NormalizePath(normalizedInput).StartsWith(PathNormalization.NormalizePath(x.Path), StringComparison.Ordinal));
+                    if (matchingDrive is not null && matchingDrive.Type == Data.Items.DriveType.CDRom && matchingDrive.MaxSpace == ByteSizeLib.ByteSize.FromBytes(0))
+                    {
+                        var ejectButton = await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InsertDiscDialog/Title".GetLocalizedResource(), string.Format("InsertDiscDialog/Text".GetLocalizedResource(), matchingDrive.Path), "InsertDiscDialog/OpenDriveButton".GetLocalizedResource(), "Close".GetLocalizedResource());
+                        if (ejectButton)
+                        {
+                            var result = await DriveHelpers.EjectDeviceAsync(matchingDrive.Path);
+                            await UIHelpers.ShowDeviceEjectResultAsync(FolderViewViewModel, matchingDrive.Type, result);
+                        }
+                        return;
+                    }
+                    var pathToNavigate = resFolder.Result?.Path ?? normalizedInput;
+                    SavePathToHistory(pathToNavigate);
+                    shellPage.NavigateToPath(pathToNavigate);
+                }
+                else if (isFtp)
+                {
+                    SavePathToHistory(normalizedInput);
+                    shellPage.NavigateToPath(normalizedInput);
+                }
+                else // Not a folder or inaccessible
+                {
+                    var resFile = await FilesystemTasks.Wrap(() => StorageFileExtensions.DangerousGetFileWithPathFromPathAsync(normalizedInput, item));
+                    if (resFile)
+                    {
+                        var pathToInvoke = resFile.Result.Path;
+                        await Win32Helper.InvokeWin32ComponentAsync(pathToInvoke, shellPage);
+                    }
+                    else // Not a file or not accessible
+                    {
+                        var workingDir =
+                            string.IsNullOrEmpty(shellPage.ShellViewModel.WorkingDirectory) ||
+                            shellPage.CurrentPageType == typeof(HomePage) ?
+                                Constants.UserEnvironmentPaths.HomePath :
+                                shellPage.ShellViewModel.WorkingDirectory;
 
-						if (await LaunchApplicationFromPath(currentInput, workingDir))
+                        if (await LaunchApplicationFromPath(currentInput, workingDir))
                         {
                             return;
                         }
 
                         try
-						{
-							if (!await Windows.System.Launcher.LaunchUriAsync(new Uri(currentInput)))
+                        {
+                            if (!await Windows.System.Launcher.LaunchUriAsync(new Uri(currentInput)))
                             {
                                 await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InvalidItemDialogTitle".GetLocalizedResource(),
-									string.Format("InvalidItemDialogContent".GetLocalizedResource(), Environment.NewLine, resFolder.ErrorCode.ToString()));
+                                    string.Format("InvalidItemDialogContent".GetLocalizedResource(), Environment.NewLine, resFolder.ErrorCode.ToString()));
                             }
                         }
-						catch (Exception ex) when (ex is UriFormatException || ex is ArgumentException)
-						{
-							await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InvalidItemDialogTitle".GetLocalizedResource(),
-								string.Format("InvalidItemDialogContent".GetLocalizedResource(), Environment.NewLine, resFolder.ErrorCode.ToString()));
-						}
-					}
-				}
-			}
+                        catch (Exception ex) when (ex is UriFormatException || ex is ArgumentException)
+                        {
+                            await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "InvalidItemDialogTitle".GetLocalizedResource(),
+                                string.Format("InvalidItemDialogContent".GetLocalizedResource(), Environment.NewLine, resFolder.ErrorCode.ToString()));
+                        }
+                    }
+                }
+            }
 
-			PathControlDisplayText = shellPage.FilesystemViewModel.WorkingDirectory;
-		}
-	}
+            PathControlDisplayText = shellPage.ShellViewModel.WorkingDirectory;
+        }
+    }
 
-	private void SavePathToHistory(string path)
+    private void SavePathToHistory(string path)
 	{
 		var pathHistoryList = UserSettingsService.GeneralSettingsService.PathHistoryList?.ToList() ?? [];
 		pathHistoryList.Remove(path);
@@ -882,24 +883,17 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
         }
 	}
 
-	private static async Task<bool> LaunchApplicationFromPath(string currentInput, string workingDir)
-	{
-		var trimmedInput = currentInput.Trim();
-		var fileName = trimmedInput;
-		var arguments = string.Empty;
-		if (trimmedInput.Contains(' '))
-		{
-			var positionOfBlank = trimmedInput.IndexOf(' ');
-			fileName = trimmedInput[..positionOfBlank];
-			arguments = currentInput[currentInput.IndexOf(' ')..];
-		}
-
-		return await LaunchHelper.LaunchAppAsync(fileName, arguments, workingDir);
-	}
+    private static async Task<bool> LaunchApplicationFromPath(string currentInput, string workingDir)
+    {
+        var args = CommandLineParser.SplitArguments(currentInput);
+        return await LaunchHelper.LaunchAppAsync(
+            args.FirstOrDefault("").Trim('"'), string.Join(' ', args.Skip(1)), workingDir
+        );
+    }
 
 	public async Task SetAddressBarSuggestionsAsync(AutoSuggestBox sender, IShellPage shellpage)
 	{
-		if (sender.Text is not null && shellpage.FilesystemViewModel is not null)
+		if (sender.Text is not null && shellpage.ShellViewModel is not null)
 		{
 			if (!await SafetyExtensions.IgnoreExceptions(async () =>
 			{
@@ -911,7 +905,8 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 					var searchText = sender.Text[1..].Trim();
 					suggestions = Commands.Where(command =>
 						command.IsExecutable &&
-						(command.Description.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                        command.IsAccessibleGlobally &&
+                        (command.Description.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
 						command.Code.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase)))
 					.Select(command => new NavigationBarSuggestionItem()
 					{
@@ -945,7 +940,7 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 						currentInput = NormalizePathInput(currentInput, isFtp);
 						var expandedPath = StorageFileExtensions.GetResolvedPath(FolderViewViewModel, currentInput, isFtp);
 						var folderPath = PathNormalization.GetParentDir(expandedPath) ?? expandedPath;
-						StorageFolderWithPath folder = await shellpage.FilesystemViewModel.GetFolderWithPathFromPathAsync(folderPath);
+						StorageFolderWithPath folder = await shellpage.ShellViewModel.GetFolderWithPathFromPathAsync(folderPath);
 
 						if (folder is null)
                         {
@@ -981,7 +976,7 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 				if (suggestions is null || suggestions.Count == 0)
 				{
 					suggestions = [ new() {
-					Text = shellpage.FilesystemViewModel.WorkingDirectory,
+					Text = shellpage.ShellViewModel.WorkingDirectory,
 					PrimaryDisplay = "NavigationToolbarVisiblePathNoResults".GetLocalizedResource() } ];
 				}
 
@@ -1039,7 +1034,7 @@ public sealed class AddressToolbarViewModel : ObservableObject, IAddressToolbarV
 					NavigationBarSuggestions.Clear();
 					NavigationBarSuggestions.Add(new NavigationBarSuggestionItem()
 					{
-						Text = shellpage.FilesystemViewModel.WorkingDirectory,
+						Text = shellpage.ShellViewModel.WorkingDirectory,
 						PrimaryDisplay = "NavigationToolbarVisiblePathNoResults".GetLocalizedResource()
 					});
 				});

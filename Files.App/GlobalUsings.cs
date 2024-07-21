@@ -25,7 +25,6 @@ global using global::CommunityToolkit.Mvvm.Messaging;
 global using global::Files.App.Helpers;
 global using global::Files.App.Extensions;
 global using global::Files.App.Utils;
-global using global::Files.App.Utils.Archives;
 global using global::Files.App.Utils.Cloud;
 global using global::Files.App.Utils.FileTags;
 global using global::Files.App.Utils.Git;
@@ -62,6 +61,7 @@ global using global::Files.App.Views.Shells;
 global using global::Files.App.Data.Enums;
 global using global::Files.App.Data.Messages;
 global using global::Files.App.Services.DateTimeFormatter;
+global using global::Files.App.Services.PreviewPopupProviders;
 global using global::Files.App.Services.Settings;
 global using global::Files.App.ViewModels.Dialogs;
 global using global::Files.App.ViewModels.Dialogs.AddItemDialog;
@@ -71,14 +71,17 @@ global using global::Files.App.Utils.CommandLine;
 // Files.Core.Storage
 
 global using global::Files.Core.Storage;
+global using global::Files.Core.Storage.Contracts;
+global using global::Files.Core.Storage.Storables;
 global using global::Files.Core.Storage.Enums;
-global using global::Files.Core.Storage.LocatableStorage;
-global using global::Files.Core.Storage.NestedStorage;
+global using global::Files.Core.Storage.EventArguments;
+global using global::Files.Core.Storage.Extensions;
+global using global::Files.Core.Storage.StorageEnumeration;
 
 // Files.Shared
 global using global::Files.Shared;
 global using global::Files.Shared.Extensions;
 
-// Core
+// DesktopWidgets3.Core
 global using global::DesktopWidgets3.Core.Contracts.Widgets;
 global using global::DesktopWidgets3.Core.Extensions;

@@ -10,19 +10,18 @@
 	xmlns:local="using:Files.App.UserControls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:wctconverters="using:CommunityToolkit.WinUI.UI.Converters"
-	d:DesignHeight="40"
-	d:DesignWidth="400"
 	DataContext="{x:Bind ViewModel, Mode=OneWay}"
 	mc:Ignorable="d">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/ToolbarButtonStyle.xaml" />
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/RightAlignedToggleSwitchStyle.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/ToolbarButtonStyle.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/RightAlignedToggleSwitchStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <SolidColorBrush x:Key="CommandBarBackgroundOpen" Color="Transparent" />
+            <SolidColorBrush x:Key="CommandBarBackground" Color="Transparent" />
+			<SolidColorBrush x:Key="CommandBarBackgroundOpen" Color="Transparent" />
             <SolidColorBrush x:Key="CommandBarBorderBrushOpen" Color="Transparent" />
 
             <converters:GenericEnumConverter x:Key="GenericEnumConverter" />
@@ -55,9 +54,12 @@
     </UserControl.Resources>
 
     <Grid
-		x:Name="RootGrid"
-		BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
-		BorderThickness="0,0,0,1">
+        x:Name="RootGrid"
+		Background="{ThemeResource App.Theme.Toolbar.BackgroundBrush}"
+		BackgroundSizing="InnerBorderEdge"
+		BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+		BorderThickness="1"
+		CornerRadius="8">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
@@ -105,7 +107,7 @@
 								KeyboardAcceleratorTextOverride="{x:Bind Commands.CreateFolder.HotKeyText, Mode=OneWay}"
 								Text="{x:Bind Commands.CreateFolder.Label}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE8B7;" />
+                                    <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="&#xE8B7;" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                             <MenuFlyoutItem
@@ -117,7 +119,7 @@
 								IsEnabled="{x:Bind ViewModel.InstanceViewModel.CanCreateFileInPage, Mode=OneWay}"
 								Text="{helpers:ResourceString Name=File}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE7C3;" />
+                                    <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="&#xE7C3;" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                             <MenuFlyoutItem
@@ -128,7 +130,7 @@
 								KeyboardAcceleratorTextOverride="{x:Bind Commands.CreateShortcutFromDialog.HotKeyText, Mode=OneWay}"
 								Text="{x:Bind Commands.CreateShortcutFromDialog.Label}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE71B;" />
+                                    <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="&#xE71B;" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                             <MenuFlyoutSeparator x:Name="NewMenuFileFolderSeparator" />
@@ -347,7 +349,23 @@
 					LabelPosition="Default"
 					ToolTipService.ToolTip="{x:Bind Commands.RunWithPowershell.LabelWithHotKey, Mode=OneWay}">
                     <AppBarButton.Icon>
-                        <FontIcon Glyph="{x:Bind Commands.RunWithPowershell.Glyph.BaseGlyph}" />
+                        <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.RunWithPowershell.Glyph.BaseGlyph}" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+
+                <!--  Open In Notepad  -->
+                <AppBarButton
+					x:Name="EditInNotepadButton"
+					Width="Auto"
+					MinWidth="40"
+					x:Load="{x:Bind Commands.EditInNotepad.IsExecutable, Mode=OneWay}"
+					AutomationProperties.Name="EditInNotepad"
+					Command="{x:Bind Commands.EditInNotepad}"
+					Label="{x:Bind Commands.EditInNotepad.Label}"
+					LabelPosition="Default"
+					ToolTipService.ToolTip="{x:Bind Commands.EditInNotepad.LabelWithHotKey, Mode=OneWay}">
+                    <AppBarButton.Icon>
+                        <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.EditInNotepad.Glyph.BaseGlyph}" />
                     </AppBarButton.Icon>
                 </AppBarButton>
 
@@ -372,7 +390,7 @@
 								KeyboardAcceleratorTextOverride="{x:Bind Commands.SetAsWallpaperBackground.HotKeyText, Mode=OneWay}"
 								Text="{helpers:ResourceString Name=Desktop}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="{x:Bind Commands.SetAsWallpaperBackground.Glyph.BaseGlyph}" />
+                                    <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.SetAsWallpaperBackground.Glyph.BaseGlyph}" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                             <MenuFlyoutItem
@@ -381,7 +399,7 @@
 								KeyboardAcceleratorTextOverride="{x:Bind Commands.SetAsLockscreenBackground.HotKeyText, Mode=OneWay}"
 								Text="{helpers:ResourceString Name=Lockscreen}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="{x:Bind Commands.SetAsLockscreenBackground.Glyph.BaseGlyph}" />
+                                    <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.SetAsLockscreenBackground.Glyph.BaseGlyph}" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                             <MenuFlyoutItem
@@ -390,7 +408,7 @@
 								KeyboardAcceleratorTextOverride="{x:Bind Commands.SetAsAppBackground.HotKeyText, Mode=OneWay}"
 								Text="{helpers:ResourceString Name=Application}">
                                 <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="{x:Bind Commands.SetAsAppBackground.Glyph.BaseGlyph}" />
+                                    <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.SetAsAppBackground.Glyph.BaseGlyph}" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                         </MenuFlyout>
@@ -419,7 +437,7 @@
 					LabelPosition="Default"
 					ToolTipService.ToolTip="{helpers:ResourceString Name=Install}">
                     <AppBarButton.Icon>
-                        <FontIcon Glyph="{x:Bind Commands.InstallInfDriver.Glyph.BaseGlyph}" />
+                        <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.InstallInfDriver.Glyph.BaseGlyph}" />
                     </AppBarButton.Icon>
                 </AppBarButton>
 
@@ -454,7 +472,7 @@
 					LabelPosition="Default"
 					ToolTipService.ToolTip="{helpers:ResourceString Name=Install}">
                     <AppBarButton.Icon>
-                        <FontIcon Glyph="{x:Bind Commands.InstallFont.Glyph.BaseGlyph, Mode=OneTime}" />
+                        <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.InstallFont.Glyph.BaseGlyph, Mode=OneTime}" />
                     </AppBarButton.Icon>
                 </AppBarButton>
 
@@ -467,7 +485,7 @@
 					LabelPosition="Default"
 					ToolTipService.ToolTip="{helpers:ResourceString Name=Install}">
                     <AppBarButton.Icon>
-                        <FontIcon Glyph="{x:Bind Commands.InstallCertificate.Glyph.BaseGlyph, Mode=OneTime}" />
+                        <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.InstallCertificate.Glyph.BaseGlyph, Mode=OneTime}" />
                     </AppBarButton.Icon>
                 </AppBarButton>
 
@@ -481,7 +499,7 @@
 					LabelPosition="Default"
 					ToolTipService.ToolTip="{x:Bind Commands.PlayAll.LabelWithHotKey, Mode=OneWay}">
                     <AppBarButton.Icon>
-                        <FontIcon Glyph="{x:Bind Commands.PlayAll.Glyph.BaseGlyph}" />
+                        <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.PlayAll.Glyph.BaseGlyph}" />
                     </AppBarButton.Icon>
                 </AppBarButton>
 
@@ -1208,7 +1226,7 @@
                     </AppBarButton.Icon>
                 </AppBarButton>
 
-                <!--  Open Pane  -->
+                <!--  Open New Pane  -->
                 <AppBarButton
 					x:Name="NavToolbarNewPane"
 					x:Load="{x:Bind Commands.OpenNewPane.IsExecutable, Mode=OneWay}"
@@ -1218,15 +1236,15 @@
                     <local:OpacityIcon Style="{x:Bind Commands.OpenNewPane.OpacityStyle}" />
                 </AppBarButton>
 
-                <!--  Close Pane  -->
+                <!--  Close Active Pane  -->
                 <AppBarButton
-					x:Name="NavToolbarClosePane"
-					x:Load="{x:Bind Commands.ClosePane.IsExecutable, Mode=OneWay}"
-					Command="{x:Bind Commands.ClosePane, Mode=OneWay}"
-					Label="{x:Bind Commands.ClosePane.Label}"
-					ToolTipService.ToolTip="{x:Bind Commands.ClosePane.LabelWithHotKey, Mode=OneWay}">
+					x:Name="NavToolbarCloseActivePane"
+					x:Load="{x:Bind Commands.CloseActivePane.IsExecutable, Mode=OneWay}"
+					Command="{x:Bind Commands.CloseActivePane, Mode=OneWay}"
+					Label="{x:Bind Commands.CloseActivePane.Label}"
+					ToolTipService.ToolTip="{x:Bind Commands.CloseActivePane.LabelWithHotKey, Mode=OneWay}">
                     <AppBarButton.Icon>
-                        <FontIcon Glyph="{x:Bind Commands.ClosePane.Glyph.BaseGlyph}" />
+                        <FontIcon Foreground="{ThemeResource App.Theme.IconBaseBrush}" Glyph="{x:Bind Commands.CloseActivePane.Glyph.BaseGlyph}" />
                     </AppBarButton.Icon>
                 </AppBarButton>
 

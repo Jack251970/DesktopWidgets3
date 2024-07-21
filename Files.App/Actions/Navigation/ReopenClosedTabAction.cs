@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace Files.App.Actions;
+/*namespace Files.App.Actions;
 
-/*internal sealed class ReopenClosedTabAction : ObservableObject, IAction
+internal sealed class ReopenClosedTabAction : ObservableObject, IAction
 {
 	private readonly IMultitaskingContext context;
 

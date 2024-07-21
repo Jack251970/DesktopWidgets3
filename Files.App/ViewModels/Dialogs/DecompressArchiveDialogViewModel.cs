@@ -4,7 +4,6 @@
 using System.IO;
 using System.Windows.Input;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 
 namespace Files.App.ViewModels.Dialogs;
 
@@ -12,11 +11,13 @@ public sealed class DecompressArchiveDialogViewModel : ObservableObject
 {
     private readonly IFolderViewViewModel folderViewViewModel;
 
-	private readonly IStorageFile archive;
+    private ICommonDialogService CommonDialogService { get; } = DependencyExtensions.GetRequiredService<ICommonDialogService>();
 
-    public StorageFolder DestinationFolder { get; private set; } = null!;
+    private readonly IStorageFile archive;
 
-	private string destinationFolderPath;
+    public BaseStorageFolder DestinationFolder { get; private set; }
+
+    private string destinationFolderPath;
 	public string DestinationFolderPath
 	{
 		get => destinationFolderPath;
@@ -61,24 +62,15 @@ public sealed class DecompressArchiveDialogViewModel : ObservableObject
 		PrimaryButtonClickCommand = new RelayCommand<DisposableArray>(password => Password = password);
 	}
 
-	private async Task SelectDestinationAsync()
-	{
-		var folderPicker = InitializeWithWindow(new FolderPicker());
-		folderPicker.FileTypeFilter.Add("*");
+    private async Task SelectDestinationAsync()
+    {
+        CommonDialogService.Open_FileOpenDialog(folderViewViewModel.WindowHandle, true, [], Environment.SpecialFolder.Desktop, out var filePath);
 
-		DestinationFolder = await folderPicker.PickSingleFolderAsync();
+        DestinationFolder = await StorageHelpers.ToStorageItem<BaseStorageFolder>(filePath);
+        DestinationFolderPath = (DestinationFolder is not null) ? DestinationFolder.Path : DefaultDestinationFolderPath();
+    }
 
-		DestinationFolderPath = (DestinationFolder is not null) ? DestinationFolder.Path : DefaultDestinationFolderPath();
-	}
-
-	// WINUI3
-	private FolderPicker InitializeWithWindow(FolderPicker obj)
-	{
-		WinRT.Interop.InitializeWithWindow.Initialize(obj, folderViewViewModel.WindowHandle);
-		return obj;
-	}
-
-	private string DefaultDestinationFolderPath()
+    private string DefaultDestinationFolderPath()
 	{
 		return Path.Combine(Path.GetDirectoryName(archive.Path)!, Path.GetFileNameWithoutExtension(archive.Path));
 	}

@@ -7,7 +7,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using TagLib;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 
 namespace Files.App.ViewModels.Properties;
 
@@ -15,7 +14,9 @@ public abstract class BasePropertiesPage : Page, IDisposable
 {
     protected IFolderViewViewModel FolderViewViewModel = null!;
 
-	public IShellPage AppInstance = null!;
+    private ICommonDialogService CommonDialogService { get; } = DependencyExtensions.GetRequiredService<ICommonDialogService>();
+
+    public IShellPage AppInstance = null!;
 
 	public BaseProperties BaseProperties { get; set; } = null!;
 
@@ -46,7 +47,8 @@ public abstract class BasePropertiesPage : Page, IDisposable
 			var props = new DriveProperties(ViewModel, drive, AppInstance);
 			BaseProperties = props;
 
-			ViewModel.FormatVisibility = !(props.Drive.Type == DriveType.Network || string.Equals(props.Drive.Path, "C:\\", StringComparison.OrdinalIgnoreCase));
+            ViewModel.CleanupVisibility = props.Drive.Type != DriveType.Network;
+            ViewModel.FormatVisibility = !(props.Drive.Type == DriveType.Network || string.Equals(props.Drive.Path, "C:\\", StringComparison.OrdinalIgnoreCase));
 			ViewModel.CleanupDriveCommand = new AsyncRelayCommand(() => StorageSenseHelper.OpenStorageSenseAsync(props.Drive.Path));
 			ViewModel.FormatDriveCommand = new RelayCommand(async () =>
 			{
@@ -94,29 +96,28 @@ public abstract class BasePropertiesPage : Page, IDisposable
 
         ViewModel.EditAlbumCoverCommand = new RelayCommand(async () =>
         {
-            var filePicker = new FileOpenPicker();
-            filePicker.FileTypeFilter.Add(".jpg");
-            filePicker.FileTypeFilter.Add(".jpeg");
-            filePicker.FileTypeFilter.Add(".bmp");
-            filePicker.FileTypeFilter.Add(".png");
+            var hWnd = Microsoft.UI.Win32Interop.GetWindowFromWindowId(np.Window.AppWindow.Id);
 
-            var parentWindowId = np.Window.AppWindow.Id;
-            var handle = Microsoft.UI.Win32Interop.GetWindowFromWindowId(parentWindowId);
-            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, handle);
+            string[] extensions =
+            [
+                "BitmapFiles".GetLocalizedResource(), "*.bmp",
+                "JPEG", "*.jpg;*.jpeg",
+                "PNG", "*.png",
+            ];
 
-            var file = await filePicker.PickSingleFileAsync();
-
-            if (file is not null)
+            var result = CommonDialogService.Open_FileOpenDialog(hWnd, false, extensions, Environment.SpecialFolder.Desktop, out var filePath);
+            if (result)
             {
                 ViewModel.IsAblumCoverModified = true;
-                ViewModel.ModifiedAlbumCover = new Picture(file.Path);
+                ViewModel.ModifiedAlbumCover = new Picture(filePath);
 
-                var result = await FileThumbnailHelper.GetIconAsync(
-                        file.Path,
-                        Constants.ShellIconSizes.ExtraLarge,
-                        false,
-                        IconOptions.UseCurrentScale);
-                ViewModel.IconData = result!;
+                var iconData = await FileThumbnailHelper.GetIconAsync(
+                    filePath,
+                    Constants.ShellIconSizes.ExtraLarge,
+                    false,
+                    IconOptions.UseCurrentScale);
+
+                ViewModel.IconData = iconData;
             }
         });
 

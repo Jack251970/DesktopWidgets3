@@ -11,6 +11,8 @@ using Windows.Win32.Graphics.Direct3D11;
 using Windows.Win32.Graphics.Dxgi;
 using Windows.Win32.Graphics.DirectComposition;
 using WinRT;
+using Windows.Win32;
+using Windows.Win32.Graphics.Dwm;
 using static Vanara.PInvoke.ShlwApi;
 using static Vanara.PInvoke.User32;
 
@@ -201,7 +203,18 @@ public sealed class ShellPreviewViewModel(ListedItem item) : BasePreviewModel(it
         Marshal.ReleaseComObject(d3d11Device);
         Marshal.ReleaseComObject(d3d11DeviceContext!);
 
-        return DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, true).Succeeded;
+        unsafe
+        {
+            var dwAttrib = Convert.ToUInt32(true);
+
+            return
+                PInvoke.DwmSetWindowAttribute(
+                    new((nint)hwnd),
+                    DWMWINDOWATTRIBUTE.DWMWA_CLOAK,
+                    &dwAttrib,
+                    (uint)Marshal.SizeOf(dwAttrib))
+                .Succeeded;
+        }
     }
 
     public void UnloadPreview()
@@ -223,8 +236,18 @@ public sealed class ShellPreviewViewModel(ListedItem item) : BasePreviewModel(it
 	{
 		if (onPreview)
 		{
-			DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, false);
-			if (isOfficePreview)
+            unsafe
+            {
+                var dwAttrib = Convert.ToUInt32(false);
+
+                PInvoke.DwmSetWindowAttribute(
+                    new((nint)hwnd),
+                    DWMWINDOWATTRIBUTE.DWMWA_CLOAK,
+                    &dwAttrib,
+                    (uint)Marshal.SizeOf(dwAttrib));
+            }
+
+            if (isOfficePreview)
             {
                 Win32Helper.SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE, 0);
             }
@@ -233,7 +256,17 @@ public sealed class ShellPreviewViewModel(ListedItem item) : BasePreviewModel(it
 		{
             Win32Helper.SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE,
 				(nint)(WindowStylesEx.WS_EX_LAYERED | WindowStylesEx.WS_EX_COMPOSITED));
-			DwmApi.DwmSetWindowAttribute(hwnd, DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CLOAK, true);
-		}
+
+            unsafe
+            {
+                var dwAttrib = Convert.ToUInt32(true);
+
+                PInvoke.DwmSetWindowAttribute(
+                    new((nint)hwnd),
+                    DWMWINDOWATTRIBUTE.DWMWA_CLOAK,
+                    &dwAttrib,
+                    (uint)Marshal.SizeOf(dwAttrib));
+            }
+        }
 	}
 }

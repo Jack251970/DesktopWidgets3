@@ -33,8 +33,8 @@ public static class ShellHelpers
 		{
 			"Home" => "Home".GetLocalizedResource(),
 			Constants.UserEnvironmentPaths.RecycleBinPath => "RecycleBin".GetLocalizedResource(),
-			Constants.UserEnvironmentPaths.NetworkFolderPath => "SidebarNetworkDrives".GetLocalizedResource(),
-			Constants.UserEnvironmentPaths.MyComputerPath => "ThisPC".GetLocalizedResource(),
+            Constants.UserEnvironmentPaths.NetworkFolderPath => "Network".GetLocalizedResource(),
+            Constants.UserEnvironmentPaths.MyComputerPath => "ThisPC".GetLocalizedResource(),
 			_ => shPath
 		};
 	}

@@ -27,11 +27,17 @@ public interface IResourcesService
 	/// <param name="appThemeAddressBarBackgroundColor"></param>
 	void SetAppThemeAddressBarBackgroundColor(Color appThemeAddressBarBackgroundColor);
 
-	/// <summary>
-	/// Overrides the XAML resource for App.Theme.Sidebar.BackgroundBrush
-	/// </summary>
-	/// <param name="appThemeSidebarBackgroundColor"></param>
-	void SetAppThemeSidebarBackgroundColor(Color appThemeSidebarBackgroundColor);
+    /// <summary>
+    /// Overrides the XAML resource for App.Theme.Toolbar.BackgroundBrush
+    /// </summary>
+    /// <param name="appThemeToolbarBackgroundColor"></param>
+    void SetAppThemeToolbarBackgroundColor(Color appThemeToolbarBackgroundColor);
+
+    /// <summary>
+    /// Overrides the XAML resource for App.Theme.Sidebar.BackgroundBrush
+    /// </summary>
+    /// <param name="appThemeSidebarBackgroundColor"></param>
+    void SetAppThemeSidebarBackgroundColor(Color appThemeSidebarBackgroundColor);
 
 	/// <summary>
 	/// Overrides the XAML resource for App.Theme.FileArea.BackgroundBrush
@@ -39,9 +45,21 @@ public interface IResourcesService
 	/// <param name="appThemeFileAreaBackgroundColor"></param>
 	void SetAppThemeFileAreaBackgroundColor(Color appThemeFileAreaBackgroundColor);
 
-	/// <summary>
-	/// Overrides the XAML resource for ContentControlThemeFontFamily
-	/// </summary>
-	/// <param name="contentControlThemeFontFamily"></param>
-	void SetAppThemeFontFamily(string contentControlThemeFontFamily);
+    // <summary>
+    /// Overrides the XAML resource for App.Theme.FileArea.SecondaryBackgroundBrush
+    /// </summary>
+    /// <param name="appThemeFileAreaSecondaryBackgroundColor"></param>
+    void SetAppThemeFileAreaSecondaryBackgroundColor(Color appThemeFileAreaSecondaryBackgroundColor);
+
+    /// <summary>
+    /// Overrides the XAML resource for App.Theme.InfoPane.BackgroundBrush
+    /// </summary>
+    /// <param name="appThemeInfoPaneBackgroundColor"></param>
+    void SetAppThemeInfoPaneBackgroundColor(Color appThemeInfoPaneBackgroundColor);
+
+    /// <summary>
+    /// Overrides the XAML resource for ContentControlThemeFontFamily
+    /// </summary>
+    /// <param name="contentControlThemeFontFamily"></param>
+    void SetAppThemeFontFamily(string contentControlThemeFontFamily);
 }

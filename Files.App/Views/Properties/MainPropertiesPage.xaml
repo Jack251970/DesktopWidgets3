@@ -22,8 +22,8 @@
 	<vm:BasePropertiesPage.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/PropertiesStyles.xaml" />
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/NavigationViewItemButtonStyle.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/PropertiesStyles.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/NavigationViewItemButtonStyle.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
 			<wctconverters:BoolNegationConverter x:Key="BoolNegationConverter" />

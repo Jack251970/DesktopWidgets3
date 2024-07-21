@@ -38,7 +38,14 @@ public class ModifiableActionItem : ObservableObject
 		set => SetProperty(ref _IsInEditMode, value);
 	}
 
-	private bool _IsDefinedByDefault;
+    private bool _IsValidKeyBinding;
+    public bool IsValidKeyBinding
+    {
+        get => _IsValidKeyBinding;
+        set => SetProperty(ref _IsValidKeyBinding, value);
+    }
+
+    private bool _IsDefinedByDefault;
 	public bool IsDefinedByDefault
 	{
 		get => _IsDefinedByDefault;

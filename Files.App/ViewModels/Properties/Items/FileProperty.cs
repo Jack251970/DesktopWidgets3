@@ -308,7 +308,7 @@ public sealed class FileProperty : ObservableObject
 		if (!cachedPropertiesListFiles.TryGetValue(uriPath, out text!))
 		{
             // CHANGE: Use StorageHelper to get StorageFile.
-            var propertiesJsonFile = await DesktopWidgets3.Core.Helpers.StorageHelper.GetStorageFile(uriPath);
+            var propertiesJsonFile = await DesktopWidgets3.Core.Helpers.StorageHelper.GetStorageFileFromApplicationUriAsync(uriPath);
 			text = await FileIO.ReadTextAsync(propertiesJsonFile);
 			cachedPropertiesListFiles[uriPath] = text;
 		}

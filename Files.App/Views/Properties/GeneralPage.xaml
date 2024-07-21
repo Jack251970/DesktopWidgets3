@@ -19,7 +19,7 @@
     <vm:BasePropertiesPage.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/PropertiesStyles.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/PropertiesStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <ResourceDictionary.ThemeDictionaries>
@@ -392,7 +392,7 @@
 				x:Name="DiskDetailsGrid"
 				Padding="12"
 				HorizontalAlignment="Stretch"
-				x:Load="{x:Bind ViewModel.DriveCapacityVisibility, Mode=OneWay}"
+				x:Load="{x:Bind ViewModel.CleanupVisibility, Mode=OneWay}"
 				Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
 				BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
 				BorderThickness="1"

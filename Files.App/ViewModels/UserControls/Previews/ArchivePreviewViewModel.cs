@@ -46,8 +46,8 @@ public sealed class ArchivePreviewViewModel(ListedItem item) : BasePreviewModel(
 
 		folderCount = (int)zipFile.FilesCount - fileCount;
 
-		var propertyItemCount = string.Format("DetailsArchiveItemCount".GetLocalizedResource(), zipFile.FilesCount, fileCount, folderCount);
-		details.Add(GetFileProperty("PropertyItemCount", propertyItemCount));
+        var propertyItemCount = "DetailsArchiveItems".GetLocalizedFormatResource(zipFile.FilesCount, fileCount, folderCount);
+        details.Add(GetFileProperty("PropertyItemCount", propertyItemCount));
 		details.Add(GetFileProperty("PropertyUncompressedSize", totalSize.ToLongSizeString()));
 
 		// Loads the thumbnail preview

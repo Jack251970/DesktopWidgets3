@@ -23,20 +23,14 @@ public sealed class DrivesWidgetViewModel : BaseWidgetViewModel, IWidgetViewMode
 	public string AutomationProperties => "Drives".GetLocalizedResource();
 	public string WidgetHeader => "Drives".GetLocalizedResource();
 	public bool IsWidgetSettingEnabled => UserSettingsService.GeneralSettingsService.ShowDrivesWidget;
-	public bool ShowMenuFlyout => true;
-	public MenuFlyoutItem? MenuFlyoutItem => new()
-	{
-		Icon = new FontIcon() { Glyph = "\uE710" },
-		Text = "DrivesWidgetOptionsFlyoutMapNetDriveMenuItem/Text".GetLocalizedResource(),
-		Command = MapNetworkDriveCommand
-	};
+    public bool ShowMenuFlyout => false;
+    public MenuFlyoutItem? MenuFlyoutItem => null;
 
-	// Commands
+    // Commands
 
-	private ICommand FormatDriveCommand { get; } = null!;
+    private ICommand FormatDriveCommand { get; } = null!;
 	private ICommand EjectDeviceCommand { get; } = null!;
 	private ICommand OpenInNewPaneCommand { get; } = null!;
-	private ICommand MapNetworkDriveCommand { get; } = null!;
 	private ICommand DisconnectNetworkDriveCommand { get; } = null!;
 
 	// Constructor
@@ -56,7 +50,6 @@ public sealed class DrivesWidgetViewModel : BaseWidgetViewModel, IWidgetViewMode
 		OpenInNewPaneCommand = new AsyncRelayCommand<WidgetDriveCardItem>(ExecuteOpenInNewPaneCommand);
 		OpenPropertiesCommand = new RelayCommand<WidgetDriveCardItem>(ExecuteOpenPropertiesCommand);
 		DisconnectNetworkDriveCommand = new RelayCommand<WidgetDriveCardItem>(ExecuteDisconnectNetworkDriveCommand);
-		MapNetworkDriveCommand = new AsyncRelayCommand(ExecuteMapNetworkDriveCommand);
 	}
 
 	// Methods
@@ -100,30 +93,10 @@ public sealed class DrivesWidgetViewModel : BaseWidgetViewModel, IWidgetViewMode
 
 		return new List<ContextMenuFlyoutItemViewModel>()
 		{
-			new()
-			{
-				Text = "OpenInNewTab".GetLocalizedResource(),
-				OpacityIcon = new OpacityIconModel() { OpacityIconStyle = "ColorIconOpenInNewTab" },
-				Command = OpenInNewTabCommand,
-				CommandParameter = item,
-				ShowItem = UserSettingsService.GeneralSettingsService.ShowOpenInNewTab
-			},
-			new()
-			{
-				Text = "OpenInNewWindow".GetLocalizedResource(),
-				OpacityIcon = new OpacityIconModel() { OpacityIconStyle = "ColorIconOpenInNewWindow" },
-				Command = OpenInNewWindowCommand,
-				CommandParameter = item,
-				ShowItem = UserSettingsService.GeneralSettingsService.ShowOpenInNewWindow
-			},
-			new()
-			{
-				Text = "OpenInNewPane".GetLocalizedResource(),
-				Command = OpenInNewPaneCommand,
-				CommandParameter = item,
-				ShowItem = UserSettingsService.GeneralSettingsService.ShowOpenInNewPane
-			},
-			new()
+            new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewTabFromHomeAction).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewWindowFromHomeAction).Build(),
+            new ContextMenuFlyoutItemViewModelBuilder(CommandManager.OpenInNewPaneFromHomeAction).Build(),
+            new()
 			{
 				Text = "PinFolderToSidebar".GetLocalizedResource(),
 				OpacityIcon = new OpacityIconModel() { OpacityIconStyle = "Icons.Pin.16x16" },
@@ -209,12 +182,7 @@ public sealed class DrivesWidgetViewModel : BaseWidgetViewModel, IWidgetViewMode
             return;
         }
 
-        ContentPageContext.ShellPage!.PaneHolder?.OpenPathInNewPane(item.Item.Path);
-	}
-
-	private Task ExecuteMapNetworkDriveCommand()
-	{
-		return NetworkDrivesService.OpenMapNetworkDriveDialogAsync(FolderViewViewModel);
+        ContentPageContext.ShellPage!.PaneHolder?.OpenSecondaryPane(item.Item.Path);
 	}
 
 	private void ExecuteFormatDriveCommand(WidgetDriveCardItem? item)
@@ -248,7 +216,7 @@ public sealed class DrivesWidgetViewModel : BaseWidgetViewModel, IWidgetViewMode
             return;
         }
 
-        NetworkDrivesService.DisconnectNetworkDrive(item.Item);
+        NetworkService.DisconnectNetworkDrive(item.Item);
 	}
 
 	// Event methods
@@ -259,7 +227,7 @@ public sealed class DrivesWidgetViewModel : BaseWidgetViewModel, IWidgetViewMode
 		{
 			foreach (var drive in DrivesViewModel.Drives.ToList().Cast<DriveItem>())
 			{
-				if (!Items.Any(x => x.Item == drive) && drive.Type != DriveType.VirtualDrive)
+				if (!Items.Any(x => x.Item == drive) && drive.Type is not DriveType.VirtualDrive)
 				{
 					var cardItem = new WidgetDriveCardItem(drive);
 					Items.AddSorted(cardItem);

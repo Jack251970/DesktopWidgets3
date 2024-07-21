@@ -36,7 +36,7 @@ internal sealed class OpenFileLocationAction : ObservableObject, IAction
 
 	public async Task ExecuteAsync(object? parameter = null)
 	{
-		if (context.ShellPage?.FilesystemViewModel is null)
+		if (context.ShellPage?.ShellViewModel is null)
         {
             return;
         }
@@ -50,7 +50,7 @@ internal sealed class OpenFileLocationAction : ObservableObject, IAction
 
         // Check if destination path exists
         var folderPath = Path.GetDirectoryName(item.TargetPath);
-		var destFolder = await context.ShellPage.FilesystemViewModel.GetFolderWithPathFromPathAsync(folderPath!);
+		var destFolder = await context.ShellPage.ShellViewModel.GetFolderWithPathFromPathAsync(folderPath!);
 
 		if (destFolder)
 		{

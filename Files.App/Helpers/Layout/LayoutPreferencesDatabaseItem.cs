@@ -1,7 +1,5 @@
-﻿// Copyright (c) 2023 Files Community
+﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
-
-using LiteDB;
 
 namespace Files.App.Helpers;
 
@@ -9,16 +7,13 @@ namespace Files.App.Helpers;
 /// Represents item for the database of a folder's layout preferences.
 /// </summary>
 [RegistrySerializable]
-public class LayoutPreferencesDatabaseItem
+public sealed class LayoutPreferencesDatabaseItem
 {
-	[BsonId]
-	public int Id { get; set; }
+    public ulong? Frn { get; set; }
 
-	public ulong? Frn { get; set; }
+    public string FilePath { get; set; } = string.Empty;
 
-	public string FilePath { get; set; } = string.Empty;
-
-    public LayoutPreferencesItem LayoutPreferencesManager { get; set; } = null!;
+    public LayoutPreferencesItem LayoutPreferencesManager { get; set; }
 
     public LayoutPreferencesDatabaseItem()
     {

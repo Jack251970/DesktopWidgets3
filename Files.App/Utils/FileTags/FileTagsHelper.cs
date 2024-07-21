@@ -91,7 +91,7 @@ public static class FileTagsHelper
                 }
                 else
                 {
-                    dbInstance.SetTags(null!, file.Frn, []);
+                    dbInstance.SetTags(pathFromFrn.Replace(@"\\?\", "", StringComparison.Ordinal), file.Frn, []);
                 }
             }
             else

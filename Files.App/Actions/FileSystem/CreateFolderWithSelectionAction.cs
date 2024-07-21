@@ -18,11 +18,13 @@ internal sealed class CreateFolderWithSelectionAction : ObservableObject, IActio
 	public RichGlyph Glyph
 		=> new(opacityStyle: "ColorIconNewFolder");
 
-	public bool IsExecutable =>
-		context.ShellPage is not null &&
-		context.HasSelection;
+    public bool IsExecutable =>
+        context.ShellPage is not null &&
+        context.PageType != ContentPageTypes.RecycleBin &&
+        context.PageType != ContentPageTypes.ZipFolder &&
+        context.HasSelection;
 
-	public CreateFolderWithSelectionAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
+    public CreateFolderWithSelectionAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {
         FolderViewViewModel = folderViewViewModel;
 

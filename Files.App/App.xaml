@@ -34,20 +34,23 @@
 		<!--<XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />-->
 
 		<!--  Styles for the custom icons  -->
-		<ResourceDictionary Source="ms-appx:///Files.App/ResourceDictionaries/PathIcons.xaml" />
+		<ResourceDictionary Source="ms-appx:///Files.App/Styles/PathIcons.xaml" />
         <ResourceDictionary Source="ms-appx:///Files.App/UserControls/SideBar/SideBarControls.xaml" />
-        <ResourceDictionary Source="ms-appx:///Files.App/ResourceDictionaries/App.Theme.TextBlockStyles.xaml" />
-        <ResourceDictionary Source="ms-appx:///Files.App/ResourceDictionaries/ShimmerStyles.xaml" />
-        <ResourceDictionary Source="ms-appx:///Files.App/ResourceDictionaries/MenuFlyoutSubItemWithImageStyle.xaml" />
+        <ResourceDictionary Source="ms-appx:///Files.App/Styles/App.Theme.TextBlockStyles.xaml" />
+        <ResourceDictionary Source="ms-appx:///Files.App/Styles/ShimmerStyles.xaml" />
+        <ResourceDictionary Source="ms-appx:///Files.App/Styles/MenuFlyoutSubItemWithImageStyle.xaml" />
 		<ResourceDictionary>
 			<ResourceDictionary.ThemeDictionaries>
 				<ResourceDictionary x:Key="Light">
-					<SolidColorBrush x:Key="App.Theme.BackgroundBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-					<SolidColorBrush x:Key="App.Theme.Sidebar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-					<SolidColorBrush x:Key="App.Theme.FileArea.BackgroundBrush" Color="#C0FCFCFC" />
+                    <SolidColorBrush x:Key="App.Theme.BackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
+                    <SolidColorBrush x:Key="App.Theme.Toolbar.BackgroundBrush" Color="{StaticResource CardBackgroundFillColorSecondary}" />
+                    <SolidColorBrush x:Key="App.Theme.Sidebar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
+                    <SolidColorBrush x:Key="App.Theme.FileArea.BackgroundBrush" Color="#C0FCFCFC" />
+                    <SolidColorBrush x:Key="App.Theme.FileArea.SecondaryBackgroundBrush" Color="{StaticResource CardBackgroundFillColorSecondary}" />
+                    <SolidColorBrush x:Key="App.Theme.InfoPane.BackgroundBrush" Color="{StaticResource CardBackgroundFillColorSecondary}" />
 
-					<SolidColorBrush x:Key="TabViewItemHeaderBackground" Color="{StaticResource SubtleFillColorTransparent}" />
+                    <SolidColorBrush x:Key="TabViewItemHeaderBackground" Color="{StaticResource SubtleFillColorTransparent}" />
 					<SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
 					<SolidColorBrush x:Key="TabViewItemHeaderBackgroundPressed" Color="{StaticResource SubtleFillColorTertiary}" />
 					<SolidColorBrush x:Key="TabViewItemHeaderBackgroundPointerOver" Color="{StaticResource SubtleFillColorSecondary}" />
@@ -56,12 +59,15 @@
 					<SolidColorBrush x:Key="App.Theme.FillColorAttentionBrush" Color="{StaticResource App.Theme.FillColorAttention}" />
 				</ResourceDictionary>
 				<ResourceDictionary x:Key="Dark">
-					<SolidColorBrush x:Key="App.Theme.BackgroundBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-					<SolidColorBrush x:Key="App.Theme.Sidebar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
-					<SolidColorBrush x:Key="App.Theme.FileArea.BackgroundBrush" Color="#10f9f9f9" />
+                    <SolidColorBrush x:Key="App.Theme.BackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
+                    <SolidColorBrush x:Key="App.Theme.Toolbar.BackgroundBrush" Color="{StaticResource CardBackgroundFillColorSecondary}" />
+                    <SolidColorBrush x:Key="App.Theme.Sidebar.BackgroundBrush" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
+                    <SolidColorBrush x:Key="App.Theme.FileArea.BackgroundBrush" Color="{StaticResource CardBackgroundFillColorDefault}" />
+                    <SolidColorBrush x:Key="App.Theme.FileArea.SecondaryBackgroundBrush" Color="{StaticResource CardBackgroundFillColorSecondary}" />
+                    <SolidColorBrush x:Key="App.Theme.InfoPane.BackgroundBrush" Color="{StaticResource CardBackgroundFillColorSecondary}" />
 
-					<SolidColorBrush x:Key="TabViewItemHeaderBackground" Color="{StaticResource SubtleFillColorTransparent}" />
+                    <SolidColorBrush x:Key="TabViewItemHeaderBackground" Color="{StaticResource SubtleFillColorTransparent}" />
 					<SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="{StaticResource LayerOnMicaBaseAltFillColorDefault}" />
 					<SolidColorBrush x:Key="TabViewItemHeaderBackgroundPressed" Color="{StaticResource SubtleFillColorTertiary}" />
 					<SolidColorBrush x:Key="TabViewItemHeaderBackgroundPointerOver" Color="{StaticResource SubtleFillColorSecondary}" />
@@ -70,12 +76,15 @@
 					<SolidColorBrush x:Key="App.Theme.FillColorAttentionBrush" Color="{StaticResource App.Theme.FillColorAttention}" />
 				</ResourceDictionary>
 				<ResourceDictionary x:Key="HighContrast">
-					<SolidColorBrush x:Key="App.Theme.BackgroundBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="App.Theme.Sidebar.BackgroundBrush" Color="Transparent" />
-					<SolidColorBrush x:Key="App.Theme.FileArea.BackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="App.Theme.BackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="App.Theme.AddressBar.BackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="App.Theme.Toolbar.BackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="App.Theme.Sidebar.BackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="App.Theme.FileArea.BackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="App.Theme.FileArea.SecondaryBackgroundBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="App.Theme.InfoPane.BackgroundBrush" Color="Transparent" />
 
-					<SolidColorBrush x:Key="TabViewItemHeaderBackground" Color="{StaticResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="TabViewItemHeaderBackground" Color="{StaticResource SystemColorWindowColor}" />
 					<SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="{StaticResource SystemColorHighlightColor}" />
 					<SolidColorBrush x:Key="TabViewItemHeaderBackgroundPressed" Color="{StaticResource SystemColorHighlightColor}" />
 					<SolidColorBrush x:Key="TabViewItemHeaderBackgroundPointerOver" Color="{StaticResource SystemColorHighlightColor}" />

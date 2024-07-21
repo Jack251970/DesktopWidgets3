@@ -94,6 +94,11 @@ public interface IRichCommand : ICommand, INotifyPropertyChanging, INotifyProper
     bool IsExecutable { get; }
 
     /// <summary>
+    /// Returns whether the action is accessible in any context.
+    /// </summary>
+    bool IsAccessibleGlobally { get; }
+
+    /// <summary>
     /// Executes the command.
     /// </summary>
     /// <param name="parameter">Parameter that is passed when executed.</param>

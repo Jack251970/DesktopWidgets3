@@ -9,18 +9,18 @@ internal sealed class ContentPageContext : ObservableObject, IContentPageContext
 {
 	private static readonly IReadOnlyList<ListedItem> emptyItems = Enumerable.Empty<ListedItem>().ToImmutableList();
 
-	private IPageContext Context { get; set; } = null!;
+	private IMultiPanesContext Context { get; set; } = null!;
 
-	private ItemViewModel? filesystemViewModel;
+	private ShellViewModel? filesystemViewModel;
 
-	public IShellPage? ShellPage => Context?.PaneOrColumn;
+	public IShellPage? ShellPage => Context?.ActivePaneOrColumn;
 
 	public Type PageLayoutType => ShellPage?.CurrentPageType ?? typeof(DetailsLayoutPage);
 
 	private ContentPageTypes pageType = ContentPageTypes.None;
 	public ContentPageTypes PageType => pageType;
 
-	public ListedItem? Folder => ShellPage?.FilesystemViewModel?.CurrentFolder;
+	public ListedItem? Folder => ShellPage?.ShellViewModel?.CurrentFolder;
 
 	public bool HasItem => ShellPage?.ToolbarViewModel?.HasItem ?? false;
 
@@ -50,19 +50,19 @@ internal sealed class ContentPageContext : ObservableObject, IContentPageContext
 
 	public bool CanExecuteGitAction => IsGitRepository && !GitHelpers.IsExecutingGitAction;
 
-	public string? SolutionFilePath => ShellPage?.FilesystemViewModel?.SolutionFilePath;
+	public string? SolutionFilePath => ShellPage?.ShellViewModel?.SolutionFilePath;
 
 	public ContentPageContext()
 	{
 
     }
 
-    public void Initialize(IPageContext context)
+    public void Initialize(IMultiPanesContext context)
     {
         Context = context;
 
-        context.Changing += Context_Changing;
-        context.Changed += Context_Changed;
+        context.ActivePaneChanging += Context_Changing;
+        context.ActivePaneChanged += Context_Changed;
         GitHelpers.IsExecutingGitActionChanged += GitHelpers_IsExecutingGitActionChanged;
 
         Update();
@@ -113,7 +113,7 @@ internal sealed class ContentPageContext : ObservableObject, IContentPageContext
             }
         }
 
-		filesystemViewModel = ShellPage?.FilesystemViewModel;
+		filesystemViewModel = ShellPage?.ShellViewModel;
 		if (filesystemViewModel is not null)
         {
             filesystemViewModel.PropertyChanged += FilesystemViewModel_PropertyChanged;
@@ -138,14 +138,14 @@ internal sealed class ContentPageContext : ObservableObject, IContentPageContext
 		}
 	}
 
-	private void Page_ContentChanged(object? sender, CustomTabViewItemParameter e) => Update();
+	private void Page_ContentChanged(object? sender, TabBarItemParameter e) => Update();
 
 	private void PaneHolder_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		switch (e.PropertyName)
 		{
-			case nameof(IPaneHolder.IsMultiPaneEnabled):
-			case nameof(IPaneHolder.IsMultiPaneActive):
+			case nameof(IShellPanesPage.IsMultiPaneEnabled):
+			case nameof(IShellPanesPage.IsMultiPaneActive):
 				OnPropertyChanged(e.PropertyName);
 				break;
 		}
@@ -194,10 +194,10 @@ internal sealed class ContentPageContext : ObservableObject, IContentPageContext
 	{
 		switch (e.PropertyName)
 		{
-			case nameof(ItemViewModel.CurrentFolder):
+			case nameof(ShellViewModel.CurrentFolder):
 				OnPropertyChanged(nameof(Folder));
 				break;
-			case nameof(ItemViewModel.SolutionFilePath):
+			case nameof(ShellViewModel.SolutionFilePath):
 				OnPropertyChanged(nameof(SolutionFilePath));
 				break;
 		}

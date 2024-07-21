@@ -12,7 +12,7 @@ internal sealed class DecompressArchiveHere(IFolderViewViewModel folderViewViewM
 		=> "DecompressArchiveHereDescription".GetLocalizedResource();
 
     public override Task ExecuteAsync(object? parameter = null)
-	{
-		return DecompressHelper.DecompressArchiveHereAsync(FolderViewViewModel, context.ShellPage!);
-	}
+    {
+        return DecompressArchiveHereAsync();
+    }
 }

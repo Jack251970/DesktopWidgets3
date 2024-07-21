@@ -140,109 +140,90 @@ public sealed class FileSystemDialogViewModel : BaseDialogViewModel, IRecipient<
 		ApplyConflictOptionToAll(FileNameConflictResolveOptionType.Skip);
 	}
 
-	public static FileSystemDialogViewModel GetDialogViewModel(IFolderViewViewModel folderViewViewModel, FileSystemDialogMode dialogMode, (bool deletePermanently, bool IsDeletePermanentlyEnabled) deleteOption, FilesystemOperationType operationType, List<BaseFileSystemDialogItemViewModel> nonConflictingItems, List<BaseFileSystemDialogItemViewModel> conflictingItems)
-	{
-		var titleText = string.Empty;
-		var descriptionText = string.Empty;
-		var primaryButtonText = string.Empty;
-		var secondaryButtonText = string.Empty;
-		var isInDeleteMode = false;
+    public static FileSystemDialogViewModel GetDialogViewModel(IFolderViewViewModel folderViewViewModel, FileSystemDialogMode dialogMode, (bool deletePermanently, bool IsDeletePermanentlyEnabled) deleteOption, FilesystemOperationType operationType, List<BaseFileSystemDialogItemViewModel> nonConflictingItems, List<BaseFileSystemDialogItemViewModel> conflictingItems)
+    {
+        var titleText = string.Empty;
+        var descriptionText = string.Empty;
+        var primaryButtonText = string.Empty;
+        var secondaryButtonText = string.Empty;
+        var isInDeleteMode = false;
+        var totalCount = nonConflictingItems.Count + conflictingItems.Count;
 
-		if (dialogMode.ConflictsExist)
-		{
-			// Subtitle text
-			if (conflictingItems.Count > 1)
-			{
-				var descriptionLocalized = (nonConflictingItems.Count > 0)
-					? "ConflictingItemsDialogSubtitleMultipleConflictsMultipleNonConflicts".ToLocalized()
-					: "ConflictingItemsDialogSubtitleMultipleConflictsNoNonConflicts".ToLocalized();
+        if (dialogMode.ConflictsExist)
+        {
+            titleText = "ConflictingItemsDialogTitle".GetLocalizedFormatResource(totalCount);
 
-				descriptionText = string.Format(descriptionLocalized, conflictingItems.Count, nonConflictingItems.Count);
-			}
-			else
-			{
-				descriptionText = (nonConflictingItems.Count > 0)
-					? string.Format("ConflictingItemsDialogSubtitleSingleConflictMultipleNonConflicts".ToLocalized(), nonConflictingItems.Count)
-					: string.Format("ConflictingItemsDialogSubtitleSingleConflictNoNonConflicts".ToLocalized(), conflictingItems.Count);
-			}
+            descriptionText = nonConflictingItems.Count > 0
+                ? "ConflictingItemsDialogSubtitleConflictsNonConflicts".GetLocalizedFormatResource(conflictingItems.Count, nonConflictingItems.Count)
+                : "ConflictingItemsDialogSubtitleConflicts".GetLocalizedFormatResource(conflictingItems.Count);
 
-			titleText = "ConflictingItemsDialogTitle".ToLocalized();
-			primaryButtonText = "ConflictingItemsDialogPrimaryButtonText".ToLocalized();
-			secondaryButtonText = "Cancel".ToLocalized();
-		}
-		else
-		{
-			switch (operationType)
-			{
-				case FilesystemOperationType.Copy:
-					{
-						titleText = "CopyItemsDialogTitle".ToLocalized();
+            primaryButtonText = "ConflictingItemsDialogPrimaryButtonText".ToLocalized();
+            secondaryButtonText = "Cancel".ToLocalized();
+        }
+        else
+        {
+            switch (operationType)
+            {
+                case FilesystemOperationType.Copy:
+                    {
+                        titleText = "CopyItemsDialogTitle".GetLocalizedFormatResource(totalCount);
 
-						descriptionText = (nonConflictingItems.Count + conflictingItems.Count == 1)
-							? "CopyItemsDialogSubtitleSingle".ToLocalized()
-							: string.Format("CopyItemsDialogSubtitleMultiple".ToLocalized(), nonConflictingItems.Count + conflictingItems.Count);
+                        descriptionText = "CopyItemsDialogSubtitle".GetLocalizedFormatResource(totalCount);
+                        primaryButtonText = "Copy".ToLocalized();
+                        secondaryButtonText = "Cancel".ToLocalized();
 
-						primaryButtonText = "Copy".ToLocalized();
-						secondaryButtonText = "Cancel".ToLocalized();
+                        break;
+                    }
 
-						break;
-					}
+                case FilesystemOperationType.Move:
+                    {
+                        titleText = "MoveItemsDialogTitle".GetLocalizedFormatResource(totalCount);
 
-				case FilesystemOperationType.Move:
-					{
-						titleText = "MoveItemsDialogTitle".ToLocalized();
+                        descriptionText = "MoveItemsDialogSubtitle".GetLocalizedFormatResource(totalCount);
+                        primaryButtonText = "MoveItemsDialogPrimaryButtonText".ToLocalized();
+                        secondaryButtonText = "Cancel".ToLocalized();
 
-						descriptionText = (nonConflictingItems.Count + conflictingItems.Count == 1)
-							? "MoveItemsDialogSubtitleSingle".ToLocalized()
-							: string.Format("MoveItemsDialogSubtitleMultiple".ToLocalized(), nonConflictingItems.Count + conflictingItems.Count);
+                        break;
+                    }
 
-						primaryButtonText = "MoveItemsDialogPrimaryButtonText".ToLocalized();
-						secondaryButtonText = "Cancel".ToLocalized();
+                case FilesystemOperationType.Delete:
+                    {
+                        titleText = "DeleteItemsDialogTitle".GetLocalizedFormatResource(totalCount);
 
-						break;
-					}
+                        descriptionText = "DeleteItemsDialogSubtitle".GetLocalizedFormatResource(totalCount);
+                        primaryButtonText = "Delete".ToLocalized();
+                        secondaryButtonText = "Cancel".ToLocalized();
 
-				case FilesystemOperationType.Delete:
-					{
-						titleText = "DeleteItemsDialogTitle".ToLocalized();
+                        isInDeleteMode = true;
 
-						descriptionText = (nonConflictingItems.Count + conflictingItems.Count == 1)
-							? "DeleteItemsDialogSubtitleSingle".ToLocalized()
-							: string.Format("DeleteItemsDialogSubtitleMultiple".ToLocalized(), nonConflictingItems.Count);
+                        break;
+                    }
+            }
+        }
 
-						primaryButtonText = "Delete".ToLocalized();
-						secondaryButtonText = "Cancel".ToLocalized();
-
-						isInDeleteMode = true;
-
-						break;
-					}
-			}
-		}
-
-		var viewModel = new FileSystemDialogViewModel(
+        var viewModel = new FileSystemDialogViewModel(
             folderViewViewModel,
             new()
-			{
-				IsInDeleteMode = isInDeleteMode,
-				ConflictsExist = !conflictingItems.IsEmpty()
-			},
-			conflictingItems.Concat(nonConflictingItems))
-		{
-			Title = titleText,
-			Description = descriptionText,
-			PrimaryButtonText = primaryButtonText,
-			SecondaryButtonText = secondaryButtonText,
-			DeletePermanently = deleteOption.deletePermanently,
-			IsDeletePermanentlyEnabled = deleteOption.IsDeletePermanentlyEnabled
-		};
+            {
+                IsInDeleteMode = isInDeleteMode,
+                ConflictsExist = !conflictingItems.IsEmpty()
+            },
+            conflictingItems.Concat(nonConflictingItems))
+        {
+            Title = titleText,
+            Description = descriptionText,
+            PrimaryButtonText = primaryButtonText,
+            SecondaryButtonText = secondaryButtonText,
+            DeletePermanently = deleteOption.deletePermanently,
+            IsDeletePermanentlyEnabled = deleteOption.IsDeletePermanentlyEnabled
+        };
 
-		_ = LoadItemsIcon(viewModel.Items, viewModel._dialogClosingCts.Token);
+        _ = LoadItemsIcon(viewModel.Items, viewModel._dialogClosingCts.Token);
 
-		return viewModel;
-	}
+        return viewModel;
+    }
 
-	public static FileSystemDialogViewModel GetDialogViewModel(IFolderViewViewModel folderViewViewModel, List<BaseFileSystemDialogItemViewModel> nonConflictingItems, string titleText, string descriptionText, string primaryButtonText, string secondaryButtonText)
+    public static FileSystemDialogViewModel GetDialogViewModel(IFolderViewViewModel folderViewViewModel, List<BaseFileSystemDialogItemViewModel> nonConflictingItems, string titleText, string descriptionText, string primaryButtonText, string secondaryButtonText)
 	{
 		var viewModel = new FileSystemDialogViewModel(
             folderViewViewModel,

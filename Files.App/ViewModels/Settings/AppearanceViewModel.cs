@@ -5,7 +5,6 @@ using CommunityToolkit.WinUI.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System.Windows.Input;
-using Windows.Storage.Pickers;
 
 namespace Files.App.ViewModels.Settings;
 
@@ -14,6 +13,7 @@ public sealed class AppearanceViewModel : ObservableObject
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     private IAppThemeModeService AppThemeModeService { get; } = DependencyExtensions.GetRequiredService<IAppThemeModeService>();
+    private ICommonDialogService CommonDialogService { get; } = DependencyExtensions.GetRequiredService<ICommonDialogService>();
     private IUserSettingsService UserSettingsService { get; set; } = null!;
     private IResourcesService ResourcesService { get; set; } = null!;
 
@@ -43,17 +43,15 @@ public sealed class AppearanceViewModel : ObservableObject
 			"DarkTheme".GetLocalizedResource()
 		];
 
-		// FILESTODO: Re-add Solid and regular Mica when theming is revamped
-		//BackdropMaterialTypes.Add(BackdropMaterialType.Solid, "Solid".GetLocalizedResource());
+        BackdropMaterialTypes.Add(BackdropMaterialType.Solid, "None".GetLocalizedResource());
+        BackdropMaterialTypes.Add(BackdropMaterialType.Acrylic, "Acrylic".GetLocalizedResource());
+        BackdropMaterialTypes.Add(BackdropMaterialType.ThinAcrylic, "ThinAcrylic".GetLocalizedResource());
+        BackdropMaterialTypes.Add(BackdropMaterialType.Mica, "Mica".GetLocalizedResource());
+        BackdropMaterialTypes.Add(BackdropMaterialType.MicaAlt, "MicaAlt".GetLocalizedResource());
 
-		BackdropMaterialTypes.Add(BackdropMaterialType.Acrylic, "Acrylic".GetLocalizedResource());
+        /*selectedBackdropMaterial = BackdropMaterialTypes[UserSettingsService.AppearanceSettingsService.AppThemeBackdropMaterial];*/
 
-		//BackdropMaterialTypes.Add(BackdropMaterialType.Mica, "Mica".GetLocalizedResource());
-		BackdropMaterialTypes.Add(BackdropMaterialType.MicaAlt, "MicaAlt".GetLocalizedResource());
-
-		/*selectedBackdropMaterial = BackdropMaterialTypes[UserSettingsService.AppearanceSettingsService.AppThemeBackdropMaterial];*/
-
-		AppThemeResources = AppThemeResourceFactory.AppThemeResources;
+        AppThemeResources = AppThemeResourceFactory.AppThemeResources;
 
         // Background image fit options
         ImageStretchTypes.Add(Stretch.None, "None".GetLocalizedResource());
@@ -78,7 +76,7 @@ public sealed class AppearanceViewModel : ObservableObject
 
         /*UpdateSelectedResource();*/
 
-        SelectImageCommand = new AsyncRelayCommand(SelectBackgroundImage);
+        SelectImageCommand = new RelayCommand(SelectBackgroundImage);
         RemoveImageCommand = new RelayCommand(RemoveBackgroundImage);
     }
 
@@ -101,24 +99,23 @@ public sealed class AppearanceViewModel : ObservableObject
     /// <summary>
     /// Opens a file picker to select a background image
     /// </summary>
-    private async Task SelectBackgroundImage()
+    private void SelectBackgroundImage()
     {
-        var filePicker = new FileOpenPicker
-        {
-            ViewMode = PickerViewMode.Thumbnail,
-            SuggestedStartLocation = PickerLocationId.PicturesLibrary,
-            FileTypeFilter = { ".png", ".bmp", ".jpg", ".jpeg", ".jfif", ".gif", ".tiff", ".tif", ".webp" }
-        };
+        string[] extensions =
+        [
+            "BitmapFiles".GetLocalizedResource(), "*.bmp;*.dib",
+            "JPEG", "*.jpg;*.jpeg;*.jpe;*.jfif",
+            "GIF", "*.gif",
+            "TIFF", "*.tif;*.tiff",
+            "PNG", "*.png",
+            "HEIC", "*.heic;*.hif",
+            "WEBP", "*.webp",
+        ];
 
-        // WINUI3: Create and initialize new window
-        var parentWindowId = FolderViewViewModel.AppWindow.Id;
-        var handle = Microsoft.UI.Win32Interop.GetWindowFromWindowId(parentWindowId);
-        WinRT.Interop.InitializeWithWindow.Initialize(filePicker, handle);
-
-        var file = await filePicker.PickSingleFileAsync();
-        if (file is not null)
+        var result = CommonDialogService.Open_FileOpenDialog(FolderViewViewModel.WindowHandle, false, extensions, Environment.SpecialFolder.MyPictures, out var filePath);
+        if (result)
         {
-            AppThemeBackgroundImageSource = file.Path;
+            AppThemeBackgroundImageSource = filePath;
         }
     }
 
@@ -290,6 +287,20 @@ public sealed class AppearanceViewModel : ObservableObject
             if (SetProperty(ref selectedImageHorizontalAlignmentType, value))
             {
                 UserSettingsService.AppearanceSettingsService.AppThemeBackgroundImageHorizontalAlignment = ImageHorizontalAlignmentTypes.First(e => e.Value == value).Key;
+            }
+        }
+    }
+
+    public bool ShowToolbar
+    {
+        get => UserSettingsService.AppearanceSettingsService.ShowToolbar;
+        set
+        {
+            if (value != UserSettingsService.AppearanceSettingsService.ShowToolbar)
+            {
+                UserSettingsService.AppearanceSettingsService.ShowToolbar = value;
+
+                OnPropertyChanged();
             }
         }
     }

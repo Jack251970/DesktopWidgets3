@@ -30,7 +30,7 @@ internal sealed class CopyPathAction(IContentPageContext context) : IAction
 		{
 			var path = context.ShellPage.SlimContentPage.SelectedItems is not null
 				? context.ShellPage.SlimContentPage.SelectedItems.Select(x => x.ItemPath).Aggregate((accum, current) => accum + "\n" + current)
-				: context.ShellPage.FilesystemViewModel.WorkingDirectory;
+				: context.ShellPage.ShellViewModel.WorkingDirectory;
 
 			if (FtpHelpers.IsFtpPath(path))
             {

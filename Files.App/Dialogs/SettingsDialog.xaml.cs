@@ -56,7 +56,7 @@ public sealed partial class SettingsDialog : ContentDialog, IDialog<SettingsDial
             SettingsPageKind.FoldersPage => SettingsContentFrame.Navigate(typeof(FoldersPage), FolderViewViewModel),
             SettingsPageKind.ActionsPage => SettingsContentFrame.Navigate(typeof(ActionsPage), FolderViewViewModel),
             SettingsPageKind.TagsPage => SettingsContentFrame.Navigate(typeof(TagsPage), FolderViewViewModel),
-            SettingsPageKind.GitPage => SettingsContentFrame.Navigate(typeof(GitPage), FolderViewViewModel),
+            SettingsPageKind.DevToolsPage => SettingsContentFrame.Navigate(typeof(DevToolsPage), FolderViewViewModel),
             SettingsPageKind.AdvancedPage => SettingsContentFrame.Navigate(typeof(AdvancedPage), FolderViewViewModel),
             SettingsPageKind.AboutPage => SettingsContentFrame.Navigate(typeof(AboutPage), FolderViewViewModel),
             _ => SettingsContentFrame.Navigate(typeof(AppearancePage), FolderViewViewModel)

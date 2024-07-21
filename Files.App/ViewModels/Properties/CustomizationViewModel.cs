@@ -1,12 +1,15 @@
 ﻿using System.IO;
 using Windows.Storage.Pickers;
 using Microsoft.UI.Windowing;
+using System.Windows.Input;
 
 namespace Files.App.ViewModels.Properties;
 
 public sealed class CustomizationViewModel : ObservableObject
 {
-	private static string DefaultIconDllFilePath
+    private ICommonDialogService CommonDialogService { get; } = DependencyExtensions.GetRequiredService<ICommonDialogService>();
+
+    private static string DefaultIconDllFilePath
 		=> Path.Combine(Constants.UserEnvironmentPaths.SystemRootPath, "System32", "SHELL32.dll");
 
 	private readonly AppWindow _appWindow;
@@ -41,10 +44,10 @@ public sealed class CustomizationViewModel : ObservableObject
         }
 	}
 
-	public IRelayCommand RestoreDefaultIconCommand { get; private set; }
-	public IAsyncRelayCommand OpenFilePickerCommand { get; private set; }
+    public ICommand RestoreDefaultIconCommand { get; private set; }
+    public ICommand OpenFilePickerCommand { get; private set; }
 
-	public CustomizationViewModel(IShellPage appInstance, BaseProperties baseProperties, AppWindow appWindow)
+    public CustomizationViewModel(IShellPage appInstance, BaseProperties baseProperties, AppWindow appWindow)
 	{
 		ListedItem item;
 
@@ -72,45 +75,37 @@ public sealed class CustomizationViewModel : ObservableObject
 		// Get default
 		LoadIconsForPath(IconResourceItemPath);
 
-		RestoreDefaultIconCommand = new RelayCommand(ExecuteRestoreDefaultIcon);
-		OpenFilePickerCommand = new AsyncRelayCommand(ExecuteOpenFilePickerAsync);
-	}
+        RestoreDefaultIconCommand = new RelayCommand(ExecuteRestoreDefaultIconCommand);
+        OpenFilePickerCommand = new RelayCommand(ExecuteOpenFilePickerCommand);
+    }
 
-	private void ExecuteRestoreDefaultIcon()
-	{
-		SelectedDllIcon = null;
-		_isIconChanged = true;
-	}
+    private void ExecuteRestoreDefaultIconCommand()
+    {
+        SelectedDllIcon = null;
+        _isIconChanged = true;
+    }
 
-	private async Task ExecuteOpenFilePickerAsync()
-	{
-		// Initialize picker
-		FileOpenPicker picker = new()
-		{
-			SuggestedStartLocation = PickerLocationId.ComputerFolder,
-			ViewMode = PickerViewMode.Thumbnail,
-		};
+    private void ExecuteOpenFilePickerCommand()
+    {
+        // TODO: Check appWindow and windowId here.
+        var parentWindowId = _appWindow.Id;
+        var hWnd = Microsoft.UI.Win32Interop.GetWindowFromWindowId(parentWindowId);
 
-		picker.FileTypeFilter.Add(".dll");
-		picker.FileTypeFilter.Add(".exe");
-		picker.FileTypeFilter.Add(".ico");
+        string[] extensions =
+        [
+            "ApplicationExtension".GetLocalizedResource(), "*.dll",
+            "Application".GetLocalizedResource(), "*.exe",
+            "IcoFileCapitalized".GetLocalizedResource(), "*.ico",
+        ];
 
-		// WINUI3: Create and initialize new window
-		var parentWindowId = _appWindow.Id;
-		var handle = Microsoft.UI.Win32Interop.GetWindowFromWindowId(parentWindowId);
-		WinRT.Interop.InitializeWithWindow.Initialize(picker, handle);
-
-		// Open picker
-		var file = await picker.PickSingleFileAsync();
-		if (file is null)
+        var result = CommonDialogService.Open_FileOpenDialog(hWnd, false, extensions, Environment.SpecialFolder.MyComputer, out var filePath);
+        if (result)
         {
-            return;
+            LoadIconsForPath(filePath);
         }
+    }
 
-        LoadIconsForPath(file.Path);
-	}
-
-	public async Task<bool> UpdateIcon()
+    public async Task<bool> UpdateIcon()
 	{
 		if (!_isIconChanged)
         {
@@ -139,7 +134,7 @@ public sealed class CustomizationViewModel : ObservableObject
 
         await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
 		{
-			_appInstance?.FilesystemViewModel?.RefreshItems(null);
+			_appInstance?.ShellViewModel?.RefreshItems(null);
 		});
 
 		return true;

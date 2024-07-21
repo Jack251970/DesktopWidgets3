@@ -7,9 +7,8 @@ namespace Files.App.Services.DateTimeFormatter;
 
 internal abstract class AbstractDateTimeFormatter : IDateTimeFormatter
 {
-    // CHANGE: Remove ApplicationLanguages.PrimaryLanguageOverride, which is unsupported in unpackaged mode.
-    /*private static readonly CultureInfo cultureInfo
-		= ApplicationLanguages.PrimaryLanguageOverride == string.Empty ? CultureInfo.CurrentCulture : new(ApplicationLanguages.PrimaryLanguageOverride);*/
+    // TODO: Remove ApplicationLanguages.PrimaryLanguageOverride, which is unsupported in unpackaged mode.
+    /*private static readonly CultureInfo cultureInfo = new(AppLanguageHelper.PreferredLanguage.Code);*/
     private static readonly CultureInfo cultureInfo = CultureInfo.CurrentCulture;
 
     public abstract string Name { get; }

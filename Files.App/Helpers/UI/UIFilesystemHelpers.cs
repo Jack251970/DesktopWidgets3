@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Storage.FtpStorage;
+using Files.App.Storage.Storables;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.IO;
@@ -71,7 +71,7 @@ public static class UIFilesystemHelpers
                     }
 					else if (listedItem.PrimaryItemAttribute == StorageItemTypes.File || listedItem is ZipItem)
 					{
-						var result = await associatedInstance.FilesystemViewModel.GetFileFromPathAsync(listedItem.ItemPath)
+						var result = await associatedInstance.ShellViewModel.GetFileFromPathAsync(listedItem.ItemPath)
 							.OnSuccess(t => items.Add(t));
 
 						if (!result)
@@ -81,7 +81,7 @@ public static class UIFilesystemHelpers
                     }
 					else
 					{
-						var result = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(listedItem.ItemPath)
+						var result = await associatedInstance.ShellViewModel.GetFolderFromPathAsync(listedItem.ItemPath)
 							.OnSuccess(t => items.Add(t));
 
 						if (!result)
@@ -179,7 +179,7 @@ public static class UIFilesystemHelpers
                     }
 					else if (listedItem.PrimaryItemAttribute == StorageItemTypes.File || listedItem is ZipItem)
 					{
-						var result = await associatedInstance.FilesystemViewModel.GetFileFromPathAsync(listedItem.ItemPath)
+						var result = await associatedInstance.ShellViewModel.GetFileFromPathAsync(listedItem.ItemPath)
 							.OnSuccess(t => items.Add(t));
 
 						if (!result)
@@ -189,7 +189,7 @@ public static class UIFilesystemHelpers
                     }
 					else
 					{
-						var result = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(listedItem.ItemPath)
+						var result = await associatedInstance.ShellViewModel.GetFolderFromPathAsync(listedItem.ItemPath)
 							.OnSuccess(t => items.Add(t));
 
 						if (!result)
@@ -305,7 +305,7 @@ public static class UIFilesystemHelpers
 
 		if (associatedInstance.SlimContentPage is not null)
 		{
-			currentPath = associatedInstance.FilesystemViewModel.WorkingDirectory;
+			currentPath = associatedInstance.ShellViewModel.WorkingDirectory;
 			if (App.LibraryManager.TryGetLibrary(currentPath, out var library) &&
 				!library.IsEmpty &&
 				library.Folders.Count == 1) // FILESTODO: handle libraries with multiple folders
@@ -402,7 +402,7 @@ public static class UIFilesystemHelpers
 
 	public static async Task CreateShortcutAsync(IFolderViewViewModel folderViewViewModel, IShellPage? associatedInstance, IReadOnlyList<ListedItem> selectedItems)
 	{
-		var currentPath = associatedInstance?.FilesystemViewModel.WorkingDirectory;
+		var currentPath = associatedInstance?.ShellViewModel.WorkingDirectory;
 
 		if (App.LibraryManager.TryGetLibrary(currentPath ?? string.Empty, out var library) && !library.IsEmpty)
         {
@@ -428,7 +428,7 @@ public static class UIFilesystemHelpers
 
 	public static async Task CreateShortcutFromDialogAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
 	{
-		var currentPath = associatedInstance.FilesystemViewModel.WorkingDirectory;
+		var currentPath = associatedInstance.ShellViewModel.WorkingDirectory;
 		if (App.LibraryManager.TryGetLibrary(currentPath, out var library) &&
 			!library.IsEmpty)
 		{

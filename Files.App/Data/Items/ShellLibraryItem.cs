@@ -9,15 +9,15 @@ public sealed class ShellLibraryItem
 {
 	public const string EXTENSION = ".library-ms";
 
-	public static readonly string LibrariesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft", "Windows", "Libraries");
+	public static readonly string LibrariesPath = Win32PInvoke.GetFolderFromKnownFolderGUID(new Guid("1B3EA5DC-B587-4786-B4EF-BD1DC332AEAE"));
 
-	/// <summary>
-	/// Full path of library file.<br/>
-	/// <br/>
-	/// C:\Users\[username]\AppData\Roaming\Microsoft\Windows\Libraries\Documents.library-ms<br/>
-	/// C:\Users\[username]\AppData\Roaming\Microsoft\Windows\Libraries\Custom library.library-ms
-	/// </summary>
-	public string FullPath { get; set; }
+    /// <summary>
+    /// Full path of library file.<br/>
+    /// <br/>
+    /// C:\Users\[username]\AppData\Roaming\Microsoft\Windows\Libraries\Documents.library-ms<br/>
+    /// C:\Users\[username]\AppData\Roaming\Microsoft\Windows\Libraries\Custom library.library-ms
+    /// </summary>
+    public string FullPath { get; set; }
 
 	/// <summary>
 	/// ShellItemDisplayString.DesktopAbsoluteParsing<br/>

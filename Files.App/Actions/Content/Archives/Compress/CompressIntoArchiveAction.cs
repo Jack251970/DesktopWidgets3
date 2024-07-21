@@ -22,14 +22,11 @@ internal sealed class CompressIntoArchiveAction(IFolderViewViewModel folderViewV
             return;
         }
 
-        var (sources, directory, fileName) = CompressHelper.GetCompressDestination(context.ShellPage);
+        GetDestination(out var sources, out var directory, out var fileName);
 
-		var dialog = new CreateArchiveDialog(FolderViewViewModel)
-		{
-			FileName = fileName,
-		};
+        var dialog = new CreateArchiveDialog(FolderViewViewModel) { FileName = fileName };
 
-		if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
             dialog.XamlRoot = FolderViewViewModel.XamlRoot;
         }
@@ -41,8 +38,8 @@ internal sealed class CompressIntoArchiveAction(IFolderViewViewModel folderViewV
             return;
         }
 
-        ICompressArchiveModel creator = new CompressArchiveModel(
-			sources,
+        ICompressArchiveModel compressionModel = new CompressArchiveModel(
+            sources,
 			directory,
 			dialog.FileName,
 			dialog.Password,
@@ -50,6 +47,6 @@ internal sealed class CompressIntoArchiveAction(IFolderViewViewModel folderViewV
 			dialog.CompressionLevel,
 			dialog.SplittingSize);
 
-		await CompressHelper.CompressArchiveAsync(FolderViewViewModel, creator);
-	}
+        await StorageArchiveService.CompressAsync(FolderViewViewModel, compressionModel);
+    }
 }

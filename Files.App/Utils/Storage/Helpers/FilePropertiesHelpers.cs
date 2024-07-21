@@ -65,7 +65,7 @@ public static class FilePropertiesHelpers
 		else
 		{
 			// Instance's current folder
-			var folder = associatedInstance.FilesystemViewModel?.CurrentFolder;
+			var folder = associatedInstance.ShellViewModel?.CurrentFolder;
 			if (folder is null)
             {
                 return;
@@ -192,14 +192,19 @@ public static class FilePropertiesHelpers
 	/// Destroy all cached properties windows
 	/// </summary>
 	/// <returns></returns>
-	public static async void DestroyCachedWindows()
+	public static void DestroyCachedWindows()
 	{
-		while (WindowCache.TryTake(out var window))
-		{
-			window.Closed -= PropertiesWindow_Closed;
-            await WindowsExtensions.CloseWindow(window);
+        while (WindowCache?.TryTake(out var window) ?? false)
+        {
+            if (window is null)
+            {
+                continue;
+            }
+
+            window.Closed -= PropertiesWindow_Closed;
+            window.Close();
         }
-	}
+    }
 
 	/// <summary>
 	/// Returns task to wait for all properties windows to close

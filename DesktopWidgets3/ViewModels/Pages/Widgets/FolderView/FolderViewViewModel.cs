@@ -2,7 +2,7 @@
 using Files.App.ViewModels;
 using Files.App.Data.EventArguments;
 using Files.App.Data.Enums;
-using Files.App.Services.Settings;
+using Files.App.Data.Contracts;
 using Windows.Foundation;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -323,7 +323,7 @@ public partial class FolderViewViewModel : BaseWidgetViewModel<FolderViewWidgetS
             case nameof(IApplicationSettingsService.ShowRunningAsAdminPrompt):
                 Settings.ShowRunningAsAdminPrompt = (bool)e.NewValue!;
                 break;
-            case nameof(Files.App.Services.Settings.IAppSettingsService.ShowStatusCenterTeachingTip):
+            case nameof(Files.App.Data.Contracts.IAppSettingsService.ShowStatusCenterTeachingTip):
                 await LocalSettingsExtensions.SaveLocalSettingAsync("ShowStatusCenterTeachingTip", (bool)e.NewValue!);
                 return;
             default:

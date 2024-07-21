@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.App.Storage.WindowsStorage;
+using Files.App.Storage.Storables;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -331,7 +331,7 @@ public sealed class DriveItem : ObservableObject, INavigationControlItem, ILocat
 
         if (string.Equals(DeviceID, "network-folder"))
         {
-            IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.NetworkDrives).IconData;
+            IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.Network).IconData;
         }
 
         IconData ??= UIHelpers.GetSidebarIconResourceInfo(Constants.ImageRes.Folder).IconData;

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-namespace Files.App.Actions;
+/*namespace Files.App.Actions;
 
-/*internal sealed class PreviousTabAction : ObservableObject, IAction
+internal sealed class PreviousTabAction : ObservableObject, IAction
 {
 	private readonly IMultitaskingContext multitaskingContext;
 
@@ -26,7 +26,7 @@ namespace Files.App.Actions;
 		multitaskingContext.PropertyChanged += MultitaskingContext_PropertyChanged;
 	}
 
-	public Task ExecuteAsync(object? parameter = null)
+	public async Task ExecuteAsync(object? parameter = null)
 	{
 		if (FolderViewViewModel.TabStripSelectedIndex is 0)
         {
@@ -37,10 +37,14 @@ namespace Files.App.Actions;
             FolderViewViewModel.TabStripSelectedIndex--;
         }
 
-        return Task.CompletedTask;
-	}
+        // Small delay for the UI to load
+        await Task.Delay(500);
 
-	private void MultitaskingContext_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        // Refocus on the file list
+        (multitaskingContext.CurrentTabItem.TabItemContent as Control)?.Focus(FocusState.Programmatic);
+    }
+
+    private void MultitaskingContext_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName == nameof(IMultitaskingContext.TabCount))
         {

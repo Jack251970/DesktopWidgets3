@@ -56,9 +56,9 @@ public sealed partial class HomePage : Page, IDisposable
 		AppInstance.ToolbarViewModel.RefreshRequested += ToolbarViewModel_RefreshRequested;
 
 		// Set path of working directory empty
-		await AppInstance.FilesystemViewModel.SetWorkingDirectoryAsync("Home");
+		await AppInstance.ShellViewModel.SetWorkingDirectoryAsync("Home");
 
-		AppInstance.SlimContentPage?.DirectoryPropertiesViewModel.UpdateGitInfo(false, string.Empty, null);
+		AppInstance.SlimContentPage?.StatusBarViewModel.UpdateGitInfo(false, string.Empty, null);
 
 		AppInstance.ToolbarViewModel.PathComponents.Clear();
 

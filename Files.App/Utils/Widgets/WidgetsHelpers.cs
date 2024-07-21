@@ -41,6 +41,10 @@ public static class WidgetsHelpers
         {
             return generalSettingsService.ShowDrivesWidget;
         }
+        if (typeof(TWidget) == typeof(NetworkLocationsWidgetViewModel))
+        {
+            return generalSettingsService.ShowNetworkLocationsWidget;
+        }
         if (typeof(TWidget) == typeof(FileTagsWidgetViewModel))
         {
             return generalSettingsService.ShowFileTagsWidget;

@@ -31,7 +31,7 @@ internal sealed class CopyPathWithQuotesAction(IContentPageContext context) : IA
 			var selectedItems = context.ShellPage.SlimContentPage.SelectedItems;
 			var path = selectedItems is not null
 				? string.Join("\n", selectedItems.Select(item => $"\"{item.ItemPath}\""))
-				: context.ShellPage.FilesystemViewModel.WorkingDirectory;
+				: context.ShellPage.ShellViewModel.WorkingDirectory;
 
 			if (FtpHelpers.IsFtpPath(path))
             {

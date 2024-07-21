@@ -29,7 +29,7 @@ public interface IBaseLayoutPage : IDisposable
 
 	SelectedItemsPropertiesViewModel SelectedItemsPropertiesViewModel { get; }
 
-	DirectoryPropertiesViewModel DirectoryPropertiesViewModel { get; }
+	StatusBarViewModel StatusBarViewModel { get; }
 
 	BaseLayoutViewModel? CommandsViewModel { get; }
 

@@ -4,6 +4,7 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using Files.App.Actions;
+using Microsoft.Extensions.Logging;
 
 namespace Files.App.Data.Commands;
 
@@ -113,7 +114,8 @@ internal sealed class CommandManager : ICommandManager
 	public IRichCommand OpenTerminal => commands[CommandCodes.OpenTerminal];
 	public IRichCommand OpenTerminalAsAdmin => commands[CommandCodes.OpenTerminalAsAdmin];
 	public IRichCommand OpenCommandPalette => commands[CommandCodes.OpenCommandPalette];
-	public IRichCommand LayoutDecreaseSize => commands[CommandCodes.LayoutDecreaseSize];
+    public IRichCommand EditInNotepad => commands[CommandCodes.EditInNotepad];
+    public IRichCommand LayoutDecreaseSize => commands[CommandCodes.LayoutDecreaseSize];
 	public IRichCommand LayoutIncreaseSize => commands[CommandCodes.LayoutIncreaseSize];
 	public IRichCommand LayoutDetails => commands[CommandCodes.LayoutDetails];
     public IRichCommand LayoutList => commands[CommandCodes.LayoutList];
@@ -178,16 +180,24 @@ internal sealed class CommandManager : ICommandManager
 	public IRichCommand CloseTabsToTheRightSelected => commands[CommandCodes.CloseTabsToTheRightSelected];
 	public IRichCommand CloseOtherTabsCurrent => commands[CommandCodes.CloseOtherTabsCurrent];
 	public IRichCommand CloseOtherTabsSelected => commands[CommandCodes.CloseOtherTabsSelected];*/
-    public IRichCommand OpenDirectoryInNewPaneAction => commands[CommandCodes.OpenDirectoryInNewPane];
-	public IRichCommand OpenDirectoryInNewTabAction => commands[CommandCodes.OpenDirectoryInNewTab];
-	public IRichCommand OpenInNewWindowItemAction => commands[CommandCodes.OpenInNewWindowItem];
+    public IRichCommand OpenInNewPaneAction => commands[CommandCodes.OpenInNewPane];
+    public IRichCommand OpenInNewPaneFromHomeAction => commands[CommandCodes.OpenInNewPaneFromHome];
+    public IRichCommand OpenInNewPaneFromSidebarAction => commands[CommandCodes.OpenInNewPaneFromSidebar];
+    public IRichCommand OpenInNewTabAction => commands[CommandCodes.OpenInNewTab];
+    public IRichCommand OpenInNewTabFromHomeAction => commands[CommandCodes.OpenInNewTabFromHome];
+    public IRichCommand OpenInNewTabFromSidebarAction => commands[CommandCodes.OpenInNewTabFromSidebar];
+    public IRichCommand OpenInNewWindowAction => commands[CommandCodes.OpenInNewWindow];
+    public IRichCommand OpenInNewWindowFromHomeAction => commands[CommandCodes.OpenInNewWindowFromHome];
+    public IRichCommand OpenInNewWindowFromSidebarAction => commands[CommandCodes.OpenInNewWindowFromSidebar];
     // CHANGE: Remove commands related to tabs.
     /*public IRichCommand ReopenClosedTab => commands[CommandCodes.ReopenClosedTab];
 	public IRichCommand PreviousTab => commands[CommandCodes.PreviousTab];
 	public IRichCommand NextTab => commands[CommandCodes.NextTab];
 	public IRichCommand CloseSelectedTab => commands[CommandCodes.CloseSelectedTab];*/
     public IRichCommand OpenNewPane => commands[CommandCodes.OpenNewPane];
-	public IRichCommand ClosePane => commands[CommandCodes.ClosePane];
+    public IRichCommand CloseActivePane => commands[CommandCodes.CloseActivePane];
+    public IRichCommand FocusLeftPane => commands[CommandCodes.FocusLeftPane];
+    public IRichCommand FocusRightPane => commands[CommandCodes.FocusRightPane];
     public IRichCommand OpenFileLocation => commands[CommandCodes.OpenFileLocation];
 	public IRichCommand PlayAll => commands[CommandCodes.PlayAll];
 	public IRichCommand GitFetch => commands[CommandCodes.GitFetch];
@@ -308,6 +318,7 @@ internal sealed class CommandManager : ICommandManager
 		[CommandCodes.OpenTerminal] = new OpenTerminalAction(contentPageContext),
 		[CommandCodes.OpenTerminalAsAdmin] = new OpenTerminalAsAdminAction(contentPageContext),
 		[CommandCodes.OpenCommandPalette] = new OpenCommandPaletteAction(contentPageContext),
+        [CommandCodes.EditInNotepad] = new EditInNotepadAction(contentPageContext),
         [CommandCodes.LayoutDecreaseSize] = new LayoutDecreaseSizeAction(folderViewViewModel, displayPageContext, contentPageContext),
 		[CommandCodes.LayoutIncreaseSize] = new LayoutIncreaseSizeAction(folderViewViewModel, displayPageContext, contentPageContext),
 		[CommandCodes.LayoutDetails] = new LayoutDetailsAction(displayPageContext),
@@ -373,16 +384,24 @@ internal sealed class CommandManager : ICommandManager
 		[CommandCodes.CloseTabsToTheRightSelected] = new CloseTabsToTheRightSelectedAction(),
 		[CommandCodes.CloseOtherTabsCurrent] = new CloseOtherTabsCurrentAction(),
         [CommandCodes.CloseOtherTabsSelected] = new CloseOtherTabsSelectedAction(),*/
-        [CommandCodes.OpenDirectoryInNewPane] = new OpenDirectoryInNewPaneAction(folderViewViewModel, contentPageContext),
-		[CommandCodes.OpenDirectoryInNewTab] = new OpenDirectoryInNewTabAction(folderViewViewModel, contentPageContext),
-		[CommandCodes.OpenInNewWindowItem] = new OpenInNewWindowItemAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenInNewPane] = new OpenInNewPaneAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenInNewPaneFromHome] = new OpenInNewPaneFromHomeAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenInNewPaneFromSidebar] = new OpenInNewPaneFromSidebarAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenInNewTab] = new OpenInNewTabAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenInNewTabFromHome] = new OpenInNewTabFromHomeAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenInNewTabFromSidebar] = new OpenInNewTabFromSidebarAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenInNewWindow] = new OpenInNewWindowAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenInNewWindowFromHome] = new OpenInNewWindowFromHomeAction(folderViewViewModel, contentPageContext),
+        [CommandCodes.OpenInNewWindowFromSidebar] = new OpenInNewWindowFromSidebarAction(folderViewViewModel, contentPageContext),
         // CHANGE: Remove commands related to tabs.
         /*[CommandCodes.ReopenClosedTab] = new ReopenClosedTabAction(),
 		[CommandCodes.PreviousTab] = new PreviousTabAction(),
 		[CommandCodes.NextTab] = new NextTabAction(),
 		[CommandCodes.CloseSelectedTab] = new CloseSelectedTabAction(),*/
         [CommandCodes.OpenNewPane] = new OpenNewPaneAction(contentPageContext),
-		[CommandCodes.ClosePane] = new ClosePaneAction(contentPageContext),
+        [CommandCodes.CloseActivePane] = new CloseActivePaneAction(contentPageContext),
+        [CommandCodes.FocusLeftPane] = new FocusLeftPaneAction(contentPageContext),
+        [CommandCodes.FocusRightPane] = new FocusRightPaneAction(contentPageContext),
         [CommandCodes.OpenFileLocation] = new OpenFileLocationAction(folderViewViewModel, contentPageContext),
 		[CommandCodes.PlayAll] = new PlayAllAction(folderViewViewModel, contentPageContext),
 		[CommandCodes.GitFetch] = new GitFetchAction(contentPageContext),
@@ -398,25 +417,26 @@ internal sealed class CommandManager : ICommandManager
     /// </summary>
     private void OverwriteKeyBindings()
     {
+        var allCommands = commands.Values.OfType<ActionCommand>();
+
         if (ActionsSettingsService.ActionsV2 is null)
         {
-            foreach (var command in commands.Values.OfType<ActionCommand>())
-            {
-                command.RestoreKeyBindings();
-            }
+            allCommands.ForEach(x => x.RestoreKeyBindings());
         }
         else
         {
-            foreach (var command in commands.Values.OfType<ActionCommand>())
+            foreach (var command in allCommands)
             {
                 var customizedKeyBindings = ActionsSettingsService.ActionsV2.FindAll(x => x.CommandCode == command.Code.ToString());
 
                 if (customizedKeyBindings.IsEmpty())
                 {
+                    // Could not find customized key bindings for the command
                     command.RestoreKeyBindings();
                 }
                 else if (customizedKeyBindings.Count == 1 && customizedKeyBindings[0].KeyBinding == string.Empty)
                 {
+                    // Do not assign any key binding even though there're default keys pre-defined
                     command.OverwriteKeyBindings(HotKeyCollection.Empty);
                 }
                 else
@@ -427,9 +447,62 @@ internal sealed class CommandManager : ICommandManager
             }
         }
 
-        _allKeyBindings = commands.Values
-            .SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
-            .ToImmutableDictionary(item => item.HotKey, item => item.Command);
+        try
+        {
+            // Set collection of a set of command code and key bindings to dictionary
+            _allKeyBindings = commands.Values
+                .SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
+                .ToImmutableDictionary(item => item.HotKey, item => item.Command);
+        }
+        catch (ArgumentException ex)
+        {
+            // The keys are not necessarily all different because they can be set manually in text editor
+            // ISSUE: https://github.com/files-community/Files/issues/15331
+
+            var flat = commands.Values.SelectMany(x => x.HotKeys).Select(x => x.LocalizedLabel);
+            var duplicates = flat.GroupBy(x => x).Where(x => x.Count() > 1).Select(group => group.Key);
+
+            foreach (var item in duplicates)
+            {
+                if (!string.IsNullOrEmpty(item))
+                {
+                    var occurrences = allCommands.Where(x => x.HotKeys.Select(x => x.LocalizedLabel).Contains(item));
+
+                    // Restore the defaults for all occurrences in our cache
+                    occurrences.ForEach(x => x.RestoreKeyBindings());
+
+                    // Get all customized key bindings from user settings json
+                    var actions =
+                        ActionsSettingsService.ActionsV2 is not null
+                            ? new List<ActionWithParameterItem>(ActionsSettingsService.ActionsV2)
+                            : [];
+
+                    // Remove the duplicated key binding from user settings JSON file
+                    actions.RemoveAll(x => x.KeyBinding.Contains(item));
+
+                    // Reset
+                    ActionsSettingsService.ActionsV2 = actions;
+                }
+            }
+
+            // Set collection of a set of command code and key bindings to dictionary
+            _allKeyBindings = commands.Values
+                .SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
+                .ToImmutableDictionary(item => item.HotKey, item => item.Command);
+
+            App.Logger.LogWarning(ex, "The app found some keys in different commands are duplicated and are using default key bindings for those commands.");
+        }
+        catch (Exception ex)
+        {
+            allCommands.ForEach(x => x.RestoreKeyBindings());
+
+            // Set collection of a set of command code and key bindings to dictionary
+            _allKeyBindings = commands.Values
+                .SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
+                .ToImmutableDictionary(item => item.HotKey, item => item.Command);
+
+            App.Logger.LogWarning(ex, "The app is temporarily using default key bindings for all because of a serious error of assigning custom keys.");
+        }
     }
 
     public static HotKeyCollection GetDefaultKeyBindings(IAction action)

@@ -16,7 +16,7 @@ public class StorageHelper
         "ms-appdata:///tempstate/", "ms-appdata:///localstate/", "ms-appdata:///roamingstate/"
     ];
 
-    public static Task<StorageFile> GetStorageFile(string uriPath, string? path = null)
+    public static Task<StorageFile> GetStorageFileFromApplicationUriAsync(string uriPath, string? path = null)
     {
         if (RuntimeHelper.IsMSIX)
         {

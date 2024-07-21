@@ -107,6 +107,7 @@ public enum CommandCodes
     OpenTerminal,
     OpenTerminalAsAdmin,
     OpenCommandPalette,
+    EditInNotepad,
 
     // Layout
     LayoutDecreaseSize,
@@ -171,7 +172,6 @@ public enum CommandCodes
     NavigateForward,
     NavigateUp,
 
-    // Other
     DuplicateCurrentTab,
     DuplicateSelectedTab,
     CloseTabsToTheLeftCurrent,
@@ -180,15 +180,25 @@ public enum CommandCodes
     CloseTabsToTheRightSelected,
     CloseOtherTabsCurrent,
     CloseOtherTabsSelected,
-    OpenDirectoryInNewPane,
-    OpenDirectoryInNewTab,
-    OpenInNewWindowItem,
     ReopenClosedTab,
     PreviousTab,
     NextTab,
     CloseSelectedTab,
     OpenNewPane,
-    ClosePane,
+    CloseActivePane,
+    FocusLeftPane,
+    FocusRightPane,
+
+    // OpenInNew
+    OpenInNewPane,
+    OpenInNewPaneFromHome,
+    OpenInNewPaneFromSidebar,
+    OpenInNewTab,
+    OpenInNewTabFromHome,
+    OpenInNewTabFromSidebar,
+    OpenInNewWindow,
+    OpenInNewWindowFromHome,
+    OpenInNewWindowFromSidebar,
 
     // Play
     PlayAll,

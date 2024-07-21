@@ -1,8 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.AppCenter.Analytics;
-
 namespace Files.App.Services.Settings;
 
 internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGeneralSettingsService
@@ -104,7 +102,13 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 		set => Set(value);
 	}
 
-	public bool ShowFileTagsWidget
+    public bool ShowNetworkLocationsWidget
+    {
+        get => Get(true);
+        set => Set(value);
+    }
+
+    public bool ShowFileTagsWidget
 	{
 		get => Get(false);
 		set => Set(value);
@@ -128,7 +132,13 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 		set => Set(value);
 	}
 
-	public bool FileTagsWidgetExpanded
+    public bool NetworkLocationsWidgetExpanded
+    {
+        get => Get(false);
+        set => Set(value);
+    }
+
+    public bool FileTagsWidgetExpanded
 	{
 		get => Get(true);
 		set => Set(value);
@@ -158,7 +168,7 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 		set => Set(value);
 	}
 
-	public bool ShowNetworkDrivesSection
+	public bool ShowNetworkSection
 	{
 		get => Get(true);
 		set => Set(value);
@@ -258,44 +268,14 @@ internal sealed class GeneralSettingsService : BaseObservableJsonSettings, IGene
 		set => Set(value);
 	}
 
-	protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)
-	{
-		switch (e.SettingName)
-		{
-			case nameof(OpenSpecificPageOnStartup):
-			case nameof(ContinueLastSessionOnStartUp):
-			case nameof(OpenNewTabOnStartup):
-			case nameof(OpenTabInExistingInstance):
-			case nameof(AlwaysOpenDualPaneInNewTab):
-			case nameof(ShowQuickAccessWidget):
-			case nameof(ShowRecentFilesWidget):
-			case nameof(ShowDrivesWidget):
-			case nameof(FoldersWidgetExpanded):
-			case nameof(RecentFilesWidgetExpanded):
-			case nameof(DrivesWidgetExpanded):
-			case nameof(ShowPinnedSection):
-			case nameof(ShowLibrarySection):
-			case nameof(ShowCloudDrivesSection):
-			case nameof(ShowNetworkDrivesSection):
-			case nameof(ShowWslSection):
-			case nameof(ShowFileTagsSection):
-			case nameof(MoveShellExtensionsToSubMenu):
-			case nameof(ShowEditTagsMenu):
-			case nameof(ShowSendToMenu):
-			case nameof(ShowOpenInNewTab):
-			case nameof(ShowOpenInNewWindow):
-			case nameof(ShowOpenInNewPane):
-            case nameof(ShowCopyPath):
-            case nameof(ShowCreateFolderWithSelection):
-            case nameof(ShowCreateShortcut):
-            case nameof(ShowCompressionOptions):
-            case nameof(LeaveAppRunning):
-			case nameof(ConflictsResolveOption):
-			case nameof(ShowHashesDictionary):
-				Analytics.TrackEvent($"Set {e.SettingName} to {e.NewValue}");
-				break;
-		}
+    public string UserId
+    {
+        get => Get(Guid.NewGuid().ToString())!;
+        set => Set(value);
+    }
 
-		base.RaiseOnSettingChangedEvent(sender, e);
-	}
+    protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)
+    {
+        base.RaiseOnSettingChangedEvent(sender, e);
+    }
 }

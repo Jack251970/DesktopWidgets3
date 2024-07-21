@@ -28,7 +28,7 @@ public abstract class BaseTabBar : ITabBar
 	public const string TabPathIdentifier = "FilesTabViewItemPath";
 
 	// RecentlyClosedTabs is shared between all multitasking controls
-	public static Stack<CustomTabViewItemParameter[]> RecentlyClosedTabs { get; private set; } = new();
+	public static Stack<TabBarItemParameter[]> RecentlyClosedTabs { get; private set; } = new();
 
     public ObservableCollection<TabBarItem> Items
 		=> MainPageViewModel.AppInstancesManager.Get(FolderViewViewModel);
@@ -133,7 +133,7 @@ public abstract class BaseTabBar : ITabBar
 	}
 
     // CHANGE: Non-static function instead of static one.
-    public void PushRecentTab(CustomTabViewItemParameter[] tab)
+    public void PushRecentTab(TabBarItemParameter[] tab)
 	{
 		RecentlyClosedTabs.Push(tab);
 		StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(nameof(RecentlyClosedTabs)));

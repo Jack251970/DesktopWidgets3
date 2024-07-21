@@ -37,7 +37,7 @@ internal sealed class PasteItemAction : ObservableObject, IAction
             return;
         }
 
-        var path = context.ShellPage.FilesystemViewModel.WorkingDirectory;
+        var path = context.ShellPage.ShellViewModel.WorkingDirectory;
 		await UIFilesystemHelpers.PasteItemAsync(path, context.ShellPage);
 	}
 

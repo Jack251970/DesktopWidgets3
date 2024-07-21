@@ -23,7 +23,7 @@ internal abstract class BaseRotateAction : ObservableObject, IAction
 
 	public bool IsExecutable =>
 		IsContextPageTypeAdaptedToCommand() &&
-		(context.ShellPage?.SlimContentPage?.SelectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false);
+		(context.ShellPage?.SlimContentPage?.SelectedItemsPropertiesViewModel?.IsCompatibleToSetAsWindowsWallpaper ?? false);
 
 	public BaseRotateAction(IFolderViewViewModel folderViewViewModel, IContentPageContext context)
     {

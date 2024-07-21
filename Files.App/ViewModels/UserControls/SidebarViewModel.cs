@@ -16,21 +16,20 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.System;
 using Windows.UI.Core;
-using Files.Core.Storage.Extensions;
 
 namespace Files.App.ViewModels.UserControls;
 
 public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarViewModel
 {
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
-    private INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
+    private INetworkService NetworkService { get; } = DependencyExtensions.GetRequiredService<INetworkService>();
     private IUserSettingsService UserSettingsService { get; set; } = null!;
     private ICommandManager Commands { get; set; } = null!;
     private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
     private readonly IFileTagsService fileTagsService;
 
-    private IPaneHolder paneHolder = null!;
-    public IPaneHolder PaneHolder
+    private IShellPanesPage paneHolder = null!;
+    public IShellPanesPage PaneHolder
     {
         get => paneHolder;
         set => SetProperty(ref paneHolder, value);
@@ -200,17 +199,17 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
         }
     }
 
-    public bool ShowNetworkDrivesSection
+    public bool ShowNetworkSection
     {
-        get => UserSettingsService.GeneralSettingsService.ShowNetworkDrivesSection;
+        get => UserSettingsService.GeneralSettingsService.ShowNetworkSection;
         set
         {
-            if (value == UserSettingsService.GeneralSettingsService.ShowNetworkDrivesSection)
+            if (value == UserSettingsService.GeneralSettingsService.ShowNetworkSection)
             {
                 return;
             }
 
-            UserSettingsService.GeneralSettingsService.ShowNetworkDrivesSection = value;
+            UserSettingsService.GeneralSettingsService.ShowNetworkSection = value;
         }
     }
 
@@ -271,7 +270,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
         App.LibraryManager.DataChanged += Manager_DataChanged;
         drivesViewModel.Drives.CollectionChanged += (x, args) => Manager_DataChanged(SectionType.Drives, args);
         CloudDrivesManager.DataChanged += Manager_DataChanged;
-        NetworkDrivesService.Drives.CollectionChanged += (x, args) => Manager_DataChanged(SectionType.Network, args);
+        NetworkService.Computers.CollectionChanged += (x, args) => Manager_DataChanged(SectionType.Network, args);
         WSLDistroManager.DataChanged += Manager_DataChanged;
         App.FileTagsManager.DataChanged += Manager_DataChanged;
         SidebarDisplayMode = UserSettingsService.AppearanceSettingsService.IsSidebarOpen ? SidebarDisplayMode.Expanded : SidebarDisplayMode.Compact;*/
@@ -310,7 +309,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
         App.LibraryManager.DataChanged += Manager_DataChanged;
         drivesViewModel.Drives.CollectionChanged += (x, args) => Manager_DataChanged(SectionType.Drives, args);
         CloudDrivesManager.DataChanged += Manager_DataChanged;
-        NetworkDrivesService.Drives.CollectionChanged += (x, args) => Manager_DataChanged(SectionType.Network, args);
+        NetworkService.Computers.CollectionChanged += (x, args) => Manager_DataChanged(SectionType.Network, args);
         WSLDistroManager.DataChanged += Manager_DataChanged;
         App.FileTagsManager.DataChanged += Manager_DataChanged;
         // CHANGE: Remove sidebar.
@@ -337,7 +336,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
                 SectionType.Pinned => App.QuickAccessManager.Model.PinnedFolderItems,
                 SectionType.CloudDrives => CloudDrivesManager.Drives,
                 SectionType.Drives => drivesViewModel.Drives.Cast<DriveItem>().ToList().AsReadOnly(),
-                SectionType.Network => NetworkDrivesService.Drives.Cast<DriveItem>().ToList().AsReadOnly(),
+                SectionType.Network => NetworkService.Computers.Cast<DriveItem>().ToList().AsReadOnly(),
                 SectionType.WSL => WSLDistroManager.Distros,
                 SectionType.Library => App.LibraryManager.Libraries,
                 SectionType.FileTag => App.FileTagsManager.FileTags,
@@ -551,12 +550,12 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
 
             case SectionType.Network:
                 {
-                    if (!ShowNetworkDrivesSection)
+                    if (!ShowNetworkSection)
                     {
                         break;
                     }
-                    section = BuildSection("SidebarNetworkDrives".GetLocalizedResource(), sectionType, new ContextMenuOptions { ShowHideSection = true }, false);
-                    iconIdex = Constants.ImageRes.NetworkDrives;
+                    section = BuildSection("Network".GetLocalizedResource(), sectionType, new ContextMenuOptions { ShowHideSection = true }, false);
+                    iconIdex = Constants.ImageRes.Network;
                     section.IsHeader = true;
 
                     break;
@@ -635,7 +634,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
             {
                 SectionType.CloudDrives when generalSettingsService.ShowCloudDrivesSection => CloudDrivesManager.UpdateDrivesAsync,
                 SectionType.Drives => drivesViewModel.UpdateDrivesAsync,
-                SectionType.Network when generalSettingsService.ShowNetworkDrivesSection => NetworkDrivesService.UpdateDrivesAsync,
+                SectionType.Network when generalSettingsService.ShowNetworkSection => NetworkService.UpdateComputersAsync,
                 SectionType.WSL when generalSettingsService.ShowWslSection => WSLDistroManager.UpdateDrivesAsync,
                 SectionType.FileTag when generalSettingsService.ShowFileTagsSection => App.FileTagsManager.UpdateFileTagsAsync,
                 SectionType.Library => App.LibraryManager.UpdateLibrariesAsync,
@@ -679,9 +678,9 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
                 await UpdateSectionVisibilityAsync(SectionType.Drives, ShowDrivesSection);
                 OnPropertyChanged(nameof(ShowDrivesSection));
                 break;
-            case nameof(UserSettingsService.GeneralSettingsService.ShowNetworkDrivesSection):
-                await UpdateSectionVisibilityAsync(SectionType.Network, ShowNetworkDrivesSection);
-                OnPropertyChanged(nameof(ShowNetworkDrivesSection));
+            case nameof(UserSettingsService.GeneralSettingsService.ShowNetworkSection):
+                await UpdateSectionVisibilityAsync(SectionType.Network, ShowNetworkSection);
+                OnPropertyChanged(nameof(ShowNetworkSection));
                 break;
             case nameof(UserSettingsService.GeneralSettingsService.ShowWslSection):
                 await UpdateSectionVisibilityAsync(SectionType.WSL, ShowWslSection);
@@ -702,7 +701,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
         App.LibraryManager.DataChanged -= Manager_DataChanged;
         drivesViewModel.Drives.CollectionChanged -= (x, args) => Manager_DataChanged(SectionType.Drives, args);
         CloudDrivesManager.DataChanged -= Manager_DataChanged;
-        NetworkDrivesService.Drives.CollectionChanged -= (x, args) => Manager_DataChanged(SectionType.Network, args);
+        NetworkService.Computers.CollectionChanged -= (x, args) => Manager_DataChanged(SectionType.Network, args);
         WSLDistroManager.DataChanged -= Manager_DataChanged;
         App.FileTagsManager.DataChanged -= Manager_DataChanged;
     }
@@ -895,7 +894,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
             return;
         }
 
-        PaneHolder.OpenPathInNewPane(rightClickedItem.Path);
+        PaneHolder.OpenSecondaryPane(rightClickedItem.Path);
     }
 
     private async Task OpenInNewTabAsync()
@@ -950,7 +949,7 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
                 UserSettingsService.GeneralSettingsService.ShowDrivesSection = false;
                 break;
             case SectionType.Network:
-                UserSettingsService.GeneralSettingsService.ShowNetworkDrivesSection = false;
+                UserSettingsService.GeneralSettingsService.ShowNetworkSection = false;
                 break;
             case SectionType.WSL:
                 UserSettingsService.GeneralSettingsService.ShowWslSection = false;
@@ -976,11 +975,11 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
             menu!.Closed -= flyoutClosed;
             if (rightClickedItem is DriveItem)
             {
-                FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, rightClickedItem, PaneHolder.ActivePane);
+                FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, rightClickedItem, PaneHolder.ActivePane!);
             }
             else if (rightClickedItem is LibraryLocationItem library)
             {
-                FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, new LibraryItem(FolderViewViewModel, library), PaneHolder.ActivePane);
+                FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, new LibraryItem(FolderViewViewModel, library), PaneHolder.ActivePane!);
             }
             else if (rightClickedItem is LocationItem locationItem)
             {
@@ -994,15 +993,15 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
 
                 if (!string.Equals(locationItem.Path, Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    BaseStorageFolder matchingStorageFolder = await PaneHolder.ActivePane.FilesystemViewModel.GetFolderFromPathAsync(locationItem.Path);
+                    BaseStorageFolder matchingStorageFolder = await PaneHolder.ActivePane!.ShellViewModel.GetFolderFromPathAsync(locationItem.Path);
                     if (matchingStorageFolder is not null)
                     {
-                        var syncStatus = await PaneHolder.ActivePane.FilesystemViewModel.CheckCloudDriveSyncStatusAsync(matchingStorageFolder);
+                        var syncStatus = await PaneHolder.ActivePane.ShellViewModel.CheckCloudDriveSyncStatusAsync(matchingStorageFolder);
                         listedItem.SyncStatusUI = CloudDriveSyncStatusUI.FromCloudDriveSyncStatus(syncStatus);
                     }
                 }
 
-                FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, listedItem, PaneHolder.ActivePane);
+                FilePropertiesHelpers.OpenPropertiesWindow(FolderViewViewModel, listedItem, PaneHolder.ActivePane!);
             }
         };
         menu!.Closed += flyoutClosed;
@@ -1058,32 +1057,9 @@ public sealed class SidebarViewModel : ObservableObject, IDisposable, ISidebarVi
             {
                 IsVisible = options.ShowEmptyRecycleBin,
             }.Build(),
-            new()
-            {
-                Text = "OpenInNewTab".GetLocalizedResource(),
-                OpacityIcon = new OpacityIconModel()
-                {
-                    OpacityIconStyle = "ColorIconOpenInNewTab",
-                },
-                Command = OpenInNewTabCommand,
-                ShowItem = options.IsLocationItem && UserSettingsService.GeneralSettingsService.ShowOpenInNewTab
-            },
-            new()
-            {
-                Text = "OpenInNewWindow".GetLocalizedResource(),
-                OpacityIcon = new OpacityIconModel()
-                {
-                    OpacityIconStyle = "ColorIconOpenInNewWindow",
-                },
-                Command = OpenInNewWindowCommand,
-                ShowItem = options.IsLocationItem && UserSettingsService.GeneralSettingsService.ShowOpenInNewTab
-            },
-            new()
-            {
-                Text = "OpenInNewPane".GetLocalizedResource(),
-                Command = OpenInNewPaneCommand,
-                ShowItem = options.IsLocationItem && UserSettingsService.GeneralSettingsService.ShowOpenInNewPane
-            },
+            new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenInNewTabFromSidebarAction).Build(),
+                new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenInNewWindowFromSidebarAction).Build(),
+                new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenInNewPaneFromSidebarAction).Build(),
             new()
             {
                 Text = "PinFolderToSidebar".GetLocalizedResource(),

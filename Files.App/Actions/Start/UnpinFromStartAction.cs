@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-
 namespace Files.App.Actions;
 
 internal sealed class UnpinFromStartAction(IContentPageContext context) : IAction
@@ -38,7 +36,7 @@ internal sealed class UnpinFromStartAction(IContentPageContext context) : IActio
 		}
 		else
 		{
-			var currentFolder = context.ShellPage!.FilesystemViewModel.CurrentFolder;
+			var currentFolder = context.ShellPage!.ShellViewModel.CurrentFolder;
 			var folder = await StorageService.GetFolderAsync(currentFolder!.ItemPath);
 
 			await StartMenuService.UnpinAsync(folder);

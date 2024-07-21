@@ -72,13 +72,13 @@ public sealed partial class ColumnShellPage : BaseShellPage
 
             InitializeBaseShellPage();
 
-            FilesystemViewModel = new ItemViewModel(FolderViewViewModel, InstanceViewModel?.FolderSettings!);
-            FilesystemViewModel.WorkingDirectoryModified += ViewModel_WorkingDirectoryModified;
-            FilesystemViewModel.ItemLoadStatusChanged += FilesystemViewModel_ItemLoadStatusChanged;
-            FilesystemViewModel.DirectoryInfoUpdated += FilesystemViewModel_DirectoryInfoUpdated;
-            FilesystemViewModel.PageTypeUpdated += FilesystemViewModel_PageTypeUpdated;
-            FilesystemViewModel.OnSelectionRequestedEvent += FilesystemViewModel_OnSelectionRequestedEvent;
-            FilesystemViewModel.GitDirectoryUpdated += FilesystemViewModel_GitDirectoryUpdated;
+            ShellViewModel = new ShellViewModel(FolderViewViewModel, InstanceViewModel?.FolderSettings!);
+            ShellViewModel.WorkingDirectoryModified += ViewModel_WorkingDirectoryModified;
+            ShellViewModel.ItemLoadStatusChanged += FilesystemViewModel_ItemLoadStatusChanged;
+            ShellViewModel.DirectoryInfoUpdated += FilesystemViewModel_DirectoryInfoUpdated;
+            ShellViewModel.PageTypeUpdated += FilesystemViewModel_PageTypeUpdated;
+            ShellViewModel.OnSelectionRequestedEvent += FilesystemViewModel_OnSelectionRequestedEvent;
+            ShellViewModel.GitDirectoryUpdated += FilesystemViewModel_GitDirectoryUpdated;
         }
 
         ItemDisplayFrame.Navigate(
@@ -109,7 +109,7 @@ public sealed partial class ColumnShellPage : BaseShellPage
 
 		base.Page_Loaded(sender, e);
 
-		NotifyPropertyChanged(nameof(FilesystemViewModel));
+		NotifyPropertyChanged(nameof(ShellViewModel));
 	}
 
     protected async override void ViewModel_WorkingDirectoryModified(object sender, WorkingDirectoryModifiedEventArgs e)
@@ -138,7 +138,7 @@ public sealed partial class ColumnShellPage : BaseShellPage
 		}
 
 		var parameters = e.Parameter as NavigationArguments;
-		TabItemParameter = new CustomTabViewItemParameter()
+		TabBarItemParameter = new TabBarItemParameter()
 		{
             FolderViewViewModel = FolderViewViewModel,
 			InitialPageType = typeof(ColumnShellPage),
@@ -165,7 +165,7 @@ public sealed partial class ColumnShellPage : BaseShellPage
 			case (true, false, false, true, VirtualKey.V):
 				if (!ToolbarViewModel.IsEditModeEnabled && !ContentPage.IsRenamingItem && !InstanceViewModel.IsPageTypeSearchResults && !ToolbarViewModel.SearchHasFocus)
                 {
-                    await UIFilesystemHelpers.PasteItemAsync(FilesystemViewModel.WorkingDirectory, this);
+                    await UIFilesystemHelpers.PasteItemAsync(ShellViewModel.WorkingDirectory, this);
                 }
 
                 break;
@@ -228,14 +228,14 @@ public sealed partial class ColumnShellPage : BaseShellPage
 
 	public new void SubmitSearch(string query)
 	{
-		FilesystemViewModel.CancelSearch();
+		ShellViewModel.CancelSearch();
 		InstanceViewModel.CurrentSearchQuery = query;
 		ItemDisplayFrame.Navigate(typeof(ColumnLayoutPage), new NavigationArguments()
 		{
             FolderViewViewModel = FolderViewViewModel,
 			AssociatedTabInstance = this,
 			IsSearchResultPage = true,
-			SearchPathParam = FilesystemViewModel.WorkingDirectory,
+			SearchPathParam = ShellViewModel.WorkingDirectory,
 			SearchQuery = query,
 		});
 

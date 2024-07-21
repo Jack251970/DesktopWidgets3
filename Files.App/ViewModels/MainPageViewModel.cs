@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using System.Windows.Input;
 using Windows.System;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Files.App.ViewModels;
 
@@ -21,7 +22,7 @@ public sealed class MainPageViewModel : ObservableObject
     // Dependency injections
 
     private IAppearanceSettingsService AppearanceSettingsService { get; set; } = null!;
-    private INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
+    private INetworkService NetworkService { get; } = DependencyExtensions.GetRequiredService<INetworkService>();
     private IUserSettingsService UserSettingsService { get; set; } = null!;
 	/*private IResourcesService ResourcesService { get; } = DependencyExtensions.GetRequiredService<IResourcesService>();*/
 	private DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetRequiredService<DrivesViewModel>();
@@ -82,6 +83,9 @@ public sealed class MainPageViewModel : ObservableObject
     public HorizontalAlignment AppThemeBackgroundImageHorizontalAlignment
         => AppearanceSettingsService.AppThemeBackgroundImageHorizontalAlignment;
 
+    public bool ShowToolbar
+        => AppearanceSettingsService.ShowToolbar;
+
     // Commands
 
     public ICommand NavigateToNumberedTabKeyboardAcceleratorCommand { get; }
@@ -111,13 +115,16 @@ public sealed class MainPageViewModel : ObservableObject
                 case nameof(AppearanceSettingsService.AppThemeBackgroundImageHorizontalAlignment):
                     OnPropertyChanged(nameof(AppThemeBackgroundImageHorizontalAlignment));
                     break;
+                case nameof(AppearanceSettingsService.ShowToolbar):
+					OnPropertyChanged(nameof(ShowToolbar));
+					break;
             }
         };*/
     }
 
-	// Methods
+    // Methods
 
-	public async Task OnNavigatedToAsync(NavigationEventArgs e)
+    public async Task OnNavigatedToAsync(NavigationEventArgs e)
 	{
 		if (e.NavigationMode == NavigationMode.Back)
         {
@@ -152,6 +159,9 @@ public sealed class MainPageViewModel : ObservableObject
                 case nameof(AppearanceSettingsService.AppThemeBackgroundImageHorizontalAlignment):
                     OnPropertyChanged(nameof(AppThemeBackgroundImageHorizontalAlignment));
                     break;
+                case nameof(AppearanceSettingsService.ShowToolbar):
+                    OnPropertyChanged(nameof(ShowToolbar));
+                    break;
             }
         };
 
@@ -170,10 +180,10 @@ public sealed class MainPageViewModel : ObservableObject
 				// add last session tabs to closed tabs stack if those tabs are not about to be opened
 				if (!UserSettingsService.AppSettingsService.RestoreTabsOnStartup && !UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp && UserSettingsService.GeneralSettingsService.LastSessionTabList != null)
 				{
-					var items = new CustomTabViewItemParameter[UserSettingsService.GeneralSettingsService.LastSessionTabList.Count];
-					for (var i = 0; i < items.Length; i++)
+                    var items = new TabBarItemParameter[UserSettingsService.GeneralSettingsService.LastSessionTabList.Count];
+                    for (var i = 0; i < items.Length; i++)
                     {
-                        items[i] = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, UserSettingsService.GeneralSettingsService.LastSessionTabList[i]);
+                        items[i] = TabBarItemParameter.Deserialize(FolderViewViewModel, UserSettingsService.GeneralSettingsService.LastSessionTabList[i]);
                     }
 
                     // CHANGE: Non-static function instead of static one.
@@ -187,7 +197,7 @@ public sealed class MainPageViewModel : ObservableObject
 					{
 						foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 						{
-							var tabArgs = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
+							var tabArgs = TabBarItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
 							await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 						}
 
@@ -202,7 +212,7 @@ public sealed class MainPageViewModel : ObservableObject
 				{
 					foreach (var path in UserSettingsService.GeneralSettingsService.TabsOnStartupList)
                     {
-                        await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), path, true);
+                        await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(ShellPanesPage), path, true);
                     }
                 }
 				else if (UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp &&
@@ -212,7 +222,7 @@ public sealed class MainPageViewModel : ObservableObject
                     {
                         foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
                         {
-                            var tabArgs = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
+                            var tabArgs = TabBarItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
                             await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
                         }
                     }
@@ -238,7 +248,7 @@ public sealed class MainPageViewModel : ObservableObject
 					{
 						foreach (var path in UserSettingsService.GeneralSettingsService.TabsOnStartupList)
                         {
-                            await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), path, true);
+                            await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(ShellPanesPage), path, true);
                         }
                     }
                     else if (UserSettingsService.GeneralSettingsService.ContinueLastSessionOnStartUp &&
@@ -247,7 +257,7 @@ public sealed class MainPageViewModel : ObservableObject
                     {
                         foreach (var tabArgsString in UserSettingsService.GeneralSettingsService.LastSessionTabList)
 						{
-							var tabArgs = CustomTabViewItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
+							var tabArgs = TabBarItemParameter.Deserialize(FolderViewViewModel, tabArgsString);
 							await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
 						}
 					}
@@ -257,13 +267,13 @@ public sealed class MainPageViewModel : ObservableObject
 
 			if (parameter is string navArgs)
             {
-                await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(PaneHolderPage), navArgs, true);
+                await NavigationHelpers.AddNewTabByPathAsync(FolderViewViewModel, typeof(ShellPanesPage), navArgs, true);
             }
             else if (parameter is PaneNavigationArguments paneArgs)
             {
-                await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, typeof(PaneHolderPage), paneArgs);
+                await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, typeof(ShellPanesPage), paneArgs);
             }
-            else if (parameter is CustomTabViewItemParameter tabArgs)
+            else if (parameter is TabBarItemParameter tabArgs)
             {
                 await NavigationHelpers.AddNewTabByParamAsync(FolderViewViewModel, tabArgs.InitialPageType, tabArgs.NavigationParameter);
             }
@@ -275,33 +285,41 @@ public sealed class MainPageViewModel : ObservableObject
 
         await Task.WhenAll(
             DrivesViewModel.UpdateDrivesAsync(),
-            NetworkDrivesService.UpdateDrivesAsync());
+            NetworkService.UpdateComputersAsync(),
+            NetworkService.UpdateShortcutsAsync());
     }
 
     // Command methods
 
-    private void ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand(KeyboardAcceleratorInvokedEventArgs? e)
-	{
-		var indexToSelect = e!.KeyboardAccelerator.Key switch
-		{
-			VirtualKey.Number1 => 0,
-			VirtualKey.Number2 => 1,
-			VirtualKey.Number3 => 2,
-			VirtualKey.Number4 => 3,
-			VirtualKey.Number5 => 4,
-			VirtualKey.Number6 => 5,
-			VirtualKey.Number7 => 6,
-			VirtualKey.Number8 => 7,
-			VirtualKey.Number9 => AppInstancesManager.Get(FolderViewViewModel).Count - 1,
-			_ => AppInstancesManager.Get(FolderViewViewModel).Count - 1,
-		};
+    private async void ExecuteNavigateToNumberedTabKeyboardAcceleratorCommand(KeyboardAcceleratorInvokedEventArgs? e)
+    {
+        var AppInstances = AppInstancesManager.Get(FolderViewViewModel);
+        var indexToSelect = e!.KeyboardAccelerator.Key switch
+        {
+            VirtualKey.Number1 => 0,
+            VirtualKey.Number2 => 1,
+            VirtualKey.Number3 => 2,
+            VirtualKey.Number4 => 3,
+            VirtualKey.Number5 => 4,
+            VirtualKey.Number6 => 5,
+            VirtualKey.Number7 => 6,
+            VirtualKey.Number8 => 7,
+            VirtualKey.Number9 => AppInstances.Count - 1,
+            _ => AppInstances.Count - 1,
+        };
 
-		// Only select the tab if it is in the list
-		if (indexToSelect < AppInstancesManager.Get(FolderViewViewModel).Count)
+        // Only select the tab if it is in the list
+        if (indexToSelect < AppInstances.Count)
         {
             FolderViewViewModel.TabStripSelectedIndex = indexToSelect;
+
+            // Small delay for the UI to load
+            await Task.Delay(500);
+
+            // Refocus on the file list
+            (SelectedTabItem?.TabItemContent as Control)?.Focus(FocusState.Programmatic);
         }
 
         e.Handled = true;
-	}
+    }
 }

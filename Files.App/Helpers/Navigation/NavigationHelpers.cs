@@ -14,7 +14,7 @@ public static class NavigationHelpers
 {
 	/*private static MainPageViewModel MainPageViewModel { get; } = DependencyExtensions.GetRequiredService<MainPageViewModel>();*/
 	private static DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetRequiredService<DrivesViewModel>();
-    private static INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
+    private static INetworkService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkService>();
 
     // CHANGE: Opening in explorer functions.
     public static async Task OpenInExplorerAsync(string path) => await OpenInExplorerAsync(path, string.Empty);
@@ -40,7 +40,7 @@ public static class NavigationHelpers
     public static Task OpenPathInNewTab(IFolderViewViewModel folderViewViewModel, string? path, bool focusNewTab)
 	{
         // CHANGE: Opening in explorer instead of opening path in new tab.
-        /*return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), path, focusNewTab);*/
+        /*return AddNewTabByPathAsync(folderViewViewModel, typeof(ShellPanesPage), path, focusNewTab);*/
         if (folderViewViewModel is null)
         {
             return Task.CompletedTask;
@@ -51,7 +51,7 @@ public static class NavigationHelpers
 
     public static Task AddNewTabAsync(IFolderViewViewModel folderViewViewModel)
 	{
-		return AddNewTabByPathAsync(folderViewViewModel, typeof(PaneHolderPage), "Home", true);
+		return AddNewTabByPathAsync(folderViewViewModel, typeof(ShellPanesPage), "Home", true);
 	}
 
 	public static async Task AddNewTabByPathAsync(IFolderViewViewModel folderViewViewModel, Type type, string? path, bool focusNewTab, int atIndex = -1)
@@ -72,7 +72,7 @@ public static class NavigationHelpers
 			IconSource = null!,
 			Description = null!,
 			ToolTipText = null!,
-			NavigationParameter = new CustomTabViewItemParameter()
+			NavigationParameter = new TabBarItemParameter()
 			{
                 FolderViewViewModel = folderViewViewModel,
                 InitialPageType = type,
@@ -106,7 +106,7 @@ public static class NavigationHelpers
             IconSource = null!,
             Description = null!,
             ToolTipText = null!,
-            NavigationParameter = new CustomTabViewItemParameter()
+            NavigationParameter = new TabBarItemParameter()
             {
                 FolderViewViewModel = folderViewViewModel,
                 InitialPageType = type,
@@ -191,7 +191,7 @@ public static class NavigationHelpers
 		}
 		else if (currentPath.Equals(Constants.UserEnvironmentPaths.NetworkFolderPath, StringComparison.OrdinalIgnoreCase))
 		{
-			tabLocationHeader = "SidebarNetworkDrives".GetLocalizedResource();
+			tabLocationHeader = "Network".GetLocalizedResource();
 		}
 		else if (App.LibraryManager.TryGetLibrary(currentPath, out var library))
 		{
@@ -215,7 +215,7 @@ public static class NavigationHelpers
 			}
 			else if (PathNormalization.NormalizePath(PathNormalization.GetPathRoot(currentPath)) == normalizedCurrentPath) // If path is a drive's root
 			{
-				var matchingDrive = NetworkDrivesService.Drives.Cast<DriveItem>().FirstOrDefault(netDrive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(netDrive.Path), StringComparison.OrdinalIgnoreCase));
+				var matchingDrive = NetworkDrivesService.Computers.Cast<DriveItem>().FirstOrDefault(netDrive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(netDrive.Path), StringComparison.OrdinalIgnoreCase));
 				matchingDrive ??= DrivesViewModel.Drives.Cast<DriveItem>().FirstOrDefault(drive => normalizedCurrentPath.Contains(PathNormalization.NormalizePath(drive.Path), StringComparison.OrdinalIgnoreCase));
 				tabLocationHeader = matchingDrive is not null ? matchingDrive.Text : normalizedCurrentPath;
 			}
@@ -287,7 +287,7 @@ public static class NavigationHelpers
         });
 	}
 
-    public static async void Control_ContentChanged(object? sender, CustomTabViewItemParameter e)
+    public static async void Control_ContentChanged(object? sender, TabBarItemParameter e)
     {
         if (sender is null)
         {
@@ -305,6 +305,7 @@ public static class NavigationHelpers
 
     public static Task<bool> OpenPathInNewWindowAsync(string? path)
 	{
+        // TODO
 		if (string.IsNullOrWhiteSpace(path))
         {
             return Task.FromResult(false);
@@ -317,6 +318,7 @@ public static class NavigationHelpers
 
 	public static Task<bool> OpenTabInNewWindowAsync(string tabArgs)
 	{
+        // TODO
 		var folderUri = new Uri($"files-uwp:?tab={Uri.EscapeDataString(tabArgs)}");
 		return Launcher.LaunchUriAsync(folderUri).AsTask();
 	}
@@ -328,7 +330,7 @@ public static class NavigationHelpers
             return;
         }
 
-        associatedInstance.PaneHolder?.OpenPathInNewPane((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
+        associatedInstance.PaneHolder?.OpenSecondaryPane((listedItem as ShortcutItem)?.TargetPath ?? listedItem.ItemPath);
 	}
 
 	public static async Task LaunchNewWindowAsync(IFolderViewViewModel folderViewViewModel)
@@ -342,7 +344,7 @@ public static class NavigationHelpers
     public static async Task OpenSelectedItemsAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance, bool openViaApplicationPicker = false)
 	{
 		// Don't open files and folders inside recycle bin
-		if (associatedInstance.FilesystemViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
+		if (associatedInstance.ShellViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
 			associatedInstance.SlimContentPage?.SelectedItems is null)
 		{
 			return;
@@ -386,7 +388,7 @@ public static class NavigationHelpers
 	public static async Task OpenItemsWithExecutableAsync(IShellPage associatedInstance, IEnumerable<IStorageItemWithPath> items, string executablePath)
 	{
 		// Don't open files and folders inside recycle bin
-		if (associatedInstance.FilesystemViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
+		if (associatedInstance.ShellViewModel.WorkingDirectory.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal) ||
 			associatedInstance.SlimContentPage is null)
         {
             return;
@@ -408,7 +410,7 @@ public static class NavigationHelpers
 	/// <param name="forceOpenInNewTab">Open folders in a new tab regardless of the "OpenFoldersInNewTab" option</param>
 	public static async Task<bool> OpenPath(IFolderViewViewModel folderViewViewModel, string path, IShellPage associatedInstance, FilesystemItemType? itemType = null, bool openSilent = false, bool openViaApplicationPicker = false, IEnumerable<string>? selectItems = null, string? args = default, bool forceOpenInNewTab = false)
 	{
-		var previousDir = associatedInstance.FilesystemViewModel.WorkingDirectory;
+		var previousDir = associatedInstance.ShellViewModel.WorkingDirectory;
 		var isHiddenItem = Win32Helper.HasFileAttribute(path, SystemIO.FileAttributes.Hidden);
 		var isDirectory = Win32Helper.HasFileAttribute(path, SystemIO.FileAttributes.Directory);
 		var isReparsePoint = Win32Helper.HasFileAttribute(path, SystemIO.FileAttributes.ReparsePoint);
@@ -512,7 +514,7 @@ public static class NavigationHelpers
 		{
 			await DialogDisplayHelper.ShowDialogAsync(folderViewViewModel, "FileNotFoundDialog/Title".GetLocalizedResource(), "FileNotFoundDialog/Text".GetLocalizedResource());
 			associatedInstance.ToolbarViewModel.CanRefresh = false;
-			associatedInstance.FilesystemViewModel?.RefreshItems(previousDir);
+			associatedInstance.ShellViewModel?.RefreshItems(previousDir);
 		}
 
 		return opened;
@@ -568,7 +570,7 @@ public static class NavigationHelpers
 		}
 		else
 		{
-			opened = await associatedInstance.FilesystemViewModel.GetFolderWithPathFromPathAsync(path)
+			opened = await associatedInstance.ShellViewModel.GetFolderWithPathFromPathAsync(path)
 				.OnSuccess((childFolder) =>
 				{
                     // Add location to Recent Items List
@@ -610,7 +612,7 @@ public static class NavigationHelpers
 			{
 				if (!FileExtensionHelpers.IsWebLinkFile(path))
 				{
-					StorageFileWithPath childFile = await associatedInstance.FilesystemViewModel.GetFileWithPathFromPathAsync(shortcutInfo.TargetPath);
+					StorageFileWithPath childFile = await associatedInstance.ShellViewModel.GetFileWithPathFromPathAsync(shortcutInfo.TargetPath);
 					// Add location to Recent Items List
 					if (childFile?.Item is SystemStorageFile)
                     {
@@ -627,7 +629,7 @@ public static class NavigationHelpers
 		}
 		else
 		{
-			opened = await associatedInstance.FilesystemViewModel.GetFileWithPathFromPathAsync(path)
+			opened = await associatedInstance.ShellViewModel.GetFileWithPathFromPathAsync(path)
 				.OnSuccess(async childFile =>
 				{
 					// Add location to Recent Items List
@@ -655,7 +657,7 @@ public static class NavigationHelpers
 						BaseStorageFileQueryResult? fileQueryResult = null;
 
                         //Get folder to create a file query (to pass to apps like Photos, Movies & TV..., needed to scroll through the folder like what Windows Explorer does)
-                        BaseStorageFolder currentFolder = await associatedInstance.FilesystemViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(path));
+                        BaseStorageFolder currentFolder = await associatedInstance.ShellViewModel.GetFolderFromPathAsync(PathNormalization.GetParentDir(path));
 
 						if (currentFolder is not null)
 						{

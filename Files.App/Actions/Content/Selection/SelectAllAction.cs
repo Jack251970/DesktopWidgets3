@@ -34,7 +34,7 @@ internal sealed class SelectAllAction(IContentPageContext context) : IAction
                 return false;
             }
 
-            var itemCount = page.FilesystemViewModel.FilesAndFolders.Count;
+            var itemCount = page.ShellViewModel.FilesAndFolders.Count;
 			var selectedItemCount = context.SelectedItems.Count;
 			if (itemCount == selectedItemCount)
             {

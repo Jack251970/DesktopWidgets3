@@ -36,7 +36,7 @@
 			</ResourceDictionary.ThemeDictionaries>
 
 			<ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx://../Files.App/ResourceDictionaries/RightAlignedToggleSwitchStyle.xaml" />
+                <ResourceDictionary Source="ms-appx://../Files.App/Styles/RightAlignedToggleSwitchStyle.xaml" />
                 <ResourceDictionary Source="ms-appx://../Files.App/UserControls/KeyboardShortcut/KeyboardShortcut.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
@@ -265,7 +265,7 @@
 										Style="{StaticResource CaptionTextBlockStyle}"
 										Text="{x:Bind CommandDescription}"
 										TextTrimming="CharacterEllipsis"
-										TextWrapping="NoWrap" />
+										TextWrapping="WrapWholeWords" />
 								</StackPanel>
 
 								<!--  Key Binding Control  -->
@@ -319,6 +319,7 @@
 									AutomationProperties.Name="{helpers:ResourceString Name=Save}"
 									Command="{Binding ElementName=PageRoot, Path=DataContext.SaveCommand, Mode=OneWay}"
 									CommandParameter="{x:Bind}"
+									IsEnabled="{x:Bind IsValidKeyBinding, Mode=OneWay}"
 									Style="{StaticResource AccentButtonStyle}"
 									ToolTipService.ToolTip="{helpers:ResourceString Name=Save}">
 									<FontIcon FontSize="14" Glyph="&#xE73E;" />
@@ -410,5 +411,13 @@
 			PreferredPlacement="Auto"
 			Subtitle="{helpers:ResourceString Name=KeybindingAlreadyUsedNotification}" />
 
-	</Grid>
+        <!--  Invalid Key TeachingTip  -->
+        <TeachingTip
+			x:Name="InvalidKeyTeachingTip"
+			IsLightDismissEnabled="True"
+			IsOpen="{x:Bind ViewModel.IsInvalidKeyTeachingTipOpened, Mode=TwoWay}"
+			PreferredPlacement="Bottom"
+			Subtitle="{helpers:ResourceString Name=KeybindingInvalidKeyNotification}" />
+
+    </Grid>
 </Page>

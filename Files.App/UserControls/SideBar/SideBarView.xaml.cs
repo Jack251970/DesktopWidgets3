@@ -124,10 +124,10 @@ public sealed partial class SidebarView : UserControl, INotifyPropertyChanged
 
 	private void UpdateOpenPaneLengthColumn()
 	{
-		DisplayColumn.Width = new GridLength(OpenPaneLength);
-	}
+        PaneColumnDefinition.Width = new GridLength(OpenPaneLength);
+    }
 
-	private void SidebarView_Loaded(object sender, RoutedEventArgs e)
+    private void SidebarView_Loaded(object sender, RoutedEventArgs e)
 	{
 		UpdateDisplayMode();
 		UpdateOpenPaneLengthColumn();

@@ -51,8 +51,14 @@ internal sealed class CombinedFileProperties(
 			var props = queries.SelectMany(query => query!.First(section => section.Key == group.Key));
 			foreach (var prop in group)
 			{
-				if (props.Where(x => x.Property == prop.Property).Any(x => !Equals(x.Value, prop.Value)))
-				{
+                if (prop.Property == "System.Media.Duration")
+                {
+                    ulong totalDuration = 0;
+                    props.Where(x => x.Property == prop.Property).ForEach(x => totalDuration += (ulong)x.Value);
+                    prop.Value = totalDuration;
+                }
+                else if (props.Where(x => x.Property == prop.Property).Any(x => !Equals(x.Value, prop.Value)))
+                {
 					// Has multiple values
 					prop.Value = prop.IsReadOnly ? "MultipleValues".GetLocalizedResource() : null!;
 					prop.PlaceholderText = "MultipleValues".GetLocalizedResource();

@@ -35,7 +35,7 @@ internal sealed class OpenNewPaneAction : ObservableObject, IAction
 
 	public Task ExecuteAsync(object? parameter = null)
 	{
-		context.ShellPage!.PaneHolder.OpenPathInNewPane("Home");
+		context.ShellPage!.PaneHolder.OpenSecondaryPane("Home");
 
 		return Task.CompletedTask;
 	}

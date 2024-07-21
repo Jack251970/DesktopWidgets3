@@ -113,7 +113,7 @@ internal sealed class FolderProperties : BaseProperties
 		}
 
 		var folderPath = (Item as ShortcutItem)?.TargetPath ?? Item.ItemPath;
-		BaseStorageFolder storageFolder = await AppInstance.FilesystemViewModel.GetFolderFromPathAsync(folderPath);
+		BaseStorageFolder storageFolder = await AppInstance.ShellViewModel.GetFolderFromPathAsync(folderPath);
 
 		if (storageFolder is not null)
 		{

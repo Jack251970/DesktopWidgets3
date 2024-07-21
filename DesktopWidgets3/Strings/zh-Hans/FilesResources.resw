@@ -60,45 +60,45 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -340,7 +340,7 @@
     <value>设为锁屏背景</value>
   </data>
   <data name="SetAsAppBackground" xml:space="preserve">
-    <value>设置为此应用背景</value>
+    <value>设置为应用程序背景</value>
   </data>
   <data name="AccessDeniedDeleteDialog.Text" xml:space="preserve">
     <value>该项目无法删除</value>
@@ -385,28 +385,40 @@
     <value>只读</value>
   </data>
   <data name="DaysAgo" xml:space="preserve">
-    <value>{0} 天前</value>
+    <value>{0, plural, other {# 天前}}</value>
   </data>
-  <data name="DayAgo" xml:space="preserve">
+  <data name="DaysAgo_Singular" xml:space="preserve">
+    <value>1 天前</value>
+  </data>
+  <data name="DaysAgo_Plural" xml:space="preserve">
     <value>{0} 天前</value>
   </data>
   <data name="HoursAgo" xml:space="preserve">
-    <value>{0} 小时前</value>
+    <value>{0, plural, other {# 小时前}}</value>
   </data>
-  <data name="HourAgo" xml:space="preserve">
+  <data name="HoursAgo_Singular" xml:space="preserve">
+    <value>1 小时前</value>
+  </data>
+  <data name="HoursAgo_Plural" xml:space="preserve">
     <value>{0} 小时前</value>
   </data>
   <data name="MinutesAgo" xml:space="preserve">
-    <value>{0} 分钟前</value>
+    <value>{0, plural, other {# 分钟前}}</value>
   </data>
-  <data name="MinuteAgo" xml:space="preserve">
+  <data name="MinutesAgo_Singular" xml:space="preserve">
+    <value>1 分钟前</value>
+  </data>
+  <data name="MinutesAgo_Plural" xml:space="preserve">
     <value>{0} 分钟前</value>
   </data>
   <data name="SecondsAgo" xml:space="preserve">
-    <value>{0} 秒前</value>
+    <value>{0, plural, other {# 秒前}}</value>
   </data>
-  <data name="OneSecondAgo" xml:space="preserve">
+  <data name="SecondsAgo_Singular" xml:space="preserve">
     <value>1 秒前</value>
+  </data>
+  <data name="SecondsAgo_Plural" xml:space="preserve">
+    <value>{0} 秒前</value>
   </data>
   <data name="Now" xml:space="preserve">
     <value>现在</value>
@@ -426,17 +438,13 @@
   <data name="InvalidFilename.Text" xml:space="preserve">
     <value>指定的项目名称无效</value>
   </data>
-  <data name="ItemSelected.Text" xml:space="preserve">
-    <value>个项目已选择</value>
+  <data name="SelectedItems" xml:space="preserve">
+    <value>{0, plural, other {选中 # 个项目}}</value>
+    <comment>ICU format for plurals, more information here: https://support.crowdin.com/icu-message-syntax/#plural</comment>
   </data>
-  <data name="ItemsSelected.Text" xml:space="preserve">
-    <value>个项目已选择</value>
-  </data>
-  <data name="ItemCount.Text" xml:space="preserve">
-    <value>个项目</value>
-  </data>
-  <data name="ItemsCount.Text" xml:space="preserve">
-    <value>个项目</value>
+  <data name="Items" xml:space="preserve">
+    <value>{0, plural, other {个项目}}</value>
+    <comment>ICU format for plurals, more information here: https://support.crowdin.com/icu-message-syntax/#plural</comment>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>是</value>
@@ -469,10 +477,10 @@
     <value>B</value>
   </data>
   <data name="PropertiesFilesAndFoldersCountString" xml:space="preserve">
-    <value>{0:#,##0} 个文件, {1:#,##0} 个文件夹</value>
+    <value>{0, number} {0, plural, other {个文件}}, {1, number} {1, plural, other {个文件夹}}</value>
   </data>
-  <data name="PropertiesFilesFoldersAndLocationsCountString" xml:space="preserve">
-    <value>{0:#,##0} 个文件，{1:#,##0} 个文件夹，来自 {2:#,##0} 个位置 </value>
+  <data name="PropertiesFilesAndFoldersAndLocationsCount" xml:space="preserve">
+    <value>{0, number} {0, plural, other {个文件}}, {1, number} {1, plural, other {个文件夹}}, 来自 {2, number} {2, plural, other {个位置}}</value>
   </data>
   <data name="BaseLayoutContextFlyoutRunAsAnotherUser.Text" xml:space="preserve">
     <value>以其他用户身份运行</value>
@@ -504,7 +512,7 @@
   <data name="TabStripDragAndDropUIOverrideCaption" xml:space="preserve">
     <value>移动标签页到此处</value>
   </data>
-  <data name="syncStatusColumn.Header" xml:space="preserve">
+  <data name="Status" xml:space="preserve">
     <value>状态</value>
   </data>
   <data name="SettingsPreferencesSystemDefaultLanguageOption" xml:space="preserve">
@@ -571,7 +579,7 @@
     <value>版本:</value>
   </data>
   <data name="ShareDialogFailMessage" xml:space="preserve">
-    <value>目前没有可共享的内容……</value>
+    <value>目前没有可共享的内容。</value>
   </data>
   <data name="ShareDialogMultipleItemsDescription" xml:space="preserve">
     <value>将共享你选择的项目</value>
@@ -1083,9 +1091,6 @@
   <data name="UnpinFolderFromSidebar" xml:space="preserve">
     <value>从侧边栏取消固定</value>
   </data>
-  <data name="SidebarNetworkDrives" xml:space="preserve">
-    <value>网络驱动器</value>
-  </data>
   <data name="Network" xml:space="preserve">
     <value>网络</value>
   </data>
@@ -1216,16 +1221,16 @@
     <value>没有位置</value>
   </data>
   <data name="ErrorInputEmpty" xml:space="preserve">
-    <value>输入框不能为空！</value>
+    <value>输入框不能为空。</value>
   </data>
   <data name="ErrorNameInputRestrictedCharacters" xml:space="preserve">
     <value>名称不能包含下列任何字符：\ / : * ? " &lt; &gt; |</value>
   </data>
   <data name="ErrorNameInputRestricted" xml:space="preserve">
-    <value>不允许使用此名称！</value>
+    <value>不允许使用此名称。</value>
   </data>
   <data name="CreateLibraryErrorAlreadyExists" xml:space="preserve">
-    <value>同名称的库已存在！</value>
+    <value>同名称的库已存在。</value>
   </data>
   <data name="OpenStorageSense" xml:space="preserve">
     <value>打开存储感知</value>
@@ -1233,47 +1238,38 @@
   <data name="Copy" xml:space="preserve">
     <value>复制</value>
   </data>
-  <data name="CopyItemsDialogSubtitleMultiple" xml:space="preserve">
-    <value>{0} 项将被复制</value>
-  </data>
   <data name="CopyItemsDialogTitle" xml:space="preserve">
-    <value>复制项目</value>
+    <value>复制{0, plural, other {项目}}</value>
   </data>
   <data name="DeleteItemsDialogTitle" xml:space="preserve">
-    <value>删除项目</value>
+    <value>删除{0, plural, other {项目}}</value>
   </data>
   <data name="MoveItemsDialogPrimaryButtonText" xml:space="preserve">
     <value>移动</value>
   </data>
-  <data name="MoveItemsDialogSubtitleMultiple" xml:space="preserve">
-    <value>将移动 {0} 个项目</value>
+  <data name="MoveItemsDialogSubtitle" xml:space="preserve">
+    <value>{0, plural, other {将移动 # 个项目}}</value>
   </data>
   <data name="MoveItemsDialogTitle" xml:space="preserve">
-    <value>移动项目</value>
+    <value>移动{0, plural, other {项目}}</value>
   </data>
-  <data name="DeleteItemsDialogSubtitleMultiple" xml:space="preserve">
-    <value>将删除 {0} 个项目</value>
+  <data name="DeleteItemsDialogSubtitle" xml:space="preserve">
+    <value>{0, plural, other {将删除 # 个项目}}</value>
   </data>
   <data name="ConflictingItemsDialogPrimaryButtonText" xml:space="preserve">
     <value>继续</value>
   </data>
-  <data name="ConflictingItemsDialogSubtitleMultipleConflictsMultipleNonConflicts" xml:space="preserve">
-    <value>有 {0} 个冲突的文件名，已完成 {1} 项。</value>
+  <data name="ConflictingItemsDialogSubtitleConflicts" xml:space="preserve">
+    <value>{0, plural, other {有 # 个文件名冲突}}</value>
+  </data>
+  <data name="ConflictingItemsDialogSubtitleConflictsNonConflicts" xml:space="preserve">
+    <value>{0, plural, other {有 # 个文件名冲突}}和 {1, plural, other {# 个无冲突的项目}}</value>
   </data>
   <data name="ConflictingItemsDialogTitle" xml:space="preserve">
-    <value>文件名有冲突</value>
+    <value>{0, plural, other {文件名冲突}}</value>
   </data>
-  <data name="ConflictingItemsDialogSubtitleSingleConflictMultipleNonConflicts" xml:space="preserve">
-    <value>有一个冲突的文件名，已完成 {0} 项。</value>
-  </data>
-  <data name="CopyItemsDialogSubtitleSingle" xml:space="preserve">
-    <value>将复制一项</value>
-  </data>
-  <data name="DeleteItemsDialogSubtitleSingle" xml:space="preserve">
-    <value>将删除 1 个项目</value>
-  </data>
-  <data name="MoveItemsDialogSubtitleSingle" xml:space="preserve">
-    <value>将移动一项</value>
+  <data name="CopyItemsDialogSubtitle" xml:space="preserve">
+    <value>{0, plural, other {将复制 # 个项目}}</value>
   </data>
   <data name="DeleteItemsDialogPermanentlyDeleteCheckBox.Content" xml:space="preserve">
     <value>永久删除</value>
@@ -1286,12 +1282,6 @@
   </data>
   <data name="GenerateNewName" xml:space="preserve">
     <value>生成新名称</value>
-  </data>
-  <data name="ConflictingItemsDialogSubtitleMultipleConflictsNoNonConflicts" xml:space="preserve">
-    <value>有 {0} 个冲突的文件名。</value>
-  </data>
-  <data name="ConflictingItemsDialogSubtitleSingleConflictNoNonConflicts" xml:space="preserve">
-    <value>有一个冲突的文件名。</value>
   </data>
   <data name="CreateFolderWithSelection" xml:space="preserve">
     <value>用选中的项目创建文件夹</value>
@@ -1593,8 +1583,8 @@
   <data name="SecurityAdvancedReplaceChildPermissions2.ToolTipService.ToolTip" xml:space="preserve">
     <value>用来自该对象的可继承权限条目替换所有子对象权限条目</value>
   </data>
-  <data name="NavigationToolbarClosePane.Label" xml:space="preserve">
-    <value>关闭面板</value>
+  <data name="CloseActivePane" xml:space="preserve">
+    <value>关闭活动窗格</value>
   </data>
   <data name="EnterCompactOverlay" xml:space="preserve">
     <value>进入精简模式</value>
@@ -1623,8 +1613,8 @@
   <data name="PreviewPaneLoadCloudItemButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>从云端下载该项并加载预览</value>
   </data>
-  <data name="DetailsArchiveItemCount" xml:space="preserve">
-    <value>{0} 个项（{1} 个文件，{2} 个文件夹）</value>
+  <data name="DetailsArchiveItems" xml:space="preserve">
+    <value>{0, plural, other {# 个项目}} ({1, plural, other {# 个文件}}, {2, plural, other {# 个文件夹}})</value>
   </data>
   <data name="PropertyUncompressedSize" xml:space="preserve">
     <value>解压缩大小</value>
@@ -1669,7 +1659,7 @@
     <value>正在解压压缩文件</value>
   </data>
   <data name="ExtractingCompleteText" xml:space="preserve">
-    <value>解压完成！</value>
+    <value>解压完成。</value>
   </data>
   <data name="BaseLayoutItemContextFlyoutOpenParentFolder.Text" xml:space="preserve">
     <value>打开上级目录</value>
@@ -1702,7 +1692,7 @@
     <value>匿名</value>
   </data>
   <data name="CredentialDialogDescription.Text" xml:space="preserve">
-    <value>请提供你的访问凭据：</value>
+    <value>请提供你的访问凭据</value>
   </data>
   <data name="CredentialDialogUserName.PlaceholderText" xml:space="preserve">
     <value>用户名</value>
@@ -1854,8 +1844,8 @@
   <data name="CompatibilityNoReducedColor" xml:space="preserve">
     <value>不使用简化的颜色</value>
   </data>
-  <data name="ThirdPartyLicenses" xml:space="preserve">
-    <value>第三方许可</value>
+  <data name="ThirdPartyLibraries" xml:space="preserve">
+    <value>第三方库</value>
   </data>
   <data name="SettingsSetAsDefaultFileManagerDescription" xml:space="preserve">
     <value>此选项会修改系统注册表，并可能对你的设备产生意想不到的副作用。 继续即代表您自行承担风险。</value>
@@ -2467,7 +2457,7 @@
     <value>设置所选图片为锁屏背景</value>
   </data>
   <data name="SetAsAppBackgroundDescription" xml:space="preserve">
-    <value>设置所选图片为此应用背景</value>
+    <value>设置所选图片为此应用程序的背景</value>
   </data>
   <data name="InstallFontDescription" xml:space="preserve">
     <value>安装所选字体</value>
@@ -2682,8 +2672,20 @@
   <data name="OpenNewPaneDescription" xml:space="preserve">
     <value>打开新面板</value>
   </data>
-  <data name="ClosePaneDescription" xml:space="preserve">
-    <value>关闭右侧标签页</value>
+  <data name="CloseActivePaneDescription" xml:space="preserve">
+    <value>关闭活动窗格</value>
+  </data>
+  <data name="FocusLeftPane" xml:space="preserve">
+    <value>聚焦到左侧窗格</value>
+  </data>
+  <data name="FocusLeftPaneDescription" xml:space="preserve">
+    <value>切换焦点到左侧窗格</value>
+  </data>
+  <data name="FocusRightPane" xml:space="preserve">
+    <value>聚焦到右侧窗格</value>
+  </data>
+  <data name="FocusRightPaneDescription" xml:space="preserve">
+    <value>切换焦点到右侧窗格</value>
   </data>
   <data name="ToggleSidebar" xml:space="preserve">
     <value>打开/关闭侧边栏</value>
@@ -3271,7 +3273,7 @@
     <value>Files 正在以管理员身份运行</value>
   </data>
   <data name="FilesRunningAsAdminContent" xml:space="preserve">
-    <value>由于 Windows 和 WinAppSdk 的限制，当以管理员身份运行 Files 时，拖动和拖放不可用。 若要启用拖放， 你可以从开始菜单中打开 UAC（用户帐户控制）设置，选择第三个保护等级并重启 Windows，以解除这一限制。 否则，您可继续使用 Files，但无法使用拖放。</value>
+    <value>由于 Windows 和 WinAppSdk 的限制，当以管理员身份运行 Files 时，拖动和拖放不可用。 若要启用拖放， 你可以从开始菜单中打开 UAC（用户帐户控制）设置，选择第三个保护等级并重启 Windows，以解除这一限制。 否则，你可以继续使用 Files，但无法使用拖放。</value>
   </data>
   <data name="SettingsLeaveAppRunning" xml:space="preserve">
     <value>当窗口关闭后保持应用程序后台运行</value>
@@ -3743,6 +3745,9 @@
   <data name="KeybindingAlreadyUsedNotification" xml:space="preserve">
     <value>此按键绑定已被使用，请选择一个不同的按键绑定以继续。</value>
   </data>
+  <data name="KeybindingInvalidKeyNotification" xml:space="preserve">
+    <value>所选的按键绑定无法使用，请用其他按键绑定重试。</value>
+  </data>
   <data name="Customized" xml:space="preserve">
     <value>自定义</value>
   </data>
@@ -3795,5 +3800,67 @@
   </data>
   <data name="VerticalAlignment" xml:space="preserve">
     <value>垂直对齐方式</value>
+  </data>
+  <data name="ThinAcrylic" xml:space="preserve">
+    <value>薄 Acrylic</value>
+    <comment>This is a type of backdrop for the application background</comment>
+  </data>
+  <data name="AllLocations" xml:space="preserve">
+    <value>在所有位置中显示</value>
+    <comment>Setting where users can choose to display "Open IDE" button for Git Repos</comment>
+  </data>
+  <data name="DevTools" xml:space="preserve">
+    <value>开发者工具</value>
+  </data>
+  <data name="DisplayOpenIDE" xml:space="preserve">
+    <value>配置状态栏上的“打开 IDE”按钮</value>
+  </data>
+  <data name="GitRepos" xml:space="preserve">
+    <value>在 Git 存储库中显示</value>
+    <comment>Setting where users can choose to display "Open IDE" button for all locations.</comment>
+  </data>
+  <data name="ApplicationExtension" xml:space="preserve">
+    <value>应用程序扩展</value>
+    <comment>This is the friendly name for DLL files.</comment>
+  </data>
+  <data name="IcoFileCapitalized" xml:space="preserve">
+    <value>ICO 图标文件</value>
+    <comment>This is the friendly name for ICO files.</comment>
+  </data>
+  <data name="ZipFileCapitalized" xml:space="preserve">
+    <value>Zip 压缩文件</value>
+    <comment>This is the friendly name for ZIP files.</comment>
+  </data>
+  <data name="BitmapFiles" xml:space="preserve">
+    <value>位图文件</value>
+    <comment>This is the friendly name for bitmap files.</comment>
+  </data>
+  <data name="NumPadTypeName" xml:space="preserve">
+    <value>小键盘</value>
+  </data>
+  <data name="NetworkLocations" xml:space="preserve">
+    <value>网络位置</value>
+  </data>
+  <data name="NoNetworkLocationsInfo" xml:space="preserve">
+    <value>没有网络位置。如果你不使用网络位置，可以禁用该小组件。</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>禁用</value>
+  </data>
+  <data name="EditInNotepad" xml:space="preserve">
+    <value>在记事本中编辑</value>
+  </data>
+  <data name="EditInNotepadDescription" xml:space="preserve">
+    <value>在记事本中编辑选中的文件</value>
+  </data>
+  <data name="PropertyDimensionsColon" xml:space="preserve">
+    <value>分辨率:</value>
+  </data>
+  <data name="StatusWithColon" xml:space="preserve">
+    <value>状态:</value>
+  </data>
+  <data name="ShowToolbar" xml:space="preserve">
+    <value>显示工具栏</value>
+    <comment>Setting that controls if the Toolbar is shown in the main view</comment>
   </data>
 </root>

@@ -85,7 +85,7 @@ public sealed partial class GeneralPage : BasePropertiesPage
 
         bool SaveDrive(DriveItem drive)
         {
-            var fsVM = AppInstance.FilesystemViewModel;
+            var fsVM = AppInstance.ShellViewModel;
             if (!GetNewName(out var newName) || fsVM is null)
             {
                 return false;
@@ -112,7 +112,7 @@ public sealed partial class GeneralPage : BasePropertiesPage
 
         async Task<bool> SaveLibraryAsync(LibraryItem library)
         {
-            var fsVM = AppInstance.FilesystemViewModel;
+            var fsVM = AppInstance.ShellViewModel;
             if (!GetNewName(out var newName) || fsVM is null || !App.LibraryManager.CanCreateLibrary(FolderViewViewModel, newName).result)
             {
                 return false;
@@ -160,7 +160,7 @@ public sealed partial class GeneralPage : BasePropertiesPage
 
                         await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
                         {
-                            AppInstance?.FilesystemViewModel?.RefreshItems(null);
+                            AppInstance?.ShellViewModel?.RefreshItems(null);
                         });
                     }
                 }
@@ -190,7 +190,7 @@ public sealed partial class GeneralPage : BasePropertiesPage
 
                 await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(() =>
                 {
-                    AppInstance?.FilesystemViewModel?.RefreshItems(null);
+                    AppInstance?.ShellViewModel?.RefreshItems(null);
                 });
             }
 

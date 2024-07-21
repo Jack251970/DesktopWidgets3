@@ -4,6 +4,7 @@
 using CommunityToolkit.WinUI.UI;
 using CommunityToolkit.WinUI.UI.Controls;
 using Files.App.UserControls.Sidebar;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -21,6 +22,7 @@ public sealed partial class MainPage : Page
 
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
+    private IGeneralSettingsService generalSettingsService { get; set; }
     public IUserSettingsService UserSettingsService { get; private set; } = null!;
 
 	public ICommandManager Commands { get; private set; } = null!;
@@ -163,9 +165,9 @@ public sealed partial class MainPage : Page
         return height;
     }*/
 
-    public async void TabItemContent_ContentChanged(object? sender, CustomTabViewItemParameter e)
-	{
-		if (SidebarAdaptiveViewModel.PaneHolder is null)
+    public async void TabItemContent_ContentChanged(object? sender, TabBarItemParameter e)
+    {
+        if (SidebarAdaptiveViewModel.PaneHolder is null)
         {
             return;
         }
@@ -190,17 +192,17 @@ public sealed partial class MainPage : Page
             SidebarAdaptiveViewModel.PaneHolder.PropertyChanged -= PaneHolder_PropertyChanged;
         }
 
-        var navArgs = e.CurrentInstance.TabItemParameter?.NavigationParameter;
-        if (e.CurrentInstance is IPaneHolder currentInstance)
+        var navArgs = e.CurrentInstance.TabBarItemParameter?.NavigationParameter;
+        if (e.CurrentInstance is IShellPanesPage currentInstance)
         {
             SidebarAdaptiveViewModel.PaneHolder = currentInstance;
             SidebarAdaptiveViewModel.PaneHolder.PropertyChanged += PaneHolder_PropertyChanged;
 		}
 		SidebarAdaptiveViewModel.NotifyInstanceRelatedPropertiesChanged((navArgs as PaneNavigationArguments)?.LeftPaneNavPathParam);
 
-		if (SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.SlimContentPage?.DirectoryPropertiesViewModel is not null)
+		if (SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn!.SlimContentPage?.StatusBarViewModel is not null)
         {
-            SidebarAdaptiveViewModel.PaneHolder.ActivePaneOrColumn.SlimContentPage.DirectoryPropertiesViewModel.ShowLocals = true;
+            SidebarAdaptiveViewModel.PaneHolder.ActivePaneOrColumn.SlimContentPage.StatusBarViewModel.ShowLocals = true;
         }
 
         UpdateStatusBarProperties();
@@ -215,7 +217,7 @@ public sealed partial class MainPage : Page
 
 	private void PaneHolder_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		SidebarAdaptiveViewModel.NotifyInstanceRelatedPropertiesChanged(SidebarAdaptiveViewModel.PaneHolder.ActivePane?.TabItemParameter?.NavigationParameter?.ToString());
+		SidebarAdaptiveViewModel.NotifyInstanceRelatedPropertiesChanged(SidebarAdaptiveViewModel.PaneHolder.ActivePane?.TabBarItemParameter?.NavigationParameter?.ToString());
 		UpdateStatusBarProperties();
 		UpdateNavToolbarProperties();
 		LoadPaneChanged();
@@ -225,8 +227,8 @@ public sealed partial class MainPage : Page
 	{
 		if (StatusBar is not null)
 		{
-			StatusBar.DirectoryPropertiesViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.SlimContentPage?.DirectoryPropertiesViewModel;
-			StatusBar.SelectedItemsPropertiesViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.SlimContentPage?.SelectedItemsPropertiesViewModel;
+			StatusBar.StatusBarViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn!.SlimContentPage?.StatusBarViewModel;
+			StatusBar.SelectedItemsPropertiesViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn!.SlimContentPage?.SelectedItemsPropertiesViewModel;
 		}
 	}
 
@@ -234,12 +236,12 @@ public sealed partial class MainPage : Page
     {
         if (NavToolbar is not null)
         {
-            NavToolbar.ViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.ToolbarViewModel;
+            NavToolbar.ViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn!.ToolbarViewModel;
         }
 
         if (InnerNavigationToolbar is not null)
         {
-            InnerNavigationToolbar.ViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn.ToolbarViewModel;
+            InnerNavigationToolbar.ViewModel = SidebarAdaptiveViewModel.PaneHolder?.ActivePaneOrColumn!.ToolbarViewModel;
         }
     }
 
@@ -251,7 +253,9 @@ public sealed partial class MainPage : Page
             TabControl.Initialize(folderViewViewModel);
 
             FolderViewViewModel = folderViewViewModel;
-            FolderViewViewModel.RegisterRightTappedMenu(RightMarginGrid);
+            FolderViewViewModel.RegisterRightTappedMenu(HeaderArea);
+
+            generalSettingsService = folderViewViewModel.GetRequiredService<IGeneralSettingsService>();
 
             UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
             Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
@@ -375,7 +379,7 @@ public sealed partial class MainPage : Page
     private void PreviewPane_Loaded(object sender, RoutedEventArgs e)
 	{
         // CHANGE: Initalize folder view view model.
-        PreviewPane.Initialize(FolderViewViewModel);
+        InfoPane.Initialize(FolderViewViewModel);
 
         _updateDateDisplayTimer.Start();
 	}
@@ -389,13 +393,13 @@ public sealed partial class MainPage : Page
 	{
 		if (!App.AppModel.IsMainWindowClosed)
         {
-            PreviewPane?.ViewModel!.UpdateDateDisplay();
+            InfoPane?.ViewModel!.UpdateDateDisplay();
         }
     }
 
 	private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
 	{
-		switch (PreviewPane?.Position)
+		switch (InfoPane?.Position)
 		{
 			case PreviewPanePositions.Right when ContentColumn.ActualWidth == ContentColumn.MinWidth:
 				UserSettingsService.InfoPaneSettingsService.VerticalSizePx += e.NewSize.Width - e.PreviousSize.Width;
@@ -422,7 +426,7 @@ public sealed partial class MainPage : Page
 	/// </summary>
 	private void UpdatePositioning()
 	{
-        if (PreviewPane is null || !ViewModel.ShouldPreviewPaneBeActive)
+        if (InfoPane is null || !ViewModel.ShouldPreviewPaneBeActive)
         {
             PaneRow.MinHeight = 0;
 			PaneRow.MaxHeight = double.MaxValue;
@@ -433,8 +437,8 @@ public sealed partial class MainPage : Page
 		}
 		else
 		{
-			PreviewPane.UpdatePosition(RootGrid.ActualWidth, RootGrid.ActualHeight);
-			switch (PreviewPane.Position)
+            InfoPane.UpdatePosition(RootGrid.ActualWidth, RootGrid.ActualHeight);
+			switch (InfoPane.Position)
 			{
 				case PreviewPanePositions.None:
 					PaneRow.MinHeight = 0;
@@ -443,24 +447,24 @@ public sealed partial class MainPage : Page
 					PaneColumn.Width = new GridLength(0);
 					break;
 				case PreviewPanePositions.Right:
-					PreviewPane.SetValue(Grid.RowProperty, 1);
-					PreviewPane.SetValue(Grid.ColumnProperty, 2);
+                    InfoPane.SetValue(Grid.RowProperty, 1);
+					InfoPane.SetValue(Grid.ColumnProperty, 2);
 					PaneSplitter.SetValue(Grid.RowProperty, 1);
 					PaneSplitter.SetValue(Grid.ColumnProperty, 1);
 					PaneSplitter.Width = 2;
 					PaneSplitter.Height = RootGrid.ActualHeight;
 					PaneSplitter.GripperCursor = GridSplitter.GripperCursorType.SizeWestEast;
 					PaneSplitter.ChangeCursor(InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast));
-					PaneColumn.MinWidth = PreviewPane.MinWidth;
-					PaneColumn.MaxWidth = PreviewPane.MaxWidth;
+					PaneColumn.MinWidth = InfoPane.MinWidth;
+					PaneColumn.MaxWidth = InfoPane.MaxWidth;
 					PaneColumn.Width = new GridLength(UserSettingsService.InfoPaneSettingsService.VerticalSizePx, GridUnitType.Pixel);
 					PaneRow.MinHeight = 0;
 					PaneRow.MaxHeight = double.MaxValue;
 					PaneRow.Height = new GridLength(0);
 					break;
 				case PreviewPanePositions.Bottom:
-					PreviewPane.SetValue(Grid.RowProperty, 3);
-					PreviewPane.SetValue(Grid.ColumnProperty, 0);
+					InfoPane.SetValue(Grid.RowProperty, 3);
+					InfoPane.SetValue(Grid.ColumnProperty, 0);
 					PaneSplitter.SetValue(Grid.RowProperty, 2);
 					PaneSplitter.SetValue(Grid.ColumnProperty, 0);
 					PaneSplitter.Height = 2;
@@ -470,8 +474,8 @@ public sealed partial class MainPage : Page
 					PaneColumn.MinWidth = 0;
 					PaneColumn.MaxWidth = double.MaxValue;
 					PaneColumn.Width = new GridLength(0);
-					PaneRow.MinHeight = PreviewPane.MinHeight;
-					PaneRow.MaxHeight = PreviewPane.MaxHeight;
+					PaneRow.MinHeight = InfoPane.MinHeight;
+					PaneRow.MaxHeight = InfoPane.MaxHeight;
 					PaneRow.Height = new GridLength(UserSettingsService.InfoPaneSettingsService.HorizontalSizePx, GridUnitType.Pixel);
 					break;
 			}
@@ -480,13 +484,13 @@ public sealed partial class MainPage : Page
 
 	private void PaneSplitter_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
 	{
-		switch (PreviewPane?.Position)
+		switch (InfoPane?.Position)
 		{
 			case PreviewPanePositions.Right:
-				UserSettingsService.InfoPaneSettingsService.VerticalSizePx = PreviewPane.ActualWidth;
+				UserSettingsService.InfoPaneSettingsService.VerticalSizePx = InfoPane.ActualWidth;
 				break;
 			case PreviewPanePositions.Bottom:
-				UserSettingsService.InfoPaneSettingsService.HorizontalSizePx = PreviewPane.ActualHeight;
+				UserSettingsService.InfoPaneSettingsService.HorizontalSizePx = InfoPane.ActualHeight;
 				break;
 		}
 
@@ -495,16 +499,26 @@ public sealed partial class MainPage : Page
 
     private void LoadPaneChanged()
     {
-        var isHomePage = !(SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false);
-        var isMultiPane = SidebarAdaptiveViewModel.PaneHolder?.IsMultiPaneActive ?? false;
-        var isBigEnough = !App.AppModel.IsMainWindowClosed &&
-                (FolderViewViewModel.Bounds.Width > 450 && FolderViewViewModel.Bounds.Height > 450 || RootGrid.ActualWidth > 700 && FolderViewViewModel.Bounds.Height > 360);
+        try
+        {
+            var isHomePage = !(SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false);
+            var isMultiPane = SidebarAdaptiveViewModel.PaneHolder?.IsMultiPaneActive ?? false;
+            var isBigEnough = !App.AppModel.IsMainWindowClosed &&
+                    (FolderViewViewModel.Bounds.Width > 450 && FolderViewViewModel.Bounds.Height > 450 || RootGrid.ActualWidth > 700 && FolderViewViewModel.Bounds.Height > 360);
 
-        ViewModel.ShouldPreviewPaneBeDisplayed = (!isHomePage || isMultiPane) && isBigEnough;
-        ViewModel.ShouldPreviewPaneBeActive = UserSettingsService.InfoPaneSettingsService.IsEnabled && ViewModel.ShouldPreviewPaneBeDisplayed;
-        ViewModel.ShouldViewControlBeDisplayed = SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false;
+            ViewModel.ShouldPreviewPaneBeDisplayed = (!isHomePage || isMultiPane) && isBigEnough;
+            ViewModel.ShouldPreviewPaneBeActive = UserSettingsService.InfoPaneSettingsService.IsEnabled && ViewModel.ShouldPreviewPaneBeDisplayed;
+            ViewModel.ShouldViewControlBeDisplayed = SidebarAdaptiveViewModel.PaneHolder?.ActivePane?.InstanceViewModel?.IsPageTypeNotHome ?? false;
 
-        UpdatePositioning();
+            UpdatePositioning();
+        }
+        catch (Exception ex)
+        {
+            // Handle exception in case WinUI Windows is closed
+            // (see https://github.com/files-community/Files/issues/15599)
+
+            App.Logger.LogWarning(ex, ex.Message);
+        }
     }
 
     private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -538,69 +552,6 @@ public sealed partial class MainPage : Page
                 break;
 		}
 	}
-
-    // CHANGE: Remove horizontal multitasking control drag and drop events.
-    /*private bool lockFlag = false;
-    //private string[] dropableArchiveTypes = { "zip", "rar", "7z", "tar" };
-
-    private async void HorizontalMultitaskingControlAddButton_Drop(object sender, DragEventArgs e)
-    {
-        if (lockFlag || !FilesystemHelpers.HasDraggedStorageItems(e.DataView))
-        {
-            return;
-        }
-
-        lockFlag = true;
-
-        var items = (await FilesystemHelpers.GetDraggedStorageItems(e.DataView))
-            .Where(x => x.ItemType is FilesystemItemType.Directory
-            //|| dropableArchiveTypes.Contains(x.Name.Split('.').Last().ToLower())
-            );
-
-        var deferral = e.GetDeferral();
-        try
-        {
-            foreach (var item in items)
-            {
-                await NavigationHelpers.OpenPathInNewTab(FolderViewViewModel, item.Path, true);
-            }
-
-            deferral.Complete();
-        }
-        catch { }
-        lockFlag = false;
-    }
-
-    private async void HorizontalMultitaskingControlAddButton_DragOver(object sender, DragEventArgs e)
-    {
-        if (!FilesystemHelpers.HasDraggedStorageItems(e.DataView))
-        {
-            e.AcceptedOperation = DataPackageOperation.None;
-            return;
-        }
-
-        var hasValidDraggedItems =
-            (await FilesystemHelpers.GetDraggedStorageItems(e.DataView)).Any(x => x.ItemType is FilesystemItemType.Directory
-            //|| dropableArchiveTypes.Contains(x.Name.Split('.').Last().ToLower())
-            );
-
-        if (!hasValidDraggedItems)
-        {
-            e.AcceptedOperation = DataPackageOperation.None;
-            return;
-        }
-
-        try
-        {
-            e.Handled = true;
-            var deferral = e.GetDeferral();
-            e.DragUIOverride.IsCaptionVisible = true;
-            e.DragUIOverride.Caption = string.Format("OpenInNewTab".GetLocalizedResource());
-            e.AcceptedOperation = DataPackageOperation.Link;
-            deferral.Complete();
-        }
-        catch { }
-    }*/
 
     private void NavToolbar_Loaded(object sender, RoutedEventArgs e)
     {

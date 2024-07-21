@@ -37,59 +37,78 @@ public sealed class HomeViewModel : ObservableObject, IDisposable
 
     // Methods
 
-    public void ReloadWidgets()
+    private void ReloadWidgets()
     {
         var reloadQuickAccessWidget = WidgetsHelpers.TryGetWidget<QuickAccessWidgetViewModel>(this);
         var reloadDrivesWidget = WidgetsHelpers.TryGetWidget<DrivesWidgetViewModel>(this);
+        var reloadNetworkLocationsWidget = WidgetsHelpers.TryGetWidget<NetworkLocationsWidgetViewModel>(this);
         var reloadFileTagsWidget = WidgetsHelpers.TryGetWidget<FileTagsWidgetViewModel>(this);
         var reloadRecentFilesWidget = WidgetsHelpers.TryGetWidget<RecentFilesWidgetViewModel>(this);
+        var insertIndex = 0;
 
         if (reloadQuickAccessWidget)
         {
             var quickAccessWidget = new QuickAccessWidget(FolderViewViewModel);
 
-            AddWidget(
+            InsertWidget(
                 new(
                     quickAccessWidget,
                     quickAccessWidget.ViewModel,
                     (value) => UserSettingsService.GeneralSettingsService.FoldersWidgetExpanded = value,
-                    () => UserSettingsService.GeneralSettingsService.FoldersWidgetExpanded));
+                    () => UserSettingsService.GeneralSettingsService.FoldersWidgetExpanded),
+                insertIndex++);
         }
 
         if (reloadDrivesWidget)
         {
             var drivesWidget = new DrivesWidget(FolderViewViewModel);
 
-            AddWidget(
+            InsertWidget(
                 new(
                     drivesWidget,
                     drivesWidget.ViewModel,
                     (value) => UserSettingsService.GeneralSettingsService.DrivesWidgetExpanded = value,
-                    () => UserSettingsService.GeneralSettingsService.DrivesWidgetExpanded));
+                    () => UserSettingsService.GeneralSettingsService.DrivesWidgetExpanded),
+                insertIndex++);
+        }
+
+        if (reloadNetworkLocationsWidget)
+        {
+            var networkLocationsWidget = new NetworkLocationsWidget(FolderViewViewModel);
+
+            InsertWidget(
+                new(
+                    networkLocationsWidget,
+                    networkLocationsWidget.ViewModel,
+                    (value) => UserSettingsService.GeneralSettingsService.NetworkLocationsWidgetExpanded = value,
+                    () => UserSettingsService.GeneralSettingsService.NetworkLocationsWidgetExpanded),
+                insertIndex++);
         }
 
         if (reloadFileTagsWidget)
         {
             var fileTagsWidget = new FileTagsWidget(FolderViewViewModel);
 
-            AddWidget(
+            InsertWidget(
                 new(
                     fileTagsWidget,
                     fileTagsWidget.ViewModel,
                     (value) => UserSettingsService.GeneralSettingsService.FileTagsWidgetExpanded = value,
-                    () => UserSettingsService.GeneralSettingsService.FileTagsWidgetExpanded));
+                    () => UserSettingsService.GeneralSettingsService.FileTagsWidgetExpanded),
+                insertIndex++);
         }
 
         if (reloadRecentFilesWidget)
         {
             var recentFilesWidget = new RecentFilesWidget(FolderViewViewModel);
 
-            AddWidget(
+            InsertWidget(
                 new(
                     recentFilesWidget,
                     recentFilesWidget.ViewModel,
                     (value) => UserSettingsService.GeneralSettingsService.RecentFilesWidgetExpanded = value,
-                    () => UserSettingsService.GeneralSettingsService.RecentFilesWidgetExpanded));
+                    () => UserSettingsService.GeneralSettingsService.RecentFilesWidgetExpanded),
+                insertIndex++);
         }
     }
 
@@ -106,12 +125,7 @@ public sealed class HomeViewModel : ObservableObject, IDisposable
         ReloadWidgets();
     }
 
-    public bool AddWidget(WidgetContainerItem widgetModel)
-    {
-        return InsertWidget(widgetModel, WidgetItems.Count + 1);
-    }
-
-    public bool InsertWidget(WidgetContainerItem widgetModel, int atIndex)
+    private bool InsertWidget(WidgetContainerItem widgetModel, int atIndex)
     {
         // The widget must not be null and must implement IWidgetItemModel
         if (widgetModel.WidgetItemModel is not IWidgetViewModel widgetItemModel)
@@ -142,7 +156,7 @@ public sealed class HomeViewModel : ObservableObject, IDisposable
         return !(WidgetItems.Any((item) => item.WidgetItemModel.WidgetName == widgetName));
     }
 
-    public void RemoveWidgetAt(int index)
+    private void RemoveWidgetAt(int index)
     {
         if (index < 0)
         {

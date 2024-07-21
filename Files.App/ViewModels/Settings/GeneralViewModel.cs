@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.Collections.Specialized;
-using System.Globalization;
-using Windows.Globalization;
 using Windows.Storage.Pickers;
 using Windows.System;
 using static Files.App.Helpers.MenuFlyoutHelper;
@@ -12,15 +10,17 @@ namespace Files.App.ViewModels.Settings;
 
 public sealed class GeneralViewModel : ObservableObject, IDisposable
 {
-    private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
+    // TODO: Replace { get; set; } = null! with  { get; set; }
+    private IFolderViewViewModel FolderViewViewModel { get; set; }
 
-    private IUserSettingsService UserSettingsService { get; set; } = null!;
+    private IUserSettingsService UserSettingsService { get; set; }
+    private ICommonDialogService CommonDialogService { get; } = DependencyExtensions.GetRequiredService<ICommonDialogService>();
 
-	private bool disposed;
+    private bool disposed;
 
 	private ReadOnlyCollection<IMenuFlyoutItemViewModel> addFlyoutItemsSource = null!;
 
-	public AsyncRelayCommand ChangePageCommand { get; }
+	public RelayCommand ChangePageCommand { get; }
 	public RelayCommand<PageOnStartupViewModel> RemovePageCommand { get; }
 	public RelayCommand<string> AddPageCommand { get; }
 	public RelayCommand RestartCommand { get; }
@@ -73,33 +73,28 @@ public sealed class GeneralViewModel : ObservableObject, IDisposable
 		get => selectedAppLanguageIndex;
 		set
 		{
-			if (SetProperty(ref selectedAppLanguageIndex, value))
-			{
-				OnPropertyChanged(nameof(SelectedAppLanguageIndex));
-
-				if (ApplicationLanguages.PrimaryLanguageOverride != AppLanguages[value].LanguagID)
-                {
-                    ShowRestartControl = true;
-                }
-
-                ApplicationLanguages.PrimaryLanguageOverride = AppLanguages[value].LanguagID;
-			}
-		}
+            if (AppLanguageHelper.TryChange(value))
+            {
+                selectedAppLanguageIndex = value;
+                OnPropertyChanged(nameof(SelectedAppLanguageIndex));
+                ShowRestartControl = true;
+            }
+        }
 	}
 
     public List<DateTimeFormatItem> DateFormats { get; set; } = null!;
 
-    public ObservableCollection<AppLanguageItem> AppLanguages { get; set; } = null!;
+    public ObservableCollection<AppLanguageItem> AppLanguages => AppLanguageHelper.SupportedLanguages;
 
-	public GeneralViewModel()
+    public GeneralViewModel()
 	{
-		ChangePageCommand = new AsyncRelayCommand(ChangePageAsync);
-		RemovePageCommand = new RelayCommand<PageOnStartupViewModel>(RemovePage);
+        ChangePageCommand = new RelayCommand(ChangePageAsync);
+        RemovePageCommand = new RelayCommand<PageOnStartupViewModel>(RemovePage);
 		AddPageCommand = new RelayCommand<string>(async (path) => await AddPageAsync(path!));
 		RestartCommand = new RelayCommand(DoRestartAsync);
 		CancelRestartCommand = new RelayCommand(DoCancelRestart);
 
-		AddSupportedAppLanguages();
+        selectedAppLanguageIndex = AppLanguageHelper.SupportedLanguages.IndexOf(AppLanguageHelper.PreferredLanguage);
 
 		AddDateTimeOptions();
         /*SelectedDateTimeFormatIndex = (int)Enum.Parse(typeof(DateTimeFormats), DateTimeFormat.ToString());
@@ -168,38 +163,6 @@ public sealed class GeneralViewModel : ObservableObject, IDisposable
 		var styles = new DateTimeFormats[] { DateTimeFormats.Application, DateTimeFormats.System, DateTimeFormats.Universal };
 
 		DateFormats = styles.Select(style => new DateTimeFormatItem(style, sampleDate1, sampleDate2)).ToList();
-	}
-
-	private void AddSupportedAppLanguages()
-	{
-        // CHANGE: Manully add supported languages.
-        try
-        {
-            var appLanguages = ApplicationLanguages.ManifestLanguages
-            .Append(string.Empty) // Add default language id
-            .Select(language => new AppLanguageItem(language))
-            .OrderBy(language => language.LanguagID is not "") // Default language on top
-            .ThenBy(language => language.LanguageName);
-
-            AppLanguages = new ObservableCollection<AppLanguageItem>(appLanguages);
-
-            var languageID = ApplicationLanguages.PrimaryLanguageOverride;
-            SelectedAppLanguageIndex = AppLanguages
-                .IndexOf(AppLanguages.FirstOrDefault(dl => dl.LanguagID == languageID) ?? AppLanguages.First());
-        }
-        catch
-        {
-            List<string> manifestLanguages = ["en-US", "zh-Hans"];
-            var appLanguages = manifestLanguages
-            .Append(string.Empty) // Add default language id
-            .Select(language => new AppLanguageItem(language))
-            .OrderBy(language => language.LanguagID is not "") // Default language on top
-            .ThenBy(language => language.LanguageName);
-
-            AppLanguages = new ObservableCollection<AppLanguageItem>(appLanguages);
-
-            SelectedAppLanguageIndex = 0;
-        }
 	}
 
 	private void InitStartupSettingsRecentFoldersFlyout()
@@ -365,23 +328,17 @@ public sealed class GeneralViewModel : ObservableObject, IDisposable
 		}
 	}
 
-	private async Task ChangePageAsync()
-	{
-		var folderPicker = InitializeWithWindow(new FolderPicker());
-		folderPicker.FileTypeFilter.Add("*");
-		var folder = await folderPicker.PickSingleFolderAsync();
-
-		if (folder is not null)
-		{
-			if (SelectedPageIndex >= 0)
-            {
-                PagesOnStartupList[SelectedPageIndex] = new PageOnStartupViewModel(folder.Path);
-            }
+    private void ChangePageAsync()
+    {
+        var result = CommonDialogService.Open_FileOpenDialog(FolderViewViewModel.WindowHandle, true, [], Environment.SpecialFolder.Desktop, out var filePath);
+        if (result && SelectedPageIndex >= 0)
+        {
+            PagesOnStartupList[SelectedPageIndex] = new PageOnStartupViewModel(filePath);
         }
-	}
+    }
 
-	// WINUI3
-	private FolderPicker InitializeWithWindow(FolderPicker obj)
+    // WINUI3
+    private FolderPicker InitializeWithWindow(FolderPicker obj)
 	{
 		WinRT.Interop.InitializeWithWindow.Initialize(obj, FolderViewViewModel.WindowHandle);
 
@@ -393,27 +350,24 @@ public sealed class GeneralViewModel : ObservableObject, IDisposable
 		PagesOnStartupList.Remove(page!);
 	}
 
-	private async Task AddPageAsync(string path = null!)
-	{
-		if (string.IsNullOrWhiteSpace(path))
-		{
-			var folderPicker = InitializeWithWindow(new FolderPicker());
-			folderPicker.FileTypeFilter.Add("*");
+    private async Task AddPageAsync(string path = null!)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            CommonDialogService.Open_FileOpenDialog(FolderViewViewModel.WindowHandle, true, [], Environment.SpecialFolder.Desktop, out var filePath);
 
-			var folder = await folderPicker.PickSingleFolderAsync();
-			if (folder is not null)
-            {
-                path = folder.Path;
-            }
+            path = filePath;
         }
 
-		if (path is not null && PagesOnStartupList is not null)
+        if (!string.IsNullOrEmpty(path) && PagesOnStartupList is not null)
         {
             PagesOnStartupList.Add(new PageOnStartupViewModel(path));
         }
+
+        await Task.CompletedTask;
     }
 
-	public string DateFormatSample
+    public string DateFormatSample
 		=> string.Format("DateFormatSample".GetLocalizedResource(), DateFormats[SelectedDateTimeFormatIndex].Sample1, DateFormats[SelectedDateTimeFormatIndex].Sample2);
 
 	public DateTimeFormats DateTimeFormat
@@ -453,7 +407,19 @@ public sealed class GeneralViewModel : ObservableObject, IDisposable
         }
 	}
 
-	public bool ShowFileTagsWidget
+    public bool ShowNetworkLocationsWidget
+    {
+        get => UserSettingsService.GeneralSettingsService.ShowNetworkLocationsWidget;
+        set
+        {
+            if (value != UserSettingsService.GeneralSettingsService.ShowNetworkLocationsWidget)
+            {
+                UserSettingsService.GeneralSettingsService.ShowNetworkLocationsWidget = value;
+            }
+        }
+    }
+
+    public bool ShowFileTagsWidget
 	{
 		get => UserSettingsService.GeneralSettingsService.ShowFileTagsWidget;
 		set
@@ -584,35 +550,6 @@ public sealed class PageOnStartupViewModel
     {
         Path = path;
     }
-}
-
-public sealed class AppLanguageItem
-{
-	public string LanguagID { get; set; }
-
-	public string LanguageName { get; set; }
-
-	public AppLanguageItem(string languagID)
-	{
-		if (!string.IsNullOrEmpty(languagID))
-		{
-			var info = new CultureInfo(languagID);
-			LanguagID = info.Name;
-			LanguageName = info.NativeName;
-		}
-		else
-		{
-			LanguagID = string.Empty;
-			var systemDefaultLanguageOptionStr = "SettingsPreferencesSystemDefaultLanguageOption".GetLocalizedResource();
-
-			LanguageName = string.IsNullOrEmpty(systemDefaultLanguageOptionStr) ? "System Default" : systemDefaultLanguageOptionStr;
-		}
-	}
-
-	public override string ToString()
-	{
-		return LanguageName;
-	}
 }
 
 public sealed class DateTimeFormatItem

@@ -1,11 +1,8 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using LiteDB;
 using Microsoft.Win32;
-using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using static Files.App.Helpers.RegistryHelpers;
 using static Files.App.Utils.FileTags.TaggedFileRegistry;
@@ -15,69 +12,17 @@ namespace Files.App.Utils.FileTags;
 public sealed class FileTagsDatabase
 {
     // CHANGE: Use InfoHelper instead of Package.Current.
-    private static readonly string FileTagsKey = @$"Software\Files Community\{InfoHelper.GetFullName()}\v1\FileTags";
+    private static string? _FileTagsKey;
+    private string? FileTagsKey => _FileTagsKey ??= SafetyExtensions.IgnoreExceptions(() => @$"Software\Files Community\{InfoHelper.GetFullName()}\v1\FileTags");
 
-    // CHANGE: Use LocalSettingsExtensions instead of Package.Current.
-    private static readonly string FileTagsDbPath = Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), "filetags.db");
-    private const string FileTagsCollectionName = "taggedfiles";
+    public void SetTags(string filePath, ulong? frn, string[] tags)
+    {
+        if (FileTagsKey is null)
+        {
+            return;
+        }
 
-	static FileTagsDatabase()
-	{
-		if (File.Exists(FileTagsDbPath))
-		{
-			SafetyExtensions.IgnoreExceptions(() => CheckDbVersion(FileTagsDbPath));
-
-			using (var database = new LiteDatabase(new ConnectionString(FileTagsDbPath)
-			{
-				Connection = ConnectionType.Direct,
-				Upgrade = true
-			}))
-			{
-				UpdateDb(database);
-				ImportCore(database.GetCollection<TaggedFile>(FileTagsCollectionName).FindAll().ToArray());
-			}
-
-			File.Delete(FileTagsDbPath);
-		}
-	}
-
-	private static void UpdateDb(LiteDatabase database)
-	{
-		if (database.UserVersion == 0)
-		{
-			var col = database.GetCollection(FileTagsCollectionName);
-			foreach (var doc in col.FindAll())
-			{
-				doc["Tags"] = new BsonValue(new[] { doc["Tag"].AsString });
-				doc.Remove("Tags");
-				col.Update(doc);
-			}
-			database.UserVersion = 1;
-		}
-	}
-
-	// https://github.com/mbdavid/LiteDB/blob/master/LiteDB/Engine/Engine/Upgrade.cs
-	private static void CheckDbVersion(string filename)
-	{
-		var buffer = new byte[8192 * 2];
-		using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-		{
-			// read first 16k
-			stream.Read(buffer, 0, buffer.Length);
-
-			// checks if v7 (plain or encrypted)
-			if (Encoding.UTF8.GetString(buffer, 25, "** This is a LiteDB file **".Length) == "** This is a LiteDB file **" &&
-				buffer[52] == 7)
-			{
-				return; // version 4.1.4
-			}
-		}
-		File.Delete(filename); // recreate DB with correct version
-	}
-
-	public void SetTags(string filePath, ulong? frn, string[] tags)
-	{
-		using var filePathKey = Registry.CurrentUser.CreateSubKey(CombineKeys(FileTagsKey, filePath));
+        using var filePathKey = Registry.CurrentUser.CreateSubKey(CombineKeys(FileTagsKey, filePath));
 
 		if (tags is [])
 		{
@@ -108,7 +53,12 @@ public sealed class FileTagsDatabase
 
 	private TaggedFile? FindTag(string? filePath, ulong? frn)
 	{
-		if (filePath is not null)
+        if (FileTagsKey is null)
+        {
+            return null;
+        }
+
+        if (filePath is not null)
 		{
 			using var filePathKey = Registry.CurrentUser.CreateSubKey(CombineKeys(FileTagsKey, filePath));
 			if (filePathKey.ValueCount > 0)
@@ -148,7 +98,12 @@ public sealed class FileTagsDatabase
 
 	public void UpdateTag(string oldFilePath, ulong? frn, string? newFilePath)
 	{
-		var tag = FindTag(oldFilePath, null);
+        if (FileTagsKey is null)
+        {
+            return;
+        }
+
+        var tag = FindTag(oldFilePath, null);
 		using var filePathKey = Registry.CurrentUser.CreateSubKey(CombineKeys(FileTagsKey, oldFilePath));
 		SaveValues(filePathKey, null!);
 
@@ -173,7 +128,12 @@ public sealed class FileTagsDatabase
 
 	public void UpdateTag(ulong oldFrn, ulong? frn, string? newFilePath)
 	{
-		var tag = FindTag(null, oldFrn);
+        if (FileTagsKey is null)
+        {
+            return;
+        }
+
+        var tag = FindTag(null, oldFrn);
 		using var frnKey = Registry.CurrentUser.CreateSubKey(CombineKeys(FileTagsKey, "FRN", oldFrn.ToString()));
 		SaveValues(frnKey, null!);
 
@@ -204,7 +164,12 @@ public sealed class FileTagsDatabase
 	public IEnumerable<TaggedFile> GetAll()
 	{
 		var list = new List<TaggedFile>();
-		IterateKeys(list, FileTagsKey, 0);
+
+        if (FileTagsKey is not null)
+        {
+            IterateKeys(list, FileTagsKey, 0);
+        }
+
 		return list;
 	}
 
@@ -212,19 +177,25 @@ public sealed class FileTagsDatabase
 	{
 		folderPath = folderPath.Replace('/', '\\').TrimStart('\\');
 		var list = new List<TaggedFile>();
-		IterateKeys(list, CombineKeys(FileTagsKey, folderPath), 0);
+
+        if (FileTagsKey is not null)
+        {
+            IterateKeys(list, CombineKeys(FileTagsKey, folderPath), 0);
+        }
+            
 		return list;
 	}
 
 	public void Import(string json)
 	{
-		var tags = JsonSerializer.Deserialize<TaggedFile[]>(json);
-		ImportCore(tags);
-	}
+        if (FileTagsKey is null)
+        {
+            return;
+        }
 
-	private static void ImportCore(TaggedFile[]? tags)
-	{
-		Registry.CurrentUser.DeleteSubKeyTree(FileTagsKey, false);
+        var tags = JsonSerializer.Deserialize<TaggedFile[]>(json);
+
+        Registry.CurrentUser.DeleteSubKeyTree(FileTagsKey, false);
 		if (tags is null)
 		{
 			return;
@@ -244,7 +215,12 @@ public sealed class FileTagsDatabase
 	public string Export()
 	{
 		var list = new List<TaggedFile>();
-		IterateKeys(list, FileTagsKey, 0);
+
+        if (FileTagsKey is not null)
+        {
+            IterateKeys(list, FileTagsKey, 0);
+        }
+
 		return JsonSerializer.Serialize(list);
 	}
 

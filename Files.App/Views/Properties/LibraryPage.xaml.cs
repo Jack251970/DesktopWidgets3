@@ -5,13 +5,14 @@ using Files.App.ViewModels.Properties;
 using Microsoft.UI.Xaml;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Windows.Storage.Pickers;
 
 namespace Files.App.Views.Properties;
 
 public sealed partial class LibraryPage : BasePropertiesPage, INotifyPropertyChanged
 {
-	public event PropertyChangedEventHandler? PropertyChanged;
+    private ICommonDialogService CommonDialogService { get; } = DependencyExtensions.GetRequiredService<ICommonDialogService>();
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
 	private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
 	{
@@ -88,31 +89,27 @@ public sealed partial class LibraryPage : BasePropertiesPage, INotifyPropertyCha
 		}
 	}
 
-	private async Task AddLocationAsync()
-	{
-		var folderPicker = InitializeWithWindow(new FolderPicker());
-		folderPicker.FileTypeFilter.Add("*");
+    private async Task AddLocationAsync()
+    {
+        var result = CommonDialogService.Open_FileOpenDialog(FolderViewViewModel.WindowHandle, true, [], Environment.SpecialFolder.Desktop, out var filePath);
+        if (!result)
+        {
+            return;
+        }
 
-		var folder = await folderPicker.PickSingleFolderAsync();
-		if (folder is not null && !Folders.Any((f) => string.Equals(folder.Path, f.Path, StringComparison.OrdinalIgnoreCase)))
-		{
-			var isDefault = Folders.Count == 0;
-			Folders.Add(new LibraryFolder { Path = folder.Path, IsDefault = isDefault });
-			if (isDefault)
-			{
-				NotifyPropertyChanged(nameof(IsLibraryEmpty));
-			}
-		}
-	}
+        var folder = await StorageHelpers.ToStorageItem<BaseStorageFolder>(filePath);
+        if (folder is not null && !Folders.Any((f) => string.Equals(folder.Path, f.Path, StringComparison.OrdinalIgnoreCase)))
+        {
+            var isDefault = Folders.Count == 0;
+            Folders.Add(new LibraryFolder { Path = folder.Path, IsDefault = isDefault });
+            if (isDefault)
+            {
+                NotifyPropertyChanged(nameof(IsLibraryEmpty));
+            }
+        }
+    }
 
-	// WINUI3
-	private FolderPicker InitializeWithWindow(FolderPicker obj)
-	{
-		WinRT.Interop.InitializeWithWindow.Initialize(obj, FolderViewViewModel.WindowHandle);
-		return obj;
-	}
-
-	private void SetDefaultLocation()
+    private void SetDefaultLocation()
 	{
 		var index = SelectedFolderIndex;
 		if (index >= 0)

@@ -21,9 +21,10 @@ public static class ContentPageContextFlyoutFactory
 	/*private static readonly IUserSettingsService UserSettingsService = DependencyExtensions.GetRequiredService<IUserSettingsService>();
 	private static readonly IModifiableCommandManager ModifiableCommands = DependencyExtensions.GetRequiredService<IModifiableCommandManager>();*/
 	private static readonly IAddItemService AddItemService = DependencyExtensions.GetRequiredService<IAddItemService>();
-	/*private static readonly ICommandManager Commands = DependencyExtensions.GetRequiredService<ICommandManager>();*/
+    /*private static readonly ICommandManager Commands = DependencyExtensions.GetRequiredService<ICommandManager>();*/
+    private static IStorageArchiveService StorageArchiveService { get; } = DependencyExtensions.GetRequiredService<IStorageArchiveService>();
 
-	public static List<ContextMenuFlyoutItemViewModel> GetItemContextCommandsWithoutShellItems(IFolderViewViewModel folderViewViewModel, CurrentInstanceViewModel currentInstanceViewModel, List<ListedItem> selectedItems, BaseLayoutViewModel commandsViewModel, bool shiftPressed, SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel, ItemViewModel? itemViewModel = null)
+    public static List<ContextMenuFlyoutItemViewModel> GetItemContextCommandsWithoutShellItems(IFolderViewViewModel folderViewViewModel, CurrentInstanceViewModel currentInstanceViewModel, List<ListedItem> selectedItems, BaseLayoutViewModel commandsViewModel, bool shiftPressed, SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel, ShellViewModel? itemViewModel = null)
 	{
 		var menuItemsList = GetBaseItemMenuItems(folderViewViewModel: folderViewViewModel, commandsViewModel: commandsViewModel, selectedItems: selectedItems, selectedItemsPropertiesViewModel: selectedItemsPropertiesViewModel, currentInstanceViewModel: currentInstanceViewModel, itemViewModel: itemViewModel);
 		menuItemsList = Filter(folderViewViewModel: folderViewViewModel, items: menuItemsList, shiftPressed: shiftPressed, currentInstanceViewModel: currentInstanceViewModel, selectedItems: selectedItems, removeOverflowMenu: false);
@@ -86,13 +87,13 @@ public static class ContentPageContextFlyoutFactory
 		SelectedItemsPropertiesViewModel? selectedItemsPropertiesViewModel,
 		List<ListedItem> selectedItems,
 		CurrentInstanceViewModel currentInstanceViewModel,
-		ItemViewModel? itemViewModel = null)
+		ShellViewModel? itemViewModel = null)
 	{
         var UserSettingsService = folderViewViewModel.GetRequiredService<IUserSettingsService>();
         var ModifiableCommands = folderViewViewModel.GetRequiredService<IModifiableCommandManager>();
         var Commands = folderViewViewModel.GetRequiredService<ICommandManager>();
 
-		var itemsSelected = itemViewModel is null;
+        var itemsSelected = itemViewModel is null;
 		var canDecompress = selectedItems.Count != 0 && selectedItems.All(x => x.IsArchive)
 			|| selectedItems.All(x => x.PrimaryItemAttribute == StorageItemTypes.File && FileExtensionHelpers.IsZipFile(x.FileExtension));
 		var canCompress = !canDecompress || selectedItems.Count > 1;
@@ -409,13 +410,13 @@ public static class ContentPageContextFlyoutFactory
 				ShowItem = itemsSelected && showOpenItemWith
 			},
 			new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenFileLocation).Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenDirectoryInNewTabAction).Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenInNewWindowItemAction).Build(),
-			new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenDirectoryInNewPaneAction).Build(),
+			new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenInNewTabAction).Build(),
+			new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenInNewWindowAction).Build(),
+			new ContextMenuFlyoutItemViewModelBuilder(Commands.OpenInNewPaneAction).Build(),
 			new()
 			{
 				Text = "BaseLayoutItemContextFlyoutSetAs/Text".GetLocalizedResource(),
-				ShowItem = itemsSelected && (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false),
+				ShowItem = itemsSelected && (selectedItemsPropertiesViewModel?.IsCompatibleToSetAsWindowsWallpaper ?? false),
 				ShowInSearchPage = true,
 				Items =
 				[
@@ -429,13 +430,13 @@ public static class ContentPageContextFlyoutFactory
 			{
 				IsVisible = !currentInstanceViewModel.IsPageTypeRecycleBin
 							&& !currentInstanceViewModel.IsPageTypeZipFolder
-							&& (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false)
+							&& (selectedItemsPropertiesViewModel?.IsCompatibleToSetAsWindowsWallpaper ?? false)
 			}.Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(Commands.RotateRight)
 			{
 				IsVisible = !currentInstanceViewModel.IsPageTypeRecycleBin
 							&& !currentInstanceViewModel.IsPageTypeZipFolder
-							&& (selectedItemsPropertiesViewModel?.IsSelectedItemImage ?? false)
+							&& (selectedItemsPropertiesViewModel?.IsCompatibleToSetAsWindowsWallpaper ?? false)
 			}.Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(Commands.RunAsAdmin).Build(),
 			new ContextMenuFlyoutItemViewModelBuilder(Commands.RunAsAnotherUser).Build(),
@@ -531,7 +532,7 @@ public static class ContentPageContextFlyoutFactory
 					new ContextMenuFlyoutItemViewModelBuilder(Commands.CompressIntoZip).Build(),
 					new ContextMenuFlyoutItemViewModelBuilder(Commands.CompressIntoSevenZip).Build(),
 				],
-				ShowItem = UserSettingsService.GeneralSettingsService.ShowCompressionOptions && itemsSelected && CompressHelper.CanCompress(selectedItems)
+				ShowItem = UserSettingsService.GeneralSettingsService.ShowCompressionOptions && itemsSelected && StorageArchiveService.CanCompress(selectedItems)
 			},
 			new()
 			{
@@ -548,7 +549,7 @@ public static class ContentPageContextFlyoutFactory
 					new ContextMenuFlyoutItemViewModelBuilder(Commands.DecompressArchiveHere).Build(),
 					new ContextMenuFlyoutItemViewModelBuilder(Commands.DecompressArchiveToChildFolder).Build(),
 				],
-				ShowItem = UserSettingsService.GeneralSettingsService.ShowCompressionOptions && CompressHelper.CanDecompress(selectedItems)
+				ShowItem = UserSettingsService.GeneralSettingsService.ShowCompressionOptions && StorageArchiveService.CanDecompress(selectedItems)
 			},
 			new()
 			{
@@ -602,7 +603,8 @@ public static class ContentPageContextFlyoutFactory
 				ShowInRecycleBin = true,
 				ShowInSearchPage = true,
 			},
-			new()
+            new ContextMenuFlyoutItemViewModelBuilder(Commands.EditInNotepad).Build(),
+            new()
 			{
 				Text = "Loading".GetLocalizedResource(),
 				Glyph = "\xE712",

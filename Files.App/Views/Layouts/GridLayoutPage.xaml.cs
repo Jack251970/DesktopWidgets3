@@ -129,16 +129,14 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
 
         currentIconSize = FolderSettings!.GetRoundedIconSize();
 
-        FolderSettings.GroupOptionPreferenceUpdated -= ZoomIn;
-		FolderSettings.GroupOptionPreferenceUpdated += ZoomIn;
-		FolderSettings.LayoutModeChangeRequested -= FolderSettings_LayoutModeChangeRequested;
+        FolderSettings.LayoutModeChangeRequested -= FolderSettings_LayoutModeChangeRequested;
 		FolderSettings.LayoutModeChangeRequested += FolderSettings_LayoutModeChangeRequested;
         UserSettingsService.LayoutSettingsService.PropertyChanged += LayoutSettingsService_PropertyChanged;
 
         // Set ItemTemplate
         SetItemTemplate();
         SetItemContainerStyle();
-        FileList.ItemsSource ??= ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders;
+        FileList.ItemsSource ??= ParentShellPageInstance!.ShellViewModel.FilesAndFolders;
 
 		var parameters = (NavigationArguments)eventArgs.Parameter;
 		if (parameters.IsLayoutSwitch)
@@ -544,24 +542,24 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
             return;
         }
 
-        ParentShellPageInstance.FilesystemViewModel.CancelExtendedPropertiesLoading();
-		var filesAndFolders = ParentShellPageInstance.FilesystemViewModel.FilesAndFolders.ToList();
+        ParentShellPageInstance.ShellViewModel.CancelExtendedPropertiesLoading();
+		var filesAndFolders = ParentShellPageInstance.ShellViewModel.FilesAndFolders.ToList();
 		foreach (var listedItem in filesAndFolders)
 		{
 			listedItem.ItemPropertiesInitialized = false;
             if (FileList.ContainerFromItem(listedItem) is not null)
             {
-                await ParentShellPageInstance.FilesystemViewModel.LoadExtendedItemPropertiesAsync(listedItem);
+                await ParentShellPageInstance.ShellViewModel.LoadExtendedItemPropertiesAsync(listedItem);
             }
         }
 
-		if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None)
+		if (ParentShellPageInstance.ShellViewModel.EnabledGitProperties is not GitProperties.None)
 		{
 			await Task.WhenAll(filesAndFolders.Select(item =>
 			{
 				if (item is GitItem gitItem)
                 {
-                    return ParentShellPageInstance.FilesystemViewModel.LoadGitPropertiesAsync(gitItem);
+                    return ParentShellPageInstance.ShellViewModel.LoadGitPropertiesAsync(gitItem);
                 }
 
                 return Task.CompletedTask;
@@ -759,7 +757,7 @@ public sealed partial class GridLayoutPage : BaseGroupableLayoutPage
     // To avoid crashes, disable scrolling when drag-and-drop if grouped. (#14484)
     private bool ShouldDisableScrollingWhenDragAndDrop =>
         FolderSettings?.LayoutMode is FolderLayoutModes.GridView or FolderLayoutModes.TilesView &&
-        (ParentShellPageInstance?.FilesystemViewModel.FilesAndFolders.IsGrouped ?? false);
+        (ParentShellPageInstance?.ShellViewModel.FilesAndFolders.IsGrouped ?? false);
 
     protected override void FileList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
     {

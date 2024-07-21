@@ -100,7 +100,7 @@ public sealed partial class SidebarItem : Control
 	public static readonly DependencyProperty TemplateRootProperty =
 		DependencyProperty.Register("TemplateRoot", typeof(FrameworkElement), typeof(FrameworkElement), new PropertyMetadata(null));
 
-	public static void OnPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+    public static void OnPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 	{
 		if (sender is not SidebarItem item)
         {

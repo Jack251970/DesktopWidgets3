@@ -285,23 +285,34 @@ public sealed class CloudDrivesDetector
 			var iconPath = Path.Combine(programFilesFolder, "Nutstore", "Nutstore.exe");
 			var iconFile = Win32Helper.ExtractSelectedIconsFromDLL(iconPath, [101]).FirstOrDefault();
 
-			// get every folder under the Nutstore folder in %userprofile%
-			var mainFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Nutstore");
-			var nutstoreFolders = Directory.GetDirectories(mainFolder, "Nutstore", SearchOption.AllDirectories);
-			foreach (var nutstoreFolder in nutstoreFolders)
-			{
-				var folderName = Path.GetFileName(nutstoreFolder);
-				if (folderName is not null && folderName.StartsWith("Nutstore", StringComparison.OrdinalIgnoreCase))
-				{
-					results.Add(new CloudProvider(CloudProviders.Nutstore)
-					{
-						Name = $"Nutstore",
-						SyncFolder = nutstoreFolder,
-						IconData = iconFile?.IconData
-					});
-				}
-			}
-		}
+            using var syncRootMangerKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SyncRootManager");
+            if (syncRootMangerKey is not null)
+            {
+                var syncRootIds = syncRootMangerKey.GetSubKeyNames();
+                foreach (var syncRootId in syncRootIds)
+                {
+                    if (!syncRootId.StartsWith("Nutstore-"))
+                    {
+                        continue;
+                    }
+
+                    var sid = syncRootId.Split('!')[1];
+                    using var syncRootKey = syncRootMangerKey.OpenSubKey($@"{syncRootId}\UserSyncRoots");
+                    var userSyncRoot = syncRootKey?.GetValue(sid)?.ToString();
+                    if (string.IsNullOrEmpty(userSyncRoot))
+                    {
+                        continue;
+                    }
+
+                    results.Add(new CloudProvider(CloudProviders.Nutstore)
+                    {
+                        Name = $"Nutstore",
+                        SyncFolder = userSyncRoot,
+                        IconData = iconFile?.IconData
+                    });
+                }
+            }
+        }
 
 		return Task.FromResult<IEnumerable<ICloudProvider>>(results);
 	}

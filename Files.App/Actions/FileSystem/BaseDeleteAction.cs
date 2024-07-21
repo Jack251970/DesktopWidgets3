@@ -34,10 +34,12 @@ internal abstract class BaseDeleteAction : BaseUIAction
 						? FilesystemItemType.File
 						: FilesystemItemType.Directory));
 
-		await context.ShellPage!.FilesystemHelpers.DeleteItemsAsync(items, settings.DeleteConfirmationPolicy, permanently, true);
-
-		await context.ShellPage.FilesystemViewModel.ApplyFilesAndFoldersChangesAsync();
-	}
+        if (context.ShellPage is IShellPage shellPage)
+        {
+            await shellPage.FilesystemHelpers.DeleteItemsAsync(items, settings.DeleteConfirmationPolicy, permanently, true);
+            await shellPage.ShellViewModel.ApplyFilesAndFoldersChangesAsync();
+        }
+    }
 
 	private void Context_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{

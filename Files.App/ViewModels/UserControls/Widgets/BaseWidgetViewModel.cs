@@ -26,11 +26,12 @@ public abstract class BaseWidgetViewModel : ObservableObject
 	protected IContentPageContext ContentPageContext { get; private set; } = null!;
 	protected IFileTagsService FileTagsService { get; } = DependencyExtensions.GetRequiredService<IFileTagsService>();
 	protected DrivesViewModel DrivesViewModel { get; } = DependencyExtensions.GetRequiredService<DrivesViewModel>();
-	protected INetworkDrivesService NetworkDrivesService { get; } = DependencyExtensions.GetRequiredService<INetworkDrivesService>();
+	protected INetworkService NetworkService { get; } = DependencyExtensions.GetRequiredService<INetworkService>();
+    protected ICommandManager CommandManager { get; } = DependencyExtensions.GetRequiredService<ICommandManager>();
 
-	// Fields
+    // Fields
 
-	protected string? _flyoutItemPath;
+    protected string? _flyoutItemPath;
 
 	// Commands
 

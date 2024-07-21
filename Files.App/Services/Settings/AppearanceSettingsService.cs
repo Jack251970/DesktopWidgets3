@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.AppCenter.Analytics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 
@@ -55,8 +54,15 @@ internal sealed class AppearanceSettingsService : BaseObservableJsonSettings, IA
 		set => Set(value);
 	}
 
-	/// <inheritdoc/>
-	public string AppThemeSidebarBackgroundColor
+    /// <inheritdoc/>
+    public string AppThemeToolbarBackgroundColor
+    {
+        get => Get("")!;
+        set => Set(value);
+    }
+
+    /// <inheritdoc/>
+    public string AppThemeSidebarBackgroundColor
 	{
 		get => Get("")!;
 		set => Set(value);
@@ -69,8 +75,22 @@ internal sealed class AppearanceSettingsService : BaseObservableJsonSettings, IA
 		set => Set(value);
 	}
 
-	/// <inheritdoc/>
-	public string AppThemeFontFamily
+    /// <inheritdoc/>
+    public string AppThemeFileAreaSecondaryBackgroundColor
+    {
+        get => Get("")!;
+        set => Set(value);
+    }
+
+    /// <inheritdoc/>
+    public string AppThemeInfoPaneBackgroundColor
+    {
+        get => Get("")!;
+        set => Set(value);
+    }
+
+    /// <inheritdoc/>
+    public string AppThemeFontFamily
 	{
 		get => Get("Segoe UI Variable")!;
 		set => Set(value);
@@ -118,23 +138,15 @@ internal sealed class AppearanceSettingsService : BaseObservableJsonSettings, IA
         set => Set(value);
     }
 
-    protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)
-	{
-		switch (e.SettingName)
-		{
-			case nameof(AppThemeBackgroundColor):
-			case nameof(AppThemeAddressBarBackgroundColor):
-			case nameof(AppThemeSidebarBackgroundColor):
-			case nameof(AppThemeFileAreaBackgroundColor):
-			case nameof(AppThemeBackdropMaterial):
-            case nameof(AppThemeBackgroundImageFit):
-            case nameof(AppThemeBackgroundImageOpacity):
-            case nameof(AppThemeBackgroundImageVerticalAlignment):
-            case nameof(AppThemeBackgroundImageHorizontalAlignment):
-                Analytics.TrackEvent($"Set {e.SettingName} to {e.NewValue}");
-				break;
-		}
+    /// <inheritdoc/>
+    public bool ShowToolbar
+    {
+        get => Get(true);
+        set => Set(value);
+    }
 
-		base.RaiseOnSettingChangedEvent(sender, e);
-	}
+    protected override void RaiseOnSettingChangedEvent(object sender, SettingChangedEventArgs e)
+    {
+        base.RaiseOnSettingChangedEvent(sender, e);
+    }
 }

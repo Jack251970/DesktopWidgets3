@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Shared.Helpers;
-
 namespace Files.App.Actions;
 
 internal abstract class BaseRunAsAction : ObservableObject, IAction
@@ -17,13 +15,9 @@ internal abstract class BaseRunAsAction : ObservableObject, IAction
 
 	public abstract RichGlyph Glyph { get; }
 
-	public bool IsExecutable =>
-		_context.SelectedItem is not null &&
-		(FileExtensionHelpers.IsExecutableFile(_context.SelectedItem.FileExtension) ||
-		(_context.SelectedItem is ShortcutItem shortcut &&
-		shortcut.IsExecutable));
+    public virtual bool IsExecutable { get; }
 
-	public BaseRunAsAction(IContentPageContext context, string verb)
+    public BaseRunAsAction(IContentPageContext context, string verb)
 	{
 		_verb = verb;
         _context = context;

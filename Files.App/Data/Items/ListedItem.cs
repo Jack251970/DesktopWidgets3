@@ -6,6 +6,7 @@ using Files.Shared.Helpers;
 using FluentFTP;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using Windows.Storage;
@@ -48,9 +49,14 @@ public class ListedItem : ObservableObject, IGroupableItem
                 tooltipBuilder.Append($"{Environment.NewLine}{"SizeLabel".GetLocalizedResource()} {FileSize}");
             }
 
+            if (!string.IsNullOrWhiteSpace(DimensionsDisplay))
+            {
+                tooltipBuilder.Append($"{Environment.NewLine}{"PropertyDimensionsColon".GetLocalizedResource()} {DimensionsDisplay}");
+            }
+
             if (SyncStatusUI.LoadSyncStatus)
             {
-                tooltipBuilder.Append($"{Environment.NewLine}{"syncStatusColumn/Header".GetLocalizedResource()}: {syncStatusUI.SyncStatusString}");
+                tooltipBuilder.Append($"{Environment.NewLine}{"StatusWithColon".GetLocalizedResource()} {syncStatusUI.SyncStatusString}");
             }
 
             return tooltipBuilder.ToString();
@@ -325,6 +331,41 @@ public class ListedItem : ObservableObject, IGroupableItem
 		get => itemProperties;
 		set => SetProperty(ref itemProperties, value);
 	}
+
+    public string DimensionsDisplay
+    {
+        get
+        {
+            var imageHeight = 0;
+            var imageWidth = 0;
+
+            var isImageFile = FileExtensionHelpers.IsImageFile(FileExtension);
+            if (isImageFile)
+            {
+                try
+                {
+                    // FILESTODO: Consider to use 'System.Kind' instead.
+                    using FileStream fileStream = new(ItemPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    using var image = Image.FromStream(fileStream, false, false);
+
+                    if (image is not null)
+                    {
+                        imageHeight = image.Height;
+                        imageWidth = image.Width;
+                    }
+                }
+                catch { }
+            }
+
+
+            return
+                isImageFile &&
+                imageWidth > 0 &&
+                imageHeight > 0
+                    ? $"{imageWidth} \u00D7 {imageHeight}"
+                    : string.Empty;
+        }
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ListedItem" /> class.

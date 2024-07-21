@@ -1,9 +1,8 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Xaml.Controls;
-using Windows.System;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace Files.App.Views.Settings;
 
@@ -14,19 +13,12 @@ public sealed partial class AboutPage : Page
 		InitializeComponent();
 	}
 
-    private async void ThirdPartyLicenses_Click(object sender, bool e)
-	{
-		if (e && string.IsNullOrEmpty(ViewModel.ThirdPartyNotices))
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        // CHANGE: Initialize folder view view model and related services.
+        if (e.Parameter is IFolderViewViewModel folderViewViewModel)
         {
-            await ViewModel.LoadThirdPartyNoticesAsync();
-        }
-    }
-
-	private async void MarkdownTextBlock_LinkClicked(object sender, LinkClickedEventArgs e)
-	{
-		if (Uri.TryCreate(e.Link, UriKind.Absolute, out var link))
-        {
-            await Launcher.LaunchUriAsync(link);
+            ViewModel.Initialize(folderViewViewModel);
         }
     }
 }

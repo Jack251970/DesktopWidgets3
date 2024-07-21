@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
+using Sentry;
 using Files.App.Actions;
-using Microsoft.AppCenter.Analytics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -112,7 +112,11 @@ internal sealed class ActionCommand : ObservableObject, IRichCommand
 	public bool IsExecutable
 		=> Action.IsExecutable;
 
-	public ActionCommand(IFolderViewViewModel folderViewViewModel, CommandCodes code, IAction action)
+    /// <inheritdoc/>
+    public bool IsAccessibleGlobally
+        => Action.IsAccessibleGlobally;
+
+    public ActionCommand(IFolderViewViewModel folderViewViewModel, CommandCodes code, IAction action)
 	{
         ActionsSettingsService = folderViewViewModel.GetRequiredService<IActionsSettingsService>();
         Code = code;
@@ -150,8 +154,8 @@ internal sealed class ActionCommand : ObservableObject, IRichCommand
 	{
 		if (IsExecutable)
 		{
-			Analytics.TrackEvent($"Triggered {Code} action");
-			return Action.ExecuteAsync(parameter);
+            SentrySdk.Metrics.Increment("actions", tags: new Dictionary<string, string> { { "command", Code.ToString() } });
+            return Action.ExecuteAsync(parameter);
 		}
 
 		return Task.CompletedTask;

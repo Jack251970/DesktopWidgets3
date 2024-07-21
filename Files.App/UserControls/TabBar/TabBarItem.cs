@@ -12,7 +12,7 @@ public sealed class TabBarItem : ObservableObject, ITabBarItem, IDisposable
 {
 	public Frame ContentFrame { get; private set; }
 
-	public event EventHandler<CustomTabViewItemParameter>? ContentChanged;
+	public event EventHandler<TabBarItemParameter>? ContentChanged;
 
 	private IconSource _IconSource = null!;
 	public IconSource IconSource
@@ -49,8 +49,8 @@ public sealed class TabBarItem : ObservableObject, ITabBarItem, IDisposable
 		set => SetProperty(ref _AllowStorageItemDrop, value);
 	}
 
-	private CustomTabViewItemParameter _NavigationArguments = null!;
-	public CustomTabViewItemParameter NavigationParameter
+	private TabBarItemParameter _NavigationArguments = null!;
+	public TabBarItemParameter NavigationParameter
 	{
 		get => _NavigationArguments;
 		set
@@ -99,7 +99,7 @@ public sealed class TabBarItem : ObservableObject, ITabBarItem, IDisposable
         }
     }
 
-	private void TabItemContent_ContentChanged(object? sender, CustomTabViewItemParameter e)
+	private void TabItemContent_ContentChanged(object? sender, TabBarItemParameter e)
 	{
 		_NavigationArguments = e;
 		ContentChanged?.Invoke(this, e);

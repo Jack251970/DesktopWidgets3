@@ -45,7 +45,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 	// ViewModels
 
 	public SelectedItemsPropertiesViewModel SelectedItemsPropertiesViewModel { get; }
-    public DirectoryPropertiesViewModel DirectoryPropertiesViewModel { get; }
+    public StatusBarViewModel StatusBarViewModel { get; }
 	public ItemManipulationModel ItemManipulationModel { get; private set; }
 	public BaseLayoutViewModel? CommandsViewModel { get; protected set; }
 
@@ -197,7 +197,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				if (previouslySelectedItem is not null)
 				{
                     // Use FilesAndFolders because only displayed entries should be jumped to
-                    var candidateItems = ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders.ToList()
+                    var candidateItems = ParentShellPageInstance!.ShellViewModel.FilesAndFolders.ToList()
                         .SkipWhile(x => x != previouslySelectedItem)
 						.Skip(value.Length == 1 ? 1 : 0) // User is trying to cycle through items starting with the same letter
 						.Where(f => f.Name.Length >= value.Length && string.Equals(f.Name[..value.Length], value, StringComparison.OrdinalIgnoreCase));
@@ -207,7 +207,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				if (jumpedToItem is null)
 				{
                     // Use FilesAndFolders because only displayed entries should be jumped to
-                    var candidateItems = ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders
+                    var candidateItems = ParentShellPageInstance!.ShellViewModel.FilesAndFolders
                         .Where(f => f.Name.Length >= value.Length && string.Equals(f.Name[..value.Length], value, StringComparison.OrdinalIgnoreCase));
 					jumpedToItem = candidateItems.FirstOrDefault();
 				}
@@ -255,10 +255,10 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 					UpdateSelectionSize();
 
 					SelectedItemsPropertiesViewModel.SelectedItemsCount = selectedItems.Count;
+                    SelectedItemsPropertiesViewModel.SelectedItemsCountString = "SelectedItems".GetLocalizedFormatResource(selectedItems!.Count);
 
-					if (selectedItems.Count == 1)
+                    if (selectedItems.Count == 1)
 					{
-						SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems.Count} {"ItemSelected/Text".GetLocalizedResource()}";
 						DispatcherQueue.EnqueueOrInvokeAsync(async () =>
 						{
 							// Tapped event must be executed first
@@ -268,7 +268,6 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 					}
 					else
 					{
-						SelectedItemsPropertiesViewModel.SelectedItemsCountString = $"{selectedItems!.Count} {"ItemsSelected/Text".GetLocalizedResource()}";
 						ResetRenameDoubleClick();
 					}
 				}
@@ -296,7 +295,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		Item_DragOverEventHandler = new DragEventHandler(Item_DragOver);
 
 		SelectedItemsPropertiesViewModel = new SelectedItemsPropertiesViewModel();
-		DirectoryPropertiesViewModel = new DirectoryPropertiesViewModel();
+		StatusBarViewModel = new StatusBarViewModel();
 
 		dragOverTimer = DispatcherQueue.CreateTimer();
 		tapDebounceTimer = DispatcherQueue.CreateTimer();
@@ -368,7 +367,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 	{
 		if (ParentShellPageInstance?.SlimContentPage is not null)
 		{
-			var layoutType = FolderSettings!.GetLayoutType(ParentShellPageInstance.FilesystemViewModel.WorkingDirectory);
+			var layoutType = FolderSettings!.GetLayoutType(ParentShellPageInstance.ShellViewModel.WorkingDirectory);
 
 			if (layoutType != ParentShellPageInstance.CurrentPageType)
 			{
@@ -388,7 +387,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				ParentShellPageInstance.ResetNavigationStackLayoutMode();
 			}
 
-			ParentShellPageInstance.FilesystemViewModel.UpdateEmptyTextType();
+			ParentShellPageInstance.ShellViewModel.UpdateEmptyTextType();
 		}
 	}
 
@@ -414,10 +413,10 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
         InfoPaneViewModel = FolderViewViewModel.GetRequiredService<InfoPaneViewModel>();
 
         SelectedItemsPropertiesViewModel.Initialize(FolderViewViewModel);
-        DirectoryPropertiesViewModel.Initialize(FolderViewViewModel);
+        StatusBarViewModel.Initialize(FolderViewViewModel);
 
         // Git properties are not loaded by default
-        ParentShellPageInstance!.FilesystemViewModel.EnabledGitProperties = GitProperties.None;
+        ParentShellPageInstance!.ShellViewModel.EnabledGitProperties = GitProperties.None;
 
 		InitializeCommandsViewModel();
 
@@ -428,16 +427,16 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		FolderSettings.GroupDirectionPreferenceUpdated += FolderSettings_GroupDirectionPreferenceUpdated;
 		FolderSettings.GroupByDateUnitPreferenceUpdated += FolderSettings_GroupByDateUnitPreferenceUpdated;
 
-		ParentShellPageInstance.FilesystemViewModel.EmptyTextType = EmptyTextType.None;
+		ParentShellPageInstance.ShellViewModel.EmptyTextType = EmptyTextType.None;
 		ParentShellPageInstance.ToolbarViewModel.CanRefresh = true;
 
         if (!navigationArguments.IsSearchResultPage)
 		{
-			var previousDir = ParentShellPageInstance.FilesystemViewModel.WorkingDirectory;
-			await ParentShellPageInstance.FilesystemViewModel.SetWorkingDirectoryAsync(navigationArguments.NavPathParam);
+			var previousDir = ParentShellPageInstance.ShellViewModel.WorkingDirectory;
+			await ParentShellPageInstance.ShellViewModel.SetWorkingDirectoryAsync(navigationArguments.NavPathParam);
 
 			// pathRoot will be empty on recycle bin path
-			var workingDir = ParentShellPageInstance.FilesystemViewModel.WorkingDirectory ?? string.Empty;
+			var workingDir = ParentShellPageInstance.ShellViewModel.WorkingDirectory ?? string.Empty;
 			var pathRoot = GetPathRoot(workingDir);
 
 			var isRecycleBin = workingDir.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
@@ -466,7 +465,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
             if (!navigationArguments.IsLayoutSwitch || previousDir != workingDir)
             {
-                ParentShellPageInstance.FilesystemViewModel.RefreshItems(previousDir, SetSelectedItemsOnNavigation);
+                ParentShellPageInstance.ShellViewModel.RefreshItems(previousDir, SetSelectedItemsOnNavigation);
             }
             else
             {
@@ -475,7 +474,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
         }
 		else
 		{
-			await ParentShellPageInstance.FilesystemViewModel.SetWorkingDirectoryAsync(navigationArguments.SearchPathParam);
+			await ParentShellPageInstance.ShellViewModel.SetWorkingDirectoryAsync(navigationArguments.SearchPathParam);
 
 			ParentShellPageInstance.ToolbarViewModel.CanGoForward = false;
 
@@ -484,7 +483,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
 			ParentShellPageInstance.ToolbarViewModel.CanNavigateToParent = false;
 
-			var workingDir = ParentShellPageInstance.FilesystemViewModel.WorkingDirectory ?? string.Empty;
+			var workingDir = ParentShellPageInstance.ShellViewModel.WorkingDirectory ?? string.Empty;
 
 			ParentShellPageInstance.InstanceViewModel.IsPageTypeRecycleBin = workingDir.StartsWith(Constants.UserEnvironmentPaths.RecycleBinPath, StringComparison.Ordinal);
 			ParentShellPageInstance.InstanceViewModel.IsPageTypeMtpDevice = workingDir.StartsWith("\\\\?\\", StringComparison.Ordinal);
@@ -504,13 +503,13 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
                     ThumbnailSize = InstanceViewModel!.FolderSettings.GetRoundedIconSize(),
                 };
 
-                _ = ParentShellPageInstance.FilesystemViewModel.SearchAsync(FolderViewViewModel, searchInstance);
+                _ = ParentShellPageInstance.ShellViewModel.SearchAsync(FolderViewViewModel, searchInstance);
 			}
 		}
 
         // Show controls that were hidden on the home page
         ParentShellPageInstance.InstanceViewModel.IsPageTypeNotHome = true;
-        ParentShellPageInstance.FilesystemViewModel.UpdateGroupOptions();
+        ParentShellPageInstance.ShellViewModel.UpdateGroupOptions();
 
         UpdateCollectionViewSource();
 		FolderSettings.IsLayoutModeChanging = false;
@@ -531,7 +530,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			{
                 List<ListedItem> listedItemsToSelect =
                 [
-                    .. ParentShellPageInstance!.FilesystemViewModel.FilesAndFolders.ToList().Where((li) => navigationArguments.SelectItems.Contains(li.ItemNameRaw)),
+                    .. ParentShellPageInstance!.ShellViewModel.FilesAndFolders.ToList().Where((li) => navigationArguments.SelectItems.Contains(li.ItemNameRaw)),
                 ];
 
                 ItemManipulationModel.SetSelectedItems(listedItemsToSelect);
@@ -568,11 +567,11 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		groupingCancellationToken = new CancellationTokenSource();
 		var token = groupingCancellationToken.Token;
 
-		await ParentShellPageInstance!.FilesystemViewModel.GroupOptionsUpdatedAsync(token);
+		await ParentShellPageInstance!.ShellViewModel.GroupOptionsUpdatedAsync(token);
 
 		UpdateCollectionViewSource();
 
-		await ParentShellPageInstance.FilesystemViewModel.ReloadItemGroupHeaderImagesAsync();
+		await ParentShellPageInstance.ShellViewModel.ReloadItemGroupHeaderImagesAsync();
 	}
 
 	protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -591,7 +590,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 		var parameter = e.Parameter as NavigationArguments;
 		if (parameter is not null && !parameter.IsLayoutSwitch)
         {
-            ParentShellPageInstance!.FilesystemViewModel.CancelLoadAndClearFiles();
+            ParentShellPageInstance!.ShellViewModel.CancelLoadAndClearFiles();
         }
     }
 
@@ -646,7 +645,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
                 if (!InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
 				{
-                    var shellMenuItems = await ContentPageContextFlyoutFactory.GetItemContextShellCommandsAsync(workingDir: ParentShellPageInstance.FilesystemViewModel.WorkingDirectory, selectedItems: SelectedItems!, shiftPressed: shiftPressed, showOpenMenu: false, shellContextMenuItemCancellationToken.Token);
+                    var shellMenuItems = await ContentPageContextFlyoutFactory.GetItemContextShellCommandsAsync(workingDir: ParentShellPageInstance.ShellViewModel.WorkingDirectory, selectedItems: SelectedItems!, shiftPressed: shiftPressed, showOpenMenu: false, shellContextMenuItemCancellationToken.Token);
                     if (shellMenuItems.Count != 0)
                     {
                         await AddShellMenuItemsAsync(shellMenuItems, ItemContextMenuFlyout, shiftPressed);
@@ -694,7 +693,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 			shellContextMenuItemCancellationToken = new CancellationTokenSource();
 
 			shiftPressed = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
-            var items = ContentPageContextFlyoutFactory.GetItemContextCommandsWithoutShellItems(folderViewViewModel: FolderViewViewModel, currentInstanceViewModel: InstanceViewModel!, selectedItems: [ParentShellPageInstance!.FilesystemViewModel.CurrentFolder], commandsViewModel: CommandsViewModel!, shiftPressed: shiftPressed, itemViewModel: ParentShellPageInstance!.FilesystemViewModel, selectedItemsPropertiesViewModel: null);
+            var items = ContentPageContextFlyoutFactory.GetItemContextCommandsWithoutShellItems(folderViewViewModel: FolderViewViewModel, currentInstanceViewModel: InstanceViewModel!, selectedItems: [ParentShellPageInstance!.ShellViewModel.CurrentFolder], commandsViewModel: CommandsViewModel!, shiftPressed: shiftPressed, itemViewModel: ParentShellPageInstance!.ShellViewModel, selectedItemsPropertiesViewModel: null);
 
             BaseContextMenuFlyout.PrimaryCommands.Clear();
 			BaseContextMenuFlyout.SecondaryCommands.Clear();
@@ -711,7 +710,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
 			if (!InstanceViewModel!.IsPageTypeSearchResults && !InstanceViewModel.IsPageTypeZipFolder && !InstanceViewModel.IsPageTypeFtp)
 			{
-                var shellMenuItems = await ContentPageContextFlyoutFactory.GetItemContextShellCommandsAsync(workingDir: ParentShellPageInstance.FilesystemViewModel.WorkingDirectory, selectedItems: [], shiftPressed: shiftPressed, showOpenMenu: false, shellContextMenuItemCancellationToken.Token);
+                var shellMenuItems = await ContentPageContextFlyoutFactory.GetItemContextShellCommandsAsync(workingDir: ParentShellPageInstance.ShellViewModel.WorkingDirectory, selectedItems: [], shiftPressed: shiftPressed, showOpenMenu: false, shellContextMenuItemCancellationToken.Token);
                 if (shellMenuItems.Count != 0)
                 {
                     await AddShellMenuItemsAsync(shellMenuItems, BaseContextMenuFlyout, shiftPressed);
@@ -1242,7 +1241,7 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 
         if (inRecycleQueue)
 		{
-			ParentShellPageInstance!.FilesystemViewModel.CancelExtendedPropertiesLoadingForItem(listedItem);
+			ParentShellPageInstance!.ShellViewModel.CancelExtendedPropertiesLoadingForItem(listedItem);
 		}
 		else
 		{
@@ -1253,10 +1252,10 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
 				uint callbackPhase = 3;
 				args.RegisterUpdateCallback(callbackPhase, async (s, c) =>
 				{
-                    await ParentShellPageInstance!.FilesystemViewModel.LoadExtendedItemPropertiesAsync(listedItem);
-                    if (ParentShellPageInstance.FilesystemViewModel.EnabledGitProperties is not GitProperties.None && listedItem is GitItem gitItem)
+                    await ParentShellPageInstance!.ShellViewModel.LoadExtendedItemPropertiesAsync(listedItem);
+                    if (ParentShellPageInstance.ShellViewModel.EnabledGitProperties is not GitProperties.None && listedItem is GitItem gitItem)
                     {
-                        await ParentShellPageInstance.FilesystemViewModel.LoadGitPropertiesAsync(gitItem);
+                        await ParentShellPageInstance.ShellViewModel.LoadGitPropertiesAsync(gitItem);
                     }
                 });
 			}
@@ -1408,27 +1407,33 @@ public abstract class BaseLayoutPage : Page, IBaseLayoutPage, INotifyPropertyCha
             return;
         }
 
-        if (ParentShellPageInstance.FilesystemViewModel.FilesAndFolders.IsGrouped)
+        if (ParentShellPageInstance.ShellViewModel.FilesAndFolders.IsGrouped)
 		{
             var newSource = new CollectionViewSource()
             {
 				IsSourceGrouped = true,
-				Source = ParentShellPageInstance.FilesystemViewModel.FilesAndFolders.GroupedCollection
+				Source = ParentShellPageInstance.ShellViewModel.FilesAndFolders.GroupedCollection
 			};
             CollectionViewSource = newSource;
         }
 		else
 		{
+            ZoomIn();
+
             var newSource = new CollectionViewSource()
             {
 				IsSourceGrouped = false,
-				Source = ParentShellPageInstance.FilesystemViewModel.FilesAndFolders
+				Source = ParentShellPageInstance.ShellViewModel.FilesAndFolders
 			};
             CollectionViewSource = newSource;
         }
 	}
 
-	protected void SemanticZoom_ViewChangeStarted(object _, SemanticZoomViewChangedEventArgs e)
+    protected virtual void ZoomIn()
+    {
+    }
+
+    protected void SemanticZoom_ViewChangeStarted(object _, SemanticZoomViewChangedEventArgs e)
 	{
 		if (e.IsSourceZoomedInView)
         {

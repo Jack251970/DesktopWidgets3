@@ -34,7 +34,14 @@ public sealed class ActionsViewModel : ObservableObject
 		set => SetProperty(ref _IsAlreadyUsedTeachingTipOpened, value);
 	}
 
-	private bool _ShowAddNewKeyBindingBlock;
+    private bool _IsInvalidKeyTeachingTipOpened;
+    public bool IsInvalidKeyTeachingTipOpened
+    {
+        get => _IsInvalidKeyTeachingTipOpened;
+        set => SetProperty(ref _IsInvalidKeyTeachingTipOpened, value);
+    }
+
+    private bool _ShowAddNewKeyBindingBlock;
 	public bool ShowAddNewKeyBindingBlock
 	{
 		get => _ShowAddNewKeyBindingBlock;
@@ -110,7 +117,7 @@ public sealed class ActionsViewModel : ObservableObject
 			{
 				var defaultKeyBindings = command.DefaultHotKeys;
 
-				if (command is NoneCommand)
+                if (command is NoneCommand || (command is IRichCommand richCommand && !richCommand.IsAccessibleGlobally))
                 {
                     continue;
                 }
@@ -300,7 +307,10 @@ public sealed class ActionsViewModel : ObservableObject
 
 		// Enter edit mode for the item
 		item.IsInEditMode = true;
-	}
+
+        // Mark the key binding as invalid to prevent saving it
+        item.IsValidKeyBinding = false;
+    }
 
 	private void ExecuteSaveCommand(ModifiableActionItem? item)
 	{

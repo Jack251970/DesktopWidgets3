@@ -79,6 +79,10 @@ internal sealed class ModifiableCommand : ObservableObject, IRichCommand
     public bool IsExecutable
         => BaseCommand.IsExecutable;
 
+    /// <inheritdoc/>
+    public bool IsAccessibleGlobally
+        => BaseCommand.IsAccessibleGlobally;
+
     public ModifiableCommand(IRichCommand baseCommand, Dictionary<KeyModifiers, IRichCommand> modifiedCommands)
     {
         BaseCommand = baseCommand;

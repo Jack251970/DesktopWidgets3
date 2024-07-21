@@ -21,12 +21,12 @@ public static class Constants
 	// The following constants will be replaced with actual values by the Files CI workflow
 	public static class AutomatedWorkflowInjectionKeys
 	{
-		public const string AppCenterSecret = "appcenter.secret";
-
 		public const string GitHubClientId = "githubclientid.secret";
 
 		public const string BingMapsSecret = "bingmapskey.secret";
-	}
+
+        public const string SentrySecret = "sentry.secret";
+    }
 
 	public static class KnownImageFormats
 	{
@@ -46,7 +46,7 @@ public static class Constants
 		public const int GenericDiskDrive = 35;
 		public const int WindowsDrive = 36;
 		public const int ThisPC = 109;
-		public const int NetworkDrives = 25;
+		public const int Network = 25;
 		public const int RecycleBin = 55;
 		public const int CloudDrives = 1040;
 		public const int OneDrive = 1043;
@@ -111,7 +111,9 @@ public static class Constants
 
 		// For contextmenu hacks
 		public const double ContextMenuItemsMaxWidth = 250;
-	}
+
+        public const double MultiplePaneWidthThreshold = 750;
+    }
 
 	public static class Appearance
 	{

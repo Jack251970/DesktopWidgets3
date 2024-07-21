@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using LiteDB;
 using Microsoft.Win32;
-using System.IO;
 using System.Runtime.CompilerServices;
 using static Files.App.Helpers.LayoutPreferencesDatabaseItemRegistry;
 using static Files.App.Helpers.RegistryHelpers;
@@ -16,28 +14,7 @@ public sealed class LayoutPreferencesDatabase
     // CHANGE: Use InfoHelper instead of Package.Current.
     private static readonly string LayoutSettingsKey = @$"Software\Files Community\{InfoHelper.GetFullName()}\v1\LayoutPreferences";
 
-    // CHANGE: Use LocalSettingsExtensions instead of Package.Current.
-    private static readonly string LayoutSettingsDbPath = Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), "user_settings.db");
-    private const string LayoutSettingsCollectionName = "layoutprefs";
-
-	static LayoutPreferencesDatabase()
-	{
-		if (File.Exists(LayoutSettingsDbPath))
-		{
-			using (var database = new LiteDatabase(new ConnectionString(LayoutSettingsDbPath)
-			{
-				Connection = ConnectionType.Direct,
-				Upgrade = true
-			}))
-			{
-				ImportCore(database.GetCollection<LayoutPreferencesDatabaseItem>(LayoutSettingsCollectionName).FindAll().ToArray());
-			}
-
-			File.Delete(LayoutSettingsDbPath);
-		}
-	}
-
-	public LayoutPreferencesItem? GetPreferences(IFolderViewViewModel folderViewViewModel, string filePath, ulong? frn)
+    public LayoutPreferencesItem? GetPreferences(IFolderViewViewModel folderViewViewModel, string filePath, ulong? frn)
 	{
 		return FindPreferences(folderViewViewModel, filePath, frn)?.LayoutPreferencesManager;
 	}

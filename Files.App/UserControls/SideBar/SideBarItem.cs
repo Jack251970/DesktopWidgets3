@@ -21,7 +21,10 @@ public sealed partial class SidebarItem : Control
 	public bool IsGroupHeader => Item?.Children is not null;
 	public bool CollapseEnabled => DisplayMode != SidebarDisplayMode.Compact;
 
-	private bool HasChildSelection => selectedChildItem != null;
+    // FILESTODO: Do not use localized text for comparison. This is a workaround to avoid major refactoring for now, it should be done any time soon
+    public bool IsHomeItem => Item?.Text == "Home".GetLocalizedResource() && Owner?.MenuItemsSource is IList enumerable && enumerable.IndexOf(Item) == 0;
+
+    private bool HasChildSelection => selectedChildItem != null;
 	private bool isPointerOver = false;
 	private bool isClicking = false;
 	private object? selectedChildItem = null;
@@ -335,9 +338,9 @@ public sealed partial class SidebarItem : Control
 	{
 		if (Item?.Children is null || !CollapseEnabled)
 		{
-			VisualStateManager.GoToState(this, "NoExpansion", useAnimations);
-		}
-		else if (!HasChildren)
+            VisualStateManager.GoToState(this, IsHomeItem ? "NoExpansionWithPadding" : "NoExpansion", useAnimations);
+        }
+        else if (!HasChildren)
 		{
 			VisualStateManager.GoToState(this, "NoChildren", useAnimations);
 		}

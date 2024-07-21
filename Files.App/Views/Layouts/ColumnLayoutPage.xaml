@@ -153,7 +153,7 @@
 			HorizontalAlignment="Center"
 			VerticalAlignment="Center"
 			Canvas.ZIndex="0"
-			EmptyTextType="{x:Bind ParentShellPageInstance.FilesystemViewModel.EmptyTextType, Mode=OneWay}" />
+			EmptyTextType="{x:Bind ParentShellPageInstance.ShellViewModel.EmptyTextType, Mode=OneWay}" />
 
 		<!--  Invalid Item Name Tip  -->
 		<TeachingTip
@@ -310,17 +310,21 @@
 									<StackPanel Orientation="Horizontal" Spacing="4">
 
 										<!--  Cloud Status  -->
-                                        <uc:OpacityIcon
+                                        <Border
 											x:Name="CloudDriveSyncStatusGlyph"
-                                            Width="16"
-											Height="16"
 											HorizontalAlignment="Center"
 											VerticalAlignment="Center"
-                                            x:Load="{x:Bind ((cloud:CloudDriveSyncStatusUI)SyncStatusUI).LoadSyncStatus, Mode=OneWay}"
+											x:Load="{x:Bind ((cloud:CloudDriveSyncStatusUI)SyncStatusUI).LoadSyncStatus, Mode=OneWay}"
 											x:Phase="2"
-											Style="{x:Bind ((cloud:CloudDriveSyncStatusUI)SyncStatusUI).OpacityIcon, Mode=OneWay}" />
+											Background="Transparent"
+											ToolTipService.ToolTip="{x:Bind SyncStatusUI.SyncStatusString, Mode=OneWay}">
+                                            <uc:OpacityIcon
+												Width="16"
+												Height="16"
+												Style="{x:Bind ((cloud:CloudDriveSyncStatusUI)SyncStatusUI).OpacityIcon, Mode=OneWay}" />
+                                        </Border>
 
-										<!--  Tag  -->
+                                        <!--  Tag  -->
 										<Ellipse
 											Width="12"
 											Height="12"
@@ -337,7 +341,7 @@
 											VerticalAlignment="Center"
 											x:Load="{x:Bind IsFolder}"
 											FontSize="12"
-											Foreground="{ThemeResource TextFillColorSecondary}"
+											Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 											Glyph="&#xE76C;" />
 
 									</StackPanel>

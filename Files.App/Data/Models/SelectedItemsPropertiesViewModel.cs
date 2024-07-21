@@ -451,6 +451,13 @@ public sealed class SelectedItemsPropertiesViewModel : ObservableObject
 
     public double DrivePercentageValue => DriveCapacityValue > 0 ? DriveUsedSpaceValue / (double)DriveCapacityValue * 100 : 0;
 
+    private bool cleanupVisibility = false;
+    public bool CleanupVisibility
+    {
+        get => cleanupVisibility;
+        set => SetProperty(ref cleanupVisibility, value);
+    }
+
     private ICommand cleanupDriveCommand;
 	public ICommand CleanupDriveCommand
 	{
@@ -517,7 +524,7 @@ public sealed class SelectedItemsPropertiesViewModel : ObservableObject
     }
 
 	private bool isSelectedItemImage = false;
-	public bool IsSelectedItemImage
+	public bool IsCompatibleToSetAsWindowsWallpaper
 	{
 		get => isSelectedItemImage;
 		set => SetProperty(ref isSelectedItemImage, value);
@@ -532,10 +539,10 @@ public sealed class SelectedItemsPropertiesViewModel : ObservableObject
 
 	public void CheckAllFileExtensions(List<string> itemExtensions)
 	{
-		// Checks if all the item extensions are image extensions of some kind.
-		IsSelectedItemImage = itemExtensions.TrueForAll(FileExtensionHelpers.IsImageFile);
-		// Checks if there is only one selected item and if it's a shortcut.
-		IsSelectedItemShortcut = (itemExtensions.Count == 1) && (itemExtensions.TrueForAll(FileExtensionHelpers.IsShortcutFile));
+        // Checks if all the item extensions are image extensions of some kind.
+        IsCompatibleToSetAsWindowsWallpaper = itemExtensions.TrueForAll(FileExtensionHelpers.IsCompatibleToSetAsWindowsWallpaper);
+        // Checks if there is only one selected item and if it's a shortcut.
+        IsSelectedItemShortcut = (itemExtensions.Count == 1) && (itemExtensions.TrueForAll(FileExtensionHelpers.IsShortcutFile));
 	}
 
 	private string shortcutItemType;

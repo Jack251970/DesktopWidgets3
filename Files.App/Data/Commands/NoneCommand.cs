@@ -89,6 +89,10 @@ internal sealed class NoneCommand : IRichCommand
     public bool IsExecutable
         => false;
 
+    /// <inheritdoc/>
+    public bool IsAccessibleGlobally
+        => false;
+
     public bool CanExecute(object? parameter)
         => false;
 
