@@ -5,7 +5,7 @@
     xmlns:helpers="using:DesktopWidgets3.Helpers"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:control="using:DesktopWidgets3.Views.Controls"
+    xmlns:control="using:DesktopWidgets3.UserControls"
     Loaded="OnLoaded">
     <!-- Do not try to add DataContext! -->
 

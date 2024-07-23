@@ -42,7 +42,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Remove="Views\Controls\TrayIconView.xaml" />
+    <None Remove="UserControls\TrayIconView.xaml" />
     <None Remove="Views\Pages\DashboardPage.xaml" />
     <None Remove="Views\Pages\EditModeOverlayPage.xaml" />
     <None Remove="Views\Pages\Widget\Clock\ClockPage.xaml" />
@@ -113,7 +113,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Views\Controls\TrayIconView.xaml">
+    <Page Update="UserControls\TrayIconView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\Pages\DashboardPage.xaml">
@@ -149,6 +149,10 @@
     <Page Update="Views\Windows\WidgetWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UserControls\" />
   </ItemGroup>
   
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
