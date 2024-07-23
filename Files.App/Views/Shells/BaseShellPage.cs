@@ -281,13 +281,14 @@ public abstract class BaseShellPage : Page, IShellPage, INotifyPropertyChanged
 		ContentPage.ItemManipulationModel.SetSelectedItems(e);
 	}
 
-	protected async void FilesystemViewModel_DirectoryInfoUpdated(object? sender, EventArgs e)
+    protected async void FilesystemViewModel_DirectoryInfoUpdated(object? sender, EventArgs e)
 	{
 		if (ContentPage is null)
         {
             return;
         }
 
+        // TODO: Fix bug here.
         var directoryItemCountLocalization = "Items".GetLocalizedFormatResource(ShellViewModel.FilesAndFolders.Count);
 
         BranchItem? headBranch = headBranch = InstanceViewModel.IsGitRepository

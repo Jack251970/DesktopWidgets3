@@ -41,7 +41,8 @@ internal sealed class StoreUpdateService : ObservableObject, IUpdateService
 		private set => SetProperty(ref _isReleaseNotesAvailable, value);
 	}
 
-    public bool IsAppUpdated => SystemInformation.Instance.IsAppUpdated;
+    // CHANGE: Remove SystemInformation.
+    public bool IsAppUpdated => false;// SystemInformation.Instance.IsAppUpdated;
 
     public StoreUpdateService()
 	{
@@ -176,8 +177,10 @@ internal sealed class StoreUpdateService : ObservableObject, IUpdateService
 
 	public async Task<string?> GetLatestReleaseNotesAsync(CancellationToken cancellationToken = default)
 	{
-		var applicationVersion = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";
-		var releaseNotesLocation = string.Concat("https://raw.githubusercontent.com/files-community/Release-Notes/main/", applicationVersion, ".md");
+        // CHANGE: Remove SystemInformation.
+        /*var applicationVersion = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";*/
+        var applicationVersion = InfoHelper.GetVersion().ToString();
+        var releaseNotesLocation = string.Concat("https://raw.githubusercontent.com/files-community/Release-Notes/main/", applicationVersion, ".md");
 
 		using var client = new HttpClient();
 

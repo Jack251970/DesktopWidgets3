@@ -137,7 +137,9 @@ public static class AppLifecycleHelper
         {
             options.Dsn = Constants.AutomatedWorkflowInjectionKeys.SentrySecret;
             options.AutoSessionTracking = true;
-            options.Release = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";
+            // CHANGE: Remove SystemInformation.
+            /*options.Release = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";*/
+            options.Release = InfoHelper.GetVersion().ToString();
             options.TracesSampleRate = 0.80;
             options.ProfilesSampleRate = 0.40;
             options.Environment = AppEnvironment == AppEnvironment.Preview ? "preview" : "production";

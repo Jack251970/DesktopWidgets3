@@ -195,8 +195,10 @@ public sealed class AboutViewModel : ObservableObject
 
 	public string GetWindowsVersion()
 	{
-		return SystemInformation.Instance.OperatingSystemVersion.ToString();
-	}
+        // CHANGE: Remove SystemInformation.
+        /*return SystemInformation.Instance.OperatingSystemVersion.ToString();*/
+        return string.Empty;
+    }
 
 	public string GetVersionsQueryString()
 	{

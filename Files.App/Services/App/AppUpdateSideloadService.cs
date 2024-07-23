@@ -48,7 +48,8 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 		private set => SetProperty(ref _isUpdating, value);
 	}
 
-    public bool IsAppUpdated => SystemInformation.Instance.IsAppUpdated;
+    // CHANGE: Remove SystemInformation.
+    public bool IsAppUpdated => false;// SystemInformation.Instance.IsAppUpdated;
 
     private bool _isReleaseNotesAvailable;
 	public bool IsReleaseNotesAvailable
@@ -68,8 +69,10 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 
 	public async Task<string?> GetLatestReleaseNotesAsync(CancellationToken cancellationToken = default)
 	{
-		var applicationVersion = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";
-		var releaseNotesLocation = string.Concat("https://raw.githubusercontent.com/files-community/Release-Notes/main/", applicationVersion, ".md");
+        // CHANGE: Remove SystemInformation.
+        /*var applicationVersion = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";*/
+		var applicationVersion = InfoHelper.GetVersion().ToString();
+        var releaseNotesLocation = string.Concat("https://raw.githubusercontent.com/files-community/Release-Notes/main/", applicationVersion, ".md");
 
 		using var client = new HttpClient();
 
