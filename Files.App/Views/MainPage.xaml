@@ -124,13 +124,14 @@
         </Grid.RowDefinitions>
 
         <!--  Background Image  -->
-        <Image
+        <!-- // CHANGE: Remove background image. -->
+        <!--<Image
 			Grid.RowSpan="2"
 			HorizontalAlignment="{x:Bind ViewModel.AppThemeBackgroundImageHorizontalAlignment, Mode=OneWay}"
 			VerticalAlignment="{x:Bind ViewModel.AppThemeBackgroundImageVerticalAlignment, Mode=OneWay}"
 			Opacity="{x:Bind ViewModel.AppThemeBackgroundImageOpacity, Mode=OneWay}"
 			Source="{x:Bind ViewModel.AppThemeBackgroundImageSource, Mode=OneWay}"
-			Stretch="{x:Bind ViewModel.AppThemeBackgroundImageFit, Mode=OneWay}" />
+			Stretch="{x:Bind ViewModel.AppThemeBackgroundImageFit, Mode=OneWay}" />-->
 
         <!--  Header Area  -->
         <Grid x:Name="HeaderArea">
@@ -153,7 +154,7 @@
 				Grid.Row="1"
 				HorizontalAlignment="Stretch"
 				HorizontalContentAlignment="Stretch"
-				x:Load="False"
+                x:Load="False"
 				Loaded="NavToolbar_Loaded"
                 Commands="{x:Bind Commands}"
 				OngoingTasksViewModel="{x:Bind OngoingTasksViewModel}"

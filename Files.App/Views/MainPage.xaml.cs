@@ -47,6 +47,7 @@ public sealed partial class MainPage : Page
 	public MainPage()
 	{
 		InitializeComponent();
+
         TabControl = new();
         TabControl.Loaded += HorizontalMultitaskingControl_Loaded;
 
