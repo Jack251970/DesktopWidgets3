@@ -1,7 +1,6 @@
 # Desktop Widgets 3
 **An app for many useful desktop widgets based on WinUI 3.(By [Jack251970](https://github.com/Jack251970))**
 
-
 ## Building
 
 Before building, you need to add these package sources.
