@@ -21,6 +21,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HardwareInfo", "HardwareInf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Files.Core.SourceGenerator", "Files.Core.SourceGenerator\Files.Core.SourceGenerator.csproj", "{3E989401-28D8-42F3-A688-D46D2388517B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FB32A1B4-C59F-4BC4-8923-CE6C9B077844}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		.vsconfig = .vsconfig
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
