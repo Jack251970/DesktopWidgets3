@@ -82,13 +82,13 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 				NavPathParam = column.NavPathParam
 			});
 			navigationArguments!.NavPathParam = column.NavPathParam;
-			ParentShellPageInstance!.TabBarItemParameter.NavigationParameter = column.NavPathParam!;
+			ParentShellPageInstance!.TabBarItemParameter!.NavigationParameter = column.NavPathParam!;
 		}
 	}
 
 	private void ContentChanged(IShellPage p)
 	{
-		(ParentShellPageInstance as ModernShellPage)?.RaiseContentChanged(p, p.TabBarItemParameter);
+		(ParentShellPageInstance as ModernShellPage)?.RaiseContentChanged(p, p.TabBarItemParameter!);
 	}
 
 	protected override void OnNavigatedTo(NavigationEventArgs eventArgs)
@@ -230,7 +230,7 @@ public sealed partial class ColumnsLayoutPage : BaseLayoutPage
 				if (ColumnHost.ActiveBlades[index].Content is Frame { Content: ColumnShellPage s })
 				{
 					navigationArguments!.NavPathParam = s.ShellViewModel.WorkingDirectory;
-					ParentShellPageInstance!.TabBarItemParameter.NavigationParameter = s.ShellViewModel.WorkingDirectory;
+					ParentShellPageInstance!.TabBarItemParameter!.NavigationParameter = s.ShellViewModel.WorkingDirectory;
 				}
 			});
 		}

@@ -12,7 +12,7 @@ public interface ITabBarItemContent
 {
 	public bool IsCurrentInstance { get; set; }
 
-	public TabBarItemParameter TabBarItemParameter { get; }
+	public TabBarItemParameter? TabBarItemParameter { get; }
 
 	public event EventHandler<TabBarItemParameter> ContentChanged;
 

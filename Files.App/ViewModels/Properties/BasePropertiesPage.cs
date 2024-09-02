@@ -117,7 +117,7 @@ public abstract class BasePropertiesPage : Page, IDisposable
                     false,
                     IconOptions.UseCurrentScale);
 
-                ViewModel.IconData = iconData;
+                ViewModel.IconData = iconData!;
             }
         });
 

@@ -130,7 +130,7 @@ public sealed partial class ShellPanesPage : Page, IShellPanesPage, ITabBarItemC
                 NotifyPropertyChanged(nameof(NavParamsLeft));
 
                 if (GetPane(0) is ModernShellPage page)
-                    {
+                {
                     page.NavParams = value!;
                 }
             }

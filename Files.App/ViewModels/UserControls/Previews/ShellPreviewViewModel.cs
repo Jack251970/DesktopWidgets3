@@ -11,7 +11,6 @@ using Windows.Win32.Graphics.Direct3D11;
 using Windows.Win32.Graphics.Dxgi;
 using Windows.Win32.Graphics.DirectComposition;
 using WinRT;
-using Windows.Win32;
 using Windows.Win32.Graphics.Dwm;
 using static Vanara.PInvoke.ShlwApi;
 using static Vanara.PInvoke.User32;

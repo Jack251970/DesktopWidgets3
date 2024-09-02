@@ -10,7 +10,7 @@ public sealed class DevToolsViewModel : ObservableObject
     private IFolderViewViewModel FolderViewViewModel { get; set; }
 
     public readonly IFileTagsSettingsService FileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
-    protected IDevToolsSettingsService DevToolsSettingsService { get; private set; }
+    private IDevToolsSettingsService DevToolsSettingsService { get; set; }
 
     public Dictionary<OpenInIDEOption, string> OpenInIDEOptions { get; private set; } = [];
 

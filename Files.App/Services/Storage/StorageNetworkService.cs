@@ -108,7 +108,7 @@ public sealed class NetworkService : ObservableObject, INetworkService
                         var linkPath = (string?)item?.Properties["System.Link.TargetParsingPath"];
                         if (linkPath is not null)
                         {
-                            var linkItem = ShellFolderExtensions.GetShellFileItem(item);
+                            var linkItem = ShellFolderExtensions.GetShellFileItem(item!);
                             locations.Add(new(linkItem) { TargetPath = linkPath });
                         }
                     }

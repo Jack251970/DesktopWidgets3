@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
+using InfoHelper = DesktopWidgets3.Helpers.InfoHelper;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
@@ -23,7 +24,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     private bool _multiThread;
 
     [ObservableProperty]
-    private string _version = $"v{Helpers.InfoHelper.GetVersion()}";
+    private string _version = $"v{InfoHelper.GetVersion()}";
 
     #endregion
 
