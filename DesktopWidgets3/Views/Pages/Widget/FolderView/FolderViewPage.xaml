@@ -7,6 +7,4 @@
     xmlns:widget="using:DesktopWidgets3.ViewModels.Pages.Widgets"
     d:DataContext="{d:DesignInstance Type=widget:FolderViewViewModel}"
     NavigationCacheMode="Required"
-    mc:Ignorable="d">
-    
-</Page>
+    mc:Ignorable="d" />

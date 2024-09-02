@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <UserControl
     x:Class="HardwareInfo.UserControls.ProgressCard"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -9,27 +9,23 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="5"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                Text="{x:Bind LeftTitle, Mode=OneWay}"/>
-            <TextBlock
-                Grid.Column="2"
-                Text="{x:Bind RightTitle, Mode=OneWay}"/>
+            <TextBlock Grid.Column="0" Text="{x:Bind LeftTitle, Mode=OneWay}" />
+            <TextBlock Grid.Column="2" Text="{x:Bind RightTitle, Mode=OneWay}" />
         </Grid>
         <ProgressBar
             Grid.Row="2"
-            Value="{x:Bind ProgressValue, Mode=OneWay}"
+            Maximum="100"
             Minimum="0"
-            Maximum="100"/>
+            Value="{x:Bind ProgressValue, Mode=OneWay}" />
     </Grid>
 </UserControl>

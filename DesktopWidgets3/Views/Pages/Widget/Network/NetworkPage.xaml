@@ -11,68 +11,72 @@
 
     <Grid
         x:Name="ContentArea"
-        Background="Transparent"
-        Padding="20, 15, 20, 15">
+        Padding="20,15,20,15"
+        Background="Transparent">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock x:Uid="Widget_Network_Title"
-                   Grid.Row="0" 
-                   Grid.Column="0"
-                   VerticalAlignment="Center"/>
-        <ComboBox Height="32"
-            Grid.Row="0" 
+        <TextBlock
+            x:Uid="Widget_Network_Title"
+            Grid.Row="0"
+            Grid.Column="0"
+            VerticalAlignment="Center" />
+        <ComboBox
+            Grid.Row="0"
             Grid.Column="2"
+            Height="32"
             VerticalAlignment="Stretch"
             VerticalContentAlignment="Center"
             DisplayMemberPath="Item1"
-            SelectedValuePath="Item2"
             ItemsSource="{x:Bind ViewModel.NetworkNames, Mode=OneWay}"
-            SelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"/>
+            SelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
+            SelectedValuePath="Item2" />
         <StackPanel
-            Grid.Row="1" 
+            Grid.Row="1"
             Grid.Column="0"
             Orientation="Horizontal">
             <FontIcon
-                Glyph="&#xE898;"
                 VerticalAlignment="Center"
-                FontSize="16"/>
-            <TextBlock x:Uid="Widget_Network_UploadSpeed_Title"
-                       VerticalAlignment="Center"
-                       Margin="10, 0, 0, 0"/>
+                FontSize="16"
+                Glyph="&#xE898;" />
+            <TextBlock
+                x:Uid="Widget_Network_UploadSpeed_Title"
+                Margin="10,0,0,0"
+                VerticalAlignment="Center" />
         </StackPanel>
-        <TextBlock 
-            Grid.Row="1" 
+        <TextBlock
+            Grid.Row="1"
             Grid.Column="2"
-            Text="{x:Bind ViewModel.UploadSpeed, Mode=OneWay}"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
-            Style="{ThemeResource BodyTextBlockStyle}" />
+            Style="{ThemeResource BodyTextBlockStyle}"
+            Text="{x:Bind ViewModel.UploadSpeed, Mode=OneWay}" />
         <StackPanel
-            Grid.Row="2" 
+            Grid.Row="2"
             Grid.Column="0"
             Orientation="Horizontal">
             <FontIcon
-                Glyph="&#xE896;"
                 VerticalAlignment="Center"
-                FontSize="16"/>
-            <TextBlock x:Uid="Widget_Network_DownloadSpeed_Title"
-                       VerticalAlignment="Center"
-                       Margin="10, 0, 0, 0"/>
+                FontSize="16"
+                Glyph="&#xE896;" />
+            <TextBlock
+                x:Uid="Widget_Network_DownloadSpeed_Title"
+                Margin="10,0,0,0"
+                VerticalAlignment="Center" />
         </StackPanel>
-        <TextBlock 
-            Grid.Row="2" 
+        <TextBlock
+            Grid.Row="2"
             Grid.Column="2"
-            Text="{x:Bind ViewModel.DownloadSpeed, Mode=OneWay}"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
-            Style="{ThemeResource BodyTextBlockStyle}" />
+            Style="{ThemeResource BodyTextBlockStyle}"
+            Text="{x:Bind ViewModel.DownloadSpeed, Mode=OneWay}" />
     </Grid>
 </Page>

@@ -7,23 +7,19 @@
     xmlns:tb="using:H.NotifyIcon"
     mc:Ignorable="d">
 
-    <tb:TaskbarIcon 
+    <tb:TaskbarIcon
         x:Name="TrayIconControl"
         x:Uid="TrayMenu_TaskBarIcon"
         ContextMenuMode="SecondWindow"
-        IconSource="/Assets/WindowIcon.ico"
         DoubleClickCommand="{x:Bind ShowWindowCommand}"
-        NoLeftClickDelay="True"
-        MenuActivation="RightClick">
+        IconSource="/Assets/WindowIcon.ico"
+        MenuActivation="RightClick"
+        NoLeftClickDelay="True">
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout AreOpenCloseAnimationsEnabled="False">
-                <MenuFlyoutItem
-                    x:Uid="TrayMenu_MenuFlyoutItem_ShowWindow"
-                    Command="{x:Bind ShowWindowCommand}"/>
+                <MenuFlyoutItem x:Uid="TrayMenu_MenuFlyoutItem_ShowWindow" Command="{x:Bind ShowWindowCommand}" />
                 <MenuFlyoutSeparator />
-                <MenuFlyoutItem
-                    x:Uid="TrayMenu_MenuFlyoutItem_ExitApp"
-                    Command="{x:Bind ExitAppCommand}"/>
+                <MenuFlyoutItem x:Uid="TrayMenu_MenuFlyoutItem_ExitApp" Command="{x:Bind ExitAppCommand}" />
             </MenuFlyout>
         </tb:TaskbarIcon.ContextFlyout>
     </tb:TaskbarIcon>

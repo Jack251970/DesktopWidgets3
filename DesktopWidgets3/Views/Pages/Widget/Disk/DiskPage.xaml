@@ -10,9 +10,7 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
-    <Grid
-        x:Name="ContentArea"
-        Background="Transparent">
+    <Grid x:Name="ContentArea" Background="Transparent">
         <ScrollViewer
             HorizontalScrollBarVisibility="Auto"
             HorizontalScrollMode="Auto"
@@ -20,36 +18,41 @@
             VerticalScrollMode="Auto">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <TextBlock
                     x:Uid="Widget_Disk_Title"
                     Grid.Row="0"
-                    Margin="20,20,20,10"/>
-                <ListView Grid.Row="1"
-                    ItemsSource="{x:Bind ViewModel.ProgressCardItems, Mode=OneWay}"
+                    Margin="20,20,20,10" />
+                <ListView
+                    Grid.Row="1"
+                    Margin="10,0,10,0"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
-                    Margin="10,0,10,0">
+                    ItemsSource="{x:Bind ViewModel.ProgressCardItems, Mode=OneWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="local:ProgressCardData">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="5"/>
-                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="5" />
+                                    <RowDefinition Height="auto" />
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding LeftTitle, Mode=OneWay}"/>
-                                    <TextBlock Grid.Column="2" Text="{Binding RightTitle, Mode=OneWay}"/>
+                                    <TextBlock Grid.Column="0" Text="{Binding LeftTitle, Mode=OneWay}" />
+                                    <TextBlock Grid.Column="2" Text="{Binding RightTitle, Mode=OneWay}" />
                                 </Grid>
-                                <ProgressBar Grid.Row="2" Value="{Binding ProgressValue, Mode=OneWay}" Minimum="0" Maximum="100"/>
+                                <ProgressBar
+                                    Grid.Row="2"
+                                    Maximum="100"
+                                    Minimum="0"
+                                    Value="{Binding ProgressValue, Mode=OneWay}" />
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>

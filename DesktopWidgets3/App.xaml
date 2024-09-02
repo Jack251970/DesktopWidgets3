@@ -2,26 +2,26 @@
     x:Class="DesktopWidgets3.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+
     <Application.Resources>
         <ResourceDictionary>
 
             <ResourceDictionary.MergedDictionaries>
-                <!-- Remeber: Don't include this in other resource dictionaries! -->
+                <!--  Remeber: Don't include this in other resource dictionaries!  -->
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
 
                 <ResourceDictionary Source="/Styles/Controls.xaml" />
                 <ResourceDictionary Source="/Styles/Others.xaml" />
                 <ResourceDictionary Source="/Styles/Values.xaml" />
 
-                <!-- Files -->
+                <!--  Files  -->
                 <ResourceDictionary Source="../Files.App/App.xaml" />
-                
-                <!-- Clock -->
+
+                <!--  Clock  -->
                 <ResourceDictionary Source="../Clock/ResourceDictionary.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
-            
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
