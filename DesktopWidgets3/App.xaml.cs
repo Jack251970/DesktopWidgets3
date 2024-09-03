@@ -216,7 +216,7 @@ public partial class App : Application
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         HandleAppUnhandledException(e.Exception, true);
-        ApplicationLifecycleExtensions.UnhandledException?.Invoke(sender, e);
+        ApplicationLifecycleExtensions.App_UnhandledException?.Invoke(sender, e);
     }
 
 	public static void HandleAppUnhandledException(Exception? ex, bool showToastNotification)

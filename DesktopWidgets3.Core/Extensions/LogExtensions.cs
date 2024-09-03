@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 
 namespace DesktopWidgets3.Core.Extensions;
 
+#pragma warning disable CA2254 // Template should be a static expression
+
 public class LogExtensions
 {
     public static ILogger? Logger => logger;

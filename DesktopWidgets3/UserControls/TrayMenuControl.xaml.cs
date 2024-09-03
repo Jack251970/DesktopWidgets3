@@ -19,7 +19,6 @@ public sealed partial class TrayMenuControl : UserControl
     private void ShowWindow()
     {
         App.ShowMainWindow(false);
-        ApplicationLifecycleExtensions.MainWindow_Closing?.Invoke(App.MainWindow, null!);
     }
 
     [RelayCommand]
