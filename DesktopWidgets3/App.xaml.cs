@@ -5,6 +5,7 @@ using H.NotifyIcon;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
@@ -67,6 +68,8 @@ public partial class App : Application
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
             .UseContentRoot(AppContext.BaseDirectory)
+            .ConfigureLogging(builder => builder
+                .AddProvider(new FileLoggerProvider()))
             .ConfigureServices((context, services) =>
             {
                 #region Core Service

@@ -13,6 +13,7 @@ public static class LocalSettingsExtensions
 #else
     private static readonly string DefaultApplicationDataFolder = "DesktopWidgets3/ApplicationData";
 #endif
+    private static readonly string LogFolder = "Logs";
     private static string ApplicationDataFolder { get; set; } = null!;
     private static readonly List<string> SubFolders = [];
 
@@ -45,6 +46,17 @@ public static class LocalSettingsExtensions
     public static void RegisterService(ILocalSettingsService localSettingsService)
     {
         FallbackLocalSettingsService = localSettingsService;
+    }
+
+    public static string GetLogFolder()
+    {
+        var folder = Path.Combine(ApplicationDataFolder, LogFolder);
+        if (!Directory.Exists(folder))
+        {
+            Directory.CreateDirectory(folder);
+        }
+
+        return folder;
     }
 
     public static string GetApplicationDataFolder(string? subFolder = null)

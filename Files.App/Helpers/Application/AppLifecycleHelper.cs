@@ -1,11 +1,9 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.Helpers;
 using Files.App.Helpers.Application;
 using Files.App.Services.SizeProvider;
 using Files.App.Storage.Storables;
-using Files.App.Utils.Logger;
 using Files.App.ViewModels.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,7 +13,6 @@ using Sentry.Protocol;
 using System.IO;
 using System.Text;
 using Windows.System;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Files.App.Helpers;
 
@@ -159,10 +156,11 @@ public static class AppLifecycleHelper
     {
         return host
             .UseEnvironment(AppEnvironment.ToString())
-            .ConfigureLogging(builder => builder
+            // CHANGE: Register logger provides in core project.
+            /*.ConfigureLogging(builder => builder
                     .AddProvider(new FileLoggerProvider(Path.Combine(LocalSettingsExtensions.GetApplicationDataFolder("Files"), "debug.log")))
                     .AddProvider(new SentryLoggerProvider())
-                    .SetMinimumLevel(LogLevel.Information))
+                    .SetMinimumLevel(LogLevel.Information))*/
             .ConfigureServices(services => services
                 // Settings services
                 .AddTransient<IUserSettingsService, UserSettingsService>()

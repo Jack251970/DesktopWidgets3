@@ -44,3 +44,6 @@ global using DesktopWidgets3.Views.Pages;
 global using DesktopWidgets3.Views.Pages.Widgets;
 global using DesktopWidgets3.Views.Pages.Widgets.Settings;
 global using DesktopWidgets3.Views.Windows;
+
+// Utils
+global using DesktopWidgets3.Utils.Logger;
