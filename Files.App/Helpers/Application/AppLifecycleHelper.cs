@@ -8,8 +8,6 @@ using Files.App.ViewModels.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Sentry;
-using Sentry.Protocol;
 using System.IO;
 using System.Text;
 using Windows.System;
@@ -130,12 +128,13 @@ public static class AppLifecycleHelper
     /// </summary>
     public static void ConfigureSentry()
     {
-        SentrySdk.Init(options =>
+        // CHANGE: Move sentry.
+        /*SentrySdk.Init(options =>
         {
             options.Dsn = Constants.AutomatedWorkflowInjectionKeys.SentrySecret;
             options.AutoSessionTracking = true;
             // CHANGE: Remove SystemInformation.
-            /*options.Release = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";*/
+            *//*options.Release = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";*//*
             options.Release = InfoHelper.GetVersion().ToString();
             options.TracesSampleRate = 0.80;
             options.ProfilesSampleRate = 0.40;
@@ -146,7 +145,7 @@ public static class AppLifecycleHelper
             };
 
             options.DisableWinUiUnhandledExceptionIntegration();
-        });
+        });*/
     }
 
     /// <summary>
@@ -294,14 +293,15 @@ public static class AppLifecycleHelper
 
 		if (ex is not null)
 		{
-            ex.Data[Mechanism.HandledKey] = false;
+            // CHANGE: Move sentry.
+            /*ex.Data[Mechanism.HandledKey] = false;
             ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
 
             SentrySdk.CaptureException(ex, scope =>
             {
                 scope.User.Id = generalSettingsService?.UserId;
                 scope.Level = SentryLevel.Fatal;
-            });
+            });*/
 
             formattedException.AppendLine($">>>> HRESULT: {ex.HResult}");
 

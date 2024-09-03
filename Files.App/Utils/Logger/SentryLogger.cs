@@ -1,7 +1,8 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
+// CHANGE: Move sentry.
+/*using Microsoft.Extensions.Logging;
 using Sentry;
 using Sentry.Protocol;
 
@@ -46,4 +47,4 @@ public sealed class SentryLogger : ILogger
 			scope.Level = level;
 		});
 	}
-}
+}*/

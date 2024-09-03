@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Sentry;
 using Files.App.Actions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -154,7 +153,8 @@ internal sealed class ActionCommand : ObservableObject, IRichCommand
 	{
 		if (IsExecutable)
 		{
-            SentrySdk.Metrics.Increment("actions", tags: new Dictionary<string, string> { { "command", Code.ToString() } });
+            // CHANGE: Move sentry.
+            /*SentrySdk.Metrics.Increment("actions", tags: new Dictionary<string, string> { { "command", Code.ToString() } });*/
             return Action.ExecuteAsync(parameter);
 		}
 

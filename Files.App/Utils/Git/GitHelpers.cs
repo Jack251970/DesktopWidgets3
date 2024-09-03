@@ -3,11 +3,9 @@
 
 using Files.App.Dialogs;
 using LibGit2Sharp;
-using Sentry;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Net.Sockets;
 using System.Text;
 
 namespace Files.App.Utils.Git;
@@ -197,9 +195,10 @@ internal static partial class GitHelpers
 
 	public static async Task<bool> Checkout(IFolderViewViewModel folderViewViewModel, string? repositoryPath, string? branch)
 	{
-		SentrySdk.Metrics.Increment("Triggered git checkout");
+        // CHANGE: Move sentry.
+        /*SentrySdk.Metrics.Increment("Triggered git checkout");*/
 
-		if (string.IsNullOrWhiteSpace(repositoryPath) || !Repository.IsValid(repositoryPath))
+        if (string.IsNullOrWhiteSpace(repositoryPath) || !Repository.IsValid(repositoryPath))
         {
             return false;
         }
@@ -279,7 +278,8 @@ internal static partial class GitHelpers
 
 	public static async Task CreateNewBranchAsync(IFolderViewViewModel folderViewViewModel, string repositoryPath, string activeBranch)
 	{
-		SentrySdk.Metrics.Increment("Triggered create git branch");
+        // CHANGE: Move sentry.
+        /*SentrySdk.Metrics.Increment("Triggered create git branch");*/
 
 		var viewModel = new AddBranchDialogViewModel(repositoryPath, activeBranch);
 		var loadBranchesTask = viewModel.LoadBranches();
@@ -314,7 +314,8 @@ internal static partial class GitHelpers
 
 	public static async Task DeleteBranchAsync(IFolderViewViewModel folderViewViewModel, string? repositoryPath, string? activeBranch, string? branchToDelete)
 	{
-		SentrySdk.Metrics.Increment("Triggered delete git branch");
+        // CHANGE: Move sentry.
+        /*SentrySdk.Metrics.Increment("Triggered delete git branch");*/
 
 		if (string.IsNullOrWhiteSpace(repositoryPath) ||
 			string.IsNullOrWhiteSpace(activeBranch) ||
