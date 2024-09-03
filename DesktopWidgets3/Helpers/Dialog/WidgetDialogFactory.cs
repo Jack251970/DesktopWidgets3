@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Helpers.Widgets;
+﻿namespace DesktopWidgets3.Helpers.Dialog;
 
 internal static class WidgetDialogFactory
 {

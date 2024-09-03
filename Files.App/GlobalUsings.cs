@@ -85,3 +85,4 @@ global using global::Files.Shared.Extensions;
 // DesktopWidgets3.Core
 global using global::DesktopWidgets3.Core.Contracts.Widgets;
 global using global::DesktopWidgets3.Core.Extensions;
+global using global::DesktopWidgets3.Core.Utils;

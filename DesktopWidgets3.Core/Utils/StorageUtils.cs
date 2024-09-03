@@ -1,9 +1,9 @@
 ﻿using Windows.Storage;
 using Windows.Storage.Pickers;
 
-namespace DesktopWidgets3.Core.Helpers;
+namespace DesktopWidgets3.Core.Utils;
 
-public class StorageHelper
+public class StorageUtils
 {
     private static readonly string[] UriPrefixes = 
     [

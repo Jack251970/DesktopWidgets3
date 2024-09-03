@@ -12,8 +12,8 @@ internal class StartupHelper
     private static readonly string RegistryPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
     private static readonly string ApprovalPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run";
 
-    private static readonly byte[] ApprovalValue1 = new byte[] { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-    private static readonly byte[] ApprovalValue2 = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    private static readonly byte[] ApprovalValue1 = [0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+    private static readonly byte[] ApprovalValue2 = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
 
     private static readonly string RegistryKey = "AppDisplayName".GetLocalized();
     private static readonly string StartupTaskId = "StartAppOnLoginTask";

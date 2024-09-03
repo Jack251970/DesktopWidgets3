@@ -5,6 +5,9 @@ namespace DesktopWidgets3.Core.Extensions;
 
 #pragma warning disable CA2254 // Template should be a static expression
 
+/// <summary>
+/// Provide static extension for logging.
+/// </summary>
 public class LogExtensions
 {
     public static ILogger? Logger => logger;

@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-
+using DesktopWidgets3.Extensions;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 

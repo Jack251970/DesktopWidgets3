@@ -8,6 +8,7 @@ global using DesktopWidgets3.Core.Helpers;
 global using DesktopWidgets3.Core.Models;
 global using DesktopWidgets3.Core.Services;
 global using DesktopWidgets3.Core.Views.Windows;
+global using DesktopWidgets3.Core.Utils;
 
 // Activation
 global using DesktopWidgets3.Activation;
@@ -15,16 +16,21 @@ global using DesktopWidgets3.Activation;
 // Behaviors
 global using DesktopWidgets3.Behaviors;
 
-// Services
+// Contracts
 global using DesktopWidgets3.Contracts.Services;
 global using DesktopWidgets3.Contracts.Services.Widgets;
 global using DesktopWidgets3.Contracts.ViewModels;
+
+// Extensions
+global using DesktopWidgets3.Extensions;
+
+// Services
 global using DesktopWidgets3.Services;
 global using DesktopWidgets3.Services.Widgets;
 
 // Helpers
 global using DesktopWidgets3.Helpers;
-global using DesktopWidgets3.Helpers.Widgets;
+global using DesktopWidgets3.Helpers.Dialog;
 
 // Models
 global using DesktopWidgets3.Models;

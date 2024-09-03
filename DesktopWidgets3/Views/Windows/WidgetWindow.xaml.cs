@@ -7,6 +7,7 @@ using Windows.Graphics;
 using WinUIEx.Messaging;
 using Windows.Foundation;
 using Microsoft.UI.Xaml;
+using DesktopWidgets3.Extensions;
 
 namespace DesktopWidgets3.Views.Windows;
 

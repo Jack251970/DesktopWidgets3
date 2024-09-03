@@ -92,7 +92,7 @@ public partial class FolderViewSettingsViewModel : BaseWidgetSettingsViewModel
     {
         if (IsInitialized)
         {
-            var newPath = await StorageHelper.PickSingleFolderDialog(App.MainWindow.WindowHandle);
+            var newPath = await StorageUtils.PickSingleFolderDialog(App.MainWindow.WindowHandle);
             if (!string.IsNullOrEmpty(newPath))
             {
                 Settings.FolderPath = newPath;
