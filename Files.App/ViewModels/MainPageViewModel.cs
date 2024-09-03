@@ -83,6 +83,7 @@ public sealed class MainPageViewModel : ObservableObject
     public HorizontalAlignment AppThemeBackgroundImageHorizontalAlignment
         => AppearanceSettingsService.AppThemeBackgroundImageHorizontalAlignment;
 
+    // TODO: Fix nullability issue here.
     public bool ShowToolbar
         => AppearanceSettingsService.ShowToolbar;
 
