@@ -214,7 +214,7 @@ public sealed class RecentFilesWidgetViewModel : BaseWidgetViewModel, IWidgetVie
         }
         catch (Exception ex)
         {
-            App.Logger.LogInformation(ex, "Could not populate recent files");
+            LogExtensions.LogInformation(ex, "Could not populate recent files");
         }
         finally
         {
@@ -233,7 +233,7 @@ public sealed class RecentFilesWidgetViewModel : BaseWidgetViewModel, IWidgetVie
         {
             Items.Insert(index < 0 ? Items.Count : Math.Min(index, Items.Count), recentItem);
             _ = recentItem.LoadRecentItemIconAsync()
-                .ContinueWith(t => App.Logger.LogWarning(t.Exception, null), TaskContinuationOptions.OnlyOnFaulted);
+                .ContinueWith(t => LogExtensions.LogWarning(t.Exception, null), TaskContinuationOptions.OnlyOnFaulted);
             return true;
         }
         return false;

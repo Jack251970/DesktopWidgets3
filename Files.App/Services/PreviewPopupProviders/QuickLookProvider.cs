@@ -75,7 +75,7 @@ public sealed class QuickLookProvider : IPreviewPopupProvider
 		}
 		catch (Exception ex)
 		{
-			App.Logger?.LogInformation(ex, ex.Message);
+			LogExtensions.LogInformation(ex, ex.Message);
 			return false;
 		}
 	}

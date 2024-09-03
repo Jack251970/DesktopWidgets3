@@ -196,7 +196,7 @@ internal sealed class FolderProperties : BaseProperties
 		}
 		catch (Exception ex)
 		{
-			App.Logger.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ex, ex.Message);
 		}
 
 		ViewModel.ItemSizeProgressVisibility = false;

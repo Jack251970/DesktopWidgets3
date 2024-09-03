@@ -122,7 +122,7 @@ internal class CombinedProperties : BaseProperties
 				}
 				catch (Exception ex)
 				{
-					App.Logger.LogWarning(ex, ex.Message);
+					LogExtensions.LogWarning(ex, ex.Message);
 				}
 			}
 		}

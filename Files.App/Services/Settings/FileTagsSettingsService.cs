@@ -58,7 +58,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 	{
 		if (FileTagList.Any(x => x.Uid is null))
 		{
-			App.Logger.LogWarning("Tags file is invalid, regenerate");
+			LogExtensions.LogWarning("Tags file is invalid, regenerate");
 			FileTagList = DefaultFileTags;
 		}
 

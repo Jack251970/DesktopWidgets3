@@ -233,7 +233,7 @@ public sealed class RecentItems : IDisposable
         }
         catch (Exception ex)
         {
-            App.Logger.LogWarning(ex, ex.Message);
+            LogExtensions.LogWarning(ex, ex.Message);
             return false;
         }
     }
@@ -252,7 +252,7 @@ public sealed class RecentItems : IDisposable
         }
         catch (Exception ex)
         {
-            App.Logger.LogWarning(ex, ex.Message);
+            LogExtensions.LogWarning(ex, ex.Message);
             return false;
         }
     }

@@ -791,7 +791,7 @@ public sealed class ShellViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            App.Logger.LogWarning(ex, ex.Message);
+            LogExtensions.LogWarning(ex, ex.Message);
         }
     }
 
@@ -950,7 +950,7 @@ public sealed class ShellViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
 		{
-			App.Logger?.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ex, ex.Message);
 		}
 		finally
 		{
@@ -2344,7 +2344,7 @@ public sealed class ShellViewModel : ObservableObject, IDisposable
 						}
 						catch (Exception ex)
 						{
-							App.Logger?.LogWarning(ex, ex.Message);
+							LogExtensions.LogWarning(ex, ex.Message);
 						}
 
 						if (anyEdits && sampler.CheckNow())

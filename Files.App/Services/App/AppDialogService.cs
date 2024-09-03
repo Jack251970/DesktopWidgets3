@@ -76,7 +76,7 @@ internal sealed class DialogService : IDialogService
 		}
 		catch (Exception ex)
 		{
-			App.Logger?.LogWarning(ex, "Failed to show dialog");
+			LogExtensions.LogWarning(ex, "Failed to show dialog");
 
 			Debugger.Break();
 		}

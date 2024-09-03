@@ -490,7 +490,7 @@ internal sealed class CommandManager : ICommandManager
                 .SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
                 .ToImmutableDictionary(item => item.HotKey, item => item.Command);
 
-            App.Logger.LogWarning(ex, "The app found some keys in different commands are duplicated and are using default key bindings for those commands.");
+            LogExtensions.LogWarning(ex, "The app found some keys in different commands are duplicated and are using default key bindings for those commands.");
         }
         catch (Exception ex)
         {
@@ -501,7 +501,7 @@ internal sealed class CommandManager : ICommandManager
                 .SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
                 .ToImmutableDictionary(item => item.HotKey, item => item.Command);
 
-            App.Logger.LogWarning(ex, "The app is temporarily using default key bindings for all because of a serious error of assigning custom keys.");
+            LogExtensions.LogWarning(ex, "The app is temporarily using default key bindings for all because of a serious error of assigning custom keys.");
         }
     }
 

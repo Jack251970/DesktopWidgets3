@@ -61,7 +61,7 @@ public static class PathNormalization
         }
         catch (UriFormatException ex)
         {
-            App.Logger?.LogWarning(ex, path);
+            LogExtensions.LogWarning(ex, path);
             return path;
         }
     }

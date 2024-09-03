@@ -88,7 +88,7 @@ public sealed class LibraryManager : IDisposable
 			}
 			catch (Exception e)
 			{
-				App.Logger?.LogWarning(e, null);
+				LogExtensions.LogWarning(e, null);
 			}
 
 			return [];
@@ -150,7 +150,7 @@ public sealed class LibraryManager : IDisposable
 			}
 			catch (Exception e)
 			{
-				App.Logger?.LogWarning(e, null);
+				LogExtensions.LogWarning(e, null);
 			}
 
 			return Task.FromResult<ShellLibraryItem>(null!);
@@ -233,7 +233,7 @@ public sealed class LibraryManager : IDisposable
 			}
 			catch (Exception e)
 			{
-				App.Logger?.LogWarning(e, null);
+				LogExtensions.LogWarning(e, null);
 			}
 
 			return Task.FromResult<ShellLibraryItem>(null!);
@@ -384,7 +384,7 @@ public sealed class LibraryManager : IDisposable
 			var library = SafetyExtensions.IgnoreExceptions(() => new ShellLibraryEx(Shell32.ShellUtil.GetShellItemForPath(newPath!)!, true));
 			if (library is null)
 			{
-				App.Logger?.LogWarning($"Failed to open library after {changeType}: {newPath}");
+				LogExtensions.LogWarning($"Failed to open library after {changeType}: {newPath}");
 				return;
 			}
 

@@ -340,7 +340,7 @@ public static class AppLifecycleHelper
 
         // Save the current tab list in case it was overwriten by another instance
         SaveSessionTabs();
-        App.Logger?.LogError(ex, ex?.Message ?? "An unhandled error occurred.");
+        LogExtensions.LogError(ex, ex?.Message ?? "An unhandled error occurred.");
 
         if (!showToastNotification)
         {

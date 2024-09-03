@@ -99,7 +99,7 @@ public sealed partial class MainPage : Page
 				InitializeWithWindow.Initialize(storeContext, FolderViewViewModel.WindowHandle);
 				var storeRateAndReviewResult = await storeContext.RequestRateAndReviewAppAsync();
 
-				App.Logger?.LogInformation($"STORE: review request status: {storeRateAndReviewResult.Status}");
+				LogExtensions.LogInformation($"STORE: review request status: {storeRateAndReviewResult.Status}");
 
 				UserSettingsService.ApplicationSettingsService.ClickedToReviewApp = true;
 			}
@@ -507,7 +507,7 @@ public sealed partial class MainPage : Page
             // Handle exception in case WinUI Windows is closed
             // (see https://github.com/files-community/Files/issues/15599)
 
-            App.Logger.LogWarning(ex, ex.Message);
+            LogExtensions.LogWarning(ex, ex.Message);
         }
     }
 

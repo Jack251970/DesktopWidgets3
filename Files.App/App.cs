@@ -50,7 +50,8 @@ public partial class App
 	public static RecentItems RecentItemsManager { get; private set; } = null!;
 	public static LibraryManager LibraryManager { get; private set; } = null!;
 	public static AppModel AppModel { get; private set; } = null!;
-	public static ILogger Logger { get; private set; } = null!;
+    // CHANGE: Use log extension instead.
+    public static ILogger Logger => App.Logger!;
 
 	/// <summary>
 	/// Initializes an instance of <see cref="App"/>.
@@ -148,7 +149,8 @@ public partial class App
                 FileTagsManager = DependencyExtensions.GetRequiredService<FileTagsManager>();
                 RecentItemsManager = DependencyExtensions.GetRequiredService<RecentItems>();
                 LibraryManager = DependencyExtensions.GetRequiredService<LibraryManager>();
-                Logger = DependencyExtensions.GetRequiredService<ILogger<App>>();
+                // CHANGE: Use log extension instead.
+                /*Logger = DependencyExtensions.GetRequiredService<ILogger<App>>();*/
                 AppModel = DependencyExtensions.GetRequiredService<AppModel>();
             }
 
@@ -162,7 +164,8 @@ public partial class App
             MainWindow.Closed += Window_Closed;
 			MainWindow.Activated += Window_Activated;
 
-			Logger?.LogInformation($"App launched. Launch args type: {appActivationArguments.Data.GetType().Name}");
+            // CHANGE: Remove launch args log.
+			/*Logger?.LogInformation($"App launched. Launch args type: {appActivationArguments.Data.GetType().Name}");*/
 
             if (!(isStartupTask && isLeaveAppRunning))
             {
@@ -210,8 +213,9 @@ public partial class App
     /// </summary>
     public async Task OnActivatedAsync(AppActivationArguments activatedEventArgs)
     {
+        // CHANGE: Remove activate type log.
         var activatedEventArgsData = activatedEventArgs.Data;
-        Logger.LogInformation($"The app is being activated. Activation type: {activatedEventArgsData.GetType().Name}");
+        /*Logger.LogInformation($"The app is being activated. Activation type: {activatedEventArgsData.GetType().Name}");*/
 
         // InitializeApplication accesses UI, needs to be called on UI thread
         await ThreadExtensions.MainDispatcherQueue.EnqueueOrInvokeAsync(()
@@ -378,7 +382,7 @@ public partial class App
                 }
             }
         },
-        Logger);
+        App.Logger);
 
         // Destroy cached properties windows
         FilePropertiesHelpers.DestroyCachedWindows();

@@ -172,7 +172,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 				await srcExeFile.CopyAsync(destFolder, "Files.App.Launcher.exe", NameCollisionOption.ReplaceExisting);
 				await srcHashFile.CopyAsync(destFolder, "Files.App.Launcher.exe.sha256", NameCollisionOption.ReplaceExisting);
 
-				App.Logger?.LogInformation("Files.App.Launcher updated.");
+				LogExtensions.LogInformation("Files.App.Launcher updated.");
 			}
 		}
 

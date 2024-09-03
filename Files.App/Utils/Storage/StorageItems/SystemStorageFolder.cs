@@ -46,7 +46,7 @@ public sealed class SystemStorageFolder(StorageFolder folder) : BaseStorageFolde
             }
             catch (Exception e)
             {
-                App.Logger.LogWarning(e, null);
+                LogExtensions.LogWarning(e, null);
             }
         }
 

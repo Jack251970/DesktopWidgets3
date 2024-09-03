@@ -90,7 +90,7 @@ internal sealed class DriveProperties : BaseProperties
 		catch (Exception e)
 		{
 			ViewModel.LastSeparatorVisibility = false;
-			App.Logger.LogWarning(e, e.Message);
+			LogExtensions.LogWarning(e, e.Message);
 		}
 	}
 }

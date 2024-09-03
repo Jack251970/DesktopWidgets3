@@ -86,7 +86,7 @@ public sealed class FolderSearch
 		}
 		catch (Exception e)
 		{
-			App.Logger?.LogWarning(e, "Search failure");
+			LogExtensions.LogWarning(e, "Search failure");
 		}
 
 		return Task.CompletedTask;
@@ -128,7 +128,7 @@ public sealed class FolderSearch
 		}
 		catch (Exception e)
 		{
-			App.Logger?.LogWarning(e, "Search failure");
+			LogExtensions.LogWarning(e, "Search failure");
 		}
 
 		return results;
@@ -163,7 +163,7 @@ public sealed class FolderSearch
                 }
 				catch (Exception ex)
 				{
-					App.Logger?.LogWarning(ex, "Error creating ListedItem from StorageItem");
+					LogExtensions.LogWarning(ex, "Error creating ListedItem from StorageItem");
 				}
 
 				if (results.Count == 32 || results.Count % 300 == 0 /*|| sampler.CheckNow()*/)
@@ -250,7 +250,7 @@ public sealed class FolderSearch
                 }
 				catch (Exception ex)
 				{
-					App.Logger?.LogWarning(ex, "Error creating ListedItem from StorageItem");
+					LogExtensions.LogWarning(ex, "Error creating ListedItem from StorageItem");
 				}
 			}
 

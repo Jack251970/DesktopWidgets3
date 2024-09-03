@@ -226,7 +226,7 @@ public sealed class AdvancedViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            App.Logger.LogWarning(ex, "Error importing settings");
+            LogExtensions.LogWarning(ex, "Error importing settings");
             UIHelpers.CloseAllDialogs(FolderViewViewModel);
             await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "SettingsImportErrorTitle".GetLocalizedResource(), "SettingsImportErrorDescription".GetLocalizedResource());
         }
@@ -281,7 +281,7 @@ public sealed class AdvancedViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            App.Logger.LogWarning(ex, "Error exporting settings");
+            LogExtensions.LogWarning(ex, "Error exporting settings");
         }
     }
 

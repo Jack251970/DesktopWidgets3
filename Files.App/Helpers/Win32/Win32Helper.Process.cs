@@ -23,7 +23,7 @@ public static partial class Win32Helper
 			{
 				isRunningOnArm = IsArmProcessor();
                 // CHANGE: Use named placeholder instead of numeric values.
-                App.Logger.LogInformation("Running on ARM: {isRunningOnArm}", isRunningOnArm);
+                LogExtensions.LogInformation($"Running on ARM: {isRunningOnArm}");
 			}
 
 			return isRunningOnArm ?? false;

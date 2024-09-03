@@ -84,7 +84,7 @@ public sealed class CommonDialogService : ICommonDialogService
 		}
 		catch (Exception ex)
 		{
-			App.Logger.LogError(ex, "Failed to open a common dialog called FileOpenDialog.");
+			LogExtensions.LogError(ex, "Failed to open a common dialog called FileOpenDialog.");
 
 			return false;
 		}
@@ -157,7 +157,7 @@ public sealed class CommonDialogService : ICommonDialogService
 		}
 		catch (Exception ex)
 		{
-			App.Logger.LogError(ex, "Failed to open a common dialog called FileSaveDialog.");
+			LogExtensions.LogError(ex, "Failed to open a common dialog called FileSaveDialog.");
 
 			return false;
 		}

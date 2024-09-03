@@ -135,7 +135,7 @@ public class AppThemeModeService : IAppThemeModeService
         }
         catch (Exception ex)
         {
-            App.Logger.LogWarning(ex, "Failed to change theme mode of the app.");
+            LogExtensions.LogWarning(ex, "Failed to change theme mode of the app.");
         }
     }
 

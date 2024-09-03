@@ -735,7 +735,7 @@ public sealed class FileOperationsHelpers
 		}
 		catch (FileNotFoundException ex) // Could not parse shortcut
 		{
-			App.Logger?.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ex, ex.Message);
 			// Return a item containing the invalid target path
 			return new ShellLinkItem
 			{
@@ -746,7 +746,7 @@ public sealed class FileOperationsHelpers
 		catch (Exception ex)
 		{
 			// Could not parse shortcut
-			App.Logger?.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ex, ex.Message);
 			return null;
 		}
 	}
@@ -776,7 +776,7 @@ public sealed class FileOperationsHelpers
 		catch (Exception ex)
 		{
 			// Could not create shortcut
-			App.Logger?.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ex, ex.Message);
 		}
 
 		return Task.FromResult(false);
@@ -826,7 +826,7 @@ public sealed class FileOperationsHelpers
         catch (Exception ex)
 		{
 			// Could not create shortcut
-			App.Logger?.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ex, ex.Message);
 		}
 
 		return false;

@@ -66,7 +66,7 @@ public static class UniversalStorageEnumerator
 			}
 			catch (Exception ex)
 			{
-				App.Logger?.LogWarning(ex, "Error enumerating directory contents.");
+				LogExtensions.LogWarning(ex, "Error enumerating directory contents.");
 
 				break;
 			}
@@ -168,7 +168,7 @@ public static class UniversalStorageEnumerator
 			}
 			catch (Exception ex)
 			{
-				App.Logger?.LogWarning(ex, "Error enumerating directory contents.");
+				LogExtensions.LogWarning(ex, "Error enumerating directory contents.");
 				break;
 			}
 

@@ -207,6 +207,7 @@ public partial class App : Application
         ThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
         TitleBarHelper.Initialize(GetService<IThemeSelectorService>());
         WindowsExtensions.Initialize(GetService<IWindowService>());
+        LogExtensions.Initialize(GetService<ILogger<App>>());
     }
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -222,6 +223,7 @@ public partial class App : Application
         {
             MainWindow = await WindowsExtensions.GetWindow<MainWindow>(ActivationType.Main, args);
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
+            LogExtensions.LogInformation($"App launched. Launch args type: {args.GetType().Name}");
         }
     }
 

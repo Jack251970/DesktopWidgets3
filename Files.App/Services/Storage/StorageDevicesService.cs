@@ -26,13 +26,13 @@ public sealed class RemovableDrivesService : IRemovableDrivesService
 			var res = await FilesystemTasks.Wrap(() => StorageFolder.GetFolderFromPathAsync(drive.Name).AsTask());
 			if (res.ErrorCode is FileSystemStatusCode.Unauthorized)
 			{
-				App.Logger?.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
+				LogExtensions.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
 					+ " failed at the StorageFolder initialization step. This device will be ignored.");
 				continue;
 			}
 			else if (!res)
 			{
-				App.Logger?.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
+				LogExtensions.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
 					+ " failed at the StorageFolder initialization step. This device will be ignored.");
 				continue;
 			}
@@ -48,7 +48,7 @@ public sealed class RemovableDrivesService : IRemovableDrivesService
                 continue;
             }
 
-            App.Logger?.LogInformation($"Drive added: {driveItem.Path}, {driveItem.Type}");
+            LogExtensions.LogInformation($"Drive added: {driveItem.Path}, {driveItem.Type}");
 
 			yield return driveItem;
 		}

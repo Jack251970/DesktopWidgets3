@@ -92,7 +92,7 @@ public static class MessageFormatExtensions
 		catch
 		{
 			value = string.Empty;
-			App.Logger.LogWarning($"Formatter could not get a valid result value for: '{resourceKey}'");
+			LogExtensions.LogWarning($"Formatter could not get a valid result value for: '{resourceKey}'");
 		}
 
 		return value;

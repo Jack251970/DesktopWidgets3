@@ -36,7 +36,7 @@ public static partial class Win32Helper
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult();
-				App.Logger.LogWarning(ex, ex.Message);
+				LogExtensions.LogWarning(ex, ex.Message);
 			}
 			finally
 			{
@@ -70,7 +70,7 @@ public static partial class Win32Helper
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult();
-				App.Logger.LogWarning(ex, ex.Message);
+				LogExtensions.LogWarning(ex, ex.Message);
 			}
 			finally
 			{
@@ -104,7 +104,7 @@ public static partial class Win32Helper
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult(default);
-				App.Logger.LogWarning(ex, ex.Message);
+				LogExtensions.LogWarning(ex, ex.Message);
 				//tcs.SetException(e);
 			}
 			finally
@@ -138,7 +138,7 @@ public static partial class Win32Helper
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult(default);
-				App.Logger.LogInformation(ex, ex.Message);
+				LogExtensions.LogInformation(ex, ex.Message);
 				//tcs.SetException(e);
 			}
 			finally
@@ -437,7 +437,7 @@ public static partial class Win32Helper
 		}
 		catch (InvalidOperationException ex)
 		{
-			App.Logger.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ex, ex.Message);
 			return false;
 		}
 		catch (Win32Exception)

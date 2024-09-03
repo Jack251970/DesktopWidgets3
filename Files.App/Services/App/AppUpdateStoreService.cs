@@ -83,7 +83,7 @@ internal sealed class StoreUpdateService : ObservableObject, IUpdateService
 		{
 			if (await ShowDialogAsync(folderViewViewModel))
 			{
-				App.Logger?.LogInformation("STORE: Downloading updates...");
+				LogExtensions.LogInformation("STORE: Downloading updates...");
 				OnUpdateInProgress();
 				await DownloadAndInstallAsync();
 				OnUpdateCompleted();
@@ -94,13 +94,13 @@ internal sealed class StoreUpdateService : ObservableObject, IUpdateService
 	public async Task CheckForUpdatesAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		IsUpdateAvailable = false;
-		App.Logger?.LogInformation("STORE: Checking for updates...");
+		LogExtensions.LogInformation("STORE: Checking for updates...");
 
 		await GetUpdatePackagesAsync(folderViewViewModel);
 
 		if (_updatePackages is not null && _updatePackages.Count > 0)
 		{
-			App.Logger?.LogInformation("STORE: Update found.");
+			LogExtensions.LogInformation("STORE: Update found.");
 			IsUpdateAvailable = true;
 		}
 	}
@@ -222,7 +222,7 @@ internal sealed class StoreUpdateService : ObservableObject, IUpdateService
 				await srcExeFile.CopyAsync(destFolder, "Files.App.Launcher.exe", NameCollisionOption.ReplaceExisting);
 				await srcHashFile.CopyAsync(destFolder, "Files.App.Launcher.exe.sha256", NameCollisionOption.ReplaceExisting);
 
-				App.Logger?.LogInformation("Files.App.Launcher updated.");
+				LogExtensions.LogInformation("Files.App.Launcher updated.");
 			}
 		}
 

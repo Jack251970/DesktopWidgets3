@@ -384,7 +384,7 @@ public static class UIFilesystemHelpers
 		}
 		catch (Exception ex)
 		{
-            App.Logger?.LogWarning(ex, null);
+            LogExtensions.LogWarning(ex, null);
 		}
 	}
 

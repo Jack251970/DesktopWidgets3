@@ -680,7 +680,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			if (path is not null && collisions.ContainsKey(path))
 			{
 				// Something strange happened, log
-				App.Logger?.LogWarning($"Duplicate key when resolving conflicts: {incomingItems.ElementAt(item.index).SourcePath}, {item.src.Name}\n" +
+				LogExtensions.LogWarning($"Duplicate key when resolving conflicts: {incomingItems.ElementAt(item.index).SourcePath}, {item.src.Name}\n" +
 					$"Source: {string.Join(", ", source.Select(x => string.IsNullOrEmpty(x.Path) ? x.Item.Name : x.Path))}");
 			}
 			collisions!.AddIfNotPresent(incomingItems.ElementAt(item.index).SourcePath, FileNameConflictResolveOptionType.GenerateNewName);
@@ -768,7 +768,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			}
 			catch (Exception ex)
 			{
-				App.Logger?.LogWarning(ex, ex.Message);
+				LogExtensions.LogWarning(ex, ex.Message);
 				return itemsList;
 			}
 		}
@@ -795,7 +795,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 		}
 		catch (Exception ex)
 		{
-			App.Logger?.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ex, ex.Message);
 		}
 
 		// workaround for GetStorageItemsAsync() bug that only yields 16 items at most

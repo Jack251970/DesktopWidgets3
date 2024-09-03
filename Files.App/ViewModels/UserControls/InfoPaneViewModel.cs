@@ -180,7 +180,7 @@ public sealed class InfoPaneViewModel : ObservableObject, IDisposable
                     // Handle exception in case WinUI Windows is closed
                     // (see https://github.com/files-community/Files/issues/15599)
 
-                    App.Logger.LogWarning(ex, ex.Message);
+                    LogExtensions.LogWarning(ex, ex.Message);
                 }
                 
                 break;
