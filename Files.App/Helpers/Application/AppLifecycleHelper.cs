@@ -7,7 +7,6 @@ using Files.App.Storage.Storables;
 using Files.App.ViewModels.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text;
 using Windows.System;
@@ -347,10 +346,7 @@ public static class AppLifecycleHelper
             return;
         }
 
-        SafetyExtensions.IgnoreExceptions(() =>
-        {
-            AppToastNotificationHelper.ShowUnhandledExceptionToast();
-        });
+        SafetyExtensions.IgnoreExceptions(AppToastNotificationHelper.ShowUnhandledExceptionToast);
 
         // Restart the app
         var userSettingsService = DependencyExtensions.GetRequiredService<IUserSettingsService>();

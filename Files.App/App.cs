@@ -64,7 +64,8 @@ public partial class App
         if (!isInitialized)
         {
             // Configure exception handlers
-            ApplicationLifecycleExtensions.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);
+            // CHANGE: Remove unhandled exception handler because it is already in core project.
+            /*ApplicationLifecycleExtensions.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, true);*/
             AppDomain.CurrentDomain.UnhandledException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.ExceptionObject as Exception, false);
             TaskScheduler.UnobservedTaskException += (sender, e) => AppLifecycleHelper.HandleAppUnhandledException(e.Exception, false);
 

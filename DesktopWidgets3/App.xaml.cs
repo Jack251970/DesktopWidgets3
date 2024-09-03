@@ -1,5 +1,5 @@
-﻿using Files.Core.Services;
-using Files.App.Helpers;
+﻿using Files.App.Helpers;
+using Files.Core.Services;
 
 using H.NotifyIcon;
 
@@ -8,6 +8,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+
+using System.Diagnostics;
+using System.Text;
 
 using UnhandledExceptionEventArgs = Microsoft.UI.Xaml.UnhandledExceptionEventArgs;
 
@@ -212,7 +215,62 @@ public partial class App : Application
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
+        HandleAppUnhandledException(e.Exception, true);
         ApplicationLifecycleExtensions.UnhandledException?.Invoke(sender, e);
+    }
+
+	public static void HandleAppUnhandledException(Exception? ex, bool showToastNotification)
+    {
+        StringBuilder formattedException = new()
+        {
+            Capacity = 200
+        };
+
+        formattedException.AppendLine("--------- UNHANDLED EXCEPTION ---------");
+
+        if (ex is not null)
+        {
+            formattedException.AppendLine($">>>> HRESULT: {ex.HResult}");
+
+            if (ex.Message is not null)
+            {
+                formattedException.AppendLine("--- MESSAGE ---");
+                formattedException.AppendLine(ex.Message);
+            }
+            if (ex.StackTrace is not null)
+            {
+                formattedException.AppendLine("--- STACKTRACE ---");
+                formattedException.AppendLine(ex.StackTrace);
+            }
+            if (ex.Source is not null)
+            {
+                formattedException.AppendLine("--- SOURCE ---");
+                formattedException.AppendLine(ex.Source);
+            }
+            if (ex.InnerException is not null)
+            {
+                formattedException.AppendLine("--- INNER ---");
+                formattedException.AppendLine(ex.InnerException.ToString());
+            }
+        }
+        else
+        {
+            formattedException.AppendLine("Exception data is not available.");
+        }
+
+        formattedException.AppendLine("---------------------------------------");
+
+        Debug.WriteLine(formattedException.ToString());
+
+        Debugger.Break();
+
+        LogExtensions.LogError(ex, ex?.Message ?? "An unhandled error occurred.");
+
+        if (showToastNotification)
+        {
+            GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), 
+                ex?.ToString(), AppContext.BaseDirectory));
+        }
     }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
