@@ -98,7 +98,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     partial void OnSelectedIndexChanged(int value)
     {
-        if (value < 0)
+        if (value < 0 || value >= NetworkNames.Count)
         {
             return;
         }
