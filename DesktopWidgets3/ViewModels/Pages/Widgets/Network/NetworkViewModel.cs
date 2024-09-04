@@ -30,8 +30,8 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     private NetworkSpeedInfo networkSpeedInfo = null!;
 
-    private List<Tuple<string, string>> lastNetworkNamesIdentifiers = new();
-    private List<Tuple<string, string>> networkNamesIdentifiers = new();
+    private List<Tuple<string, string>> lastNetworkNamesIdentifiers = [];
+    private List<Tuple<string, string>> networkNamesIdentifiers = [];
 
     private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;

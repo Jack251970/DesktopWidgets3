@@ -19,6 +19,8 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
     private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;
 
+    private readonly SemaphoreSlim semaphoreSlim = new(1);
+
     public DiskViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
     {
         _systemInfoService = systemInfoService;
@@ -40,13 +42,15 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
         }
         else
         {
-            var diskInfo = _systemInfoService.GetDiskInfo();
-            var progressCardData = diskInfo.GetProgressCardData();
-            var dataCount = progressCardData.Count;
-            var itemsCount = ProgressCardItems.Count;
-
-            RunOnDispatcherQueue(() =>
+            RunOnDispatcherQueue(async () =>
             {
+                await semaphoreSlim.WaitAsync();
+
+                var diskInfo = _systemInfoService.GetDiskInfo();
+                var progressCardData = diskInfo.GetProgressCardData();
+                var dataCount = progressCardData.Count;
+                var itemsCount = ProgressCardItems.Count;
+
                 // Remove extra items
                 if (dataCount < itemsCount)
                 {
@@ -54,10 +58,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                     var end = itemsCount;
                     for (var i = start; i < end; i++)
                     {
-                        if (i < ProgressCardItems.Count)
-                        {
-                            ProgressCardItems.RemoveAt(i);
-                        }
+                        ProgressCardItems.RemoveAt(i);
                     }
 
                     itemsCount = dataCount;
@@ -66,23 +67,20 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                 // Update items
                 for (var i = 0; i < itemsCount; i++)
                 {
-                    if (i < ProgressCardItems.Count)
+                    if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
                     {
-                        if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
-                        {
-                            var data = progressCardData[i].LeftTitle;
-                            ProgressCardItems[i].LeftTitle = data;
-                        }
-                        if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
-                        {
-                            var data = progressCardData[i].RightTitle;
-                            ProgressCardItems[i].RightTitle = data;
-                        }
-                        if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
-                        {
-                            var data = progressCardData[i].ProgressValue;
-                            ProgressCardItems[i].ProgressValue = data;
-                        }
+                        var data = progressCardData[i].LeftTitle;
+                        ProgressCardItems[i].LeftTitle = data;
+                    }
+                    if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
+                    {
+                        var data = progressCardData[i].RightTitle;
+                        ProgressCardItems[i].RightTitle = data;
+                    }
+                    if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
+                    {
+                        var data = progressCardData[i].ProgressValue;
+                        ProgressCardItems[i].ProgressValue = data;
                     }
                 }
 
@@ -95,6 +93,8 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                         ProgressCardItems.Add(item);
                     }
                 }
+
+                semaphoreSlim.Release();
             });
         }
     }
