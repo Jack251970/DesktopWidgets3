@@ -99,7 +99,7 @@ public sealed class GPUStats : IDisposable
 
             if (success && counters != null)
             {
-                // TODO: This outer try/catch should be replaced with more secure locking around shared resources.
+                // DevHomeTODO: This outer try/catch should be replaced with more secure locking around shared resources.
                 try
                 {
                     var sum = 0.0f;

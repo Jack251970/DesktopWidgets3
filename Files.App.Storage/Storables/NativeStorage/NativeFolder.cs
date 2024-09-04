@@ -115,7 +115,7 @@ public class NativeFolder(DirectoryInfo directoryInfo, string? name = null) : Na
 		}
 		else if (itemToCopy is IFolder sourceFolder)
 		{
-			// TODO: Implement folder copy
+			// FILESTODO: Implement folder copy
 			_ = sourceFolder;
 			throw new NotSupportedException();
 		}
