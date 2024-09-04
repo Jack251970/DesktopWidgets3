@@ -1,4 +1,6 @@
-﻿using HardwareInfo.Helpers;
+﻿using System.Globalization;
+using System.Timers;
+using HardwareInfo.Helpers;
 
 using Timer = System.Timers.Timer;
 
@@ -8,6 +10,10 @@ internal class SystemInfoService : ISystemInfoService
 {
     private readonly IAppSettingsService _appSettingsService;
 
+    private readonly HardwareMonitor hardwareMonitor = new();
+
+    private readonly Timer sampleTimer = new();
+
     public SystemInfoService(IAppSettingsService appSettingsService)
     {
         _appSettingsService = appSettingsService;
@@ -15,46 +21,35 @@ internal class SystemInfoService : ISystemInfoService
         sampleTimer.AutoReset = true;
         sampleTimer.Enabled = false;
         sampleTimer.Interval = _appSettingsService.BatterySaver ? 1000 : 100;
+        sampleTimer.Elapsed += SampleTimer_Elapsed;
 
         _appSettingsService.OnBatterySaverChanged += AppSettingsService_OnBatterySaverChanged;
+
+        hardwareMonitor.EnabledChanged += HardwareMonitor_OnEnabledChanged;
+    }
+
+    private void SampleTimer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+        hardwareMonitor.Update();
     }
 
     private void AppSettingsService_OnBatterySaverChanged(object? _, bool batterySaver)
     {
+        var enabled = sampleTimer.Enabled;
+        sampleTimer.Enabled = false;
         sampleTimer.Interval = batterySaver ? 1000 : 100;
+        sampleTimer.Enabled = enabled;
     }
 
-    #region monitor & sample timer
-
-    private readonly HardwareMonitor hardwareMonitor = new();
-
-    private readonly Timer sampleTimer = new();
-
-    private bool isMonitorOpen = false;
-    private void UpdateMonitorStatus()
+    private void HardwareMonitor_OnEnabledChanged(object? _, bool enabled)
     {
-        var lastIsMonitorOpen = isMonitorOpen;
-
-        isMonitorOpen = _isNetworkMonitorOpen || _isCpuGpuMemoryMonitorOpen || _isDiskMonitorOpen;
-
-        // Check if need to change monitor status
-        if (lastIsMonitorOpen == isMonitorOpen)
+        if (hardwareMonitor.Enabled)
         {
-            return;
-        }
-
-        if (isMonitorOpen)
-        {
-            hardwareMonitor.Open();
             sampleTimer.Start();
-            sampleTimer.Elapsed -= UpdateMonitor;
-            sampleTimer.Elapsed += UpdateMonitor;
         }
         else
         {
-            hardwareMonitor.Close();
             sampleTimer.Stop();
-            sampleTimer.Elapsed -= UpdateMonitor;
         }
     }
 
@@ -63,13 +58,15 @@ internal class SystemInfoService : ISystemInfoService
         switch (type)
         {
             case WidgetType.Network:
-                SetNetworkMonitor(true);
+                hardwareMonitor.NetworkEnabled = true;
                 break;
             case WidgetType.Performance:
-                SetCpuGpuMemoryMonitor(true);
+                hardwareMonitor.CpuEnabled = true;
+                hardwareMonitor.GpuEnabled = true;
+                hardwareMonitor.MemoryEnabled = true;
                 break;
             case WidgetType.Disk:
-                SetDiskMonitor(true);
+                hardwareMonitor.DiskEnabled = true;
                 break;
         }
     }
@@ -79,37 +76,20 @@ internal class SystemInfoService : ISystemInfoService
         switch (type)
         {
             case WidgetType.Network:
-                SetNetworkMonitor(false);
+                hardwareMonitor.NetworkEnabled = false;
                 break;
             case WidgetType.Performance:
-                SetCpuGpuMemoryMonitor(false);
+                hardwareMonitor.CpuEnabled = false;
+                hardwareMonitor.GpuEnabled = false;
+                hardwareMonitor.MemoryEnabled = false;
                 break;
             case WidgetType.Disk:
-                SetDiskMonitor(false);
+                hardwareMonitor.DiskEnabled = false;
                 break;
         }
     }
-    
-    private void UpdateMonitor(object? sender, System.Timers.ElapsedEventArgs e)
-    {
-        hardwareMonitor.Update();
-    }
-
-    #endregion
 
     #region network
-
-    private bool _isNetworkMonitorOpen;
-    private void SetNetworkMonitor(bool enabled)
-    {
-        if (enabled != _isNetworkMonitorOpen)
-        {
-            _isNetworkMonitorOpen = enabled;
-            hardwareMonitor.NetworkEnabled = enabled;
-
-            UpdateMonitorStatus();
-        }
-    }
 
     private readonly NetworkSpeedInfo NetworkSpeedInfo = new();
 
@@ -117,15 +97,31 @@ internal class SystemInfoService : ISystemInfoService
     {
         NetworkSpeedInfo.ClearItems();
 
-        var networkInfoItems = hardwareMonitor.GetNetworkInfo();
-        foreach (var networkInfoItem in networkInfoItems)
-        {
-            var hardwareName = networkInfoItem.Identifier == HardwareMonitor.TotalSpeedHardwareIdentifier
-                ? "Total".GetLocalized()
-                : networkInfoItem.Name;
+        var currentData = hardwareMonitor.GetNetworkStats();
 
-            NetworkSpeedInfo.AddItem(hardwareName, networkInfoItem.Identifier, FormatNetworkSpeed(networkInfoItem.UploadSpeed, useBps), FormatNetworkSpeed(networkInfoItem.DownloadSpeed, useBps));
+        if (currentData == null)
+        {
+            return GetInitNetworkSpeed(useBps);
         }
+
+        var netCount = currentData.GetNetworkCount();
+
+        var totalSent = 0f;
+        var totalReceived = 0f;
+        for (var i = 0; i < netCount; i++)
+        {
+            var netName = currentData.GetNetworkName(i);
+            var networkStats = currentData.GetNetworkUsage(i);
+            var uploadSpeed = FormatNetworkSpeed(networkStats.Sent, useBps);
+            var downloadSpeed = FormatNetworkSpeed(networkStats.Received, useBps);
+            NetworkSpeedInfo.AddItem(netName, netName, uploadSpeed, downloadSpeed);
+            totalSent += networkStats.Sent;
+            totalReceived += networkStats.Received;
+        }
+
+        var totalUploadSpeed = FormatNetworkSpeed(totalSent, useBps);
+        var totalDownloadSpeed = FormatNetworkSpeed(totalReceived, useBps);
+        NetworkSpeedInfo.AddItem("Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
 
         return NetworkSpeedInfo;
     }
@@ -134,7 +130,9 @@ internal class SystemInfoService : ISystemInfoService
     {
         NetworkSpeedInfo.ClearItems();
 
-        NetworkSpeedInfo.AddItem("Total".GetLocalized(), HardwareMonitor.TotalSpeedHardwareIdentifier, FormatNetworkSpeed(0, useBps), FormatNetworkSpeed(0, useBps));
+        var totalUploadSpeed = FormatNetworkSpeed(0, useBps);
+        var totalDownloadSpeed = FormatNetworkSpeed(0, useBps);
+        NetworkSpeedInfo.AddItem("Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
 
         return NetworkSpeedInfo;
     }
@@ -159,37 +157,43 @@ internal class SystemInfoService : ISystemInfoService
 
     #region cpu & gpu * memory
 
-    private bool _isCpuGpuMemoryMonitorOpen;
-    private void SetCpuGpuMemoryMonitor(bool enabled)
+    // TODO: Change cpuTempreture to cpuSpeed.
+    public (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetCpuInfo()
     {
-        if (enabled != _isCpuGpuMemoryMonitorOpen)
+        var currentData = hardwareMonitor.GetCpuStats();
+
+        if (currentData == null)
         {
-            _isCpuGpuMemoryMonitorOpen = enabled;
-            hardwareMonitor.CpuEnabled = enabled;
-            hardwareMonitor.GpuEnabled = enabled;
-            hardwareMonitor.MemoryEnabled = enabled;
-
-            UpdateMonitorStatus();
+            return GetInitCpuInfo();
         }
+
+        var cpuUsage = FormatPercentage(currentData.CpuUsage);
+        var cpuSpeed = FormatSpeed(currentData.CpuSpeed);
+
+        return (cpuUsage, currentData.CpuUsage, cpuSpeed);
     }
 
-    public (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetCpuInfo(bool useCelsius)
+    public (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetInitCpuInfo()
     {
-        var (cpuLoad, cpuTemperature) = hardwareMonitor.GetCpuInfo();
-
-        return (FormatPercentage(cpuLoad), cpuLoad ?? 0, FormatTemperature(cpuTemperature, useCelsius));
-    }
-
-    public (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetInitCpuInfo(bool useCelsius)
-    {
-        return (FormatPercentage(0), 0, FormatTemperature(0, useCelsius));
+        return (FormatPercentage(0), 0, FormatSpeed(0));
     }
 
     public (string GpuLoad, float GpuLoadValue, string GpuTempreture) GetGpuInfo(bool useCelsius)
     {
-        var (_, gpuLoad, gpuTemperature) = hardwareMonitor.GetGpuInfo();
+        var stats = hardwareMonitor.GetGpuStats();
 
-        return (FormatPercentage(gpuLoad), gpuLoad ?? 0, FormatTemperature(gpuTemperature, useCelsius));
+        if (stats == null)
+        {
+            return GetInitGpuInfo(useCelsius);
+        }
+
+        // TODO: Add actite index support.
+        var _gpuActiveIndex = 0;
+        // var gpuName = stats.GetGPUName(_gpuActiveIndex);
+        var gpuUsage = stats.GetGPUUsage(_gpuActiveIndex);
+        var gpuTemp = stats.GetGPUTemperature(_gpuActiveIndex);
+
+        return (FormatPercentage(gpuUsage), gpuUsage, FormatTemperature(gpuTemp, useCelsius));
     }
 
     public (string GpuLoad, float GpuLoadValue, string GpuTempreture) GetInitGpuInfo(bool useCelsius)
@@ -199,9 +203,18 @@ internal class SystemInfoService : ISystemInfoService
 
     public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetMemoryInfo()
     {
-        var (memoryLoad, memoryUsed, memoryAvailable) = hardwareMonitor.GetMemoryInfo();
+        var currentData = hardwareMonitor.GetMemoryStats();
 
-        return (FormatPercentage(memoryLoad), memoryLoad ?? 0, FormatMemoryUsedInfo(memoryUsed, memoryAvailable));
+        if (currentData == null)
+        {
+            return GetInitMemoryInfo();
+        }
+
+        var usedMem = currentData.UsedMem;
+        var memUsage = currentData.MemUsage;
+        var allMem = currentData.AllMem;
+
+        return (FormatPercentage(memUsage), memUsage, FormatMemoryUsedInfo(usedMem, allMem));
     }
 
     public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetInitMemoryInfo()
@@ -209,31 +222,19 @@ internal class SystemInfoService : ISystemInfoService
         return (FormatPercentage(0), 0, FormatMemoryUsedInfo(0, 0));
     }
 
-    private static string FormatMemoryUsedInfo(float? used, float? available)
+    private static string FormatMemoryUsedInfo(ulong? used, ulong? all)
     {
-        if (used is null || available is null)
+        if (used is null || all is null)
         {
             return string.Empty;
         }
 
-        return FormateUsedInfoGB(used, used + available);
+        return FormateUsedInfoGB(used, all);
     }
 
     #endregion
 
     #region disk
-
-    private bool _isDiskMonitorOpen;
-    private void SetDiskMonitor(bool enabled)
-    {
-        if (enabled != _isDiskMonitorOpen)
-        {
-            _isDiskMonitorOpen = enabled;
-            hardwareMonitor.DiskEnabled = enabled;
-
-            UpdateMonitorStatus();
-        }
-    }
 
     private readonly DiskInfo DiskInfo = new();
 
@@ -279,14 +280,10 @@ internal class SystemInfoService : ISystemInfoService
 
     #region format methods
 
-    private const ulong kilo = 1024;
-    private const ulong mega = 1024 * kilo;
-    private const ulong giga = 1024 * mega;
-    private const ulong kiloGiga = 1024 * giga;
-    private const float recKilo = 1f / kilo;
-    private const float recMega = 1f / mega;
-    private const float recGiga = 1f / giga;
-    private const float recKiloGiga = 1f / kiloGiga;
+    private const ulong Kilo = 1024;
+    private const ulong Mega = 1024 * Kilo;
+    private const ulong Giga = 1024 * Mega;
+    private const ulong KiloGiga = 1024 * Giga;
 
     private static readonly string PercentageFormat = "{0:F2} %";
     private static readonly string BytesFormat = "{0:F2} {1}";
@@ -301,7 +298,7 @@ internal class SystemInfoService : ISystemInfoService
             return string.Empty;
         }
 
-        return string.Format(PercentageFormat, percentage);
+        return string.Format(PercentageFormat, percentage * 100);
     }
 
     private static string FormatBytes(float? bytes, string unit)
@@ -311,22 +308,28 @@ internal class SystemInfoService : ISystemInfoService
             return string.Empty;
         }
 
-        if (bytes < kilo)
+        if (bytes < Kilo)
         {
             return string.Format(BytesFormat, bytes, unit);
         }
-        else if (bytes < mega)
+        else if (bytes < Mega)
         {
-            return string.Format(BytesFormat, bytes / kilo, $"K{unit}");
+            return string.Format(BytesFormat, bytes / Kilo, $"K{unit}");
         }
-        else if (bytes < giga)
+        else if (bytes < Giga)
         {
-            return string.Format(BytesFormat, bytes / mega, $"M{unit}");
+            return string.Format(BytesFormat, bytes / Mega, $"M{unit}");
         }
         else
         {
-            return string.Format(BytesFormat, bytes / giga, $"G{unit}");
+            return string.Format(BytesFormat, bytes / Giga, $"G{unit}");
         }
+    }
+
+    // TODO: Add culture info support like this.
+    private static string FormatSpeed(float cpuSpeed)
+    {
+        return string.Format(CultureInfo.InvariantCulture, "{0:0.00} GHz", cpuSpeed / 1000);
     }
 
     private static string FormatTemperature(float? celsiusDegree, bool useCelsius)
@@ -334,6 +337,11 @@ internal class SystemInfoService : ISystemInfoService
         if (celsiusDegree is null)
         {
             return string.Empty;
+        }
+
+        if (celsiusDegree == 0)
+        {
+            return "--";
         }
 
         if (useCelsius)
@@ -347,36 +355,32 @@ internal class SystemInfoService : ISystemInfoService
         }
     }
 
-    private static string FormateUsedInfoGB(float? used, float? total)
+    private static string FormateUsedInfoGB(ulong? used, ulong? total)
     {
         if (used is null || total is null)
         {
             return string.Empty;
         }
 
-        if (total > 1024)
+        if (total < Kilo)
         {
-            return string.Format(UsedInfoFormat, used * recKilo, total * recKilo, "TB");
+            return string.Format(UsedInfoFormat, used, total, "B");
         }
-        else if (total > 1)
+        else if (total < Mega)
         {
-            return string.Format(UsedInfoFormat, used, total, "GB");
+            return string.Format(UsedInfoFormat, used / Kilo, total / Kilo, "KB");
         }
-        else if (total > recKilo)
+        else if (total < Giga)
         {
-            return string.Format(UsedInfoFormat, used * kilo, total * kilo, "MB");
+            return string.Format(UsedInfoFormat, used / Mega, total / Mega, "MB");
         }
-        else if (total > recMega)
+        else if (total < KiloGiga)
         {
-            return string.Format(UsedInfoFormat, used * mega, total * mega, "KB");
-        }
-        else if (total > recGiga)
-        {
-            return string.Format(UsedInfoFormat, used * giga, total * giga, "B");
+            return string.Format(UsedInfoFormat, used / Giga, total / Giga, "GB");
         }
         else
         {
-            return string.Format(UsedInfoFormat, used * giga * 8, total * giga * 8, "b");
+            return string.Format(UsedInfoFormat, used / KiloGiga, total / KiloGiga, "TB");
         }
     }
 
@@ -387,29 +391,25 @@ internal class SystemInfoService : ISystemInfoService
             return string.Empty;
         }
 
-        if (total > kiloGiga)
+        if (total > KiloGiga)
         {
-            return string.Format(UsedInfoFormat, used * recKiloGiga, total * recKiloGiga, "TB");
+            return string.Format(UsedInfoFormat, used / KiloGiga, total / KiloGiga, "TB");
         }
-        else if (total > giga)
+        else if (total > Giga)
         {
-            return string.Format(UsedInfoFormat, used * recGiga, total * recGiga, "GB");
+            return string.Format(UsedInfoFormat, used / Giga, total / Giga, "GB");
         }
-        else if (total > mega)
+        else if (total > Mega)
         {
-            return string.Format(UsedInfoFormat, used * recMega, total * recMega, "MB");
+            return string.Format(UsedInfoFormat, used / Mega, total / Mega, "MB");
         }
-        else if (total > kilo)
+        else if (total > Kilo)
         {
-            return string.Format(UsedInfoFormat, used * recKilo, total * recKilo, "KB");
-        }
-        else if (total > 1)
-        {
-            return string.Format(UsedInfoFormat, used, total, "B");
+            return string.Format(UsedInfoFormat, used / Kilo, total / Kilo, "KB");
         }
         else
         {
-            return string.Format(UsedInfoFormat, used * 8, total * 8, "b");
+            return string.Format(UsedInfoFormat, used, total, "B");
         }
     }
 

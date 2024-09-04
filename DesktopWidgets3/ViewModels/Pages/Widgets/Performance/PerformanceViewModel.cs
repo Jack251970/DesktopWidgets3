@@ -71,13 +71,13 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
 
         if (isInit)
         {
-            (cpuLoad, cpuLoadValue, cpuTempreture) = await Task.Run(() => _systemInfoService.GetInitCpuInfo(useCelsius));
+            (cpuLoad, cpuLoadValue, cpuTempreture) = await Task.Run(_systemInfoService.GetInitCpuInfo);
             (gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetInitGpuInfo(useCelsius));
             (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetInitMemoryInfo);
         }
         else
         {
-            (cpuLoad, cpuLoadValue, cpuTempreture) = await Task.Run(() => _systemInfoService.GetCpuInfo(useCelsius));
+            (cpuLoad, cpuLoadValue, cpuTempreture) = await Task.Run(_systemInfoService.GetCpuInfo);
             (gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
             (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetMemoryInfo);
         }
@@ -85,13 +85,13 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
         RunOnDispatcherQueue(() => {
             CpuLeftInfo = "Cpu".GetLocalized();
             CpuRightInfo = string.IsNullOrEmpty(cpuTempreture) ? cpuLoad : cpuTempreture;
-            CpuLoadValue = cpuLoadValue;
+            CpuLoadValue = cpuLoadValue * 100;
             GpuLeftInfo = "Gpu".GetLocalized();
             GpuRightInfo = string.IsNullOrEmpty(gpuTempreture) ? gpuLoad : gpuTempreture;
-            GpuLoadValue = gpuLoadValue;
+            GpuLoadValue = gpuLoadValue * 100;
             MemoryLeftInfo = "Memory".GetLocalized();
             MemoryRightInfo = string.IsNullOrEmpty(memoryUsedInfo) ? memoryLoad : memoryUsedInfo;
-            MemoryLoadValue = memoryLoadValue;
+            MemoryLoadValue = memoryLoadValue * 100;
         });
     }
 

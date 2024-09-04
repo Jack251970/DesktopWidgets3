@@ -2,268 +2,178 @@
 
 namespace HardwareInfo.Helpers;
 
-public class HardwareMonitor
+/// <summary>
+/// Hardware monitor.
+/// </summary>
+public class HardwareMonitor: IDisposable
 {
-    #region monitor options
+    public bool Enabled => NetworkEnabled || CpuEnabled || GpuEnabled || MemoryEnabled || DiskEnabled;
 
-    public bool CpuEnabled
-    {
-        get => _computer.IsCpuEnabled;
-        set => _computer.IsCpuEnabled = value;
-    }
+    public event EventHandler<bool>? EnabledChanged;
 
-    public bool DiskEnabled
-    {
-        get => _computer.IsStorageEnabled;
-        set => _computer.IsStorageEnabled = value;
-    }
-
-    public bool GpuEnabled
-    {
-        get => _computer.IsGpuEnabled;
-        set => _computer.IsGpuEnabled = value;
-    }
-
-    public bool MemoryEnabled
-    {
-        get => _computer.IsMemoryEnabled;
-        set => _computer.IsMemoryEnabled = value;
-    }
-
+    public bool networkEnabled;
     public bool NetworkEnabled
     {
-        get => _computer.IsNetworkEnabled;
-        set => _computer.IsNetworkEnabled = value;
+        get => networkEnabled;
+        set
+        {
+            var enabledBefore = Enabled;
+            networkEnabled = value;
+            var enabledAfter = Enabled;
+            if (enabledBefore != enabledAfter)
+            {
+                EnabledChanged?.Invoke(this, enabledAfter);
+            }
+        }
     }
 
-    #endregion
-
-    private readonly Computer _computer = new();
-    private readonly UpdateVisitor _updateVisitor = new();
-
-    private IList<IHardware> Hardware => _computer.Hardware;
-
-    public HardwareMonitor() { }
-
-    public void Open()
+    private bool cpuEnabled;
+    public bool CpuEnabled
     {
-        _computer.Open();
+        get => cpuEnabled;
+        set
+        {
+            var enabledBefore = Enabled;
+            cpuEnabled = value;
+            var enabledAfter = Enabled;
+            if (enabledBefore != enabledAfter)
+            {
+                EnabledChanged?.Invoke(this, enabledAfter);
+            }
+        }
     }
 
-    public void Close()
+    public bool gpuEnabled;
+    public bool GpuEnabled
     {
-        _computer.Close();
+        get => gpuEnabled;
+        set
+        {
+            var enabledBefore = Enabled;
+            gpuEnabled = value;
+            var enabledAfter = Enabled;
+            if (enabledBefore != enabledAfter)
+            {
+                EnabledChanged?.Invoke(this, enabledAfter);
+            }
+        }
+    }
+
+    public bool memoryEnabled;
+    public bool MemoryEnabled
+    {
+        get => memoryEnabled;
+        set
+        {
+            var enabledBefore = Enabled;
+            memoryEnabled = value;
+            var enabledAfter = Enabled;
+            if (enabledBefore != enabledAfter)
+            {
+                EnabledChanged?.Invoke(this, enabledAfter);
+            }
+        }
+    }
+
+    public bool diskEnabled;
+    public bool DiskEnabled
+    {
+        get => diskEnabled;
+        set
+        {
+            var enabledBefore = Enabled;
+            diskEnabled = value;
+            var enabledAfter = Enabled;
+            if (enabledBefore != enabledAfter)
+            {
+                EnabledChanged?.Invoke(this, enabledAfter);
+            }
+        }
+    }
+
+    private readonly Dictionary<HardwareType, DataManager> Hardwares;
+
+    public HardwareMonitor()
+    {
+        Hardwares = new Dictionary<HardwareType, DataManager>
+        {
+            { HardwareType.CPU, new DataManager(HardwareType.CPU) },
+            { HardwareType.GPU, new DataManager(HardwareType.GPU) },
+            { HardwareType.Memory, new DataManager(HardwareType.Memory) },
+            { HardwareType.Network, new DataManager(HardwareType.Network) }
+        };
     }
 
     public void Update()
     {
-        _computer.Accept(_updateVisitor);
-    }
-
-    #region cpu info
-
-    /// <summary>
-    /// Get cpu infomation in celsius unit.
-    /// </summary>
-    public (float? CpuLoad, float? CpuTemperature) GetCpuInfo()
-    {
-        float? cpuLoad = null;
-        float? cpuTemperature = null;
-
         if (CpuEnabled)
         {
-            foreach (var hardware in Hardware)
-            {
-                if (hardware.HardwareType == HardwareType.Cpu)
-                {
-                    foreach (var sensor in hardware.Sensors)
-                    {
-                        if (sensor.SensorType == SensorType.Load && sensor.Value != null)
-                        {
-                            cpuLoad = sensor.Value;
-                        }
-                        else if (sensor.SensorType == SensorType.Temperature && sensor.Value != null)
-                        {
-                            cpuTemperature = sensor.Value;
-                        }
-                    }
-                }
-            }
+            Hardwares[HardwareType.CPU].Update();
         }
-
-        return (cpuLoad, cpuTemperature);
-    }
-
-    #endregion
-
-    #region gpu info
-
-    /// <summary>
-    /// Get gpu infomation in celsius unit.
-    /// </summary>
-    public (HardwareType? GpuType, float? GpuLoad, float? GpuTemperature) GetGpuInfo()
-    {
-        HardwareType? gpuType = null;
-        float? gpuLoad = null;
-        float? gpuTemperature = null;
 
         if (GpuEnabled)
         {
-            foreach (var hardware in Hardware)
-            {
-                switch (hardware.HardwareType)
-                {
-                    case HardwareType.GpuIntel:
-                    case HardwareType.GpuNvidia:
-                    case HardwareType.GpuAmd:
-                        foreach (var sensor in hardware.Sensors)
-                        {
-                            if (sensor.SensorType == SensorType.Load && sensor.Value != null)
-                            {
-                                gpuLoad = sensor.Value;
-                            }
-                            else if (sensor.SensorType == SensorType.Temperature && sensor.Value != null)
-                            {
-                                gpuTemperature = sensor.Value;
-                            }
-                        }
-                        break;
-                    default:
-                        continue;
-                }
-            }
+            Hardwares[HardwareType.GPU].Update();
         }
-
-        return (gpuType, gpuLoad, gpuTemperature);
-    }
-
-    #endregion
-
-    #region memory info
-
-    private readonly string MemoryUsedSensorName = "Memory Used";
-    private readonly string MemoryAvailableSensorName = "Memory Available";
-
-    /// <summary>
-    /// Get memory infomation in GB & celsius unit.
-    /// </summary>
-    public (float? MemoryLoad, float? MemoryUsed, float? MemoryAvailable) GetMemoryInfo()
-    {
-        float? memoryLoad = null;
-        float? memoryUsed = null;
-        float? memoryAvailable = null;
 
         if (MemoryEnabled)
         {
-            foreach (var hardware in Hardware)
-            {
-                if (hardware.HardwareType == HardwareType.Memory)
-                {
-                    foreach (var sensor in hardware.Sensors)
-                    {
-                        if (sensor.SensorType == SensorType.Load && sensor.Value != null)
-                        {
-                            memoryLoad = sensor.Value;
-                        }
-                        else if (sensor.Name == MemoryUsedSensorName && sensor.Value != null)
-                        {
-                            memoryUsed = sensor.Value;
-                        }
-                        else if (sensor.Name == MemoryAvailableSensorName && sensor.Value != null)
-                        {
-                            memoryAvailable = sensor.Value;
-                        }
-                    }
-                }
-            }
+            Hardwares[HardwareType.Memory].Update();
         }
-
-        return (memoryLoad, memoryUsed, memoryAvailable);
-    }
-
-    #endregion
-
-    #region network info
-
-    public static readonly string TotalSpeedHardwareIdentifier = "Total";
-
-    private readonly string UploadSpeedSensorName = "Upload Speed";
-    private readonly string DownloadSpeedSensorName = "Download Speed";
-
-    /// <summary>
-    /// Get network infomation in K/s unit.
-    /// </summary>
-    public List<NetworkInfoItem> GetNetworkInfo()
-    {
-        List<NetworkInfoItem> networkInfoItems = [];
 
         if (NetworkEnabled)
         {
-            float totalUploadSpeed = 0;
-            float totalDownloadSpeed = 0;
-
-            string hardwareName;
-            string hardwareIdentifier;
-            float? uploadSpeed = null;
-            float? downloadSpeed = null;
-
-            foreach (var hardware in Hardware)
-            {
-                if (hardware.HardwareType == HardwareType.Network)
-                {
-                    hardwareName = hardware.Name;
-                    hardwareIdentifier = hardware.Identifier.ToString();
-
-                    foreach (var sensor in hardware.Sensors)
-                    {
-                        if (sensor.Name == UploadSpeedSensorName)
-                        {
-                            uploadSpeed = sensor.Value;
-                            if (sensor.Value != null)
-                            {
-                                totalUploadSpeed += (float)sensor.Value;
-                            }
-                        }
-                        else if (sensor.Name == DownloadSpeedSensorName)
-                        {
-                            downloadSpeed = sensor.Value;
-                            if (sensor.Value != null)
-                            {
-                                totalDownloadSpeed += (float)sensor.Value;
-                            }
-                        }
-                    }
-
-                    networkInfoItems.Add(new NetworkInfoItem
-                    {
-                        Name = hardwareName,
-                        Identifier = hardwareIdentifier,
-                        UploadSpeed = uploadSpeed,
-                        DownloadSpeed = downloadSpeed
-                    });
-                }
-            }
-
-            // insert total network info at the beginning
-            networkInfoItems.Insert(0, new NetworkInfoItem
-            {
-                Name = string.Empty,
-                Identifier = TotalSpeedHardwareIdentifier,
-                UploadSpeed = totalUploadSpeed,
-                DownloadSpeed = totalDownloadSpeed
-            });
+            Hardwares[HardwareType.Network].Update();
         }
 
-        return networkInfoItems;
+        // TODO
+        /*if (DiskEnabled)
+        {
+            Hardwares[HardwareType.Disk].Update();
+        }*/
     }
 
-    #endregion
+    public CPUStats? GetCpuStats()
+    {
+        if (!CpuEnabled)
+        {
+            return null;
+        }
 
-    #region disk info
+        return Hardwares[HardwareType.CPU].GetCPUStats();
+    }
 
-    /// <summary>
-    /// Get disk infomation in byte/B unit.
-    /// </summary>
+    public GPUStats? GetGpuStats()
+    {
+        if (!GpuEnabled)
+        {
+            return null;
+        }
+
+        return Hardwares[HardwareType.GPU].GetGPUStats();
+    }
+
+    public MemoryStats? GetMemoryStats()
+    {
+        if (!MemoryEnabled)
+        {
+            return null;
+        }
+
+        return Hardwares[HardwareType.Memory].GetMemoryStats();
+    }
+
+    public NetworkStats? GetNetworkStats()
+    {
+        if (!NetworkEnabled)
+        {
+            return null;
+        }
+
+        return Hardwares[HardwareType.Network].GetNetworkStats();
+    }
+
+    // TODO: Get it to DiskStas.
     public List<DiskInfoItem> GetDiskInfo()
     {
         List<DiskInfoItem> diskInfoItems = [];
@@ -327,32 +237,11 @@ public class HardwareMonitor
         return diskInfoItems;
     }
 
-    #endregion
-}
-
-internal class UpdateVisitor : IVisitor
-{
-    public void VisitComputer(IComputer computer)
+    public void Dispose()
     {
-        computer.Traverse(this);
-    }
-
-    public void VisitHardware(IHardware hardware)
-    {
-        hardware.Update();
-        foreach (var subHardware in hardware.SubHardware)
+        foreach (var hardware in Hardwares)
         {
-            subHardware.Accept(this);
+            hardware.Value.Dispose();
         }
-    }
-
-    public void VisitSensor(ISensor sensor)
-    {
-
-    }
-
-    public void VisitParameter(IParameter parameter)
-    {
-
     }
 }

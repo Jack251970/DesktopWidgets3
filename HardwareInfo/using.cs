@@ -1,6 +1,5 @@
-﻿// LibreHardwareMonitor
-global using LibreHardwareMonitor.Hardware;
-
-// HardwareInfo
+﻿// HardwareInfo
 global using HardwareInfo.Models;
 
+// DesktopWidgets3.Core
+global using DesktopWidgets3.Core.Extensions;

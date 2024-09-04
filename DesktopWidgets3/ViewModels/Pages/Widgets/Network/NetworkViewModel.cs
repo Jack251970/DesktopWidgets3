@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using HardwareInfo.Helpers;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
@@ -25,7 +24,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     private bool useBps = false;
 
-    private string hardwareIdentifier = HardwareMonitor.TotalSpeedHardwareIdentifier;
+    private string hardwareIdentifier = "Total";
 
     #endregion
 

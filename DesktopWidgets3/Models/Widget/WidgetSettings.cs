@@ -1,5 +1,4 @@
 ﻿using Files.App.Data.Enums;
-using HardwareInfo.Helpers;
 
 namespace DesktopWidgets3.Models.Widget;
 
@@ -105,7 +104,7 @@ public class NetworkWidgetSettings : BaseWidgetSettings
 {
     public bool UseBps { get; set; } = false;
 
-    public string HardwareIdentifier { get; set; } = HardwareMonitor.TotalSpeedHardwareIdentifier;
+    public string HardwareIdentifier { get; set; } = "Total";
 
     public override BaseWidgetSettings Clone()
     {
