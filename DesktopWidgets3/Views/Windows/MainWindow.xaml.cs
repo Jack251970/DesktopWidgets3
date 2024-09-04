@@ -19,7 +19,7 @@ public sealed partial class MainWindow : WindowEx
 
     public UIElement? TitleBarText { get; set; }
 
-    public new bool Visible { get; set; }
+    public new bool Visible { get; set; } = true;
 
     #endregion
 
@@ -49,9 +49,24 @@ public sealed partial class MainWindow : WindowEx
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
-        Closed += (s, a) => WindowEx_Closed(a);
-        VisibilityChanged += (s, a) => Visible = a.Visible;
+        Closed += WindowEx_Closed;
     }
+
+    #region Hide & Show
+
+    public void Hide()
+    {
+        this.Hide(true);
+        Visible = false;
+    }
+
+    public void Show()
+    {
+        this.Show(true);
+        Visible = true;
+    }
+
+    #endregion
 
     // This handles updating the caption button colors correctly when windows system theme is changed while the app is open
     private void Settings_ColorValuesChanged(UISettings sender, object args)
@@ -61,7 +76,7 @@ public sealed partial class MainWindow : WindowEx
     }
 
     // this enables the app to continue running in background after clicking close button
-    private async void WindowEx_Closed(WindowEventArgs args)
+    private async void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         if (App.CanCloseWindow)
         {
@@ -75,7 +90,8 @@ public sealed partial class MainWindow : WindowEx
         {
             args.Handled = true;
             ApplicationLifecycleExtensions.MainWindow_Hiding?.Invoke(this, args);
-            this.Hide(true);
+            Hide();
+            Visible = false;
             ApplicationLifecycleExtensions.MainWindow_Hided?.Invoke(this, args);
         }
     }

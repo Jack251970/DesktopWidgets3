@@ -287,7 +287,7 @@ public partial class App : Application
 
     public static void ShowMainWindow(bool front)
     {
-        MainWindow.Show(true);
+        MainWindow.Show();
         if (front)
         {
             MainWindow.Activate();

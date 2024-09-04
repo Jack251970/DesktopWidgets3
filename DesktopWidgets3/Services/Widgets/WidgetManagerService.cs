@@ -432,7 +432,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
 
         if (restoreMainWindow)
         {
-            App.MainWindow.Show(true);
+            App.MainWindow.Show();
             restoreMainWindow = false;
         }
     }
@@ -460,7 +460,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
 
         if (restoreMainWindow)
         {
-            App.MainWindow.Show(true);
+            App.MainWindow.Show();
             restoreMainWindow = false;
         }
     }
