@@ -16,7 +16,7 @@ public sealed class FileLoggerProvider() : ILoggerProvider
         }
 
         var logger = new FileLogger(logDirectory);
-        _ = Task.Run(() => logger.PurgeLogs(100));
+        /*_ = Task.Run(() => logger.PurgeLogs(100));*/
         return logger;
     }
 
