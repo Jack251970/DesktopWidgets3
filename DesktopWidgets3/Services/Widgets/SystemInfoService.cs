@@ -121,7 +121,7 @@ internal class SystemInfoService : ISystemInfoService
 
         var totalUploadSpeed = FormatNetworkSpeed(totalSent, useBps);
         var totalDownloadSpeed = FormatNetworkSpeed(totalReceived, useBps);
-        NetworkSpeedInfo.AddItem("Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
+        NetworkSpeedInfo.InsertItem(0, "Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
 
         return NetworkSpeedInfo;
     }
@@ -243,6 +243,8 @@ internal class SystemInfoService : ISystemInfoService
                 }
             }
         }
+        DiskInfo.SortItems();
+
         return DiskInfo;
     }
 

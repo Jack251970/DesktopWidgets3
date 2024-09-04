@@ -17,6 +17,17 @@ public class NetworkSpeedInfo
         });
     }
 
+    public void InsertItem(int index, string hardwareName, string hardwareIdentifier, string uploadSpeed, string downloadSpeed)
+    {
+        networkSpeedInfoItems.Insert(index, new NetworkSpeedInfoItem()
+        {
+            Name = hardwareName,
+            Identifier = hardwareIdentifier,
+            UploadSpeed = uploadSpeed,
+            DownloadSpeed = downloadSpeed
+        });
+    }
+
     public (int index, string HardwareName, string HardwareIdentifier, string UploadSpeed, string DownloadSpeed)? SearchItemByIdentifier(string hardwareIdentifier)
     {
         for (var i = 0; i < networkSpeedInfoItems.Count; i++)
@@ -85,6 +96,11 @@ public class DiskInfo
             PartitionLoadValue = partitionLoadValue,
             PartitionUsedInfo = partitionUsedInfo
         });
+    }
+
+    public void SortItems()
+    {
+        diskSpaceInfoItems.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
     }
 
     public List<ProgressCardData> GetProgressCardData()
