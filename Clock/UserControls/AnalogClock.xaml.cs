@@ -1,10 +1,8 @@
 ﻿using Clock.Extensions;
-
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace Clock.UserControls;
 
@@ -156,12 +154,16 @@ public sealed partial class AnalogClock : UserControl, INotifyPropertyChanged
         InitializeComponent();
     }
 
+    #region INotifyPropertyChanged
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+    #endregion
 }
 
 public enum HandsMode

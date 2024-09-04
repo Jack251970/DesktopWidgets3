@@ -17,9 +17,6 @@
                 <!--  Files  -->
                 <ResourceDictionary Source="../Files.App/App.xaml" />
 
-                <!--  Clock  -->
-                <ResourceDictionary Source="../Clock/ResourceDictionary.xaml" />
-
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>

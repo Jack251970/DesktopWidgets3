@@ -128,6 +128,6 @@
             Height="6"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Fill="{ThemeResource RadialGaugeNeedleBackground}" />
+            Fill="{ThemeResource AccentFillColorTertiaryBrush}" />
     </Grid>
 </UserControl>
