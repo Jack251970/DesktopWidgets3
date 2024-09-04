@@ -213,7 +213,7 @@ internal class SystemInfoService : ISystemInfoService
         var memUsage = currentData.MemUsage;
         var allMem = currentData.AllMem;
 
-        return (FormatPercentage(memUsage), memUsage, FormateUsedInfoGB(usedMem, allMem));
+        return (FormatPercentage(memUsage), memUsage, FormatUsedInfoByte(usedMem, allMem));
     }
 
     public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetInitMemoryInfo()
@@ -262,7 +262,7 @@ internal class SystemInfoService : ISystemInfoService
             return string.Empty;
         }
 
-        return FormateUsedInfoB((float)used, (float)total);
+        return FormatUsedInfoByte((float)used, (float)total);
     }
 
     #endregion
@@ -273,6 +273,10 @@ internal class SystemInfoService : ISystemInfoService
     private const ulong Mega = 1024 * Kilo;
     private const ulong Giga = 1024 * Mega;
     private const ulong KiloGiga = 1024 * Giga;
+    private const float RecKilo = 1f / Kilo;
+    private const float RecMega = 1f / Mega;
+    private const float RecGiga = 1f / Giga;
+    private const float RecKiloGiga = 1f / KiloGiga;
 
     private static readonly string PercentageFormat = "{0:F2} %";
     private static readonly string CpuSpeedFormat = "{0:F2} GHz";
@@ -324,7 +328,7 @@ internal class SystemInfoService : ISystemInfoService
         }
     }
 
-    private static string FormateUsedInfoGB(ulong used, ulong total)
+    private static string FormatUsedInfoByte(ulong used, ulong total)
     {
         if (total < Kilo)
         {
@@ -332,39 +336,39 @@ internal class SystemInfoService : ISystemInfoService
         }
         else if (total < Mega)
         {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Kilo, total / Kilo, "KB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecKilo, total * RecKilo, "KB");
         }
         else if (total < Giga)
         {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Mega, total / Mega, "MB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecMega, total * RecMega, "MB");
         }
         else if (total < KiloGiga)
         {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Giga, total / Giga, "GB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecGiga, total * RecGiga, "GB");
         }
         else
         {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / KiloGiga, total / KiloGiga, "TB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecKiloGiga, total * RecKiloGiga, "TB");
         }
     }
 
-    private static string FormateUsedInfoB(float used, float total)
+    private static string FormatUsedInfoByte(float used, float total)
     {
         if (total > KiloGiga)
         {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / KiloGiga, total / KiloGiga, "TB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecKiloGiga, total * RecKiloGiga, "TB");
         }
         else if (total > Giga)
         {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Giga, total / Giga, "GB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecGiga, total * RecGiga, "GB");
         }
         else if (total > Mega)
         {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Mega, total / Mega, "MB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecMega, total * RecMega, "MB");
         }
         else if (total > Kilo)
         {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Kilo, total / Kilo, "KB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecKilo, total * RecKilo, "KB");
         }
         else
         {
