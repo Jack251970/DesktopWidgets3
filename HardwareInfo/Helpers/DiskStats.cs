@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace HardwareInfo.Helpers;
 
-// TODO: Implement DiskStats class
+// TODO: Implement DiskStats class, Move nullable variable return.
 public sealed class DiskStats : IDisposable
 {
     // CPU counters

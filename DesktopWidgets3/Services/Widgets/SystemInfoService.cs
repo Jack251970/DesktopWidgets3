@@ -157,8 +157,7 @@ internal class SystemInfoService : ISystemInfoService
 
     #region cpu & gpu * memory
 
-    // TODO: Change cpuTempreture to cpuSpeed.
-    public (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetCpuInfo()
+    public (string CpuLoad, float CpuLoadValue, string CpuSpeed) GetCpuInfo()
     {
         var currentData = hardwareMonitor.GetCpuStats();
 
@@ -168,17 +167,17 @@ internal class SystemInfoService : ISystemInfoService
         }
 
         var cpuUsage = FormatPercentage(currentData.CpuUsage);
-        var cpuSpeed = FormatSpeed(currentData.CpuSpeed);
+        var cpuSpeed = FormatCpuSpeed(currentData.CpuSpeed);
 
         return (cpuUsage, currentData.CpuUsage, cpuSpeed);
     }
 
-    public (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetInitCpuInfo()
+    public (string CpuLoad, float CpuLoadValue, string CpuSpeed) GetInitCpuInfo()
     {
-        return (FormatPercentage(0), 0, FormatSpeed(0));
+        return (FormatPercentage(0), 0, "--");
     }
 
-    public (string GpuLoad, float GpuLoadValue, string GpuTempreture) GetGpuInfo(bool useCelsius)
+    public (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetGpuInfo(bool useCelsius)
     {
         var stats = hardwareMonitor.GetGpuStats();
 
@@ -189,16 +188,16 @@ internal class SystemInfoService : ISystemInfoService
 
         // TODO: Add actite index support.
         var _gpuActiveIndex = 0;
-        // var gpuName = stats.GetGPUName(_gpuActiveIndex);
+        var gpuName = stats.GetGPUName(_gpuActiveIndex);
         var gpuUsage = stats.GetGPUUsage(_gpuActiveIndex);
         var gpuTemp = stats.GetGPUTemperature(_gpuActiveIndex);
 
-        return (FormatPercentage(gpuUsage), gpuUsage, FormatTemperature(gpuTemp, useCelsius));
+        return (gpuName, FormatPercentage(gpuUsage), gpuUsage, gpuTemp == 0 ? string.Empty : FormatTemperature(gpuTemp, useCelsius));
     }
 
-    public (string GpuLoad, float GpuLoadValue, string GpuTempreture) GetInitGpuInfo(bool useCelsius)
+    public (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetInitGpuInfo(bool useCelsius)
     {
-        return (FormatPercentage(0), 0, FormatTemperature(0, useCelsius));
+        return (string.Empty, FormatPercentage(0), 0, "--");
     }
 
     public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetMemoryInfo()
@@ -214,22 +213,12 @@ internal class SystemInfoService : ISystemInfoService
         var memUsage = currentData.MemUsage;
         var allMem = currentData.AllMem;
 
-        return (FormatPercentage(memUsage), memUsage, FormatMemoryUsedInfo(usedMem, allMem));
+        return (FormatPercentage(memUsage), memUsage, FormateUsedInfoGB(usedMem, allMem));
     }
 
     public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetInitMemoryInfo()
     {
-        return (FormatPercentage(0), 0, FormatMemoryUsedInfo(0, 0));
-    }
-
-    private static string FormatMemoryUsedInfo(ulong? used, ulong? all)
-    {
-        if (used is null || all is null)
-        {
-            return string.Empty;
-        }
-
-        return FormateUsedInfoGB(used, all);
+        return (FormatPercentage(0), 0, "--");
     }
 
     #endregion
@@ -249,8 +238,8 @@ internal class SystemInfoService : ISystemInfoService
             {
                 if (partitionInfoItem.Name != null)
                 {
-                    var loadValue = partitionInfoItem.PartitionUsed / partitionInfoItem.PartitionTotal * 100f;
-                    DiskInfo.AddItem(partitionInfoItem.Name, partitionInfoItem.Identifier, FormatPercentage(loadValue), loadValue ?? 0, FormatDiskUsedInfo(partitionInfoItem.PartitionUsed, partitionInfoItem.PartitionTotal));
+                    var loadValue = partitionInfoItem.PartitionUsed / partitionInfoItem.PartitionTotal * 100f ?? 0;
+                    DiskInfo.AddItem(partitionInfoItem.Name, partitionInfoItem.Identifier, FormatPercentage(loadValue), loadValue, FormatDiskUsedInfo(partitionInfoItem.PartitionUsed, partitionInfoItem.PartitionTotal));
                 }
             }
         }
@@ -261,7 +250,7 @@ internal class SystemInfoService : ISystemInfoService
     {
         DiskInfo.ClearItems();
 
-        DiskInfo.AddItem("C:", null!, FormatPercentage(0), 0, FormatDiskUsedInfo(0, 0));
+        DiskInfo.AddItem("C:", null!, FormatPercentage(0), 0, "--");
 
         return DiskInfo;
     }
@@ -273,7 +262,7 @@ internal class SystemInfoService : ISystemInfoService
             return string.Empty;
         }
 
-        return FormateUsedInfoB(used, total);
+        return FormateUsedInfoB((float)used, (float)total);
     }
 
     #endregion
@@ -286,130 +275,100 @@ internal class SystemInfoService : ISystemInfoService
     private const ulong KiloGiga = 1024 * Giga;
 
     private static readonly string PercentageFormat = "{0:F2} %";
+    private static readonly string CpuSpeedFormat = "{0:F2} GHz";
     private static readonly string BytesFormat = "{0:F2} {1}";
     private static readonly string CelsiusTemperatureFormat = "{0:F2} °C";
     private static readonly string FahrenheitTemperatureFormat = "{0:F2} °C";
     private static readonly string UsedInfoFormat = "{0:F2} / {1:F2} {2}";
 
-    private static string FormatPercentage(float? percentage)
+    private static string FormatPercentage(float percentage)
     {
-        if (percentage == null)
-        {
-            return string.Empty;
-        }
-
-        return string.Format(PercentageFormat, percentage * 100);
+        return string.Format(CultureInfo.InvariantCulture, PercentageFormat, percentage * 100);
     }
 
-    private static string FormatBytes(float? bytes, string unit)
+    private static string FormatCpuSpeed(float cpuSpeed)
     {
-        if (bytes is null)
-        {
-            return string.Empty;
-        }
+        return string.Format(CultureInfo.InvariantCulture, CpuSpeedFormat, cpuSpeed / 1000);
+    }
 
+    private static string FormatBytes(float bytes, string unit)
+    {
         if (bytes < Kilo)
         {
-            return string.Format(BytesFormat, bytes, unit);
+            return string.Format(CultureInfo.InvariantCulture, BytesFormat, bytes, unit);
         }
         else if (bytes < Mega)
         {
-            return string.Format(BytesFormat, bytes / Kilo, $"K{unit}");
+            return string.Format(CultureInfo.InvariantCulture, BytesFormat, bytes / Kilo, $"K{unit}");
         }
         else if (bytes < Giga)
         {
-            return string.Format(BytesFormat, bytes / Mega, $"M{unit}");
+            return string.Format(CultureInfo.InvariantCulture, BytesFormat, bytes / Mega, $"M{unit}");
         }
         else
         {
-            return string.Format(BytesFormat, bytes / Giga, $"G{unit}");
+            return string.Format(CultureInfo.InvariantCulture, BytesFormat, bytes / Giga, $"G{unit}");
         }
     }
 
-    // TODO: Add culture info support like this.
-    private static string FormatSpeed(float cpuSpeed)
+    private static string FormatTemperature(float celsiusDegree, bool useCelsius)
     {
-        return string.Format(CultureInfo.InvariantCulture, "{0:0.00} GHz", cpuSpeed / 1000);
-    }
-
-    private static string FormatTemperature(float? celsiusDegree, bool useCelsius)
-    {
-        if (celsiusDegree is null)
-        {
-            return string.Empty;
-        }
-
-        if (celsiusDegree == 0)
-        {
-            return "--";
-        }
-
         if (useCelsius)
         {
-            return string.Format(CelsiusTemperatureFormat, celsiusDegree);
+            return string.Format(CultureInfo.InvariantCulture, CelsiusTemperatureFormat, celsiusDegree);
         }
         else
         {
             var fahrenheitDegree = celsiusDegree * 9 / 5 + 32;
-            return string.Format(FahrenheitTemperatureFormat, fahrenheitDegree);
+            return string.Format(CultureInfo.InvariantCulture, FahrenheitTemperatureFormat, fahrenheitDegree);
         }
     }
 
-    private static string FormateUsedInfoGB(ulong? used, ulong? total)
+    private static string FormateUsedInfoGB(ulong used, ulong total)
     {
-        if (used is null || total is null)
-        {
-            return string.Empty;
-        }
-
         if (total < Kilo)
         {
-            return string.Format(UsedInfoFormat, used, total, "B");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used, total, "B");
         }
         else if (total < Mega)
         {
-            return string.Format(UsedInfoFormat, used / Kilo, total / Kilo, "KB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Kilo, total / Kilo, "KB");
         }
         else if (total < Giga)
         {
-            return string.Format(UsedInfoFormat, used / Mega, total / Mega, "MB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Mega, total / Mega, "MB");
         }
         else if (total < KiloGiga)
         {
-            return string.Format(UsedInfoFormat, used / Giga, total / Giga, "GB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Giga, total / Giga, "GB");
         }
         else
         {
-            return string.Format(UsedInfoFormat, used / KiloGiga, total / KiloGiga, "TB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / KiloGiga, total / KiloGiga, "TB");
         }
     }
 
-    private static string FormateUsedInfoB(float? used, float? total)
+    private static string FormateUsedInfoB(float used, float total)
     {
-        if (used is null || total is null)
-        {
-            return string.Empty;
-        }
-
         if (total > KiloGiga)
         {
-            return string.Format(UsedInfoFormat, used / KiloGiga, total / KiloGiga, "TB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / KiloGiga, total / KiloGiga, "TB");
         }
         else if (total > Giga)
         {
-            return string.Format(UsedInfoFormat, used / Giga, total / Giga, "GB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Giga, total / Giga, "GB");
         }
         else if (total > Mega)
         {
-            return string.Format(UsedInfoFormat, used / Mega, total / Mega, "MB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Mega, total / Mega, "MB");
         }
         else if (total > Kilo)
         {
-            return string.Format(UsedInfoFormat, used / Kilo, total / Kilo, "KB");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used / Kilo, total / Kilo, "KB");
         }
         else
         {
-            return string.Format(UsedInfoFormat, used, total, "B");
+            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used, total, "B");
         }
     }
 

@@ -10,13 +10,13 @@ public interface ISystemInfoService
 
     NetworkSpeedInfo GetInitNetworkSpeed(bool useBps);
 
-    (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetCpuInfo();
+    (string CpuLoad, float CpuLoadValue, string CpuSpeed) GetCpuInfo();
 
-    (string CpuLoad, float CpuLoadValue, string CpuTempreture) GetInitCpuInfo();
+    (string CpuLoad, float CpuLoadValue, string CpuSpeed) GetInitCpuInfo();
 
-    (string GpuLoad, float GpuLoadValue, string GpuTempreture) GetGpuInfo(bool useCelsius);
+    (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetGpuInfo(bool useCelsius);
 
-    (string GpuLoad, float GpuLoadValue, string GpuTempreture) GetInitGpuInfo(bool useCelsius);
+    (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetInitGpuInfo(bool useCelsius);
 
     (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetMemoryInfo();
 

@@ -60,8 +60,9 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
     private async Task UpdateCards(bool isInit)
     {
         var cpuLoad = string.Empty;
-        var cpuTempreture = string.Empty;
+        var cpuSpeed = string.Empty;
         double cpuLoadValue = 0;
+        var gpuName = string.Empty;
         var gpuLoad = string.Empty;
         var gpuTempreture = string.Empty;
         double gpuLoadValue = 0;
@@ -71,22 +72,22 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
 
         if (isInit)
         {
-            (cpuLoad, cpuLoadValue, cpuTempreture) = await Task.Run(_systemInfoService.GetInitCpuInfo);
-            (gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetInitGpuInfo(useCelsius));
+            (cpuLoad, cpuLoadValue, cpuSpeed) = await Task.Run(_systemInfoService.GetInitCpuInfo);
+            (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetInitGpuInfo(useCelsius));
             (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetInitMemoryInfo);
         }
         else
         {
-            (cpuLoad, cpuLoadValue, cpuTempreture) = await Task.Run(_systemInfoService.GetCpuInfo);
-            (gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
+            (cpuLoad, cpuLoadValue, cpuSpeed) = await Task.Run(_systemInfoService.GetCpuInfo);
+            (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
             (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetMemoryInfo);
         }
 
         RunOnDispatcherQueue(() => {
             CpuLeftInfo = "Cpu".GetLocalized();
-            CpuRightInfo = string.IsNullOrEmpty(cpuTempreture) ? cpuLoad : cpuTempreture;
+            CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? cpuLoad : cpuSpeed;
             CpuLoadValue = cpuLoadValue * 100;
-            GpuLeftInfo = "Gpu".GetLocalized();
+            GpuLeftInfo = string.IsNullOrEmpty(cpuSpeed) ? "Gpu".GetLocalized() : "Gpu".GetLocalized() + $" ({gpuName})";
             GpuRightInfo = string.IsNullOrEmpty(gpuTempreture) ? gpuLoad : gpuTempreture;
             GpuLoadValue = gpuLoadValue * 100;
             MemoryLeftInfo = "Memory".GetLocalized();
