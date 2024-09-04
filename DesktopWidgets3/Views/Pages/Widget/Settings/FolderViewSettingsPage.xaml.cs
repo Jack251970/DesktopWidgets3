@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Windows.System;
+using Windows.UI;
 
 namespace DesktopWidgets3.Views.Pages.Widgets.Settings;
 
@@ -122,10 +123,16 @@ public sealed partial class FolderViewSettingsPage : Page
             return;
         }
 
+        // TODO: Check CommunityToolkit.WinUI.Helpers.ColorHelper.ToHex.
         editingTag!.CanCommit = editingTag!.IsNameValid && (
             editingTag!.NewName != editingTag!.Tag.Name ||
-            CommunityToolkit.WinUI.Helpers.ColorHelper.ToHex(sender.Color) != editingTag!.Tag.Color
+            ColorToHex(sender.Color) != editingTag!.Tag.Color
         );
+    }
+
+    private static string ColorToHex(Color color)
+    {
+        return $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}";
     }
 
     private void NewTagTextBox_TextChanged(object sender, TextChangedEventArgs e)
