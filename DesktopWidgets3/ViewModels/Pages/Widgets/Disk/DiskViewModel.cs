@@ -36,14 +36,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
     {
         if (init)
         {
-            var diskInfo = _systemInfoService.GetInitDiskInfo();
-            var progressCardData = diskInfo.GetProgressCardData();
-
             ProgressCardItems.Clear();
-            foreach (var item in progressCardData)
-            {
-                ProgressCardItems.Add(item);
-            }
         }
         else
         {
@@ -61,7 +54,10 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                     var end = itemsCount;
                     for (var i = start; i < end; i++)
                     {
-                        ProgressCardItems.RemoveAt(i);
+                        if (i < ProgressCardItems.Count)
+                        {
+                            ProgressCardItems.RemoveAt(i);
+                        }
                     }
 
                     itemsCount = dataCount;
@@ -70,21 +66,23 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                 // Update items
                 for (var i = 0; i < itemsCount; i++)
                 {
-                    var index = i;
-                    if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
+                    if (i < ProgressCardItems.Count)
                     {
-                        var data = progressCardData[index].LeftTitle;
-                        ProgressCardItems[index].LeftTitle = data;
-                    }
-                    if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
-                    {
-                        var data = progressCardData[index].RightTitle;
-                        ProgressCardItems[index].RightTitle = data;
-                    }
-                    if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
-                    {
-                        var data = progressCardData[index].ProgressValue;
-                        ProgressCardItems[index].ProgressValue = data;
+                        if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
+                        {
+                            var data = progressCardData[i].LeftTitle;
+                            ProgressCardItems[i].LeftTitle = data;
+                        }
+                        if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
+                        {
+                            var data = progressCardData[i].RightTitle;
+                            ProgressCardItems[i].RightTitle = data;
+                        }
+                        if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
+                        {
+                            var data = progressCardData[i].ProgressValue;
+                            ProgressCardItems[i].ProgressValue = data;
+                        }
                     }
                 }
 
