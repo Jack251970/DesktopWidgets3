@@ -246,15 +246,6 @@ internal class SystemInfoService : ISystemInfoService
         return DiskInfo;
     }
 
-    public DiskInfo GetInitDiskInfo()
-    {
-        DiskInfo.ClearItems();
-
-        DiskInfo.AddItem("C:", null!, FormatPercentage(0), 0, "--");
-
-        return DiskInfo;
-    }
-
     private static string FormatDiskUsedInfo(float? used, float? total)
     {
         if (used is null || total is null)
