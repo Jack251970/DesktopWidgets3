@@ -26,9 +26,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     {
         return widgetType switch
         {
-            WidgetType.Clock => new RectSize(240, 240),
+            WidgetType.Clock => new RectSize(280, 280),
+            WidgetType.Disk => new RectSize(345, 200),
             WidgetType.FolderView => new RectSize(575, 480),
-            WidgetType.Network => new RectSize(300, 150),
+            WidgetType.Network => new RectSize(345, 150),
             WidgetType.Performance => new RectSize(345, 200),
             _ => new RectSize(318, 200),
         }; ;
