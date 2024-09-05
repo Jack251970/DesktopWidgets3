@@ -3,8 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:settings="using:DesktopWidgets3.ViewModels.Pages.Widgets.Settings"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="Widget_Clock_Label"
@@ -19,12 +19,12 @@
             VerticalScrollBarVisibility="Hidden"
             VerticalScrollMode="Auto">
             <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                <labs:SettingsCard x:Uid="WidgetSettings_ShowSeconds_Card">
-                    <labs:SettingsCard.HeaderIcon>
+                <controls:SettingsCard x:Uid="WidgetSettings_ShowSeconds_Card">
+                    <controls:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE823;" />
-                    </labs:SettingsCard.HeaderIcon>
+                    </controls:SettingsCard.HeaderIcon>
                     <ToggleSwitch IsOn="{x:Bind ViewModel.ShowSeconds, Mode=TwoWay}" />
-                </labs:SettingsCard>
+                </controls:SettingsCard>
             </StackPanel>
         </ScrollViewer>
     </Grid>
