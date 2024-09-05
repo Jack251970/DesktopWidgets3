@@ -59,41 +59,48 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
 
     private async Task UpdateCards(bool isInit)
     {
-        var cpuLoad = string.Empty;
-        var cpuSpeed = string.Empty;
-        double cpuLoadValue = 0;
-        var gpuName = string.Empty;
-        var gpuLoad = string.Empty;
-        var gpuTempreture = string.Empty;
-        double gpuLoadValue = 0;
-        var memoryLoad = string.Empty;
-        var memoryUsedInfo = string.Empty;
-        double memoryLoadValue = 0;
-
-        if (isInit)
+        try
         {
-            (cpuLoad, cpuLoadValue, cpuSpeed) = await Task.Run(_systemInfoService.GetInitCpuInfo);
-            (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetInitGpuInfo(useCelsius));
-            (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetInitMemoryInfo);
-        }
-        else
-        {
-            (cpuLoad, cpuLoadValue, cpuSpeed) = await Task.Run(_systemInfoService.GetCpuInfo);
-            (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
-            (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetMemoryInfo);
-        }
+            var cpuLoad = string.Empty;
+            var cpuSpeed = string.Empty;
+            double cpuLoadValue = 0;
+            var gpuName = string.Empty;
+            var gpuLoad = string.Empty;
+            var gpuTempreture = string.Empty;
+            double gpuLoadValue = 0;
+            var memoryLoad = string.Empty;
+            var memoryUsedInfo = string.Empty;
+            double memoryLoadValue = 0;
 
-        RunOnDispatcherQueue(() => {
-            CpuLeftInfo = "Cpu".GetLocalized();
-            CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? cpuLoad : cpuSpeed;
-            CpuLoadValue = cpuLoadValue * 100;
-            GpuLeftInfo = string.IsNullOrEmpty(cpuSpeed) ? "Gpu".GetLocalized() : "Gpu".GetLocalized() + $" ({gpuName})";
-            GpuRightInfo = string.IsNullOrEmpty(gpuTempreture) ? gpuLoad : gpuTempreture;
-            GpuLoadValue = gpuLoadValue * 100;
-            MemoryLeftInfo = "Memory".GetLocalized();
-            MemoryRightInfo = string.IsNullOrEmpty(memoryUsedInfo) ? memoryLoad : memoryUsedInfo;
-            MemoryLoadValue = memoryLoadValue * 100;
-        });
+            if (isInit)
+            {
+                (cpuLoad, cpuLoadValue, cpuSpeed) = await Task.Run(_systemInfoService.GetInitCpuInfo);
+                (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetInitGpuInfo(useCelsius));
+                (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetInitMemoryInfo);
+            }
+            else
+            {
+                (cpuLoad, cpuLoadValue, cpuSpeed) = await Task.Run(_systemInfoService.GetCpuInfo);
+                (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
+                (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetMemoryInfo);
+            }
+
+            RunOnDispatcherQueue(() => {
+                CpuLeftInfo = "Cpu".GetLocalized();
+                CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? cpuLoad : cpuSpeed;
+                CpuLoadValue = cpuLoadValue * 100;
+                GpuLeftInfo = string.IsNullOrEmpty(cpuSpeed) ? "Gpu".GetLocalized() : "Gpu".GetLocalized() + $" ({gpuName})";
+                GpuRightInfo = string.IsNullOrEmpty(gpuTempreture) ? gpuLoad : gpuTempreture;
+                GpuLoadValue = gpuLoadValue * 100;
+                MemoryLeftInfo = "Memory".GetLocalized();
+                MemoryRightInfo = string.IsNullOrEmpty(memoryUsedInfo) ? memoryLoad : memoryUsedInfo;
+                MemoryLoadValue = memoryLoadValue * 100;
+            });
+        }
+        catch (Exception e)
+        {
+            LogExtensions.LogError(e, "Error updating performance widget.");
+        }
     }
 
     #region abstract methods

@@ -19,7 +19,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
     private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;
 
-    private readonly SemaphoreSlim semaphoreSlim = new(1);
+    private bool updated = true;
 
     public DiskViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
     {
@@ -36,66 +36,78 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     private void UpdateCards(bool init)
     {
-        if (init)
+        try
         {
-            ProgressCardItems.Clear();
-        }
-        else
-        {
-            RunOnDispatcherQueue(async () =>
+            if (init)
             {
-                await semaphoreSlim.WaitAsync();
-
-                var diskInfo = _systemInfoService.GetDiskInfo();
-                var progressCardData = diskInfo.GetProgressCardData();
-                var dataCount = progressCardData.Count;
-                var itemsCount = ProgressCardItems.Count;
-
-                // Remove extra items
-                if (dataCount < itemsCount)
+                ProgressCardItems.Clear();
+            }
+            else
+            {
+                RunOnDispatcherQueue(() =>
                 {
-                    var start = dataCount;
-                    var end = itemsCount;
-                    for (var i = start; i < end; i++)
+                    if (!updated)
                     {
-                        ProgressCardItems.RemoveAt(i);
+                        return;
                     }
 
-                    itemsCount = dataCount;
-                }
+                    updated = false;
 
-                // Update items
-                for (var i = 0; i < itemsCount; i++)
-                {
-                    if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
-                    {
-                        var data = progressCardData[i].LeftTitle;
-                        ProgressCardItems[i].LeftTitle = data;
-                    }
-                    if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
-                    {
-                        var data = progressCardData[i].RightTitle;
-                        ProgressCardItems[i].RightTitle = data;
-                    }
-                    if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
-                    {
-                        var data = progressCardData[i].ProgressValue;
-                        ProgressCardItems[i].ProgressValue = data;
-                    }
-                }
+                    var diskInfo = _systemInfoService.GetDiskInfo();
+                    var progressCardData = diskInfo.GetProgressCardData();
+                    var dataCount = progressCardData.Count;
+                    var itemsCount = ProgressCardItems.Count;
 
-                // Add extra items
-                if (dataCount > itemsCount)
-                {
-                    var data = progressCardData.Skip(itemsCount).ToList();
-                    foreach (var item in data)
+                    // Remove extra items
+                    if (dataCount < itemsCount)
                     {
-                        ProgressCardItems.Add(item);
-                    }
-                }
+                        var start = dataCount;
+                        var end = itemsCount;
+                        for (var i = start; i < end; i++)
+                        {
+                            ProgressCardItems.RemoveAt(i);
+                        }
 
-                semaphoreSlim.Release();
-            });
+                        itemsCount = dataCount;
+                    }
+
+                    // Update items
+                    for (var i = 0; i < itemsCount; i++)
+                    {
+                        if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
+                        {
+                            var data = progressCardData[i].LeftTitle;
+                            ProgressCardItems[i].LeftTitle = data;
+                        }
+                        if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
+                        {
+                            var data = progressCardData[i].RightTitle;
+                            ProgressCardItems[i].RightTitle = data;
+                        }
+                        if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
+                        {
+                            var data = progressCardData[i].ProgressValue;
+                            ProgressCardItems[i].ProgressValue = data;
+                        }
+                    }
+
+                    // Add extra items
+                    if (dataCount > itemsCount)
+                    {
+                        var data = progressCardData.Skip(itemsCount).ToList();
+                        foreach (var item in data)
+                        {
+                            ProgressCardItems.Add(item);
+                        }
+                    }
+
+                    updated = true;
+                });
+            }
+        }
+        catch(Exception e)
+        {
+            LogExtensions.LogError(e, "Disk Widget Update Error");
         }
     }
 

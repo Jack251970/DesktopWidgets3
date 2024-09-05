@@ -51,49 +51,56 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     private async Task UpdateCard(bool init)
     {
-        (int, string, string, string, string)? networkSpeedInfoItem;
+        try
+        {
+            (int, string, string, string, string)? networkSpeedInfoItem;
 
-        if (init)
-        {
-            networkSpeedInfo = await Task.Run(() => _systemInfoService.GetInitNetworkSpeed(useBps));
-            lastNetworkNamesIdentifiers = networkNamesIdentifiers;
-            networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
-            networkSpeedInfoItem = networkSpeedInfo.GetItem(0);
-        }
-        else
-        {
-            networkSpeedInfo = await Task.Run(() => _systemInfoService.GetNetworkSpeed(useBps));
-            lastNetworkNamesIdentifiers = networkNamesIdentifiers;
-            networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
-            networkSpeedInfoItem = networkSpeedInfo.SearchItemByIdentifier(hardwareIdentifier);
-        }
-
-        if (lastNetworkNamesIdentifiers.Count != networkNamesIdentifiers.Count || 
-            !lastNetworkNamesIdentifiers.SequenceEqual(networkNamesIdentifiers))
-        {
-            RunOnDispatcherQueue(() =>
+            if (init)
             {
-                NetworkNames.Clear();
-                foreach (var item in networkNamesIdentifiers)
+                networkSpeedInfo = await Task.Run(() => _systemInfoService.GetInitNetworkSpeed(useBps));
+                lastNetworkNamesIdentifiers = networkNamesIdentifiers;
+                networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
+                networkSpeedInfoItem = networkSpeedInfo.GetItem(0);
+            }
+            else
+            {
+                networkSpeedInfo = await Task.Run(() => _systemInfoService.GetNetworkSpeed(useBps));
+                lastNetworkNamesIdentifiers = networkNamesIdentifiers;
+                networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
+                networkSpeedInfoItem = networkSpeedInfo.SearchItemByIdentifier(hardwareIdentifier);
+            }
+
+            if (lastNetworkNamesIdentifiers.Count != networkNamesIdentifiers.Count ||
+                !lastNetworkNamesIdentifiers.SequenceEqual(networkNamesIdentifiers))
+            {
+                RunOnDispatcherQueue(() =>
                 {
-                    NetworkNames.Add(item);
-                }
+                    NetworkNames.Clear();
+                    foreach (var item in networkNamesIdentifiers)
+                    {
+                        NetworkNames.Add(item);
+                    }
+                });
+            }
+
+            var selectedIndex = 0;
+            var uploadSpeed = string.Empty;
+            var downloadSpeed = string.Empty;
+            if (networkSpeedInfoItem != null)
+            {
+                (selectedIndex, _, _, uploadSpeed, downloadSpeed) = networkSpeedInfoItem.Value;
+            }
+
+            RunOnDispatcherQueue(() => {
+                SelectedIndex = selectedIndex;
+                UploadSpeed = uploadSpeed;
+                DownloadSpeed = downloadSpeed;
             });
         }
-
-        var selectedIndex = 0;
-        var uploadSpeed = string.Empty;
-        var downloadSpeed = string.Empty;
-        if (networkSpeedInfoItem != null)
+        catch (Exception e)
         {
-            (selectedIndex, _, _, uploadSpeed, downloadSpeed) = networkSpeedInfoItem.Value;
+            LogExtensions.LogError(e, "Failed to update network card.");
         }
-
-        RunOnDispatcherQueue(() => {
-            SelectedIndex = selectedIndex;
-            UploadSpeed = uploadSpeed;
-            DownloadSpeed = downloadSpeed;
-        });
     }
 
     partial void OnSelectedIndexChanged(int value)
