@@ -19,7 +19,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
     private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;
 
-    private bool updated = true;
+    private bool updating = false;
 
     public DiskViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
     {
@@ -44,19 +44,19 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
             }
             else
             {
+                var diskInfo = _systemInfoService.GetDiskInfo();
+                var progressCardData = diskInfo.GetProgressCardData();
+                var dataCount = progressCardData.Count;
+                var itemsCount = ProgressCardItems.Count;
+
                 RunOnDispatcherQueue(() =>
                 {
-                    if (!updated)
+                    if (updating)
                     {
                         return;
                     }
 
-                    updated = false;
-
-                    var diskInfo = _systemInfoService.GetDiskInfo();
-                    var progressCardData = diskInfo.GetProgressCardData();
-                    var dataCount = progressCardData.Count;
-                    var itemsCount = ProgressCardItems.Count;
+                    updating = true;
 
                     // Remove extra items
                     if (dataCount < itemsCount)
@@ -101,7 +101,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                         }
                     }
 
-                    updated = true;
+                    updating = false;
                 });
             }
         }

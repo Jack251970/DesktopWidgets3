@@ -36,6 +36,9 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
     private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;
 
+    private bool listUpdating = false;
+    private bool updating = false;
+
     public NetworkViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
     {
         _systemInfoService = systemInfoService;
@@ -44,12 +47,12 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
         timersService.AddTimerAction(WidgetType.Network, UpdateNetwork);
     }
 
-    private async void UpdateNetwork()
+    private void UpdateNetwork()
     {
-        await UpdateCard(false);
+        UpdateCard(false);
     }
 
-    private async Task UpdateCard(bool init)
+    private void UpdateCard(bool init)
     {
         try
         {
@@ -57,14 +60,14 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
             if (init)
             {
-                networkSpeedInfo = await Task.Run(() => _systemInfoService.GetInitNetworkSpeed(useBps));
+                networkSpeedInfo = _systemInfoService.GetInitNetworkSpeed(useBps);
                 lastNetworkNamesIdentifiers = networkNamesIdentifiers;
                 networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
                 networkSpeedInfoItem = networkSpeedInfo.GetItem(0);
             }
             else
             {
-                networkSpeedInfo = await Task.Run(() => _systemInfoService.GetNetworkSpeed(useBps));
+                networkSpeedInfo = _systemInfoService.GetNetworkSpeed(useBps);
                 lastNetworkNamesIdentifiers = networkNamesIdentifiers;
                 networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
                 networkSpeedInfoItem = networkSpeedInfo.SearchItemByIdentifier(hardwareIdentifier);
@@ -75,11 +78,20 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
             {
                 RunOnDispatcherQueue(() =>
                 {
+                    if (listUpdating)
+                    {
+                        return;
+                    }
+
+                    listUpdating = true;
+
                     NetworkNames.Clear();
                     foreach (var item in networkNamesIdentifiers)
                     {
                         NetworkNames.Add(item);
                     }
+
+                    listUpdating = false;
                 });
             }
 
@@ -91,10 +103,20 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
                 (selectedIndex, _, _, uploadSpeed, downloadSpeed) = networkSpeedInfoItem.Value;
             }
 
-            RunOnDispatcherQueue(() => {
+            RunOnDispatcherQueue(() =>
+            {
+                if (updating)
+                {
+                    return;
+                }
+
+                updating = true;
+
                 SelectedIndex = selectedIndex;
                 UploadSpeed = uploadSpeed;
                 DownloadSpeed = downloadSpeed;
+
+                updating = false;
             });
         }
         catch (Exception e)
@@ -105,6 +127,11 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     partial void OnSelectedIndexChanged(int value)
     {
+        if (listUpdating)
+        {
+            return;
+        }
+
         if (value < 0 || value >= NetworkNames.Count)
         {
             return;
@@ -117,7 +144,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     #region abstract methods
 
-    protected async override void LoadSettings(NetworkWidgetSettings settings)
+    protected override void LoadSettings(NetworkWidgetSettings settings)
     {
         if (settings.UseBps != useBps)
         {
@@ -131,7 +158,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
         if (UploadSpeed == string.Empty)
         {
-            await UpdateCard(true);
+            UpdateCard(true);
         }
     }
 

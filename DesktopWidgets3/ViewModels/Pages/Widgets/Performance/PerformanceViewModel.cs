@@ -44,6 +44,8 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
     private readonly ISystemInfoService _systemInfoService;
     private readonly ITimersService _timersService;
 
+    private bool updating = false;
+
     public PerformanceViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
     {
         _systemInfoService = systemInfoService;
@@ -74,18 +76,38 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
 
             if (isInit)
             {
-                (cpuLoad, cpuLoadValue, cpuSpeed) = await Task.Run(_systemInfoService.GetInitCpuInfo);
-                (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetInitGpuInfo(useCelsius));
-                (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetInitMemoryInfo);
+                var cpuTask = Task.Run(_systemInfoService.GetInitCpuInfo);
+                var gpuTask = Task.Run(() => _systemInfoService.GetInitGpuInfo(useCelsius));
+                var memoryTask = Task.Run(_systemInfoService.GetInitMemoryInfo);
+
+                await Task.WhenAll(cpuTask, gpuTask, memoryTask);
+
+                (cpuLoad, cpuLoadValue, cpuSpeed) = cpuTask.Result;
+                (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = gpuTask.Result;
+                (memoryLoad, memoryLoadValue, memoryUsedInfo) = memoryTask.Result;
             }
             else
             {
-                (cpuLoad, cpuLoadValue, cpuSpeed) = await Task.Run(_systemInfoService.GetCpuInfo);
-                (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = await Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
-                (memoryLoad, memoryLoadValue, memoryUsedInfo) = await Task.Run(_systemInfoService.GetMemoryInfo);
+                var cpuTask = Task.Run(_systemInfoService.GetCpuInfo);
+                var gpuTask = Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
+                var memoryTask = Task.Run(_systemInfoService.GetMemoryInfo);
+
+                await Task.WhenAll(cpuTask, gpuTask, memoryTask);
+
+                (cpuLoad, cpuLoadValue, cpuSpeed) = cpuTask.Result;
+                (gpuName, gpuLoad, gpuLoadValue, gpuTempreture) = gpuTask.Result;
+                (memoryLoad, memoryLoadValue, memoryUsedInfo) = memoryTask.Result;
             }
 
-            RunOnDispatcherQueue(() => {
+            RunOnDispatcherQueue(() =>
+            {
+                if (updating)
+                {
+                    return;
+                }
+
+                updating = true;
+
                 CpuLeftInfo = "Cpu".GetLocalized();
                 CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? cpuLoad : cpuSpeed;
                 CpuLoadValue = cpuLoadValue * 100;
@@ -95,6 +117,8 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
                 MemoryLeftInfo = "Memory".GetLocalized();
                 MemoryRightInfo = string.IsNullOrEmpty(memoryUsedInfo) ? memoryLoad : memoryUsedInfo;
                 MemoryLoadValue = memoryLoadValue * 100;
+
+                updating = false;
             });
         }
         catch (Exception e)
