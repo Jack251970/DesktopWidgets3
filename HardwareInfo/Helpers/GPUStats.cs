@@ -114,7 +114,7 @@ public sealed class GPUStats : IDisposable
                         catch (InvalidOperationException ex)
                         {
                             // We can't modify the list during the loop, so save it to remove at the end.
-                            LogExtensions.LogInformation(ex, "Failed to get next value, remove");
+                            LogExtensions.LogDebug(ex, "Failed to get next value, remove");
                             countersToRemove.Add(counter);
                         }
                         catch (Exception ex)
