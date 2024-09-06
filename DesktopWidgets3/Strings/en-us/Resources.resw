@@ -289,10 +289,10 @@
     <value>Show thumbnails</value>
   </data>
   <data name="Cpu" xml:space="preserve">
-    <value>Cpu</value>
+    <value>CPU</value>
   </data>
   <data name="Gpu" xml:space="preserve">
-    <value>Gpu</value>
+    <value>GPU</value>
   </data>
   <data name="Memory" xml:space="preserve">
     <value>Memory</value>
