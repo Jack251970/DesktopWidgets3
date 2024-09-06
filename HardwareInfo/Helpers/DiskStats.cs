@@ -19,7 +19,7 @@ public sealed class DiskStats : IDisposable
 
         public ulong Size { get; set; }
 
-        public List<PartitionData> PartitionDatas { get; set; } = null!;
+        public List<PartitionData> PartitionDatas { get; set; } = [];
     }
 
     public sealed class PartitionData
