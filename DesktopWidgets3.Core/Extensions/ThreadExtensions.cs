@@ -23,7 +23,7 @@ public static class ThreadExtensions
         MainDispatcherThreadId = Environment.CurrentManagedThreadId;
     }
 
-    public static void RegisterWindow(Window window)
+    public static void RegisterWindow<T>(T window) where T : Window
     {
         var threadId = Environment.CurrentManagedThreadId;
         if (!WindowsAndDispatcherThreads.TryAdd(window, threadId))
@@ -34,17 +34,17 @@ public static class ThreadExtensions
         window.Closed += (sender, args) => UnregisterWindow(window);
     }
 
-    private static void UnregisterWindow(Window window)
+    private static void UnregisterWindow<T>(T window) where T : Window
     {
         WindowsAndDispatcherThreads.Remove(window);
     }
 
-    private static bool IsDispatcherThreadDifferent(this Window window)
+    private static bool IsDispatcherThreadDifferent<T>(this T window) where T : Window
     {
         return Environment.CurrentManagedThreadId != window.GetDispatcherThreadId();
     }
 
-    private static int GetDispatcherThreadId(this Window window)
+    private static int GetDispatcherThreadId<T>(this T window) where T : Window
     {
         return WindowsAndDispatcherThreads.FirstOrDefault(x => x.Key == window).Value;
     }
@@ -120,7 +120,7 @@ public static class ThreadExtensions
 
     // for multiple windows
 
-    public static Task EnqueueOrInvokeAsync(this List<Window> windows, Func<Window, Task> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+    public static Task EnqueueOrInvokeAsync<T>(this List<T> windows, Func<T, Task> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
     {
         return IgnoreExceptions(() =>
         {
@@ -160,15 +160,17 @@ public static class ThreadExtensions
         }, null, typeof(COMException));
     }
 
-    public static Task EnqueueOrInvokeAsync(this List<Window> windows, Action<Window> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+    public static Task EnqueueOrInvokeAsync<T>(this List<T> windows, Action<T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
     {
         return IgnoreExceptions(() =>
         {
             var (ThreadSameWindows, ThreadDifferentWindows) = windows.GetThreadInfo();
 
+            var tasks = new List<Task>();
+
             foreach (var window in ThreadSameWindows)
             {
-                function(window);
+                tasks.Add(Task.Run(() => function(window)));
             }
 
             foreach (var (dispatcherThreadInfo, windowList) in ThreadDifferentWindows)
@@ -177,19 +179,19 @@ public static class ThreadExtensions
 
                 if (dispatcher is not null)
                 {
-                    dispatcher.EnqueueAsync(() =>
+                    tasks.Add(dispatcher.EnqueueAsync(() =>
                     {
                         foreach (var window in windowList)
                         {
                             function(window);
                         }
-                    }, priority);
+                    }, priority));
                 }
                 else
                 {
                     foreach (var window in windowList)
                     {
-                        function(window);
+                        tasks.Add(Task.Run(() => function(window)));
                     }
                 }
             }
@@ -246,10 +248,10 @@ public static class ThreadExtensions
 
     #region dispatcher thread info
 
-    private static (List<Window> ThreadSameWindows, Dictionary<DispatcherThreadInfo, List<Window>> ThreadDifferentWindows) GetThreadInfo(this List<Window> windows)
+    private static (List<T> ThreadSameWindows, Dictionary<DispatcherThreadInfo, List<T>> ThreadDifferentWindows) GetThreadInfo<T>(this List<T> windows) where T : Window
     {
-        var threadSameWindows = new List<Window>();
-        var threadDifferentWindows = new Dictionary<DispatcherThreadInfo, List<Window>>();
+        var threadSameWindows = new List<T>();
+        var threadDifferentWindows = new Dictionary<DispatcherThreadInfo, List<T>>();
         foreach (var window in windows)
         {
             var (isWindowThreadDifferent, dispatcherThreadInfo) = window.GetThreadInfo();
@@ -273,7 +275,7 @@ public static class ThreadExtensions
         return (threadSameWindows, threadDifferentWindows);
     }
 
-    private static (bool IsWindowThreadDifferent, DispatcherThreadInfo DispatcherThreadInfo) GetThreadInfo(this Window window)
+    private static (bool IsWindowThreadDifferent, DispatcherThreadInfo DispatcherThreadInfo) GetThreadInfo<T>(this T window) where T : Window
     {
         var windowThreadId = window.GetDispatcherThreadId();
         return (Environment.CurrentManagedThreadId != windowThreadId, new DispatcherThreadInfo()
