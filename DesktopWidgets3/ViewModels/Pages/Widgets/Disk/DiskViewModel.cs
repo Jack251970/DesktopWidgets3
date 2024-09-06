@@ -37,6 +37,11 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
         {
             var progressCardData = _systemInfoService.GetDiskInfo().GetProgressCardData();
 
+            if (progressCardData.Count == 0)
+            {
+                return;
+            }
+
             RunOnDispatcherQueue(() =>
             {
                 if (updating)
