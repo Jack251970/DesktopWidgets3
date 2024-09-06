@@ -332,4 +332,10 @@
   &lt;/visual&gt;
 &lt;/toast&gt;</value>
   </data>
+  <data name="WidgetSettings_UseCelsius_Card.Header" xml:space="preserve">
+    <value>显示摄氏度</value>
+  </data>
+  <data name="WidgetSettings_UseCelsius_Card.Description" xml:space="preserve">
+    <value>使用摄氏度而不是华氏度作为硬件温度单位</value>
+  </data>
 </root>

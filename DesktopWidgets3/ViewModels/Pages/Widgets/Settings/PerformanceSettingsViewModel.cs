@@ -1,8 +1,13 @@
-﻿namespace DesktopWidgets3.ViewModels.Pages.Widgets.Settings;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace DesktopWidgets3.ViewModels.Pages.Widgets.Settings;
 
 public partial class PerformanceSettingsViewModel : BaseWidgetSettingsViewModel
 {
     #region view properties
+
+    [ObservableProperty]
+    private bool _useCelsius = false;
 
     #endregion
 
@@ -17,6 +22,15 @@ public partial class PerformanceSettingsViewModel : BaseWidgetSettingsViewModel
 
     protected override void InitializeWidgetSettings()
     {
-        
+        UseCelsius = Settings.UseCelsius;
+    }
+
+    partial void OnUseCelsiusChanged(bool value)
+    {
+        if (IsInitialized)
+        {
+            Settings.UseCelsius = value;
+            NeedUpdate = true;
+        }
     }
 }

@@ -18,7 +18,11 @@
             UseSystemFocusVisuals="False"
             VerticalScrollBarVisibility="Hidden"
             VerticalScrollMode="Auto">
-            <StackPanel Spacing="{StaticResource SettingsCardSpacing}" />
+            <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                <controls:SettingsCard x:Uid="WidgetSettings_UseCelsius_Card">
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.UseCelsius, Mode=TwoWay}" />
+                </controls:SettingsCard>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </Page>
