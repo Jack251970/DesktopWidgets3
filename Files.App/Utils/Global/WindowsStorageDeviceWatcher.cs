@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Runtime.InteropServices;
 using Windows.Devices.Enumeration;
@@ -12,7 +11,9 @@ namespace Files.App.Utils;
 
 public sealed class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 {
-	public event EventHandler<ILocatableFolder> DeviceAdded;
+    private static string ClassName => typeof(WindowsStorageDeviceWatcher).Name;
+
+    public event EventHandler<ILocatableFolder> DeviceAdded;
 	public event EventHandler<string> DeviceRemoved;
 	public event EventHandler EnumerationCompleted;
 	public event EventHandler<string> DeviceModified;
@@ -55,7 +56,7 @@ public sealed class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 		var rootAdded = await FilesystemTasks.Wrap(() => StorageFolder.GetFolderFromPathAsync(e.DeviceId).AsTask());
 		if (!rootAdded)
 		{
-			LogExtensions.LogWarning($"{rootAdded.ErrorCode}: Attempting to add the device, {e.DeviceId},"
+			LogExtensions.LogWarning(ClassName, $"{rootAdded.ErrorCode}: Attempting to add the device, {e.DeviceId},"
 				+ " failed at the StorageFolder initialization step. This device will be ignored.");
 			return;
 		}
@@ -87,7 +88,7 @@ public sealed class WindowsStorageDeviceWatcher : IStorageDeviceWatcher
 		}
         catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException or COMException)
         {
-            LogExtensions.LogWarning($"{ex.GetType()}: Attempting to add the device, {args.Name},"
+            LogExtensions.LogWarning(ClassName, $"{ex.GetType()}: Attempting to add the device, {args.Name},"
 				+ $" failed at the StorageFolder initialization step. This device will be ignored. Device ID: {deviceId}");
 			return;
 		}

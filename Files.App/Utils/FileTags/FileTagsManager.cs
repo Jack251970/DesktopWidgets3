@@ -1,15 +1,16 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 
 namespace Files.App.Utils.FileTags;
 
 public sealed class FileTagsManager
 {
-	private readonly ILogger logger = App.Logger;
-	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
+    private static string ClassName => typeof(FileTagsManager).Name;
+
+    /*private readonly ILogger logger = App.Logger;*/
+    private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
 	public EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 
@@ -69,7 +70,7 @@ public sealed class FileTagsManager
 		}
 		catch (Exception ex)
 		{
-			logger.LogWarning(ex, "Error loading tags section.");
+			LogExtensions.LogWarning(ClassName, ex, "Error loading tags section.");
 		}
 
 		return Task.CompletedTask;

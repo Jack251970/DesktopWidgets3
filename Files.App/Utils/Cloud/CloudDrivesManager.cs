@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using System.Collections.Specialized;
 using Windows.Storage;
 
@@ -9,9 +8,11 @@ namespace Files.App.Utils.Cloud;
 
 public static class CloudDrivesManager
 {
-	private static readonly ILogger _logger = App.Logger;
+    private static string ClassName => typeof(CloudDrivesManager).Name;
 
-	private static readonly ICloudDetector _detector = DependencyExtensions.GetRequiredService<ICloudDetector>();
+    /*private static readonly ILogger _logger = App.Logger;*/
+
+    private static readonly ICloudDetector _detector = DependencyExtensions.GetRequiredService<ICloudDetector>();
 
 	public static EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 
@@ -37,7 +38,7 @@ public static class CloudDrivesManager
 
         foreach (var provider in providers)
 		{
-			_logger?.LogInformation($"Adding cloud provider \"{provider.Name}\" mapped to {provider.SyncFolder}");
+			LogExtensions.LogInformation(ClassName, $"Adding cloud provider \"{provider.Name}\" mapped to {provider.SyncFolder}");
 
 			var cloudProviderItem = new DriveItem()
 			{
@@ -54,7 +55,7 @@ public static class CloudDrivesManager
 			}
 			catch (Exception ex)
 			{
-				_logger?.LogWarning(ex, "Cloud provider local folder couldn't be found");
+				LogExtensions.LogWarning(ClassName, ex, "Cloud provider local folder couldn't be found");
 			}
 
 			cloudProviderItem.MenuOptions = new ContextMenuOptions()

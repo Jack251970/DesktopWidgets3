@@ -18,6 +18,8 @@ namespace Files.App.Helpers;
 /// </summary>
 public static class AppLifecycleHelper
 {
+    private static string ClassName => typeof(AppLifecycleHelper).Name;
+
     /// <summary>
     /// Gets the value that provides application environment or branch name.
     /// </summary>
@@ -339,7 +341,7 @@ public static class AppLifecycleHelper
 
         // Save the current tab list in case it was overwriten by another instance
         SaveSessionTabs();
-        LogExtensions.LogError(ex, ex?.Message ?? "An unhandled error occurred.");
+        LogExtensions.LogError(ClassName, ex, ex?.Message ?? "An unhandled error occurred.");
 
         if (!showToastNotification)
         {

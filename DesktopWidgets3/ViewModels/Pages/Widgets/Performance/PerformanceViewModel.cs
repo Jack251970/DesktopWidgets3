@@ -4,6 +4,8 @@ namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
 public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
+    private static string ClassName => typeof(PerformanceViewModel).Name;
+
     #region view properties
 
     [ObservableProperty]
@@ -92,7 +94,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
         }
         catch (Exception e)
         {
-            LogExtensions.LogError(e, "Error updating performance widget.");
+            LogExtensions.LogError(ClassName, e, "Error updating performance widget.");
         }
     }
 

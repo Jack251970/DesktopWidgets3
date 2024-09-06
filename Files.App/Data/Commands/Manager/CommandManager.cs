@@ -4,12 +4,13 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using Files.App.Actions;
-using Microsoft.Extensions.Logging;
 
 namespace Files.App.Data.Commands;
 
 internal sealed class CommandManager : ICommandManager
 {
+    private string ClassName => GetType().Name;
+
     private IFolderViewViewModel FolderViewViewModel = null!;
 
     // Dependency injections
@@ -490,7 +491,7 @@ internal sealed class CommandManager : ICommandManager
                 .SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
                 .ToImmutableDictionary(item => item.HotKey, item => item.Command);
 
-            LogExtensions.LogWarning(ex, "The app found some keys in different commands are duplicated and are using default key bindings for those commands.");
+            LogExtensions.LogWarning(ClassName, ex, "The app found some keys in different commands are duplicated and are using default key bindings for those commands.");
         }
         catch (Exception ex)
         {
@@ -501,7 +502,7 @@ internal sealed class CommandManager : ICommandManager
                 .SelectMany(command => command.HotKeys, (command, hotKey) => (Command: command, HotKey: hotKey))
                 .ToImmutableDictionary(item => item.HotKey, item => item.Command);
 
-            LogExtensions.LogWarning(ex, "The app is temporarily using default key bindings for all because of a serious error of assigning custom keys.");
+            LogExtensions.LogWarning(ClassName, ex, "The app is temporarily using default key bindings for all because of a serious error of assigning custom keys.");
         }
     }
 

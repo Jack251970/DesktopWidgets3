@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
+/*using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace Files.Shared;
@@ -20,4 +20,4 @@ public sealed class FileLoggerProvider(string path) : ILoggerProvider
 	public void Dispose()
 	{
 	}
-}
+}*/

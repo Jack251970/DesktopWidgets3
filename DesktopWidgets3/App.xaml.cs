@@ -16,6 +16,8 @@ namespace DesktopWidgets3;
 // To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application
 {
+    private static string ClassName => typeof(App).Name;
+
     // The .NET Generic Host provides dependency injection, configuration, logging, and other services.
     // https://docs.microsoft.com/dotnet/core/extensions/generic-host
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -261,7 +263,7 @@ public partial class App : Application
 
         Debugger.Break();
 
-        LogExtensions.LogError(ex, ex?.Message ?? "An unhandled error occurred.");
+        LogExtensions.LogError(ClassName, ex, ex?.Message ?? "An unhandled error occurred.");
 
         if (showToastNotification)
         {
@@ -278,7 +280,7 @@ public partial class App : Application
         {
             MainWindow = await WindowsExtensions.GetWindow<MainWindow>(WindowsExtensions.ActivationType.Main, args);
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
-            LogExtensions.LogInformation($"App launched. Launch args type: {args.GetType().Name}.");
+            LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
         }
     }
 

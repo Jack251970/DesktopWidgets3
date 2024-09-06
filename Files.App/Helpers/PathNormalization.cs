@@ -1,13 +1,14 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using System.IO;
 
 namespace Files.App.Helpers;
 
 public static class PathNormalization
 {
+    private static string ClassName => typeof(PathNormalization).Name;
+
     public static string GetPathRoot(string path)
     {
         if (string.IsNullOrEmpty(path))
@@ -61,7 +62,7 @@ public static class PathNormalization
         }
         catch (UriFormatException ex)
         {
-            LogExtensions.LogWarning(ex, path);
+            LogExtensions.LogWarning(ClassName, ex, path);
             return path;
         }
     }

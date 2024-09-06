@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using System.IO;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
@@ -13,8 +12,10 @@ namespace Files.App.Utils.Storage;
 
 public sealed class FolderSearch
 {
-	/*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetRequiredService<IUserSettingsService>();*/
-	private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
+    private string ClassName => GetType().Name;
+
+    /*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetRequiredService<IUserSettingsService>();*/
+    private readonly DrivesViewModel drivesViewModel = DependencyExtensions.GetRequiredService<DrivesViewModel>();
 
 	private readonly IFileTagsSettingsService fileTagsSettingsService = DependencyExtensions.GetRequiredService<IFileTagsSettingsService>();
 
@@ -86,7 +87,7 @@ public sealed class FolderSearch
 		}
 		catch (Exception e)
 		{
-			LogExtensions.LogWarning(e, "Search failure");
+			LogExtensions.LogWarning(ClassName, e, "Search failure");
 		}
 
 		return Task.CompletedTask;
@@ -128,7 +129,7 @@ public sealed class FolderSearch
 		}
 		catch (Exception e)
 		{
-			LogExtensions.LogWarning(e, "Search failure");
+			LogExtensions.LogWarning(ClassName, e, "Search failure");
 		}
 
 		return results;
@@ -163,7 +164,7 @@ public sealed class FolderSearch
                 }
 				catch (Exception ex)
 				{
-					LogExtensions.LogWarning(ex, "Error creating ListedItem from StorageItem");
+					LogExtensions.LogWarning(ClassName, ex, "Error creating ListedItem from StorageItem");
 				}
 
 				if (results.Count == 32 || results.Count % 300 == 0 /*|| sampler.CheckNow()*/)
@@ -250,7 +251,7 @@ public sealed class FolderSearch
                 }
 				catch (Exception ex)
 				{
-					LogExtensions.LogWarning(ex, "Error creating ListedItem from StorageItem");
+					LogExtensions.LogWarning(ClassName, ex, "Error creating ListedItem from StorageItem");
 				}
 			}
 

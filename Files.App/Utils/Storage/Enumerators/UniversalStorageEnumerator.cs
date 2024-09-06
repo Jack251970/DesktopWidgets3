@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.IO;
 using Windows.Storage;
@@ -11,7 +10,9 @@ namespace Files.App.Utils.Storage;
 
 public static class UniversalStorageEnumerator
 {
-	public static async Task<List<ListedItem>> ListEntries(
+    private static string ClassName => typeof(UniversalStorageEnumerator).Name;
+
+    public static async Task<List<ListedItem>> ListEntries(
         IFolderViewViewModel folderViewViewModel,
         BaseStorageFolder rootFolder,
 		StorageFolderWithPath currentStorageFolder,
@@ -66,7 +67,7 @@ public static class UniversalStorageEnumerator
 			}
 			catch (Exception ex)
 			{
-				LogExtensions.LogWarning(ex, "Error enumerating directory contents.");
+				LogExtensions.LogWarning(ClassName, ex, "Error enumerating directory contents.");
 
 				break;
 			}
@@ -168,7 +169,7 @@ public static class UniversalStorageEnumerator
 			}
 			catch (Exception ex)
 			{
-				LogExtensions.LogWarning(ex, "Error enumerating directory contents.");
+				LogExtensions.LogWarning(ClassName, ex, "Error enumerating directory contents.");
 				break;
 			}
 

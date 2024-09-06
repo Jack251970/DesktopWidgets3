@@ -7,6 +7,8 @@ namespace HardwareInfo.Helpers;
 
 public sealed class CPUStats : IDisposable
 {
+    private string ClassName => GetType().Name;
+
     // CPU counters
     private readonly PerformanceCounter _procPerf = new("Processor Information", "% Processor Utility", "_Total");
     private readonly PerformanceCounter _procPerformance = new("Processor Information", "% Processor Performance", "_Total");
@@ -67,12 +69,12 @@ public sealed class CPUStats : IDisposable
             }
             catch (InvalidOperationException)
             {
-                LogExtensions.LogInformation($"ProcessCounter Key {processCounter.Key} no longer exists, removing from _cpuCounters.");
+                LogExtensions.LogInformation(ClassName, $"ProcessCounter Key {processCounter.Key} no longer exists, removing from _cpuCounters.");
                 _cpuCounters.Remove(processCounter.Key);
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ex, "Error going through process counters.");
+                LogExtensions.LogError(ClassName, ex, "Error going through process counters.");
             }
         }
 

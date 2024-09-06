@@ -4,7 +4,6 @@
 using CommunityToolkit.WinUI.UI;
 using CommunityToolkit.WinUI.UI.Controls;
 using Files.App.UserControls.Sidebar;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -17,6 +16,8 @@ namespace Files.App.Views;
 
 public sealed partial class MainPage : Page
 {
+    private string ClassName => GetType().Name;
+
     // CHANGE: Use tab control model instead of tab control component.
     public readonly TabBar TabControl;
 
@@ -507,7 +508,7 @@ public sealed partial class MainPage : Page
             // Handle exception in case WinUI Windows is closed
             // (see https://github.com/files-community/Files/issues/15599)
 
-            LogExtensions.LogWarning(ex, ex.Message);
+            LogExtensions.LogWarning(ClassName, ex, ex.Message);
         }
     }
 

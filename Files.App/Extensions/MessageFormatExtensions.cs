@@ -3,7 +3,6 @@
 
 using Jeffijoe.MessageFormat;
 using System.Globalization;
-using Microsoft.Extensions.Logging;
 
 namespace Files.App.Extensions;
 
@@ -12,17 +11,19 @@ namespace Files.App.Extensions;
 /// </summary>
 public static class MessageFormatExtensions
 {
-	/// <summary>
-	/// Resource map for accessing localized strings.
-	/// It is initialized with the main resource map of the application's resources and the subtree "Resources".
-	/// </summary>
-	/*private static readonly ResourceMap _resourcesTree = new ResourceManager().MainResourceMap.TryGetSubtree("Resources");*/
+    private static string ClassName => typeof(MessageFormatExtensions).Name;
 
-	/// <summary>
-	/// CultureInfo based on the application's primary language override.
-	/// It is initialized with the selected language of the application.
-	/// </summary>
-	private static readonly CultureInfo _locale = new(AppLanguageHelper.PreferredLanguage.Code);
+    /// <summary>
+    /// Resource map for accessing localized strings.
+    /// It is initialized with the main resource map of the application's resources and the subtree "Resources".
+    /// </summary>
+    /*private static readonly ResourceMap _resourcesTree = new ResourceManager().MainResourceMap.TryGetSubtree("Resources");*/
+
+    /// <summary>
+    /// CultureInfo based on the application's primary language override.
+    /// It is initialized with the selected language of the application.
+    /// </summary>
+    private static readonly CultureInfo _locale = new(AppLanguageHelper.PreferredLanguage.Code);
 
 	/// <summary>
 	/// Gets custom value formatters for the message formatter.
@@ -92,7 +93,7 @@ public static class MessageFormatExtensions
 		catch
 		{
 			value = string.Empty;
-			LogExtensions.LogWarning($"Formatter could not get a valid result value for: '{resourceKey}'");
+			LogExtensions.LogWarning(ClassName, $"Formatter could not get a valid result value for: '{resourceKey}'");
 		}
 
 		return value;

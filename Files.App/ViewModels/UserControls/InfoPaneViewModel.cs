@@ -4,7 +4,6 @@
 using Files.App.UserControls.FilePreviews;
 using Files.App.ViewModels.Previews;
 using Files.Shared.Helpers;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
@@ -13,6 +12,8 @@ namespace Files.App.ViewModels.UserControls;
 
 public sealed class InfoPaneViewModel : ObservableObject, IDisposable
 {
+    private string ClassName => GetType().Name;
+
     private IFolderViewViewModel FolderViewViewModel { get; set; }
 
     private IInfoPaneSettingsService InfoPaneSettingsService { get; set; }
@@ -180,7 +181,7 @@ public sealed class InfoPaneViewModel : ObservableObject, IDisposable
                     // Handle exception in case WinUI Windows is closed
                     // (see https://github.com/files-community/Files/issues/15599)
 
-                    LogExtensions.LogWarning(ex, ex.Message);
+                    LogExtensions.LogWarning(ClassName, ex, ex.Message);
                 }
                 
                 break;

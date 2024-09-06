@@ -1,9 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Files.Core.Storage;
-using Files.Core.Storage.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -20,6 +17,8 @@ namespace Files.App.Utils.Storage;
 
 public sealed class FilesystemHelpers : IFilesystemHelpers
 {
+    private static string ClassName => typeof(FilesystemHelpers).Name;
+
     private readonly IFolderViewViewModel FolderViewViewModel;
 
     private readonly StatusCenterViewModel StatusCenterViewModel;
@@ -680,7 +679,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			if (path is not null && collisions.ContainsKey(path))
 			{
 				// Something strange happened, log
-				LogExtensions.LogWarning($"Duplicate key when resolving conflicts: {incomingItems.ElementAt(item.index).SourcePath}, {item.src.Name}\n" +
+				LogExtensions.LogWarning(ClassName, $"Duplicate key when resolving conflicts: {incomingItems.ElementAt(item.index).SourcePath}, {item.src.Name}\n" +
 					$"Source: {string.Join(", ", source.Select(x => string.IsNullOrEmpty(x.Path) ? x.Item.Name : x.Path))}");
 			}
 			collisions!.AddIfNotPresent(incomingItems.ElementAt(item.index).SourcePath, FileNameConflictResolveOptionType.GenerateNewName);
@@ -768,7 +767,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 			}
 			catch (Exception ex)
 			{
-				LogExtensions.LogWarning(ex, ex.Message);
+				LogExtensions.LogWarning(ClassName, ex, ex.Message);
 				return itemsList;
 			}
 		}
@@ -795,7 +794,7 @@ public sealed class FilesystemHelpers : IFilesystemHelpers
 		}
 		catch (Exception ex)
 		{
-			LogExtensions.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ClassName, ex, ex.Message);
 		}
 
 		// workaround for GetStorageItemsAsync() bug that only yields 16 items at most

@@ -1,8 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.Helpers;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using System.IO;
 using System.Net.Http;
@@ -15,7 +13,9 @@ namespace Files.App.Services;
 
 internal sealed class StoreUpdateService : ObservableObject, IUpdateService
 {
-	private StoreContext? _storeContext;
+    private static string ClassName => typeof(StoreUpdateService).Name;
+
+    private StoreContext? _storeContext;
     private List<StorePackageUpdate>? _updatePackages;
 
     private bool IsMandatory => _updatePackages?.Where(e => e.Mandatory).ToList().Count >= 1;
@@ -83,7 +83,7 @@ internal sealed class StoreUpdateService : ObservableObject, IUpdateService
 		{
 			if (await ShowDialogAsync(folderViewViewModel))
 			{
-				LogExtensions.LogInformation("STORE: Downloading updates...");
+				LogExtensions.LogInformation(ClassName, "STORE: Downloading updates...");
 				OnUpdateInProgress();
 				await DownloadAndInstallAsync();
 				OnUpdateCompleted();
@@ -94,13 +94,13 @@ internal sealed class StoreUpdateService : ObservableObject, IUpdateService
 	public async Task CheckForUpdatesAsync(IFolderViewViewModel folderViewViewModel)
 	{
 		IsUpdateAvailable = false;
-		LogExtensions.LogInformation("STORE: Checking for updates...");
+		LogExtensions.LogInformation(ClassName, "STORE: Checking for updates...");
 
 		await GetUpdatePackagesAsync(folderViewViewModel);
 
 		if (_updatePackages is not null && _updatePackages.Count > 0)
 		{
-			LogExtensions.LogInformation("STORE: Update found.");
+			LogExtensions.LogInformation(ClassName, "STORE: Update found.");
 			IsUpdateAvailable = true;
 		}
 	}
@@ -222,7 +222,7 @@ internal sealed class StoreUpdateService : ObservableObject, IUpdateService
 				await srcExeFile.CopyAsync(destFolder, "Files.App.Launcher.exe", NameCollisionOption.ReplaceExisting);
 				await srcHashFile.CopyAsync(destFolder, "Files.App.Launcher.exe.sha256", NameCollisionOption.ReplaceExisting);
 
-				LogExtensions.LogInformation("Files.App.Launcher updated.");
+				LogExtensions.LogInformation(ClassName, "Files.App.Launcher updated.");
 			}
 		}
 

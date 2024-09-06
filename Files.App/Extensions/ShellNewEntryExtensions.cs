@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using System.IO;
-using Microsoft.Extensions.Logging;
 using Windows.Storage;
 
 namespace Files.App.Extensions;

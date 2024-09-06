@@ -9,6 +9,8 @@ namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class MainWindow : WindowEx
 {
+    private static string ClassName => typeof(MainWindow).Name;
+
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
@@ -84,7 +86,7 @@ public sealed partial class MainWindow : WindowEx
             await App.GetService<IWidgetManagerService>().DisableAllWidgets();
             await WindowsExtensions.CloseAllWindows();
             ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closed?.Invoke(this, args);
-            LogExtensions.LogInformation("Exit current application.");
+            LogExtensions.LogInformation(ClassName, "Exit current application.");
             Application.Current.Exit();
         }
         else

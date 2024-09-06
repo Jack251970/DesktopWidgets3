@@ -4,6 +4,8 @@ namespace DesktopWidgets3.Core.Services;
 
 public class FileService : IFileService
 {
+    private static string ClassName => typeof(FileService).Name;
+
     private readonly Dictionary<string, SemaphoreSlim> semaphoreSlims = [];
 
     public T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null!)
@@ -18,7 +20,7 @@ public class FileService : IFileService
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(e, $"Reading file {path} failed");
+                LogExtensions.LogError(ClassName, e, $"Reading file {path} failed");
             }
         }
 
@@ -45,7 +47,7 @@ public class FileService : IFileService
         }
         catch (Exception e)
         {
-            LogExtensions.LogError(e, $"Writing file {path} failed");
+            LogExtensions.LogError(ClassName, e, $"Writing file {path} failed");
         }
         finally
         {
@@ -66,7 +68,7 @@ public class FileService : IFileService
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(e, $"Deleting file {path} failed");
+                LogExtensions.LogError(ClassName, e, $"Deleting file {path} failed");
             }
             return true;
         }

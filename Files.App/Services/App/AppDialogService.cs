@@ -3,7 +3,6 @@
 
 using System.Collections.Frozen;
 using Files.App.Dialogs;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation.Metadata;
 
@@ -12,6 +11,8 @@ namespace Files.App.Services;
 /// <inheritdoc cref="IDialogService"/>
 internal sealed class DialogService : IDialogService
 {
+    private static string ClassName => typeof(DialogService).Name;
+
     private IFolderViewViewModel _folderViewViewModel = null!;
 
     private FrozenDictionary<Type, Func<ContentDialog>> _dialogs;
@@ -76,7 +77,7 @@ internal sealed class DialogService : IDialogService
 		}
 		catch (Exception ex)
 		{
-			LogExtensions.LogWarning(ex, "Failed to show dialog");
+			LogExtensions.LogWarning(ClassName, ex, "Failed to show dialog");
 
 			Debugger.Break();
 		}

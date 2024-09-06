@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using Windows.Foundation.Metadata;
 using Windows.System;
 
@@ -12,7 +11,7 @@ namespace Files.App.Helpers;
 /// </summary>
 public static partial class Win32Helper
 {
-	private static bool? isRunningOnArm = null;
+    private static bool? isRunningOnArm = null;
 	public static bool IsRunningOnArm
 	{
 		get
@@ -23,7 +22,7 @@ public static partial class Win32Helper
 			{
 				isRunningOnArm = IsArmProcessor();
                 // CHANGE: Use named placeholder instead of numeric values.
-                LogExtensions.LogInformation($"Running on ARM: {isRunningOnArm}");
+                LogExtensions.LogInformation(ClassName, $"Running on ARM: {isRunningOnArm}");
 			}
 
 			return isRunningOnArm ?? false;

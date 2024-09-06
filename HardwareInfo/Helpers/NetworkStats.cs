@@ -7,6 +7,8 @@ namespace HardwareInfo.Helpers;
 
 public sealed class NetworkStats : IDisposable
 {
+    private string ClassName => GetType().Name;
+
     private readonly Dictionary<string, List<PerformanceCounter>> _networkCounters = [];
 
     private Dictionary<string, Data> NetworkUsages { get; set; } = [];
@@ -84,7 +86,7 @@ public sealed class NetworkStats : IDisposable
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ex, "Error getting network data.");
+                LogExtensions.LogError(ClassName, ex, "Error getting network data.");
             }
         }
     }

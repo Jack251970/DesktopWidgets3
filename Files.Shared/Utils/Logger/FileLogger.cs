@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
+/*using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -77,4 +77,4 @@ public sealed class FileLogger(string filePath) : ILogger
 			semaphoreSlim.Release();
 		}
 	}
-}
+}*/

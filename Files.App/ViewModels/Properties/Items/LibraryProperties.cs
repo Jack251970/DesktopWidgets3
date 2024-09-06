@@ -1,14 +1,15 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 
 namespace Files.App.ViewModels.Properties;
 
 internal sealed class LibraryProperties : BaseProperties
 {
-	public LibraryItem Library { get; private set; }
+    private string ClassName => GetType().Name;
+
+    public LibraryItem Library { get; private set; }
 
 	public LibraryProperties(SelectedItemsPropertiesViewModel viewModel, CancellationTokenSource tokenSource,
 		DispatcherQueue coreDispatcher, LibraryItem item, IShellPage instance)
@@ -88,7 +89,7 @@ internal sealed class LibraryProperties : BaseProperties
 			}
 			catch (Exception ex)
 			{
-				LogExtensions.LogWarning(ex, ex.Message);
+				LogExtensions.LogWarning(ClassName, ex, ex.Message);
 			}
 		}
 
@@ -127,7 +128,7 @@ internal sealed class LibraryProperties : BaseProperties
 		}
 		catch (Exception ex)
 		{
-			LogExtensions.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ClassName, ex, ex.Message);
 		}
 
 		ViewModel.ItemSizeProgressVisibility = false;

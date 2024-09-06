@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 using System.Collections.Concurrent;
 using System.Drawing;
@@ -21,7 +20,9 @@ namespace Files.App.Helpers;
 /// </summary>
 public static partial class Win32Helper
 {
-	public static Task StartSTATask(Func<Task> func)
+    private static string ClassName => typeof(Win32Helper).Name;
+
+    public static Task StartSTATask(Func<Task> func)
 	{
 		var taskCompletionSource = new TaskCompletionSource();
 		var thread = new Thread(async () =>
@@ -36,7 +37,7 @@ public static partial class Win32Helper
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult();
-				LogExtensions.LogWarning(ex, ex.Message);
+				LogExtensions.LogWarning(ClassName, ex, ex.Message);
 			}
 			finally
 			{
@@ -70,7 +71,7 @@ public static partial class Win32Helper
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult();
-				LogExtensions.LogWarning(ex, ex.Message);
+				LogExtensions.LogWarning(ClassName, ex, ex.Message);
 			}
 			finally
 			{
@@ -104,7 +105,7 @@ public static partial class Win32Helper
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult(default);
-				LogExtensions.LogWarning(ex, ex.Message);
+				LogExtensions.LogWarning(ClassName, ex, ex.Message);
 				//tcs.SetException(e);
 			}
 			finally
@@ -138,7 +139,7 @@ public static partial class Win32Helper
 			catch (Exception ex)
 			{
 				taskCompletionSource.SetResult(default);
-				LogExtensions.LogInformation(ex, ex.Message);
+				LogExtensions.LogInformation(ClassName, ex, ex.Message);
 				//tcs.SetException(e);
 			}
 			finally
@@ -437,7 +438,7 @@ public static partial class Win32Helper
 		}
 		catch (InvalidOperationException ex)
 		{
-			LogExtensions.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ClassName, ex, ex.Message);
 			return false;
 		}
 		catch (Win32Exception)

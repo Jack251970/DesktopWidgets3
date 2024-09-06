@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Storage.Storables;
-using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
@@ -15,9 +14,11 @@ namespace Files.App.Helpers;
 
 public static class UIFilesystemHelpers
 {
-	/*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetRequiredService<StatusCenterViewModel>();*/
+    private static string ClassName => typeof(UIFilesystemHelpers).Name;
 
-	public static async Task CutItemAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
+    /*private static readonly StatusCenterViewModel _statusCenterViewModel = DependencyExtensions.GetRequiredService<StatusCenterViewModel>();*/
+
+    public static async Task CutItemAsync(IFolderViewViewModel folderViewViewModel, IShellPage associatedInstance)
 	{
 		var dataPackage = new DataPackage()
 		{
@@ -384,7 +385,7 @@ public static class UIFilesystemHelpers
 		}
 		catch (Exception ex)
 		{
-            LogExtensions.LogWarning(ex, null);
+            LogExtensions.LogWarning(ClassName, ex, null);
 		}
 	}
 

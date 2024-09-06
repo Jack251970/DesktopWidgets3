@@ -6,6 +6,8 @@ namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
 public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
+    private static string ClassName => typeof(DiskViewModel).Name;
+
     #region view properties
 
     public ObservableCollection<ProgressCardData> ProgressCardItems { get; set; } = new();
@@ -94,7 +96,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                 }
                 catch (Exception e)
                 {
-                    LogExtensions.LogError(e, "Disk Widget Update Error on DispatcherQueue");
+                    LogExtensions.LogError(ClassName, e, "Disk Widget Update Error on DispatcherQueue");
                 }
 
                 updating = false;
@@ -102,7 +104,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
         }
         catch (Exception e)
         {
-            LogExtensions.LogError(e, "Disk Widget Update Error");
+            LogExtensions.LogError(ClassName, e, "Disk Widget Update Error");
         }
     }
 

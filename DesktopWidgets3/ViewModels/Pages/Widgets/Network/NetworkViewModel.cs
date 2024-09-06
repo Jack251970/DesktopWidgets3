@@ -5,6 +5,8 @@ namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
 public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSettings>, IWidgetUpdate, IWidgetClose
 {
+    private static string ClassName => typeof(NetworkViewModel).Name;
+
     #region view properties
 
     public ObservableCollection<Tuple<string, string>> NetworkNames { get; set; } = new();
@@ -105,7 +107,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
         }
         catch (Exception e)
         {
-            LogExtensions.LogError(e, "Failed to update network card.");
+            LogExtensions.LogError(ClassName, e, "Failed to update network card.");
         }
     }
 

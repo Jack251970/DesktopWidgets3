@@ -3,7 +3,6 @@
 
 using Files.App.Dialogs;
 using LibGit2Sharp;
-using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -12,7 +11,9 @@ namespace Files.App.Utils.Git;
 
 internal static partial class GitHelpers
 {
-	private const string GIT_RESOURCE_NAME = "Files:https://github.com";
+    private static string ClassName => typeof(GitHelpers).Name;
+
+    private const string GIT_RESOURCE_NAME = "Files:https://github.com";
 
 	private const string GIT_RESOURCE_USERNAME = "Personal Access Token";
 
@@ -22,9 +23,9 @@ internal static partial class GitHelpers
 
 	private const int MAX_NUMBER_OF_BRANCHES = 30;
 
-	private static readonly ILogger? _logger = App.Logger;
+	/*private static readonly ILogger? _logger = App.Logger;
 
-	/*private static readonly IDialogService _dialogService = DependencyExtensions.GetRequiredService<IDialogService>();*/
+	private static readonly IDialogService _dialogService = DependencyExtensions.GetRequiredService<IDialogService>();*/
 
 	private static readonly FetchOptions _fetchOptions = new()
 	{
@@ -98,7 +99,7 @@ internal static partial class GitHelpers
         }
         catch (Exception ex) when (ex is LibGit2SharpException or EncoderFallbackException)
         {
-			_logger?.LogWarning(ex.Message);
+			LogExtensions.LogWarning(ClassName, ex.Message);
 
 			return null;
 		}
@@ -574,7 +575,7 @@ internal static partial class GitHelpers
         }
 		catch (Exception ex)
 		{
-			_logger?.LogWarning(ex.Message);
+            LogExtensions.LogWarning(ClassName, ex.Message);
 		}
 
         ThreadExtensions.MainDispatcherQueue!.TryEnqueue(() =>
@@ -681,7 +682,7 @@ internal static partial class GitHelpers
             }
             catch (Exception ex)
             {
-                _logger!.LogWarning(ex.Message);
+                LogExtensions.LogWarning(ClassName, ex.Message);
                 dialog.Hide();
                 break;
             }
@@ -791,7 +792,7 @@ internal static partial class GitHelpers
 		}
 		catch (LibGit2SharpException ex)
 		{
-			_logger?.LogWarning(ex.Message);
+            LogExtensions.LogWarning(ClassName, ex.Message);
 			await DynamicDialogFactory.GetFor_GitCannotInitializeqRepositoryHere(folderViewViewModel).TryShowAsync(folderViewViewModel);
 		}
 	}

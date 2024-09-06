@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -12,6 +11,8 @@ namespace Files.App.Services;
 
 public class AppThemeModeService : IAppThemeModeService
 {
+    private static string ClassName => typeof(AppThemeModeService).Name;
+
     // CHANGE: Use theme extensions instead of theme setting.
     /*private IUserSettingsService UserSettingsService { get; } = DependencyExtensions.GetRequiredService<IUserSettingsService>();
 
@@ -135,7 +136,7 @@ public class AppThemeModeService : IAppThemeModeService
         }
         catch (Exception ex)
         {
-            LogExtensions.LogWarning(ex, "Failed to change theme mode of the app.");
+            LogExtensions.LogWarning(ClassName, ex, "Failed to change theme mode of the app.");
         }
     }
 

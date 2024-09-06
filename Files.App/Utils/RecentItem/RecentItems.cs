@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using System.Collections.Specialized;
 using System.IO;
@@ -12,6 +11,8 @@ namespace Files.App.Utils.RecentItem;
 
 public sealed class RecentItems : IDisposable
 {
+    private string ClassName => GetType().Name;
+
     private const string QuickAccessGuid = "::{679f85cb-0220-4080-b29b-5540cc05aab6}";
 
     // CHANGE: Use dictionary to support multiple folder view view models.
@@ -233,7 +234,7 @@ public sealed class RecentItems : IDisposable
         }
         catch (Exception ex)
         {
-            LogExtensions.LogWarning(ex, ex.Message);
+            LogExtensions.LogWarning(ClassName, ex, ex.Message);
             return false;
         }
     }
@@ -252,7 +253,7 @@ public sealed class RecentItems : IDisposable
         }
         catch (Exception ex)
         {
-            LogExtensions.LogWarning(ex, ex.Message);
+            LogExtensions.LogWarning(ClassName, ex, ex.Message);
             return false;
         }
     }

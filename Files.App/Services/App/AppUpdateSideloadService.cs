@@ -1,8 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using CommunityToolkit.WinUI.Helpers;
-using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Http;
 using System.Xml.Serialization;
@@ -13,7 +11,9 @@ namespace Files.App.Services;
 
 public sealed class SideloadUpdateService : ObservableObject, IUpdateService, IDisposable
 {
-	private const string SIDELOAD_STABLE = "https://cdn.files.community/files/stable/Files.Package.appinstaller";
+    private static string ClassName => typeof(SideloadUpdateService).Name;
+
+    private const string SIDELOAD_STABLE = "https://cdn.files.community/files/stable/Files.Package.appinstaller";
 	private const string SIDELOAD_PREVIEW = "https://cdn.files.community/files/preview/Files.Package.appinstaller";
 
 	private readonly HttpClient _client = new(new SocketsHttpHandler { PooledConnectionLifetime = TimeSpan.FromMinutes(3) });
@@ -26,7 +26,8 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 
 	private const string TEMPORARY_UPDATE_PACKAGE_NAME = "UpdatePackage.msix";
 
-	private ILogger? Logger { get; } = App.Logger;
+    // CHANGE: Remove Logger.
+	/*private ILogger? Logger { get; } = App.Logger;*/
 
 	private string PackageName { get; } = InfoHelper.GetName();
 
@@ -106,7 +107,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 		IsUpdateAvailable = false;
 		try
 		{
-			Logger?.LogInformation($"SIDELOAD: Checking for updates...");
+			LogExtensions.LogInformation(ClassName, $"SIDELOAD: Checking for updates...");
 
 			await using var stream = await _client.GetStreamAsync(_sideloadVersion[PackageName]);
 
@@ -121,27 +122,27 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 
             var remoteVersion = new Version(appInstaller.Version);
 
-			Logger?.LogInformation($"SIDELOAD: Current Package Name: {PackageName}");
-			Logger?.LogInformation($"SIDELOAD: Remote Package Name: {appInstaller.MainBundle.Name}");
-			Logger?.LogInformation($"SIDELOAD: Current Version: {PackageVersion}");
-			Logger?.LogInformation($"SIDELOAD: Remote Version: {remoteVersion}");
+			LogExtensions.LogInformation(ClassName, $"SIDELOAD: Current Package Name: {PackageName}");
+			LogExtensions.LogInformation(ClassName, $"SIDELOAD: Remote Package Name: {appInstaller.MainBundle.Name}");
+			LogExtensions.LogInformation(ClassName, $"SIDELOAD: Current Version: {PackageVersion}");
+			LogExtensions.LogInformation(ClassName, $"SIDELOAD: Remote Version: {remoteVersion}");
 
 			// Check details and version number
 			if (appInstaller.MainBundle.Name.Equals(PackageName) && remoteVersion.CompareTo(PackageVersion) > 0)
 			{
-				Logger?.LogInformation("SIDELOAD: Update found.");
-				Logger?.LogInformation("SIDELOAD: Starting background download.");
+				LogExtensions.LogInformation(ClassName, "SIDELOAD: Update found.");
+				LogExtensions.LogInformation(ClassName, "SIDELOAD: Starting background download.");
 				DownloadUri = new Uri(appInstaller.MainBundle.Uri);
 				await StartBackgroundDownloadAsync();
 			}
 			else
 			{
-				Logger?.LogWarning("SIDELOAD: Update not found.");
+				LogExtensions.LogWarning(ClassName, "SIDELOAD: Update not found.");
 			}
 		}
 		catch (Exception e)
 		{
-			Logger?.LogError(e, e.Message);
+			LogExtensions.LogError(ClassName, e, e.Message);
 		}
 	}
 
@@ -172,7 +173,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 				await srcExeFile.CopyAsync(destFolder, "Files.App.Launcher.exe", NameCollisionOption.ReplaceExisting);
 				await srcHashFile.CopyAsync(destFolder, "Files.App.Launcher.exe.sha256", NameCollisionOption.ReplaceExisting);
 
-				LogExtensions.LogInformation("Files.App.Launcher updated.");
+				LogExtensions.LogInformation(ClassName, "Files.App.Launcher updated.");
 			}
 		}
 
@@ -205,13 +206,13 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
             timer.Stop();
 			var timespan = timer.Elapsed;
 
-			Logger?.LogInformation($"Download time taken: {timespan.Hours:00}:{timespan.Minutes:00}:{timespan.Seconds:00}");
+			LogExtensions.LogInformation(ClassName, $"Download time taken: {timespan.Hours:00}:{timespan.Minutes:00}:{timespan.Seconds:00}");
 
 			IsUpdateAvailable = true;
 		}
 		catch (Exception e)
 		{
-			Logger?.LogError(e, e.Message);
+			LogExtensions.LogError(ClassName, e, e.Message);
 		}
 	}
 
@@ -233,7 +234,7 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
             var restartStatus = Win32PInvoke.RegisterApplicationRestart(null!, 0);
             App.AppModel.ForceProcessTermination = true;
 
-			Logger?.LogInformation($"Register for restart: {restartStatus}");
+			LogExtensions.LogInformation(ClassName, $"Register for restart: {restartStatus}");
 
 			await Task.Run(async () =>
 			{
@@ -254,10 +255,10 @@ public sealed class SideloadUpdateService : ObservableObject, IUpdateService, ID
 		{
 			if (result?.ExtendedErrorCode is not null)
             {
-                Logger?.LogInformation(result.ErrorText);
+                LogExtensions.LogInformation(ClassName, result.ErrorText);
             }
 
-            Logger?.LogError(e, e.Message);
+            LogExtensions.LogError(ClassName, e, e.Message);
 		}
 		finally
 		{

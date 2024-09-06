@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
+/*using Microsoft.Extensions.Logging;
 
 namespace Files.Shared.Extensions;
 
@@ -13,4 +13,4 @@ public static class FileLoggerExtensions
 
 		return factory;
 	}
-}
+}*/

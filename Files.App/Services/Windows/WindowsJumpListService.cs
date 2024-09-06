@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using System.IO;
 using Windows.Storage;
 using Windows.UI.StartScreen;
@@ -10,6 +9,8 @@ namespace Files.App.Services;
 
 public sealed class WindowsJumpListService : IWindowsJumpListService
 {
+    private static string ClassName => typeof(WindowsJumpListService).Name;
+
     private const string JumpListRecentGroupHeader = "ms-resource:///Resources/JumpListRecentGroupHeader";
     private const string JumpListPinnedGroupHeader = "ms-resource:///Resources/JumpListPinnedGroupHeader";
 
@@ -24,7 +25,7 @@ public sealed class WindowsJumpListService : IWindowsJumpListService
         }
         catch (Exception ex)
         {
-            LogExtensions.LogWarning(ex, ex.Message);
+            LogExtensions.LogWarning(ClassName, ex, ex.Message);
         }
     }
 

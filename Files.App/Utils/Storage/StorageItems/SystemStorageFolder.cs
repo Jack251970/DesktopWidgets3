@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Vanara.PInvoke;
 using Windows.Foundation;
@@ -14,6 +13,8 @@ namespace Files.App.Utils.Storage;
 
 public sealed class SystemStorageFolder(StorageFolder folder) : BaseStorageFolder
 {
+    private static string ClassName => typeof(SystemStorageFolder).Name;
+
     public StorageFolder Folder { get; } = folder;
 
     public override string Path => Folder.Path;
@@ -46,7 +47,7 @@ public sealed class SystemStorageFolder(StorageFolder folder) : BaseStorageFolde
             }
             catch (Exception e)
             {
-                LogExtensions.LogWarning(e, null);
+                LogExtensions.LogWarning(ClassName, e, null);
             }
         }
 

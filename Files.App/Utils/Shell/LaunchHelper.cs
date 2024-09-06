@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.Shared.Helpers;
-using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 using System.IO;
 using Vanara.PInvoke;
@@ -15,7 +14,9 @@ namespace Files.App.Utils.Shell;
 /// </summary>
 public static partial class LaunchHelper
 {
-	public static void LaunchSettings(string page)
+    private static string ClassName => typeof(LaunchHelper).Name;
+
+    public static void LaunchSettings(string page)
 	{
 		var appActiveManager = new Shell32.IApplicationActivationManager();
 
@@ -245,7 +246,7 @@ public static partial class LaunchHelper
 		catch (Exception ex)
 		{
 			// Generic error, log
-			LogExtensions.LogWarning(ex, $"Error launching: {application}");
+			LogExtensions.LogWarning(ClassName, ex, $"Error launching: {application}");
 			return false;
 		}
 	}

@@ -2,14 +2,15 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Services.SizeProvider;
-using Microsoft.Extensions.Logging;
 using System.IO;
 
 namespace Files.App.Data.Models;
 
 public sealed class DrivesViewModel : ObservableObject, IDisposable
 {
-	public ObservableCollection<ILocatableFolder> Drives
+    private static string ClassName => typeof(DrivesViewModel).Name;
+
+    public ObservableCollection<ILocatableFolder> Drives
 	{
 		get => drives;
 		private set => SetProperty(ref drives, value);
@@ -26,16 +27,16 @@ public sealed class DrivesViewModel : ObservableObject, IDisposable
 	private readonly IRemovableDrivesService removableDrivesService;
 	/*private readonly ISizeProvider folderSizeProvider;*/
 	private readonly IStorageDeviceWatcher watcher;
-	private readonly ILogger? logger;
+	/*private readonly ILogger? logger;*/
 
-    // CHANGE: Remove folderSizeProvider from the constructor
-    public DrivesViewModel(IRemovableDrivesService removableDrivesService, /*ISizeProvider folderSizeProvider, */ILogger? logger = null)
+    // CHANGE: Remove folderSizeProvider and logger from the constructor
+    public DrivesViewModel(IRemovableDrivesService removableDrivesService/*, ISizeProvider folderSizeProvider, ILogger? logger = null*/)
 	{
 		this.removableDrivesService = removableDrivesService;
-		/*this.folderSizeProvider = folderSizeProvider;*/
-		this.logger = logger;
+        /*this.folderSizeProvider = folderSizeProvider;
+		this.logger = logger;*/
 
-		drives = [];
+        drives = [];
 
 		watcher = removableDrivesService.CreateWatcher();
 		watcher.DeviceAdded += Watcher_DeviceAdded;
@@ -46,7 +47,7 @@ public sealed class DrivesViewModel : ObservableObject, IDisposable
 
 	private async void Watcher_EnumerationCompleted(object? sender, EventArgs e)
 	{
-		logger?.LogDebug("Watcher_EnumerationCompleted");
+		LogExtensions.LogDebug(ClassName, "Watcher_EnumerationCompleted");
         foreach (var folderViewViewModel in App.FolderViewViewModels)
         {
             var folderSizeProvider = folderViewViewModel.GetRequiredService<ISizeProvider>();
@@ -65,7 +66,7 @@ public sealed class DrivesViewModel : ObservableObject, IDisposable
 
 	private void Watcher_DeviceRemoved(object? sender, string e)
 	{
-		logger?.LogInformation($"Drive removed: {e}");
+		LogExtensions.LogInformation(ClassName, $"Drive removed: {e}");
 		lock (Drives)
 		{
 			var drive = Drives.FirstOrDefault(x => x.Id == e);
@@ -96,7 +97,7 @@ public sealed class DrivesViewModel : ObservableObject, IDisposable
                 Drives.Remove(matchingDrive);
             }
 
-            logger?.LogInformation($"Drive added: {e.Path}");
+            LogExtensions.LogInformation(ClassName, $"Drive added: {e.Path}");
 			Drives.Add(e);
 		}
 

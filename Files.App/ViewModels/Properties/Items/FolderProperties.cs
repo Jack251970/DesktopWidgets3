@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using System.IO;
 using ByteSize = ByteSizeLib.ByteSize;
@@ -10,6 +9,8 @@ namespace Files.App.ViewModels.Properties;
 
 internal sealed class FolderProperties : BaseProperties
 {
+    private string ClassName => GetType().Name;
+
     private readonly IFolderViewViewModel FolderViewViewModel;
 
 	public ListedItem Item { get; }
@@ -196,7 +197,7 @@ internal sealed class FolderProperties : BaseProperties
 		}
 		catch (Exception ex)
 		{
-			LogExtensions.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ClassName, ex, ex.Message);
 		}
 
 		ViewModel.ItemSizeProgressVisibility = false;

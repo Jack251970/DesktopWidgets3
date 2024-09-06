@@ -1,10 +1,10 @@
-using Microsoft.Extensions.Logging;
-
 namespace Files.App.ViewModels.Properties;
 
 internal sealed class DriveProperties : BaseProperties
 {
-	public DriveItem Drive { get; }
+    private string ClassName => GetType().Name;
+
+    public DriveItem Drive { get; }
 
 	public DriveProperties(SelectedItemsPropertiesViewModel viewModel, DriveItem driveItem, IShellPage instance)
 	{
@@ -90,7 +90,7 @@ internal sealed class DriveProperties : BaseProperties
 		catch (Exception e)
 		{
 			ViewModel.LastSeparatorVisibility = false;
-			LogExtensions.LogWarning(e, e.Message);
+			LogExtensions.LogWarning(ClassName, e, e.Message);
 		}
 	}
 }

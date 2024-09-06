@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using System.IO;
 using Windows.Storage;
@@ -7,7 +6,9 @@ namespace Files.App.ViewModels.Properties;
 
 internal class CombinedProperties : BaseProperties
 {
-	public List<ListedItem> List { get; }
+    private string ClassName => GetType().Name;
+
+    public List<ListedItem> List { get; }
 
 	public CombinedProperties(
 		SelectedItemsPropertiesViewModel viewModel,
@@ -122,7 +123,7 @@ internal class CombinedProperties : BaseProperties
 				}
 				catch (Exception ex)
 				{
-					LogExtensions.LogWarning(ex, ex.Message);
+					LogExtensions.LogWarning(ClassName, ex, ex.Message);
 				}
 			}
 		}

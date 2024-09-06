@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using SevenZip;
 using System.IO;
@@ -16,6 +15,8 @@ namespace Files.App.ViewModels.Settings;
 
 public sealed class AdvancedViewModel : ObservableObject
 {
+    private string ClassName => GetType().Name;
+
     private IFolderViewViewModel FolderViewViewModel { get; set; } = null!;
 
     private IUserSettingsService UserSettingsService { get; set; } = null!;
@@ -226,7 +227,7 @@ public sealed class AdvancedViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            LogExtensions.LogWarning(ex, "Error importing settings");
+            LogExtensions.LogWarning(ClassName, ex, "Error importing settings");
             UIHelpers.CloseAllDialogs(FolderViewViewModel);
             await DialogDisplayHelper.ShowDialogAsync(FolderViewViewModel, "SettingsImportErrorTitle".GetLocalizedResource(), "SettingsImportErrorDescription".GetLocalizedResource());
         }
@@ -281,7 +282,7 @@ public sealed class AdvancedViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            LogExtensions.LogWarning(ex, "Error exporting settings");
+            LogExtensions.LogWarning(ClassName, ex, "Error exporting settings");
         }
     }
 

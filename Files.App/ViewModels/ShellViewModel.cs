@@ -4,7 +4,6 @@
 using Files.App.Services.SizeProvider;
 using Files.Shared.Helpers;
 using LibGit2Sharp;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -28,6 +27,8 @@ namespace Files.App.ViewModels;
 /// </summary>
 public sealed class ShellViewModel : ObservableObject, IDisposable
 {
+    private string ClassName => GetType().Name;
+
     private readonly IFolderViewViewModel FolderViewViewModel;
 
 	private readonly SemaphoreSlim enumFolderSemaphore;
@@ -791,7 +792,7 @@ public sealed class ShellViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            LogExtensions.LogWarning(ex, ex.Message);
+            LogExtensions.LogWarning(ClassName, ex, ex.Message);
         }
     }
 
@@ -950,7 +951,7 @@ public sealed class ShellViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
 		{
-			LogExtensions.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ClassName, ex, ex.Message);
 		}
 		finally
 		{
@@ -2344,7 +2345,7 @@ public sealed class ShellViewModel : ObservableObject, IDisposable
 						}
 						catch (Exception ex)
 						{
-							LogExtensions.LogWarning(ex, ex.Message);
+							LogExtensions.LogWarning(ClassName, ex, ex.Message);
 						}
 
 						if (anyEdits && sampler.CheckNow())

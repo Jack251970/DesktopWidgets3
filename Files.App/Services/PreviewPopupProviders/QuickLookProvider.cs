@@ -1,7 +1,6 @@
 // Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using System.IO;
 using System.IO.Pipes;
 using System.Security.Principal;
@@ -10,7 +9,9 @@ namespace Files.App.Services.PreviewPopupProviders;
 
 public sealed class QuickLookProvider : IPreviewPopupProvider
 {
-	public static QuickLookProvider Instance { get; } = new();
+    private static string ClassName => typeof(QuickLookProvider).Name;
+
+    public static QuickLookProvider Instance { get; } = new();
 
 	private const int TIMEOUT = 500;
 	private static readonly string pipeName = $"QuickLook.App.Pipe.{WindowsIdentity.GetCurrent().User?.Value}";
@@ -75,7 +76,7 @@ public sealed class QuickLookProvider : IPreviewPopupProvider
 		}
 		catch (Exception ex)
 		{
-			LogExtensions.LogInformation(ex, ex.Message);
+			LogExtensions.LogInformation(ClassName, ex, ex.Message);
 			return false;
 		}
 	}

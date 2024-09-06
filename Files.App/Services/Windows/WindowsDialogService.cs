@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Vanara.Extensions;
@@ -17,8 +16,10 @@ namespace Files.App.Services;
 /// <inheritdoc cref="ICommonDialogService"/>
 public sealed class CommonDialogService : ICommonDialogService
 {
-	/// <inheritdoc/>
-	public bool Open_FileOpenDialog(nint hWnd, bool pickFoldersOnly, string[] filters, Environment.SpecialFolder defaultFolder, out string filePath)
+    private static string ClassName => typeof(CommonDialogService).Name;
+
+    /// <inheritdoc/>
+    public bool Open_FileOpenDialog(nint hWnd, bool pickFoldersOnly, string[] filters, Environment.SpecialFolder defaultFolder, out string filePath)
 	{
 		filePath = string.Empty;
 
@@ -84,7 +85,7 @@ public sealed class CommonDialogService : ICommonDialogService
 		}
 		catch (Exception ex)
 		{
-			LogExtensions.LogError(ex, "Failed to open a common dialog called FileOpenDialog.");
+			LogExtensions.LogError(ClassName, ex, "Failed to open a common dialog called FileOpenDialog.");
 
 			return false;
 		}
@@ -157,7 +158,7 @@ public sealed class CommonDialogService : ICommonDialogService
 		}
 		catch (Exception ex)
 		{
-			LogExtensions.LogError(ex, "Failed to open a common dialog called FileSaveDialog.");
+			LogExtensions.LogError(ClassName, ex, "Failed to open a common dialog called FileSaveDialog.");
 
 			return false;
 		}

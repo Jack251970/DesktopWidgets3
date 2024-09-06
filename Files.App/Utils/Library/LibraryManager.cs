@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Dialogs;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Specialized;
 using System.IO;
@@ -15,7 +14,9 @@ namespace Files.App.Utils.Library;
 
 public sealed class LibraryManager : IDisposable
 {
-	public EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
+    private static string ClassName => typeof(LibraryManager).Name;
+
+    public EventHandler<NotifyCollectionChangedEventArgs>? DataChanged;
 
 	private FileSystemWatcher librariesWatcher = null!;
     private readonly List<LibraryLocationItem> libraries = [];
@@ -88,7 +89,7 @@ public sealed class LibraryManager : IDisposable
 			}
 			catch (Exception e)
 			{
-				LogExtensions.LogWarning(e, null);
+				LogExtensions.LogWarning(ClassName, e, null);
 			}
 
 			return [];
@@ -150,7 +151,7 @@ public sealed class LibraryManager : IDisposable
 			}
 			catch (Exception e)
 			{
-				LogExtensions.LogWarning(e, null);
+				LogExtensions.LogWarning(ClassName, e, null);
 			}
 
 			return Task.FromResult<ShellLibraryItem>(null!);
@@ -233,7 +234,7 @@ public sealed class LibraryManager : IDisposable
 			}
 			catch (Exception e)
 			{
-				LogExtensions.LogWarning(e, null);
+				LogExtensions.LogWarning(ClassName, e, null);
 			}
 
 			return Task.FromResult<ShellLibraryItem>(null!);
@@ -384,7 +385,7 @@ public sealed class LibraryManager : IDisposable
 			var library = SafetyExtensions.IgnoreExceptions(() => new ShellLibraryEx(Shell32.ShellUtil.GetShellItemForPath(newPath!)!, true));
 			if (library is null)
 			{
-				LogExtensions.LogWarning($"Failed to open library after {changeType}: {newPath}");
+				LogExtensions.LogWarning(ClassName, $"Failed to open library after {changeType}: {newPath}");
 				return;
 			}
 

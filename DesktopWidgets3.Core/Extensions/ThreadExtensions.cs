@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using CommunityToolkit.WinUI;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
@@ -66,7 +65,7 @@ public static class ThreadExtensions
             {
                 return function(window);
             }
-        }, null, typeof(COMException));
+        }, typeof(COMException));
     }
 
     public static Task<T?> EnqueueOrInvokeAsync<T>(this Window window, Func<Window, Task<T>> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
@@ -82,7 +81,7 @@ public static class ThreadExtensions
             {
                 return function(window);
             }
-        }, null, typeof(COMException));
+        }, typeof(COMException));
     }
 
     public static Task EnqueueOrInvokeAsync(this Window window, Action<Window> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
@@ -99,7 +98,7 @@ public static class ThreadExtensions
                 function(window);
                 return Task.CompletedTask;
             }
-        }, null, typeof(COMException));
+        }, typeof(COMException));
     }
 
     public static Task<T?> EnqueueOrInvokeAsync<T>(this Window window, Func<Window, T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
@@ -115,7 +114,7 @@ public static class ThreadExtensions
             {
                 return Task.FromResult(function(window));
             }
-        }, null, typeof(COMException));
+        }, typeof(COMException));
     }
 
     // for multiple windows
@@ -157,7 +156,7 @@ public static class ThreadExtensions
             }
 
             return Task.WhenAll(tasks);
-        }, null, typeof(COMException));
+        }, typeof(COMException));
     }
 
     public static Task EnqueueOrInvokeAsync<T>(this List<T> windows, Action<T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
@@ -197,10 +196,10 @@ public static class ThreadExtensions
             }
 
             return Task.CompletedTask;
-        }, null, typeof(COMException));
+        }, typeof(COMException));
     }
 
-    private static async Task<bool> IgnoreExceptions(Func<Task> action, ILogger? logger = null, Type? exceptionToIgnore = null)
+    private static async Task<bool> IgnoreExceptions(Func<Task> action, Type? exceptionToIgnore = null)
     {
         try
         {
@@ -212,7 +211,7 @@ public static class ThreadExtensions
         {
             if (exceptionToIgnore is null || exceptionToIgnore.IsAssignableFrom(ex.GetType()))
             {
-                logger?.LogInformation(ex, ex.Message);
+                LogExtensions.LogInformation(string.Empty, ex, ex.Message);
 
                 return false;
             }
@@ -223,7 +222,7 @@ public static class ThreadExtensions
         }
     }
 
-    private static async Task<T?> IgnoreExceptions<T>(Func<Task<T>> action, ILogger? logger = null, Type? exceptionToIgnore = null)
+    private static async Task<T?> IgnoreExceptions<T>(Func<Task<T>> action, Type? exceptionToIgnore = null)
     {
         try
         {
@@ -233,7 +232,7 @@ public static class ThreadExtensions
         {
             if (exceptionToIgnore is null || exceptionToIgnore.IsAssignableFrom(ex.GetType()))
             {
-                logger?.LogInformation(ex, ex.Message);
+                LogExtensions.LogInformation(string.Empty, ex, ex.Message);
 
                 return default;
             }

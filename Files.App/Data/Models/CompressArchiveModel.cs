@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Utils.Storage.Operations;
-using Microsoft.Extensions.Logging;
 using SevenZip;
 using System.IO;
 
@@ -20,7 +19,9 @@ public sealed class CompressArchiveModel(
     ArchiveCompressionLevels compressionLevel = ArchiveCompressionLevels.Normal,
     ArchiveSplittingSizes splittingSize = ArchiveSplittingSizes.None) : ICompressArchiveModel
 {
-	private StatusCenterItemProgressModel _fileSystemProgress;
+    private static string ClassName => typeof(CompressArchiveModel).Name;
+
+    private StatusCenterItemProgressModel _fileSystemProgress;
 
 	private FileSizeCalculator _sizeCalculator;
 
@@ -214,8 +215,7 @@ public sealed class CompressArchiveModel(
 		}
 		catch (Exception ex)
 		{
-			var logger = DependencyExtensions.GetRequiredService<ILogger<App>>();
-			logger?.LogWarning(ex, $"Error compressing folder: {ArchivePath}");
+			LogExtensions.LogWarning(ClassName, ex, $"Error compressing folder: {ArchivePath}");
 
 			cts.Cancel();
 

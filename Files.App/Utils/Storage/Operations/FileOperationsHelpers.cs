@@ -3,7 +3,6 @@
 
 using Files.App.Utils.Storage.Operations;
 using Files.Shared.Helpers;
-using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -17,7 +16,9 @@ namespace Files.App.Utils.Storage;
 
 public sealed class FileOperationsHelpers
 {
-	private static readonly Ole32.PROPERTYKEY PKEY_FilePlaceholderStatus = new(new Guid("B2F9B9D6-FEC4-4DD5-94D7-8957488C807B"), 2);
+    private static string ClassName => typeof(FileOperationsHelpers).Name;
+
+    private static readonly Ole32.PROPERTYKEY PKEY_FilePlaceholderStatus = new(new Guid("B2F9B9D6-FEC4-4DD5-94D7-8957488C807B"), 2);
 	private const uint PS_CLOUDFILE_PLACEHOLDER = 8;
 
 	private static ProgressHandler? progressHandler; // Warning: must be initialized from a MTA thread
@@ -735,7 +736,7 @@ public sealed class FileOperationsHelpers
 		}
 		catch (FileNotFoundException ex) // Could not parse shortcut
 		{
-			LogExtensions.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ClassName, ex, ex.Message);
 			// Return a item containing the invalid target path
 			return new ShellLinkItem
 			{
@@ -746,7 +747,7 @@ public sealed class FileOperationsHelpers
 		catch (Exception ex)
 		{
 			// Could not parse shortcut
-			LogExtensions.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ClassName, ex, ex.Message);
 			return null;
 		}
 	}
@@ -776,7 +777,7 @@ public sealed class FileOperationsHelpers
 		catch (Exception ex)
 		{
 			// Could not create shortcut
-			LogExtensions.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ClassName, ex, ex.Message);
 		}
 
 		return Task.FromResult(false);
@@ -826,7 +827,7 @@ public sealed class FileOperationsHelpers
         catch (Exception ex)
 		{
 			// Could not create shortcut
-			LogExtensions.LogWarning(ex, ex.Message);
+			LogExtensions.LogWarning(ClassName, ex, ex.Message);
 		}
 
 		return false;

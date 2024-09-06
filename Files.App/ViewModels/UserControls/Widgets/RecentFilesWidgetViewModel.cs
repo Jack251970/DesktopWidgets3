@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2024 Files Community
 // Licensed under the MIT License. See the LICENSE.
 
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Specialized;
 using System.IO;
@@ -14,6 +13,8 @@ namespace Files.App.ViewModels.UserControls.Widgets;
 /// </summary>
 public sealed class RecentFilesWidgetViewModel : BaseWidgetViewModel, IWidgetViewModel
 {
+    private string ClassName => GetType().Name;
+
     // Fields
 
     private readonly SemaphoreSlim _refreshRecentFilesSemaphore;
@@ -214,7 +215,7 @@ public sealed class RecentFilesWidgetViewModel : BaseWidgetViewModel, IWidgetVie
         }
         catch (Exception ex)
         {
-            LogExtensions.LogInformation(ex, "Could not populate recent files");
+            LogExtensions.LogInformation(ClassName, ex, "Could not populate recent files");
         }
         finally
         {
@@ -233,7 +234,7 @@ public sealed class RecentFilesWidgetViewModel : BaseWidgetViewModel, IWidgetVie
         {
             Items.Insert(index < 0 ? Items.Count : Math.Min(index, Items.Count), recentItem);
             _ = recentItem.LoadRecentItemIconAsync()
-                .ContinueWith(t => LogExtensions.LogWarning(t.Exception, null), TaskContinuationOptions.OnlyOnFaulted);
+                .ContinueWith(t => LogExtensions.LogWarning(ClassName, t.Exception, null), TaskContinuationOptions.OnlyOnFaulted);
             return true;
         }
         return false;

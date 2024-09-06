@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Storage.Storables;
-using Microsoft.Extensions.Logging;
 using System.IO;
 using Windows.Storage;
 
@@ -10,7 +9,9 @@ namespace Files.App.Services;
 
 public sealed class RemovableDrivesService : IRemovableDrivesService
 {
-	public IStorageDeviceWatcher CreateWatcher()
+    private static string ClassName => typeof(RemovableDrivesService).Name;
+
+    public IStorageDeviceWatcher CreateWatcher()
 	{
 		return new WindowsStorageDeviceWatcher();
 	}
@@ -26,13 +27,13 @@ public sealed class RemovableDrivesService : IRemovableDrivesService
 			var res = await FilesystemTasks.Wrap(() => StorageFolder.GetFolderFromPathAsync(drive.Name).AsTask());
 			if (res.ErrorCode is FileSystemStatusCode.Unauthorized)
 			{
-				LogExtensions.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
+				LogExtensions.LogWarning(ClassName, $"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
 					+ " failed at the StorageFolder initialization step. This device will be ignored.");
 				continue;
 			}
 			else if (!res)
 			{
-				LogExtensions.LogWarning($"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
+				LogExtensions.LogWarning(ClassName, $"{res.ErrorCode}: Attempting to add the device, {drive.Name},"
 					+ " failed at the StorageFolder initialization step. This device will be ignored.");
 				continue;
 			}
@@ -48,7 +49,7 @@ public sealed class RemovableDrivesService : IRemovableDrivesService
                 continue;
             }
 
-            LogExtensions.LogInformation($"Drive added: {driveItem.Path}, {driveItem.Type}");
+            LogExtensions.LogInformation(ClassName, $"Drive added: {driveItem.Path}, {driveItem.Type}");
 
 			yield return driveItem;
 		}

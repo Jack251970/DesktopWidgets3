@@ -2,15 +2,15 @@
 // Licensed under the MIT License. See the LICENSE.
 
 using Files.App.Utils.Serialization.Implementation;
-using Microsoft.Extensions.Logging;
 using System.IO;
-using Windows.Storage;
 
 namespace Files.App.Services.Settings;
 
 internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSettingsService
 {
-	public event EventHandler? OnSettingImportedEvent;
+    private static string ClassName => typeof(FileTagsSettingsService).Name;
+
+    public event EventHandler? OnSettingImportedEvent;
 
 	public event EventHandler? OnTagsUpdated;
 
@@ -58,7 +58,7 @@ internal sealed class FileTagsSettingsService : BaseJsonSettings, IFileTagsSetti
 	{
 		if (FileTagList.Any(x => x.Uid is null))
 		{
-			LogExtensions.LogWarning("Tags file is invalid, regenerate");
+			LogExtensions.LogWarning(ClassName, "Tags file is invalid, regenerate");
 			FileTagList = DefaultFileTags;
 		}
 
