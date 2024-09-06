@@ -173,7 +173,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
 
         // configure widget window lifecycle actions
         var minSize = _widgetResourceService.GetMinSize(currentWidgetType);
-        var liftcycleActions = new WindowLifecycleActions()
+        var lifecycleActions = new WindowLifecycleActions()
         {
             Window_Created = (window) => WidgetWindow_Created(window, widget, minSize),
             Window_Closing = WidgetWindow_Closing
@@ -181,7 +181,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
 
         // create widget window
         var newThread = _widgetResourceService.GetWidgetInNewThread(currentWidgetType);
-        var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(WindowsExtensions.ActivationType.Widget, widget.Settings, newThread, liftcycleActions);
+        var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(WindowsExtensions.ActivationType.Widget, widget.Settings, newThread, lifecycleActions);
 
         // handle monitor
         _systemInfoService.StartMonitor(widget.Type);
