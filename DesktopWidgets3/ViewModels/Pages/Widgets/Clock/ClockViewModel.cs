@@ -1,6 +1,7 @@
 ﻿using Clock.UserControls;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
@@ -28,6 +29,8 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
     private readonly IAppSettingsService _appSettingsService;
     private readonly ITimersService _timersService;
 
+    private bool updating = false;
+
     public ClockViewModel(IAppSettingsService appSettingsService, ITimersService timersService)
     {
         _appSettingsService = appSettingsService;
@@ -49,15 +52,25 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
         }
     }
 
-    private async void UpdateTime()
+    private void UpdateTime()
     {
         var nowTime = DateTime.Now;
-        var systemTime = await Task.Run(() => nowTime.ToString(timingFormat));
+        var systemTime = nowTime.ToString(timingFormat);
 
-        RunOnDispatcherQueue(() => {
+        RunOnDispatcherQueue(() =>
+        {
+            if (updating)
+            {
+                return;
+            }
+
+            updating = true;
+
             DateTime = nowTime;
-            SystemTime = systemTime; 
-        });
+            SystemTime = systemTime;
+
+            updating = false;
+        }, DispatcherQueuePriority.Normal);
     }
 
     #region abstract methods

@@ -47,9 +47,9 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     #region dispatcher queue
 
-    protected void RunOnDispatcherQueue(Action action)
+    protected bool RunOnDispatcherQueue(Action action, DispatcherQueuePriority priority = DispatcherQueuePriority.Low)
     {
-        _dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => action());
+        return _dispatcherQueue.TryEnqueue(priority, () => action());
     }
 
     #endregion
