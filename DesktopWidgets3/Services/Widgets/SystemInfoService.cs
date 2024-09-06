@@ -101,6 +101,7 @@ internal class SystemInfoService : ISystemInfoService
 
         if (currentData == null)
         {
+            NetworkSpeedInfo.AddItem("Total".GetLocalized(), "Total", "--", "--");
             return NetworkSpeedInfo;
         }
 
@@ -121,17 +122,6 @@ internal class SystemInfoService : ISystemInfoService
         var totalUploadSpeed = FormatNetworkSpeed(totalSent, useBps);
         var totalDownloadSpeed = FormatNetworkSpeed(totalReceived, useBps);
         NetworkSpeedInfo.InsertItem(0, "Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
-
-        return NetworkSpeedInfo;
-    }
-
-    public NetworkSpeedInfo GetInitNetworkSpeed(bool useBps)
-    {
-        NetworkSpeedInfo.ClearItems();
-
-        var totalUploadSpeed = FormatNetworkSpeed(0, useBps);
-        var totalDownloadSpeed = FormatNetworkSpeed(0, useBps);
-        NetworkSpeedInfo.AddItem("Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
 
         return NetworkSpeedInfo;
     }
@@ -162,7 +152,7 @@ internal class SystemInfoService : ISystemInfoService
 
         if (currentData == null)
         {
-            return GetInitCpuInfo();
+            return (FormatPercentage(0), 0, "--");
         }
 
         var cpuUsage = FormatPercentage(currentData.CpuUsage);
@@ -171,18 +161,13 @@ internal class SystemInfoService : ISystemInfoService
         return (cpuUsage, currentData.CpuUsage, cpuSpeed);
     }
 
-    public (string CpuLoad, float CpuLoadValue, string CpuSpeed) GetInitCpuInfo()
-    {
-        return (FormatPercentage(0), 0, "--");
-    }
-
     public (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetGpuInfo(bool useCelsius)
     {
         var stats = hardwareMonitor.GetGpuStats();
 
         if (stats == null)
         {
-            return GetInitGpuInfo(useCelsius);
+            return (string.Empty, FormatPercentage(0), 0, "--");
         }
 
         // TODO: Add actite index support.
@@ -194,18 +179,13 @@ internal class SystemInfoService : ISystemInfoService
         return (gpuName, FormatPercentage(gpuUsage), gpuUsage, gpuTemp == 0 ? string.Empty : FormatTemperature(gpuTemp, useCelsius));
     }
 
-    public (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetInitGpuInfo(bool useCelsius)
-    {
-        return (string.Empty, FormatPercentage(0), 0, "--");
-    }
-
     public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetMemoryInfo()
     {
         var currentData = hardwareMonitor.GetMemoryStats();
 
         if (currentData == null)
         {
-            return GetInitMemoryInfo();
+            return (FormatPercentage(0), 0, "--");
         }
 
         var usedMem = currentData.UsedMem;
@@ -213,11 +193,6 @@ internal class SystemInfoService : ISystemInfoService
         var allMem = currentData.AllMem;
 
         return (FormatPercentage(memUsage), memUsage, FormatUsedInfoByte(usedMem, allMem));
-    }
-
-    public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetInitMemoryInfo()
-    {
-        return (FormatPercentage(0), 0, "--");
     }
 
     #endregion

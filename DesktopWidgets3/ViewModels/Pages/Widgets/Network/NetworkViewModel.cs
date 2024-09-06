@@ -49,28 +49,18 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     private void UpdateNetwork()
     {
-        UpdateCard(false);
-    }
-
-    private void UpdateCard(bool init)
-    {
         try
         {
             (int, string, string, string, string)? networkSpeedInfoItem;
 
-            if (init)
+            networkSpeedInfo = _systemInfoService.GetNetworkSpeed(useBps);
+            lastNetworkNamesIdentifiers = networkNamesIdentifiers;
+            networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
+            networkSpeedInfoItem = networkSpeedInfo.SearchItemByIdentifier(hardwareIdentifier);
+
+            if (networkSpeedInfoItem == null)
             {
-                networkSpeedInfo = _systemInfoService.GetInitNetworkSpeed(useBps);
-                lastNetworkNamesIdentifiers = networkNamesIdentifiers;
-                networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
-                networkSpeedInfoItem = networkSpeedInfo.GetItem(0);
-            }
-            else
-            {
-                networkSpeedInfo = _systemInfoService.GetNetworkSpeed(useBps);
-                lastNetworkNamesIdentifiers = networkNamesIdentifiers;
-                networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
-                networkSpeedInfoItem = networkSpeedInfo.SearchItemByIdentifier(hardwareIdentifier);
+                return;
             }
 
             if (lastNetworkNamesIdentifiers.Count != networkNamesIdentifiers.Count ||
@@ -95,14 +85,6 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
                 });
             }
 
-            var selectedIndex = 0;
-            var uploadSpeed = string.Empty;
-            var downloadSpeed = string.Empty;
-            if (networkSpeedInfoItem != null)
-            {
-                (selectedIndex, _, _, uploadSpeed, downloadSpeed) = networkSpeedInfoItem.Value;
-            }
-
             RunOnDispatcherQueue(() =>
             {
                 if (updating)
@@ -111,6 +93,8 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
                 }
 
                 updating = true;
+
+                (var selectedIndex, _, _, var uploadSpeed, var downloadSpeed) = networkSpeedInfoItem.Value;
 
                 SelectedIndex = selectedIndex;
                 UploadSpeed = uploadSpeed;
@@ -127,11 +111,6 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
     partial void OnSelectedIndexChanged(int value)
     {
-        if (listUpdating)
-        {
-            return;
-        }
-
         if (value < 0 || value >= NetworkNames.Count)
         {
             return;
@@ -158,7 +137,9 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
         if (UploadSpeed == string.Empty)
         {
-            UpdateCard(true);
+            NetworkNames.Add(new Tuple<string, string>("Total".GetLocalized(), "Total"));
+            UploadSpeed = "--";
+            DownloadSpeed = "--";
         }
     }
 

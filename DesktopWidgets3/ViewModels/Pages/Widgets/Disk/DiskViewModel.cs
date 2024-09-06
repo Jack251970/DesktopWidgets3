@@ -31,81 +31,69 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     private void UpdateDisk()
     {
-        UpdateCards(false);
-    }
-
-    private void UpdateCards(bool init)
-    {
         try
         {
-            if (init)
+            var progressCardData = _systemInfoService.GetDiskInfo().GetProgressCardData();
+
+            RunOnDispatcherQueue(() =>
             {
-                ProgressCardItems.Clear();
-            }
-            else
-            {
-                var diskInfo = _systemInfoService.GetDiskInfo();
-                var progressCardData = diskInfo.GetProgressCardData();
+                if (updating)
+                {
+                    return;
+                }
+
+                updating = true;
+
                 var dataCount = progressCardData.Count;
                 var itemsCount = ProgressCardItems.Count;
 
-                RunOnDispatcherQueue(() =>
+                // Remove extra items
+                if (dataCount < itemsCount)
                 {
-                    if (updating)
+                    var start = dataCount;
+                    var end = itemsCount;
+                    for (var i = start; i < end; i++)
                     {
-                        return;
+                        ProgressCardItems.RemoveAt(i);
                     }
 
-                    updating = true;
+                    itemsCount = dataCount;
+                }
 
-                    // Remove extra items
-                    if (dataCount < itemsCount)
+                // Update items
+                for (var i = 0; i < itemsCount; i++)
+                {
+                    if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
                     {
-                        var start = dataCount;
-                        var end = itemsCount;
-                        for (var i = start; i < end; i++)
-                        {
-                            ProgressCardItems.RemoveAt(i);
-                        }
-
-                        itemsCount = dataCount;
+                        var data = progressCardData[i].LeftTitle;
+                        ProgressCardItems[i].LeftTitle = data;
                     }
-
-                    // Update items
-                    for (var i = 0; i < itemsCount; i++)
+                    if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
                     {
-                        if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
-                        {
-                            var data = progressCardData[i].LeftTitle;
-                            ProgressCardItems[i].LeftTitle = data;
-                        }
-                        if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
-                        {
-                            var data = progressCardData[i].RightTitle;
-                            ProgressCardItems[i].RightTitle = data;
-                        }
-                        if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
-                        {
-                            var data = progressCardData[i].ProgressValue;
-                            ProgressCardItems[i].ProgressValue = data;
-                        }
+                        var data = progressCardData[i].RightTitle;
+                        ProgressCardItems[i].RightTitle = data;
                     }
-
-                    // Add extra items
-                    if (dataCount > itemsCount)
+                    if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
                     {
-                        var data = progressCardData.Skip(itemsCount).ToList();
-                        foreach (var item in data)
-                        {
-                            ProgressCardItems.Add(item);
-                        }
+                        var data = progressCardData[i].ProgressValue;
+                        ProgressCardItems[i].ProgressValue = data;
                     }
+                }
 
-                    updating = false;
-                });
-            }
+                // Add extra items
+                if (dataCount > itemsCount)
+                {
+                    var data = progressCardData.Skip(itemsCount).ToList();
+                    foreach (var item in data)
+                    {
+                        ProgressCardItems.Add(item);
+                    }
+                }
+
+                updating = false;
+            });
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             LogExtensions.LogError(e, "Disk Widget Update Error");
         }
@@ -115,7 +103,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     protected override void LoadSettings(DiskWidgetSettings settings)
     {
-        UpdateCards(true);
+        
     }
 
     public override DiskWidgetSettings GetSettings()

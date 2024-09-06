@@ -8,19 +8,11 @@ public interface ISystemInfoService
 
     NetworkSpeedInfo GetNetworkSpeed(bool useBps);
 
-    NetworkSpeedInfo GetInitNetworkSpeed(bool useBps);
-
     (string CpuLoad, float CpuLoadValue, string CpuSpeed) GetCpuInfo();
-
-    (string CpuLoad, float CpuLoadValue, string CpuSpeed) GetInitCpuInfo();
 
     (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetGpuInfo(bool useCelsius);
 
-    (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetInitGpuInfo(bool useCelsius);
-
     (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetMemoryInfo();
-
-    (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetInitMemoryInfo();
 
     DiskInfo GetDiskInfo();
 }
