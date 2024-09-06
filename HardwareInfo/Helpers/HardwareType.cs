@@ -24,4 +24,9 @@ public enum HardwareType
     /// Network related data.
     /// </summary>
     Network,
+
+    /// <summary>
+    /// Disk related data.
+    /// </summary>
+    Disk
 }

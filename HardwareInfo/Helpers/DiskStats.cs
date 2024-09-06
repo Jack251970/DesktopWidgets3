@@ -1,120 +1,173 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
+using System.Management;
+using Microsoft.Management.Infrastructure;
 
 namespace HardwareInfo.Helpers;
 
-// TODO: Implement DiskStats class, Move nullable variable return.
 public sealed class DiskStats : IDisposable
 {
-    // CPU counters
-    private readonly PerformanceCounter _procPerf = new("Processor Information", "% Processor Utility", "_Total");
-    private readonly PerformanceCounter _procPerformance = new("Processor Information", "% Processor Performance", "_Total");
-    private readonly PerformanceCounter _procFrequency = new("Processor Information", "Processor Frequency", "_Total");
-    private readonly Dictionary<Process, PerformanceCounter> _cpuCounters = [];
+    // Disk counters
+    private Dictionary<string, Data> DiskUsages { get; set; } = [];
 
-    public sealed class ProcessStats
+    public sealed class Data
     {
-        public Process? Process { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public float CpuUsage { get; set; }
+        public string DeviceId { get; set; } = string.Empty;
+
+        public ulong Size { get; set; }
+
+        public List<PartitionData> PartitionDatas { get; set; } = null!;
     }
 
-    public float CpuUsage { get; set; }
-
-    public float CpuSpeed { get; set; }
-
-    public ProcessStats[] ProcessCPUStats { get; set; }
-
-    public List<float> CpuChartValues { get; set; } = [];
-
-    public DiskStats()
+    public sealed class PartitionData
     {
-        CpuUsage = 0;
-        ProcessCPUStats =
-        [
-            new ProcessStats(),
-            new ProcessStats(),
-            new ProcessStats()
-        ];
+        public string Name { get; set; } = string.Empty;
 
-        InitCPUPerfCounters();
+        public string DeviceId { get; set; } = string.Empty;
+
+        public ulong Size { get; set; }
+
+        public ulong FreeSpace { get; set; }
+
+        public float Usage => Size > 0 ? (float)(Size - FreeSpace) / Size : 0;
     }
 
-    private void InitCPUPerfCounters()
-    {
-        var allProcesses = Process.GetProcesses().Where(p => (long)p.MainWindowHandle != 0);
+    public DiskStats() {}
 
-        foreach (var process in allProcesses)
+    public void LoadDisks()
+    {
+        using var session = CimSession.Create(null);
+        DiskUsages.Clear();
+
+        var disks = session.QueryInstances("root/cimv2", "WQL", "select * from Win32_DiskDrive");
+        foreach (var obj in disks)
         {
-            _cpuCounters.Add(process, new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true));
+            var diskName = (string)obj.CimInstanceProperties["Model"].Value;
+            var diskDeviceId = (string)obj.CimInstanceProperties["DeviceID"].Value;
+            var diskSize = (ulong)(obj.CimInstanceProperties["Size"].Value ?? (ulong)0);
+            var paritionDatas = new List<PartitionData>();
+
+            // Use management object searcher to get partitions because there are some issues with CimSession
+            var partitionSearcher = new ManagementObjectSearcher($"ASSOCIATORS OF {{Win32_DiskDrive.DeviceID='{diskDeviceId}'}} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
+            var partitions = partitionSearcher.Get().Cast<ManagementObject>();
+            foreach (var partition in partitions)
+            {
+                var partitionDeviceId = (string)partition["DeviceID"];
+
+                var logicalDiskSearcher = new ManagementObjectSearcher($"ASSOCIATORS OF {{Win32_DiskPartition.DeviceID='{partitionDeviceId}'}} WHERE AssocClass = Win32_LogicalDiskToPartition");
+                var logicalDisks = logicalDiskSearcher.Get().Cast<ManagementObject>();
+                foreach (var logicalDisk in logicalDisks)
+                {
+                    var partitionName = (string)logicalDisk["Name"];
+                    var size = (ulong)logicalDisk["Size"];
+                    var freeSpace = (ulong)logicalDisk["FreeSpace"];
+
+                    paritionDatas.Add(new PartitionData
+                    {
+                        Name = partitionName,
+                        DeviceId = partitionDeviceId,
+                        Size = size,
+                        FreeSpace = freeSpace
+                    });
+                }
+            }
+            /*var partitions = session.QueryInstances("root/cimv2", "WQL", $"ASSOCIATORS OF {{Win32_DiskDrive.DeviceID='{diskDeviceId}'}} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
+            foreach (var partition in partitions)
+            {
+                var partitionDeviceId = (string)partition.CimInstanceProperties["DeviceID"].Value;
+
+                var logicalDisks = session.QueryInstances("root/cimv2", "WQL", $"ASSOCIATORS OF {{Win32_DiskPartition.DeviceID='{partitionDeviceId}'}} WHERE AssocClass = Win32_LogicalDiskToPartition");
+                foreach(var logicalDisk in logicalDisks)
+                {
+                    var partitionName = (string)logicalDisk.CimInstanceProperties["Name"].Value;
+                    var size = (ulong)(logicalDisk.CimInstanceProperties["Size"].Value ?? (ulong)0);
+                    var freeSpace = (ulong)(logicalDisk.CimInstanceProperties["FreeSpace"].Value ?? (ulong)0);
+
+                    _stats[i].PartitionDatas.Add(new PartitionData
+                    {
+                        Name = partitionName,
+                        DeviceId = partitionDeviceId,
+                        Size = size,
+                        FreeSpace = freeSpace
+                    });
+                }
+            }*/
+
+            DiskUsages.Add(diskDeviceId, new Data() { Name = diskName, DeviceId = diskDeviceId, Size = diskSize, PartitionDatas = paritionDatas });
         }
     }
 
     public void GetData()
     {
-        CpuUsage = _procPerf.NextValue() / 100;
-        CpuSpeed = _procFrequency.NextValue() * (_procPerformance.NextValue() / 100);
-
-        var processCPUUsages = new Dictionary<Process, float>();
-
-        foreach (var processCounter in _cpuCounters)
-        {
-            try
-            {
-                // process might be terminated
-                processCPUUsages.Add(processCounter.Key, processCounter.Value.NextValue() / Environment.ProcessorCount);
-            }
-            catch (InvalidOperationException)
-            {
-                LogExtensions.LogInformation($"ProcessCounter Key {processCounter.Key} no longer exists, removing from _cpuCounters.");
-                _cpuCounters.Remove(processCounter.Key);
-            }
-            catch (Exception ex)
-            {
-                LogExtensions.LogError(ex, "Error going through process counters.");
-            }
-        }
-
-        var cpuIndex = 0;
-        foreach (var processCPUValue in processCPUUsages.OrderByDescending(x => x.Value).Take(3))
-        {
-            ProcessCPUStats[cpuIndex].Process = processCPUValue.Key;
-            ProcessCPUStats[cpuIndex].CpuUsage = processCPUValue.Value;
-            cpuIndex++;
-        }
+        LoadDisks();
     }
 
-    internal string GetCpuProcessText(int cpuProcessIndex)
+    public int GetDiskCount()
     {
-        if (cpuProcessIndex >= ProcessCPUStats.Length)
-        {
-            return "no data";
-        }
-
-        return $"{ProcessCPUStats[cpuProcessIndex].Process?.ProcessName} ({ProcessCPUStats[cpuProcessIndex].CpuUsage / 100:p})";
+        return DiskUsages.Count;
     }
 
-    internal void KillTopProcess(int cpuProcessIndex)
+    public string GetDiskDeviceId(int diskActiveIndex)
     {
-        if (cpuProcessIndex >= ProcessCPUStats.Length)
+        if (DiskUsages.Count <= diskActiveIndex)
         {
-            return;
+            return string.Empty;
         }
 
-        ProcessCPUStats[cpuProcessIndex].Process?.Kill();
+        return DiskUsages.ElementAt(diskActiveIndex).Key;
+    }
+
+    public Data GetDiskUsage(int diskActiveIndex)
+    {
+        if (DiskUsages.Count <= diskActiveIndex)
+        {
+            return new Data();
+        }
+
+        var currDiskDeviceId = DiskUsages.ElementAt(diskActiveIndex).Key;
+        if (!DiskUsages.TryGetValue(currDiskDeviceId, out var value))
+        {
+            return new Data();
+        }
+
+        return value;
+    }
+
+    public int GetPrevDiskIndex(int diskActiveIndex)
+    {
+        if (DiskUsages.Count == 0)
+        {
+            return 0;
+        }
+
+        if (diskActiveIndex == 0)
+        {
+            return DiskUsages.Count - 1;
+        }
+
+        return diskActiveIndex - 1;
+    }
+
+    public int GetNextDiskIndex(int diskActiveIndex)
+    {
+        if (DiskUsages.Count == 0)
+        {
+            return 0;
+        }
+
+        if (diskActiveIndex == DiskUsages.Count - 1)
+        {
+            return 0;
+        }
+
+        return diskActiveIndex + 1;
     }
 
     public void Dispose()
     {
-        _procPerf.Dispose();
-        _procPerformance.Dispose();
-        _procFrequency.Dispose();
-
-        foreach (var counter in _cpuCounters.Values)
-        {
-            counter.Dispose();
-        }
+        
     }
 }

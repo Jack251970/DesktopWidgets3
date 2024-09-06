@@ -101,22 +101,21 @@ internal class SystemInfoService : ISystemInfoService
 
         if (currentData == null)
         {
-            return GetInitNetworkSpeed(useBps);
+            return NetworkSpeedInfo;
         }
 
         var netCount = currentData.GetNetworkCount();
-
         var totalSent = 0f;
         var totalReceived = 0f;
         for (var i = 0; i < netCount; i++)
         {
             var netName = currentData.GetNetworkName(i);
-            var networkStats = currentData.GetNetworkUsage(i);
-            var uploadSpeed = FormatNetworkSpeed(networkStats.Sent, useBps);
-            var downloadSpeed = FormatNetworkSpeed(networkStats.Received, useBps);
+            var networkUsage = currentData.GetNetworkUsage(i);
+            var uploadSpeed = FormatNetworkSpeed(networkUsage.Sent, useBps);
+            var downloadSpeed = FormatNetworkSpeed(networkUsage.Received, useBps);
             NetworkSpeedInfo.AddItem(netName, netName, uploadSpeed, downloadSpeed);
-            totalSent += networkStats.Sent;
-            totalReceived += networkStats.Received;
+            totalSent += networkUsage.Sent;
+            totalReceived += networkUsage.Received;
         }
 
         var totalUploadSpeed = FormatNetworkSpeed(totalSent, useBps);
@@ -232,30 +231,29 @@ internal class SystemInfoService : ISystemInfoService
         DiskInfo.ClearItems();
 
         var diskInfoItems = hardwareMonitor.GetDiskInfo();
-        foreach (var diskInfoItem in diskInfoItems)
+
+        if (diskInfoItems == null)
         {
-            foreach (var partitionInfoItem in diskInfoItem.PartitionInfoItems)
+            return DiskInfo;
+        }
+
+        var diskCount = diskInfoItems.GetDiskCount();
+        for (var i = 0; i < diskCount; i++)
+        {
+            var diskUsage = diskInfoItems.GetDiskUsage(i);
+            var diskPartitions = diskUsage.PartitionDatas;
+            foreach (var partition in diskPartitions)
             {
-                if (partitionInfoItem.Name != null)
+                if (partition.Name != null)
                 {
-                    var loadValue = partitionInfoItem.PartitionUsed / partitionInfoItem.PartitionTotal * 100f ?? 0;
-                    DiskInfo.AddItem(partitionInfoItem.Name, partitionInfoItem.Identifier, FormatPercentage(loadValue), loadValue, FormatDiskUsedInfo(partitionInfoItem.PartitionUsed, partitionInfoItem.PartitionTotal));
+                    var loadValue = partition.Size == 0 ? 0f : (partition.Size - partition.FreeSpace) * 100f / partition.Size;
+                    DiskInfo.AddItem(partition.Name, partition.DeviceId, FormatPercentage(loadValue), loadValue, FormatUsedInfoByte(partition.Size - partition.FreeSpace, partition.Size));
                 }
             }
         }
         DiskInfo.SortItems();
 
         return DiskInfo;
-    }
-
-    private static string FormatDiskUsedInfo(float? used, float? total)
-    {
-        if (used is null || total is null)
-        {
-            return string.Empty;
-        }
-
-        return FormatUsedInfoByte((float)used, (float)total);
     }
 
     #endregion
@@ -342,30 +340,6 @@ internal class SystemInfoService : ISystemInfoService
         else
         {
             return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecKiloGiga, total * RecKiloGiga, "TB");
-        }
-    }
-
-    private static string FormatUsedInfoByte(float used, float total)
-    {
-        if (total > KiloGiga)
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecKiloGiga, total * RecKiloGiga, "TB");
-        }
-        else if (total > Giga)
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecGiga, total * RecGiga, "GB");
-        }
-        else if (total > Mega)
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecMega, total * RecMega, "MB");
-        }
-        else if (total > Kilo)
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecKilo, total * RecKilo, "KB");
-        }
-        else
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used, total, "B");
         }
     }
 

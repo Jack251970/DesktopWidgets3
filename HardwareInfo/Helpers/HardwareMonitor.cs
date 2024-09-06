@@ -1,6 +1,4 @@
-﻿using System.Management;
-
-namespace HardwareInfo.Helpers;
+﻿namespace HardwareInfo.Helpers;
 
 /// <summary>
 /// Hardware monitor.
@@ -100,7 +98,8 @@ public class HardwareMonitor: IDisposable
             { HardwareType.CPU, new DataManager(HardwareType.CPU) },
             { HardwareType.GPU, new DataManager(HardwareType.GPU) },
             { HardwareType.Memory, new DataManager(HardwareType.Memory) },
-            { HardwareType.Network, new DataManager(HardwareType.Network) }
+            { HardwareType.Network, new DataManager(HardwareType.Network) },
+            { HardwareType.Disk, new DataManager(HardwareType.Disk) }
         };
     }
 
@@ -126,11 +125,10 @@ public class HardwareMonitor: IDisposable
             Hardwares[HardwareType.Network].Update();
         }
 
-        // TODO
-        /*if (DiskEnabled)
+        if (DiskEnabled)
         {
             Hardwares[HardwareType.Disk].Update();
-        }*/
+        }
     }
 
     public CPUStats? GetCpuStats()
@@ -173,68 +171,14 @@ public class HardwareMonitor: IDisposable
         return Hardwares[HardwareType.Network].GetNetworkStats();
     }
 
-    // TODO: Get it to DiskStas.
-    public List<DiskInfoItem> GetDiskInfo()
+    public DiskStats? GetDiskInfo()
     {
-        List<DiskInfoItem> diskInfoItems = [];
-
-        if (DiskEnabled)
+        if (!DiskEnabled)
         {
-            string hardwareName;
-            string hardwareIdentifier;
-
-            float? diskUsed = null;
-            float? diskTotal;
-
-            if (diskInfoItems.Count == 0)
-            {
-                var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
-                foreach (var disk in searcher.Get().Cast<ManagementObject>())
-                {
-                    hardwareName = disk["Model"].ToString()!;
-                    hardwareIdentifier = disk["DeviceID"].ToString()!;
-                    diskTotal = Convert.ToSingle(disk["Size"]);
-
-                    List<PartitionInfoItem> partitionInfoItems = [];
-
-                    var partitionSearcher = new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" + hardwareIdentifier + "'} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
-                    foreach (var partition in partitionSearcher.Get().Cast<ManagementObject>())
-                    {
-                        string partitionName = null!;
-                        var partitionIdentifier = partition["DeviceID"].ToString()!;
-                        float? partitionUsed = null;
-                        float? partitionTotal = null;
-
-                        var logicalDiskSearcher = new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionIdentifier + "'} WHERE AssocClass = Win32_LogicalDiskToPartition");
-                        foreach (var logicalDisk in logicalDiskSearcher.Get().Cast<ManagementObject>())
-                        {
-                            partitionName = logicalDisk["Name"].ToString()!;
-                            partitionTotal = Convert.ToSingle(logicalDisk["Size"]);
-                            partitionUsed = partitionTotal - Convert.ToSingle(logicalDisk["FreeSpace"]);
-                        }
-
-                        partitionInfoItems.Add(new PartitionInfoItem
-                        {
-                            Name = partitionName,
-                            Identifier = partitionIdentifier,
-                            PartitionUsed = partitionUsed,
-                            PartitionTotal = partitionTotal
-                        });
-                    }
-
-                    diskInfoItems.Add(new DiskInfoItem
-                    {
-                        Name = hardwareName,
-                        Identifier = hardwareIdentifier,
-                        DiskUsed = diskUsed,
-                        DiskTotal = diskTotal,
-                        PartitionInfoItems = partitionInfoItems
-                    });
-                }
-            }
+            return null;
         }
 
-        return diskInfoItems;
+        return Hardwares[HardwareType.Disk].GetDiskStats();
     }
 
     public void Dispose()

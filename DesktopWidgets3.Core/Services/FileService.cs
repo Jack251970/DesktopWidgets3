@@ -100,7 +100,7 @@ public class FileService : IFileService
             return par == saveTaskParameter;
         }
 
-        lastSaveTaskParameters[path] = saveTaskParameter;
+        lastSaveTaskParameters[path] = saveTaskParameter;  // TODO: Fix System.NullReferenceException: 'Object reference not set to an instance of an object.'
         return false;
     }
 

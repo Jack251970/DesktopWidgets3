@@ -91,7 +91,7 @@ public sealed class NetworkStats : IDisposable
     
     public int GetNetworkCount()
     {
-        return NetChartValues.Count;
+        return NetworkUsages.Count;
     }
 
     public string GetNetworkName(int networkIndex)

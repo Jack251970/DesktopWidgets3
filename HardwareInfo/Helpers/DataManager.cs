@@ -42,6 +42,14 @@ internal sealed class DataManager(HardwareType type) : IDisposable
         }
     }
 
+    private static void GetDiskData()
+    {
+        lock (SystemData.DiskStats)
+        {
+            SystemData.DiskStats.GetData();
+        }
+    }
+
     public void Update()
     {
         switch (_hardwareType)
@@ -71,6 +79,13 @@ internal sealed class DataManager(HardwareType type) : IDisposable
                 {
                     // network
                     GetNetworkData();
+                    break;
+                }
+
+            case HardwareType.Disk:
+                {
+                    // disk
+                    GetDiskData();
                     break;
                 }
         }
@@ -105,6 +120,14 @@ internal sealed class DataManager(HardwareType type) : IDisposable
         lock (SystemData.CpuStats)
         {
             return SystemData.CpuStats;
+        }
+    }
+
+    internal DiskStats GetDiskStats()
+    {
+        lock (SystemData.DiskStats)
+        {
+            return SystemData.DiskStats;
         }
     }
 
