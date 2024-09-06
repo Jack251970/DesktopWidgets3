@@ -112,7 +112,12 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
     protected override void LoadSettings(DiskWidgetSettings settings)
     {
-        
+        ProgressCardItems.Add(new ProgressCardData()
+        {
+            LeftTitle = "C:",
+            RightTitle = "--",
+            ProgressValue = 0
+        });
     }
 
     public override DiskWidgetSettings GetSettings()
