@@ -127,6 +127,6 @@ internal class LocalSettingsService : ILocalSettingsService
     {
         var valueCopy = new List<JsonWidgetItem>((List<JsonWidgetItem>)value);
 
-        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, valueCopy, true, true));
+        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, valueCopy, true));
     }
 }
