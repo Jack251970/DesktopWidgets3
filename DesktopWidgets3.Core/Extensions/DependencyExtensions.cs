@@ -1,6 +1,4 @@
-﻿using Files.Core.Services;
-
-namespace DesktopWidgets3.Core.Extensions;
+﻿namespace DesktopWidgets3.Core.Extensions;
 
 /// <summary>
 /// Provides static extension for dependency injection.

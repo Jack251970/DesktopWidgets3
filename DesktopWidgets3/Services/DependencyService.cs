@@ -1,6 +1,4 @@
-﻿using Files.Core.Services;
-
-namespace DesktopWidgets3.Services;
+﻿namespace DesktopWidgets3.Services;
 
 internal class DependencyService : IDependencyService
 {

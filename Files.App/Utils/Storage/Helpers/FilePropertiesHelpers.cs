@@ -14,6 +14,7 @@ using Windows.Graphics;
 using Windows.Win32;
 
 namespace Files.App.Utils.Storage;
+
 /// <summary>
 /// Represents a helper class that helps users open and handle item properties window
 /// </summary>
@@ -110,7 +111,7 @@ public static class FilePropertiesHelpers
         WinUIEx.WindowEx propertiesWindow;
 		if (!WindowCache.TryTake(out propertiesWindow!))
 		{
-            propertiesWindow = await WindowsExtensions.GetWindow<BlankWindow>(ActivationType.Blank);
+            propertiesWindow = await WindowsExtensions.GetWindow<BlankWindow>(WindowsExtensions.ActivationType.Blank);
             propertiesWindow.Closed += PropertiesWindow_Closed;
 		}
 

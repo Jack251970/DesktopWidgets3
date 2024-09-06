@@ -197,13 +197,20 @@ public static class WindowsExtensions
     {
         WindowsAndLifecycle.Remove(window);
     }
-}
 
-public enum ActivationType
-{
-    None,
-    Main,
-    Widget,
-    Overlay,
-    Blank
+    public enum ActivationType
+    {
+        None,
+        Main,
+        Widget,
+        Overlay,
+        Blank
+    }
+
+    private class WindowLifecycleHandler
+    {
+        public DispatcherExitDeferral? ExitDeferral { get; set; }
+
+        public WindowLifecycleActions LifecycleActions { get; set; } = null!;
+    }
 }

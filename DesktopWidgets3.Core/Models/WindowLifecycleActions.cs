@@ -1,5 +1,4 @@
-﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Core.Models;
 
@@ -14,11 +13,4 @@ public class WindowLifecycleActions
     public Action<Window>? Window_Closing { get; set; }
 
     public Action? Window_Closed { get; set; }
-}
-
-internal class WindowLifecycleHandler
-{
-    public DispatcherExitDeferral? ExitDeferral { get; set; }
-
-    public WindowLifecycleActions LifecycleActions { get; set; } = null!;
 }

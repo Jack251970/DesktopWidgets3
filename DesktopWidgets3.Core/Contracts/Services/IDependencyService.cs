@@ -1,4 +1,4 @@
-﻿namespace Files.Core.Services;
+﻿namespace DesktopWidgets3.Core.Contracts.Services;
 
 public interface IDependencyService
 {

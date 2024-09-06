@@ -32,7 +32,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
         }
 
         // initialize edit mode overlay window
-        EditModeOverlayWindow ??= await WindowsExtensions.GetWindow<OverlayWindow>(ActivationType.Overlay);
+        EditModeOverlayWindow ??= await WindowsExtensions.GetWindow<OverlayWindow>(WindowsExtensions.ActivationType.Overlay);
         (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
     }
 
@@ -181,7 +181,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
 
         // create widget window
         var newThread = _widgetResourceService.GetWidgetInNewThread(currentWidgetType);
-        var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(ActivationType.Widget, widget.Settings, newThread, liftcycleActions);
+        var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(WindowsExtensions.ActivationType.Widget, widget.Settings, newThread, liftcycleActions);
 
         // handle monitor
         _systemInfoService.StartMonitor(widget.Type);

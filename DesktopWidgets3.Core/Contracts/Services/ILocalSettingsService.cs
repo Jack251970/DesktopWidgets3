@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Contracts.Services;
+﻿namespace DesktopWidgets3.Core.Contracts.Services;
 
 public interface ILocalSettingsService
 {

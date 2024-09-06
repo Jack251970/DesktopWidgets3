@@ -1,7 +1,4 @@
 ﻿using Files.App.Helpers;
-using Files.Core.Services;
-
-using H.NotifyIcon;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -279,7 +276,7 @@ public partial class App : Application
 
         if (!IsExistWindow && MainWindow is null)
         {
-            MainWindow = await WindowsExtensions.GetWindow<MainWindow>(ActivationType.Main, args);
+            MainWindow = await WindowsExtensions.GetWindow<MainWindow>(WindowsExtensions.ActivationType.Main, args);
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
             LogExtensions.LogInformation($"App launched. Launch args type: {args.GetType().Name}");
         }

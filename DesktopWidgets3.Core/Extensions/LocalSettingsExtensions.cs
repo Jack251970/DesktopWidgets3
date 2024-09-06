@@ -1,5 +1,4 @@
-﻿using DesktopWidgets3.Contracts.Services;
-using Windows.Storage;
+﻿using Windows.Storage;
 
 namespace DesktopWidgets3.Core.Extensions;
 
