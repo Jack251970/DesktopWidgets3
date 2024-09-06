@@ -278,7 +278,7 @@ public partial class App : Application
         {
             MainWindow = await WindowsExtensions.GetWindow<MainWindow>(WindowsExtensions.ActivationType.Main, args);
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
-            LogExtensions.LogInformation($"App launched. Launch args type: {args.GetType().Name}");
+            LogExtensions.LogInformation($"App launched. Launch args type: {args.GetType().Name}.");
         }
     }
 
