@@ -44,50 +44,57 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
 
                 updating = true;
 
-                var dataCount = progressCardData.Count;
-                var itemsCount = ProgressCardItems.Count;
-
-                // Remove extra items
-                if (dataCount < itemsCount)
+                try
                 {
-                    var start = dataCount;
-                    var end = itemsCount;
-                    for (var i = start; i < end; i++)
+                    var dataCount = progressCardData.Count;
+                    var itemsCount = ProgressCardItems.Count;
+
+                    // Remove extra items
+                    if (dataCount < itemsCount)
                     {
-                        ProgressCardItems.RemoveAt(i);
+                        var start = dataCount;
+                        var end = itemsCount;
+                        for (var i = start; i < end; i++)
+                        {
+                            ProgressCardItems.RemoveAt(i);
+                        }
+
+                        itemsCount = dataCount;
                     }
 
-                    itemsCount = dataCount;
+                    // Update items
+                    for (var i = 0; i < itemsCount; i++)
+                    {
+                        if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
+                        {
+                            var data = progressCardData[i].LeftTitle;
+                            ProgressCardItems[i].LeftTitle = data;
+                        }
+                        if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
+                        {
+                            var data = progressCardData[i].RightTitle;
+                            ProgressCardItems[i].RightTitle = data;
+                        }
+                        if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
+                        {
+                            var data = progressCardData[i].ProgressValue;
+                            ProgressCardItems[i].ProgressValue = data;
+                        }
+                    }
+
+                    // Add extra items
+                    if (dataCount > itemsCount)
+                    {
+                        var data = progressCardData.Skip(itemsCount).ToList();
+                        foreach (var item in data)
+                        {
+                            ProgressCardItems.Add(item);
+                        }
+                    }
                 }
-
-                // Update items
-                for (var i = 0; i < itemsCount; i++)
+                catch (Exception e)
                 {
-                    if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
-                    {
-                        var data = progressCardData[i].LeftTitle;
-                        ProgressCardItems[i].LeftTitle = data;
-                    }
-                    if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
-                    {
-                        var data = progressCardData[i].RightTitle;
-                        ProgressCardItems[i].RightTitle = data;
-                    }
-                    if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
-                    {
-                        var data = progressCardData[i].ProgressValue;
-                        ProgressCardItems[i].ProgressValue = data;
-                    }
-                }
-
-                // Add extra items
-                if (dataCount > itemsCount)
-                {
-                    var data = progressCardData.Skip(itemsCount).ToList();
-                    foreach (var item in data)
-                    {
-                        ProgressCardItems.Add(item);
-                    }
+                    LogExtensions.LogError(e, "Disk Widget Update Error on DispatcherQueue");
                 }
 
                 updating = false;
