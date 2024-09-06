@@ -66,7 +66,10 @@ public class NetworkSpeedInfo
 
     public List<Tuple<string, string>> GetHardwareNamesIdentifiers()
     {
-        return networkSpeedInfoItems.Select(x => new Tuple<string, string>(x.Name, x.Identifier)).ToList();
+        return networkSpeedInfoItems
+            .Where(x => x != null)
+            .Select(x => new Tuple<string, string>(x.Name, x.Identifier))
+            .ToList();
     }
 
     public void ClearItems()
