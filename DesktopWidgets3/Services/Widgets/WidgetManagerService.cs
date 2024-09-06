@@ -279,10 +279,16 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
     public async Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings)
     {
         var widgetWindow = GetWidgetWindow(widgetType, indexTag);
-        widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, new WidgetNavigationParameter()
+        if (widgetWindow != null)
         {
-            Settings = settings
-        });
+            await widgetWindow.EnqueueOrInvokeAsync((window) =>
+            {
+                widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, new WidgetNavigationParameter()
+                {
+                    Settings = settings
+                });
+            });
+        }
 
         var widgetList = await _appSettingsService.GetWidgetsList();
         var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
@@ -383,7 +389,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
         var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
         var screenWidth = primaryMonitorInfo.RectWork.Width;
 
-        await EditModeOverlayWindow.EnqueueOrInvokeAsync(async (window) =>
+        await App.MainWindow.EnqueueOrInvokeAsync(async (window) =>
         {
             // set window size according to xaml, rember larger than 136 x 39
             EditModeOverlayWindow.Size = new SizeInt32(EditModeOverlayWindowXamlWidth, EditModeOverlayWindowXamlHeight);

@@ -95,9 +95,9 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
 
     public BaseWidgetSettings GetWidgetSettings() => (GetSettings() as BaseWidgetSettings)!;
 
-    protected void UpdateWidgetSettings(BaseWidgetSettings settings)
+    protected async void UpdateWidgetSettings(BaseWidgetSettings settings)
     {
-        _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, settings);
+        await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, settings);
     }
 
     #endregion

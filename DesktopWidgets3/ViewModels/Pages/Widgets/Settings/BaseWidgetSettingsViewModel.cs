@@ -50,11 +50,11 @@ public abstract partial class BaseWidgetSettingsViewModel : ObservableRecipient,
         PropertyChanged += WidgetSettings_PropertyChanged;
     }
 
-    private void WidgetSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async void WidgetSettings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (NeedUpdate)
         {
-            _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, WidgetSettings!);
+            await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, WidgetSettings!);
             NeedUpdate = false;
         }
     }
