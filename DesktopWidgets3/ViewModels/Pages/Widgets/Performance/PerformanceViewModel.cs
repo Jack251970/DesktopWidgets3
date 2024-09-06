@@ -111,7 +111,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
                 CpuLeftInfo = "Cpu".GetLocalized();
                 CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? cpuLoad : cpuSpeed;
                 CpuLoadValue = cpuLoadValue * 100;
-                GpuLeftInfo = string.IsNullOrEmpty(cpuSpeed) ? "Gpu".GetLocalized() : "Gpu".GetLocalized() + $" ({gpuName})";
+                GpuLeftInfo = string.IsNullOrEmpty(gpuName) ? "Gpu".GetLocalized() : "Gpu".GetLocalized() + $" ({gpuName})";
                 GpuRightInfo = string.IsNullOrEmpty(gpuTempreture) ? gpuLoad : gpuTempreture;
                 GpuLoadValue = gpuLoadValue * 100;
                 MemoryLeftInfo = "Memory".GetLocalized();
