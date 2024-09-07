@@ -27,17 +27,20 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
     #endregion
 
     private readonly IAppSettingsService _appSettingsService;
-    private readonly ITimersService _timersService;
+
+    private readonly DispatcherQueueTimer dispatcherQueueTimer;
 
     private bool updating = false;
 
-    public ClockViewModel(IAppSettingsService appSettingsService, ITimersService timersService)
+    public ClockViewModel(IAppSettingsService appSettingsService)
     {
         _appSettingsService = appSettingsService;
-        _timersService = timersService;
 
         _appSettingsService.OnBatterySaverChanged += AppSettingsService_OnBatterySaverChanged;
-        _timersService.AddTimerAction(WidgetType.Clock, UpdateTime);
+
+        dispatcherQueueTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
+        dispatcherQueueTimer.Interval = TimeSpan.FromSeconds(1);
+        dispatcherQueueTimer.Tick += (_, _) => UpdateTime();
     }
 
     private void AppSettingsService_OnBatterySaverChanged(object? _, bool batterySaver)
@@ -54,23 +57,20 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
 
     private void UpdateTime()
     {
+        if (updating)
+        {
+            return;
+        }
+
+        updating = true;
+
         var nowTime = DateTime.Now;
         var systemTime = nowTime.ToString(timingFormat);
 
-        RunOnDispatcherQueue(() =>
-        {
-            if (updating)
-            {
-                return;
-            }
+        DateTime = nowTime;
+        SystemTime = systemTime;
 
-            updating = true;
-
-            DateTime = nowTime;
-            SystemTime = systemTime;
-
-            updating = false;
-        }, DispatcherQueuePriority.Normal);
+        updating = false;
     }
 
     #region abstract methods
@@ -83,6 +83,7 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
         }
 
         SystemTime = DateTime.Now.ToString(timingFormat);
+        dispatcherQueueTimer.Start();
     }
 
     public override ClockWidgetSettings GetSettings()
@@ -101,18 +102,19 @@ public partial class ClockViewModel : BaseWidgetViewModel<ClockWidgetSettings>, 
     {
         if (enable)
         {
-            _timersService.StartTimer(WidgetType.Clock);
+            dispatcherQueueTimer.Start();
         }
         else
         {
-            _timersService.StopTimer(WidgetType.Clock);
+            dispatcherQueueTimer.Stop();
         }
+
         await Task.CompletedTask;
     }
 
     public void WidgetWindow_Closing()
     {
-        _timersService.RemoveTimerAction(WidgetType.Clock, UpdateTime);
+        dispatcherQueueTimer.Stop();
     }
 
     #endregion

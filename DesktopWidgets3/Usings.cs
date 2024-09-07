@@ -53,3 +53,6 @@ global using DesktopWidgets3.Views.Windows;
 
 // Utils
 global using DesktopWidgets3.Utils.Logger;
+
+// HardwareInfo
+global using HardwareInfo.Helpers;

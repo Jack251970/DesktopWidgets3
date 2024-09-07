@@ -5,6 +5,8 @@
 /// </summary>
 public class HardwareMonitor: IDisposable
 {
+    #region enable properties
+
     public bool Enabled => NetworkEnabled || CpuEnabled || GpuEnabled || MemoryEnabled || DiskEnabled;
 
     public event EventHandler<bool>? EnabledChanged;
@@ -89,6 +91,22 @@ public class HardwareMonitor: IDisposable
         }
     }
 
+    #endregion
+
+    #region update events
+
+    public event Action? OnCpuStatsUpdated;
+
+    public event Action? OnGpuStatsUpdated;
+
+    public event Action? OnMemoryStatsUpdated;
+
+    public event Action? OnNetworkStatsUpdated;
+
+    public event Action? OnDiskStatsUpdated;
+
+    #endregion
+
     private readonly Dictionary<HardwareType, DataManager> Hardwares;
 
     public HardwareMonitor()
@@ -103,33 +121,44 @@ public class HardwareMonitor: IDisposable
         };
     }
 
+    #region update
+
     public void Update()
     {
         if (CpuEnabled)
         {
             Hardwares[HardwareType.CPU].Update();
+            OnCpuStatsUpdated?.Invoke();
         }
 
         if (GpuEnabled)
         {
             Hardwares[HardwareType.GPU].Update();
+            OnGpuStatsUpdated?.Invoke();
         }
 
         if (MemoryEnabled)
         {
             Hardwares[HardwareType.Memory].Update();
+            OnMemoryStatsUpdated?.Invoke();
         }
 
         if (NetworkEnabled)
         {
             Hardwares[HardwareType.Network].Update();
+            OnNetworkStatsUpdated?.Invoke();
         }
 
         if (DiskEnabled)
         {
             Hardwares[HardwareType.Disk].Update();
+            OnDiskStatsUpdated?.Invoke();
         }
     }
+
+    #endregion
+
+    #region get stats
 
     public CPUStats? GetCpuStats()
     {
@@ -181,6 +210,10 @@ public class HardwareMonitor: IDisposable
         return Hardwares[HardwareType.Disk].GetDiskStats();
     }
 
+    #endregion
+
+    #region dispose
+
     public void Dispose()
     {
         foreach (var hardware in Hardwares)
@@ -188,4 +221,6 @@ public class HardwareMonitor: IDisposable
             hardware.Value.Dispose();
         }
     }
+
+    #endregion
 }

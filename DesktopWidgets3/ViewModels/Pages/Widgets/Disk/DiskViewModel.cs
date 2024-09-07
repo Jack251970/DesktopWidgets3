@@ -19,16 +19,14 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
     #endregion
 
     private readonly ISystemInfoService _systemInfoService;
-    private readonly ITimersService _timersService;
 
     private bool updating = false;
 
-    public DiskViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
+    public DiskViewModel(ISystemInfoService systemInfoService)
     {
         _systemInfoService = systemInfoService;
-        _timersService = timersService;
 
-        timersService.AddTimerAction(WidgetType.Disk, UpdateDisk);
+        _systemInfoService.RegisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
     }
 
     private void UpdateDisk()
@@ -141,18 +139,19 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
     {
         if (enable)
         {
-            _timersService.StartTimer(WidgetType.Disk);
+            _systemInfoService.RegisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
         }
         else
         {
-            _timersService.StopTimer(WidgetType.Disk);
+            _systemInfoService.UnregisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
         }
+
         await Task.CompletedTask;
     }
 
     public void WidgetWindow_Closing()
     {
-        _timersService.RemoveTimerAction(WidgetType.Disk, UpdateDisk);
+        _systemInfoService.UnregisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
     }
 
     #endregion

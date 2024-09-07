@@ -20,7 +20,7 @@ internal class SystemInfoService : ISystemInfoService
 
         sampleTimer.AutoReset = true;
         sampleTimer.Enabled = false;
-        sampleTimer.Interval = _appSettingsService.BatterySaver ? 1000 : 100;
+        sampleTimer.Interval = _appSettingsService.BatterySaver ? 1000 : 500;
         sampleTimer.Elapsed += SampleTimer_Elapsed;
 
         _appSettingsService.OnBatterySaverChanged += AppSettingsService_OnBatterySaverChanged;
@@ -40,6 +40,8 @@ internal class SystemInfoService : ISystemInfoService
         sampleTimer.Interval = batterySaver ? 1000 : 100;
         sampleTimer.Enabled = enabled;
     }
+
+    #region hardware monitor
 
     private void HardwareMonitor_OnEnabledChanged(object? _, bool enabled)
     {
@@ -88,6 +90,52 @@ internal class SystemInfoService : ISystemInfoService
                 break;
         }
     }
+
+    public void RegisterUpdatedCallback(HardwareType type, Action action)
+    {
+        switch (type)
+        {
+            case HardwareType.Network:
+                hardwareMonitor.OnNetworkStatsUpdated += action;
+                break;
+            case HardwareType.CPU:
+                hardwareMonitor.OnCpuStatsUpdated += action;
+                break;
+            case HardwareType.GPU:
+                hardwareMonitor.OnGpuStatsUpdated += action;
+                break;
+            case HardwareType.Memory:
+                hardwareMonitor.OnMemoryStatsUpdated += action;
+                break;
+            case HardwareType.Disk:
+                hardwareMonitor.OnDiskStatsUpdated += action;
+                break;
+        }
+    }
+
+    public void UnregisterUpdatedCallback(HardwareType type, Action action)
+    {
+        switch (type)
+        {
+            case HardwareType.Network:
+                hardwareMonitor.OnNetworkStatsUpdated -= action;
+                break;
+            case HardwareType.CPU:
+                hardwareMonitor.OnCpuStatsUpdated -= action;
+                break;
+            case HardwareType.GPU:
+                hardwareMonitor.OnGpuStatsUpdated -= action;
+                break;
+            case HardwareType.Memory:
+                hardwareMonitor.OnMemoryStatsUpdated -= action;
+                break;
+            case HardwareType.Disk:
+                hardwareMonitor.OnDiskStatsUpdated -= action;
+                break;
+        }
+    }
+
+    #endregion
 
     #region network
 

@@ -129,9 +129,6 @@ public partial class App : Application
                 // Widget Dialogs
                 services.AddSingleton<IWidgetDialogService, WidgetDialogService>();
 
-                // Timers
-                services.AddSingleton<ITimersService, TimersService>();
-
                 // Widgets Management
                 services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
 

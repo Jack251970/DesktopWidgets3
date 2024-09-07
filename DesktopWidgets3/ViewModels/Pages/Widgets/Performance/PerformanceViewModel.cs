@@ -44,31 +44,23 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
     #endregion
 
     private readonly ISystemInfoService _systemInfoService;
-    private readonly ITimersService _timersService;
 
     private bool updating = false;
 
-    public PerformanceViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
+    public PerformanceViewModel(ISystemInfoService systemInfoService)
     {
         _systemInfoService = systemInfoService;
-        _timersService = timersService;
 
-        timersService.AddTimerAction(WidgetType.Performance, UpdatePerformance);
+        _systemInfoService.RegisterUpdatedCallback(HardwareType.CPU, UpdateCPU);
+        _systemInfoService.RegisterUpdatedCallback(HardwareType.GPU, UpdateGPU);
+        _systemInfoService.RegisterUpdatedCallback(HardwareType.Memory, UpdateMemory);
     }
 
-    private async void UpdatePerformance()
+    private void UpdateCPU()
     {
         try
         {
-            var cpuTask = Task.Run(_systemInfoService.GetCpuInfo);
-            var gpuTask = Task.Run(() => _systemInfoService.GetGpuInfo(useCelsius));
-            var memoryTask = Task.Run(_systemInfoService.GetMemoryInfo);
-
-            await Task.WhenAll(cpuTask, gpuTask, memoryTask);
-
-            (var cpuLoad, var cpuLoadValue, var cpuSpeed) = cpuTask.Result;
-            (var gpuName, var gpuLoad, var gpuLoadValue, var gpuTempreture) = gpuTask.Result;
-            (var memoryLoad, var memoryLoadValue, var memoryUsedInfo) = memoryTask.Result;
+            (var cpuLoad, var cpuLoadValue, var cpuSpeed) = _systemInfoService.GetCpuInfo();
 
             RunOnDispatcherQueue(() =>
             {
@@ -82,9 +74,59 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
                 CpuLeftInfo = "Cpu".GetLocalized();
                 CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? cpuLoad : cpuSpeed;
                 CpuLoadValue = cpuLoadValue * 100;
+
+                updating = false;
+            });
+        }
+        catch (Exception e)
+        {
+            LogExtensions.LogError(ClassName, e, "Error updating performance widget.");
+        }
+    }
+
+    private void UpdateGPU()
+    {
+        try
+        {
+            (var gpuName, var gpuLoad, var gpuLoadValue, var gpuTempreture) = _systemInfoService.GetGpuInfo(useCelsius);
+
+            RunOnDispatcherQueue(() =>
+            {
+                if (updating)
+                {
+                    return;
+                }
+
+                updating = true;
+
                 GpuLeftInfo = string.IsNullOrEmpty(gpuName) ? "Gpu".GetLocalized() : "Gpu".GetLocalized() + $" ({gpuName})";
                 GpuRightInfo = string.IsNullOrEmpty(gpuTempreture) ? gpuLoad : gpuTempreture;
                 GpuLoadValue = gpuLoadValue * 100;
+                
+                updating = false;
+            });
+        }
+        catch (Exception e)
+        {
+            LogExtensions.LogError(ClassName, e, "Error updating performance widget.");
+        }
+    }
+
+    private void UpdateMemory()
+    {
+        try
+        {
+            (var memoryLoad, var memoryLoadValue, var memoryUsedInfo) = _systemInfoService.GetMemoryInfo();
+
+            RunOnDispatcherQueue(() =>
+            {
+                if (updating)
+                {
+                    return;
+                }
+
+                updating = true;
+
                 MemoryLeftInfo = "Memory".GetLocalized();
                 MemoryRightInfo = string.IsNullOrEmpty(memoryUsedInfo) ? memoryLoad : memoryUsedInfo;
                 MemoryLoadValue = memoryLoadValue * 100;
@@ -134,18 +176,24 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
     {
         if (enable)
         {
-            _timersService.StartTimer(WidgetType.Performance);
+            _systemInfoService.RegisterUpdatedCallback(HardwareType.CPU, UpdateCPU);
+            _systemInfoService.RegisterUpdatedCallback(HardwareType.GPU, UpdateGPU);
+            _systemInfoService.RegisterUpdatedCallback(HardwareType.Memory, UpdateMemory);
         }
         else
         {
-            _timersService.StopTimer(WidgetType.Performance);
+            _systemInfoService.UnregisterUpdatedCallback(HardwareType.CPU, UpdateCPU);
+            _systemInfoService.UnregisterUpdatedCallback(HardwareType.GPU, UpdateGPU);
+            _systemInfoService.UnregisterUpdatedCallback(HardwareType.Memory, UpdateMemory);
         }
         await Task.CompletedTask;
     }
 
     public void WidgetWindow_Closing()
     {
-        _timersService.RemoveTimerAction(WidgetType.Performance, UpdatePerformance);
+        _systemInfoService.UnregisterUpdatedCallback(HardwareType.CPU, UpdateCPU);
+        _systemInfoService.UnregisterUpdatedCallback(HardwareType.GPU, UpdateGPU);
+        _systemInfoService.UnregisterUpdatedCallback(HardwareType.Memory, UpdateMemory);
     }
 
     #endregion

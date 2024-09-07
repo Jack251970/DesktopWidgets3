@@ -5,13 +5,12 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, ITimersService timersService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal class WidgetManagerService(IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
     private readonly List<WidgetWindow> WidgetsList = [];
 
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly ISystemInfoService _systemInfoService = systemInfoService;
-    private readonly ITimersService _timersService = timersService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     private WidgetType currentWidgetType;
@@ -152,10 +151,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
             await CloseWidgetWindow(widgetWindow);
         }
 
-        // stop all monitors and timers
+        // stop all monitors
         foreach (WidgetType widgetType in Enum.GetValues(typeof(WidgetType)))
         {
-            _timersService.StopTimer(widgetType);
             _systemInfoService.StopMonitor(widgetType);
         }
     }
@@ -185,9 +183,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
 
         // handle monitor
         _systemInfoService.StartMonitor(widget.Type);
-
-        // handle timer
-        _timersService.StartTimer(widget.Type);
 
         // add to widget list
         WidgetsList.Add(widgetWindow);
@@ -248,7 +243,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
         var sameTypeWidgets = WidgetsList.Count(x => x.WidgetType == widgetType);
         if (sameTypeWidgets == 0)
         {
-            _timersService.StopTimer(widgetType);
             _systemInfoService.StopMonitor(widgetType);
         }
     }

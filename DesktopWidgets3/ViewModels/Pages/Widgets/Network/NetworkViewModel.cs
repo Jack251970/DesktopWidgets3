@@ -36,17 +36,15 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
     private List<Tuple<string, string>> networkNamesIdentifiers = [];
 
     private readonly ISystemInfoService _systemInfoService;
-    private readonly ITimersService _timersService;
 
     private bool listUpdating = false;
     private bool updating = false;
 
-    public NetworkViewModel(ISystemInfoService systemInfoService, ITimersService timersService)
+    public NetworkViewModel(ISystemInfoService systemInfoService)
     {
         _systemInfoService = systemInfoService;
-        _timersService = timersService;
 
-        timersService.AddTimerAction(WidgetType.Network, UpdateNetwork);
+        _systemInfoService.RegisterUpdatedCallback(HardwareType.Network, UpdateNetwork);
     }
 
     private void UpdateNetwork()
@@ -162,18 +160,19 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
     {
         if (enable)
         {
-            _timersService.StartTimer(WidgetType.Network);
+            _systemInfoService.RegisterUpdatedCallback(HardwareType.Network, UpdateNetwork);
         }
         else
         {
-            _timersService.StopTimer(WidgetType.Network);
+            _systemInfoService.UnregisterUpdatedCallback(HardwareType.Network, UpdateNetwork);
         }
+
         await Task.CompletedTask;
     }
 
     public void WidgetWindow_Closing()
     {
-        _timersService.RemoveTimerAction(WidgetType.Network, UpdateNetwork);
+        _systemInfoService.UnregisterUpdatedCallback(HardwareType.Network, UpdateNetwork);
     }
 
     #endregion
