@@ -2,11 +2,11 @@
 
 public class NetworkSpeedInfo
 {
-    private readonly List<NetworkSpeedInfoItem> networkSpeedInfoItems = [];
+    private readonly List<NetworkSpeedInfoItem> NetworkSpeedInfoItems = [];
 
     public void AddItem(string hardwareName, string hardwareIdentifier, string uploadSpeed, string downloadSpeed)
     {
-        networkSpeedInfoItems.Add(new NetworkSpeedInfoItem()
+        NetworkSpeedInfoItems.Add(new NetworkSpeedInfoItem()
         {
             Name = hardwareName,
             Identifier = hardwareIdentifier,
@@ -17,7 +17,7 @@ public class NetworkSpeedInfo
 
     public void InsertItem(int index, string hardwareName, string hardwareIdentifier, string uploadSpeed, string downloadSpeed)
     {
-        networkSpeedInfoItems.Insert(index, new NetworkSpeedInfoItem()
+        NetworkSpeedInfoItems.Insert(index, new NetworkSpeedInfoItem()
         {
             Name = hardwareName,
             Identifier = hardwareIdentifier,
@@ -28,35 +28,12 @@ public class NetworkSpeedInfo
 
     public (int index, string HardwareName, string HardwareIdentifier, string UploadSpeed, string DownloadSpeed)? SearchItemByIdentifier(string hardwareIdentifier)
     {
-        for (var i = 0; i < networkSpeedInfoItems.Count; i++)
+        for (var i = 0; i < NetworkSpeedInfoItems.Count; i++)
         {
-            if (networkSpeedInfoItems[i].Identifier == hardwareIdentifier)
+            if (NetworkSpeedInfoItems[i].Identifier == hardwareIdentifier)
             {
-                return (i, networkSpeedInfoItems[i].Name, networkSpeedInfoItems[i].Identifier, networkSpeedInfoItems[i].UploadSpeed, networkSpeedInfoItems[i].DownloadSpeed);
+                return (i, NetworkSpeedInfoItems[i].Name, NetworkSpeedInfoItems[i].Identifier, NetworkSpeedInfoItems[i].UploadSpeed, NetworkSpeedInfoItems[i].DownloadSpeed);
             }
-        }
-
-        return null;
-    }
-
-    public (int index, string HardwareName, string HardwareIdentifier, string UploadSpeed, string DownloadSpeed)? SearchItemByName(string hardwareName)
-    {
-        for (var i = 0; i < networkSpeedInfoItems.Count; i++)
-        {
-            if (networkSpeedInfoItems[i].Name == hardwareName)
-            {
-                return (i, networkSpeedInfoItems[i].Name, networkSpeedInfoItems[i].Identifier, networkSpeedInfoItems[i].UploadSpeed, networkSpeedInfoItems[i].DownloadSpeed);
-            }
-        }
-
-        return null;
-    }
-
-    public (int index, string HardwareName, string HardwareIdentifier, string UploadSpeed, string DownloadSpeed)? GetItem(int index)
-    {
-        if (index >= 0 && index < networkSpeedInfoItems.Count)
-        {
-            return (index, networkSpeedInfoItems[index].Name, networkSpeedInfoItems[index].Identifier, networkSpeedInfoItems[index].UploadSpeed, networkSpeedInfoItems[index].DownloadSpeed);
         }
 
         return null;
@@ -64,15 +41,9 @@ public class NetworkSpeedInfo
 
     public List<Tuple<string, string>> GetHardwareNamesIdentifiers()
     {
-        return networkSpeedInfoItems
-            .Where(x => x != null)
+        return NetworkSpeedInfoItems
             .Select(x => new Tuple<string, string>(x.Name, x.Identifier))
             .ToList();
-    }
-
-    public void ClearItems()
-    {
-        networkSpeedInfoItems.Clear();
     }
 
     private class NetworkSpeedInfoItem
@@ -89,11 +60,11 @@ public class NetworkSpeedInfo
 
 public class DiskInfo
 {
-    private readonly List<PartitionSpaceInfoItem> diskSpaceInfoItems = [];
+    private readonly List<PartitionInfoItem> PartitionInfoItems = [];
 
     public void AddItem(string partitionName, string partitionIdentifier, string partitionLoad, float partitionLoadValue, string partitionUsedInfo)
     {
-        diskSpaceInfoItems.Add(new PartitionSpaceInfoItem()
+        PartitionInfoItems.Add(new PartitionInfoItem()
         {
             Name = partitionName,
             Identifier = partitionIdentifier,
@@ -105,12 +76,12 @@ public class DiskInfo
 
     public void SortItems()
     {
-        diskSpaceInfoItems.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
+        PartitionInfoItems.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
     }
 
     public List<ProgressCardData> GetProgressCardData()
     {
-        return diskSpaceInfoItems.Select(x => new ProgressCardData()
+        return PartitionInfoItems.Select(x => new ProgressCardData()
         {
             LeftTitle = x.Name,
             RightTitle = x.PartitionUsedInfo,
@@ -118,12 +89,7 @@ public class DiskInfo
         }).ToList();
     }
 
-    public void ClearItems()
-    {
-        diskSpaceInfoItems.Clear();
-    }
-
-    private class PartitionSpaceInfoItem
+    private class PartitionInfoItem
     {
         public string Name { get; set; } = null!;
 

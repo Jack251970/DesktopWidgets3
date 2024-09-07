@@ -139,18 +139,16 @@ internal class SystemInfoService : ISystemInfoService
 
     #region network
 
-    private readonly NetworkSpeedInfo NetworkSpeedInfo = new();
-
     public NetworkSpeedInfo GetNetworkSpeed(bool useBps)
     {
-        NetworkSpeedInfo.ClearItems();
+        var networkSpeedInfo = new NetworkSpeedInfo();
 
         var currentData = hardwareMonitor.GetNetworkStats();
 
         if (currentData == null)
         {
-            NetworkSpeedInfo.AddItem("Total".GetLocalized(), "Total", "--", "--");
-            return NetworkSpeedInfo;
+            networkSpeedInfo.AddItem("Total".GetLocalized(), "Total", "--", "--");
+            return networkSpeedInfo;
         }
 
         var netCount = currentData.GetNetworkCount();
@@ -162,16 +160,16 @@ internal class SystemInfoService : ISystemInfoService
             var networkUsage = currentData.GetNetworkUsage(i);
             var uploadSpeed = FormatNetworkSpeed(networkUsage.Sent, useBps);
             var downloadSpeed = FormatNetworkSpeed(networkUsage.Received, useBps);
-            NetworkSpeedInfo.AddItem(netName, netName, uploadSpeed, downloadSpeed);
+            networkSpeedInfo.AddItem(netName, netName, uploadSpeed, downloadSpeed);
             totalSent += networkUsage.Sent;
             totalReceived += networkUsage.Received;
         }
 
         var totalUploadSpeed = FormatNetworkSpeed(totalSent, useBps);
         var totalDownloadSpeed = FormatNetworkSpeed(totalReceived, useBps);
-        NetworkSpeedInfo.InsertItem(0, "Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
+        networkSpeedInfo.InsertItem(0, "Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
 
-        return NetworkSpeedInfo;
+        return networkSpeedInfo;
     }
 
     private static string FormatNetworkSpeed(float? bytes, bool useBps)
@@ -247,17 +245,15 @@ internal class SystemInfoService : ISystemInfoService
 
     #region disk
 
-    private readonly DiskInfo DiskInfo = new();
-
     public DiskInfo GetDiskInfo()
     {
-        DiskInfo.ClearItems();
+        var diskInfo = new DiskInfo();
 
         var diskInfoItems = hardwareMonitor.GetDiskInfo();
 
         if (diskInfoItems == null)
         {
-            return DiskInfo;
+            return diskInfo;
         }
 
         var diskCount = diskInfoItems.GetDiskCount();
@@ -270,13 +266,13 @@ internal class SystemInfoService : ISystemInfoService
                 if (partition.Name != null)
                 {
                     var loadValue = partition.Size == 0 ? 0f : (partition.Size - partition.FreeSpace) * 100f / partition.Size;
-                    DiskInfo.AddItem(partition.Name, partition.DeviceId, FormatPercentage(loadValue), loadValue, FormatUsedInfoByte(partition.Size - partition.FreeSpace, partition.Size));
+                    diskInfo.AddItem(partition.Name, partition.DeviceId, FormatPercentage(loadValue), loadValue, FormatUsedInfoByte(partition.Size - partition.FreeSpace, partition.Size));
                 }
             }
         }
-        DiskInfo.SortItems();
+        diskInfo.SortItems();
 
-        return DiskInfo;
+        return diskInfo;
     }
 
     #endregion
