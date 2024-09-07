@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
 
 namespace DesktopWidgets3.Core.Services;
 
@@ -6,7 +7,7 @@ public class FileService : IFileService
 {
     private static string ClassName => typeof(FileService).Name;
 
-    private readonly Dictionary<string, SemaphoreSlim> semaphoreSlims = [];
+    private readonly ConcurrentDictionary<string, SemaphoreSlim> semaphoreSlims = [];
 
     public T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null!)
     {
@@ -35,7 +36,7 @@ public class FileService : IFileService
         if (semaphoreSlim == null)
         {
             semaphoreSlim = new SemaphoreSlim(1);
-            semaphoreSlims.Add(path, semaphoreSlim);
+            semaphoreSlims.TryAdd(path, semaphoreSlim);
         }
 
         await semaphoreSlim.WaitAsync();
