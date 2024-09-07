@@ -8,8 +8,6 @@ namespace Clock.UserControls;
 
 public sealed partial class AnalogClock : UserControl, INotifyPropertyChanged
 {
-    #region size
-
     public static readonly DependencyProperty SizeProperty =
         DependencyProperty.Register("Size", typeof(double), typeof(AnalogClock), new PropertyMetadata(null));
 
@@ -18,10 +16,6 @@ public sealed partial class AnalogClock : UserControl, INotifyPropertyChanged
         get => (double)GetValue(SizeProperty);
         set => SetValue(SizeProperty, value);
     }
-
-    #endregion
-
-    #region time
 
     public static readonly DependencyProperty DateTimeProperty =
         DependencyProperty.Register("DateTime", typeof(DateTime), typeof(AnalogClock), new PropertyMetadata(null, OnDateTimeChanged));
@@ -134,10 +128,6 @@ public sealed partial class AnalogClock : UserControl, INotifyPropertyChanged
         }
     }
 
-    #endregion
-
-    #region mode
-
     public static readonly DependencyProperty HandsModeProperty =
         DependencyProperty.Register("HandsMode", typeof(HandsMode), typeof(AnalogClock), new PropertyMetadata(HandsMode.Precise));
 
@@ -146,8 +136,6 @@ public sealed partial class AnalogClock : UserControl, INotifyPropertyChanged
         get => (HandsMode)GetValue(HandsModeProperty);
         set => SetValue(HandsModeProperty, value);
     }
-
-    #endregion
 
     public AnalogClock()
     {

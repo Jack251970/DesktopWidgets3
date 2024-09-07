@@ -50,9 +50,9 @@ public static class ThreadExtensions
 
     #region ui thread extensions
 
-    // for single window
+    #region single window
 
-    public static Task EnqueueOrInvokeAsync(this Window window, Func<Window, Task> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+    public static Task EnqueueOrInvokeAsync<T>(this T window, Func<T, Task> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
     {
         return IgnoreExceptions(() =>
         {
@@ -68,7 +68,7 @@ public static class ThreadExtensions
         }, typeof(COMException));
     }
 
-    public static Task<T?> EnqueueOrInvokeAsync<T>(this Window window, Func<Window, Task<T>> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+    public static Task<T1?> EnqueueOrInvokeAsync<T, T1>(this T window, Func<T, Task<T1>> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
     {
         return IgnoreExceptions(() =>
         {
@@ -84,7 +84,7 @@ public static class ThreadExtensions
         }, typeof(COMException));
     }
 
-    public static Task EnqueueOrInvokeAsync(this Window window, Action<Window> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+    public static Task EnqueueOrInvokeAsync<T>(this T window, Action<T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
     {
         return IgnoreExceptions(() =>
         {
@@ -101,7 +101,7 @@ public static class ThreadExtensions
         }, typeof(COMException));
     }
 
-    public static Task<T?> EnqueueOrInvokeAsync<T>(this Window window, Func<Window, T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+    public static Task<T1?> EnqueueOrInvokeAsync<T, T1>(this T window, Func<T, T1> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
     {
         return IgnoreExceptions(() =>
         {
@@ -117,87 +117,37 @@ public static class ThreadExtensions
         }, typeof(COMException));
     }
 
-    // for multiple windows
+    #endregion
 
-    public static Task EnqueueOrInvokeAsync<T>(this List<T> windows, Func<T, Task> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
+    #region multiple windows
+
+    public static async Task EnqueueOrInvokeAsync<T>(this List<T> windows, Func<T, Task> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
     {
-        return IgnoreExceptions(() =>
+        var tasks = new List<Task>();
+
+        foreach (var window in windows)
         {
-            var (ThreadSameWindows, ThreadDifferentWindows) = windows.GetThreadInfo();
+            tasks.Add(window.EnqueueOrInvokeAsync(function, priority));
+        }
 
-            var tasks = new List<Task>();
-
-            foreach (var window in ThreadSameWindows)
-            {
-                tasks.Add(function(window));
-            }
-
-            foreach (var (dispatcherThreadInfo, windowList) in ThreadDifferentWindows)
-            {
-                var dispatcher = dispatcherThreadInfo.DispatcherQueue;
-
-                if (dispatcher is not null)
-                {
-                    tasks.Add(dispatcher.EnqueueAsync(() =>
-                    {
-                        foreach (var window in windowList)
-                        {
-                            function(window);
-                        }
-                    }, priority));
-                }
-                else
-                {
-                    foreach (var window in windowList)
-                    {
-                        tasks.Add(function(window));
-                    }
-                }
-            }
-
-            return Task.WhenAll(tasks);
-        }, typeof(COMException));
+        await Task.WhenAll(tasks);
     }
 
-    public static Task EnqueueOrInvokeAsync<T>(this List<T> windows, Action<T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
+    public static async Task EnqueueOrInvokeAsync<T>(this List<T> windows, Action<T> function, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal) where T : Window
     {
-        return IgnoreExceptions(() =>
+        var tasks = new List<Task>();
+
+        foreach (var window in windows)
         {
-            var (ThreadSameWindows, ThreadDifferentWindows) = windows.GetThreadInfo();
+            tasks.Add(window.EnqueueOrInvokeAsync(function, priority));
+        }
 
-            var tasks = new List<Task>();
-
-            foreach (var window in ThreadSameWindows)
-            {
-                tasks.Add(Task.Run(() => function(window)));
-            }
-
-            foreach (var (dispatcherThreadInfo, windowList) in ThreadDifferentWindows)
-            {
-                var dispatcher = dispatcherThreadInfo.DispatcherQueue;
-
-                if (dispatcher is not null)
-                {
-                    tasks.Add(dispatcher.EnqueueAsync(() =>
-                    {
-                        foreach (var window in windowList)
-                        {
-                            function(window);
-                        }
-                    }, priority));
-                }
-                else
-                {
-                    foreach (var window in windowList)
-                    {
-                        tasks.Add(Task.Run(() => function(window)));
-                    }
-                }
-            }
-
-            return Task.CompletedTask;
-        }, typeof(COMException));
+        await Task.WhenAll(tasks);
     }
+
+    #endregion
+
+    #region ignore exceptions
 
     private static async Task<bool> IgnoreExceptions(Func<Task> action, Type? exceptionToIgnore = null)
     {
@@ -245,44 +195,9 @@ public static class ThreadExtensions
 
     #endregion
 
+    #endregion
+
     #region dispatcher thread info
-
-    private static (List<T> ThreadSameWindows, Dictionary<DispatcherThreadInfo, List<T>> ThreadDifferentWindows) GetThreadInfo<T>(this List<T> windows) where T : Window
-    {
-        var threadSameWindows = new List<T>();
-        var threadDifferentWindows = new Dictionary<DispatcherThreadInfo, List<T>>();
-        foreach (var window in windows)
-        {
-            var (isWindowThreadDifferent, dispatcherThreadInfo) = window.GetThreadInfo();
-            if (isWindowThreadDifferent)
-            {
-                if (threadDifferentWindows.TryGetValue(dispatcherThreadInfo, out var value))
-                {
-                    value.Add(window);
-                }
-                else
-                {
-                    threadDifferentWindows.Add(dispatcherThreadInfo, [window]);
-                }
-            }
-            else
-            {
-                threadSameWindows.Add(window);
-            }
-        }
-
-        return (threadSameWindows, threadDifferentWindows);
-    }
-
-    private static (bool IsWindowThreadDifferent, DispatcherThreadInfo DispatcherThreadInfo) GetThreadInfo<T>(this T window) where T : Window
-    {
-        var windowThreadId = window.GetDispatcherThreadId();
-        return (Environment.CurrentManagedThreadId != windowThreadId, new DispatcherThreadInfo()
-        {
-            ThreadId = windowThreadId,
-            DispatcherQueue = window.DispatcherQueue
-        });
-    }
 
     private class DispatcherThreadInfo
     {

@@ -109,12 +109,14 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
     private async Task InitializeAsync()
     {
         await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
+
         await Task.CompletedTask;
     }
 
     private async Task StartupAsync(Window window)
     {
         await _themeSelectorService.SetRequestedThemeAsync(window);
+
         await Task.CompletedTask;
     }
 }

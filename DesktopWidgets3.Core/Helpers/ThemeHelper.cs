@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Core.Helpers;
 
 public static class ThemeHelper
 {
-    public static async Task SetRequestedThemeAsync(Window window, ElementTheme theme)
+    public static void SetRequestedThemeAsync(Window window, ElementTheme theme)
     {
         if (window.Content is FrameworkElement rootElement)
         {
@@ -12,7 +12,5 @@ public static class ThemeHelper
 
             TitleBarHelper.UpdateTitleBar(window, window.AppWindow.TitleBar, theme);
         }
-
-        await Task.CompletedTask;
     }
 }
