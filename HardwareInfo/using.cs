@@ -1,5 +1,2 @@
-﻿// HardwareInfo
-global using HardwareInfo.Models;
-
-// DesktopWidgets3.Core
+﻿// DesktopWidgets3.Core
 global using DesktopWidgets3.Core.Extensions;

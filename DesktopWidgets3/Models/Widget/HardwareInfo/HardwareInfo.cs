@@ -1,6 +1,4 @@
-﻿using HardwareInfo.Models;
-
-namespace DesktopWidgets3.Models.Widget.HardwareInfo;
+﻿namespace DesktopWidgets3.Models.Widget.HardwareInfo;
 
 public class NetworkSpeedInfo
 {
@@ -77,8 +75,12 @@ public class NetworkSpeedInfo
         networkSpeedInfoItems.Clear();
     }
 
-    private class NetworkSpeedInfoItem : HardwareInfoItem
+    private class NetworkSpeedInfoItem
     {
+        public string Name { get; set; } = null!;
+
+        public string Identifier { get; set; } = null!;
+
         public string UploadSpeed { get; set; } = null!;
 
         public string DownloadSpeed { get; set; } = null!;
@@ -121,8 +123,12 @@ public class DiskInfo
         diskSpaceInfoItems.Clear();
     }
 
-    private class PartitionSpaceInfoItem : PartitionInfoItem
+    private class PartitionSpaceInfoItem
     {
+        public string Name { get; set; } = null!;
+
+        public string Identifier { get; set; } = null!;
+
         public string PartitionLoad { get; set; } = null!;
 
         public float PartitionLoadValue { get; set; } = 0;
