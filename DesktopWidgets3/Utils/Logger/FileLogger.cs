@@ -28,7 +28,12 @@ public sealed class FileLogger(string logDirectory) : ILogger
 
         try
         {
-            var message = exception?.ToString() ?? formatter(state, exception);
+            var message = formatter(state, exception);
+
+            if (exception?.ToString() is string str && (!string.IsNullOrEmpty(str)))
+            {
+                message = $"{message}" + Environment.NewLine + $"{str}";
+            }
 
             await File.AppendAllTextAsync(FilePath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}|{logLevel}|{message}" + Environment.NewLine);
         }
