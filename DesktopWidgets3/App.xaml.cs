@@ -60,7 +60,7 @@ public partial class App : Application
 
         // The DispatcherQueue event loop exits when all XAML windows on a thread are closed
         // https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.dispatchershutdownmode
-        DispatcherShutdownMode = DispatcherShutdownMode.OnExplicitShutdown;
+        DispatcherShutdownMode = DispatcherShutdownMode.OnLastWindowClose;
 
         // Initialize core extensions before injecting services
         LocalSettingsExtensions.Initialize();
