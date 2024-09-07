@@ -1,6 +1,4 @@
-﻿using HardwareInfo.Helpers;
-
-namespace DesktopWidgets3.Contracts.Services.Widgets;
+﻿namespace DesktopWidgets3.Contracts.Services.Widgets;
 
 public interface ISystemInfoService
 {
@@ -12,13 +10,13 @@ public interface ISystemInfoService
 
     void UnregisterUpdatedCallback(HardwareType type, Action action);
 
-    NetworkSpeedInfo GetNetworkSpeed(bool useBps);
+    NetworkStats? GetNetworkStats();
 
-    (string CpuLoad, float CpuLoadValue, string CpuSpeed) GetCpuInfo();
+    CPUStats? GetCPUStats();
 
-    (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetGpuInfo(bool useCelsius);
+    GPUStats? GetGPUStats();
 
-    (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetMemoryInfo();
+    MemoryStats? GetMemoryStats();
 
-    DiskInfo GetDiskInfo();
+    DiskStats? GetDiskStats();
 }

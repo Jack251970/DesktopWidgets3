@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Timers;
-using HardwareInfo.Helpers;
+﻿using System.Timers;
 
 using Timer = System.Timers.Timer;
 
@@ -137,229 +135,31 @@ internal class SystemInfoService : ISystemInfoService
 
     #endregion
 
-    #region network
+    #region get stats
 
-    public NetworkSpeedInfo GetNetworkSpeed(bool useBps)
+    public NetworkStats? GetNetworkStats()
     {
-        var networkSpeedInfo = new NetworkSpeedInfo();
-
-        var currentData = hardwareMonitor.GetNetworkStats();
-
-        if (currentData == null)
-        {
-            networkSpeedInfo.AddItem("Total".GetLocalized(), "Total", "--", "--");
-            return networkSpeedInfo;
-        }
-
-        var netCount = currentData.GetNetworkCount();
-        var totalSent = 0f;
-        var totalReceived = 0f;
-        for (var i = 0; i < netCount; i++)
-        {
-            var netName = currentData.GetNetworkName(i);
-            var networkUsage = currentData.GetNetworkUsage(i);
-            var uploadSpeed = FormatNetworkSpeed(networkUsage.Sent, useBps);
-            var downloadSpeed = FormatNetworkSpeed(networkUsage.Received, useBps);
-            networkSpeedInfo.AddItem(netName, netName, uploadSpeed, downloadSpeed);
-            totalSent += networkUsage.Sent;
-            totalReceived += networkUsage.Received;
-        }
-
-        var totalUploadSpeed = FormatNetworkSpeed(totalSent, useBps);
-        var totalDownloadSpeed = FormatNetworkSpeed(totalReceived, useBps);
-        networkSpeedInfo.InsertItem(0, "Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
-
-        return networkSpeedInfo;
+        return hardwareMonitor.GetNetworkStats();
     }
 
-    private static string FormatNetworkSpeed(float? bytes, bool useBps)
+    public CPUStats? GetCPUStats()
     {
-        if (bytes is null)
-        {
-            return string.Empty;
-        }
-
-        var unit = useBps ? "bps" : "B/s";
-        if (useBps)
-        {
-            bytes *= 8;
-        }
-
-        return FormatBytes(bytes.Value, unit);
+        return hardwareMonitor.GetCpuStats();
     }
 
-    #endregion
-
-    #region cpu & gpu * memory
-
-    public (string CpuLoad, float CpuLoadValue, string CpuSpeed) GetCpuInfo()
+    public GPUStats? GetGPUStats()
     {
-        var currentData = hardwareMonitor.GetCpuStats();
-
-        if (currentData == null)
-        {
-            return (FormatPercentage(0), 0, "--");
-        }
-
-        var cpuUsage = FormatPercentage(currentData.CpuUsage);
-        var cpuSpeed = FormatCpuSpeed(currentData.CpuSpeed);
-
-        return (cpuUsage, currentData.CpuUsage, cpuSpeed);
+        return hardwareMonitor.GetGpuStats();
     }
 
-    public (string GpuName, string GpuLoad, float GpuLoadValue, string GpuInfo) GetGpuInfo(bool useCelsius)
+    public MemoryStats? GetMemoryStats()
     {
-        var stats = hardwareMonitor.GetGpuStats();
-
-        if (stats == null)
-        {
-            return (string.Empty, FormatPercentage(0), 0, "--");
-        }
-
-        // TODO: Add actite index support.
-        var _gpuActiveIndex = 0;
-        var gpuName = stats.GetGPUName(_gpuActiveIndex);
-        var gpuUsage = stats.GetGPUUsage(_gpuActiveIndex);
-        var gpuTemp = stats.GetGPUTemperature(_gpuActiveIndex);
-
-        return (gpuName, FormatPercentage(gpuUsage), gpuUsage, gpuTemp == 0 ? string.Empty : FormatTemperature(gpuTemp, useCelsius));
+        return hardwareMonitor.GetMemoryStats();
     }
 
-    public (string MemoryLoad, float MemoryLoadValue, string MemoryUsedInfo) GetMemoryInfo()
+    public DiskStats? GetDiskStats()
     {
-        var currentData = hardwareMonitor.GetMemoryStats();
-
-        if (currentData == null)
-        {
-            return (FormatPercentage(0), 0, "--");
-        }
-
-        var usedMem = currentData.UsedMem;
-        var memUsage = currentData.MemUsage;
-        var allMem = currentData.AllMem;
-
-        return (FormatPercentage(memUsage), memUsage, FormatUsedInfoByte(usedMem, allMem));
-    }
-
-    #endregion
-
-    #region disk
-
-    public DiskInfo GetDiskInfo()
-    {
-        var diskInfo = new DiskInfo();
-
-        var diskInfoItems = hardwareMonitor.GetDiskInfo();
-
-        if (diskInfoItems == null)
-        {
-            return diskInfo;
-        }
-
-        var diskCount = diskInfoItems.GetDiskCount();
-        for (var i = 0; i < diskCount; i++)
-        {
-            var diskUsage = diskInfoItems.GetDiskUsage(i);
-            var diskPartitions = diskUsage.PartitionDatas;
-            foreach (var partition in diskPartitions)
-            {
-                if (partition.Name != null)
-                {
-                    var loadValue = partition.Size == 0 ? 0f : (partition.Size - partition.FreeSpace) * 100f / partition.Size;
-                    diskInfo.AddItem(partition.Name, partition.DeviceId, FormatPercentage(loadValue), loadValue, FormatUsedInfoByte(partition.Size - partition.FreeSpace, partition.Size));
-                }
-            }
-        }
-        diskInfo.SortItems();
-
-        return diskInfo;
-    }
-
-    #endregion
-
-    #region format methods
-
-    private const ulong Kilo = 1024;
-    private const ulong Mega = 1024 * Kilo;
-    private const ulong Giga = 1024 * Mega;
-    private const ulong KiloGiga = 1024 * Giga;
-    private const float RecKilo = 1f / Kilo;
-    private const float RecMega = 1f / Mega;
-    private const float RecGiga = 1f / Giga;
-    private const float RecKiloGiga = 1f / KiloGiga;
-
-    private static readonly string PercentageFormat = "{0:F2} %";
-    private static readonly string CpuSpeedFormat = "{0:F2} GHz";
-    private static readonly string BytesFormat = "{0:F2} {1}";
-    private static readonly string CelsiusTemperatureFormat = "{0:F2} °C";
-    private static readonly string FahrenheitTemperatureFormat = "{0:F2} °C";
-    private static readonly string UsedInfoFormat = "{0:F2} / {1:F2} {2}";
-
-    private static string FormatPercentage(float percentage)
-    {
-        return string.Format(CultureInfo.InvariantCulture, PercentageFormat, percentage * 100);
-    }
-
-    private static string FormatCpuSpeed(float cpuSpeed)
-    {
-        return string.Format(CultureInfo.InvariantCulture, CpuSpeedFormat, cpuSpeed / 1000);
-    }
-
-    private static string FormatBytes(float bytes, string unit)
-    {
-        if (bytes < Kilo)
-        {
-            return string.Format(CultureInfo.InvariantCulture, BytesFormat, bytes, unit);
-        }
-        else if (bytes < Mega)
-        {
-            return string.Format(CultureInfo.InvariantCulture, BytesFormat, bytes / Kilo, $"K{unit}");
-        }
-        else if (bytes < Giga)
-        {
-            return string.Format(CultureInfo.InvariantCulture, BytesFormat, bytes / Mega, $"M{unit}");
-        }
-        else
-        {
-            return string.Format(CultureInfo.InvariantCulture, BytesFormat, bytes / Giga, $"G{unit}");
-        }
-    }
-
-    private static string FormatTemperature(float celsiusDegree, bool useCelsius)
-    {
-        if (useCelsius)
-        {
-            return string.Format(CultureInfo.InvariantCulture, CelsiusTemperatureFormat, celsiusDegree);
-        }
-        else
-        {
-            var fahrenheitDegree = celsiusDegree * 9 / 5 + 32;
-            return string.Format(CultureInfo.InvariantCulture, FahrenheitTemperatureFormat, fahrenheitDegree);
-        }
-    }
-
-    private static string FormatUsedInfoByte(ulong used, ulong total)
-    {
-        if (total < Kilo)
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used, total, "B");
-        }
-        else if (total < Mega)
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecKilo, total * RecKilo, "KB");
-        }
-        else if (total < Giga)
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecMega, total * RecMega, "MB");
-        }
-        else if (total < KiloGiga)
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecGiga, total * RecGiga, "GB");
-        }
-        else
-        {
-            return string.Format(CultureInfo.InvariantCulture, UsedInfoFormat, used * RecKiloGiga, total * RecKiloGiga, "TB");
-        }
+        return hardwareMonitor.GetDiskStats();
     }
 
     #endregion

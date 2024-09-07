@@ -60,7 +60,15 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
     {
         try
         {
-            (var cpuLoad, var cpuLoadValue, var cpuSpeed) = _systemInfoService.GetCpuInfo();
+            var cpuStats = _systemInfoService.GetCPUStats();
+
+            if (cpuStats == null)
+            {
+                return;
+            }
+
+            var cpuUsage = cpuStats.CpuUsage;
+            var cpuSpeed = FormatUtils.FormatCpuSpeed(cpuStats.CpuSpeed);
 
             RunOnDispatcherQueue(() =>
             {
@@ -72,8 +80,8 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
                 updating = true;
 
                 CpuLeftInfo = "Cpu".GetLocalized();
-                CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? cpuLoad : cpuSpeed;
-                CpuLoadValue = cpuLoadValue * 100;
+                CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? FormatUtils.FormatPercentage(cpuUsage) : cpuSpeed;
+                CpuLoadValue = cpuUsage * 100;
 
                 updating = false;
             });
@@ -88,7 +96,18 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
     {
         try
         {
-            (var gpuName, var gpuLoad, var gpuLoadValue, var gpuTempreture) = _systemInfoService.GetGpuInfo(useCelsius);
+            var gpuStats = _systemInfoService.GetGPUStats();
+
+            if (gpuStats == null)
+            {
+                return;
+            }
+
+            // TODO: Add actite index support.
+            var _gpuActiveIndex = 0;
+            var gpuName = gpuStats.GetGPUName(_gpuActiveIndex);
+            var gpuUsage = gpuStats.GetGPUUsage(_gpuActiveIndex);
+            var gpuTemperature = gpuStats.GetGPUTemperature(_gpuActiveIndex);
 
             RunOnDispatcherQueue(() =>
             {
@@ -100,8 +119,8 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
                 updating = true;
 
                 GpuLeftInfo = string.IsNullOrEmpty(gpuName) ? "Gpu".GetLocalized() : "Gpu".GetLocalized() + $" ({gpuName})";
-                GpuRightInfo = string.IsNullOrEmpty(gpuTempreture) ? gpuLoad : gpuTempreture;
-                GpuLoadValue = gpuLoadValue * 100;
+                GpuRightInfo = gpuTemperature == 0 ? FormatUtils.FormatPercentage(gpuUsage) : FormatUtils.FormatTemperature(gpuTemperature, useCelsius);
+                GpuLoadValue = gpuUsage * 100;
                 
                 updating = false;
             });
@@ -116,7 +135,17 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
     {
         try
         {
-            (var memoryLoad, var memoryLoadValue, var memoryUsedInfo) = _systemInfoService.GetMemoryInfo();
+            var memoryStats = _systemInfoService.GetMemoryStats();
+
+            if (memoryStats == null)
+            {
+                return;
+            }
+
+            var usedMem = memoryStats.UsedMem;
+            var memoryUsage = memoryStats.MemUsage;
+            var allMem = memoryStats.AllMem;
+            var memoryUsedInfo = FormatUtils.FormatUsedInfoByte(usedMem, allMem);
 
             RunOnDispatcherQueue(() =>
             {
@@ -128,8 +157,8 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
                 updating = true;
 
                 MemoryLeftInfo = "Memory".GetLocalized();
-                MemoryRightInfo = string.IsNullOrEmpty(memoryUsedInfo) ? memoryLoad : memoryUsedInfo;
-                MemoryLoadValue = memoryLoadValue * 100;
+                MemoryRightInfo = allMem == 0 ? FormatUtils.FormatPercentage(memoryUsage) : memoryUsedInfo;
+                MemoryLoadValue = memoryUsage * 100;
 
                 updating = false;
             });

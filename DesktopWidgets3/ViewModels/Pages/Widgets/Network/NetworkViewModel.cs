@@ -51,11 +51,17 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
     {
         try
         {
-            (int, string, string, string, string)? networkSpeedInfoItem;
+            var networkStats = _systemInfoService.GetNetworkStats();
 
-            networkSpeedInfo = _systemInfoService.GetNetworkSpeed(useBps);
+            if (networkStats == null)
+            {
+                return;
+            }
+
+            networkSpeedInfo = GetNetworkSpeed(networkStats, useBps);
             lastNetworkNamesIdentifiers = networkNamesIdentifiers;
             networkNamesIdentifiers = networkSpeedInfo.GetHardwareNamesIdentifiers();
+            (int, string, string, string, string)? networkSpeedInfoItem;
             networkSpeedInfoItem = networkSpeedInfo.SearchItemByIdentifier(hardwareIdentifier);
 
             if (networkSpeedInfoItem == null)
@@ -107,6 +113,47 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
         {
             LogExtensions.LogError(ClassName, e, "Failed to update network card.");
         }
+    }
+
+    private static NetworkSpeedInfo GetNetworkSpeed(NetworkStats networkStats, bool useBps)
+    {
+        var networkSpeedInfo = new NetworkSpeedInfo();
+
+        var netCount = networkStats.GetNetworkCount();
+        var totalSent = 0f;
+        var totalReceived = 0f;
+        for (var i = 0; i < netCount; i++)
+        {
+            var netName = networkStats.GetNetworkName(i);
+            var networkUsage = networkStats.GetNetworkUsage(i);
+            var uploadSpeed = FormatNetworkSpeed(networkUsage.Sent, useBps);
+            var downloadSpeed = FormatNetworkSpeed(networkUsage.Received, useBps);
+            networkSpeedInfo.AddItem(netName, netName, uploadSpeed, downloadSpeed);
+            totalSent += networkUsage.Sent;
+            totalReceived += networkUsage.Received;
+        }
+
+        var totalUploadSpeed = FormatNetworkSpeed(totalSent, useBps);
+        var totalDownloadSpeed = FormatNetworkSpeed(totalReceived, useBps);
+        networkSpeedInfo.InsertItem(0, "Total".GetLocalized(), "Total", totalUploadSpeed, totalDownloadSpeed);
+
+        return networkSpeedInfo;
+    }
+
+    private static string FormatNetworkSpeed(float? bytes, bool useBps)
+    {
+        if (bytes is null)
+        {
+            return string.Empty;
+        }
+
+        var unit = useBps ? "bps" : "B/s";
+        if (useBps)
+        {
+            bytes *= 8;
+        }
+
+        return FormatUtils.FormatBytes(bytes.Value, unit);
     }
 
     partial void OnSelectedIndexChanged(int value)
@@ -176,4 +223,62 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
     }
 
     #endregion
+
+    private class NetworkSpeedInfo
+    {
+        private readonly List<NetworkSpeedInfoItem> NetworkSpeedInfoItems = [];
+
+        public void AddItem(string hardwareName, string hardwareIdentifier, string uploadSpeed, string downloadSpeed)
+        {
+            NetworkSpeedInfoItems.Add(new NetworkSpeedInfoItem()
+            {
+                Name = hardwareName,
+                Identifier = hardwareIdentifier,
+                UploadSpeed = uploadSpeed,
+                DownloadSpeed = downloadSpeed
+            });
+        }
+
+        public void InsertItem(int index, string hardwareName, string hardwareIdentifier, string uploadSpeed, string downloadSpeed)
+        {
+            NetworkSpeedInfoItems.Insert(index, new NetworkSpeedInfoItem()
+            {
+                Name = hardwareName,
+                Identifier = hardwareIdentifier,
+                UploadSpeed = uploadSpeed,
+                DownloadSpeed = downloadSpeed
+            });
+        }
+
+        public (int index, string HardwareName, string HardwareIdentifier, string UploadSpeed, string DownloadSpeed)? SearchItemByIdentifier(string hardwareIdentifier)
+        {
+            for (var i = 0; i < NetworkSpeedInfoItems.Count; i++)
+            {
+                if (NetworkSpeedInfoItems[i].Identifier == hardwareIdentifier)
+                {
+                    return (i, NetworkSpeedInfoItems[i].Name, NetworkSpeedInfoItems[i].Identifier, NetworkSpeedInfoItems[i].UploadSpeed, NetworkSpeedInfoItems[i].DownloadSpeed);
+                }
+            }
+
+            return null;
+        }
+
+        public List<Tuple<string, string>> GetHardwareNamesIdentifiers()
+        {
+            return NetworkSpeedInfoItems
+                .Select(x => new Tuple<string, string>(x.Name, x.Identifier))
+                .ToList();
+        }
+
+        private class NetworkSpeedInfoItem
+        {
+            public string Name { get; set; } = null!;
+
+            public string Identifier { get; set; } = null!;
+
+            public string UploadSpeed { get; set; } = null!;
+
+            public string DownloadSpeed { get; set; } = null!;
+        }
+    }
 }

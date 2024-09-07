@@ -200,7 +200,7 @@ public class HardwareMonitor: IDisposable
         return Hardwares[HardwareType.Network].GetNetworkStats();
     }
 
-    public DiskStats? GetDiskInfo()
+    public DiskStats? GetDiskStats()
     {
         if (!DiskEnabled)
         {

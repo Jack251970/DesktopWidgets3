@@ -36,7 +36,6 @@ global using DesktopWidgets3.Helpers.Dialog;
 global using DesktopWidgets3.Models;
 global using DesktopWidgets3.Models.Component;
 global using DesktopWidgets3.Models.Widget;
-global using DesktopWidgets3.Models.Widget.HardwareInfo;
 global using DesktopWidgets3.Models.Widget.Parameters;
 
 // ViewModels
@@ -52,6 +51,7 @@ global using DesktopWidgets3.Views.Pages.Widgets.Settings;
 global using DesktopWidgets3.Views.Windows;
 
 // Utils
+global using DesktopWidgets3.Utils;
 global using DesktopWidgets3.Utils.Logger;
 
 // HardwareInfo
