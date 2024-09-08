@@ -4,11 +4,11 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidget3.Clock.View;
 
-public sealed partial class ClockPage : Page
+public sealed partial class ClockWidget : UserControl, IWidgetMenu
 {
-    public ClockViewModel ViewModel { get; }
+    public ClockViewModel ViewModel = new();
 
-    public ClockPage()
+    public ClockWidget()
     {
         InitializeComponent();
     }

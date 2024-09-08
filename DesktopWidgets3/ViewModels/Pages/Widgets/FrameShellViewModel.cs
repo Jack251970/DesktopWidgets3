@@ -1,16 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
 public partial class FrameShellViewModel : ObservableRecipient
 {
-    public IWidgetNavigationService WidgetNavigationService
-    {
-        get;
-    }
+    [ObservableProperty]
+    public FrameworkElement _widgetFrameworkElement = null!;
 
-    public FrameShellViewModel(IWidgetNavigationService widgetNavigationService)
+    public FrameShellViewModel()
     {
-        WidgetNavigationService = widgetNavigationService;
+
     }
 }

@@ -111,10 +111,6 @@ public partial class App : Application
                 services.AddSingleton<IPageService, PageService>();
                 services.AddSingleton<INavigationService, NavigationService>();
 
-                // Widgets Window Pages
-                services.AddSingleton<IWidgetPageService, WidgetPageService>();
-                services.AddTransient<IWidgetNavigationService, WidgetNavigationService>();
-
                 #endregion
 
                 #region Settings Service
@@ -157,32 +153,12 @@ public partial class App : Application
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<DashboardViewModel>();
                 services.AddTransient<DashboardPage>();
-                services.AddTransient<ClockSettingsViewModel>();
-                services.AddTransient<ClockSettingsPage>();
-                services.AddTransient<PerformanceSettingsViewModel>();
-                services.AddTransient<PerformanceSettingsPage>();
-                services.AddTransient<DiskSettingsViewModel>();
-                services.AddTransient<DiskSettingsPage>();
-                services.AddTransient<FolderViewSettingsViewModel>();
-                services.AddTransient<FolderViewSettingsPage>();
-                services.AddTransient<NetworkSettingsViewModel>();
-                services.AddTransient<NetworkSettingsPage>();
 
                 // Widgets Window Pages
                 services.AddTransient<FrameShellPage>();
                 services.AddTransient<FrameShellViewModel>();
                 services.AddTransient<EditModeOverlayPage>();
                 services.AddTransient<EditModeOverlayViewModel>();
-                services.AddTransient<ClockViewModel>();
-                services.AddTransient<ClockPage>();
-                services.AddTransient<PerformanceViewModel>();
-                services.AddTransient<PerformancePage>();
-                services.AddTransient<DiskViewModel>();
-                services.AddTransient<DiskPage>();
-                services.AddTransient<FolderViewViewModel>();
-                services.AddTransient<FolderViewPage>();
-                services.AddTransient<NetworkViewModel>();
-                services.AddTransient<NetworkPage>();
 
                 #endregion
 

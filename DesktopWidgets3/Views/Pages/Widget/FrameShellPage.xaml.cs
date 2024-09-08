@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Views.Pages.Widgets;
 
@@ -6,7 +7,7 @@ public sealed partial class FrameShellPage : Page
 {
     public FrameShellViewModel ViewModel { get; }
 
-    public Frame NavigationFrame { get; }
+    public FrameworkElement? FrameworkElement => WidgetScrollViewer.Content as FrameworkElement;
 
     private WidgetWindow WidgetWindow { get; set; } = null!;
 
@@ -14,9 +15,6 @@ public sealed partial class FrameShellPage : Page
     {
         ViewModel = viewModel;
         InitializeComponent();
-
-        NavigationFrame = WidgetNavigationFrame;
-        ViewModel.WidgetNavigationService.Frame = WidgetNavigationFrame;
     }
 
     public void InitializeWindow(WidgetWindow window)
@@ -30,5 +28,10 @@ public sealed partial class FrameShellPage : Page
         WidgetWindow.ExtendsContentIntoTitleBar = customTitleBar;
         WidgetWindow.SetTitleBar(customTitleBar ? WidgetTitleBar : null);
         WidgetWindow.InitializeTitleBar();
+    }
+
+    public void SetFrameworkElement(FrameworkElement frameworkElement)
+    {
+        ViewModel.WidgetFrameworkElement = frameworkElement;
     }
 }

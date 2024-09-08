@@ -41,12 +41,10 @@ global using DesktopWidgets3.Models.Widget;
 global using DesktopWidgets3.ViewModels.Commands;
 global using DesktopWidgets3.ViewModels.Pages;
 global using DesktopWidgets3.ViewModels.Pages.Widgets;
-global using DesktopWidgets3.ViewModels.Pages.Widgets.Settings;
 
 // Views
 global using DesktopWidgets3.Views.Pages;
 global using DesktopWidgets3.Views.Pages.Widgets;
-global using DesktopWidgets3.Views.Pages.Widgets.Settings;
 global using DesktopWidgets3.Views.Windows;
 
 // Utils

@@ -2,7 +2,5 @@
 
 public interface IWidgetNavigation
 {
-    void OnNavigatedTo(object parameter);
-
-    void OnNavigatedFrom();
+    void UpdateWidgetViewModel(object parameter);
 }

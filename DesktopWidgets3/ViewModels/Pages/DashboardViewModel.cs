@@ -16,14 +16,16 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = [];
 
     private readonly IWidgetManagerService _widgetManagerService;
+    private readonly IWidgetResourceService _widgetResourceService;
 
     private List<DashboardWidgetItem> yourWidgetItems = [];
 
     private bool _isInitialized;
 
-    public DashboardViewModel(IWidgetManagerService widgetManagerService)
+    public DashboardViewModel(IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService)
     {
         _widgetManagerService = widgetManagerService;
+        _widgetResourceService = widgetResourceService;
 
         LoadAllWidgets();
     }
@@ -46,21 +48,21 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 
         if (parameter is Dictionary<string, object> param)
         {
-            if (param.TryGetValue("UpdateEvent", out var updateEventObj) && param.TryGetValue("WidgetType", out var widgetTypeObj) && param.TryGetValue("IndexTag", out var indexTagObj))
+            if (param.TryGetValue("UpdateEvent", out var updateEventObj) && param.TryGetValue("Id", out var widgetIdObj) && param.TryGetValue("IndexTag", out var indexTagObj))
             {
                 var updateEvent = (UpdateEvent)updateEventObj;
-                var widgetType = (WidgetType)widgetTypeObj;
+                var widgetId = (string)widgetIdObj;
                 var indexTag = (int)indexTagObj;
                 
                 if (updateEvent == UpdateEvent.Disable)
                 {
-                    var widgetItem = yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag);
+                    var widgetItem = yourWidgetItems.First(x => x.Id == widgetId && x.IndexTag == indexTag);
                     widgetItem.IsEnabled = false;
                     widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
                 }
                 else if (updateEvent == UpdateEvent.Delete)
                 {
-                    yourWidgetItems.Remove(yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag));
+                    yourWidgetItems.Remove(yourWidgetItems.First(x => x.Id == widgetId && x.IndexTag == indexTag));
                 }
             
                 RefreshYourWidgets();
@@ -73,9 +75,9 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         
     }
 
-    internal async void AllWidgetsItemClick(WidgetType widgetType)
+    internal async void AllWidgetsItemClick(string widgetId)
     {
-        await _widgetManagerService.AddWidget(widgetType);
+        await _widgetManagerService.AddWidget(widgetId);
 
         var widgetItem = _widgetManagerService.GetCurrentEnabledWidget();
         widgetItem.IsEnabled = true;
@@ -85,11 +87,11 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
         RefreshYourWidgets();
     }
 
-    internal async void MenuFlyoutItemDeleteWidgetClick(WidgetType widgetType, int indexTag)
+    internal async void MenuFlyoutItemDeleteWidgetClick(string widgetId, int indexTag)
     {
-        await _widgetManagerService.DeleteWidget(widgetType, indexTag);
+        await _widgetManagerService.DeleteWidget(widgetId, indexTag);
 
-        yourWidgetItems.Remove(yourWidgetItems.First(x => x.Type == widgetType && x.IndexTag == indexTag));
+        yourWidgetItems.Remove(yourWidgetItems.First(x => x.Id == widgetId && x.IndexTag == indexTag));
 
         RefreshYourWidgets();
     }
@@ -98,13 +100,13 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     {
         if (dashboardListItem.IsEnabled)
         {
-            await _widgetManagerService.EnableWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
-            yourWidgetItems.First(x => x.Type == dashboardListItem.Type && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = true;
+            await _widgetManagerService.EnableWidget(dashboardListItem.Id, dashboardListItem.IndexTag);
+            yourWidgetItems.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = true;
         }
         else
         {
-            await _widgetManagerService.DisableWidget(dashboardListItem.Type, dashboardListItem.IndexTag);
-            yourWidgetItems.First(x => x.Type == dashboardListItem.Type && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = false;
+            await _widgetManagerService.DisableWidget(dashboardListItem.Id, dashboardListItem.IndexTag);
+            yourWidgetItems.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = false;
         }
 
         RefreshYourWidgets();
@@ -112,7 +114,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 
     private void LoadAllWidgets()
     {
-        var allWidgets = _widgetManagerService.GetAllWidgetItems();
+        var allWidgets = _widgetResourceService.GetAllWidgetItems();
 
         AllWidgets.Clear();
 

@@ -4,21 +4,19 @@ public interface IWidgetManagerService
 {
     Task Initialize();
 
-    Task AddWidget(WidgetType widgetType);
+    Task AddWidget(string widgetId);
 
-    Task EnableWidget(WidgetType widgetType, int indexTag);
+    Task EnableWidget(string widgetId, int indexTag);
 
-    Task DisableWidget(WidgetType widgetType, int indexTag);
+    Task DisableWidget(string widgetId, int indexTag);
 
-    Task DeleteWidget(WidgetType widgetType, int indexTag);
+    Task DeleteWidget(string widgetId, int indexTag);
 
     Task DisableAllWidgets();
 
-    bool IsWidgetEnabled(WidgetType widgetType, int indexTag);
+    bool IsWidgetEnabled(string widgetId, int indexTag);
 
     DashboardWidgetItem GetCurrentEnabledWidget();
-
-    List<DashboardWidgetItem> GetAllWidgetItems();
 
     Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync();
 
@@ -28,9 +26,7 @@ public interface IWidgetManagerService
 
     void CancelAndExitEditMode();
 
-    Task<BaseWidgetSettings?> GetWidgetSettings(WidgetType widgetType, int indexTag);
+    Task<BaseWidgetSettings?> GetWidgetSettings(string widgetId, int indexTag);
 
-    Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings);
-
-    void WidgetNavigateTo(WidgetType widgetType, int indexTag, object? parameter = null, bool clearNavigation = false);
+    Task UpdateWidgetSettings(string widgetId, int indexTag, BaseWidgetSettings settings);
 }

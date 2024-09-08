@@ -13,11 +13,6 @@ internal class PageService : IPageService
         Configure<HomeViewModel, HomePage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DashboardViewModel, DashboardPage>();
-        Configure<ClockSettingsViewModel, ClockSettingsPage>();
-        Configure<PerformanceSettingsViewModel, PerformanceSettingsPage>();
-        Configure<DiskSettingsViewModel, DiskSettingsPage>();
-        Configure<FolderViewSettingsViewModel, FolderViewSettingsPage>();
-        Configure<NetworkSettingsViewModel, NetworkSettingsPage>();
     }
 
     public Type GetPageType(string viewModel)

@@ -16,13 +16,17 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private readonly ISystemInfoService _systemInfoService = systemInfoService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
-    private WidgetType currentWidgetType;
+    // TODO: Check length.
+    private string currentWidgetId = Guid.NewGuid().ToString();
     private int currentIndexTag = -1;
 
     #region widget window
 
     public async Task Initialize()
     {
+        // initialize widgets
+        _widgetResourceService.Initalize();
+
         // enable all enabled widgets
         var widgetList = await _appSettingsService.GetWidgetsList();
         foreach (var widget in widgetList)
@@ -38,12 +42,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
     }
 
-    public async Task AddWidget(WidgetType widgetType)
+    public async Task AddWidget(string widgetId)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
 
         // find index tag
-        var indexTags = widgetList.Where(x => x.Type == widgetType).Select(x => x.IndexTag).ToList();
+        var indexTags = widgetList.Where(x => x.Id == widgetId).Select(x => x.IndexTag).ToList();
         indexTags.Sort();
         var indexTag = 0;
         foreach (var tag in indexTags)
@@ -58,13 +62,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // save widget item
         var widget = new JsonWidgetItem()
         {
-            Type = widgetType,
+            Id = widgetId,
             IndexTag = indexTag,
             IsEnabled = true,
             Position = new PointInt32(-1, -1),
-            Size = WidgetResourceService.GetDefaultSize(widgetType),
+            Size = _widgetResourceService.GetDefaultSize(widgetId),
             DisplayMonitor = new(GetMonitorInfo(null)),
-            Settings = WidgetResourceService.GetDefaultSettings(widgetType),
+            Settings = _widgetResourceService.GetDefaultSetting(widgetId),
         };
         await _appSettingsService.UpdateWidgetsList(widget);
 
@@ -72,12 +76,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await CreateWidgetWindow(widget);
     }
 
-    public async Task EnableWidget(WidgetType widgetType, int indexTag)
+    public async Task EnableWidget(string widgetId, int indexTag)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
 
         // find target widget
-        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
 
         if (widget != null && !widget.IsEnabled)
         {
@@ -90,15 +94,15 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    public async Task DisableWidget(WidgetType widgetType, int indexTag)
+    public async Task DisableWidget(string widgetId, int indexTag)
     {
-        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
+        var widgetWindow = GetWidgetWindow(widgetId, indexTag);
         if (widgetWindow != null)
         {
             var widgetList = await _appSettingsService.GetWidgetsList();
 
             // find target widget
-            var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+            var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
 
             if (widget != null && widget.IsEnabled)
             {
@@ -110,38 +114,38 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 await CloseWidgetWindow(widgetWindow);
 
                 // stop monitor and timer if no more widgets of this type
-                CheckMonitorAndTimer(widgetType);
+                CheckMonitorAndTimer(widgetId);
             }
         }
     }
 
-    public async Task DeleteWidget(WidgetType widgetType, int indexTag)
+    public async Task DeleteWidget(string widgetId, int indexTag)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
 
         // find target widget
-        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
 
         // update widget item
         widget ??= new JsonWidgetItem()
         {
-            Type = widgetType,
+            Id = widgetId,
             IndexTag = indexTag,
             Position = new PointInt32(-1, -1),
-            Size = WidgetResourceService.GetDefaultSize(widgetType),
+            Size = _widgetResourceService.GetDefaultSize(widgetId),
             DisplayMonitor = new(),
-            Settings = WidgetResourceService.GetDefaultSettings(widgetType),
+            Settings = _widgetResourceService.GetDefaultSetting(widgetId),
         };
         await _appSettingsService.DeleteWidgetsList(widget);
 
-        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
+        var widgetWindow = GetWidgetWindow(widgetId, indexTag);
         if (widgetWindow != null)
         {
             // close widget window
             await CloseWidgetWindow(widgetWindow);
 
             // stop monitor and timer if no more widgets of this type
-            CheckMonitorAndTimer(widgetType);
+            CheckMonitorAndTimer(widgetId);
         }
     }
 
@@ -155,25 +159,25 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         // stop all monitors
-        foreach (WidgetType widgetType in Enum.GetValues(typeof(WidgetType)))
+        foreach (HardwareType hardwareType in Enum.GetValues(typeof(HardwareType)))
         {
-            _systemInfoService.StopMonitor(widgetType);
+            _systemInfoService.StopMonitor(hardwareType);
         }
     }
 
-    public bool IsWidgetEnabled(WidgetType widgetType, int indexTag)
+    public bool IsWidgetEnabled(string widgetId, int indexTag)
     {
-        return GetWidgetWindow(widgetType, indexTag) != null;
+        return GetWidgetWindow(widgetId, indexTag) != null;
     }
 
     private async Task CreateWidgetWindow(JsonWidgetItem widget)
     {
         // load widget info
-        currentWidgetType = widget.Type;
+        currentWidgetId = widget.Id;
         currentIndexTag = widget.IndexTag;
 
         // configure widget window lifecycle actions
-        var minSize = _widgetResourceService.GetMinSize(currentWidgetType);
+        var minSize = _widgetResourceService.GetMinSize(currentWidgetId);
         var lifecycleActions = new WindowLifecycleActions()
         {
             Window_Created = (window) => WidgetWindow_Created(window, widget, minSize),
@@ -181,11 +185,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         };
 
         // create widget window
-        var newThread = _widgetResourceService.GetWidgetInNewThread(currentWidgetType);
+        var newThread = _widgetResourceService.GetWidgetInNewThread(currentWidgetId);
         var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(WindowsExtensions.ActivationType.Widget, widget.Settings, newThread, lifecycleActions);
 
-        // handle monitor
-        _systemInfoService.StartMonitor(widget.Type);
+        // TODO: Now handle monitor by widget itself.
 
         // add to widget list
         WidgetsList.Add(widgetWindow);
@@ -196,6 +199,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         if (window is WidgetWindow widgetWindow)
         {
+            // initialize widget framework element
+            var element = _widgetResourceService.GetWidgetFrameworkElement(widget.Id);
+            widgetWindow.ShellPage.SetFrameworkElement(element);
+
             // initialize widget settings
             widgetWindow.InitializeSettings(widget);
 
@@ -225,8 +232,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private void RegisterRightTappedMenu(WidgetWindow widgetWindow)
     {
-        var page = widgetWindow.FramePage;
-        if (page is IWidgetMenu menuPage)
+        var content = widgetWindow.FrameworkElement;
+        if (content is IWidgetMenu menuPage)
         {
             var element = menuPage.GetWidgetMenuFrameworkElement();
             if (element != null)
@@ -235,7 +242,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 return;
             }
         }
-        page.RightTapped += ShowRightTappedMenu;
+        if (content != null)
+        {
+            content.RightTapped += ShowRightTappedMenu;
+        }
     }
 
     private void ShowRightTappedMenu(object sender, RightTappedRoutedEventArgs e)
@@ -281,13 +291,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         // TODO: Cache right tapped menu here.
         var widgetWindow = new WidgetWindow();
-        var widgetType = widgetWindow.WidgetType;
+        var widgetId = widgetWindow.Id;
         var indexTag = widgetWindow.IndexTag;
-        await DisableWidget(widgetType, indexTag);
+        await DisableWidget(widgetId, indexTag);
         var parameter = new Dictionary<string, object>
         {
             { "UpdateEvent", DashboardViewModel.UpdateEvent.Disable },
-            { "WidgetType", widgetWindow.WidgetType },
+            { "string", widgetWindow.Id },
             { "IndexTag", widgetWindow.IndexTag }
         };
         RefreshDashboardPage(parameter);
@@ -299,13 +309,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetWindow = new WidgetWindow();
         if (await widgetWindow.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
         {
-            var widgetType = widgetWindow.WidgetType;
+            var widgetId = widgetWindow.Id;
             var indexTag = widgetWindow.IndexTag;
-            await DeleteWidget(widgetType, indexTag);
+            await DeleteWidget(widgetId, indexTag);
             var parameter = new Dictionary<string, object>
             {
                 { "UpdateEvent", DashboardViewModel.UpdateEvent.Delete },
-                { "WidgetType", widgetWindow.WidgetType },
+                { "string", widgetWindow.Id },
                 { "IndexTag", widgetWindow.IndexTag }
             };
             RefreshDashboardPage(parameter);
@@ -356,20 +366,21 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    private void CheckMonitorAndTimer(WidgetType widgetType)
+    private void CheckMonitorAndTimer(string widgetId)
     {
-        var sameTypeWidgets = WidgetsList.Count(x => x.WidgetType == widgetType);
+        var sameTypeWidgets = WidgetsList.Count(x => x.Id == widgetId);
         if (sameTypeWidgets == 0)
         {
-            _systemInfoService.StopMonitor(widgetType);
+            // TODO: Stop Monitor there.
+            // _systemInfoService.StopMonitor(widgetId);
         }
     }
 
-    private WidgetWindow? GetWidgetWindow(WidgetType widgetType, int indexTag)
+    private WidgetWindow? GetWidgetWindow(string widgetId, int indexTag)
     {
         foreach (var widgetWindow in WidgetsList)
         {
-            if (widgetWindow.WidgetType == widgetType && widgetWindow.IndexTag == indexTag)
+            if (widgetWindow.Id == widgetId && widgetWindow.IndexTag == indexTag)
             {
                 return widgetWindow;
             }
@@ -381,21 +392,21 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region widget settings
 
-    public async Task<BaseWidgetSettings?> GetWidgetSettings(WidgetType widgetType, int indexTag)
+    public async Task<BaseWidgetSettings?> GetWidgetSettings(string widgetId, int indexTag)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
         return widget?.Settings.Clone();
     }
 
-    public async Task UpdateWidgetSettings(WidgetType widgetType, int indexTag, BaseWidgetSettings settings)
+    public async Task UpdateWidgetSettings(string widgetId, int indexTag, BaseWidgetSettings settings)
     {
-        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
+        var widgetWindow = GetWidgetWindow(widgetId, indexTag);
         if (widgetWindow != null)
         {
             await widgetWindow.EnqueueOrInvokeAsync((window) =>
             {
-                widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, new WidgetNavigationParameter()
+                widgetWindow.UpdatePageViewModel(new WidgetNavigationParameter()
                 {
                     Window = widgetWindow,
                     Settings = settings
@@ -404,7 +415,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         var widgetList = await _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => x.Type == widgetType && x.IndexTag == indexTag);
+        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
         if (widget != null)
         {
             widget.Settings = settings;
@@ -416,23 +427,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region dashboard
 
-    public List<DashboardWidgetItem> GetAllWidgetItems()
-    {
-        List<DashboardWidgetItem> dashboardItemList = [];
-
-        foreach (WidgetType widgetType in Enum.GetValues(typeof(WidgetType)))
-        {
-            dashboardItemList.Add(new DashboardWidgetItem()
-            {
-                Type = widgetType,
-                IndexTag = 0,
-                Label = _widgetResourceService.GetWidgetLabel(widgetType),
-                Icon = _widgetResourceService.GetWidgetIconSource(widgetType),
-            });
-        }
-
-        return dashboardItemList;
-    }
+    // TODO: Move these methods to widget resource service.
 
     public async Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync()
     {
@@ -441,14 +436,14 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         List<DashboardWidgetItem> dashboardItemList = [];
         foreach (var widget in widgetList)
         {
-            var widgetType = widget.Type;
+            var widgetId = widget.Id;
             dashboardItemList.Add(new DashboardWidgetItem()
             {
-                Type = widgetType,
+                Id = widgetId,
                 IndexTag = widget.IndexTag,
-                Label = _widgetResourceService.GetWidgetLabel(widgetType),
+                Label = _widgetResourceService.GetWidgetLabel(widgetId),
                 IsEnabled = widget.IsEnabled,
-                Icon = _widgetResourceService.GetWidgetIconSource(widgetType),
+                Icon = _widgetResourceService.GetWidgetIconSource(widgetId),
             });
         }
 
@@ -459,11 +454,11 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         return new DashboardWidgetItem()
         {
-            Type = currentWidgetType,
+            Id = currentWidgetId,
             IndexTag = currentIndexTag,
             IsEnabled = true,
-            Label = _widgetResourceService.GetWidgetLabel(currentWidgetType),
-            Icon = _widgetResourceService.GetWidgetIconSource(currentWidgetType),
+            Label = _widgetResourceService.GetWidgetLabel(currentWidgetId),
+            Icon = _widgetResourceService.GetWidgetIconSource(currentWidgetId),
         };
     }
 
@@ -486,7 +481,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             var widget = new JsonWidgetItem()
             {
-                Type = widgetWindow.WidgetType,
+                Id = widgetWindow.Id,
                 IndexTag = widgetWindow.IndexTag,
                 IsEnabled = true,
                 Position = widgetWindow.Position,
@@ -547,7 +542,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             {
                 var widget = new JsonWidgetItem()
                 {
-                    Type = widgetWindow.WidgetType,
+                    Id = widgetWindow.Id,
                     IndexTag = widgetWindow.IndexTag,
                     IsEnabled = true,
                     Position = widgetWindow.Position,
@@ -570,7 +565,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             await window.SetEditMode(false);
 
             // read original position and size
-            var originalWidget = originalWidgetList.First(x => x.Type == window.WidgetType && x.IndexTag == window.IndexTag);
+            var originalWidget = originalWidgetList.First(x => x.Id == window.Id && x.IndexTag == window.IndexTag);
 
             // restore position and size
             if (originalWidget != null)
@@ -590,16 +585,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             App.MainWindow.Show();
             restoreMainWindow = false;
         }
-    }
-
-    #endregion
-
-    #region navigation
-
-    public void WidgetNavigateTo(WidgetType widgetType, int indexTag, object? parameter = null, bool clearNavigation = false)
-    {
-        var widgetWindow = GetWidgetWindow(widgetType, indexTag);
-        widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, parameter, clearNavigation);
     }
 
     #endregion

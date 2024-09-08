@@ -17,15 +17,10 @@ public abstract class BaseWidgetViewModel<T> : ObservableRecipient, IWidgetNavig
 
     #endregion
 
-    #region widget navigation
+    #region widget update
 
-    public event Action<object?>? NavigatedTo;
-    public event Action? NavigatedFrom;
-
-    public void OnNavigatedTo(object parameter)
+    public void UpdateWidgetViewModel(object parameter)
     {
-        var isInitialized = _isInitialized;
-
         // Load settings
         if (parameter is WidgetNavigationParameter navigationParameter)
         {
@@ -43,13 +38,6 @@ public abstract class BaseWidgetViewModel<T> : ObservableRecipient, IWidgetNavig
             LoadSettings(new T());
             _isInitialized = true;
         }
-
-        NavigatedTo?.Invoke(parameter);
-    }
-
-    public void OnNavigatedFrom()
-    {
-        NavigatedFrom?.Invoke();
     }
 
     #endregion

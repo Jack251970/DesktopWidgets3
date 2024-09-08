@@ -2,9 +2,9 @@
 
 public interface ISystemInfoService
 {
-    void StartMonitor(WidgetType type);
+    void StartMonitor(HardwareType type);
 
-    void StopMonitor(WidgetType type);
+    void StopMonitor(HardwareType type);
 
     void RegisterUpdatedCallback(HardwareType type, Action action);
 

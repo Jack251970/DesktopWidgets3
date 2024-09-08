@@ -5,7 +5,7 @@ namespace DesktopWidgets3.Models.Widget;
 
 public class BaseWidgetItem
 {
-    public required WidgetType Type { get; set; }
+    public required string Id { get; set; }
 
     public required int IndexTag { get; set; }
 
@@ -22,20 +22,7 @@ public class BaseWidgetItem
         }
     }
 
-    protected BaseWidgetSettings widgetSettings = null!;
-    public BaseWidgetSettings Settings
-    {
-        get => Type switch
-        {
-            WidgetType.Clock => (ClockWidgetSettings)widgetSettings,
-            WidgetType.Performance => (PerformanceWidgetSettings)widgetSettings,
-            WidgetType.Disk => (DiskWidgetSettings)widgetSettings,
-            WidgetType.FolderView => (FolderViewWidgetSettings)widgetSettings,
-            WidgetType.Network => (NetworkWidgetSettings)widgetSettings,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-        set => widgetSettings = value;
-    }
+    public BaseWidgetSettings Settings { get; set; } = new BaseWidgetSettings();
 }
 
 [JsonConverter(typeof(JsonWidgetItemConverter))]

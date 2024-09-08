@@ -1,14 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 using Windows.Graphics;
 
 using WinUIEx.Messaging;
 using Windows.Foundation;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-
 namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class WidgetWindow : WindowEx
@@ -57,9 +53,9 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region type & index
+    #region id & index
 
-    public WidgetType WidgetType { get; private set; }
+    public string Id { get; private set; } = null!;
 
     public int IndexTag { get; private set; }
 
@@ -69,13 +65,13 @@ public sealed partial class WidgetWindow : WindowEx
 
     public FrameShellPage ShellPage => (FrameShellPage)Content;
 
-    public Page FramePage => (Page)ShellPage.NavigationFrame.Content;
+    public FrameworkElement? FrameworkElement => ShellPage.FrameworkElement;
 
     #endregion
 
     #region page view model & settings
 
-    public ObservableRecipient? PageViewModel { get; private set; }
+    public object? PageViewModel => FrameworkElement?.DataContext;
 
     public BaseWidgetSettings Settings => ((IWidgetSettings)PageViewModel!).GetWidgetSettings();
 
@@ -180,9 +176,9 @@ public sealed partial class WidgetWindow : WindowEx
 
     public void InitializeSettings(BaseWidgetItem widgetItem)
     {
-        WidgetType = widgetItem.Type;
+        Id = widgetItem.Id;
         IndexTag = widgetItem.IndexTag;
-        ShellPage.ViewModel.WidgetNavigationService.NavigateTo(WidgetType, new WidgetNavigationParameter()
+        UpdatePageViewModel(new WidgetNavigationParameter()
         {
             Window = this,
             Settings = widgetItem.Settings
@@ -199,14 +195,26 @@ public sealed partial class WidgetWindow : WindowEx
         // Hide window icon from taskbar
         SystemHelper.HideWindowIconFromTaskbar(_handle);
 
-        // Get view model of current page
-        PageViewModel = ShellPage.NavigationFrame.GetPageViewModel() as ObservableRecipient;
-
         // Set window to bottom of other windows
         SystemHelper.SetWindowZPos(_handle, SystemHelper.WINDOWZPOS.ONBOTTOM);
 
         // Register window sink events
         _manager.WindowMessageReceived += OnWindowMessageReceived;
+    }
+
+    #endregion
+
+    #region update
+
+    public void UpdatePageViewModel(object parameter)
+    {
+        var shellPage = ShellPage;
+        var frameworkElement = FrameworkElement;
+        var pageViewModel = PageViewModel;
+        if (PageViewModel is IWidgetNavigation viewModel)
+        {
+            viewModel.UpdateWidgetViewModel(parameter);
+        }
     }
 
     #endregion

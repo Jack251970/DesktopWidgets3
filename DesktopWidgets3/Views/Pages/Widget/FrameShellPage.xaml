@@ -6,6 +6,10 @@
 
     <Grid x:Name="ContentArea">
         <Grid x:Name="WidgetTitleBar" />
-        <Frame x:Name="WidgetNavigationFrame" />
+        <ScrollViewer
+            x:Name="WidgetScrollViewer"
+            Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}"
+            HorizontalScrollMode="Disabled"
+            VerticalScrollBarVisibility="Auto" />
     </Grid>
 </Page>

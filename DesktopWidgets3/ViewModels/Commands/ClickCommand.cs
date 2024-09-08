@@ -34,10 +34,3 @@ public class ClickCommandWithParam(Action<object?> execute) : ICommand
 
     public void OnCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
-
-public class WidgetParameter
-{
-    public WidgetType WidgetType { get; set; }
-
-    public int IndexTag { get; set;  }
-}

@@ -4,18 +4,19 @@ namespace DesktopWidgets3.Models.Widget;
 
 internal class WidgetProperties
 {
-    // Widget Type
-    public static readonly DependencyProperty WidgetTypeProperty =
-        DependencyProperty.RegisterAttached("WidgetType", typeof(WidgetType), typeof(WidgetProperties), new PropertyMetadata(WidgetType.Clock));
+    // Widget Id
+    // TODO: Check if the length is correct.
+    public static readonly DependencyProperty IdProperty =
+        DependencyProperty.RegisterAttached("Id", typeof(string), typeof(WidgetProperties), new PropertyMetadata(Guid.NewGuid().ToString()));
 
-    public static WidgetType GetWidgetType(DependencyObject obj)
+    public static string GetId(DependencyObject obj)
     {
-        return (WidgetType)obj.GetValue(WidgetTypeProperty);
+        return (string)obj.GetValue(IdProperty);
     }
 
-    public static void SetWidgetType(DependencyObject obj, WidgetType value)
+    public static void SetId(DependencyObject obj, string value)
     {
-        obj.SetValue(WidgetTypeProperty, value);
+        obj.SetValue(IdProperty, value);
     }
 
     // Index Tag

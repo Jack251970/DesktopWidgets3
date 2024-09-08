@@ -53,37 +53,45 @@ internal class SystemInfoService : ISystemInfoService
         }
     }
 
-    public void StartMonitor(WidgetType type)
+    public void StartMonitor(HardwareType type)
     {
         switch (type)
         {
-            case WidgetType.Network:
+            case HardwareType.Network:
                 hardwareMonitor.NetworkEnabled = true;
                 break;
-            case WidgetType.Performance:
+            case HardwareType.CPU:
                 hardwareMonitor.CpuEnabled = true;
+                break;
+            case HardwareType.GPU:
                 hardwareMonitor.GpuEnabled = true;
+                break;
+            case HardwareType.Memory:
                 hardwareMonitor.MemoryEnabled = true;
                 break;
-            case WidgetType.Disk:
+            case HardwareType.Disk:
                 hardwareMonitor.DiskEnabled = true;
                 break;
         }
     }
 
-    public void StopMonitor(WidgetType type)
+    public void StopMonitor(HardwareType type)
     {
         switch (type)
         {
-            case WidgetType.Network:
+            case HardwareType.Network:
                 hardwareMonitor.NetworkEnabled = false;
                 break;
-            case WidgetType.Performance:
+            case HardwareType.CPU:
                 hardwareMonitor.CpuEnabled = false;
+                break;
+            case HardwareType.GPU:
                 hardwareMonitor.GpuEnabled = false;
+                break;
+            case HardwareType.Memory:
                 hardwareMonitor.MemoryEnabled = false;
                 break;
-            case WidgetType.Disk:
+            case HardwareType.Disk:
                 hardwareMonitor.DiskEnabled = false;
                 break;
         }

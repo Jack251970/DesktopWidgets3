@@ -131,7 +131,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     {
         await InitializeWidgetList();
 
-        var index = WidgetList.FindIndex(x => x.Type == widgetItem.Type && x.IndexTag == widgetItem.IndexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetItem.Id && x.IndexTag == widgetItem.IndexTag);
         if (index == -1)
         {
             WidgetList.Add(widgetItem);
@@ -150,7 +150,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
         foreach (var widget in widgetList)
         {
-            var index = WidgetList.FindIndex(x => x.Type == widget.Type && x.IndexTag == widget.IndexTag);
+            var index = WidgetList.FindIndex(x => x.Id == widget.Id && x.IndexTag == widget.IndexTag);
             if (index != -1)
             {
                 WidgetList[index] = widget;
@@ -164,7 +164,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     {
         await InitializeWidgetList();
 
-        var index = WidgetList.FindIndex(x => x.Type == widgetItem.Type && x.IndexTag == widgetItem.IndexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetItem.Id && x.IndexTag == widgetItem.IndexTag);
         if (index != -1)
         {
             WidgetList.RemoveAt(index);

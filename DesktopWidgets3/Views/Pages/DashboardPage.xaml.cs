@@ -9,7 +9,7 @@ public sealed partial class DashboardPage : Page
 {
     public DashboardViewModel ViewModel { get; }
 
-    private WidgetType _widgetType;
+    private string _widgetId;
     private int _indexTag = -1;
 
     private readonly INavigationService _navigationService;
@@ -27,8 +27,8 @@ public sealed partial class DashboardPage : Page
         var element = sender as FrameworkElement;
         if (element != null)
         {
-            var widgetType = WidgetProperties.GetWidgetType(element);
-            ViewModel.AllWidgetsItemClick(widgetType);
+            var widgetId = WidgetProperties.GetId(element);
+            ViewModel.AllWidgetsItemClick(widgetId);
         }
     }
 
@@ -37,7 +37,7 @@ public sealed partial class DashboardPage : Page
         var element = sender as FrameworkElement;
         if (element != null)
         {
-            _widgetType = WidgetProperties.GetWidgetType(element);
+            _widgetId = WidgetProperties.GetId(element);
             _indexTag = WidgetProperties.GetIndexTag(element);
 
             element.ContextFlyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
@@ -51,7 +51,7 @@ public sealed partial class DashboardPage : Page
         {
             if (await App.MainWindow.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
             {
-                ViewModel.MenuFlyoutItemDeleteWidgetClick(_widgetType, _indexTag);
+                ViewModel.MenuFlyoutItemDeleteWidgetClick(_widgetId, _indexTag);
             }
 
             _indexTag = -1;
@@ -63,34 +63,15 @@ public sealed partial class DashboardPage : Page
         var element = sender as FrameworkElement;
         if (element != null)
         {
-            _widgetType = WidgetProperties.GetWidgetType(element);
+            _widgetId = WidgetProperties.GetId(element);
             _indexTag = WidgetProperties.GetIndexTag(element);
 
             var parameter = new Dictionary<string, object>
             {
-                { "WidgetType", _widgetType },
+                { "Id", _widgetId },
                 { "IndexTag", _indexTag }
             };
-            switch (_widgetType)
-            {
-                case WidgetType.Clock:
-                    _navigationService.NavigateTo(typeof(ClockSettingsViewModel).FullName!, parameter);
-                    break;
-                case WidgetType.Performance:
-                    _navigationService.NavigateTo(typeof(PerformanceSettingsViewModel).FullName!, parameter);
-                    break;
-                case WidgetType.Disk:
-                    _navigationService.NavigateTo(typeof(DiskSettingsViewModel).FullName!, parameter);
-                    break;
-                case WidgetType.FolderView:
-                    _navigationService.NavigateTo(typeof(FolderViewSettingsViewModel).FullName!, parameter);
-                    break;
-                case WidgetType.Network:
-                    _navigationService.NavigateTo(typeof(NetworkSettingsViewModel).FullName!, parameter);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(sender), sender, null);
-            }
+            // TODO: _navigationService.NavigateTo("WidgetSettings", parameter);
 
             _indexTag = -1;
         }

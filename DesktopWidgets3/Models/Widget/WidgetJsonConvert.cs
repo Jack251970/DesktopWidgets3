@@ -16,25 +16,17 @@ internal class JsonWidgetItemConverter : JsonConverter
         var jsonObject = JObject.Load(reader);
 
         // phase settings
-        var widgetType = (WidgetType)Enum.Parse(typeof(WidgetType), jsonObject["Type"]?.Value<string>() ?? WidgetType.Clock.ToString());
+        var widgetId = jsonObject["Id"]?.Value<string>() ?? Guid.NewGuid().ToString();   // TODO: Check if Guid.NewGuid().ToString() has the right length.
         var indexTag = jsonObject["IndexTag"]?.Value<int>() ?? new Random().Next(100, 999);
         var isEnabled = jsonObject["IsEnabled"]?.Value<bool>() ?? false;
         var position = jsonObject["Position"]?.ToObject<PointInt32>(serializer) ?? new PointInt32(-1, -1);
-        var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? WidgetResourceService.GetDefaultSize(widgetType);
+        var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? new RectSize(240, 240);
         var displayMonitor = jsonObject["DisplayMonitor"]?.ToObject<DisplayMonitor>(serializer) ?? new(WidgetManagerService.GetMonitorInfo(null));
-        var widgetSettings = (BaseWidgetSettings?)(widgetType switch
-        {
-            WidgetType.Clock => jsonObject["Settings"]?.ToObject<ClockWidgetSettings>(serializer),
-            WidgetType.Performance => jsonObject["Settings"]?.ToObject<PerformanceWidgetSettings>(serializer),
-            WidgetType.Disk => jsonObject["Settings"]?.ToObject<DiskWidgetSettings>(serializer),
-            WidgetType.FolderView => jsonObject["Settings"]?.ToObject<FolderViewWidgetSettings>(serializer),
-            WidgetType.Network => jsonObject["Settings"]?.ToObject<NetworkWidgetSettings>(serializer),
-            _ => throw new ArgumentOutOfRangeException(nameof(reader), reader, null)
-        }) ?? WidgetResourceService.GetDefaultSettings(widgetType);
+        var widgetSettings = new BaseWidgetSettings();
 
         return new JsonWidgetItem
         {
-            Type = widgetType,
+            Id = widgetId,
             IndexTag = indexTag,
             IsEnabled = isEnabled,
             Position = position,
@@ -49,7 +41,7 @@ internal class JsonWidgetItemConverter : JsonConverter
         var widgetItem = value as JsonWidgetItem;
 
         var jsonObject = new JObject(
-            new JProperty("Type", widgetItem!.Type.ToString()),
+            new JProperty("Id", widgetItem!.Id),
             new JProperty("IndexTag", widgetItem.IndexTag),
             new JProperty("IsEnabled", widgetItem.IsEnabled),
             new JProperty("Position", JToken.FromObject(widgetItem.Position, serializer)),
