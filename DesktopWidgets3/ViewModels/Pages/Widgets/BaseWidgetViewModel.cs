@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Reflection.Metadata;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -9,15 +10,9 @@ namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
 public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavigationAware, IWidgetSettings where T : new()
 {
-    protected MenuFlyout RightTappedMenu
-    {
-        get;
-    }
+    protected MenuFlyout RightTappedMenu { get; }
 
-    public WidgetWindow WidgetWindow
-    {
-        get; private set;
-    } = null!;
+    public WidgetWindow WidgetWindow { get; private set; } = null!;
 
     public WidgetType WidgetType => WidgetWindow.WidgetType;
     public int IndexTag => WidgetWindow.IndexTag;
@@ -155,21 +150,13 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
         var widgetType = WidgetWindow.WidgetType;
         var indexTag = WidgetWindow.IndexTag;
         _widgetManagerService.DisableWidget(widgetType, indexTag);
-        var dashboardPageKey = typeof(DashboardViewModel).FullName!;
         var parameter = new Dictionary<string, object>
         {
             { "UpdateEvent", DashboardViewModel.UpdateEvent.Disable },
             { "WidgetType", WidgetWindow.WidgetType },
             { "IndexTag", WidgetWindow.IndexTag }
         };
-        if (_navigationService.GetCurrentPageKey() == dashboardPageKey)
-        {
-            _navigationService.NavigateTo(dashboardPageKey, parameter);
-        }
-        else
-        {
-            _navigationService.SetNextParameter(dashboardPageKey, parameter);
-        }
+        RefreshDashboardPage(parameter);
     }
 
     private async void DeleteWidget()
@@ -179,14 +166,23 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
             var widgetType = WidgetWindow.WidgetType;
             var indexTag = WidgetWindow.IndexTag;
             await _widgetManagerService.DeleteWidget(widgetType, indexTag);
-            var dashboardPageKey = typeof(DashboardViewModel).FullName!;
             var parameter = new Dictionary<string, object>
             {
                 { "UpdateEvent", DashboardViewModel.UpdateEvent.Delete },
                 { "WidgetType", WidgetWindow.WidgetType },
                 { "IndexTag", WidgetWindow.IndexTag }
             };
-            if (_navigationService.GetCurrentPageKey() == dashboardPageKey)
+            RefreshDashboardPage(parameter);
+        }
+    }
+
+    private void RefreshDashboardPage(object parameter)
+    {
+        var dashboardPageKey = typeof(DashboardViewModel).FullName!;
+        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+        {
+            var currentKey = _navigationService.GetCurrentPageKey();
+            if (currentKey == dashboardPageKey)
             {
                 _navigationService.NavigateTo(dashboardPageKey, parameter);
             }
@@ -194,7 +190,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
             {
                 _navigationService.SetNextParameter(dashboardPageKey, parameter);
             }
-        }
+        });
     }
 
     private void EnterEidtMode()
