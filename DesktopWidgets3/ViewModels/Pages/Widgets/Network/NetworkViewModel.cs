@@ -161,9 +161,13 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
             return;
         }
 
-        hardwareIdentifier = NetworkNames[value].Item2;
+        var newHardwareIdentifier = NetworkNames[value].Item2;
 
-        UpdateWidgetSettings(GetSettings());
+        if (hardwareIdentifier != newHardwareIdentifier)
+        {
+            hardwareIdentifier = newHardwareIdentifier;
+            UpdateWidgetSettings(GetSettings());
+        }
     }
 
     #region abstract methods
