@@ -7,5 +7,10 @@
   "Language": "csharp",
   "Website": "https://github.com/Jack251970/DesktopWidgets",
   "ExecuteFileName": "DesktopWidget3.Clock.dll",
-  "IcoPath": "Images\\Clock.png"
+  "IcoPath": "Images\\Clock.png",
+  "DefaultHeight": 240.0,
+  "DefaultWidth": 240.0,
+  "MinHeight": 240.0,
+  "MinWidth": 240.0,
+  "InNewThread": true
 }
