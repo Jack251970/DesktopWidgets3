@@ -1,5 +1,8 @@
-﻿namespace DesktopWidgets3.Widget.Models.ViewModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public class BaseViewModel
+namespace DesktopWidgets3.Widget.Models.ViewModel;
+
+public class BaseViewModel : ObservableRecipient
 {
+
 }
