@@ -1,8 +1,8 @@
-using DesktopWidget3.Clock.ViewModel;
+using DesktopWidget3.DigitalClock.ViewModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DesktopWidget3.Clock.View;
+namespace DesktopWidget3.DigitalClock.View;
 
 public sealed partial class ClockWidget : UserControl, IWidgetMenu
 {

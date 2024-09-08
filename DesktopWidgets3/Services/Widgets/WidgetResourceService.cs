@@ -1,4 +1,4 @@
-﻿using DesktopWidget3.Clock;
+﻿using DesktopWidget3.DigitalClock;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Services.Widgets;

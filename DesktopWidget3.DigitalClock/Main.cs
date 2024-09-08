@@ -1,7 +1,7 @@
-using DesktopWidget3.Clock.View;
+using DesktopWidget3.DigitalClock.View;
 using Microsoft.UI.Xaml;
 
-namespace DesktopWidget3.Clock;
+namespace DesktopWidget3.DigitalClock;
 
 public class Main : IWidget
 {

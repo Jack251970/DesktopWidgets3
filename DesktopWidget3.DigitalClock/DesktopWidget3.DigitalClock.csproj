@@ -4,14 +4,14 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-    <RootNamespace>DesktopWidget3.Clock</RootNamespace>
+    <RootNamespace>DesktopWidget3.DigitalClock</RootNamespace>
     <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &gt;= 8">win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &lt; 8">win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
   
   <ItemGroup>
-    <None Remove="View\ClockWidget.xaml" />
+    <None Remove="View\DigitalClockWidget.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,17 +25,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="View\ClockWidget.xaml">
+    <Page Update="View\DigitalClockWidget.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <None Update="widget.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Images\*.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  
 </Project>
