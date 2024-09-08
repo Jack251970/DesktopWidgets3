@@ -40,7 +40,29 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                 return;
             }
 
-            var progressCardData = GetDiskInfo(diskStats).GetProgressCardData();
+            var progressCardData = new List<ProgressCardData>();
+
+            for (var i = 0; i < diskStats.GetDiskCount(); i++)
+            {
+                var diskUsage = diskStats.GetDiskUsage(i);
+                var diskPartitions = diskUsage.PartitionDatas;
+                foreach (var partition in diskPartitions)
+                {
+                    if (partition.Name != null)
+                    {
+                        var loadValue = partition.Size == 0 ? 0f : (partition.Size - partition.FreeSpace) * 100f / partition.Size;
+
+                        progressCardData.Add(new ProgressCardData()
+                        {
+                            LeftTitle = partition.Name,
+                            RightTitle = FormatUtils.FormatUsedInfoByte(partition.Size - partition.FreeSpace, partition.Size),
+                            ProgressValue = loadValue
+                        });
+                    }
+                }
+            }
+
+            progressCardData.Sort((x, y) => string.Compare(x.LeftTitle, y.LeftTitle, StringComparison.Ordinal));
 
             if (progressCardData.Count == 0)
             {
@@ -116,29 +138,6 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
         }
     }
 
-    private static DiskInfo GetDiskInfo(DiskStats diskStats)
-    {
-        var diskInfo = new DiskInfo();
-
-        var diskCount = diskStats.GetDiskCount();
-        for (var i = 0; i < diskCount; i++)
-        {
-            var diskUsage = diskStats.GetDiskUsage(i);
-            var diskPartitions = diskUsage.PartitionDatas;
-            foreach (var partition in diskPartitions)
-            {
-                if (partition.Name != null)
-                {
-                    var loadValue = partition.Size == 0 ? 0f : (partition.Size - partition.FreeSpace) * 100f / partition.Size;
-                    diskInfo.AddItem(partition.Name, partition.DeviceId, FormatUtils.FormatPercentage(loadValue), loadValue, FormatUtils.FormatUsedInfoByte(partition.Size - partition.FreeSpace, partition.Size));
-                }
-            }
-        }
-        diskInfo.SortItems();
-
-        return diskInfo;
-    }
-
     #region abstract methods
 
     protected override void LoadSettings(DiskWidgetSettings settings)
@@ -183,51 +182,6 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
     }
 
     #endregion
-
-    private class DiskInfo
-    {
-        private readonly List<PartitionInfoItem> PartitionInfoItems = [];
-
-        public void AddItem(string partitionName, string partitionIdentifier, string partitionLoad, float partitionLoadValue, string partitionUsedInfo)
-        {
-            PartitionInfoItems.Add(new PartitionInfoItem()
-            {
-                Name = partitionName,
-                Identifier = partitionIdentifier,
-                PartitionLoad = partitionLoad,
-                PartitionLoadValue = partitionLoadValue,
-                PartitionUsedInfo = partitionUsedInfo
-            });
-        }
-
-        public void SortItems()
-        {
-            PartitionInfoItems.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
-        }
-
-        public List<ProgressCardData> GetProgressCardData()
-        {
-            return PartitionInfoItems.Select(x => new ProgressCardData()
-            {
-                LeftTitle = x.Name,
-                RightTitle = x.PartitionUsedInfo,
-                ProgressValue = x.PartitionLoadValue
-            }).ToList();
-        }
-
-        private class PartitionInfoItem
-        {
-            public string Name { get; set; } = null!;
-
-            public string Identifier { get; set; } = null!;
-
-            public string PartitionLoad { get; set; } = null!;
-
-            public float PartitionLoadValue { get; set; } = 0;
-
-            public string PartitionUsedInfo { get; set; } = null!;
-        }
-    }
 }
 
 public class ProgressCardData : INotifyPropertyChanged
