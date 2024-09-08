@@ -10,6 +10,7 @@ public sealed partial class ClockWidget : UserControl, IWidgetMenu
 
     public ClockWidget()
     {
+        DataContext = ViewModel;
         InitializeComponent();
     }
 

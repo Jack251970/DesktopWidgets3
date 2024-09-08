@@ -174,15 +174,10 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region initialize
 
-    public void InitializeSettings(BaseWidgetItem widgetItem)
+    public void InitializeWindow(BaseWidgetItem widgetItem)
     {
         Id = widgetItem.Id;
         IndexTag = widgetItem.IndexTag;
-        UpdatePageViewModel(new WidgetNavigationParameter()
-        {
-            Window = this,
-            Settings = widgetItem.Settings
-        });
     }
 
     public void InitializeTitleBar()
@@ -208,9 +203,6 @@ public sealed partial class WidgetWindow : WindowEx
 
     public void UpdatePageViewModel(object parameter)
     {
-        var shellPage = ShellPage;
-        var frameworkElement = FrameworkElement;
-        var pageViewModel = PageViewModel;
         if (PageViewModel is IWidgetNavigation viewModel)
         {
             viewModel.UpdateWidgetViewModel(parameter);

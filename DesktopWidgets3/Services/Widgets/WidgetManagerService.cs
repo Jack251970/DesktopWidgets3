@@ -1,4 +1,6 @@
-﻿using H.NotifyIcon;
+﻿using System.Reflection.Metadata;
+using Files.App.ViewModels.Previews;
+using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -195,24 +197,36 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     }
 
     // created action for widget window lifecycle
-    private void WidgetWindow_Created(Window window, JsonWidgetItem widget, RectSize minSize)
+    private void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize)
     {
         if (window is WidgetWindow widgetWindow)
         {
             // initialize widget framework element
-            var element = _widgetResourceService.GetWidgetFrameworkElement(widget.Id);
+            // TODO: Store view model here.
+            var element = _widgetResourceService.GetWidgetFrameworkElement(widgetItem.Id);
+            var viewModel = element.DataContext;
             widgetWindow.ShellPage.SetFrameworkElement(element);
 
+            // initialize widget window & settings
+            widgetWindow.InitializeWindow(widgetItem);
+
             // initialize widget settings
-            widgetWindow.InitializeSettings(widget);
+            if(viewModel is IWidgetNavigation nav)
+            {
+                nav.UpdateWidgetViewModel(new WidgetNavigationParameter()
+                {
+                    Window = window,
+                    Settings = widgetItem.Settings
+                });
+            }
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
             widgetWindow.MinSize = minSize;
-            widgetWindow.Size = widget.Size;
-            if (widget.Position.X != -1 && widget.Position.Y != -1)
+            widgetWindow.Size = widgetItem.Size;
+            if (widgetItem.Position.X != -1 && widgetItem.Position.Y != -1)
             {
-                widgetWindow.Position = widget.Position;
+                widgetWindow.Position = widgetItem.Position;
             }
 
             // initialize window
