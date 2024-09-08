@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="DesktopWidget3.Clock.View.ClockWidget"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:DesktopWidget3.Clock.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodel="using:DesktopWidget3.Clock.ViewModel"
+    d:DataContext="{d:DesignInstance Type=viewmodel:ClockViewModel}"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentArea" Background="Transparent">
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Vertical">
+            <TextBlock
+                Margin="0,10,0,0"
+                HorizontalAlignment="Center"
+                Text="{x:Bind ViewModel.SystemTime, Mode=OneWay}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

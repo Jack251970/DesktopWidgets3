@@ -56,3 +56,9 @@ global using DesktopWidgets3.Utils.Logger;
 
 // HardwareInfo
 global using HardwareInfo.Helpers;
+
+// Widget
+global using DesktopWidgets3.Widget.Contracts.Main;
+global using DesktopWidgets3.Widget.Contracts.ViewModel;
+global using DesktopWidgets3.Widget.Models.Main;
+global using DesktopWidgets3.Widget.Models.ViewModel;

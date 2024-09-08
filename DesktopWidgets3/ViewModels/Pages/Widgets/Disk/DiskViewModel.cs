@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using DesktopWidgets3.Widget.Contracts.ViewModel;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 

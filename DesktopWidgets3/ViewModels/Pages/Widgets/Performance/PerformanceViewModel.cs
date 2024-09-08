@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DesktopWidgets3.Widget.Contracts.ViewModel;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 

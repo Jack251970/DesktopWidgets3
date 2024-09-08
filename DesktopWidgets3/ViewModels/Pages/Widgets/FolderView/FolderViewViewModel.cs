@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.ComponentModel;
 using FilesApp = Files.App.App;
+using DesktopWidgets3.Widget.Contracts.ViewModel;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 

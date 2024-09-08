@@ -85,6 +85,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Clock\Clock.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
+    <ProjectReference Include="..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj" />
     <ProjectReference Include="..\Files.App.Storage\Files.App.Storage.csproj" />
     <ProjectReference Include="..\Files.App\Files.App.csproj" />
     <ProjectReference Include="..\Files.Core.Storage\Files.Core.Storage.csproj" />
