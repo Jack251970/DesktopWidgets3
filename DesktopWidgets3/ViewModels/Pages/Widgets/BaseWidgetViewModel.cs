@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Input;
 
 namespace DesktopWidgets3.ViewModels.Pages.Widgets;
 
-public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavigationAware, IWidgetSettings where T : new()
+public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, IWidgetNavigation, IWidgetSettings where T : new()
 {
     protected MenuFlyout RightTappedMenu { get; }
 
