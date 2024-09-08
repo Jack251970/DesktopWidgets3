@@ -1,10 +1,10 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Contracts.Main;
 
 public interface IAsyncWidget
 {
-    FrameworkElement CreateWidgetFrameworkElement();
+    Page CreateWidgetPage();
 
     Task InitWidgetClassAsync(WidgetInitContext context);
 

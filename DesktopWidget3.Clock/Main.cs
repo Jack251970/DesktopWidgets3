@@ -1,13 +1,13 @@
 using DesktopWidget3.Clock.View;
-using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidget3.Clock;
 
 public class Main : IWidget
 {
-    public FrameworkElement CreateWidgetFrameworkElement()
+    public Page CreateWidgetPage()
     {
-        return new ClockWidget();
+        return new ClockPage();
     }
 
     public void InitWidgetClass(WidgetInitContext context)

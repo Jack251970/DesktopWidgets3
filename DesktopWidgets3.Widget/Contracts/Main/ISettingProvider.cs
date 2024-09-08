@@ -1,8 +1,8 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Contracts.Main;
 
 public interface ISettingProvider
 {
-    FrameworkElement CreateSettingFrameworkElement();
+    Page CreateSettingPage();
 }
