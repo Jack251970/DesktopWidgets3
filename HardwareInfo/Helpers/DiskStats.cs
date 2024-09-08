@@ -39,9 +39,9 @@ public sealed class DiskStats : IDisposable
 
     public void LoadDisks()
     {
-        using var session = CimSession.Create(null);
-        DiskUsages.Clear();
+        var diskUsages = new Dictionary<string, Data>();
 
+        using var session = CimSession.Create(null);
         var disks = session.QueryInstances("root/cimv2", "WQL", "select * from Win32_DiskDrive");
         foreach (var obj in disks)
         {
@@ -96,8 +96,10 @@ public sealed class DiskStats : IDisposable
                 }
             }*/
 
-            DiskUsages.Add(diskDeviceId, new Data() { Name = diskName, DeviceId = diskDeviceId, Size = diskSize, PartitionDatas = paritionDatas });
+            diskUsages.Add(diskDeviceId, new Data() { Name = diskName, DeviceId = diskDeviceId, Size = diskSize, PartitionDatas = paritionDatas });
         }
+
+        DiskUsages = diskUsages;
     }
 
     public void GetData()
