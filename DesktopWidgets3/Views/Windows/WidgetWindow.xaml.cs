@@ -65,12 +65,14 @@ public sealed partial class WidgetWindow : WindowEx
 
     public FrameShellPage ShellPage => (FrameShellPage)Content;
 
+    // TODO: Issue?
     public FrameworkElement? FrameworkElement => ShellPage.FrameworkElement;
 
     #endregion
 
     #region page view model & settings
 
+    // TODO: Issue?
     public object? PageViewModel => FrameworkElement?.DataContext;
 
     public BaseWidgetSettings Settings => ((IWidgetSettings)PageViewModel!).GetWidgetSettings();
