@@ -55,8 +55,6 @@ public sealed class MemoryStats : IDisposable
         get; set;
     }
 
-    public List<float> MemChartValues { get; set; } = [];
-
     public void GetData()
     {
         Windows.Win32.System.SystemInformation.MEMORYSTATUSEX memStatus = default;

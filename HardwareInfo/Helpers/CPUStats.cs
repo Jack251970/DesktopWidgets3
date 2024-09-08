@@ -28,8 +28,6 @@ public sealed class CPUStats : IDisposable
 
     public ProcessStats[] ProcessCPUStats { get; set; }
 
-    public List<float> CpuChartValues { get; set; } = [];
-
     public CPUStats()
     {
         CpuUsage = 0;

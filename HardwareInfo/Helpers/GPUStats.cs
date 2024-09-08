@@ -24,8 +24,6 @@ public sealed class GPUStats : IDisposable
         public float Usage { get; set; }
 
         public float Temperature { get; set; }
-
-        public List<float> GpuChartValues { get; set; } = [];
     }
 
     public GPUStats()
