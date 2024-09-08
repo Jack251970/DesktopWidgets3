@@ -6,7 +6,7 @@ public class WidgetInitContext
     {
     }
 
-    public WidgetInitContext(WidgetMetadata metadata, IPublicAPI api)
+    public WidgetInitContext(WidgetMetadata metadata, IPublicAPIService api)
     {
         WidgetMetadata = metadata;
         API = api;
@@ -14,5 +14,5 @@ public class WidgetInitContext
 
     public WidgetMetadata WidgetMetadata { get; private set; } = null!;
 
-    public IPublicAPI API { get; set; } = null!;
+    public IPublicAPIService API { get; set; } = null!;
 }

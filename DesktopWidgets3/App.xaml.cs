@@ -97,6 +97,9 @@ public partial class App : Application
                 // Dependency Injection
                 services.AddSingleton<IDependencyService, DependencyService>();
 
+                // Public API
+                services.AddSingleton<IPublicAPIService, PublicAPIService>();
+
                 #endregion
 
                 #region Navigation Service
