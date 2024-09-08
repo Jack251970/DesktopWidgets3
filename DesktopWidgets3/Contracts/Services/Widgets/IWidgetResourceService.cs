@@ -2,11 +2,11 @@
 
 public interface IWidgetResourceService
 {
-    string GetWidgetLabel(WidgetType widgetType);
+    string GetWidgetLabel(string widgetId);
 
-    string GetWidgetIconSource(WidgetType widgetType);
+    string GetWidgetIconSource(string widgetId);
 
-    RectSize GetMinSize(WidgetType widgetType);
+    RectSize GetMinSize(string widgetId);
 
-    bool GetWidgetInNewThread(WidgetType widgetType);
+    bool GetWidgetInNewThread(string widgetId);
 }

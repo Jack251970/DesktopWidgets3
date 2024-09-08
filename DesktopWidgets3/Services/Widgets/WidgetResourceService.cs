@@ -1,112 +1,48 @@
-﻿using Files.App.Data.Enums;
-
-namespace DesktopWidgets3.Services.Widgets;
+﻿namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetResourceService(IAppSettingsService appSettingsService) : IWidgetResourceService
 {
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
 
-    public string GetWidgetLabel(WidgetType widgetType)
+    private readonly List<IWidget> Widgets = [];
+
+    public void Initalize()
     {
-        return widgetType switch
-        {
-            _ => $"Widget_{widgetType}_Label".GetLocalized(),
-        };
+
     }
 
-    public string GetWidgetIconSource(WidgetType widgetType)
+    public string GetWidgetLabel(string widgetId)
     {
-        return widgetType switch
-        {
-            _ => $"ms-appx:///Assets/FluentIcons/{widgetType}.png"
-        };
+        return "Clock";
     }
 
-    public static RectSize GetDefaultSize(WidgetType widgetType)
+    public string GetWidgetIconSource(string widgetId)
     {
-        return widgetType switch
-        {
-            WidgetType.Clock => new RectSize(280, 280),
-            WidgetType.Disk => new RectSize(345, 200),
-            WidgetType.FolderView => new RectSize(575, 480),
-            WidgetType.Network => new RectSize(345, 150),
-            WidgetType.Performance => new RectSize(345, 200),
-            _ => new RectSize(318, 200),
-        }; ;
+        return "ms-appx:///Assets/Icons/Clock.png";
     }
 
-    public RectSize GetMinSize(WidgetType widgetType)
+    public static RectSize GetDefaultSize(string widgetId)
     {
-        return widgetType switch
-        {
-            WidgetType.Clock => new RectSize(240, 240),
-            WidgetType.FolderView => new RectSize(516, 416),
-            WidgetType.Network => new RectSize(300, 150),
-            _ => new RectSize(318, 200),
-        };
+        return new RectSize(240, 240);
     }
 
-    public static BaseWidgetSettings GetDefaultSettings(WidgetType widgetType)
+    public RectSize GetMinSize(string widgetId)
     {
-        return widgetType switch
-        {
-            WidgetType.Clock => new ClockWidgetSettings()
-            {
-                ShowSeconds = true,
-            },
-            WidgetType.Disk => new DiskWidgetSettings()
-            {
-
-            },
-            WidgetType.FolderView => new FolderViewWidgetSettings()
-            {
-                FolderPath = "C:\\",
-                AllowNavigation = true,
-                MoveShellExtensionsToSubMenu = true,
-                SyncFolderPreferencesAcrossDirectories = false,
-                DetailsViewSize = DetailsViewSizeKind.Small,
-                ListViewSize = ListViewSizeKind.Small,
-                TilesViewSize = TilesViewSizeKind.Small,
-                GridViewSize = GridViewSizeKind.Small,
-                ColumnsViewSize = ColumnsViewSizeKind.Small,
-                ShowHiddenItems = false,
-                ShowDotFiles = true,
-                ShowProtectedSystemFiles = false,
-                AreAlternateStreamsVisible = false,
-                ShowFileExtensions = true,
-                ShowThumbnails = true,
-                ShowCheckboxesWhenSelectingItems = true,
-                DeleteConfirmationPolicy = DeleteConfirmationPolicies.Always,
-                ShowFileExtensionWarning = true,
-                ConflictsResolveOption = FileNameConflictResolveOptionType.GenerateNewName,
-                ShowRunningAsAdminPrompt = true,
-            },
-            WidgetType.Network => new NetworkWidgetSettings()
-            {
-                UseBps = false,
-            },
-            WidgetType.Performance => new PerformanceWidgetSettings()
-            {
-                UseCelsius = true,
-            },
-            _ => throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null),
-        };
+        return new RectSize(240, 240);
     }
 
-    public bool GetWidgetInNewThread(WidgetType widgetType)
+    public static BaseWidgetSettings GetDefaultSettings(string widgetId)
+    {
+        return new BaseWidgetSettings();
+    }
+
+    public bool GetWidgetInNewThread(string widgetId)
     {
         if (!_appSettingsService.MultiThread)
         {
             return false;
         }
 
-        return widgetType switch
-        {
-            WidgetType.Clock => true,
-            WidgetType.Disk => true,
-            WidgetType.Network => true,
-            WidgetType.Performance => true,
-            _ => false,
-        };
+        return true;
     }
 }
