@@ -70,7 +70,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
             var cpuUsage = cpuStats.CpuUsage;
             var cpuSpeed = FormatUtils.FormatCpuSpeed(cpuStats.CpuSpeed);
 
-            RunOnDispatcherQueue(() =>
+            TryEnqueue(() =>
             {
                 if (updating)
                 {
@@ -109,7 +109,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
             var gpuUsage = gpuStats.GetGPUUsage(_gpuActiveIndex);
             var gpuTemperature = gpuStats.GetGPUTemperature(_gpuActiveIndex);
 
-            RunOnDispatcherQueue(() =>
+            TryEnqueue(() =>
             {
                 if (updating)
                 {
@@ -147,7 +147,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel<PerformanceWidge
             var allMem = memoryStats.AllMem;
             var memoryUsedInfo = FormatUtils.FormatUsedInfoByte(usedMem, allMem);
 
-            RunOnDispatcherQueue(() =>
+            TryEnqueue(() =>
             {
                 if (updating)
                 {

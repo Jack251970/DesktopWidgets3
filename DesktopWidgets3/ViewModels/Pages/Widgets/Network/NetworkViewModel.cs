@@ -94,7 +94,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
             if (lastNetworkNamesIdentifiers.Count != networkNamesIdentifiers.Count ||
                 !lastNetworkNamesIdentifiers.SequenceEqual(networkNamesIdentifiers))
             {
-                RunOnDispatcherQueue(() =>
+                TryEnqueue(() =>
                 {
                     if (listUpdating)
                     {
@@ -115,7 +115,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel<NetworkWidgetSetting
 
             lastNetworkNamesIdentifiers = networkNamesIdentifiers;
 
-            RunOnDispatcherQueue(() =>
+            TryEnqueue(() =>
             {
                 if (updating)
                 {

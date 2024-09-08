@@ -69,7 +69,7 @@ public partial class DiskViewModel : BaseWidgetViewModel<DiskWidgetSettings>, IW
                 return;
             }
 
-            RunOnDispatcherQueue(() =>
+            TryEnqueue(() =>
             {
                 if (updating)
                 {
