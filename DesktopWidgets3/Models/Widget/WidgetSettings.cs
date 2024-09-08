@@ -2,14 +2,6 @@
 
 namespace DesktopWidgets3.Models.Widget;
 
-public class BaseWidgetSettings
-{
-    public virtual BaseWidgetSettings Clone()
-    {
-        return (BaseWidgetSettings)MemberwiseClone();
-    }
-}
-
 public class ClockWidgetSettings : BaseWidgetSettings
 {
     public bool ShowSeconds { get; set; } = true;

@@ -5,7 +5,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidget3.Clock.ViewModel;
 
-public partial class ClockViewModel : BaseViewModel, IWidgetUpdate, IWidgetClose
+public partial class ClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
 {
     #region view properties
 
