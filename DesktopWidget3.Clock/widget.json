@@ -1,0 +1,11 @@
+﻿{
+  "ID": "0ECADE17459B49F587BF81DC3A125110",
+  "Name": "Digital Clock",
+  "Description": "Show digital clock",
+  "Author": "Jack251970",
+  "Version": "1.0.0",
+  "Language": "csharp",
+  "Website": "https://github.com/Jack251970/DesktopWidgets",
+  "ExecuteFileName": "DesktopWidget3.Clock.dll",
+  "IcoPath": "Images\\Clock.png"
+}

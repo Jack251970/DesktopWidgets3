@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DesktopWidget3.Clock.Setting;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidget3.Clock.ViewModel;
 
-public partial class ClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
+public partial class ClockViewModel : BaseWidgetViewModel<ClockSetting>, IWidgetUpdate, IWidgetClose
 {
     #region view properties
 
@@ -47,6 +48,29 @@ public partial class ClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidge
 
         updating = false;
     }
+
+    #region abstract methods
+
+    protected override void LoadSettings(ClockSetting settings)
+    {
+        if (settings.ShowSeconds != (timingFormat == "T"))
+        {
+            timingFormat = settings.ShowSeconds ? "T" : "t";
+        }
+
+        SystemTime = DateTime.Now.ToString(timingFormat);
+        dispatcherQueueTimer.Start();
+    }
+
+    public override ClockSetting GetSettings()
+    {
+        return new ClockSetting
+        {
+            ShowSeconds = timingFormat == "T"
+        };
+    }
+
+    #endregion
 
     #region interfaces
 
