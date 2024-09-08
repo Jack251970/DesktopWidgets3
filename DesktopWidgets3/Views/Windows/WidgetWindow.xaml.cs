@@ -7,8 +7,7 @@ using Windows.Graphics;
 using WinUIEx.Messaging;
 using Windows.Foundation;
 using Microsoft.UI.Xaml;
-using DesktopWidgets3.Extensions;
-using DesktopWidgets3.Widget.Contracts.ViewModel;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -69,6 +68,8 @@ public sealed partial class WidgetWindow : WindowEx
     #region ui elements
 
     public FrameShellPage ShellPage => (FrameShellPage)Content;
+
+    public Page FramePage => (Page)ShellPage.NavigationFrame.Content;
 
     #endregion
 

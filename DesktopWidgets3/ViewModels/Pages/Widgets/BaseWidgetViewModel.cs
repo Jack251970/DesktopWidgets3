@@ -62,7 +62,7 @@ public abstract partial class BaseWidgetViewModel<T>: ObservableRecipient, INavi
         // Load settings
         if (parameter is WidgetNavigationParameter navigationParameter)
         {
-            WidgetWindow ??= navigationParameter.Window!;
+            WidgetWindow ??= (WidgetWindow)navigationParameter.Window!;
             if (navigationParameter.Settings is T settings)
             {
                 LoadSettings(settings);

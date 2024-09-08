@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using DesktopWidgets3.Extensions;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
@@ -61,7 +60,7 @@ internal class WidgetNavigationService(IWidgetPageService widgetPageService) : I
         {
             var vmBeforeNavigation = _frame.GetPageViewModel();
             _frame.GoBack();
-            if (vmBeforeNavigation is INavigationAware navigationAware)
+            if (vmBeforeNavigation is IWidgetNavigation navigationAware)
             {
                 navigationAware.OnNavigatedFrom();
             }
@@ -84,7 +83,7 @@ internal class WidgetNavigationService(IWidgetPageService widgetPageService) : I
             if (navigated)
             {
                 _lastParameter = parameter;
-                if (vmBeforeNavigation is INavigationAware navigationAware)
+                if (vmBeforeNavigation is IWidgetNavigation navigationAware)
                 {
                     navigationAware.OnNavigatedFrom();
                 }
@@ -106,7 +105,7 @@ internal class WidgetNavigationService(IWidgetPageService widgetPageService) : I
                 frame.BackStack.Clear();
             }
 
-            if (frame.GetPageViewModel() is INavigationAware navigationAware)
+            if (frame.GetPageViewModel() is IWidgetNavigation navigationAware)
             {
                 navigationAware.OnNavigatedTo(e.Parameter);
             }

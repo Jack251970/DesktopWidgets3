@@ -36,7 +36,6 @@ global using DesktopWidgets3.Helpers.Dialog;
 global using DesktopWidgets3.Models;
 global using DesktopWidgets3.Models.Component;
 global using DesktopWidgets3.Models.Widget;
-global using DesktopWidgets3.Models.Widget.Parameters;
 
 // ViewModels
 global using DesktopWidgets3.ViewModels.Commands;
@@ -62,5 +61,6 @@ global using DesktopWidgets3.Widget.Contracts.Framework;
 global using DesktopWidgets3.Widget.Contracts.Main;
 global using DesktopWidgets3.Widget.Contracts.ViewModel;
 global using DesktopWidgets3.Widget.Models.Main;
+global using DesktopWidgets3.Widget.Models.Parameter;
 global using DesktopWidgets3.Widget.Models.Setting;
 global using DesktopWidgets3.Widget.Models.ViewModel;

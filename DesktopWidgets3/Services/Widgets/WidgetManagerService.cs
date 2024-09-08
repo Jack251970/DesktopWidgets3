@@ -1,15 +1,18 @@
 ﻿using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Input;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IAppSettingsService appSettingsService, ISystemInfoService systemInfoService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal class WidgetManagerService(IAppSettingsService appSettingsService, INavigationService navigationService, ISystemInfoService systemInfoService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
     private readonly List<WidgetWindow> WidgetsList = [];
 
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
+    private readonly INavigationService _navigationService = navigationService;
     private readonly ISystemInfoService _systemInfoService = systemInfoService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
@@ -189,7 +192,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
     }
 
     // created action for widget window lifecycle
-    private static void WidgetWindow_Created(Window window, JsonWidgetItem widget, RectSize minSize)
+    private void WidgetWindow_Created(Window window, JsonWidgetItem widget, RectSize minSize)
     {
         if (window is WidgetWindow widgetWindow)
         {
@@ -208,10 +211,125 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
             // initialize window
             widgetWindow.InitializeWindow();
 
+            // register right tapped menu
+            RegisterRightTappedMenu(widgetWindow);
+
             // show window
             widgetWindow.Show(true);
         }
     }
+
+    #region right tapped menu
+
+    private MenuFlyout RightTappedMenu => GetRightTappedMenu();
+
+    private void RegisterRightTappedMenu(WidgetWindow widgetWindow)
+    {
+        var page = widgetWindow.FramePage;
+        if (page is IWidgetMenu menuPage)
+        {
+            var element = menuPage.GetWidgetMenuFrameworkElement();
+            if (element != null)
+            {
+                element.RightTapped += ShowRightTappedMenu;
+                return;
+            }
+        }
+        page.RightTapped += ShowRightTappedMenu;
+    }
+
+    private void ShowRightTappedMenu(object sender, RightTappedRoutedEventArgs e)
+    {
+        var element = sender as FrameworkElement;
+        if (element != null)
+        {
+            RightTappedMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
+            e.Handled = true;
+        }
+    }
+
+    private MenuFlyout GetRightTappedMenu()
+    {
+        var menuFlyout = new MenuFlyout();
+        var disableMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_DisableWidget_Text".GetLocalized()
+        };
+        disableMenuItem.Click += (s, e) => DisableWidget();
+        menuFlyout.Items.Add(disableMenuItem);
+
+        var deleteMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_DeleteWidget_Text".GetLocalized()
+        };
+        deleteMenuItem.Click += (s, e) => DeleteWidget();
+        menuFlyout.Items.Add(deleteMenuItem);
+
+        menuFlyout.Items.Add(new MenuFlyoutSeparator());
+
+        var enterMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_EnterEditMode_Text".GetLocalized()
+        };
+        enterMenuItem.Click += (s, e) => EnterEditMode();
+        menuFlyout.Items.Add(enterMenuItem);
+
+        return menuFlyout;
+    }
+
+    private async void DisableWidget()
+    {
+        // TODO: Cache right tapped menu here.
+        var widgetWindow = new WidgetWindow();
+        var widgetType = widgetWindow.WidgetType;
+        var indexTag = widgetWindow.IndexTag;
+        await DisableWidget(widgetType, indexTag);
+        var parameter = new Dictionary<string, object>
+        {
+            { "UpdateEvent", DashboardViewModel.UpdateEvent.Disable },
+            { "WidgetType", widgetWindow.WidgetType },
+            { "IndexTag", widgetWindow.IndexTag }
+        };
+        RefreshDashboardPage(parameter);
+    }
+
+    private async void DeleteWidget()
+    {
+        // TODO: Cache right tapped menu here.
+        var widgetWindow = new WidgetWindow();
+        if (await widgetWindow.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
+        {
+            var widgetType = widgetWindow.WidgetType;
+            var indexTag = widgetWindow.IndexTag;
+            await DeleteWidget(widgetType, indexTag);
+            var parameter = new Dictionary<string, object>
+            {
+                { "UpdateEvent", DashboardViewModel.UpdateEvent.Delete },
+                { "WidgetType", widgetWindow.WidgetType },
+                { "IndexTag", widgetWindow.IndexTag }
+            };
+            RefreshDashboardPage(parameter);
+        }
+    }
+
+    private void RefreshDashboardPage(object parameter)
+    {
+        var dashboardPageKey = typeof(DashboardViewModel).FullName!;
+        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+        {
+            var currentKey = _navigationService.GetCurrentPageKey();
+            if (currentKey == dashboardPageKey)
+            {
+                _navigationService.NavigateTo(dashboardPageKey, parameter);
+            }
+            else
+            {
+                _navigationService.SetNextParameter(dashboardPageKey, parameter);
+            }
+        });
+    }
+
+    #endregion
 
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
     {
@@ -279,6 +397,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, ISys
             {
                 widgetWindow?.ShellPage?.ViewModel.WidgetNavigationService.NavigateTo(widgetType, new WidgetNavigationParameter()
                 {
+                    Window = widgetWindow,
                     Settings = settings
                 });
             });
