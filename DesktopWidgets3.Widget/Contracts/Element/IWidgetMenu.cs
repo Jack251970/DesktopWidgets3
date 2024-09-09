@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 
-namespace DesktopWidgets3.Widget.Contracts.Framework;
+namespace DesktopWidgets3.Widget.Contracts.Element;
 
 public interface IWidgetMenu
 {
