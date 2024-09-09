@@ -16,9 +16,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private readonly ISystemInfoService _systemInfoService = systemInfoService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
-    private string currentWidgetId = StringUtils.GetGuid();
-    private int currentIndexTag = -1;
-
     #region widget window
 
     public async Task Initialize()
@@ -73,6 +70,15 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
         // create widget window
         await CreateWidgetWindow(widget);
+
+        // update dashboard page
+        var parameter = new Dictionary<string, object>
+        {
+            { "UpdateEvent", DashboardViewModel.UpdateEvent.Add },
+            { "Id", widget.Id },
+            { "IndexTag", widget.IndexTag }
+        };
+        RefreshDashboardPage(parameter);
     }
 
     public async Task EnableWidget(string widgetId, int indexTag)
@@ -171,12 +177,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private async Task CreateWidgetWindow(JsonWidgetItem widget)
     {
-        // load widget info
-        currentWidgetId = widget.Id;
-        currentIndexTag = widget.IndexTag;
-
         // configure widget window lifecycle actions
-        var minSize = _widgetResourceService.GetMinSize(currentWidgetId);
+        var minSize = _widgetResourceService.GetMinSize(widget.Id);
         var lifecycleActions = new WindowLifecycleActions()
         {
             Window_Created = (window) => WidgetWindow_Created(window, widget, minSize),
@@ -184,7 +186,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         };
 
         // create widget window
-        var newThread = _widgetResourceService.GetWidgetInNewThread(currentWidgetId);
+        var newThread = _widgetResourceService.GetWidgetInNewThread(widget.Id);
         var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(WindowsExtensions.ActivationType.Widget, widget.Settings, newThread, lifecycleActions);
 
         // TODO: Now handle monitor by widget itself.
@@ -432,24 +434,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             widget.Settings = settings;
             await _appSettingsService.UpdateWidgetsList(widget);
         }
-    }
-
-    #endregion
-
-    #region dashboard
-
-    // TODO: Move these methods to widget resource service.
-
-    public DashboardWidgetItem GetCurrentEnabledWidget()
-    {
-        return new DashboardWidgetItem()
-        {
-            Id = currentWidgetId,
-            IndexTag = currentIndexTag,
-            IsEnabled = true,
-            Label = _widgetResourceService.GetWidgetLabel(currentWidgetId),
-            Icon = _widgetResourceService.GetWidgetIconSource(currentWidgetId),
-        };
     }
 
     #endregion

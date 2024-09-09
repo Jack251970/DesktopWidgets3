@@ -7,6 +7,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 {
     public enum UpdateEvent
     {
+        Add,
         Disable,
         Delete
     }
@@ -34,7 +35,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     {
         if (!_isInitialized)
         {
-            yourWidgetItems = await _widgetResourceService.GetYourWidgetItemsAsync();
+            yourWidgetItems = await _widgetResourceService.GetYourDashboardItemsAsync();
             foreach (var item in yourWidgetItems)
             {
                 item.EnabledChangedCallback = WidgetEnabledChanged;
@@ -54,7 +55,13 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
                 var widgetId = (string)widgetIdObj;
                 var indexTag = (int)indexTagObj;
                 
-                if (updateEvent == UpdateEvent.Disable)
+                if (updateEvent == UpdateEvent.Add)
+                {
+                    var widgetItem = _widgetResourceService.GetDashboardItem(widgetId, indexTag);
+                    widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+                    yourWidgetItems.Add(widgetItem);
+                }
+                else if (updateEvent == UpdateEvent.Disable)
                 {
                     var widgetItem = yourWidgetItems.First(x => x.Id == widgetId && x.IndexTag == indexTag);
                     widgetItem.IsEnabled = false;
@@ -78,13 +85,6 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     internal async void AllWidgetsItemClick(string widgetId)
     {
         await _widgetManagerService.AddWidget(widgetId);
-
-        var widgetItem = _widgetManagerService.GetCurrentEnabledWidget();
-        widgetItem.IsEnabled = true;
-        widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
-        yourWidgetItems.Add(widgetItem);
-
-        RefreshYourWidgets();
     }
 
     internal async void MenuFlyoutItemDeleteWidgetClick(string widgetId, int indexTag)
@@ -114,7 +114,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 
     private void LoadAllWidgets()
     {
-        var allWidgets = _widgetResourceService.GetAllWidgetItems();
+        var allWidgets = _widgetResourceService.GetAllDashboardItems();
 
         AllWidgets.Clear();
 

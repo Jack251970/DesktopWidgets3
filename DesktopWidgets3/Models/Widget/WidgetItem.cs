@@ -62,8 +62,5 @@ public class DashboardWidgetItem : BaseWidgetItem
         }
     }
 
-    public Action<DashboardWidgetItem>? EnabledChangedCallback
-    {
-        get; set;
-    }
+    public Action<DashboardWidgetItem>? EnabledChangedCallback { get; set; }
 }

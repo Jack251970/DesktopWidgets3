@@ -16,8 +16,6 @@ public interface IWidgetManagerService
 
     bool IsWidgetEnabled(string widgetId, int indexTag);
 
-    DashboardWidgetItem GetCurrentEnabledWidget();
-
     void EnterEditMode();
 
     void SaveAndExitEditMode();

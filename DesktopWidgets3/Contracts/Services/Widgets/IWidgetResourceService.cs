@@ -6,15 +6,13 @@ public interface IWidgetResourceService
 {
     void Initalize();
 
-    List<DashboardWidgetItem> GetAllWidgetItems();
+    List<DashboardWidgetItem> GetAllDashboardItems();
 
-    Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync();
+    Task<List<DashboardWidgetItem>> GetYourDashboardItemsAsync();
+
+    DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag);
 
     FrameworkElement GetWidgetFrameworkElement(string widgetId);
-
-    string GetWidgetLabel(string widgetId);
-
-    string GetWidgetIconSource(string widgetId);
 
     RectSize GetDefaultSize(string widgetId);
 

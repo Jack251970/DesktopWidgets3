@@ -88,32 +88,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #region Metadata
 
-    public string GetWidgetLabel(string widgetId)
-    {
-        foreach (var widget in AllWidgets)
-        {
-            if (widget.Metadata.ID == widgetId)
-            {
-                return widget.Metadata.Name;
-            }
-        }
-
-        return string.Empty;
-    }
-
-    public string GetWidgetIconSource(string widgetId)
-    {
-        foreach (var widget in AllWidgets)
-        {
-            if (widget.Metadata.ID == widgetId)
-            {
-                return widget.Metadata.IcoPath;
-            }
-        }
-
-        return string.Empty;
-    }
-
     public RectSize GetDefaultSize(string widgetId)
     {
         foreach (var widget in AllWidgets)
@@ -168,7 +142,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #region Dashboard
 
-    public List<DashboardWidgetItem> GetAllWidgetItems()
+    public List<DashboardWidgetItem> GetAllDashboardItems()
     {
         List<DashboardWidgetItem> dashboardItemList = [];
 
@@ -186,7 +160,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return dashboardItemList;
     }
 
-    public async Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync()
+    public async Task<List<DashboardWidgetItem>> GetYourDashboardItemsAsync()
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
 
@@ -198,13 +172,51 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             {
                 Id = widgetId,
                 IndexTag = widget.IndexTag,
-                Label = GetWidgetLabel(widgetId),
+                Label = GetWidgetName(widgetId),
                 IsEnabled = widget.IsEnabled,
                 Icon = GetWidgetIconSource(widgetId),
             });
         }
 
         return dashboardItemList;
+    }
+
+    public DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag)
+    {
+        return new DashboardWidgetItem()
+        {
+            Id = widgetId,
+            IndexTag = indexTag,
+            IsEnabled = true,
+            Label = GetWidgetName(widgetId),
+            Icon = GetWidgetIconSource(widgetId),
+        };
+    }
+
+    private string GetWidgetName(string widgetId)
+    {
+        foreach (var widget in AllWidgets)
+        {
+            if (widget.Metadata.ID == widgetId)
+            {
+                return widget.Metadata.Name;
+            }
+        }
+
+        return string.Empty;
+    }
+
+    private string GetWidgetIconSource(string widgetId)
+    {
+        foreach (var widget in AllWidgets)
+        {
+            if (widget.Metadata.ID == widgetId)
+            {
+                return widget.Metadata.IcoPath;
+            }
+        }
+
+        return string.Empty;
     }
 
     #endregion
