@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Windows.Forms;
 
 namespace DesktopWidgets3.Helpers.Widgets;
 
@@ -39,19 +38,19 @@ internal static class WidgetsLoader
             }
             catch (Exception e) when (assembly == null)
             {
-                LogExtensions.LogError(ClassName, e, $"|WidgetsLoader.DotNetWidgets|Couldn't load assembly for the widget: {metadata.Name}");
+                LogExtensions.LogError(ClassName, e, $"Couldn't load assembly for the widget: {metadata.Name}");
             }
             catch (InvalidOperationException e)
             {
-                LogExtensions.LogError(ClassName, e, $"|WidgetsLoader.DotNetWidgets|Can't find the required IWidget interface for the widget: <{metadata.Name}>");
+                LogExtensions.LogError(ClassName, e, $"Can't find the required IWidget interface for the widget: <{metadata.Name}>");
             }
             catch (ReflectionTypeLoadException e)
             {
-                LogExtensions.LogError(ClassName, e, $"|WidgetsLoader.DotNetWidgets|The GetTypes method was unable to load assembly types for the widget: <{metadata.Name}>");
+                LogExtensions.LogError(ClassName, e, $"The GetTypes method was unable to load assembly types for the widget: <{metadata.Name}>");
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"|WidgetsLoader.DotNetWidgets|The following widget has errored and can not be loaded: <{metadata.Name}>");
+                LogExtensions.LogError(ClassName, e, $"The following widget has errored and can not be loaded: <{metadata.Name}>");
             }
 
             if (widget == null)
@@ -73,10 +72,10 @@ internal static class WidgetsLoader
 
             _ = Task.Run(() =>
             {
-                MessageBox.Show($"{errorMessage}{Environment.NewLine}{Environment.NewLine}" +
-                                $"{errorWidgetString}{Environment.NewLine}{Environment.NewLine}" +
-                                $"Please refer to the logs for more information", "",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
+                    $"{errorMessage}{Environment.NewLine}{Environment.NewLine}" +
+                    $"{errorWidgetString}{Environment.NewLine}{Environment.NewLine}" +
+                    $"Please refer to the logs for more information"));
             });
         }
 

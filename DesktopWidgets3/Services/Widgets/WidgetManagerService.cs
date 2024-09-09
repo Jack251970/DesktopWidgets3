@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata;
-using Files.App.ViewModels.Previews;
-using H.NotifyIcon;
+﻿using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;

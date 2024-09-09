@@ -243,7 +243,7 @@ public partial class App : Application
             _ = Task.Run(() =>
             {
                 GetService<IAppNotificationService>().Show(string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
-                    ex?.ToString(), AppContext.BaseDirectory));
+                    ex?.ToString()));
             });
         }
     }

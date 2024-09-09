@@ -15,5 +15,40 @@ public static class WidgetsManager
     {
         AllWidgetsMetadata = WidgetsConfig.Parse(Directories);
         AllWidgets = WidgetsLoader.Widgets(AllWidgetsMetadata);
+        InstallResourceFiles(AllWidgetsMetadata);
     }
+
+    #region Xaml Resources
+
+    private static void InstallResourceFiles(List<WidgetMetadata> widgetsMetadata)
+    {
+        foreach (var metadata in widgetsMetadata)
+        {
+            InstallResourceFiles(metadata);
+        }
+    }
+
+    private static void InstallResourceFiles(WidgetMetadata metadata)
+    {
+        var widgetDirectory = metadata.WidgetDirectory;
+        var xamlFiles = Directory.EnumerateFiles(widgetDirectory, "*.xaml", SearchOption.AllDirectories);
+        var xbfFiles = Directory.EnumerateFiles(widgetDirectory, "*.xbf", SearchOption.AllDirectories);
+        var resourceFiles = xamlFiles.Concat(xbfFiles);
+
+        foreach (var resourceFile in resourceFiles)
+        {
+            var relativePath = Path.GetRelativePath(widgetDirectory, resourceFile);
+            // TODO: Initialize AppContext.BaseDirector in Constants.
+            var destinationPath = Path.Combine(AppContext.BaseDirectory, relativePath);
+
+            var destinationDirectory = Path.GetDirectoryName(destinationPath);
+            if (!(string.IsNullOrEmpty(destinationDirectory) || Directory.Exists(destinationDirectory)))
+            {
+                Directory.CreateDirectory(destinationDirectory);
+            }
+            File.Copy(resourceFile, destinationPath, true);
+        }
+    }
+
+    #endregion
 }
