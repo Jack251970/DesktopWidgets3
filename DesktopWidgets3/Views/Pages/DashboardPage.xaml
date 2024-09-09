@@ -54,7 +54,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Image Width="20">
                                         <Image.Source>
-                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneTime}" />
+                                            <BitmapImage UriSource="{x:Bind IcoPath, Mode=OneTime}" />
                                         </Image.Source>
                                     </Image>
                                     <TextBlock
@@ -126,7 +126,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Image Width="20">
                                         <Image.Source>
-                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneTime}" />
+                                            <BitmapImage UriSource="{x:Bind IcoPath, Mode=OneTime}" />
                                         </Image.Source>
                                     </Image>
                                     <TextBlock
@@ -190,7 +190,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Image Width="20">
                                         <Image.Source>
-                                            <BitmapImage UriSource="{x:Bind Icon, Mode=OneTime}" />
+                                            <BitmapImage UriSource="{x:Bind IcoPath, Mode=OneTime}" />
                                         </Image.Source>
                                     </Image>
                                     <TextBlock

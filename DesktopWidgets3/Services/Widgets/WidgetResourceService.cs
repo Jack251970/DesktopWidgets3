@@ -153,7 +153,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 Id = widget.Metadata.ID,
                 IndexTag = 0,
                 Label = widget.Metadata.Name,
-                Icon = widget.Metadata.IcoPath,
+                IcoPath = widget.Metadata.IcoPath,
             });
         }
 
@@ -174,7 +174,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 IndexTag = widget.IndexTag,
                 Label = GetWidgetName(widgetId),
                 IsEnabled = widget.IsEnabled,
-                Icon = GetWidgetIconSource(widgetId),
+                IcoPath = GetWidgetIcoPath(widgetId),
             });
         }
 
@@ -189,7 +189,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             IndexTag = indexTag,
             IsEnabled = true,
             Label = GetWidgetName(widgetId),
-            Icon = GetWidgetIconSource(widgetId),
+            IcoPath = GetWidgetIcoPath(widgetId),
         };
     }
 
@@ -206,7 +206,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return string.Empty;
     }
 
-    private string GetWidgetIconSource(string widgetId)
+    private string GetWidgetIcoPath(string widgetId)
     {
         foreach (var widget in AllWidgets)
         {

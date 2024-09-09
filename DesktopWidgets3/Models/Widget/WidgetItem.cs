@@ -47,7 +47,7 @@ public class DashboardWidgetItem : BaseWidgetItem
 
     public string? Description { get; set; }
 
-    public string? Icon { get; set; }
+    public string? IcoPath { get; set; }
 
     public new bool IsEnabled
     {
