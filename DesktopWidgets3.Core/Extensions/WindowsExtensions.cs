@@ -170,6 +170,7 @@ public static class WindowsExtensions
             // invoke action before window closing
             lifecycleHandler?.LifecycleActions.Window_Closing?.Invoke(window);
 
+            // close window
             window.Close();
 
             // invoke action after window closing
