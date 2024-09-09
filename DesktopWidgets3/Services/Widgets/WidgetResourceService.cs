@@ -76,7 +76,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 }
                 catch (Exception e)
                 {
-                    LogExtensions.LogError(ClassName, e, $"Error creating widget {widget.Metadata.ID}");
+                    LogExtensions.LogError(ClassName, e, $"Error creating widget framework element for widget {widget.Metadata.ID}");
                 }
             }
         }
@@ -104,7 +104,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return new BaseWidgetSettings();
     }
 
-    public FrameworkElement GetSettingPage(string widgetId)
+    public FrameworkElement GetSettingFrameworkElement(string widgetId)
     {
         foreach (var widget in AllWidgets)
         {
@@ -112,7 +112,14 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             {
                 if (widget.Widget is IWidgetSetting widgetSetting)
                 {
-                    return widgetSetting.CreateSettingPage();
+                    try
+                    {
+                        return widgetSetting.CreateSettingPage();
+                    }
+                    catch (Exception e)
+                    {
+                        LogExtensions.LogError(ClassName, e, $"Error creating setting framework element for widget {widget.Metadata.ID}");
+                    }
                 }
             }
         }

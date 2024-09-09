@@ -20,5 +20,7 @@ public interface IWidgetResourceService
 
     BaseWidgetSettings GetDefaultSetting(string widgetId);
 
+    FrameworkElement GetSettingFrameworkElement(string widgetId);
+
     bool GetWidgetInNewThread(string widgetId);
 }
