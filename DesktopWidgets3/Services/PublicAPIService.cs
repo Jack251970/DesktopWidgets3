@@ -1,15 +1,6 @@
 ﻿namespace DesktopWidgets3.Services;
 
-internal class PublicAPIService : IPublicAPIService
+internal class PublicAPIService(IWidgetManagerService widgetManagerService) : IPublicAPIService
 {
-    public T LoadSettingJsonStorage<T>() where T : new()
-    {
-        // TODO: Implement LoadSettingJsonStorage
-        return new T();
-    }
-
-    public void SaveSettingJsonStorage<T>() where T : new()
-    {
-        // TODO: Implement SaveSettingJsonStorage
-    }
+    private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
 }

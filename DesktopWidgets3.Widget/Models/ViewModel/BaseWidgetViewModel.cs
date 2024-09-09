@@ -33,14 +33,4 @@ public abstract class BaseWidgetViewModel : ObservableRecipient
     }
 
     #endregion
-
-    #region widget setting
-
-    protected async void UpdateWidgetSettings(BaseWidgetSettings settings)
-    {
-        // TODO
-        // await _widgetManagerService.UpdateWidgetSettings(WidgetType, IndexTag, settings);
-    }
-
-    #endregion
 }
