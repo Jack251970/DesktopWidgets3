@@ -104,6 +104,22 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return new BaseWidgetSettings();
     }
 
+    public Page GetSettingPage(string widgetId)
+    {
+        foreach (var widget in AllWidgets)
+        {
+            if (widget.Metadata.ID == widgetId)
+            {
+                if (widget.Widget is IWidgetSetting widgetSetting)
+                {
+                    return widgetSetting.CreateSettingPage();
+                }
+            }
+        }
+
+        return new Page();
+    }
+
     #endregion
 
     #region Metadata
