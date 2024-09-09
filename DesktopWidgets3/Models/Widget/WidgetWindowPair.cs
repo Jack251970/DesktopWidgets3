@@ -1,8 +1,12 @@
-﻿namespace DesktopWidgets3.Models.Widget;
+﻿using Microsoft.UI.Xaml.Controls;
+
+namespace DesktopWidgets3.Models.Widget;
 
 public class WidgetWindowPair
 {
     public WidgetWindow Window { get; internal set; } = null!;
+
+    public MenuFlyout? Menu { get; internal set; }
 
     public BaseWidgetViewModel? ViewModel { get; internal set; }
 
@@ -21,8 +25,7 @@ public class WidgetWindowPair
 
     public override int GetHashCode()
     {
-        return Window.Id.GetHashCode()
-            ^ Window.IndexTag.GetHashCode();
+        return Window.Id.GetHashCode() ^ Window.IndexTag.GetHashCode();
     }
 
     public override string ToString()

@@ -13,6 +13,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private readonly List<WidgetWindow> AllWidgetWindows = [];
 
+    // cached widget id and index tag for widget menu
+    private string _widgetId = string.Empty;
+    private int _indexTag = -1;
+
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly ISystemInfoService _systemInfoService = systemInfoService;
@@ -236,7 +240,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             widgetWindow.InitializeWindow();
 
             // register right tapped menu
-            RegisterRightTappedMenu(widgetWindow);
+            var widgetMenu = RegisterWidgetMenu(widgetWindow);
 
             // show window
             widgetWindow.Show(true);
@@ -245,126 +249,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             AllWidgets.Add(new WidgetWindowPair()
             {
                 Window = widgetWindow,
-                ViewModel = viewModel
+                ViewModel = viewModel,
+                Menu = widgetMenu
             });
             AllWidgetWindows.Add(widgetWindow);
         }
     }
-
-    #region right tapped menu
-
-    private MenuFlyout RightTappedMenu => GetRightTappedMenu();
-
-    private void RegisterRightTappedMenu(WidgetWindow widgetWindow)
-    {
-        var frameworkElement = widgetWindow.FrameworkElement;
-        if (frameworkElement is IWidgetMenu menu)
-        {
-            var element = menu.GetWidgetMenuFrameworkElement();
-            if (element != null)
-            {
-                element.RightTapped += ShowRightTappedMenu;
-                return;
-            }
-        }
-        if (frameworkElement != null)
-        {
-            frameworkElement.RightTapped += ShowRightTappedMenu;
-        }
-    }
-
-    private void ShowRightTappedMenu(object sender, RightTappedRoutedEventArgs e)
-    {
-        var element = sender as FrameworkElement;
-        if (element != null)
-        {
-            RightTappedMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
-            e.Handled = true;
-        }
-    }
-
-    private MenuFlyout GetRightTappedMenu()
-    {
-        var menuFlyout = new MenuFlyout();
-        var disableMenuItem = new MenuFlyoutItem
-        {
-            Text = "MenuFlyoutItem_DisableWidget_Text".GetLocalized()
-        };
-        disableMenuItem.Click += (s, e) => DisableWidget();
-        menuFlyout.Items.Add(disableMenuItem);
-
-        var deleteMenuItem = new MenuFlyoutItem
-        {
-            Text = "MenuFlyoutItem_DeleteWidget_Text".GetLocalized()
-        };
-        deleteMenuItem.Click += (s, e) => DeleteWidget();
-        menuFlyout.Items.Add(deleteMenuItem);
-
-        menuFlyout.Items.Add(new MenuFlyoutSeparator());
-
-        var enterMenuItem = new MenuFlyoutItem
-        {
-            Text = "MenuFlyoutItem_EnterEditMode_Text".GetLocalized()
-        };
-        enterMenuItem.Click += (s, e) => EnterEditMode();
-        menuFlyout.Items.Add(enterMenuItem);
-
-        return menuFlyout;
-    }
-
-    private async void DisableWidget()
-    {
-        // TODO: Cache right tapped menu here.
-        var widgetWindow = new WidgetWindow();
-        var widgetId = widgetWindow.Id;
-        var indexTag = widgetWindow.IndexTag;
-        await DisableWidget(widgetId, indexTag);
-        var parameter = new Dictionary<string, object>
-        {
-            { "UpdateEvent", DashboardViewModel.UpdateEvent.Disable },
-            { "string", widgetWindow.Id },
-            { "IndexTag", widgetWindow.IndexTag }
-        };
-        RefreshDashboardPage(parameter);
-    }
-
-    private async void DeleteWidget()
-    {
-        // TODO: Cache right tapped menu here.
-        var widgetWindow = new WidgetWindow();
-        if (await widgetWindow.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
-        {
-            var widgetId = widgetWindow.Id;
-            var indexTag = widgetWindow.IndexTag;
-            await DeleteWidget(widgetId, indexTag);
-            var parameter = new Dictionary<string, object>
-            {
-                { "UpdateEvent", DashboardViewModel.UpdateEvent.Delete },
-                { "string", widgetWindow.Id },
-                { "IndexTag", widgetWindow.IndexTag }
-            };
-            RefreshDashboardPage(parameter);
-        }
-    }
-
-    private void RefreshDashboardPage(object parameter)
-    {
-        var dashboardPageKey = typeof(DashboardViewModel).FullName!;
-        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-        {
-            var currentKey = _navigationService.GetCurrentPageKey();
-            if (currentKey == dashboardPageKey)
-            {
-                _navigationService.NavigateTo(dashboardPageKey, parameter);
-            }
-            else
-            {
-                _navigationService.SetNextParameter(dashboardPageKey, parameter);
-            }
-        });
-    }
-
-    #endregion
 
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
     {
@@ -425,6 +315,131 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             }
         }
         return null;
+    }
+
+    private MenuFlyout? GetWidgetMenu(string widgetId, int indexTag)
+    {
+        foreach (var widget in AllWidgets)
+        {
+            if (widget.Window.Id == widgetId && widget.Window.IndexTag == indexTag)
+            {
+                return widget.Menu;
+            }
+        }
+        return null;
+    }
+
+    #endregion
+
+    #region widget menu
+
+    private MenuFlyout? RegisterWidgetMenu(WidgetWindow widgetWindow)
+    {
+        var element = widgetWindow.FrameworkElement;
+        if (element is IWidgetMenu menu)
+        {
+            element = menu.GetWidgetMenuFrameworkElement();
+        }
+        if (element is not null)
+        {
+            WidgetProperties.SetId(element, widgetWindow.Id);
+            WidgetProperties.SetIndexTag(element, widgetWindow.IndexTag);
+            element.RightTapped += ShowWidgetMenu;
+            return GetWidgetMenu();
+        }
+        return null;
+    }
+
+    private MenuFlyout GetWidgetMenu()
+    {
+        var menuFlyout = new MenuFlyout();
+        var disableMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_DisableWidget_Text".GetLocalized()
+        };
+        disableMenuItem.Click += (s, e) => DisableWidget();
+        menuFlyout.Items.Add(disableMenuItem);
+
+        var deleteMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_DeleteWidget_Text".GetLocalized()
+        };
+        deleteMenuItem.Click += (s, e) => DeleteWidget();
+        menuFlyout.Items.Add(deleteMenuItem);
+
+        menuFlyout.Items.Add(new MenuFlyoutSeparator());
+
+        var enterMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_EnterEditMode_Text".GetLocalized()
+        };
+        enterMenuItem.Click += (s, e) => EnterEditMode();
+        menuFlyout.Items.Add(enterMenuItem);
+
+        return menuFlyout;
+    }
+
+    private void ShowWidgetMenu(object sender, RightTappedRoutedEventArgs e)
+    {
+        if (sender is FrameworkElement element)
+        {
+            var widgetId = WidgetProperties.GetId(element);
+            var indexTag = WidgetProperties.GetIndexTag(element);
+            _widgetId = widgetId;
+            _indexTag = indexTag;
+            var menu = GetWidgetMenu(widgetId, indexTag);
+            menu!.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
+            e.Handled = true;
+        }
+    }
+
+    private async void DisableWidget()
+    {
+        var widgetId = _widgetId;
+        var indexTag = _indexTag;
+        await DisableWidget(widgetId, indexTag);
+        var parameter = new Dictionary<string, object>
+        {
+            { "UpdateEvent", DashboardViewModel.UpdateEvent.Disable },
+            { "Id", widgetId },
+            { "IndexTag", indexTag }
+        };
+        RefreshDashboardPage(parameter);
+    }
+
+    private async void DeleteWidget()
+    {
+        var widgetId = _widgetId;
+        var indexTag = _indexTag;
+        var widgetWindow = GetWidgetWindow(widgetId, indexTag);
+        if (await widgetWindow!.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
+        {
+            await DeleteWidget(widgetId, indexTag);
+            var parameter = new Dictionary<string, object>
+            {
+                { "UpdateEvent", DashboardViewModel.UpdateEvent.Delete },
+                { "Id", widgetId },
+                { "IndexTag", indexTag }
+            };
+            RefreshDashboardPage(parameter);
+        }
+    }
+
+    private void RefreshDashboardPage(object parameter)
+    {
+        var dashboardPageKey = typeof(DashboardViewModel).FullName!;
+        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+        {
+            var currentKey = _navigationService.GetCurrentPageKey();
+            if (currentKey == dashboardPageKey)
+            {
+                _navigationService.NavigateTo(dashboardPageKey, parameter);
+            }
+            else
+            {
+                _navigationService.SetNextParameter(dashboardPageKey, parameter);
+            }
+        });
     }
 
     #endregion
