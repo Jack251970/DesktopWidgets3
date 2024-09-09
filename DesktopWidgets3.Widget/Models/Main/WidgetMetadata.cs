@@ -40,7 +40,7 @@ public class WidgetMetadata
     public string WidgetDirectory
     {
         get => _widgetDirectory;
-        internal set
+        set
         {
             _widgetDirectory = value;
             ExecuteFilePath = Path.Combine(value, ExecuteFileName);

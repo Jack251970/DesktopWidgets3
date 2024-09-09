@@ -1,5 +1,4 @@
-﻿using DesktopWidgets3.Widget.DigitalClock;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Services.Widgets;
 
@@ -7,32 +6,20 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 {
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
 
-    private readonly Dictionary<WidgetMetadata, IAsyncWidget> Widgets = [];
+    private static List<WidgetPair> Widgets => WidgetsManager.AllWidgets;
 
     public void Initalize()
     {
-        var metaData = new WidgetMetadata
-        {
-            ID = "0ECADE17459B49F587BF81DC3A125110",
-            Name = "Digital Clock",
-            IcoPath = "ms-appx:///Assets/Icons/Clock.png",
-            DefaultHeight = 240,
-            DefaultWidth = 240,
-            MinHeight = 240,
-            MinWidth = 240,
-            InNewThread = true,
-        };
-        Widgets.Add(metaData, new Main());
+        WidgetsManager.LoadWidgets();
     }
 
     public FrameworkElement GetWidgetFrameworkElement(string widgetId)
     {
-        foreach (var widgetItem in Widgets)
+        foreach (var widget in Widgets)
         {
-            if (widgetItem.Key.ID == widgetId)
+            if (widget.Metadata.ID == widgetId)
             {
-                var widget = widgetItem.Value;
-                return widget.CreateWidgetPage();
+                return widget.Widget.CreateWidgetPage();
             }
         }
 
@@ -47,10 +34,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         {
             dashboardItemList.Add(new DashboardWidgetItem()
             {
-                Id = widget.Key.ID,
+                Id = widget.Metadata.ID,
                 IndexTag = 0,
-                Label = widget.Key.Name,
-                Icon = widget.Key.IcoPath,
+                Label = widget.Metadata.Name,
+                Icon = widget.Metadata.IcoPath,
             });
         }
 
@@ -61,11 +48,12 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     {
         foreach (var widget in Widgets)
         {
-            if (widget.Key.ID == widgetId)
+            if (widget.Metadata.ID == widgetId)
             {
-                return widget.Key.Name;
+                return widget.Metadata.Name;
             }
         }
+
         return string.Empty;
     }
 
@@ -73,11 +61,12 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     {
         foreach (var widget in Widgets)
         {
-            if (widget.Key.ID == widgetId)
+            if (widget.Metadata.ID == widgetId)
             {
-                return widget.Key.IcoPath;
+                return widget.Metadata.IcoPath;
             }
         }
+
         return string.Empty;
     }
 
@@ -85,11 +74,12 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     {
         foreach (var widget in Widgets)
         {
-            if (widget.Key.ID == widgetId)
+            if (widget.Metadata.ID == widgetId)
             {
-                return new RectSize(widget.Key.DefaultWidth, widget.Key.DefaultHeight);
+                return new RectSize(widget.Metadata.DefaultWidth, widget.Metadata.DefaultHeight);
             }
         }
+
         return new RectSize(240, 240);
     }
 
@@ -97,11 +87,12 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     {
         foreach (var widget in Widgets)
         {
-            if (widget.Key.ID == widgetId)
+            if (widget.Metadata.ID == widgetId)
             {
-                return new RectSize(widget.Key.MinWidth, widget.Key.MinHeight);
+                return new RectSize(widget.Metadata.MinWidth, widget.Metadata.MinHeight);
             }
         }
+
         return new RectSize(240, 240);
     }
 
@@ -119,11 +110,12 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         foreach (var widget in Widgets)
         {
-            if (widget.Key.ID == widgetId)
+            if (widget.Metadata.ID == widgetId)
             {
-                return widget.Key.InNewThread;
+                return widget.Metadata.InNewThread;
             }
         }
+
         return false;
     }
 }
