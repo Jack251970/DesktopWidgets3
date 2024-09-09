@@ -16,11 +16,11 @@ internal class JsonWidgetItemConverter : JsonConverter
         var jsonObject = JObject.Load(reader);
 
         // phase settings
-        var widgetId = jsonObject["Id"]?.Value<string>() ?? Guid.NewGuid().ToString();   // TODO: Check if Guid.NewGuid().ToString() has the right length.
+        var widgetId = jsonObject["Id"]?.Value<string>() ?? StringUtils.GetGuid();
         var indexTag = jsonObject["IndexTag"]?.Value<int>() ?? new Random().Next(100, 999);
         var isEnabled = jsonObject["IsEnabled"]?.Value<bool>() ?? false;
         var position = jsonObject["Position"]?.ToObject<PointInt32>(serializer) ?? new PointInt32(-1, -1);
-        var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? new RectSize(240, 240);
+        var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? new RectSize(318, 200);
         var displayMonitor = jsonObject["DisplayMonitor"]?.ToObject<DisplayMonitor>(serializer) ?? new(WidgetManagerService.GetMonitorInfo(null));
         var widgetSettings = new BaseWidgetSettings();
 

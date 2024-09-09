@@ -16,8 +16,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private readonly ISystemInfoService _systemInfoService = systemInfoService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
-    // TODO: Check length.
-    private string currentWidgetId = Guid.NewGuid().ToString();
+    private string currentWidgetId = StringUtils.GetGuid();
     private int currentIndexTag = -1;
 
     #region widget window

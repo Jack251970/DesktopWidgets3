@@ -5,9 +5,8 @@ namespace DesktopWidgets3.Models.Widget;
 internal class WidgetProperties
 {
     // Widget Id
-    // TODO: Check if the length is correct.
     public static readonly DependencyProperty IdProperty =
-        DependencyProperty.RegisterAttached("Id", typeof(string), typeof(WidgetProperties), new PropertyMetadata(Guid.NewGuid().ToString()));
+        DependencyProperty.RegisterAttached("Id", typeof(string), typeof(WidgetProperties), new PropertyMetadata(StringUtils.GetGuid()));
 
     public static string GetId(DependencyObject obj)
     {

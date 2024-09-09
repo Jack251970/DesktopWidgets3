@@ -122,7 +122,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             }
         }
 
-        return new RectSize(240, 240);
+        return new RectSize(318, 200);
     }
 
     public RectSize GetMinSize(string widgetId)
@@ -135,7 +135,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             }
         }
 
-        return new RectSize(240, 240);
+        return new RectSize(318, 200);
     }
 
     public BaseWidgetSettings GetDefaultSetting(string widgetId)
