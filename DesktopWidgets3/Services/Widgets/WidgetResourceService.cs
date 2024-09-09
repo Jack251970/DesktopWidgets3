@@ -104,7 +104,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return new BaseWidgetSettings();
     }
 
-    public Page GetSettingPage(string widgetId)
+    public FrameworkElement GetSettingPage(string widgetId)
     {
         foreach (var widget in AllWidgets)
         {
@@ -117,7 +117,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             }
         }
 
-        return new Page();
+        return new UserControl();
     }
 
     #endregion

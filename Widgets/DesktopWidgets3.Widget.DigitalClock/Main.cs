@@ -33,9 +33,9 @@ public class Main : IWidget, IWidgetSetting
         return new DigitalClockSetting();
     }
 
-    public Page CreateSettingPage()
+    public FrameworkElement CreateSettingPage()
     {
-        return new Page();
+        return new UserControl();
     }
 
     #endregion
