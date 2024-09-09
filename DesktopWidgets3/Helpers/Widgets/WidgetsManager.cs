@@ -31,9 +31,8 @@ public static class WidgetsManager
     private static void InstallResourceFiles(WidgetMetadata metadata)
     {
         var widgetDirectory = metadata.WidgetDirectory;
-        var xamlFiles = Directory.EnumerateFiles(widgetDirectory, "*.xaml", SearchOption.AllDirectories);
         var xbfFiles = Directory.EnumerateFiles(widgetDirectory, "*.xbf", SearchOption.AllDirectories);
-        var resourceFiles = xamlFiles.Concat(xbfFiles);
+        var resourceFiles = xbfFiles;
 
         foreach (var resourceFile in resourceFiles)
         {
