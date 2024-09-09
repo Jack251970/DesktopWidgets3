@@ -42,14 +42,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Remove="UserControls\TrayIconView.xaml" />
-    <None Remove="Views\Pages\DashboardPage.xaml" />
-    <None Remove="Views\Pages\EditModeOverlayPage.xaml" />
-    <None Remove="Views\Windows\OverlayWindow.xaml" />
-    <None Remove="Views\Windows\WidgetWindow.xaml" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
@@ -105,24 +97,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="UserControls\TrayIconView.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\Pages\DashboardPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\Pages\EditModeOverlayPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\Windows\OverlayWindow.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\Windows\WidgetWindow.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
   </ItemGroup>
 
   <ItemGroup>
