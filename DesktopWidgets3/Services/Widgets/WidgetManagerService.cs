@@ -208,9 +208,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         if (window is WidgetWindow widgetWindow)
         {
-            // initialize widget framework element
+            // set widget framework element
             var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetItem.Id);
             widgetWindow.ShellPage.SetFrameworkElement(frameworkElement);
+
+            // set widget properties
+            WidgetProperties.SetId(frameworkElement, widgetItem.Id);
+            WidgetProperties.SetIndexTag(frameworkElement, widgetItem.IndexTag);
 
             // initialize widget window & settings
             widgetWindow.InitializeWindow(widgetItem);

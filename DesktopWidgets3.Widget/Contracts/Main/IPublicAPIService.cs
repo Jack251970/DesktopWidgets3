@@ -4,12 +4,11 @@ namespace DesktopWidgets3.Widget.Contracts.Main;
 
 public interface IPublicAPIService
 {
-    // TODO
-    //Task UpdateWidgetSettingByWidgetFrameworkElement(FrameworkElement frameworkElement, BaseWidgetSettings settings);
+    Task UpdateWidgetSettingByWidgetFrameworkElement(FrameworkElement element, BaseWidgetSettings settings);
 
-    //Task UpdateWidgetSettingByWidgetViewModel(BaseWidgetViewModel viewModel, BaseWidgetSettings settings);
+    Task UpdateWidgetSettingByWidgetViewModel(BaseWidgetViewModel viewModel, BaseWidgetSettings settings);
 
-    //Task UpdateWidgetSettingByWidgetSettingFrameworkElement(FrameworkElement framework, BaseWidgetSettings settings);
+    Task UpdateWidgetSettingByWidgetSettingFrameworkElement(FrameworkElement element, BaseWidgetSettings settings);
 
-    //Task UpdateWidgetSettingByWidgetSettingViewModel( viewModel, BaseWidgetSettings settings);
+    Task UpdateWidgetSettingByWidgetSettingViewModel(BaseWidgetSettingViewModel viewModel, BaseWidgetSettings settings);
 }

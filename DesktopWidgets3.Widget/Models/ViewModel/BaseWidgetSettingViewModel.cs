@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Models.ViewModel;
 
-public abstract class BaseWidgetViewModel : ObservableRecipient
+public abstract partial class BaseWidgetSettingViewModel : ObservableRecipient
 {
     // TODO: Check if we need WidgetWindow.
     public Window WidgetWindow { get; private set; } = null!;
