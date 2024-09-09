@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 
-namespace DesktopWidget3.DigitalClock.ViewModel;
+namespace DesktopWidgets3.Widget.DigitalClock.ViewModel;
 
 public partial class ClockViewModel : BaseWidgetViewModel<BaseWidgetSettings>, IWidgetUpdate, IWidgetClose
 {

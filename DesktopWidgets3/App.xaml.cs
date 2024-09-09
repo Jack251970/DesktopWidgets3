@@ -1,6 +1,4 @@
-﻿using Files.App.Helpers;
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
@@ -170,7 +168,6 @@ public partial class App : Application
 
                 #endregion
             })
-            .ConfigureHost()
             .Build();
 
         // Initialize core services

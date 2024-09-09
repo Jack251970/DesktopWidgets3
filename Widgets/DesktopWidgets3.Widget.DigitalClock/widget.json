@@ -6,7 +6,7 @@
   "Version": "1.0.0",
   "Language": "csharp",
   "Website": "https://github.com/Jack251970/DesktopWidgets",
-  "ExecuteFileName": "DesktopWidget3.DigitalClock.dll",
+  "ExecuteFileName": "DesktopWidgets3.Widget.DigitalClock.dll",
   "IcoPath": "Images\\Clock.png",
   "DefaultHeight": 240.0,
   "DefaultWidth": 240.0,

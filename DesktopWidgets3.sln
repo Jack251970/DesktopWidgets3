@@ -41,7 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HardwareInfoWidgets", "Hard
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopWidgets3.Widget", "DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj", "{06B7ACD0-80E5-4293-B3EB-D51F702650C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopWidget3.DigitalClock", "DesktopWidget3.DigitalClock\DesktopWidget3.DigitalClock.csproj", "{1A64F540-7248-4F33-B743-FAB2E8AD2472}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopWidgets3.Widget.DigitalClock", "Widgets\DesktopWidgets3.Widget.DigitalClock\DesktopWidgets3.Widget.DigitalClock.csproj", "{1A64F540-7248-4F33-B743-FAB2E8AD2472}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
