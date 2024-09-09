@@ -153,8 +153,8 @@ public partial class App : Application
                 services.AddTransient<DashboardPage>();
 
                 // Widgets Window Pages
-                services.AddTransient<FrameShellPage>();
-                services.AddTransient<FrameShellViewModel>();
+                services.AddTransient<WidgetPage>();
+                services.AddTransient<WidgetViewModel>();
                 services.AddTransient<EditModeOverlayPage>();
                 services.AddTransient<EditModeOverlayViewModel>();
 

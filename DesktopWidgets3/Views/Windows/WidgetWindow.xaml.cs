@@ -64,7 +64,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region ui elements
 
-    public FrameShellPage ShellPage => (FrameShellPage)Content;
+    public WidgetPage ShellPage => (WidgetPage)Content;
 
     public FrameworkElement? FrameworkElement => ShellPage.ViewModel.WidgetFrameworkElement;
 

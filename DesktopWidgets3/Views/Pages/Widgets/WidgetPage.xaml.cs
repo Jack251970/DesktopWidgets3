@@ -3,13 +3,13 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Views.Pages.Widgets;
 
-public sealed partial class FrameShellPage : Page
+public sealed partial class WidgetPage : Page
 {
-    public FrameShellViewModel ViewModel { get; }
+    public WidgetViewModel ViewModel { get; }
 
     private WidgetWindow WidgetWindow { get; set; } = null!;
 
-    public FrameShellPage(FrameShellViewModel viewModel)
+    public WidgetPage(WidgetViewModel viewModel)
     {
         ViewModel = viewModel;
         InitializeComponent();

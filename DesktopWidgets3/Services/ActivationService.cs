@@ -45,7 +45,7 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
         // Set the Window Content and handle widget settings.
         if (window.Content == null)
         {
-            var shell = App.GetService<FrameShellPage>();
+            var shell = App.GetService<WidgetPage>();
             if (shell == null)
             {
                 window.Content = new Frame();
