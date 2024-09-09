@@ -240,8 +240,11 @@ public partial class App : Application
 
         if (showToastNotification)
         {
-            GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), 
-                ex?.ToString(), AppContext.BaseDirectory));
+            _ = Task.Run(() =>
+            {
+                GetService<IAppNotificationService>().Show(string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
+                    ex?.ToString(), AppContext.BaseDirectory));
+            });
         }
     }
 
