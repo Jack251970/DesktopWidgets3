@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <UserControl
-    x:Class="DesktopWidgets3.Widget.DigitalClock.View.ClockWidget"
+    x:Class="DesktopWidgets3.Widget.DigitalClock.Views.ClockWidget"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:DesktopWidgets3.Widget.DigitalClock.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodel="using:DesktopWidgets3.Widget.DigitalClock.ViewModel"
-    d:DataContext="{d:DesignInstance Type=viewmodel:ClockViewModel}"
+    xmlns:viewmodels="using:DesktopWidgets3.Widget.DigitalClock.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:ClockViewModel}"
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea" Background="Transparent">

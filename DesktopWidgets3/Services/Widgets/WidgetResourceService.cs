@@ -72,7 +72,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             {
                 try
                 {
-                    return widget.Widget.CreateWidgetPage();
+                    return widget.Widget.CreateWidgetFrameworkElement();
                 }
                 catch (Exception e)
                 {
@@ -104,7 +104,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return new BaseWidgetSettings();
     }
 
-    public FrameworkElement GetSettingFrameworkElement(string widgetId)
+    public FrameworkElement GetWidgetSettingFrameworkElement(string widgetId)
     {
         foreach (var widget in AllWidgets)
         {
@@ -114,7 +114,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 {
                     try
                     {
-                        return widgetSetting.CreateSettingPage();
+                        return widgetSetting.CreateWidgetSettingFrameworkElement();
                     }
                     catch (Exception e)
                     {

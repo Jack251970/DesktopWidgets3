@@ -11,10 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="View\DigitalClockWidget.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
       <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240627000" />
       <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
@@ -22,12 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="View\DigitalClockWidget.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 
   <ItemGroup>

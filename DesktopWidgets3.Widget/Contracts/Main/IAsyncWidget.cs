@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Widget.Contracts.Main;
 
 public interface IAsyncWidget
 {
-    FrameworkElement CreateWidgetPage();
+    FrameworkElement CreateWidgetFrameworkElement();
 
     Task InitWidgetClassAsync(WidgetInitContext context);
 

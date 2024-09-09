@@ -1,5 +1,5 @@
 using DesktopWidgets3.Widget.DigitalClock.Setting;
-using DesktopWidgets3.Widget.DigitalClock.View;
+using DesktopWidgets3.Widget.DigitalClock.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -9,7 +9,7 @@ public class Main : IWidget, IWidgetSetting
 {
     #region IWidget
 
-    public FrameworkElement CreateWidgetPage()
+    public FrameworkElement CreateWidgetFrameworkElement()
     {
         return new ClockWidget();
     }
@@ -33,7 +33,7 @@ public class Main : IWidget, IWidgetSetting
         return new DigitalClockSetting();
     }
 
-    public FrameworkElement CreateSettingPage()
+    public FrameworkElement CreateWidgetSettingFrameworkElement()
     {
         return new UserControl();
     }
