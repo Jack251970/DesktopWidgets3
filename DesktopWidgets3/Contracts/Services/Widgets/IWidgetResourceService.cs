@@ -8,6 +8,8 @@ public interface IWidgetResourceService
 
     List<DashboardWidgetItem> GetAllWidgetItems();
 
+    Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync();
+
     FrameworkElement GetWidgetFrameworkElement(string widgetId);
 
     string GetWidgetLabel(string widgetId);

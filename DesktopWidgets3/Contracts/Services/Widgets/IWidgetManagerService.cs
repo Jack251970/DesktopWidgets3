@@ -18,8 +18,6 @@ public interface IWidgetManagerService
 
     DashboardWidgetItem GetCurrentEnabledWidget();
 
-    Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync();
-
     void EnterEditMode();
 
     void SaveAndExitEditMode();

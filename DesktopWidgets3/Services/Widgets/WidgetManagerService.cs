@@ -440,27 +440,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     // TODO: Move these methods to widget resource service.
 
-    public async Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync()
-    {
-        var widgetList = await _appSettingsService.GetWidgetsList();
-
-        List<DashboardWidgetItem> dashboardItemList = [];
-        foreach (var widget in widgetList)
-        {
-            var widgetId = widget.Id;
-            dashboardItemList.Add(new DashboardWidgetItem()
-            {
-                Id = widgetId,
-                IndexTag = widget.IndexTag,
-                Label = _widgetResourceService.GetWidgetLabel(widgetId),
-                IsEnabled = widget.IsEnabled,
-                Icon = _widgetResourceService.GetWidgetIconSource(widgetId),
-            });
-        }
-
-        return dashboardItemList;
-    }
-
     public DashboardWidgetItem GetCurrentEnabledWidget()
     {
         return new DashboardWidgetItem()

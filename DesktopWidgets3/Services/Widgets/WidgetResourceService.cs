@@ -1,9 +1,12 @@
 ﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetResourceService(IAppSettingsService appSettingsService) : IWidgetResourceService
 {
+    private static string ClassName => typeof(WidgetResourceService).Name;
+
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
 
     private List<WidgetPair> AllWidgets { get; set; } = null!;
@@ -15,6 +18,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         Constant.WidgetsPreinstalledDirectory
     };
 
+    #region Initialization
+
     public void Initalize()
     {
         AllWidgetsMetadata = WidgetsConfig.Parse(Directories);
@@ -22,7 +27,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         InstallResourceFiles(AllWidgetsMetadata);
     }
 
-    #region Xaml Resources Management
+    #region Xaml Resources
 
     private static void InstallResourceFiles(List<WidgetMetadata> widgetsMetadata)
     {
@@ -55,36 +60,33 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
+    #endregion
+
+    #region IWidget
+
     public FrameworkElement GetWidgetFrameworkElement(string widgetId)
     {
         foreach (var widget in AllWidgets)
         {
             if (widget.Metadata.ID == widgetId)
             {
-                return widget.Widget.CreateWidgetPage();
+                try
+                {
+                    return widget.Widget.CreateWidgetPage();
+                }
+                catch (Exception e)
+                {
+                    LogExtensions.LogError(ClassName, e, $"Error creating widget {widget.Metadata.ID}");
+                }
             }
         }
 
-        return null!;
+        return new UserControl();
     }
 
-    public List<DashboardWidgetItem> GetAllWidgetItems()
-    {
-        List<DashboardWidgetItem> dashboardItemList = [];
+    #endregion
 
-        foreach (var widget in AllWidgets)
-        {
-            dashboardItemList.Add(new DashboardWidgetItem()
-            {
-                Id = widget.Metadata.ID,
-                IndexTag = 0,
-                Label = widget.Metadata.Name,
-                Icon = widget.Metadata.IcoPath,
-            });
-        }
-
-        return dashboardItemList;
-    }
+    #region Metadata
 
     public string GetWidgetLabel(string widgetId)
     {
@@ -140,6 +142,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public BaseWidgetSettings GetDefaultSetting(string widgetId)
     {
+        // TODO: Interface.
         return new BaseWidgetSettings();
     }
 
@@ -160,4 +163,49 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         return false;
     }
+
+    #endregion
+
+    #region Dashboard
+
+    public List<DashboardWidgetItem> GetAllWidgetItems()
+    {
+        List<DashboardWidgetItem> dashboardItemList = [];
+
+        foreach (var widget in AllWidgets)
+        {
+            dashboardItemList.Add(new DashboardWidgetItem()
+            {
+                Id = widget.Metadata.ID,
+                IndexTag = 0,
+                Label = widget.Metadata.Name,
+                Icon = widget.Metadata.IcoPath,
+            });
+        }
+
+        return dashboardItemList;
+    }
+
+    public async Task<List<DashboardWidgetItem>> GetYourWidgetItemsAsync()
+    {
+        var widgetList = await _appSettingsService.GetWidgetsList();
+
+        List<DashboardWidgetItem> dashboardItemList = [];
+        foreach (var widget in widgetList)
+        {
+            var widgetId = widget.Id;
+            dashboardItemList.Add(new DashboardWidgetItem()
+            {
+                Id = widgetId,
+                IndexTag = widget.IndexTag,
+                Label = GetWidgetLabel(widgetId),
+                IsEnabled = widget.IsEnabled,
+                Icon = GetWidgetIconSource(widgetId),
+            });
+        }
+
+        return dashboardItemList;
+    }
+
+    #endregion
 }

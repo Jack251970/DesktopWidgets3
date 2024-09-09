@@ -34,7 +34,7 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
     {
         if (!_isInitialized)
         {
-            yourWidgetItems = await _widgetManagerService.GetYourWidgetItemsAsync();
+            yourWidgetItems = await _widgetResourceService.GetYourWidgetItemsAsync();
             foreach (var item in yourWidgetItems)
             {
                 item.EnabledChangedCallback = WidgetEnabledChanged;
