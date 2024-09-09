@@ -7,8 +7,6 @@ public sealed partial class FrameShellPage : Page
 {
     public FrameShellViewModel ViewModel { get; }
 
-    public FrameworkElement? FrameworkElement => WidgetScrollViewer.Content as FrameworkElement;
-
     private WidgetWindow WidgetWindow { get; set; } = null!;
 
     public FrameShellPage(FrameShellViewModel viewModel)

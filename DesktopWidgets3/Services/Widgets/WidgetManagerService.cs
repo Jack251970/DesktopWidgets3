@@ -177,6 +177,11 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         return GetWidgetWindow(widgetId, indexTag) != null;
     }
 
+    public BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow)
+    {
+        return GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
+    }
+
     private async Task CreateWidgetWindow(JsonWidgetItem widget)
     {
         // configure widget window lifecycle actions
@@ -252,19 +257,19 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private void RegisterRightTappedMenu(WidgetWindow widgetWindow)
     {
-        var content = widgetWindow.FrameworkElement;
-        if (content is IWidgetMenu menuPage)
+        var frameworkElement = widgetWindow.FrameworkElement;
+        if (frameworkElement is IWidgetMenu menu)
         {
-            var element = menuPage.GetWidgetMenuFrameworkElement();
+            var element = menu.GetWidgetMenuFrameworkElement();
             if (element != null)
             {
                 element.RightTapped += ShowRightTappedMenu;
                 return;
             }
         }
-        if (content != null)
+        if (frameworkElement != null)
         {
-            content.RightTapped += ShowRightTappedMenu;
+            frameworkElement.RightTapped += ShowRightTappedMenu;
         }
     }
 
@@ -372,7 +377,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     }
 
     // closing action for widget window lifecycle
-    private static async void WidgetWindow_Closing(Window window)
+    private async void WidgetWindow_Closing(Window window)
     {
         if (window is WidgetWindow widgetWindow)
         {
@@ -380,9 +385,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             await widgetWindow.SetEditMode(false);
 
             // widget close event
-            if (widgetWindow.PageViewModel is IWidgetClose viewModel)
+            var viewModel = GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
+            if (viewModel is IWidgetClose close)
             {
-                viewModel.WidgetWindow_Closing();
+                close.WidgetWindow_Closing();
             }
         }
     }
@@ -478,7 +484,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
                 DisplayMonitor = new(GetMonitorInfo(widgetWindow)),
-                Settings = widgetWindow.Settings,
+                Settings = null!,
             };
             originalWidgetList.Add(widget);
         }
@@ -539,11 +545,11 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                     Position = widgetWindow.Position,
                     Size = widgetWindow.Size,
                     DisplayMonitor = new(GetMonitorInfo(widgetWindow)),
-                    Settings = widgetWindow.Settings,
+                    Settings = null!,
                 };
                 widgetList.Add(widget);
             }
-            await _appSettingsService.UpdateWidgetsList(widgetList);
+            await _appSettingsService.UpdateWidgetsListIgnoreSetting(widgetList);
         });
     }
 

@@ -5,6 +5,7 @@ using Windows.Graphics;
 using WinUIEx.Messaging;
 using Windows.Foundation;
 using Microsoft.UI.Xaml;
+
 namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class WidgetWindow : WindowEx
@@ -65,17 +66,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     public FrameShellPage ShellPage => (FrameShellPage)Content;
 
-    // TODO: Issue?
-    public FrameworkElement? FrameworkElement => ShellPage.FrameworkElement;
-
-    #endregion
-
-    #region page view model & settings
-
-    // TODO: Issue?
-    public object? PageViewModel => FrameworkElement?.DataContext;
-
-    public BaseWidgetSettings Settings => ((IWidgetSettings)PageViewModel!).GetWidgetSettings();
+    public FrameworkElement? FrameworkElement => ShellPage.ViewModel.WidgetFrameworkElement;
 
     #endregion
 
@@ -86,6 +77,12 @@ public sealed partial class WidgetWindow : WindowEx
 
     private readonly WindowManager _manager;
     private readonly IntPtr _handle;
+
+    #endregion
+
+    #region services
+
+    private readonly IWidgetManagerService _widgetManagerService = App.GetService<IWidgetManagerService>();
 
     #endregion
 
@@ -155,9 +152,10 @@ public sealed partial class WidgetWindow : WindowEx
         ShellPage.SetCustomTitleBar(isEditMode);
 
         // set page update status
-        if (PageViewModel is IWidgetUpdate viewModel)
+        var viewModel = _widgetManagerService.GetWidgetViewModel(this);
+        if (viewModel is IWidgetUpdate update)
         {
-            await viewModel.EnableUpdate(!isEditMode);
+            await update.EnableUpdate(!isEditMode);
         }
 
         // set window size

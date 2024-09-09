@@ -16,6 +16,8 @@ public interface IWidgetManagerService
 
     bool IsWidgetEnabled(string widgetId, int indexTag);
 
+    BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow);
+
     void EnterEditMode();
 
     void SaveAndExitEditMode();

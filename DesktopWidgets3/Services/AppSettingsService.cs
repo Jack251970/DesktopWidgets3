@@ -144,7 +144,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         await _localSettingsService.SaveWidgetListAsync(WidgetList);
     }
 
-    public async Task UpdateWidgetsList(List<JsonWidgetItem> widgetList)
+    public async Task UpdateWidgetsListIgnoreSetting(List<JsonWidgetItem> widgetList)
     {
         await InitializeWidgetList();
 
@@ -153,7 +153,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
             var index = WidgetList.FindIndex(x => x.Id == widget.Id && x.IndexTag == widget.IndexTag);
             if (index != -1)
             {
+                var setting = WidgetList[index].Settings;
                 WidgetList[index] = widget;
+                WidgetList[index].Settings = setting;
             }
         }
 
