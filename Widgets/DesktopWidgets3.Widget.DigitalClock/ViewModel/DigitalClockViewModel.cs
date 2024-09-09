@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DesktopWidgets3.Widget.DigitalClock.Setting;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.DigitalClock.ViewModel;
 
-public partial class ClockViewModel : BaseWidgetViewModel<BaseWidgetSettings>, IWidgetUpdate, IWidgetClose
+public partial class ClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
 {
     #region view properties
 
     [ObservableProperty]
     private string _systemTime = string.Empty;
+
+    #endregion
+
+    #region settings
+
+    private string timingFormat = "T";
 
     #endregion
 
@@ -35,7 +42,7 @@ public partial class ClockViewModel : BaseWidgetViewModel<BaseWidgetSettings>, I
         updating = true;
 
         var nowTime = DateTime.Now;
-        var systemTime = nowTime.ToString("T");
+        var systemTime = nowTime.ToString(timingFormat);
 
         SystemTime = systemTime;
 
@@ -44,15 +51,21 @@ public partial class ClockViewModel : BaseWidgetViewModel<BaseWidgetSettings>, I
 
     #region abstract methods
 
-    protected override void LoadSettings(BaseWidgetSettings settings)
+    public override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
-        SystemTime = DateTime.Now.ToString("T");
-        dispatcherQueueTimer.Start();
-    }
+        if (settings is DigitalClockSetting digitalClockSetting)
+        {
+            if (digitalClockSetting.ShowSeconds != (timingFormat == "T"))
+            {
+                timingFormat = digitalClockSetting.ShowSeconds ? "T" : "t";
+            }
+        }
 
-    public override BaseWidgetSettings GetSettings()
-    {
-        return new BaseWidgetSettings();
+        if (initialized)
+        {
+            SystemTime = DateTime.Now.ToString(timingFormat);
+            dispatcherQueueTimer.Start();
+        }
     }
 
     #endregion

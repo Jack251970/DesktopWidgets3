@@ -86,6 +86,26 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
+    #region IWidgetSetting
+
+    public BaseWidgetSettings GetDefaultSetting(string widgetId)
+    {
+        foreach (var widget in AllWidgets)
+        {
+            if (widget.Metadata.ID == widgetId)
+            {
+                if (widget.Widget is IWidgetSetting widgetSetting)
+                {
+                    return widgetSetting.GetDefaultSetting();
+                }
+            }
+        }
+
+        return new BaseWidgetSettings();
+    }
+
+    #endregion
+
     #region Metadata
 
     public RectSize GetDefaultSize(string widgetId)
@@ -112,12 +132,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         }
 
         return new RectSize(318, 200);
-    }
-
-    public BaseWidgetSettings GetDefaultSetting(string widgetId)
-    {
-        // TODO: Interface.
-        return new BaseWidgetSettings();
     }
 
     public bool GetWidgetInNewThread(string widgetId)

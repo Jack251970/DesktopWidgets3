@@ -201,18 +201,6 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region update
-
-    public void UpdatePageViewModel(object parameter)
-    {
-        if (PageViewModel is IWidgetNavigation viewModel)
-        {
-            viewModel.UpdateWidgetViewModel(parameter);
-        }
-    }
-
-    #endregion
-
     #region window message
 
     private void OnWindowMessageReceived(object? sender, WindowMessageEventArgs e)

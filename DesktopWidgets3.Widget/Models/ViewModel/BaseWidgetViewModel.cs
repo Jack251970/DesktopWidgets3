@@ -3,48 +3,38 @@ using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Models.ViewModel;
 
-public abstract class BaseWidgetViewModel<T> : ObservableRecipient, IWidgetNavigation, IWidgetSetting where T : BaseWidgetSettings, new()
+public abstract class BaseWidgetViewModel : ObservableRecipient
 {
     public Window WidgetWindow { get; private set; } = null!;
 
-    protected bool _isInitialized;
-
     #region abstract methods
 
-    protected abstract void LoadSettings(T settings);
-
-    public abstract T GetSettings();
+    public abstract void LoadSettings(BaseWidgetSettings settings, bool initialized);
 
     #endregion
 
     #region widget update
 
-    public void UpdateWidgetViewModel(object parameter)
+    public void InitializeSettings(object parameter)
     {
-        // Load settings
         if (parameter is WidgetNavigationParameter navigationParameter)
         {
-            WidgetWindow ??= navigationParameter.Window!;
-            if (navigationParameter.Settings is T settings)
+            WidgetWindow = navigationParameter.Window!;
+            if (navigationParameter.Settings is BaseWidgetSettings settings)
             {
-                LoadSettings(settings);
-                _isInitialized = true;
+                LoadSettings(settings, true);
             }
         }
+    }
 
-        // Make sure we have loaded settings
-        if (!_isInitialized)
-        {
-            LoadSettings(new T());
-            _isInitialized = true;
-        }
+    public void UpdateSettings(BaseWidgetSettings settings)
+    {
+        LoadSettings(settings, false);
     }
 
     #endregion
 
     #region widget setting
-
-    public BaseWidgetSettings GetWidgetSettings() => GetSettings();
 
     protected async void UpdateWidgetSettings(BaseWidgetSettings settings)
     {

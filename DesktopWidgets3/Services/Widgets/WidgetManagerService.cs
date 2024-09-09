@@ -9,7 +9,9 @@ namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetManagerService(IAppSettingsService appSettingsService, INavigationService navigationService, ISystemInfoService systemInfoService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
-    private readonly List<WidgetWindow> WidgetsList = [];
+    private readonly List<WidgetWindowPair> AllWidgets = [];
+
+    private readonly List<WidgetWindow> AllWidgetWindows = [];
 
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly INavigationService _navigationService = navigationService;
@@ -156,8 +158,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public async Task DisableAllWidgets()
     {
-        var widgetsList = new List<WidgetWindow>(WidgetsList);
-        foreach (var widgetWindow in widgetsList)
+        var allWidgetWindows = AllWidgetWindows.ToArray();
+        foreach (var widgetWindow in allWidgetWindows)
         {
             // close widget window
             await CloseWidgetWindow(widgetWindow);
@@ -190,9 +192,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(WindowsExtensions.ActivationType.Widget, widget.Settings, newThread, lifecycleActions);
 
         // TODO: Now handle monitor by widget itself.
-
-        // add to widget list
-        WidgetsList.Add(widgetWindow);
     }
 
     // created action for widget window lifecycle
@@ -201,18 +200,18 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         if (window is WidgetWindow widgetWindow)
         {
             // initialize widget framework element
-            // TODO: Store view model here.
-            var element = _widgetResourceService.GetWidgetFrameworkElement(widgetItem.Id);
-            var viewModel = element.DataContext;
-            widgetWindow.ShellPage.SetFrameworkElement(element);
+            var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetItem.Id);
+            widgetWindow.ShellPage.SetFrameworkElement(frameworkElement);
 
             // initialize widget window & settings
             widgetWindow.InitializeWindow(widgetItem);
 
             // initialize widget settings
-            if(viewModel is IWidgetNavigation nav)
+            BaseWidgetViewModel viewModel = null!;
+            if (frameworkElement is IViewModel element)
             {
-                nav.UpdateWidgetViewModel(new WidgetNavigationParameter()
+                viewModel = element.ViewModel;
+                viewModel.InitializeSettings(new WidgetNavigationParameter()
                 {
                     Window = window,
                     Settings = widgetItem.Settings
@@ -236,6 +235,14 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
             // show window
             widgetWindow.Show(true);
+
+            // add to widget list & widget window list
+            AllWidgets.Add(new WidgetWindowPair()
+            {
+                Window = widgetWindow,
+                ViewModel = viewModel
+            });
+            AllWidgetWindows.Add(widgetWindow);
         }
     }
 
@@ -356,11 +363,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
     {
+        // remove from widget list & widget window list
+        AllWidgets.RemoveAll(x => x.Window.Id == widgetWindow.Id && x.Window.IndexTag == widgetWindow.IndexTag);
+        AllWidgetWindows.RemoveAll(x => x.Id == widgetWindow.Id && x.IndexTag == widgetWindow.IndexTag);
+
         // close window
         await WindowsExtensions.CloseWindow(widgetWindow);
-
-        // remove from widget list
-        WidgetsList.Remove(widgetWindow);
     }
 
     // closing action for widget window lifecycle
@@ -381,7 +389,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private void CheckMonitorAndTimer(string widgetId)
     {
-        var sameTypeWidgets = WidgetsList.Count(x => x.Id == widgetId);
+        var sameTypeWidgets = AllWidgetWindows.Count(x => x.Id == widgetId);
         if (sameTypeWidgets == 0)
         {
             // TODO: Stop Monitor there.
@@ -391,11 +399,23 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private WidgetWindow? GetWidgetWindow(string widgetId, int indexTag)
     {
-        foreach (var widgetWindow in WidgetsList)
+        foreach (var widgetWindow in AllWidgetWindows)
         {
             if (widgetWindow.Id == widgetId && widgetWindow.IndexTag == indexTag)
             {
                 return widgetWindow;
+            }
+        }
+        return null;
+    }
+
+    private BaseWidgetViewModel? GetWidgetViewModel(string widgetId, int indexTag)
+    {
+        foreach (var widget in AllWidgets)
+        {
+            if (widget.Window.Id == widgetId && widget.Window.IndexTag == indexTag)
+            {
+                return widget.ViewModel;
             }
         }
         return null;
@@ -419,11 +439,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             await widgetWindow.EnqueueOrInvokeAsync((window) =>
             {
-                widgetWindow.UpdatePageViewModel(new WidgetNavigationParameter()
-                {
-                    Window = widgetWindow,
-                    Settings = settings
-                });
+                var viewModel = GetWidgetViewModel(widgetId, indexTag);
+                viewModel?.LoadSettings(settings, false);
             });
         }
 
@@ -451,7 +468,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         // save original widget list
         originalWidgetList.Clear();
-        foreach (var widgetWindow in WidgetsList)
+        foreach (var widgetWindow in AllWidgetWindows)
         {
             var widget = new JsonWidgetItem()
             {
@@ -467,7 +484,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         // set edit mode for all widgets
-        await WidgetsList.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true));
+        await AllWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true));
 
         // hide main window if visible
         if (App.MainWindow.Visible)
@@ -496,7 +513,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async void SaveAndExitEditMode()
     {
         // restore edit mode for all widgets
-        await WidgetsList.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false));
+        await AllWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false));
 
         // hide edit mode overlay window
         EditModeOverlayWindow?.Hide(true);
@@ -512,7 +529,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await Task.Run(async () =>
         {
             List<JsonWidgetItem> widgetList = [];
-            foreach (var widgetWindow in WidgetsList)
+            foreach (var widgetWindow in AllWidgetWindows)
             {
                 var widget = new JsonWidgetItem()
                 {
@@ -533,7 +550,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async void CancelAndExitEditMode()
     {
         // restore position, size, edit mode for all widgets
-        await WidgetsList.EnqueueOrInvokeAsync(async (window) =>
+        await AllWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
         {
             // set edit mode for all widgets
             await window.SetEditMode(false);
