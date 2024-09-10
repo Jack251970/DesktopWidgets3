@@ -8,10 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages.Widgets"
     d:DataContext="{d:DesignInstance Type=viewmodels:WidgetSettingViewModel}"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    NavigationCacheMode="Disabled"
+    NavigationCacheMode="Required"
     mc:Ignorable="d">
-    <!--  // TODO: Check if ApplicationPageBackgroundThemeBrush is needed.  -->
 
     <Grid x:Name="ContentArea">
         <ScrollViewer

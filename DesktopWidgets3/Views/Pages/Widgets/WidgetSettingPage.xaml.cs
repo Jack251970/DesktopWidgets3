@@ -6,9 +6,9 @@ public sealed partial class WidgetSettingPage : Page
 {
     public WidgetSettingViewModel ViewModel { get; }
 
-    public WidgetSettingPage(WidgetSettingViewModel viewModel)
+    public WidgetSettingPage()
     {
-        ViewModel = viewModel;
+        ViewModel = App.GetService<WidgetSettingViewModel>();
         InitializeComponent();
     }
 }
