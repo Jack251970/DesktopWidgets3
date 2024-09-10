@@ -5,20 +5,14 @@
 
     <Application.Resources>
         <ResourceDictionary>
-
             <ResourceDictionary.MergedDictionaries>
-                <!--  Remeber: Don't include this in other resource dictionaries!  -->
+                <!--  Note: Don't include this in other resource dictionaries!  -->
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-
+                <!--  Control Styles  -->
                 <ResourceDictionary Source="/Styles/Controls.xaml" />
-                <ResourceDictionary Source="/Styles/Others.xaml" />
+                <!--  Values  -->
                 <ResourceDictionary Source="/Styles/Values.xaml" />
-
-                <!--  Files  -->
-                <ResourceDictionary Source="../Files.App/App.xaml" />
-
             </ResourceDictionary.MergedDictionaries>
-
         </ResourceDictionary>
     </Application.Resources>
 </Application>
