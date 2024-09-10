@@ -1,7 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace HardwareInfo.UserControls;
+namespace DesktopWidgets3.HardwareInfoProvider.UserControls;
 
 public sealed partial class ProgressCard : UserControl
 {

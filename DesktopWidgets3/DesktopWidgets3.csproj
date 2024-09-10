@@ -76,7 +76,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj" />
-    <ProjectReference Include="..\HardwareInfo\HardwareInfo.csproj" />
+    <ProjectReference Include="..\DesktopWidgets3.HardwareInfoProvider\DesktopWidgets3.HardwareInfoProvider.csproj" />
   </ItemGroup>
   
   <ItemGroup>

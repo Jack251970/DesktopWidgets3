@@ -41,5 +41,5 @@ global using DesktopWidgets3.Widget.Models.Parameter;
 global using DesktopWidgets3.Widget.Models.Setting;
 global using DesktopWidgets3.Widget.Models.ViewModel;
 
-// HardwareInfo
-global using HardwareInfo.Helpers;
+// DesktopWidgets3.HardwareInfoProvider
+global using DesktopWidgets3.HardwareInfoProvider.Helpers;

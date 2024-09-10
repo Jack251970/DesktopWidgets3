@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace HardwareInfo.Helpers;
+namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
 
 internal sealed class SystemData : IDisposable
 {

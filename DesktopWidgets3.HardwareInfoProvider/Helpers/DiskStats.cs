@@ -4,7 +4,7 @@
 using System.Management;
 using Microsoft.Management.Infrastructure;
 
-namespace HardwareInfo.Helpers;
+namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
 
 public sealed class DiskStats : IDisposable
 {

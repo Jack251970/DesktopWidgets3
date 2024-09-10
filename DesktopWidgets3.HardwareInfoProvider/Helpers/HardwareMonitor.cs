@@ -1,4 +1,4 @@
-﻿namespace HardwareInfo.Helpers;
+﻿namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
 
 /// <summary>
 /// Hardware monitor.

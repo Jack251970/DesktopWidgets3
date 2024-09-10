@@ -4,7 +4,7 @@
 using System.Diagnostics;
 using Microsoft.Management.Infrastructure;
 
-namespace HardwareInfo.Helpers;
+namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
 
 public sealed class GPUStats : IDisposable
 {

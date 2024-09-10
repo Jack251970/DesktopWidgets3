@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Files.App", "Files.App\File
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clock", "Clock\Clock.csproj", "{93F159E6-FAA2-4F0E-AE44-E333895376AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HardwareInfo", "HardwareInfo\HardwareInfo.csproj", "{51621AFC-B275-448F-B611-E467C100712F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.HardwareInfoProvider", "DesktopWidgets3.HardwareInfoProvider\DesktopWidgets3.HardwareInfoProvider.csproj", "{51621AFC-B275-448F-B611-E467C100712F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Files.Core.SourceGenerator", "Files.Core.SourceGenerator\Files.Core.SourceGenerator.csproj", "{3E989401-28D8-42F3-A688-D46D2388517B}"
 EndProject
@@ -37,11 +37,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FilesWidget", "FilesWidget"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClockWidget", "ClockWidget", "{7782F2C7-02E5-4BF0-88B5-14536FE15004}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HardwareInfoWidgets", "HardwareInfoWidgets", "{3590FF2E-EF76-4DD9-B5EB-468BA6C9985F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget", "DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj", "{06B7ACD0-80E5-4293-B3EB-D51F702650C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopWidgets3.Widget", "DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj", "{06B7ACD0-80E5-4293-B3EB-D51F702650C9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopWidgets3.Widget.DigitalClock", "Widgets\DesktopWidgets3.Widget.DigitalClock\DesktopWidgets3.Widget.DigitalClock.csproj", "{1A64F540-7248-4F33-B743-FAB2E8AD2472}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.DigitalClock", "Widgets\DesktopWidgets3.Widget.DigitalClock\DesktopWidgets3.Widget.DigitalClock.csproj", "{1A64F540-7248-4F33-B743-FAB2E8AD2472}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -519,11 +517,9 @@ Global
 		{73E6F65C-BDDD-458E-9488-1E7B8074D528} = {4D9A7785-EBE5-463C-AE65-7F4C41BDBC4F}
 		{E7973A8D-D937-4EC5-B4E5-D859F3DCAD80} = {4D9A7785-EBE5-463C-AE65-7F4C41BDBC4F}
 		{93F159E6-FAA2-4F0E-AE44-E333895376AC} = {7782F2C7-02E5-4BF0-88B5-14536FE15004}
-		{51621AFC-B275-448F-B611-E467C100712F} = {3590FF2E-EF76-4DD9-B5EB-468BA6C9985F}
 		{3E989401-28D8-42F3-A688-D46D2388517B} = {4D9A7785-EBE5-463C-AE65-7F4C41BDBC4F}
 		{4D9A7785-EBE5-463C-AE65-7F4C41BDBC4F} = {EF8A937D-DD77-46B9-A1B0-19C08E50762E}
 		{7782F2C7-02E5-4BF0-88B5-14536FE15004} = {EF8A937D-DD77-46B9-A1B0-19C08E50762E}
-		{3590FF2E-EF76-4DD9-B5EB-468BA6C9985F} = {EF8A937D-DD77-46B9-A1B0-19C08E50762E}
 		{1A64F540-7248-4F33-B743-FAB2E8AD2472} = {EF8A937D-DD77-46B9-A1B0-19C08E50762E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
