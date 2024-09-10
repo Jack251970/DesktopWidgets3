@@ -36,14 +36,6 @@
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <AppInstallerUri>E:\source\DesktopWidgets3\DesktopWidgets3\bin\x64\Release\net7.0-windows10.0.19041.0\AppPackages\</AppInstallerUri>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <Content Remove="Assets\PackageIcon.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Manifest Include="$(ApplicationManifest)" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
@@ -75,8 +67,18 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-    <ProjectCapability Include="Msix" />
+  <ItemGroup>
+    <Content Update="Assets\WindowIcon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Assets\PackageIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -90,33 +92,12 @@
     <Folder Include="UserControls\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
   </ItemGroup>
   
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
-  
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir $(TargetDir)Assets&#xD;&#xA;copy $(ProjectDir)Assets\WindowIcon.ico $(TargetDir)Assets\WindowIcon.ico&#xD;&#xA;" />
-  </Target>
-
-  <Target Name="RemoveOutOfProcWinMD" BeforeTargets="_GenerateCurrentProjectAppxManifest">
-    <ItemGroup>
-      <_AppxWinmdFilesToHarvest Condition="'%(FileName)' == 'Files.App.Server'" Remove="@(_AppxWinmdFilesToHarvest)" />
-    </ItemGroup>
-  </Target>
   
 </Project>
