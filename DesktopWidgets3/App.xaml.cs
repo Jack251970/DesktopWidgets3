@@ -63,7 +63,6 @@ public partial class App : Application
         // Initialize core extensions before injecting services
         LocalSettingsExtensions.Initialize();
         LocalSettingsExtensions.RegisterSubFolder("Files");
-        ResourceExtensions.AddStringResource("FilesResources");
 
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
