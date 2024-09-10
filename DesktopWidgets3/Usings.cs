@@ -9,6 +9,7 @@ global using DesktopWidgets3.Contracts.Services.Widgets;
 global using DesktopWidgets3.Contracts.ViewModels;
 global using DesktopWidgets3.Extensions;
 global using DesktopWidgets3.Services;
+global using DesktopWidgets3.Services.HardwareInfo;
 global using DesktopWidgets3.Services.Widgets;
 global using DesktopWidgets3.Helpers;
 global using DesktopWidgets3.Helpers.Dialog;

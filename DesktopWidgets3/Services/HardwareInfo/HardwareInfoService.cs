@@ -1,10 +1,9 @@
 ﻿using System.Timers;
-
 using Timer = System.Timers.Timer;
 
-namespace DesktopWidgets3.Services.Widgets;
+namespace DesktopWidgets3.Services.HardwareInfo;
 
-internal class SystemInfoService : ISystemInfoService
+internal class HardwareInfoService : IHardwareInfoService
 {
     private readonly IAppSettingsService _appSettingsService;
 
@@ -12,7 +11,7 @@ internal class SystemInfoService : ISystemInfoService
 
     private readonly Timer sampleTimer = new();
 
-    public SystemInfoService(IAppSettingsService appSettingsService)
+    public HardwareInfoService(IAppSettingsService appSettingsService)
     {
         _appSettingsService = appSettingsService;
 
@@ -26,7 +25,7 @@ internal class SystemInfoService : ISystemInfoService
         hardwareMonitor.EnabledChanged += HardwareMonitor_OnEnabledChanged;
     }
 
-    ~SystemInfoService()
+    ~HardwareInfoService()
     {
         hardwareMonitor.Dispose();
         sampleTimer.Dispose();

@@ -7,7 +7,7 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IAppSettingsService appSettingsService, INavigationService navigationService, ISystemInfoService systemInfoService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal class WidgetManagerService(IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
     private readonly List<WidgetWindowPair> AllWidgets = [];
     private readonly List<WidgetWindow> AllWidgetWindows = [];
@@ -18,7 +18,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly INavigationService _navigationService = navigationService;
-    private readonly ISystemInfoService _systemInfoService = systemInfoService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     #region widget window
@@ -166,12 +165,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             // close widget window
             await CloseWidgetWindow(widgetWindow);
-        }
-
-        // stop all monitors
-        foreach (HardwareType hardwareType in Enum.GetValues(typeof(HardwareType)))
-        {
-            _systemInfoService.StopMonitor(hardwareType);
         }
     }
 
@@ -326,7 +319,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         if (sameTypeWidgets == 0)
         {
             // TODO: Stop Monitor there.
-            // _systemInfoService.StopMonitor(widgetId);
         }
     }
 

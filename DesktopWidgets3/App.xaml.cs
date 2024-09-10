@@ -133,7 +133,7 @@ public partial class App : Application
                 services.AddSingleton<IWidgetResourceService, WidgetResourceService>();
 
                 // System Info
-                services.AddSingleton<ISystemInfoService, SystemInfoService>();
+                services.AddSingleton<IHardwareInfoService, HardwareInfoService>();
 
                 // Window Registeration
                 services.AddSingleton<IWindowService, WindowService>();

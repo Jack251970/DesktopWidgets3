@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Contracts.Services.Widgets;
 
-public interface ISystemInfoService
+public interface IHardwareInfoService
 {
     void StartMonitor(HardwareType type);
 
