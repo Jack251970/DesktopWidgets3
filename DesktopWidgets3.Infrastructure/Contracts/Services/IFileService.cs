@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Core.Contracts.Services;
+﻿namespace DesktopWidgets3.Infrastructure.Contracts.Services;
 
 public interface IFileService
 {

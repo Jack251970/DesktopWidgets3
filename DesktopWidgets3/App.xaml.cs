@@ -196,50 +196,13 @@ public partial class App : Application
 
 	public static void HandleAppUnhandledException(Exception? ex, bool showToastNotification)
     {
-        StringBuilder formattedException = new()
-        {
-            Capacity = 200
-        };
+        var exceptionString = ExceptionFormatter.FormatExcpetion(ex);
 
-        formattedException.AppendLine("--------- UNHANDLED EXCEPTION ---------");
-
-        if (ex is not null)
-        {
-            formattedException.AppendLine($">>>> HRESULT: {ex.HResult}");
-
-            if (ex.Message is not null)
-            {
-                formattedException.AppendLine("--- MESSAGE ---");
-                formattedException.AppendLine(ex.Message);
-            }
-            if (ex.StackTrace is not null)
-            {
-                formattedException.AppendLine("--- STACKTRACE ---");
-                formattedException.AppendLine(ex.StackTrace);
-            }
-            if (ex.Source is not null)
-            {
-                formattedException.AppendLine("--- SOURCE ---");
-                formattedException.AppendLine(ex.Source);
-            }
-            if (ex.InnerException is not null)
-            {
-                formattedException.AppendLine("--- INNER ---");
-                formattedException.AppendLine(ex.InnerException.ToString());
-            }
-        }
-        else
-        {
-            formattedException.AppendLine("Exception data is not available.");
-        }
-
-        formattedException.AppendLine("---------------------------------------");
-
-        Debug.WriteLine(formattedException.ToString());
+        Debug.WriteLine(exceptionString);
 
         Debugger.Break();
 
-        LogExtensions.LogError(ClassName, ex, ex?.Message ?? "An unhandled error occurred.");
+        LogExtensions.LogError(ClassName, ex, "An unhandled error occurred.");
 
         if (showToastNotification)
         {

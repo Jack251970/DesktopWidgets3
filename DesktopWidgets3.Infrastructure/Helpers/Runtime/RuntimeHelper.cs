@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace DesktopWidgets3.Core.Helpers;
+namespace DesktopWidgets3.Infrastructure.Helpers.Runtime;
 
 public class RuntimeHelper
 {

@@ -15,13 +15,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240627000" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
+    <ProjectReference Include="..\DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj" />
   </ItemGroup>
   
 </Project>

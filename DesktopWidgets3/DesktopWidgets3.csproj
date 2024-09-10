@@ -75,6 +75,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
+    <ProjectReference Include="..\DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.HardwareInfoProvider\DesktopWidgets3.HardwareInfoProvider.csproj" />
   </ItemGroup>
@@ -105,6 +106,21 @@
 
   <ItemGroup>
     <Folder Include="UserControls\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

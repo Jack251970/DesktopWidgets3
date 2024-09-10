@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Text;
 
-namespace DesktopWidgets3.Core.Services;
+namespace DesktopWidgets3.Infrastructure.Services;
 
 public class FileService : IFileService
 {
@@ -29,7 +29,7 @@ public class FileService : IFileService
     }
 
     public async Task<string?> Save<T>(string folderPath, string fileName, T content, bool indent)
-    {   
+    {
         var path = GetPath(folderPath, fileName, true);
 
         semaphoreSlims.TryGetValue(path, out var semaphoreSlim);

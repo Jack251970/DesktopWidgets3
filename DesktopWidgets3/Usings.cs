@@ -29,8 +29,18 @@ global using DesktopWidgets3.Utils.Logger;
 global using DesktopWidgets3.Core.Contracts.Services;
 global using DesktopWidgets3.Core.Extensions;
 global using DesktopWidgets3.Core.Helpers;
-global using DesktopWidgets3.Core.Services;
 global using DesktopWidgets3.Core.Views.Windows;
+
+// DesktopWidgets3.HardwareInfoProvider
+global using DesktopWidgets3.HardwareInfoProvider.Helpers;
+
+// DesktopWidgets3.Infrastructure
+global using DesktopWidgets3.Infrastructure.Contracts.Services;
+global using DesktopWidgets3.Infrastructure.Extensions;
+global using DesktopWidgets3.Infrastructure.Helpers.Exception;
+global using DesktopWidgets3.Infrastructure.Helpers.Json;
+global using DesktopWidgets3.Infrastructure.Helpers.Runtime;
+global using DesktopWidgets3.Infrastructure.Services;
 
 // DesktopWidgets3.Widget
 global using DesktopWidgets3.Widget.Contracts.Element;
@@ -40,6 +50,3 @@ global using DesktopWidgets3.Widget.Models.Main;
 global using DesktopWidgets3.Widget.Models.Parameter;
 global using DesktopWidgets3.Widget.Models.Setting;
 global using DesktopWidgets3.Widget.Models.ViewModel;
-
-// DesktopWidgets3.HardwareInfoProvider
-global using DesktopWidgets3.HardwareInfoProvider.Helpers;

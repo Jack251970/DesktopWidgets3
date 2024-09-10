@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
-namespace DesktopWidgets3.Core.Extensions;
+namespace DesktopWidgets3.Infrastructure.Extensions;
 
 #pragma warning disable CA2254 // Template should be a static expression
 
@@ -11,7 +11,7 @@ namespace DesktopWidgets3.Core.Extensions;
 public class LogExtensions
 {
     public static ILogger? Logger => logger;
-    private static ILogger? logger = null!;
+    private static ILogger? logger = null;
 
     public static void Initialize(ILogger logger)
     {
