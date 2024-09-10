@@ -1,37 +1,24 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml;
+﻿using System.ComponentModel;
 
 namespace DesktopWidgets3.Widget.Models.ViewModel;
 
-public abstract partial class BaseWidgetSettingViewModel : ObservableRecipient
+public abstract partial class BaseWidgetSettingViewModel : BaseWidgetViewModel
 {
-    // TODO: Check if we need WidgetWindow.
-    public Window WidgetWindow { get; private set; } = null!;
+    // TODO: Use UpdateSettings.
 
-    #region abstract methods
+    // TODO: Check if it can work
+    /*protected BaseWidgetSettings? _settings;
 
-    public abstract void LoadSettings(BaseWidgetSettings settings, bool initialized);
-
-    #endregion
-
-    #region widget update
-
-    public void InitializeSettings(object parameter)
+    public BaseWidgetSettingViewModel()
     {
-        if (parameter is WidgetNavigationParameter navigationParameter)
+        PropertyChanging += WidgetSettings_PropertyChanging;
+    }
+
+    private void WidgetSettings_PropertyChanging(object? sender, PropertyChangingEventArgs e)
+    {
+        if (_settings is null)
         {
-            WidgetWindow = navigationParameter.Window!;
-            if (navigationParameter.Settings is BaseWidgetSettings settings)
-            {
-                LoadSettings(settings, true);
-            }
+            return;
         }
-    }
-
-    public void UpdateSettings(BaseWidgetSettings settings)
-    {
-        LoadSettings(settings, false);
-    }
-
-    #endregion
+    }*/
 }

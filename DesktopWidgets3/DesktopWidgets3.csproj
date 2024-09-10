@@ -42,6 +42,10 @@
   </ItemGroup>
   
   <ItemGroup>
+    <None Remove="Views\Pages\Widgets\WidgetSettingPage.xaml" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
@@ -86,6 +90,9 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <Page Update="Views\Pages\Widgets\WidgetSettingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

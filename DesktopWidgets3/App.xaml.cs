@@ -151,10 +151,14 @@ public partial class App : Application
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<DashboardViewModel>();
                 services.AddTransient<DashboardPage>();
+                services.AddTransient<WidgetSettingPage>();
+                services.AddTransient<WidgetSettingViewModel>();
 
                 // Widgets Window Pages
                 services.AddTransient<WidgetPage>();
                 services.AddTransient<WidgetViewModel>();
+
+                // Overlay Window Pages
                 services.AddTransient<EditModeOverlayPage>();
                 services.AddTransient<EditModeOverlayViewModel>();
 
@@ -243,7 +247,7 @@ public partial class App : Application
             _ = Task.Run(() =>
             {
                 GetService<IAppNotificationService>().Show(string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
-                    ex?.ToString()));
+                    $"{ex?.ToString()}{Environment.NewLine}"));
             });
         }
     }

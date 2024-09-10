@@ -1,7 +1,6 @@
 using DesktopWidgets3.Widget.DigitalClock.Setting;
 using DesktopWidgets3.Widget.DigitalClock.Views;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.DigitalClock;
 
@@ -9,17 +8,19 @@ public class Main : IWidget, IWidgetSetting
 {
     #region IWidget
 
+    private WidgetInitContext Context = null!;
+
     public FrameworkElement CreateWidgetFrameworkElement()
     {
         return new ClockWidget();
     }
 
-    public void InitWidgetClass(WidgetInitContext context)
+    public void InitWidget(WidgetInitContext context)
     {
-
+        Context = context;
     }
 
-    public void InitWidgetInstance(WidgetInitContext context)
+    public void InitWidgetInstance(bool firstWidget)
     {
 
     }
@@ -30,12 +31,12 @@ public class Main : IWidget, IWidgetSetting
 
     public BaseWidgetSettings GetDefaultSetting()
     {
-        return new DigitalClockSetting();
+        return new DigitalClockSettings();
     }
 
     public FrameworkElement CreateWidgetSettingFrameworkElement()
     {
-        return new UserControl();
+        return new DigitalClockSetting(Context);
     }
 
     #endregion

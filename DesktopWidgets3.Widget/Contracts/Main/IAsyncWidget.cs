@@ -6,7 +6,7 @@ public interface IAsyncWidget
 {
     FrameworkElement CreateWidgetFrameworkElement();
 
-    Task InitWidgetClassAsync(WidgetInitContext context);
+    Task InitWidgetAsync(WidgetInitContext context);
 
-    Task InitWidgetInstanceAsync(WidgetInitContext context);
+    Task InitWidgetInstanceAsync(bool firstWidget);
 }

@@ -18,6 +18,8 @@ public interface IWidgetManagerService
 
     BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow);
 
+    Task NavigateToWidgetSettingPage(string widgetId, int indexTag);
+
     void EnterEditMode();
 
     void SaveAndExitEditMode();

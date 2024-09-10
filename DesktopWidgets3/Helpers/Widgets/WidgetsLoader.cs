@@ -66,16 +66,10 @@ internal static class WidgetsLoader
         {
             var errorWidgetString = string.Join(Environment.NewLine, erroredWidgets);
 
-            var errorMessage = "The following "
-                               + (erroredWidgets.Count > 1 ? "widgets have " : "widget has ")
-                               + "errored and cannot be loaded:";
-
             _ = Task.Run(() =>
             {
                 App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
-                    $"{errorMessage}{Environment.NewLine}{Environment.NewLine}" +
-                    $"{errorWidgetString}{Environment.NewLine}{Environment.NewLine}" +
-                    $"Please refer to the logs for more information"));
+                    $"{Environment.NewLine}{errorWidgetString}{Environment.NewLine}"));
             });
         }
 

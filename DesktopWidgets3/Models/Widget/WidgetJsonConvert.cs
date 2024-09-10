@@ -6,6 +6,8 @@ namespace DesktopWidgets3.Models.Widget;
 
 internal class JsonWidgetItemConverter : JsonConverter
 {
+    private readonly IWidgetResourceService _widgetResourceService = App.GetService<IWidgetResourceService>();
+
     public override bool CanConvert(Type objectType)
     {
         return objectType == typeof(JsonWidgetItem);
@@ -15,14 +17,14 @@ internal class JsonWidgetItemConverter : JsonConverter
     {
         var jsonObject = JObject.Load(reader);
 
-        // phase settings
         var widgetId = jsonObject["Id"]?.Value<string>() ?? StringUtils.GetGuid();
         var indexTag = jsonObject["IndexTag"]?.Value<int>() ?? new Random().Next(100, 999);
         var isEnabled = jsonObject["IsEnabled"]?.Value<bool>() ?? false;
         var position = jsonObject["Position"]?.ToObject<PointInt32>(serializer) ?? new PointInt32(-1, -1);
         var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? new RectSize(318, 200);
         var displayMonitor = jsonObject["DisplayMonitor"]?.ToObject<DisplayMonitor>(serializer) ?? new(WidgetManagerService.GetMonitorInfo(null));
-        var widgetSettings = new BaseWidgetSettings();
+        var defaultWidgetSettings = _widgetResourceService.GetDefaultSetting(widgetId);
+        var widgetSettings = jsonObject["Settings"]?.ToObject(defaultWidgetSettings.GetType(), serializer) as BaseWidgetSettings ?? defaultWidgetSettings;
 
         return new JsonWidgetItem
         {

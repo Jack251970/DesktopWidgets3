@@ -27,7 +27,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async Task Initialize()
     {
         // initialize widgets
-        _widgetResourceService.Initalize();
+        await _widgetResourceService.Initalize();
 
         // enable all enabled widgets
         var widgetList = await _appSettingsService.GetWidgetsList();
@@ -186,6 +186,40 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         return GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
     }
 
+    public async Task NavigateToWidgetSettingPage(string widgetId, int indexTag)
+    {
+        // navigate to widget setting page
+        _navigationService.NavigateTo(typeof(WidgetSettingPage).FullName!);
+
+        // set widget setting framework element
+        var frameworkElement = _widgetResourceService.GetWidgetSettingFrameworkElement(widgetId);
+        var widgetSettingPage = _navigationService.Frame?.Content as WidgetSettingPage;
+        if (widgetSettingPage != null)
+        {
+            widgetSettingPage.ViewModel.WidgetFrameworkElement = frameworkElement;
+        }
+
+        // set widget properties
+        WidgetProperties.SetId(frameworkElement, widgetId);
+        WidgetProperties.SetIndexTag(frameworkElement, indexTag);
+
+        // initialize widget settings
+        if (frameworkElement is ISettingViewModel element)
+        {
+            var viewModel = element.ViewModel;
+            var widgetWindow = GetWidgetWindow(widgetId, indexTag);
+            var widgetSetting = await GetWidgetSettings(widgetId, indexTag);
+            if (widgetWindow != null && widgetSetting != null)
+            {
+                viewModel.InitializeSettings(new WidgetNavigationParameter()
+                {
+                    Window = widgetWindow,
+                    Settings = widgetSetting
+                });
+            }
+        }
+    }
+
     private async Task CreateWidgetWindow(JsonWidgetItem widget)
     {
         // configure widget window lifecycle actions
@@ -210,7 +244,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             // set widget framework element
             var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetItem.Id);
-            widgetWindow.ShellPage.SetFrameworkElement(frameworkElement);
+            widgetWindow.ShellPage.ViewModel.WidgetFrameworkElement = frameworkElement;
 
             // set widget properties
             WidgetProperties.SetId(frameworkElement, widgetItem.Id);

@@ -20,6 +20,8 @@ public class WidgetMetadata
 
     public string IcoPath { get; set; } = string.Empty;
 
+    // TODO: Set default height & width here and check if they are legal.
+
     public float DefaultHeight { get; set; }
 
     public float DefaultWidth { get; set; }
@@ -33,6 +35,8 @@ public class WidgetMetadata
     public float MaxWidth { get; set; }
 
     public bool InNewThread { get; set; } = false;
+
+    public bool Disabled { get; set; } = false;
 
     public string ExecuteFilePath { get; private set; } = string.Empty;
 

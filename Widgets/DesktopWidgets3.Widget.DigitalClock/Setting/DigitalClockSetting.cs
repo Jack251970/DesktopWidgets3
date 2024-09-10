@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Widget.DigitalClock.Setting;
 
-internal class DigitalClockSetting : BaseWidgetSettings
+internal class DigitalClockSettings : BaseWidgetSettings
 {
     public bool ShowSeconds { get; set; } = true;
 }

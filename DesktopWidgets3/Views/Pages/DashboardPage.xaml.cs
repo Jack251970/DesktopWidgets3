@@ -12,6 +12,8 @@ public sealed partial class DashboardPage : Page
     private string _widgetId = string.Empty;
     private int _indexTag = -1;
 
+    private readonly IWidgetManagerService _widgetManagerService = App.GetService<IWidgetManagerService>();
+
     public DashboardPage()
     {
         ViewModel = App.GetService<DashboardViewModel>();
@@ -56,12 +58,7 @@ public sealed partial class DashboardPage : Page
         {
             _widgetId = WidgetProperties.GetId(element);
             _indexTag = WidgetProperties.GetIndexTag(element);
-            var parameter = new Dictionary<string, object>
-            {
-                { "Id", _widgetId },
-                { "IndexTag", _indexTag }
-            };
-            // TODO: _navigationService.NavigateTo("WidgetSettings", parameter);
+            _widgetManagerService.NavigateToWidgetSettingPage(_widgetId, _indexTag);
             _indexTag = -1;
         }
     }

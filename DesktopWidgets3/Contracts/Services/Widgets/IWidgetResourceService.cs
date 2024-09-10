@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Contracts.Services.Widgets;
 
 public interface IWidgetResourceService
 {
-    void Initalize();
+    Task Initalize();
 
     List<DashboardWidgetItem> GetAllDashboardItems();
 

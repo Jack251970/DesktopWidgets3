@@ -326,7 +326,7 @@
   &lt;visual&gt;
     &lt;binding template="ToastGeneric"&gt;
       &lt;text&gt;发生未知错误&lt;/text&gt;
-      &lt;text&gt;{0}&lt;/text&gt;
+      &lt;text&gt;异常：{0}请从日志中获取更多信息&lt;/text&gt;
     &lt;/binding&gt;
   &lt;/visual&gt;
 &lt;/toast&gt;</value>
@@ -342,7 +342,17 @@
   &lt;visual&gt;
     &lt;binding template="ToastGeneric"&gt;
       &lt;text&gt;组件加载错误&lt;/text&gt;
-      &lt;text&gt;{0}&lt;/text&gt;
+      &lt;text&gt;以下组件无法加载：{0}请从日志中获取更多信息&lt;/text&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="AppNotificationWidgetInitializeErrorPayload" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;组件初始化错误&lt;/text&gt;
+      &lt;text&gt;以下组件无法初始化，将会被禁用：{0}请联系组件作者寻求帮助&lt;/text&gt;
     &lt;/binding&gt;
   &lt;/visual&gt;
 &lt;/toast&gt;</value>

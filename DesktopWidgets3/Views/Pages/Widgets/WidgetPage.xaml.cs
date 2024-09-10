@@ -1,5 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Views.Pages.Widgets;
 
@@ -26,10 +25,5 @@ public sealed partial class WidgetPage : Page
         WidgetWindow.ExtendsContentIntoTitleBar = customTitleBar;
         WidgetWindow.SetTitleBar(customTitleBar ? WidgetTitleBar : null);
         WidgetWindow.InitializeTitleBar();
-    }
-
-    public void SetFrameworkElement(FrameworkElement frameworkElement)
-    {
-        ViewModel.WidgetFrameworkElement = frameworkElement;
     }
 }

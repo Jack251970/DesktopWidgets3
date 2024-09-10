@@ -24,7 +24,7 @@ internal class LocalSettingsService : ILocalSettingsService
 
     private Dictionary<string, object>? _settings;
 
-    private readonly JsonSerializerSettings _widgetListJsonSerializerSettings;
+    private JsonSerializerSettings? _widgetListJsonSerializerSettings;
 
     private bool _isInitialized;
 
@@ -42,8 +42,6 @@ internal class LocalSettingsService : ILocalSettingsService
         {
             Directory.CreateDirectory(_applicationDataFolder);
         }
-
-        _widgetListJsonSerializerSettings = new JsonSerializerSettings { Converters = { new JsonWidgetItemConverter() }};
     }
 
     public string GetApplicationDataFolder()
@@ -118,6 +116,8 @@ internal class LocalSettingsService : ILocalSettingsService
 
     public async Task<object> ReadWidgetListAsync()
     {
+        _widgetListJsonSerializerSettings ??= new JsonSerializerSettings { Converters = { new JsonWidgetItemConverter() } };
+
         var _widgetList = await Task.Run(() => _fileService.Read<List<JsonWidgetItem>>(_applicationDataFolder, _widgetListFile, _widgetListJsonSerializerSettings)) ?? [];
 
         return _widgetList;

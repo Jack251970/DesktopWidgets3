@@ -2,11 +2,11 @@
 
 public interface IWidget : IAsyncWidget
 {
-    void InitWidgetClass(WidgetInitContext context);
+    void InitWidget(WidgetInitContext context);
 
-    void InitWidgetInstance(WidgetInitContext context);
+    Task IAsyncWidget.InitWidgetAsync(WidgetInitContext context) => Task.Run(() => InitWidget(context));
 
-    Task IAsyncWidget.InitWidgetClassAsync(WidgetInitContext context) => Task.Run(() => InitWidgetClass(context));
+    void InitWidgetInstance(bool firstWidget);
 
-    Task IAsyncWidget.InitWidgetInstanceAsync(WidgetInitContext context) => Task.Run(() => InitWidgetInstance(context));
+    Task IAsyncWidget.InitWidgetInstanceAsync(bool firstWidget) => Task.Run(() => InitWidgetInstance(firstWidget));
 }

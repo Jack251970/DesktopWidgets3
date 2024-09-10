@@ -9,9 +9,14 @@
     <UseWinUI>true</UseWinUI>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="Views\DigitalClockSetting.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+      <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821" />
       <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240627000" />
       <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
   </ItemGroup>
@@ -21,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Views\DigitalClockSetting.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Update="widget.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

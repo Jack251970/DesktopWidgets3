@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.Collections.Concurrent;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -20,11 +21,17 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #region Initialization
 
-    public void Initalize()
+    public async Task Initalize()
     {
+        // load all widgets
         AllWidgetsMetadata = WidgetsConfig.Parse(Directories);
         AllWidgets = WidgetsLoader.Widgets(AllWidgetsMetadata);
+
+        // install resource files
         InstallResourceFiles(AllWidgetsMetadata);
+
+        // initialize all widgets
+        await InitAllWidgetsAsync();
     }
 
     #region Xaml Resources
@@ -55,6 +62,44 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 Directory.CreateDirectory(destinationDirectory);
             }
             File.Copy(resourceFile, destinationPath, true);
+        }
+    }
+
+    #endregion
+
+    #region IWidget
+
+    private async Task InitAllWidgetsAsync()
+    {
+        var publicAPIService = App.GetService<IPublicAPIService>();
+
+        var failedPlugins = new ConcurrentQueue<WidgetPair>();
+
+        var InitTasks = AllWidgets.Select(pair => Task.Run(delegate
+        {
+            try
+            {
+                pair.Widget.InitWidgetAsync(new WidgetInitContext(pair.Metadata, publicAPIService));
+            }
+            catch (Exception e)
+            {
+                LogExtensions.LogError(ClassName, e, $"Fail to Init plugin: {pair.Metadata.Name}");
+                pair.Metadata.Disabled = true;
+                failedPlugins.Enqueue(pair);
+            }
+        }));
+
+        await Task.WhenAll(InitTasks);
+
+        if (!failedPlugins.IsEmpty)
+        {
+            var failedWidget = string.Join(",", failedPlugins.Select(x => x.Metadata.Name));
+            _ = Task.Run(() =>
+            {
+                App.GetService<IAppNotificationService>().Show(
+                    string.Format("AppNotificationWidgetInitializeErrorPayload".GetLocalized(),
+                    failedWidget));
+            });
         }
     }
 

@@ -6,7 +6,7 @@ namespace DesktopWidgets3.Widget.DigitalClock.Views;
 
 public sealed partial class ClockWidget : UserControl, IViewModel, IWidgetMenu
 {
-    public ClockViewModel ViewModel = new();
+    public DigitalClockViewModel ViewModel = new();
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 

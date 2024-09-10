@@ -6,7 +6,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.DigitalClock.ViewModels;
 
-public partial class ClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
+public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
 {
     #region view properties
 
@@ -25,7 +25,7 @@ public partial class ClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidge
 
     private bool updating = false;
 
-    public ClockViewModel()
+    public DigitalClockViewModel()
     {
         dispatcherQueueTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
         dispatcherQueueTimer.Interval = TimeSpan.FromSeconds(1);
@@ -53,7 +53,7 @@ public partial class ClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidge
 
     public override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
-        if (settings is DigitalClockSetting digitalClockSetting)
+        if (settings is DigitalClockSettings digitalClockSetting)
         {
             if (digitalClockSetting.ShowSeconds != (timingFormat == "T"))
             {
