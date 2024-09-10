@@ -112,7 +112,7 @@
   </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir $(TargetDir)Assets&#xD;&#xA;copy $(ProjectDir)Assets\WindowIcon.ico $(TargetDir)Assets\WindowIcon.ico&#xD;&#xA;mkdir $(TargetDir)Assets\FluentIcons&#xD;&#xA;copy $(ProjectDir)Assets\FluentIcons\* $(TargetDir)Assets\FluentIcons\*&#xD;&#xA;" />
+    <Exec Command="mkdir $(TargetDir)Assets&#xD;&#xA;copy $(ProjectDir)Assets\WindowIcon.ico $(TargetDir)Assets\WindowIcon.ico&#xD;&#xA;" />
   </Target>
 
   <Target Name="RemoveOutOfProcWinMD" BeforeTargets="_GenerateCurrentProjectAppxManifest">
