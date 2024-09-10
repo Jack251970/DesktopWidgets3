@@ -177,21 +177,6 @@
   <data name="Dashboard_EnabledWidgets.Text" xml:space="preserve">
     <value>已启用组件</value>
   </data>
-  <data name="Widget_Clock_Label" xml:space="preserve">
-    <value>时钟</value>
-  </data>
-  <data name="Widget_Performance_Label" xml:space="preserve">
-    <value>性能</value>
-  </data>
-  <data name="Widget_Disk_Label" xml:space="preserve">
-    <value>磁盘</value>
-  </data>
-  <data name="Widget_FolderView_Label" xml:space="preserve">
-    <value>文件夹预览</value>
-  </data>
-  <data name="Widget_Network_Label" xml:space="preserve">
-    <value>网络</value>
-  </data>
   <data name="Dashboard_AllWidgets.Text" xml:space="preserve">
     <value>所有组件</value>
   </data>
@@ -210,25 +195,10 @@
   <data name="Ok" xml:space="preserve">
     <value>确认</value>
   </data>
-  <data name="WidgetSettings_FolderPath_Card.Header" xml:space="preserve">
-    <value>文件夹路径</value>
-  </data>
-  <data name="WidgetSettings_ShowSeconds_Card.Header" xml:space="preserve">
-    <value>显示秒数</value>
-  </data>
-  <data name="WidgetSettings_FolderPath_Card.Description" xml:space="preserve">
-    <value>组件加载的默认路径</value>
-  </data>
-  <data name="WidgetSettings_ShowSeconds_Card.Description" xml:space="preserve">
-    <value>在组件中显示秒数</value>
-  </data>
-  <data name="MenuFlyoutItem_DeleteWidget_Text" xml:space="preserve">
-    <value>删除该组件</value>
-  </data>
-  <data name="MenuFlyoutItem_DisableWidget_Text" xml:space="preserve">
+  <data name="MenuFlyoutItem_DisableWidget.Text" xml:space="preserve">
     <value>禁用该组件</value>
   </data>
-  <data name="MenuFlyoutItem_EnterEditMode_Text" xml:space="preserve">
+  <data name="MenuFlyoutItem_EnterEditMode.Text" xml:space="preserve">
     <value>进入编辑模式</value>
   </data>
   <data name="MenuFlyoutItem_DeleteWidget.Text" xml:space="preserve">
@@ -252,65 +222,14 @@
   <data name="Settings_LicenseLink.NavigateUri" xml:space="preserve">
     <value>https://github.com/Jack251970/DesktopWidgets3/blob/master/LICENSE</value>
   </data>
-  <data name="WidgetSettings_AllowNavigation_Card.Description" xml:space="preserve">
-    <value>允许根目录改变</value>
-  </data>
-  <data name="WidgetSettings_AllowNavigation_Card.Header" xml:space="preserve">
-    <value>允许导航</value>
-  </data>
-  <data name="WidgetSettings_UseBps_Card.Description" xml:space="preserve">
-    <value>使用Bps而不是B/s作为网络速度单位</value>
-  </data>
-  <data name="WidgetSettings_UseBps_Card.Header" xml:space="preserve">
-    <value>显示Bps</value>
-  </data>
-  <data name="WidgetSettings_ShowFileExtensions_Card.Description" xml:space="preserve">
-    <value>显示已知文件类型的扩展名</value>
-  </data>
-  <data name="WidgetSettings_ShowFileExtensions_Card.Header" xml:space="preserve">
-    <value>显示扩展名</value>
-  </data>
-  <data name="WidgetSettings_ShowThumbnails_Card.Description" xml:space="preserve">
-    <value>显示图像文件类型的缩略图</value>
-  </data>
-  <data name="WidgetSettings_ShowThumbnails_Card.Header" xml:space="preserve">
-    <value>显示缩略图</value>
-  </data>
-  <data name="Memory" xml:space="preserve">
-    <value>内存</value>
-  </data>
-  <data name="Total" xml:space="preserve">
-    <value>全部</value>
-  </data>
-  <data name="Widget_Network_Title.Text" xml:space="preserve">
-    <value>网络</value>
-  </data>
-  <data name="Widget_Network_DownloadSpeed_Title.Text" xml:space="preserve">
-    <value>下载</value>
-  </data>
-  <data name="Widget_Network_UploadSpeed_Title.Text" xml:space="preserve">
-    <value>上传</value>
-  </data>
-  <data name="Widget_Disk_Title.Text" xml:space="preserve">
-    <value>磁盘</value>
-  </data>
   <data name="Settings_MultiThread_Card.Description" xml:space="preserve">
     <value>使用多个线程加载组件</value>
   </data>
   <data name="Settings_MultiThread_Card.Header" xml:space="preserve">
     <value>多线程加速</value>
   </data>
-  <data name="NavigationToolbarNewWindow.Content" xml:space="preserve">
-    <value>请前往仪表板界面添加组件</value>
-  </data>
   <data name="TrayMenu_TaskBarIcon.ToolTipText" xml:space="preserve">
     <value>桌面小组件3</value>
-  </data>
-  <data name="Cpu" xml:space="preserve">
-    <value>CPU</value>
-  </data>
-  <data name="Gpu" xml:space="preserve">
-    <value>GPU</value>
   </data>
   <data name="Settings_AboutApp_Card.Header" xml:space="preserve">
     <value>桌面小组件3</value>
@@ -330,12 +249,6 @@
     &lt;/binding&gt;
   &lt;/visual&gt;
 &lt;/toast&gt;</value>
-  </data>
-  <data name="WidgetSettings_UseCelsius_Card.Header" xml:space="preserve">
-    <value>显示摄氏度</value>
-  </data>
-  <data name="WidgetSettings_UseCelsius_Card.Description" xml:space="preserve">
-    <value>使用摄氏度而不是华氏度作为硬件温度单位</value>
   </data>
   <data name="AppNotificationWidgetLoadErrorPayload" xml:space="preserve">
     <value>&lt;toast launch="action=ToastClick"&gt;
