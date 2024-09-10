@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget", "D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.DigitalClock", "Widgets\DesktopWidgets3.Widget.DigitalClock\DesktopWidgets3.Widget.DigitalClock.csproj", "{1A64F540-7248-4F33-B743-FAB2E8AD2472}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopWidgets3.Infrastructure", "DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj", "{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -507,6 +509,46 @@ Global
 		{1A64F540-7248-4F33-B743-FAB2E8AD2472}.Store|x64.Build.0 = Debug|Any CPU
 		{1A64F540-7248-4F33-B743-FAB2E8AD2472}.Store|x86.ActiveCfg = Debug|Any CPU
 		{1A64F540-7248-4F33-B743-FAB2E8AD2472}.Store|x86.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Debug|arm64.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Debug|x64.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Debug|x86.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Preview|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Preview|Any CPU.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Preview|arm64.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Preview|arm64.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Preview|x64.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Preview|x64.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Preview|x86.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Preview|x86.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Release|arm64.ActiveCfg = Release|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Release|arm64.Build.0 = Release|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Release|x64.ActiveCfg = Release|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Release|x64.Build.0 = Release|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Release|x86.ActiveCfg = Release|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Release|x86.Build.0 = Release|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Stable|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Stable|Any CPU.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Stable|arm64.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Stable|arm64.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Stable|x64.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Stable|x64.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Stable|x86.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Stable|x86.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Store|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Store|Any CPU.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Store|arm64.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Store|arm64.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Store|x64.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Store|x64.Build.0 = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Store|x86.ActiveCfg = Debug|Any CPU
+		{0BDF5176-A9A8-4571-BEC6-FA7519D118DC}.Store|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
