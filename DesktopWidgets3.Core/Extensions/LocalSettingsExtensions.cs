@@ -1,4 +1,5 @@
-﻿using Windows.Storage;
+﻿using DesktopWidgets3.Infrastructure.Helpers;
+using Windows.Storage;
 
 namespace DesktopWidgets3.Core.Extensions;
 

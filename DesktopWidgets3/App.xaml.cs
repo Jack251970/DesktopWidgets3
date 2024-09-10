@@ -1,4 +1,5 @@
 ﻿using DesktopWidgets3.Contracts.Services.HardwareInfo;
+using DesktopWidgets3.Infrastructure.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

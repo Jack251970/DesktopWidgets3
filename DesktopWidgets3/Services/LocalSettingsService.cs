@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using DesktopWidgets3.Infrastructure.Helpers;
+using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json;
 

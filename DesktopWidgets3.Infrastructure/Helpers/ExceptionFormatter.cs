@@ -1,10 +1,10 @@
 ﻿using System.Text;
 
-namespace DesktopWidgets3.Infrastructure.Helpers.Exception;
+namespace DesktopWidgets3.Infrastructure.Helpers;
 
 public class ExceptionFormatter
 {
-    public static string FormatExcpetion(System.Exception? exception)
+    public static string FormatExcpetion(Exception? exception)
     {
         StringBuilder formattedException = new()
         {

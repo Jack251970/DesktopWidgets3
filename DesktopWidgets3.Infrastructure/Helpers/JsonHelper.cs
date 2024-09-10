@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Infrastructure.Helpers.Json;
+﻿namespace DesktopWidgets3.Infrastructure.Helpers;
 
 public static class JsonHelper
 {

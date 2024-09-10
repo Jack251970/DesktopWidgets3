@@ -1,6 +1,6 @@
 ﻿using Windows.UI.Popups;
 
-namespace DesktopWidgets3.Services.Widgets;
+namespace DesktopWidgets3.Services;
 
 internal class DialogService : IDialogService
 {

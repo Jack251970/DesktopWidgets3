@@ -13,6 +13,7 @@ global using DesktopWidgets3.Services.HardwareInfo;
 global using DesktopWidgets3.Services.Widgets;
 global using DesktopWidgets3.Helpers;
 global using DesktopWidgets3.Helpers.Dialog;
+global using DesktopWidgets3.Helpers.Navigation;
 global using DesktopWidgets3.Models;
 global using DesktopWidgets3.ViewModels.Commands;
 global using DesktopWidgets3.ViewModels.Pages;
@@ -43,9 +44,7 @@ global using DesktopWidgets3.HardwareInfoProvider.Helpers;
 global using DesktopWidgets3.Infrastructure;
 global using DesktopWidgets3.Infrastructure.Contracts.Services;
 global using DesktopWidgets3.Infrastructure.Extensions;
-global using DesktopWidgets3.Infrastructure.Helpers.Exception;
-global using DesktopWidgets3.Infrastructure.Helpers.Json;
-global using DesktopWidgets3.Infrastructure.Helpers.Runtime;
+global using DesktopWidgets3.Infrastructure.Helpers;
 global using DesktopWidgets3.Infrastructure.Services;
 
 // DesktopWidgets3.Widget

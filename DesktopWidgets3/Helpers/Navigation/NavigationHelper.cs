@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DesktopWidgets3.Helpers;
+namespace DesktopWidgets3.Helpers.Navigation;
 
 // Helper class to set the navigation target for a NavigationViewItem.
 //

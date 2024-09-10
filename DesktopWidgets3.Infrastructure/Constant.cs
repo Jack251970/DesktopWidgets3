@@ -2,6 +2,10 @@
 
 public static class Constant
 {
+    public const string StartupRegistryKey = "Desktop Widgets 3";
+
+    public const string StartupTaskId = "StartAppOnLoginTask";
+
     public const string Widgets = "Widgets";
 
     public const string WidgetMetadataFileName = "widget.json";

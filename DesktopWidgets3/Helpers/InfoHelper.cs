@@ -3,7 +3,7 @@
 
 using System.Globalization;
 using System.Reflection;
-
+using DesktopWidgets3.Infrastructure.Helpers;
 using Windows.ApplicationModel;
 
 namespace DesktopWidgets3.Helpers;

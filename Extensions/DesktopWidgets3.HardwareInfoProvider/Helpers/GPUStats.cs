@@ -8,8 +8,6 @@ namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
 
 public sealed class GPUStats : IDisposable
 {
-    private string ClassName => GetType().Name;
-
     // GPU counters
     private readonly Dictionary<int, List<PerformanceCounter>> _gpuCounters = [];
 
@@ -114,12 +112,12 @@ public sealed class GPUStats : IDisposable
                         catch (InvalidOperationException ex)
                         {
                             // We can't modify the list during the loop, so save it to remove at the end.
-                            LogExtensions.LogDebug(ClassName, ex, "Failed to get next value, remove");
+                            Debug.WriteLine($"Failed to get next value, remove: {ex.Message}");
                             countersToRemove.Add(counter);
                         }
                         catch (Exception ex)
                         {
-                            LogExtensions.LogError(ClassName, ex, "Error going through process counters.");
+                            Debug.WriteLine($"Failed to get next value: {ex.Message}");
                         }
                     }
 
@@ -133,7 +131,7 @@ public sealed class GPUStats : IDisposable
                 }
                 catch (Exception ex)
                 {
-                    LogExtensions.LogError(ClassName, ex, "Error summing process counters.");
+                    Debug.WriteLine($"Error summing process counters: {ex.Message}");
                 }
             }
         }

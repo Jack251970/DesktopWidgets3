@@ -40,18 +40,6 @@
   <ItemGroup>
     <Content Remove="Assets\PackageIcon.png" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <COMReference Include="IWshRuntimeLibrary">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
 
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
@@ -74,7 +62,7 @@
     <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj" />
-    <ProjectReference Include="..\DesktopWidgets3.HardwareInfoProvider\DesktopWidgets3.HardwareInfoProvider.csproj" />
+    <ProjectReference Include="..\Extensions\DesktopWidgets3.HardwareInfoProvider\DesktopWidgets3.HardwareInfoProvider.csproj" />
   </ItemGroup>
   
   <ItemGroup>

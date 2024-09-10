@@ -86,7 +86,7 @@ public sealed class NetworkStats : IDisposable
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Error getting network data.");
+                Debug.WriteLine($"Error getting network data: {ex.Message}");
             }
         }
     }

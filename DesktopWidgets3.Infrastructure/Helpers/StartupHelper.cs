@@ -1,22 +1,19 @@
 ﻿using Microsoft.Win32;
 using Windows.ApplicationModel;
 
-namespace DesktopWidgets3.Helpers;
+namespace DesktopWidgets3.Infrastructure.Helpers;
 
 /// <summary>
 /// Helper for startup register and unregister.
 /// For MSIX package, you need to add extension: uap5:StartupTask.
 /// </summary>
-internal class StartupHelper
+public class StartupHelper
 {
     private static readonly string RegistryPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
     private static readonly string ApprovalPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run";
 
     private static readonly byte[] ApprovalValue1 = [0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
     private static readonly byte[] ApprovalValue2 = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
-
-    private static readonly string RegistryKey = "AppDisplayName".GetLocalized();
-    private static readonly string StartupTaskId = "StartAppOnLoginTask";
 
     /// <summary>
     /// Set application startup or not.
@@ -25,7 +22,7 @@ internal class StartupHelper
     {
         if (RuntimeHelper.IsMSIX)
         {
-            var startupTask = await StartupTask.GetAsync(StartupTaskId);
+            var startupTask = await StartupTask.GetAsync(Constant.StartupTaskId);
             switch (startupTask.State)
             {
                 case StartupTaskState.Disabled:
@@ -83,7 +80,7 @@ internal class StartupHelper
     {
         if (RuntimeHelper.IsMSIX)
         {
-            var startupTask = await StartupTask.GetAsync(StartupTaskId);
+            var startupTask = await StartupTask.GetAsync(Constant.StartupTaskId);
             return startupTask.State == StartupTaskState.Enabled || startupTask.State == StartupTaskState.EnabledByPolicy;
         }
         else
@@ -107,7 +104,7 @@ internal class StartupHelper
                 // check if the startup register key exists
                 foreach (var keyName in keyNames)
                 {
-                    if (keyName.Equals(RegistryKey, StringComparison.CurrentCultureIgnoreCase))
+                    if (keyName.Equals(Constant.StartupRegistryKey, StringComparison.CurrentCultureIgnoreCase))
                     {
                         startup = true;
                         // check if the startup register value is valid
@@ -117,12 +114,12 @@ internal class StartupHelper
                             if (!value.Contains(@appPath, StringComparison.CurrentCultureIgnoreCase))
                             {
                                 startup = false;
-                                path.DeleteValue(RegistryKey);
+                                path.DeleteValue(Constant.StartupRegistryKey);
                                 path.Close();
                                 path = root.OpenSubKey(ApprovalPath, true);
                                 if (path != null)
                                 {
-                                    path.DeleteValue(RegistryKey);
+                                    path.DeleteValue(Constant.StartupRegistryKey);
                                     path.Close();
                                 }
                             }
@@ -140,7 +137,7 @@ internal class StartupHelper
                         keyNames = path.GetValueNames();
                         foreach (var keyName in keyNames)
                         {
-                            if (keyName.Equals(RegistryKey, StringComparison.CurrentCultureIgnoreCase))
+                            if (keyName.Equals(Constant.StartupRegistryKey, StringComparison.CurrentCultureIgnoreCase))
                             {
                                 var value = (byte[])path.GetValue(keyName)!;
                                 if (!(value.SequenceEqual(ApprovalValue1) || value.SequenceEqual(ApprovalValue2)))
@@ -185,13 +182,13 @@ internal class StartupHelper
             // add the startup register key
             if (startup)
             {
-                path.SetValue(RegistryKey, value);
+                path.SetValue(Constant.StartupRegistryKey, value);
                 path.Close();
                 // set the startup approval key to approval status
                 path = root.OpenSubKey(ApprovalPath, true);
                 if (path != null)
                 {
-                    path.SetValue(RegistryKey, ApprovalValue1);
+                    path.SetValue(Constant.StartupRegistryKey, ApprovalValue1);
                     path.Close();
                 }
             }
@@ -201,9 +198,9 @@ internal class StartupHelper
                 var keyNames = path.GetValueNames();
                 foreach (var keyName in keyNames)
                 {
-                    if (keyName.Equals(RegistryKey, StringComparison.CurrentCultureIgnoreCase))
+                    if (keyName.Equals(Constant.StartupRegistryKey, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        path.DeleteValue(RegistryKey);
+                        path.DeleteValue(Constant.StartupRegistryKey);
                         path.Close();
                         break;
                     }
@@ -212,7 +209,7 @@ internal class StartupHelper
                 path = root.OpenSubKey(ApprovalPath, true);
                 if (path != null)
                 {
-                    path.DeleteValue(RegistryKey);
+                    path.DeleteValue(Constant.StartupRegistryKey);
                     path.Close();
                 }
             }

@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Files.App", "Files.App\File
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clock", "Clock\Clock.csproj", "{93F159E6-FAA2-4F0E-AE44-E333895376AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.HardwareInfoProvider", "DesktopWidgets3.HardwareInfoProvider\DesktopWidgets3.HardwareInfoProvider.csproj", "{51621AFC-B275-448F-B611-E467C100712F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.HardwareInfoProvider", "Extensions\DesktopWidgets3.HardwareInfoProvider\DesktopWidgets3.HardwareInfoProvider.csproj", "{51621AFC-B275-448F-B611-E467C100712F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Files.Core.SourceGenerator", "Files.Core.SourceGenerator\Files.Core.SourceGenerator.csproj", "{3E989401-28D8-42F3-A688-D46D2388517B}"
 EndProject
@@ -44,6 +44,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Core.Widgets", "DesktopWidgets3.Core.Widgets\DesktopWidgets3.Core.Widgets.csproj", "{DACBDD78-E8E9-4316-A2B2-7A2079237240}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Infrastructure", "DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj", "{E02BCC08-49C6-49D1-867D-C66BD3E44B0B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{06E8CE68-6933-47AA-9A13-166A1F2A4DD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -601,6 +603,7 @@ Global
 		{73E6F65C-BDDD-458E-9488-1E7B8074D528} = {4D9A7785-EBE5-463C-AE65-7F4C41BDBC4F}
 		{E7973A8D-D937-4EC5-B4E5-D859F3DCAD80} = {4D9A7785-EBE5-463C-AE65-7F4C41BDBC4F}
 		{93F159E6-FAA2-4F0E-AE44-E333895376AC} = {7782F2C7-02E5-4BF0-88B5-14536FE15004}
+		{51621AFC-B275-448F-B611-E467C100712F} = {06E8CE68-6933-47AA-9A13-166A1F2A4DD2}
 		{3E989401-28D8-42F3-A688-D46D2388517B} = {4D9A7785-EBE5-463C-AE65-7F4C41BDBC4F}
 		{4D9A7785-EBE5-463C-AE65-7F4C41BDBC4F} = {EF8A937D-DD77-46B9-A1B0-19C08E50762E}
 		{7782F2C7-02E5-4BF0-88B5-14536FE15004} = {EF8A937D-DD77-46B9-A1B0-19C08E50762E}

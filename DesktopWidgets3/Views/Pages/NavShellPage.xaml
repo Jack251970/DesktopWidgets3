@@ -5,7 +5,7 @@
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
     xmlns:control="using:DesktopWidgets3.UserControls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helpers="using:DesktopWidgets3.Helpers"
+    xmlns:helpers="using:DesktopWidgets3.Helpers.Navigation"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages"
