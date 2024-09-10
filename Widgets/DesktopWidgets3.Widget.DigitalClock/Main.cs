@@ -1,10 +1,11 @@
+using System;
 using DesktopWidgets3.Widget.DigitalClock.Setting;
 using DesktopWidgets3.Widget.DigitalClock.Views;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.DigitalClock;
 
-public class Main : IWidget, IWidgetSetting
+public class Main : IWidget, IWidgetSetting, IDisposable
 {
     #region IWidget
 
@@ -20,7 +21,12 @@ public class Main : IWidget, IWidgetSetting
         Context = context;
     }
 
-    public void InitWidgetInstance(bool firstWidget)
+    public void EnableWidget(bool firstWidget)
+    {
+
+    }
+
+    public void DisableWidget(bool lastWidget)
     {
 
     }
@@ -37,6 +43,31 @@ public class Main : IWidget, IWidgetSetting
     public FrameworkElement CreateWidgetSettingFrameworkElement()
     {
         return new DigitalClockSetting(Context);
+    }
+
+    #endregion
+
+    #region IDisposable
+
+    private bool disposed;
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                Context = null!;
+            }
+
+            disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     #endregion

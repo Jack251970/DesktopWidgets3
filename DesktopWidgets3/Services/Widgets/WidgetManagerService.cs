@@ -121,9 +121,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
                 // close widget window
                 await CloseWidgetWindow(widgetWindow);
-
-                // stop monitor and timer if no more widgets of this type
-                CheckMonitorAndTimer(widgetId);
             }
         }
     }
@@ -152,9 +149,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             // close widget window
             await CloseWidgetWindow(widgetWindow);
-
-            // stop monitor and timer if no more widgets of this type
-            CheckMonitorAndTimer(widgetId);
         }
     }
 
@@ -220,22 +214,24 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // create widget window
         var newThread = _widgetResourceService.GetWidgetInNewThread(widget.Id);
         var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(WindowsExtensions.ActivationType.Widget, widget.Settings, newThread, lifecycleActions);
-
-        // TODO: Now handle monitor by widget itself.
     }
 
     // created action for widget window lifecycle
-    private void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize)
+    private async void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize)
     {
         if (window is WidgetWindow widgetWindow)
         {
+            // get widget id & index tag
+            var widgetId = widgetItem.Id;
+            var indexTag = widgetItem.IndexTag;
+
             // set widget framework element
-            var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetItem.Id);
+            var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetId);
             widgetWindow.ShellPage.ViewModel.WidgetFrameworkElement = frameworkElement;
 
             // set widget properties
-            WidgetProperties.SetId(frameworkElement, widgetItem.Id);
-            WidgetProperties.SetIndexTag(frameworkElement, widgetItem.IndexTag);
+            WidgetProperties.SetId(frameworkElement, widgetId);
+            WidgetProperties.SetIndexTag(frameworkElement, indexTag);
 
             // initialize widget window & settings
             widgetWindow.InitializeWindow(widgetItem);
@@ -267,6 +263,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             // register right tapped menu
             var widgetMenu = RegisterWidgetMenu(widgetWindow);
 
+            // envoke disable widget interface
+            var firstWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
+            await _widgetResourceService.EnvokeEnableWidgetAsync(widgetId, firstWidget);
+
             // show window
             widgetWindow.Show(true);
 
@@ -283,12 +283,20 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
     {
+        // get widget id & index tag
+        var widgetId = widgetWindow.Id;
+        var indexTag = widgetWindow.IndexTag;
+
         // remove from widget list & widget window list
-        AllWidgets.RemoveAll(x => x.Window.Id == widgetWindow.Id && x.Window.IndexTag == widgetWindow.IndexTag);
-        AllWidgetWindows.RemoveAll(x => x.Id == widgetWindow.Id && x.IndexTag == widgetWindow.IndexTag);
+        AllWidgets.RemoveAll(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+        AllWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
 
         // close window
         await WindowsExtensions.CloseWindow(widgetWindow);
+
+        // envoke disable widget interface
+        var lastWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
+        await _widgetResourceService.EnvokeDisableWidgetAsync(widgetId, lastWidget);
     }
 
     // closing action for widget window lifecycle
@@ -305,15 +313,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             {
                 close.WidgetWindow_Closing();
             }
-        }
-    }
-
-    private void CheckMonitorAndTimer(string widgetId)
-    {
-        var sameTypeWidgets = AllWidgetWindows.Count(x => x.Id == widgetId);
-        if (sameTypeWidgets == 0)
-        {
-            // TODO: Stop Monitor there.
         }
     }
 

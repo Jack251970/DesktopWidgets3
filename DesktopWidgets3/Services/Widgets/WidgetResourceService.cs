@@ -119,6 +119,26 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
+    #region Dispose
+
+    public async Task DisposeWidgetsAsync()
+    {
+        foreach (var widgetPair in AllWidgets)
+        {
+            switch (widgetPair.Widget)
+            {
+                case IDisposable disposable:
+                    disposable.Dispose();
+                    break;
+                case IAsyncDisposable asyncDisposable:
+                    await asyncDisposable.DisposeAsync();
+                    break;
+            }
+        }
+    }
+
+    #endregion
+
     #region IWidget
 
     public FrameworkElement GetWidgetFrameworkElement(string widgetId)
@@ -139,6 +159,28 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         }
 
         return new UserControl();
+    }
+
+    public async Task EnvokeEnableWidgetAsync(string widgetId, bool firstWidget)
+    {
+        foreach (var widget in AllWidgets)
+        {
+            if (widget.Metadata.ID == widgetId)
+            {
+                await widget.Widget.EnableWidgetAsync(firstWidget);
+            }
+        }
+    }
+
+    public async Task EnvokeDisableWidgetAsync(string widgetId, bool lastWidget)
+    {
+        foreach (var widget in AllWidgets)
+        {
+            if (widget.Metadata.ID == widgetId)
+            {
+                await widget.Widget.DisableWidgetAsync(lastWidget);
+            }
+        }
     }
 
     #endregion

@@ -6,21 +6,27 @@ public interface IWidgetResourceService
 {
     Task Initalize();
 
-    List<DashboardWidgetItem> GetAllDashboardItems();
-
-    Task<List<DashboardWidgetItem>> GetYourDashboardItemsAsync();
-
-    DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag);
+    Task DisposeWidgetsAsync();
 
     FrameworkElement GetWidgetFrameworkElement(string widgetId);
 
-    RectSize GetDefaultSize(string widgetId);
+    Task EnvokeEnableWidgetAsync(string widgetId, bool firstWidget);
 
-    RectSize GetMinSize(string widgetId);
+    Task EnvokeDisableWidgetAsync(string widgetId, bool lastWidget);
 
     BaseWidgetSettings GetDefaultSetting(string widgetId);
 
     FrameworkElement GetWidgetSettingFrameworkElement(string widgetId);
 
+    RectSize GetDefaultSize(string widgetId);
+
+    RectSize GetMinSize(string widgetId);
+
     bool GetWidgetInNewThread(string widgetId);
+
+    List<DashboardWidgetItem> GetAllDashboardItems();
+
+    Task<List<DashboardWidgetItem>> GetYourDashboardItemsAsync();
+
+    DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag);
 }

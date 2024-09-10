@@ -70,7 +70,7 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
 
     #endregion
 
-    #region interfaces
+    #region widget update
 
     public async Task EnableUpdate(bool enable)
     {
@@ -86,9 +86,14 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
         await Task.CompletedTask;
     }
 
+    #endregion
+
+    #region widget closing
+
     public void WidgetWindow_Closing()
     {
         dispatcherQueueTimer.Stop();
+        dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
     }
 
     #endregion

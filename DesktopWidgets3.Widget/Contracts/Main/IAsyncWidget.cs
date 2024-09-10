@@ -8,5 +8,7 @@ public interface IAsyncWidget
 
     Task InitWidgetAsync(WidgetInitContext context);
 
-    Task InitWidgetInstanceAsync(bool firstWidget);
+    Task EnableWidgetAsync(bool firstWidget);
+
+    Task DisableWidgetAsync(bool lastWidget);
 }
