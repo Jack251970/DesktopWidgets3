@@ -160,12 +160,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public async Task DisableAllWidgets()
     {
-        var allWidgetWindows = AllWidgetWindows.ToArray();
-        foreach (var widgetWindow in allWidgetWindows)
-        {
-            // close widget window
-            await CloseWidgetWindow(widgetWindow);
-        }
+        await AllWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindow);
     }
 
     public bool IsWidgetEnabled(string widgetId, int indexTag)
@@ -306,7 +301,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
             // widget close event
             var viewModel = GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
-            if (viewModel is IWidgetClose close)
+            if (viewModel is IWidgetClosing close)
             {
                 close.WidgetWindow_Closing();
             }

@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Widget.Contracts.ViewModel;
 
-public interface IWidgetClose
+public interface IWidgetClosing
 {
     void WidgetWindow_Closing();
 }

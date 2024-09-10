@@ -6,7 +6,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.DigitalClock.ViewModels;
 
-public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
+public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing
 {
     #region view properties
 
