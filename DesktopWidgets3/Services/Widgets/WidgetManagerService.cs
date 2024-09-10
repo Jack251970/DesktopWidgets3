@@ -207,8 +207,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var minSize = _widgetResourceService.GetMinSize(widget.Id);
         var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
         {
+            Window_Creating = () => WidgetWindow_Creating(widget),
             Window_Created = (window) => WidgetWindow_Created(window, widget, minSize),
-            Window_Closing = WidgetWindow_Closing
+            Window_Closing = WidgetWindow_Closing,
+            Window_Closed = () => WidgetWindow_Closed(widget)
         };
 
         // create widget window
@@ -216,8 +218,17 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(WindowsExtensions.ActivationType.Widget, widget.Settings, newThread, lifecycleActions);
     }
 
-    // created action for widget window lifecycle
-    private async void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize)
+    private async void WidgetWindow_Creating(JsonWidgetItem widgetItem)
+    {
+        // get widget id & index tag
+        var widgetId = widgetItem.Id;
+
+        // envoke disable widget interface
+        var firstWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
+        await _widgetResourceService.EnvokeEnableWidgetAsync(widgetId, firstWidget).ConfigureAwait(false);
+    }
+
+    private void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize)
     {
         if (window is WidgetWindow widgetWindow)
         {
@@ -263,10 +274,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             // register right tapped menu
             var widgetMenu = RegisterWidgetMenu(widgetWindow);
 
-            // envoke disable widget interface
-            var firstWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
-            await _widgetResourceService.EnvokeEnableWidgetAsync(widgetId, firstWidget);
-
             // show window
             widgetWindow.Show(true);
 
@@ -281,25 +288,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
-    {
-        // get widget id & index tag
-        var widgetId = widgetWindow.Id;
-        var indexTag = widgetWindow.IndexTag;
-
-        // remove from widget list & widget window list
-        AllWidgets.RemoveAll(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
-        AllWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
-
-        // close window
-        await WindowsExtensions.CloseWindow(widgetWindow);
-
-        // envoke disable widget interface
-        var lastWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
-        await _widgetResourceService.EnvokeDisableWidgetAsync(widgetId, lastWidget);
-    }
-
-    // closing action for widget window lifecycle
     private async void WidgetWindow_Closing(Window window)
     {
         if (window is WidgetWindow widgetWindow)
@@ -314,6 +302,30 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 close.WidgetWindow_Closing();
             }
         }
+    }
+
+    private async void WidgetWindow_Closed(JsonWidgetItem widgetItem)
+    {
+        // get widget id & index tag
+        var widgetId = widgetItem.Id;
+
+        // envoke disable widget interface
+        var lastWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
+        await _widgetResourceService.EnvokeDisableWidgetAsync(widgetId, lastWidget);
+    }
+
+    private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
+    {
+        // get widget id & index tag
+        var widgetId = widgetWindow.Id;
+        var indexTag = widgetWindow.IndexTag;
+
+        // remove from widget list & widget window list
+        AllWidgets.RemoveAll(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+        AllWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
+
+        // close window
+        await WindowsExtensions.CloseWindow(widgetWindow);
     }
 
     private WidgetWindow? GetWidgetWindow(string widgetId, int indexTag)

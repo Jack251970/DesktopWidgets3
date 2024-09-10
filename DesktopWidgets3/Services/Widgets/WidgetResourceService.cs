@@ -135,6 +135,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                     break;
             }
         }
+
+        await Task.CompletedTask;
     }
 
     #endregion
@@ -170,6 +172,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 await widget.Widget.EnableWidgetAsync(firstWidget);
             }
         }
+
+        await Task.CompletedTask;
     }
 
     public async Task EnvokeDisableWidgetAsync(string widgetId, bool lastWidget)
@@ -181,6 +185,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 await widget.Widget.DisableWidgetAsync(lastWidget);
             }
         }
+
+        await Task.CompletedTask;
     }
 
     #endregion
