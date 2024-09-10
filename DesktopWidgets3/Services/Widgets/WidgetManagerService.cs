@@ -223,7 +223,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         // configure widget window lifecycle actions
         var minSize = _widgetResourceService.GetMinSize(widget.Id);
-        var lifecycleActions = new WindowLifecycleActions()
+        var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
         {
             Window_Created = (window) => WidgetWindow_Created(window, widget, minSize),
             Window_Closing = WidgetWindow_Closing

@@ -214,4 +214,17 @@ public static class WindowsExtensions
 
         public WindowLifecycleActions LifecycleActions { get; set; } = null!;
     }
+
+    public class WindowLifecycleActions
+    {
+        public TaskCompletionSource? CompletionSource { get; set; }
+
+        public Action? Window_Creating { get; set; }
+
+        public Action<Window>? Window_Created { get; set; }
+
+        public Action<Window>? Window_Closing { get; set; }
+
+        public Action? Window_Closed { get; set; }
+    }
 }
