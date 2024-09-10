@@ -9,11 +9,10 @@ public static class WidgetsLoader
     public static (List<WidgetPair> allWidgets, List<string> errorWidgets) Widgets(List<WidgetMetadata> metadatas)
     {
         (var dotnetWidgets, var errorDotNetWidgets) = DotNetWidgets(metadatas);
+
         var allWidgets = dotnetWidgets;
         var errorWidgets = errorDotNetWidgets;
-#if DEBUG
-        errorWidgets.Add("Test Widget");
-#endif
+
         return (allWidgets, errorWidgets);
     }
 
