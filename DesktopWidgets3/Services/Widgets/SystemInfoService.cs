@@ -26,6 +26,12 @@ internal class SystemInfoService : ISystemInfoService
         hardwareMonitor.EnabledChanged += HardwareMonitor_OnEnabledChanged;
     }
 
+    ~SystemInfoService()
+    {
+        hardwareMonitor.Dispose();
+        sampleTimer.Dispose();
+    }
+
     private void SampleTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
         hardwareMonitor.Update();
