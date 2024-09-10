@@ -82,20 +82,16 @@ public sealed partial class MainWindow : WindowEx
     {
         if (App.CanCloseWindow)
         {
-            ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closing?.Invoke(this, args);
             await App.GetService<IWidgetManagerService>().DisableAllWidgets();
             await WindowsExtensions.CloseAllWindows();
-            ApplicationLifecycleExtensions.MainWindow_Closed_Widgets_Closed?.Invoke(this, args);
             LogExtensions.LogInformation(ClassName, "Exit current application.");
             Application.Current.Exit();
         }
         else
         {
             args.Handled = true;
-            ApplicationLifecycleExtensions.MainWindow_Hiding?.Invoke(this, args);
             Hide();
             Visible = false;
-            ApplicationLifecycleExtensions.MainWindow_Hided?.Invoke(this, args);
         }
     }
 }
