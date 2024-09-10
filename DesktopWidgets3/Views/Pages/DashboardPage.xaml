@@ -5,7 +5,7 @@
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:DesktopWidgets3.Models.Widget"
+    xmlns:models="using:DesktopWidgets3.Core.Widgets.Models"
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages"
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
     NavigationCacheMode="Required"

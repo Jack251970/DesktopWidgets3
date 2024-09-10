@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DesktopWidgets3.Contracts.Services.HardwareInfo;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
@@ -125,7 +126,7 @@ public partial class App : Application
                 #region Functional Service
 
                 // Widget Dialogs
-                services.AddSingleton<IWidgetDialogService, WidgetDialogService>();
+                services.AddSingleton<IDialogService, DialogService>();
 
                 // Widgets Management
                 services.AddSingleton<IWidgetManagerService, WidgetManagerService>();

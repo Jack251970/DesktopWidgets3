@@ -2,7 +2,7 @@
 
 internal static class DialogFactory
 {
-    private static readonly IWidgetDialogService WidgetDialogService = App.GetService<IWidgetDialogService>();
+    private static readonly IDialogService WidgetDialogService = App.GetService<IDialogService>();
 
     public static async Task<WidgetDialogResult> ShowDeleteWidgetDialog(this WindowEx window)
     {

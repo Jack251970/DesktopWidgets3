@@ -24,7 +24,19 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     {
         // load all widgets
         AllWidgetsMetadata = WidgetsConfig.Parse(Directories);
-        AllWidgets = WidgetsLoader.Widgets(AllWidgetsMetadata);
+        (AllWidgets, var errorWidgets) = WidgetsLoader.Widgets(AllWidgetsMetadata);
+
+        // show error notification
+        if (errorWidgets.Count > 0)
+        {
+            var errorWidgetString = string.Join(Environment.NewLine, errorWidgets);
+
+            _ = Task.Run(() =>
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
+                    $"{Environment.NewLine}{errorWidgetString}{Environment.NewLine}"));
+            });
+        }
 
         // install resource files
         InstallResourceFiles(AllWidgetsMetadata);
@@ -92,12 +104,13 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         if (!failedPlugins.IsEmpty)
         {
-            var failedWidget = string.Join(",", failedPlugins.Select(x => x.Metadata.Name));
+            var failedWidgetString = string.Join(Environment.NewLine, failedPlugins.Select(x => x.Metadata.Name));
+
             _ = Task.Run(() =>
             {
                 App.GetService<IAppNotificationService>().Show(
                     string.Format("AppNotificationWidgetInitializeErrorPayload".GetLocalized(),
-                    failedWidget));
+                    $"{Environment.NewLine}{failedWidgetString}{Environment.NewLine}"));
             });
         }
     }

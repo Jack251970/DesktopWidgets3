@@ -67,7 +67,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             IsEnabled = true,
             Position = new PointInt32(-1, -1),
             Size = _widgetResourceService.GetDefaultSize(widgetId),
-            DisplayMonitor = new(GetMonitorInfo(null)),
+            DisplayMonitor = new(DisplayMonitor.GetMonitorInfo(null)),
             Settings = _widgetResourceService.GetDefaultSetting(widgetId),
         };
         await _appSettingsService.UpdateWidgetsList(widget);
@@ -527,7 +527,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 IsEnabled = true,
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
-                DisplayMonitor = new(GetMonitorInfo(widgetWindow)),
+                DisplayMonitor = new(DisplayMonitor.GetMonitorInfo(widgetWindow)),
                 Settings = null!,
             };
             originalWidgetList.Add(widget);
@@ -588,7 +588,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                     IsEnabled = true,
                     Position = widgetWindow.Position,
                     Size = widgetWindow.Size,
-                    DisplayMonitor = new(GetMonitorInfo(widgetWindow)),
+                    DisplayMonitor = new(DisplayMonitor.GetMonitorInfo(widgetWindow)),
                     Settings = null!,
                 };
                 widgetList.Add(widget);
@@ -626,25 +626,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             App.MainWindow.Show();
             restoreMainWindow = false;
         }
-    }
-
-    #endregion
-
-    #region monitor
-
-    public static MonitorInfo GetMonitorInfo(WindowEx? window)
-    {
-        return MonitorInfo.GetDisplayMonitors().First();
-        // TODO: get monitor info here.
-        /*if (window is null)
-        {
-            var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
-            return primaryMonitorInfo;
-        }
-        else
-        {
-            
-        }*/
     }
 
     #endregion
