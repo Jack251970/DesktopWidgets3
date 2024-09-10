@@ -11,4 +11,6 @@ public static class Constant
     public const string WidgetMetadataFileName = "widget.json";
 
     public static readonly string WidgetsPreinstalledDirectory = Path.Combine(AppContext.BaseDirectory, Widgets);
+
+    public static readonly string UnknownWidgetIcoPath = $"ms-appx:///Assets/FluentIcons/Unknown.png";
 }

@@ -56,10 +56,19 @@ public sealed partial class DashboardPage : Page
     {
         if (sender is FrameworkElement element)
         {
+            var isUnknown = WidgetProperties.GetIsUnknown(element);
+            if (isUnknown)
+            {
+                _indexTag = -1;
+                return;
+            }
             _widgetId = WidgetProperties.GetId(element);
             _indexTag = WidgetProperties.GetIndexTag(element);
-            _widgetManagerService.NavigateToWidgetSettingPage(_widgetId, _indexTag);
-            _indexTag = -1;
+            if (_indexTag != -1)
+            {
+                _widgetManagerService.NavigateToWidgetSettingPage(_widgetId, _indexTag);
+                _indexTag = -1;
+            }
         }
     }
 }

@@ -270,4 +270,7 @@
   &lt;/visual&gt;
 &lt;/toast&gt;</value>
   </data>
+  <data name="Unknown_Widget_Name" xml:space="preserve">
+    <value>未知组件 {0}</value>
+  </data>
 </root>

@@ -4,6 +4,20 @@ namespace DesktopWidgets3.Core.Widgets.Models;
 
 public class WidgetProperties
 {
+    // Is Unknown
+    public static readonly DependencyProperty IsUnknownProperty =
+        DependencyProperty.RegisterAttached("IsUnknown", typeof(bool), typeof(WidgetProperties), new PropertyMetadata(false));
+
+    public static bool GetIsUnknown(DependencyObject obj)
+    {
+        return (bool)obj.GetValue(IsUnknownProperty);
+    }
+
+    public static void SetIsUnknown(DependencyObject obj, bool value)
+    {
+        obj.SetValue(IsUnknownProperty, value);
+    }
+
     // Widget Id
     public static readonly DependencyProperty IdProperty =
         DependencyProperty.RegisterAttached("Id", typeof(string), typeof(WidgetProperties), new PropertyMetadata(StringUtils.GetRandomWidgetId()));

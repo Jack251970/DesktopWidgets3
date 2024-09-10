@@ -43,7 +43,9 @@ public class JsonWidgetItem : BaseWidgetItem
 
 public class DashboardWidgetItem : BaseWidgetItem
 {
-    public required string Label { get; set; }
+    public required string Name { get; set; }
+
+    public required bool IsUnknown { get; set; }
 
     public string? Description { get; set; }
 
@@ -57,7 +59,10 @@ public class DashboardWidgetItem : BaseWidgetItem
             if (_isEnabled != value)
             {
                 _isEnabled = value;
-                EnabledChangedCallback?.Invoke(this);
+                if (!IsUnknown)
+                {
+                    EnabledChangedCallback?.Invoke(this);
+                }
             }
         }
     }

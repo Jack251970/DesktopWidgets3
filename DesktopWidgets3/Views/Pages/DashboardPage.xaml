@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converts="using:DesktopWidgets3.Converts"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:DesktopWidgets3.Core.Widgets.Models"
@@ -15,6 +16,7 @@
         <MenuFlyout x:Key="DashboardFlyout">
             <MenuFlyoutItem x:Uid="MenuFlyoutItem_DeleteWidget" Click="MenuFlyoutItemDeleteWidget_Click" />
         </MenuFlyout>
+        <converts:BoolInvertConverter x:Key="BoolInvertConverter" />
     </Page.Resources>
 
     <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
@@ -61,7 +63,7 @@
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind Label, Mode=OneTime}"
+                                        Text="{x:Bind Name, Mode=OneTime}"
                                         TextTrimming="CharacterEllipsis" />
                                     <Button
                                         Grid.Column="2"
@@ -106,6 +108,7 @@
                             HorizontalContentAlignment="Stretch"
                             models:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
                             models:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
+                            models:WidgetProperties.IsUnknown="{x:Bind IsUnknown, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
@@ -133,12 +136,13 @@
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind Label, Mode=OneTime}"
+                                        Text="{x:Bind Name, Mode=OneTime}"
                                         TextTrimming="CharacterEllipsis" />
                                     <ToggleSwitch
                                         Grid.Column="2"
                                         Margin="0,-2,0,0"
                                         HorizontalAlignment="Right"
+                                        IsEnabled="{x:Bind IsUnknown, Mode=OneTime, Converter={StaticResource BoolInvertConverter}}"
                                         IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
                                         OffContent=""
                                         OnContent=""
@@ -170,6 +174,7 @@
                             HorizontalContentAlignment="Stretch"
                             models:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
                             models:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
+                            models:WidgetProperties.IsUnknown="{x:Bind IsUnknown, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
@@ -197,12 +202,13 @@
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
                                         FontWeight="SemiBold"
-                                        Text="{x:Bind Label, Mode=OneTime}"
+                                        Text="{x:Bind Name, Mode=OneTime}"
                                         TextTrimming="CharacterEllipsis" />
                                     <ToggleSwitch
                                         Grid.Column="2"
                                         Margin="0,-2,0,0"
                                         HorizontalAlignment="Right"
+                                        IsEnabled="{x:Bind IsUnknown, Mode=OneTime, Converter={StaticResource BoolInvertConverter}}"
                                         IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
                                         OffContent=""
                                         OnContent=""
