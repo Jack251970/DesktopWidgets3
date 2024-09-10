@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services;
 
-internal class ShellService(INavigationService navigationService, IPageService pageService) : IShellService
+internal class NavigationViewService(INavigationService navigationService, IPageService pageService) : INavigationViewService
 {
     private readonly INavigationService _navigationService = navigationService;
 

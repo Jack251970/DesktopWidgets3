@@ -101,11 +101,13 @@ public partial class App : Application
 
                 #region Navigation Service
 
-                // MainWindow Shell
-                services.AddSingleton<IShellService, ShellService>();
-
                 // MainWindow Pages
                 services.AddSingleton<IPageService, PageService>();
+
+                // MainWindow Navigation View
+                services.AddSingleton<INavigationViewService, NavigationViewService>();
+
+                // MainWindow Navigation
                 services.AddSingleton<INavigationService, NavigationService>();
 
                 #endregion

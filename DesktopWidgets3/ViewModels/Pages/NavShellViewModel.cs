@@ -14,9 +14,9 @@ public partial class NavShellViewModel : ObservableRecipient
 
     public INavigationService NavigationService { get; }
 
-    public IShellService ShellService { get; }
+    public INavigationViewService ShellService { get; }
 
-    public NavShellViewModel(INavigationService navigationService, IShellService shellService)
+    public NavShellViewModel(INavigationService navigationService, INavigationViewService shellService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
