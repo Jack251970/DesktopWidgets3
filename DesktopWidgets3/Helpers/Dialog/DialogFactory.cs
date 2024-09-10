@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Helpers.Dialog;
 
-internal static class WidgetDialogFactory
+internal static class DialogFactory
 {
     private static readonly IWidgetDialogService WidgetDialogService = App.GetService<IWidgetDialogService>();
 
