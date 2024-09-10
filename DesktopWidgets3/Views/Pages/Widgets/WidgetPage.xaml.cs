@@ -8,9 +8,9 @@ public sealed partial class WidgetPage : Page
 
     private WidgetWindow WidgetWindow { get; set; } = null!;
 
-    public WidgetPage(WidgetViewModel viewModel)
+    public WidgetPage()
     {
-        ViewModel = viewModel;
+        ViewModel = App.GetService<WidgetViewModel>();
         InitializeComponent();
     }
 

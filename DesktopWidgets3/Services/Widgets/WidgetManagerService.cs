@@ -10,7 +10,6 @@ namespace DesktopWidgets3.Services.Widgets;
 internal class WidgetManagerService(IAppSettingsService appSettingsService, INavigationService navigationService, ISystemInfoService systemInfoService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
     private readonly List<WidgetWindowPair> AllWidgets = [];
-
     private readonly List<WidgetWindow> AllWidgetWindows = [];
 
     // cached widget id and index tag for widget menu
@@ -189,7 +188,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async Task NavigateToWidgetSettingPage(string widgetId, int indexTag)
     {
         // navigate to widget setting page
-        _navigationService.NavigateTo(typeof(WidgetSettingPage).FullName!);
+        _navigationService.NavigateTo(typeof(WidgetSettingViewModel).FullName!);
 
         // set widget setting framework element
         var frameworkElement = _widgetResourceService.GetWidgetSettingFrameworkElement(widgetId);

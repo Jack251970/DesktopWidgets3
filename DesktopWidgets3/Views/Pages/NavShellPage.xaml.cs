@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace DesktopWidgets3.Views.Pages;
 
@@ -8,9 +7,9 @@ public sealed partial class NavShellPage : Page
 {
     public NavShellViewModel ViewModel { get; }
 
-    public NavShellPage(NavShellViewModel viewModel)
+    public NavShellPage()
     {
-        ViewModel = viewModel;
+        ViewModel = App.GetService<NavShellViewModel>();
         InitializeComponent();
 
         ViewModel.NavigationService.Frame = NavigationFrame;

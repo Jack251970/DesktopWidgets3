@@ -5,13 +5,6 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class DashboardViewModel : ObservableRecipient, INavigationAware
 {
-    public enum UpdateEvent
-    {
-        Add,
-        Disable,
-        Delete
-    }
-
     public ObservableCollection<DashboardWidgetItem> AllWidgets { get; set; } = [];
     public ObservableCollection<DashboardWidgetItem> EnabledWidgets { get; set; } = [];
     public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = [];
@@ -140,5 +133,12 @@ public partial class DashboardViewModel : ObservableRecipient, INavigationAware
                 DisabledWidgets.Add(item);
             }
         }
+    }
+
+    public enum UpdateEvent
+    {
+        Add,
+        Disable,
+        Delete
     }
 }

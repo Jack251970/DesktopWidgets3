@@ -11,7 +11,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
 
     private List<WidgetPair> AllWidgets { get; set; } = null!;
-
     private List<WidgetMetadata> AllWidgetsMetadata { get; set; } = null!;
 
     private static readonly string[] Directories =
