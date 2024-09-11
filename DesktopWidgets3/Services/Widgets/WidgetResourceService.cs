@@ -319,7 +319,15 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         {
             var widgetId = widget.Id;
             var indexTag = widget.IndexTag;
-            if (AllWidgetsMetadata.Any(x => x.ID == widgetId))
+            if (IsWidgetUnknown(widgetId))
+            {
+                if (!unknownWidgetIdList.Contains(widgetId))
+                {
+                    unknownWidgetIdList.Add(widgetId);
+                }
+                dashboardItemList.Add(GetUnknownDashboardItem(widgetId, indexTag, widget.IsEnabled, unknownWidgetIdList.Count));
+            }
+            else
             {
                 dashboardItemList.Add(new DashboardWidgetItem()
                 {
@@ -331,14 +339,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                     IcoPath = GetWidgetIcoPath(widgetId),
                 });
             }
-            else
-            {
-                if (!unknownWidgetIdList.Contains(widgetId))
-                {
-                    unknownWidgetIdList.Add(widgetId);
-                }
-                dashboardItemList.Add(GetUnknownDashboardItem(widgetId, indexTag, widget.IsEnabled, unknownWidgetIdList.Count));
-            }
         }
 
         return dashboardItemList;
@@ -346,22 +346,20 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag)
     {
-        if (AllWidgetsMetadata.Any(x => x.ID == widgetId))
+        return new DashboardWidgetItem()
         {
-            return new DashboardWidgetItem()
-            {
-                IsUnknown = false,
-                Id = widgetId,
-                IndexTag = indexTag,
-                IsEnabled = true,
-                Name = GetWidgetName(widgetId),
-                IcoPath = GetWidgetIcoPath(widgetId),
-            };
-        }
-        else
-        {
-            return GetUnknownDashboardItem(widgetId, indexTag, true, 1);
-        }
+            IsUnknown = false,
+            Id = widgetId,
+            IndexTag = indexTag,
+            IsEnabled = true,
+            Name = GetWidgetName(widgetId),
+            IcoPath = GetWidgetIcoPath(widgetId),
+        };
+    }
+
+    public bool IsWidgetUnknown(string widgetId)
+    {
+        return !AllWidgetsMetadata.Any(x => x.ID == widgetId);
     }
 
     private static DashboardWidgetItem GetUnknownDashboardItem(string widgetId, int indexTag, bool isEnabled, int widgetIndex)

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Core.Widgets.Models;
@@ -39,6 +40,8 @@ public class JsonWidgetItem : BaseWidgetItem
         get => base.Settings;
         set => base.Settings = value;
     }
+
+    public JToken? SettingsJToken { get; set; }
 }
 
 public class DashboardWidgetItem : BaseWidgetItem

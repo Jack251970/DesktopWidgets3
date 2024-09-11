@@ -29,4 +29,6 @@ public interface IWidgetResourceService
     Task<List<DashboardWidgetItem>> GetYourDashboardItemsAsync();
 
     DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag);
+
+    bool IsWidgetUnknown(string widgetId);
 }

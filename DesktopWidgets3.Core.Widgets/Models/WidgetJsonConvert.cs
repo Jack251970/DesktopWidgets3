@@ -25,6 +25,7 @@ public class JsonWidgetItemConverter : JsonConverter
         var displayMonitor = jsonObject["DisplayMonitor"]?.ToObject<DisplayMonitor>(serializer) ?? DisplayMonitor.GetPrimaryMonitorInfo();
         var defaultWidgetSettings = _widgetResourceService.GetDefaultSetting(widgetId);
         var widgetSettings = jsonObject["Settings"]?.ToObject(defaultWidgetSettings.GetType(), serializer) as BaseWidgetSettings ?? defaultWidgetSettings;
+        var settingsJToken = jsonObject["Settings"]?.DeepClone();
 
         return new JsonWidgetItem
         {
@@ -34,7 +35,8 @@ public class JsonWidgetItemConverter : JsonConverter
             Position = position,
             Size = size,
             DisplayMonitor = displayMonitor,
-            Settings = widgetSettings
+            Settings = widgetSettings,
+            SettingsJToken = settingsJToken
         };
     }
 
@@ -42,15 +44,24 @@ public class JsonWidgetItemConverter : JsonConverter
     {
         var widgetItem = value as JsonWidgetItem;
 
+        var widgetId = widgetItem!.Id;
         var jsonObject = new JObject(
-            new JProperty("Id", widgetItem!.Id),
+            new JProperty("Id", widgetId),
             new JProperty("IndexTag", widgetItem.IndexTag),
             new JProperty("IsEnabled", widgetItem.IsEnabled),
             new JProperty("Position", JToken.FromObject(widgetItem.Position, serializer)),
             new JProperty("Size", JToken.FromObject(widgetItem.Size, serializer)),
-            new JProperty("DisplayMonitor", JToken.FromObject(widgetItem.DisplayMonitor, serializer)),
-            new JProperty("Settings", JToken.FromObject(widgetItem.Settings, serializer))
+            new JProperty("DisplayMonitor", JToken.FromObject(widgetItem.DisplayMonitor, serializer))
         );
+
+        if (_widgetResourceService.IsWidgetUnknown(widgetItem.Id))
+        {
+            jsonObject.Add(new JProperty("Settings", widgetItem.SettingsJToken));
+        }
+        else
+        {
+            jsonObject.Add(new JProperty("Settings", JToken.FromObject(widgetItem.Settings, serializer)));
+        }
 
         jsonObject.WriteTo(writer);
     }
