@@ -31,4 +31,6 @@ public interface IWidgetResourceService
     DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag);
 
     bool IsWidgetUnknown(string widgetId);
+
+    List<WidgetStoreItem> GetInstalledWidgetStoreItems();
 }

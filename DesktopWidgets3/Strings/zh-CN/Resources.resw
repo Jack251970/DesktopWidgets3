@@ -273,4 +273,19 @@
   <data name="Unknown_Widget_Name" xml:space="preserve">
     <value>未知组件 {0}</value>
   </data>
+  <data name="Shell_WidgetStore.Content" xml:space="preserve">
+    <value>组件商城</value>
+  </data>
+  <data name="MenuFlyoutItem_InstallWidget.Text" xml:space="preserve">
+    <value>安装该组件</value>
+  </data>
+  <data name="MenuFlyoutItem_UninstallWidget.Text" xml:space="preserve">
+    <value>卸载该组件</value>
+  </data>
+  <data name="WidgetStore_AvailableWidgets.Text" xml:space="preserve">
+    <value>可用组件</value>
+  </data>
+  <data name="WidgetStore_InstalledWidgets.Text" xml:space="preserve">
+    <value>已安装组件</value>
+  </data>
 </root>

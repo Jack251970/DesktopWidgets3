@@ -402,4 +402,30 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     }
 
     #endregion
+
+    #region Widget Store
+
+    public List<WidgetStoreItem> GetInstalledWidgetStoreItems()
+    {
+        List<WidgetStoreItem> widgetStoreItemList = [];
+        foreach (var metaData in AllWidgetsMetadata)
+        {
+            widgetStoreItemList.Add(new WidgetStoreItem()
+            {
+                ID = metaData.ID,
+                Name = metaData.Name,
+                Description = metaData.Description,
+                Author = metaData.Author,
+                Version = metaData.Version,
+                Website = metaData.Website,
+                IcoPath = metaData.IcoPath,
+                Preinstalled = true,
+                Installed = true,
+            });
+        }
+
+        return widgetStoreItemList;
+    }
+
+    #endregion
 }

@@ -273,4 +273,19 @@
   <data name="Unknown_Widget_Name" xml:space="preserve">
     <value>Unknown widget {0}</value>
   </data>
+  <data name="Shell_WidgetStore.Content" xml:space="preserve">
+    <value>Widget Store</value>
+  </data>
+  <data name="MenuFlyoutItem_InstallWidget.Text" xml:space="preserve">
+    <value>Install this widget</value>
+  </data>
+  <data name="MenuFlyoutItem_UninstallWidget.Text" xml:space="preserve">
+    <value>Uninstall this widget</value>
+  </data>
+  <data name="WidgetStore_AvailableWidgets.Text" xml:space="preserve">
+    <value>Available widgets</value>
+  </data>
+  <data name="WidgetStore_InstalledWidgets.Text" xml:space="preserve">
+    <value>Installed widgets</value>
+  </data>
 </root>

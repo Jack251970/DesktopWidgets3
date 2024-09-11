@@ -13,6 +13,7 @@ internal class PageService : IPageService
         Configure<HomeViewModel, HomePage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<DashboardViewModel, DashboardPage>();
+        Configure<WidgetStoreViewModel, WidgetStorePage>();
         Configure<WidgetSettingViewModel, WidgetSettingPage>();
     }
 

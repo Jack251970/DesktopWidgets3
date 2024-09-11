@@ -26,6 +26,8 @@ public class BaseWidgetItem
     public BaseWidgetSettings Settings { get; set; } = new BaseWidgetSettings();
 }
 
+// TODO: Organize these classes.
+
 [JsonConverter(typeof(JsonWidgetItemConverter))]
 public class JsonWidgetItem : BaseWidgetItem
 {
@@ -71,4 +73,25 @@ public class DashboardWidgetItem : BaseWidgetItem
     }
 
     public Action<DashboardWidgetItem>? EnabledChangedCallback { get; set; }
+}
+
+public class WidgetStoreItem
+{
+    public required string ID { get; set; } = string.Empty;
+
+    public required string Name { get; set; } = string.Empty;
+
+    public required string Description { get; set; } = string.Empty;
+
+    public required string Author { get; set; } = string.Empty;
+
+    public required string Version { get; set; } = string.Empty;
+
+    public required string Website { get; set; } = string.Empty;
+
+    public required string IcoPath { get; set; } = string.Empty;
+
+    public required bool Preinstalled { get; set; } = false;
+
+    public required bool Installed { get; set; }
 }

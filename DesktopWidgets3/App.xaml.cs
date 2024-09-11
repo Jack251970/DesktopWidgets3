@@ -151,6 +151,8 @@ public partial class App : Application
                 services.AddTransient<DashboardPage>();
                 services.AddTransient<WidgetSettingPage>();
                 services.AddTransient<WidgetSettingViewModel>();
+                services.AddTransient<WidgetStorePage>();
+                services.AddTransient<WidgetStoreViewModel>();
 
                 // Widgets Window Pages
                 services.AddTransient<WidgetPage>();

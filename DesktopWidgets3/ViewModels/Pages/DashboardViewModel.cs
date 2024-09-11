@@ -31,6 +31,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
             RefreshYourWidgets();
 
             _isInitialized = true;
+
             return;
         }
 

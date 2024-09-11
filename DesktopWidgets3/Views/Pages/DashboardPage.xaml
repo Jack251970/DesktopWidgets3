@@ -6,20 +6,20 @@
     xmlns:converts="using:DesktopWidgets3.Converts"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:DesktopWidgets3.Core.Widgets.Models"
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages"
+    xmlns:widgetmodels="using:DesktopWidgets3.Core.Widgets.Models"
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
     <Page.Resources>
-        <MenuFlyout x:Key="DashboardFlyout">
+        <MenuFlyout x:Key="DashboardItemMenuFlyout">
             <MenuFlyoutItem x:Uid="MenuFlyoutItem_DeleteWidget" Click="MenuFlyoutItemDeleteWidget_Click" />
         </MenuFlyout>
         <converts:BoolInvertConverter x:Key="BoolInvertConverter" />
     </Page.Resources>
 
-    <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1">
+    <ScrollViewer x:Name="MainScrollViewer">
         <StackPanel Padding="0,0,0,16" Orientation="Vertical">
             <TextBlock
                 x:Uid="Dashboard_AllWidgets"
@@ -34,7 +34,7 @@
                         RowSpacing="8" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="models:DashboardWidgetItem">
+                    <DataTemplate x:DataType="widgetmodels:DashboardWidgetItem">
                         <Button
                             Padding="0"
                             HorizontalAlignment="Stretch"
@@ -72,7 +72,7 @@
                                         HorizontalAlignment="Right"
                                         HorizontalContentAlignment="Center"
                                         VerticalContentAlignment="Center"
-                                        models:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
+                                        widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
                                         Click="AllWidgetsItemClick">
                                         <FontIcon FontSize="10" Glyph="&#xE710;" />
                                     </Button>
@@ -101,18 +101,18 @@
                         RowSpacing="8" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="models:DashboardWidgetItem">
+                    <DataTemplate x:DataType="widgetmodels:DashboardWidgetItem">
                         <Button
                             Padding="0"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            models:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
-                            models:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
-                            models:WidgetProperties.IsUnknown="{x:Bind IsUnknown, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.IsUnknown="{x:Bind IsUnknown, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
-                            ContextFlyout="{StaticResource DashboardFlyout}"
+                            ContextFlyout="{StaticResource DashboardItemMenuFlyout}"
                             RightTapped="WidgetItem_RightTapped">
                             <Grid
                                 Padding="16,12"
@@ -167,18 +167,18 @@
                         RowSpacing="8" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="models:DashboardWidgetItem">
+                    <DataTemplate x:DataType="widgetmodels:DashboardWidgetItem">
                         <Button
                             Padding="0"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            models:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
-                            models:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
-                            models:WidgetProperties.IsUnknown="{x:Bind IsUnknown, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.IsUnknown="{x:Bind IsUnknown, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
-                            ContextFlyout="{StaticResource DashboardFlyout}"
+                            ContextFlyout="{StaticResource DashboardItemMenuFlyout}"
                             RightTapped="WidgetItem_RightTapped">
                             <Grid
                                 Padding="16,12"
