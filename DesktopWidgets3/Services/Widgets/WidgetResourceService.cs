@@ -22,6 +22,12 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public async Task Initalize()
     {
+        // check preinstalled directory
+        if (!Directory.Exists(Constant.WidgetsPreinstalledDirectory))
+        {
+            Directory.CreateDirectory(Constant.WidgetsPreinstalledDirectory);
+        }
+
         // load all widgets
         AllWidgetsMetadata = WidgetsConfig.Parse(Directories);
         (AllWidgets, var errorWidgets) = WidgetsLoader.Widgets(AllWidgetsMetadata);
