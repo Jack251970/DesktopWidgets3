@@ -235,6 +235,8 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     public async Task SaveWidgetStoreListAsync(List<JsonWidgetStoreItem> widgetStoreList)
     {
         await _localSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
+
+        WidgetStoreList = widgetStoreList;
     }
 
     public List<JsonWidgetStoreItem> GetWidgetStoreList()

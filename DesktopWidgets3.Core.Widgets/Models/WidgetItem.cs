@@ -52,6 +52,10 @@ public class DashboardWidgetItem : BaseWidgetItem
 
     public required bool IsUnknown { get; set; }
 
+    public required bool IsInstalled { get; set; }
+
+    public bool Editable => (!IsUnknown) && IsInstalled;
+
     public string? Description { get; set; }
 
     public string? IcoPath { get; set; }
@@ -64,7 +68,7 @@ public class DashboardWidgetItem : BaseWidgetItem
             if (_isEnabled != value)
             {
                 _isEnabled = value;
-                if (!IsUnknown)
+                if (Editable)
                 {
                     EnabledChangedCallback?.Invoke(this);
                 }

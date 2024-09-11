@@ -4,18 +4,18 @@ namespace DesktopWidgets3.Core.Widgets.Models;
 
 public class WidgetProperties
 {
-    // Is Unknown
-    public static readonly DependencyProperty IsUnknownProperty =
-        DependencyProperty.RegisterAttached("IsUnknown", typeof(bool), typeof(WidgetProperties), new PropertyMetadata(false));
+    // Editable
+    public static readonly DependencyProperty EditableProperty =
+        DependencyProperty.RegisterAttached("Editable", typeof(bool), typeof(WidgetProperties), new PropertyMetadata(false));
 
-    public static bool GetIsUnknown(DependencyObject obj)
+    public static bool GetEditable(DependencyObject obj)
     {
-        return (bool)obj.GetValue(IsUnknownProperty);
+        return (bool)obj.GetValue(EditableProperty);
     }
 
-    public static void SetIsUnknown(DependencyObject obj, bool value)
+    public static void SetEditable(DependencyObject obj, bool value)
     {
-        obj.SetValue(IsUnknownProperty, value);
+        obj.SetValue(EditableProperty, value);
     }
 
     // Widget Id

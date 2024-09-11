@@ -70,8 +70,8 @@ public sealed partial class DashboardPage : Page
     {
         if (sender is FrameworkElement element)
         {
-            var isUnknown = WidgetProperties.GetIsUnknown(element);
-            if (isUnknown)
+            var isEditable = WidgetProperties.GetEditable(element);
+            if (!isEditable)
             {
                 _indexTag = -1;
                 return;

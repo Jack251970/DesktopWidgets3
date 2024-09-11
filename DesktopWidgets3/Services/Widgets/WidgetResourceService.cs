@@ -379,6 +379,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             dashboardItemList.Add(new DashboardWidgetItem()
             {
                 IsUnknown = false,
+                IsInstalled = true,
                 Id = widget.Metadata.ID,
                 IndexTag = 0,
                 Name = widget.Metadata.Name,
@@ -412,6 +413,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 dashboardItemList.Add(new DashboardWidgetItem()
                 {
                     IsUnknown = false,
+                    IsInstalled = IsInstalled(widgetId),
                     Id = widgetId,
                     IndexTag = indexTag,
                     Name = GetWidgetName(widgetId),
@@ -429,6 +431,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return new DashboardWidgetItem()
         {
             IsUnknown = false,
+            IsInstalled = IsInstalled(widgetId),
             Id = widgetId,
             IndexTag = indexTag,
             IsEnabled = true,
@@ -442,11 +445,12 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return !AllWidgetsMetadata.Any(x => x.ID == widgetId);
     }
 
-    private static DashboardWidgetItem GetUnknownDashboardItem(string widgetId, int indexTag, bool isEnabled, int widgetIndex)
+    private DashboardWidgetItem GetUnknownDashboardItem(string widgetId, int indexTag, bool isEnabled, int widgetIndex)
     {
         return new DashboardWidgetItem()
         {
             IsUnknown = true,
+            IsInstalled = IsInstalled(widgetId),
             Id = widgetId,
             IndexTag = indexTag,
             IsEnabled = isEnabled,
@@ -457,11 +461,11 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     private string GetWidgetName(string widgetId)
     {
-        foreach (var widget in AllWidgets)
+        foreach (var metadata in AllWidgetsMetadata)
         {
-            if (widget.Metadata.ID == widgetId)
+            if (metadata.ID == widgetId)
             {
-                return widget.Metadata.Name;
+                return metadata.Name;
             }
         }
 
@@ -470,15 +474,28 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     private string GetWidgetIcoPath(string widgetId)
     {
-        foreach (var widget in AllWidgets)
+        foreach (var metadata in AllWidgetsMetadata)
         {
-            if (widget.Metadata.ID == widgetId)
+            if (metadata.ID == widgetId)
             {
-                return widget.Metadata.IcoPath;
+                return metadata.IcoPath;
             }
         }
 
         return Constant.UnknownWidgetIcoPath;
+    }
+
+    private bool IsInstalled(string widgetId)
+    {
+        foreach (var metadata in AllWidgetsMetadata)
+        {
+            if (metadata.ID == widgetId)
+            {
+                return metadata.Installed;
+            }
+        }
+
+        return false;
     }
 
     #endregion
@@ -533,14 +550,84 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return widgetStoreItemList;
     }
 
-    public async Task<bool> InstallWidget(string widgetId)
+    public async Task InstallWidget(string widgetId)
     {
-        return false;
+        var metadata = AllWidgetsMetadata.Find(x => x.ID == widgetId);
+        var widgetStoreList = _appSettingsService.GetWidgetStoreList();
+        if (metadata == null)
+        {
+            // TODO: Install widget from Github, currently not supported.
+
+        }
+        else
+        {
+            // install widget from preinstalled widgets
+            var index = widgetStoreList.FindIndex(x => x.Id == widgetId);
+            if (index == -1)
+            {
+                // install new preinstalled widgets
+                var resourcesFile = InstallResourceFiles(metadata);
+                widgetStoreList.Add(new JsonWidgetStoreItem()
+                {
+                    Id = metadata.ID,
+                    Version = metadata.Version,
+                    IsPreinstalled = metadata.Preinstalled,
+                    IsInstalled = true,
+                    ResourcesFile = resourcesFile,
+                });
+            }
+            else
+            {
+                var widgetStoreItem = widgetStoreList[index];
+                if (widgetStoreItem.IsInstalled)
+                {
+                    if (widgetStoreItem.Version == metadata.Version)
+                    {
+                        // already installed and up to date
+                        return;
+                    }
+                    // already installed and need to uninstall
+                    UninstallResourceFiles(widgetStoreItem.ResourcesFile);
+                }
+                else
+                {
+                    widgetStoreList[index].IsInstalled = true;
+                }
+                var resourcesFile = InstallResourceFiles(metadata);
+                widgetStoreList[index].ResourcesFile = resourcesFile;
+            }
+
+            await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
+        }
+
+        // TODO: Restart app.
     }
 
     public async Task UninstallWidget(string widgetId)
     {
-        
+        var metadata = AllWidgetsMetadata.Find(x => x.ID == widgetId);
+        if (metadata == null)
+        {
+            return;
+        }
+
+        var widgetStoreList = _appSettingsService.GetWidgetStoreList();
+        var index = widgetStoreList.FindIndex(x => x.Id == widgetId);
+        if (index == -1)
+        {
+            return;
+        }
+
+        var widgetStoreItem = widgetStoreList[index];
+        if (widgetStoreItem.IsInstalled)
+        {
+            UninstallResourceFiles(widgetStoreItem.ResourcesFile);
+            widgetStoreList[index].IsInstalled = false;
+            widgetStoreList[index].ResourcesFile = [];
+            await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
+        }
+
+        // TODO: Restart app.
     }
 
     #endregion
