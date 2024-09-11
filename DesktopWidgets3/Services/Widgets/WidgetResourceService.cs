@@ -412,15 +412,15 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         {
             widgetStoreItemList.Add(new WidgetStoreItem()
             {
-                ID = metaData.ID,
+                Id = metaData.ID,
                 Name = metaData.Name,
                 Description = metaData.Description,
                 Author = metaData.Author,
                 Version = metaData.Version,
                 Website = metaData.Website,
                 IcoPath = metaData.IcoPath,
-                IsPreinstalled = true,
-                IsInstalled = true,
+                IsPreinstalled = true,  // TODO
+                IsInstalled = true,  // TODO
             });
         }
 

@@ -77,7 +77,7 @@ public class DashboardWidgetItem : BaseWidgetItem
 
 public class WidgetStoreItem
 {
-    public required string ID { get; set; } = string.Empty;
+    public required string Id { get; set; } = string.Empty;
 
     public required string Name { get; set; } = string.Empty;
 
