@@ -2,13 +2,13 @@
 
 public class DisplayMonitor
 {
-    public string Name { get; internal set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-    public RectSize RectMonitor { get; internal set; }
+    public RectSize RectMonitor { get; set; }
 
-    public RectSize RectWork { get; internal set; }
+    public RectSize RectWork { get; set; }
 
-    public bool IsPrimary { get; internal set; }
+    public bool IsPrimary { get; set; }
 
     public static DisplayMonitor GetMonitorInfo(WindowEx? window)
     {
