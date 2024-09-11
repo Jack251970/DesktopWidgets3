@@ -42,9 +42,11 @@
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             widgetmodels:WidgetProperties.Id="{x:Bind ID, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.IsPreinstalled="{x:Bind IsPreinstalled, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
-                            ContextFlyout="{StaticResource WidgetStoreItemInstallMenuFlyout}">
+                            ContextFlyout="{StaticResource WidgetStoreItemInstallMenuFlyout}"
+                            RightTapped="WidgetStoreItem_RightTapped">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -95,9 +97,11 @@
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             widgetmodels:WidgetProperties.Id="{x:Bind ID, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.IsPreinstalled="{x:Bind IsPreinstalled, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
-                            ContextFlyout="{StaticResource WidgetStoreItemUninstallMenuFlyout}">
+                            ContextFlyout="{StaticResource WidgetStoreItemUninstallMenuFlyout}"
+                            RightTapped="WidgetStoreItem_RightTapped">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"

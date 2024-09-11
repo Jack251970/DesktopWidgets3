@@ -9,10 +9,10 @@ public sealed partial class DashboardPage : Page
 {
     public DashboardViewModel ViewModel { get; }
 
+    private readonly IWidgetManagerService _widgetManagerService = App.GetService<IWidgetManagerService>();
+
     private string _widgetId = string.Empty;
     private int _indexTag = -1;
-
-    private readonly IWidgetManagerService _widgetManagerService = App.GetService<IWidgetManagerService>();
 
     public DashboardPage()
     {
@@ -20,14 +20,23 @@ public sealed partial class DashboardPage : Page
         InitializeComponent();
     }
 
-    private void AllWidgetsItemClick(object sender, RoutedEventArgs e)
+    #region All Widgets
+
+    private async void AllWidgetsItem_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement element)
         {
             var widgetId = WidgetProperties.GetId(element);
-            ViewModel.AllWidgetsItemClick(widgetId);
+            var indexTag = await _widgetManagerService.AddWidget(widgetId, false);
+            ViewModel.RefreshAddedWidget(widgetId, indexTag);
         }
     }
+
+    #endregion
+
+    #region Widget Items
+
+    #region Context Menu
 
     private void WidgetItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
@@ -46,11 +55,16 @@ public sealed partial class DashboardPage : Page
         {
             if (await App.MainWindow.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
             {
-                ViewModel.MenuFlyoutItemDeleteWidgetClick(_widgetId, _indexTag);
+                await _widgetManagerService.DeleteWidget(_widgetId, _indexTag, false);
+                ViewModel.RefreshDisabledWidget(_widgetId, _indexTag);
             }
             _indexTag = -1;
         }
     }
+
+    #endregion
+
+    #region Setting Page
 
     private void WidgetItem_Click(object sender, RoutedEventArgs e)
     {
@@ -71,4 +85,8 @@ public sealed partial class DashboardPage : Page
             }
         }
     }
+
+    #endregion
+
+    #endregion
 }

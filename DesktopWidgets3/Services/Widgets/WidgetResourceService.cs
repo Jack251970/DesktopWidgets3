@@ -419,8 +419,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 Version = metaData.Version,
                 Website = metaData.Website,
                 IcoPath = metaData.IcoPath,
-                Preinstalled = true,
-                Installed = true,
+                IsPreinstalled = true,
+                IsInstalled = true,
             });
         }
 

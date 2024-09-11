@@ -16,28 +16,7 @@ public partial class WidgetStoreViewModel(IWidgetManagerService widgetManagerSer
 
     private bool _isInitialized;
 
-    public async void OnNavigatedTo(object parameter)
-    {
-        if (!_isInitialized)
-        {
-            await LoadAvailableWidgets();
-
-            RefreshAvailableWidgets();
-
-            installedWidgets = _widgetResourceService.GetInstalledWidgetStoreItems();
-
-            RefreshInstalledWidgets();
-
-            _isInitialized = true;
-
-            return;
-        }
-    }
-
-    public void OnNavigatedFrom()
-    {
-
-    }
+    #region Load
 
     private async Task LoadAvailableWidgets()
     {
@@ -51,6 +30,15 @@ public partial class WidgetStoreViewModel(IWidgetManagerService widgetManagerSer
 
         await Task.CompletedTask;
     }
+
+    private void LoadInstalledWidgets()
+    {
+        installedWidgets = _widgetResourceService.GetInstalledWidgetStoreItems();
+    }
+
+    #endregion
+
+    #region Refresh
 
     private void RefreshAvailableWidgets()
     {
@@ -71,4 +59,33 @@ public partial class WidgetStoreViewModel(IWidgetManagerService widgetManagerSer
             InstalledWidgets.Add(widget);
         }
     }
+
+    #endregion
+
+    #region Navigation Aware
+
+    public async void OnNavigatedTo(object parameter)
+    {
+        if (!_isInitialized)
+        {
+            await LoadAvailableWidgets();
+
+            RefreshAvailableWidgets();
+
+            LoadInstalledWidgets();
+
+            RefreshInstalledWidgets();
+
+            _isInitialized = true;
+
+            return;
+        }
+    }
+
+    public void OnNavigatedFrom()
+    {
+
+    }
+
+    #endregion
 }

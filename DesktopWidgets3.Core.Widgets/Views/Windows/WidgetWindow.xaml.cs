@@ -174,7 +174,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region initialize
 
-    public void InitializeWindow(BaseWidgetItem widgetItem)
+    public void InitializeWindow(JsonWidgetItem widgetItem)
     {
         Id = widgetItem.Id;
         IndexTag = widgetItem.IndexTag;

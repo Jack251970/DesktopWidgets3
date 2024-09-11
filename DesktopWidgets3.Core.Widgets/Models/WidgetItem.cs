@@ -91,7 +91,7 @@ public class WidgetStoreItem
 
     public required string IcoPath { get; set; } = string.Empty;
 
-    public required bool Preinstalled { get; set; } = false;
+    public required bool IsPreinstalled { get; set; } = false;
 
-    public required bool Installed { get; set; }
+    public required bool IsInstalled { get; set; } = false;
 }

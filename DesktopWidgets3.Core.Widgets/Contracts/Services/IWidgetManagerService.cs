@@ -4,13 +4,13 @@ public interface IWidgetManagerService
 {
     Task Initialize();
 
-    Task AddWidget(string widgetId);
+    Task<int> AddWidget(string widgetId, bool refresh);
 
     Task EnableWidget(string widgetId, int indexTag);
 
     Task DisableWidget(string widgetId, int indexTag);
 
-    Task DeleteWidget(string widgetId, int indexTag);
+    Task DeleteWidget(string widgetId, int indexTag, bool refresh);
 
     Task DisableAllWidgets();
 

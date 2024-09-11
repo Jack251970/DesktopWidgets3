@@ -73,7 +73,7 @@
                                         HorizontalContentAlignment="Center"
                                         VerticalContentAlignment="Center"
                                         widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
-                                        Click="AllWidgetsItemClick">
+                                        Click="AllWidgetsItem_Click">
                                         <FontIcon FontSize="10" Glyph="&#xE710;" />
                                     </Button>
                                 </Grid>

@@ -42,7 +42,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
     }
 
-    public async Task AddWidget(string widgetId)
+    public async Task<int> AddWidget(string widgetId, bool refresh)
     {
         var widgetList = await _appSettingsService.GetWidgetsList();
 
@@ -76,13 +76,18 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await CreateWidgetWindow(widget);
 
         // update dashboard page
-        var parameter = new Dictionary<string, object>
+        if (refresh)
         {
-            { "UpdateEvent", DashboardViewModel.UpdateEvent.Add },
-            { "Id", widget.Id },
-            { "IndexTag", widget.IndexTag }
-        };
-        RefreshDashboardPage(parameter);
+            var parameter = new Dictionary<string, object>
+            {
+                { "UpdateEvent", DashboardViewModel.UpdateEvent.Add },
+                { "Id", widget.Id },
+                { "IndexTag", widget.IndexTag }
+            };
+            RefreshDashboardPage(parameter);
+        }
+
+        return indexTag;
     }
 
     public async Task EnableWidget(string widgetId, int indexTag)
@@ -107,7 +112,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    public async Task DeleteWidget(string widgetId, int indexTag)
+    public async Task DeleteWidget(string widgetId, int indexTag, bool refresh)
     {
         // update widget list
         await _appSettingsService.DeleteWidget(widgetId, indexTag);
@@ -117,6 +122,18 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         if (widgetWindow != null)
         {
             await CloseWidgetWindow(widgetWindow);
+        }
+
+        // refresh dashboard page
+        if (refresh)
+        {
+            var parameter = new Dictionary<string, object>
+            {
+                { "UpdateEvent", DashboardViewModel.UpdateEvent.Delete },
+                { "Id", widgetId },
+                { "IndexTag", indexTag }
+            };
+            RefreshDashboardPage(parameter);
         }
     }
 
@@ -417,14 +434,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
         if (await widgetWindow!.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
         {
-            await DeleteWidget(widgetId, indexTag);
-            var parameter = new Dictionary<string, object>
-            {
-                { "UpdateEvent", DashboardViewModel.UpdateEvent.Delete },
-                { "Id", widgetId },
-                { "IndexTag", indexTag }
-            };
-            RefreshDashboardPage(parameter);
+            await DeleteWidget(widgetId, indexTag, true);
         }
     }
 

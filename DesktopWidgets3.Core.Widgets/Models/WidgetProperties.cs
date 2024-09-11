@@ -45,4 +45,18 @@ public class WidgetProperties
     {
         obj.SetValue(IndexTagProperty, value);
     }
+
+    // Is Preinstalled
+    public static readonly DependencyProperty IsPreinstalledProperty =
+        DependencyProperty.RegisterAttached("IsPreinstalled", typeof(bool), typeof(WidgetProperties), new PropertyMetadata(false));
+
+    public static bool GetIsPreinstalled(DependencyObject obj)
+    {
+        return (bool)obj.GetValue(IsPreinstalledProperty);
+    }
+
+    public static void SetIsPreinstalled(DependencyObject obj, bool value)
+    {
+        obj.SetValue(IsPreinstalledProperty, value);
+    }
 }
