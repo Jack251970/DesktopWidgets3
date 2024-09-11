@@ -3,12 +3,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class WidgetStoreViewModel(IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
+public partial class WidgetStoreViewModel(IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
 {
     public ObservableCollection<WidgetStoreItem> AvailableWidgets { get; set; } = [];
     public ObservableCollection<WidgetStoreItem> InstalledWidgets { get; set; } = [];
 
-    private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     private List<WidgetStoreItem> availableWidgets = [];
@@ -23,8 +22,7 @@ public partial class WidgetStoreViewModel(IWidgetManagerService widgetManagerSer
         // TODO: Load available widgets from Github, not supported yet
         var githubAvailableWidgets = new List<WidgetStoreItem>();
 
-        // TODO
-        var preinstalledAvailableWidgets = new List<WidgetStoreItem>();
+        var preinstalledAvailableWidgets = _widgetResourceService.GetPreinstalledAvailableWidgetStoreItems();
 
         availableWidgets = [.. githubAvailableWidgets, .. preinstalledAvailableWidgets];
 

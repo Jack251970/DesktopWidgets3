@@ -6,10 +6,18 @@ public static class WidgetsConfig
 {
     private static string ClassName => typeof(WidgetsConfig).Name;
 
-    public static List<WidgetMetadata> Parse(string[] widgetDirectories)
+    public static List<WidgetMetadata> Parse(string[] widgetDirectories, string preinstalledWidgetDirectory)
+    {
+        var directories = widgetDirectories.SelectMany(Directory.EnumerateDirectories);
+        var nonPreinstalledMetadata = directories != null ? Parse(directories, false) : [];
+        var preinstalledDirectories = Directory.EnumerateDirectories(preinstalledWidgetDirectory);
+        var preinstalledMetadata = preinstalledDirectories != null ? Parse(preinstalledDirectories, true) : [];
+        return [.. preinstalledMetadata, .. nonPreinstalledMetadata];
+    }
+
+    private static List<WidgetMetadata> Parse(IEnumerable<string> directories, bool preinstalled)
     {
         var allWidgetMetadata = new List<WidgetMetadata>();
-        var directories = widgetDirectories.SelectMany(Directory.EnumerateDirectories);
 
         // FlowLauncherTODO: use linq when diable widget is implmented since parallel.foreach + list is not thread saft
         foreach (var directory in directories)
@@ -27,7 +35,7 @@ public static class WidgetsConfig
             }
             else
             {
-                var metadata = GetWidgetMetadata(directory);
+                var metadata = GetWidgetMetadata(directory, preinstalled);
                 if (metadata != null)
                 {
                     allWidgetMetadata.Add(metadata);
@@ -85,7 +93,7 @@ public static class WidgetsConfig
         return (unique_list, duplicate_list);
     }
 
-    private static WidgetMetadata? GetWidgetMetadata(string widgetDirectory)
+    private static WidgetMetadata? GetWidgetMetadata(string widgetDirectory, bool preinstalled)
     {
         var configPath = Path.Combine(widgetDirectory, Constant.WidgetMetadataFileName);
         if (!File.Exists(configPath))
@@ -99,6 +107,7 @@ public static class WidgetsConfig
         {
             metadata = JsonSerializer.Deserialize<WidgetMetadata>(File.ReadAllText(configPath));
             metadata!.WidgetDirectory = widgetDirectory;
+            metadata.Preinstalled = preinstalled;
         }
         catch (Exception e)
         {

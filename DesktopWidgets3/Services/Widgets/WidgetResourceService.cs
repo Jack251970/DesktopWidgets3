@@ -13,24 +13,21 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     private List<WidgetPair> AllWidgets { get; set; } = null!;
     private List<WidgetMetadata> AllWidgetsMetadata { get; set; } = null!;
 
-    private static readonly string[] Directories =
-    {
-        Constant.WidgetsPreinstalledDirectory
-    };
+    private static readonly string[] WidgetsDirectories = [];  // TODO: Add user widget directory.
 
     #region Initialization
 
-    public async Task Initalize()
+    public async Task InitalizeAsync()
     {
-        // check preinstalled directory
-        if (!Directory.Exists(Constant.WidgetsPreinstalledDirectory))
-        {
-            Directory.CreateDirectory(Constant.WidgetsPreinstalledDirectory);
-        }
+        // get all widget metadata
+        AllWidgetsMetadata = WidgetsConfig.Parse(WidgetsDirectories, Constant.WidgetsPreinstalledDirectory);
 
-        // load all widgets
-        AllWidgetsMetadata = WidgetsConfig.Parse(Directories);
-        (AllWidgets, var errorWidgets) = WidgetsLoader.Widgets(AllWidgetsMetadata);
+        // check preinstalled widgets
+        await CheckPreinstalledWidgets();
+
+        // load all installed widgets
+        var installedWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Installed).ToList();
+        (AllWidgets, var errorWidgets) = WidgetsLoader.Widgets(installedWidgetsMetadata);
 
         // show error notification
         if (errorWidgets.Count > 0)
@@ -44,28 +41,81 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             });
         }
 
-        // install resource files
-        InstallResourceFiles(AllWidgetsMetadata);
-
         // initialize all widgets
         await InitAllWidgetsAsync();
     }
 
-    #region Xaml Resources
-
-    private static void InstallResourceFiles(List<WidgetMetadata> widgetsMetadata)
+    private async Task CheckPreinstalledWidgets()
     {
-        foreach (var metadata in widgetsMetadata)
+        // load widget store list
+        var widgetStoreList = await _appSettingsService.InitializeWidgetStoreListAsync();
+
+        // get preinstalled widget metadata
+        var preinstalledWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Preinstalled).ToList();
+
+        // check all preinstalled widgets
+        var needSave = false;
+        foreach (var metadata in preinstalledWidgetsMetadata)
         {
-            InstallResourceFiles(metadata);
+            var index = widgetStoreList.FindIndex(x => x.Id == metadata.ID && x.IsPreinstalled);
+            if (index == -1)
+            {
+                // install new preinstalled widgets
+                var resourcesFile = InstallResourceFiles(metadata);
+                widgetStoreList.Add(new JsonWidgetStoreItem()
+                {
+                    Id = metadata.ID,
+                    Version = metadata.Version,
+                    IsPreinstalled = true,
+                    IsInstalled = true,
+                    ResourcesFile = resourcesFile,
+                });
+                needSave = true;
+            }
+            else
+            {
+                var widgetStoreItem = widgetStoreList[index];
+                var isInstalled = widgetStoreItem.IsInstalled;
+                var version = widgetStoreItem.Version;
+                if (isInstalled)
+                {
+                    // update installed, preinstalled widgets
+                    if (version != metadata.Version)
+                    {
+                        UninstallResourceFiles(widgetStoreItem.ResourcesFile);
+                        var resourcesFile = InstallResourceFiles(metadata);
+                        widgetStoreList[index].Version = metadata.Version;
+                        widgetStoreList[index].ResourcesFile = resourcesFile;
+                        needSave = true;
+                    }
+                }
+                else
+                {
+                    // set uninstalled, preinstalled widgets
+                    var metadataIndex = AllWidgetsMetadata.FindIndex(x => x.ID == metadata.ID);
+                    if (metadataIndex != -1)
+                    {
+                        AllWidgetsMetadata[metadataIndex].Installed = false;
+                    }
+                }
+            }
+        }
+
+        // save widget store list
+        if (needSave)
+        {
+            await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
         }
     }
 
-    private static void InstallResourceFiles(WidgetMetadata metadata)
+    #region Xaml Resources
+
+    private static List<string> InstallResourceFiles(WidgetMetadata metadata)
     {
         var widgetDirectory = metadata.WidgetDirectory;
         var xbfFiles = Directory.EnumerateFiles(widgetDirectory, "*.xbf", SearchOption.AllDirectories);
         var resourceFiles = xbfFiles;
+        var destinationResources = new List<string>();
 
         foreach (var resourceFile in resourceFiles)
         {
@@ -79,6 +129,36 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 Directory.CreateDirectory(destinationDirectory);
             }
             File.Copy(resourceFile, destinationPath, true);
+
+            destinationResources.Add(destinationPath);
+        }
+
+        return destinationResources;
+    }
+
+    private static void UninstallResourceFiles(List<string> resourcesFiles)
+    {
+        foreach (var resourceFile in resourcesFiles)
+        {
+            if (resourceFile != null && File.Exists(resourceFile))
+            {
+                File.Delete(resourceFile);
+                DeleteEmptyDirectory(resourceFile);
+            }
+        }
+    }
+
+    private static void DeleteEmptyDirectory(string path)
+    {
+        var directory = Path.GetDirectoryName(path)!;
+        if (directory == AppContext.BaseDirectory)
+        {
+            return;
+        }
+        if (Directory.Exists(directory) && Directory.GetFileSystemEntries(directory).Length == 0)
+        {
+            Directory.Delete(directory);
+            DeleteEmptyDirectory(directory);
         }
     }
 
@@ -408,23 +488,59 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     public List<WidgetStoreItem> GetInstalledWidgetStoreItems()
     {
         List<WidgetStoreItem> widgetStoreItemList = [];
+
         foreach (var metaData in AllWidgetsMetadata)
         {
-            widgetStoreItemList.Add(new WidgetStoreItem()
+            if (metaData.Installed)
             {
-                Id = metaData.ID,
-                Name = metaData.Name,
-                Description = metaData.Description,
-                Author = metaData.Author,
-                Version = metaData.Version,
-                Website = metaData.Website,
-                IcoPath = metaData.IcoPath,
-                IsPreinstalled = true,  // TODO
-                IsInstalled = true,  // TODO
-            });
+                widgetStoreItemList.Add(new WidgetStoreItem()
+                {
+                    Id = metaData.ID,
+                    Name = metaData.Name,
+                    Description = metaData.Description,
+                    Author = metaData.Author,
+                    Version = metaData.Version,
+                    Website = metaData.Website,
+                    IcoPath = metaData.IcoPath
+                });
+            }
         }
 
         return widgetStoreItemList;
+    }
+
+    public List<WidgetStoreItem> GetPreinstalledAvailableWidgetStoreItems()
+    {
+        List<WidgetStoreItem> widgetStoreItemList = [];
+
+        foreach (var metaData in AllWidgetsMetadata)
+        {
+            if (metaData.Preinstalled && (!metaData.Installed))
+            {
+                widgetStoreItemList.Add(new WidgetStoreItem()
+                {
+                    Id = metaData.ID,
+                    Name = metaData.Name,
+                    Description = metaData.Description,
+                    Author = metaData.Author,
+                    Version = metaData.Version,
+                    Website = metaData.Website,
+                    IcoPath = metaData.IcoPath
+                });
+            }
+        }
+
+        return widgetStoreItemList;
+    }
+
+    public async Task<bool> InstallWidget(string widgetId)
+    {
+        return false;
+    }
+
+    public async Task UninstallWidget(string widgetId)
+    {
+        
     }
 
     #endregion

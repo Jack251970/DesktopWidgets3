@@ -31,4 +31,10 @@ public interface IAppSettingsService
     Task UpdateWidgetSettings(string widgetId, int indexTag, BaseWidgetSettings settings);
 
     Task UpdateWidgetsListIgnoreSettings(List<JsonWidgetItem> widgetList);
+
+    Task<List<JsonWidgetStoreItem>> InitializeWidgetStoreListAsync();
+
+    List<JsonWidgetStoreItem> GetWidgetStoreList();
+
+    Task SaveWidgetStoreListAsync(List<JsonWidgetStoreItem> widgetStoreList);
 }

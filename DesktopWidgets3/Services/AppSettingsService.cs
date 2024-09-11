@@ -120,6 +120,8 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     private List<JsonWidgetItem> WidgetList = null!;
 
+    // TODO: Use await InitializeWidgetList() once.
+    // TODO: Check GetWidgetsListAsync.
     public async Task<List<JsonWidgetItem>> GetWidgetsList()
     {
         await InitializeWidgetList();
@@ -215,7 +217,30 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     private async Task InitializeWidgetList()
     {
         WidgetList ??= (List<JsonWidgetItem>)await _localSettingsService.ReadWidgetListAsync();
-    } 
+    }
+
+    #endregion
+
+    #region Widget Store Data
+
+    private List<JsonWidgetStoreItem> WidgetStoreList = null!;
+
+    public async Task<List<JsonWidgetStoreItem>> InitializeWidgetStoreListAsync()
+    {
+        WidgetStoreList = (List<JsonWidgetStoreItem>)await _localSettingsService.ReadWidgetStoreListAsync();
+
+        return WidgetStoreList;
+    }
+
+    public async Task SaveWidgetStoreListAsync(List<JsonWidgetStoreItem> widgetStoreList)
+    {
+        await _localSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
+    }
+
+    public List<JsonWidgetStoreItem> GetWidgetStoreList()
+    {
+        return WidgetStoreList;
+    }
 
     #endregion
 

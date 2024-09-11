@@ -13,4 +13,8 @@ public interface ILocalSettingsService
     Task<object> ReadWidgetListAsync();
 
     Task SaveWidgetListAsync(object value);
+
+    Task<object> ReadWidgetStoreListAsync();
+
+    Task SaveWidgetStoreListAsync(object value);
 }

@@ -9,8 +9,9 @@ public sealed partial class WidgetStorePage : Page
 {
     public WidgetStoreViewModel ViewModel { get; }
 
+    private readonly IWidgetResourceService _widgetResourceService = App.GetService<IWidgetResourceService>();
+
     private string _widgetId = string.Empty;
-    private bool _isPreinstalled = false;
 
     public WidgetStorePage()
     {
@@ -27,26 +28,25 @@ public sealed partial class WidgetStorePage : Page
         if (sender is FrameworkElement element)
         {
             _widgetId = WidgetProperties.GetId(element);
-            _isPreinstalled = WidgetProperties.GetIsPreinstalled(element);
             element.ContextFlyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
         }
     }
 
-    private void MenuFlyoutItemInstallWidget_Click(object sender, RoutedEventArgs e)
+    private async void MenuFlyoutItemInstallWidget_Click(object sender, RoutedEventArgs e)
     {
         if (_widgetId != string.Empty)
         {
-            // TODO
+            await _widgetResourceService.InstallWidget(_widgetId);
             _widgetId = string.Empty;
         }
     }
 
-    private void MenuFlyoutItemUninstallWidget_Click(object sender, RoutedEventArgs e)
+    private async void MenuFlyoutItemUninstallWidget_Click(object sender, RoutedEventArgs e)
     {
         if (_widgetId != string.Empty)
         {
-            // TODO
+            await _widgetResourceService.UninstallWidget(_widgetId);
             _widgetId = string.Empty;
         }
     }

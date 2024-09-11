@@ -29,7 +29,7 @@ public sealed partial class NavShellPage : Page
         TitleBarHelper.UpdateTitleBar(null, null, RequestedTheme);
 
         // Initialize widgets after the navigation frame is loaded.
-        App.GetService<IWidgetManagerService>().Initialize();
+        App.GetService<IWidgetManagerService>().InitializeAsync();
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

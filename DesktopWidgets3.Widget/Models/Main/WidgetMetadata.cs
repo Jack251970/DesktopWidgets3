@@ -38,6 +38,10 @@ public class WidgetMetadata
 
     public bool Disabled { get; set; } = false;
 
+    public bool Preinstalled { get; set; } = false;
+
+    public bool Installed { get; set; } = true;
+
     public string ExecuteFilePath { get; private set; } = string.Empty;
 
     private string _widgetDirectory = string.Empty;

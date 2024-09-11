@@ -1,8 +1,5 @@
-﻿using DesktopWidgets3.Infrastructure.Helpers;
-using Microsoft.Extensions.Options;
-
+﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-
 using Windows.Storage;
 
 namespace DesktopWidgets3.Services;
@@ -14,6 +11,7 @@ internal class LocalSettingsService : ILocalSettingsService
 {
     private const string _defaultLocalSettingsFile = "LocalSettings.json";
     private const string _defaultWidgetListFile = "WidgetList.json";
+    private const string _defaultWidgetStoreListFile = "WidgetStoreList.json";
 
     private readonly IFileService _fileService;
     private readonly LocalSettingsOptions _options;
@@ -22,6 +20,7 @@ internal class LocalSettingsService : ILocalSettingsService
 
     private readonly string _localsettingsFile;
     private readonly string _widgetListFile;
+    private readonly string _widgetStoreListFile;
 
     private Dictionary<string, object>? _settings;
 
@@ -36,6 +35,7 @@ internal class LocalSettingsService : ILocalSettingsService
 
         _localsettingsFile = _options.LocalSettingsFile ?? _defaultLocalSettingsFile;
         _widgetListFile = _options.WidgetListFile ?? _defaultWidgetListFile;
+        _widgetStoreListFile = _options.WidgetStoreListFile ?? _defaultWidgetStoreListFile;
 
         _applicationDataFolder = LocalSettingsExtensions.GetApplicationDataFolder();
 
@@ -129,5 +129,19 @@ internal class LocalSettingsService : ILocalSettingsService
         var valueCopy = new List<JsonWidgetItem>((List<JsonWidgetItem>)value);
 
         await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, valueCopy, true));
+    }
+
+    public async Task<object> ReadWidgetStoreListAsync()
+    {
+        var widgetStoreList = await Task.Run(() => _fileService.Read<List<JsonWidgetStoreItem>>(_applicationDataFolder, _widgetStoreListFile)) ?? [];
+
+        return widgetStoreList;
+    }
+
+    public async Task SaveWidgetStoreListAsync(object value)
+    {
+        var valueCopy = new List<JsonWidgetStoreItem>((List<JsonWidgetStoreItem>)value);
+
+        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetStoreListFile, valueCopy, true));
     }
 }

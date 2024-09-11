@@ -2,7 +2,7 @@
 
 public interface IWidgetManagerService
 {
-    Task Initialize();
+    Task InitializeAsync();
 
     Task<int> AddWidget(string widgetId, bool refresh);
 

@@ -22,10 +22,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region widget window
 
-    public async Task Initialize()
+    public async Task InitializeAsync()
     {
-        // initialize widgets
-        await _widgetResourceService.Initalize();
+        await _widgetResourceService.InitalizeAsync();
 
         // enable all enabled widgets
         var widgetList = await _appSettingsService.GetWidgetsList();

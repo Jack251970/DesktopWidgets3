@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Core.Widgets.Contracts.Services;
 
 public interface IWidgetResourceService
 {
-    Task Initalize();
+    Task InitalizeAsync();
 
     Task DisposeWidgetsAsync();
 
@@ -33,4 +33,10 @@ public interface IWidgetResourceService
     bool IsWidgetUnknown(string widgetId);
 
     List<WidgetStoreItem> GetInstalledWidgetStoreItems();
+
+    List<WidgetStoreItem> GetPreinstalledAvailableWidgetStoreItems();
+
+    Task<bool> InstallWidget(string widgetId);
+
+    Task UninstallWidget(string widgetId);
 }
