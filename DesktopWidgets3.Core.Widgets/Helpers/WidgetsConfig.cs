@@ -8,10 +8,12 @@ public static class WidgetsConfig
 
     public static List<WidgetMetadata> Parse(string[] widgetDirectories, string preinstalledWidgetDirectory)
     {
-        var directories = widgetDirectories.SelectMany(Directory.EnumerateDirectories);
-        var nonPreinstalledMetadata = directories != null ? Parse(directories, false) : [];
-        var preinstalledDirectories = Directory.EnumerateDirectories(preinstalledWidgetDirectory);
-        var preinstalledMetadata = preinstalledDirectories != null ? Parse(preinstalledDirectories, true) : [];
+        var existingWidgetDirectories = widgetDirectories.Where(Directory.Exists);
+        var directories = existingWidgetDirectories.SelectMany(Directory.EnumerateDirectories);
+        var nonPreinstalledMetadata = Parse(directories, false);
+        var preinstalledDirectories = Directory.Exists(preinstalledWidgetDirectory) ?
+            Directory.EnumerateDirectories(preinstalledWidgetDirectory) : [];
+        var preinstalledMetadata = Parse(preinstalledDirectories, true);
         return [.. preinstalledMetadata, .. nonPreinstalledMetadata];
     }
 
