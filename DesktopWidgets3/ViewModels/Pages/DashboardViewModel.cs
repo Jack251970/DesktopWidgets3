@@ -3,31 +3,25 @@ using System.Collections.ObjectModel;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class DashboardViewModel : ObservableRecipient, INavigationAware
+public partial class DashboardViewModel(IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
 {
     public ObservableCollection<DashboardWidgetItem> AllWidgets { get; set; } = [];
     public ObservableCollection<DashboardWidgetItem> EnabledWidgets { get; set; } = [];
     public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = [];
 
-    private readonly IWidgetManagerService _widgetManagerService;
-    private readonly IWidgetResourceService _widgetResourceService;
+    private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
+    private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     private List<DashboardWidgetItem> yourWidgetItems = [];
 
     private bool _isInitialized;
 
-    public DashboardViewModel(IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService)
-    {
-        _widgetManagerService = widgetManagerService;
-        _widgetResourceService = widgetResourceService;
-
-        LoadAllWidgets();
-    }
-
     public async void OnNavigatedTo(object parameter)
     {
         if (!_isInitialized)
         {
+            LoadAllWidgets();
+
             yourWidgetItems = await _widgetResourceService.GetYourDashboardItemsAsync();
             foreach (var item in yourWidgetItems)
             {
