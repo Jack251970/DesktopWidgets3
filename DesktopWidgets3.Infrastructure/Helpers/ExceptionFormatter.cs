@@ -11,7 +11,7 @@ public class ExceptionFormatter
             Capacity = 200
         };
 
-        formattedException.AppendLine("--------- UNHANDLED EXCEPTION ---------");
+        formattedException.AppendLine("--------- EXCEPTION ---------");
 
         if (exception is not null)
         {
