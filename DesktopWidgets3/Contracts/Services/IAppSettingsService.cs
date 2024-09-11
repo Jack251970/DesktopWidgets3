@@ -24,5 +24,5 @@ public interface IAppSettingsService
 
     Task UpdateWidgetsListIgnoreSetting(List<JsonWidgetItem> widgetList);
 
-    Task DeleteWidgetsList(JsonWidgetItem widgetItem);
+    Task DeleteWidget(string widgetId, int indexTag);
 }

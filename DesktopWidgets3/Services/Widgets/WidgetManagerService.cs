@@ -127,27 +127,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public async Task DeleteWidget(string widgetId, int indexTag)
     {
-        var widgetList = await _appSettingsService.GetWidgetsList();
+        // update widget list
+        await _appSettingsService.DeleteWidget(widgetId, indexTag);
 
-        // find target widget
-        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
-
-        // update widget item
-        widget ??= new JsonWidgetItem()
-        {
-            Id = widgetId,
-            IndexTag = indexTag,
-            Position = new PointInt32(-1, -1),
-            Size = _widgetResourceService.GetDefaultSize(widgetId),
-            DisplayMonitor = new(),
-            Settings = _widgetResourceService.GetDefaultSetting(widgetId),
-        };
-        await _appSettingsService.DeleteWidgetsList(widget);
-
+        // close widget window
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
         if (widgetWindow != null)
         {
-            // close widget window
             await CloseWidgetWindow(widgetWindow);
         }
     }

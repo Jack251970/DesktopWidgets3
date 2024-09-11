@@ -162,11 +162,11 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         await _localSettingsService.SaveWidgetListAsync(WidgetList);
     }
 
-    public async Task DeleteWidgetsList(JsonWidgetItem widgetItem)
+    public async Task DeleteWidget(string widgetId, int indexTag)
     {
         await InitializeWidgetList();
 
-        var index = WidgetList.FindIndex(x => x.Id == widgetItem.Id && x.IndexTag == widgetItem.IndexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
         if (index != -1)
         {
             WidgetList.RemoveAt(index);
