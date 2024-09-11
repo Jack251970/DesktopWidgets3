@@ -1,4 +1,5 @@
-﻿using H.NotifyIcon;
+﻿using DesktopWidgets3.Widget.Contracts.Main;
+using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -70,7 +71,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
             Settings = _widgetResourceService.GetDefaultSetting(widgetId),
         };
-        await _appSettingsService.UpdateWidgetsList(widget);
+        await _appSettingsService.AddWidget(widget);
 
         // create widget window
         await CreateWidgetWindow(widget);
@@ -87,41 +88,23 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public async Task EnableWidget(string widgetId, int indexTag)
     {
-        var widgetList = await _appSettingsService.GetWidgetsList();
+        // update widget list
+        var widget = await _appSettingsService.EnableWidget(widgetId, indexTag);
 
-        // find target widget
-        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
-
-        if (widget != null && !widget.IsEnabled)
-        {
-            // update widget item
-            widget.IsEnabled = true;
-            await _appSettingsService.UpdateWidgetsList(widget);
-
-            // create widget window
-            await CreateWidgetWindow(widget);
-        }
+        // create widget window
+        await CreateWidgetWindow(widget);
     }
 
     public async Task DisableWidget(string widgetId, int indexTag)
     {
+        // update widget list
+        await _appSettingsService.DisableWidget(widgetId, indexTag);
+
+        // close widget window
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
         if (widgetWindow != null)
         {
-            var widgetList = await _appSettingsService.GetWidgetsList();
-
-            // find target widget
-            var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
-
-            if (widget != null && widget.IsEnabled)
-            {
-                // update widget item
-                widget.IsEnabled = false;
-                await _appSettingsService.UpdateWidgetsList(widget);
-
-                // close widget window
-                await CloseWidgetWindow(widgetWindow);
-            }
+           await CloseWidgetWindow(widgetWindow);
         }
     }
 
@@ -476,6 +459,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public async Task UpdateWidgetSettings(string widgetId, int indexTag, BaseWidgetSettings settings)
     {
+        // update widget settings
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
         if (widgetWindow != null)
         {
@@ -486,13 +470,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             });
         }
 
-        var widgetList = await _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
-        if (widget != null)
-        {
-            widget.Settings = settings;
-            await _appSettingsService.UpdateWidgetsList(widget);
-        }
+        // update widget list
+        await _appSettingsService.UpdateWidgetSettings(widgetId, indexTag, settings);
     }
 
     #endregion
@@ -585,7 +564,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 };
                 widgetList.Add(widget);
             }
-            await _appSettingsService.UpdateWidgetsListIgnoreSetting(widgetList);
+            await _appSettingsService.UpdateWidgetsListIgnoreSettings(widgetList);
         });
     }
 
