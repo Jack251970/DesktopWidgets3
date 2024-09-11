@@ -1,5 +1,4 @@
-﻿using DesktopWidgets3.Widget.Contracts.Main;
-using H.NotifyIcon;
+﻿using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;

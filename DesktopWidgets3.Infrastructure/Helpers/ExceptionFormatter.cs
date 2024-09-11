@@ -1,12 +1,10 @@
-﻿using System.Text;
-
-namespace DesktopWidgets3.Infrastructure.Helpers;
+﻿namespace DesktopWidgets3.Infrastructure.Helpers;
 
 public class ExceptionFormatter
 {
     public static string FormatExcpetion(Exception? exception)
     {
-        StringBuilder formattedException = new()
+        System.Text.StringBuilder formattedException = new()
         {
             Capacity = 200
         };

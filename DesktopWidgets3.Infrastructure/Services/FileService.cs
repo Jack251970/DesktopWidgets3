@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Text;
 
 namespace DesktopWidgets3.Infrastructure.Services;
 
@@ -44,7 +43,7 @@ public class FileService : IFileService
         var fileContent = JsonConvert.SerializeObject(content, indent ? Formatting.Indented : Formatting.None);
         try
         {
-            File.WriteAllText(path, fileContent, Encoding.UTF8);
+            File.WriteAllText(path, fileContent, System.Text.Encoding.UTF8);
         }
         catch (Exception e)
         {
