@@ -67,7 +67,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             IsEnabled = true,
             Position = new PointInt32(-1, -1),
             Size = _widgetResourceService.GetDefaultSize(widgetId),
-            DisplayMonitor = new(DisplayMonitor.GetMonitorInfo(null)),
+            DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
             Settings = _widgetResourceService.GetDefaultSetting(widgetId),
         };
         await _appSettingsService.UpdateWidgetsList(widget);
@@ -533,7 +533,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 IsEnabled = true,
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
-                DisplayMonitor = new(DisplayMonitor.GetMonitorInfo(widgetWindow)),
+                DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
             };
             originalWidgetList.Add(widget);
@@ -550,7 +550,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         // get primary monitor info & show edit mode overlay window
-        var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
+        var primaryMonitorInfo = DisplayMonitor.GetPrimaryMonitorInfo();
         var screenWidth = primaryMonitorInfo.RectWork.Width;
         await EditModeOverlayWindow.EnqueueOrInvokeAsync((window) =>
         {
@@ -594,7 +594,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                     IsEnabled = true,
                     Position = widgetWindow.Position,
                     Size = widgetWindow.Size,
-                    DisplayMonitor = new(DisplayMonitor.GetMonitorInfo(widgetWindow)),
+                    DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                     Settings = null!,
                 };
                 widgetList.Add(widget);

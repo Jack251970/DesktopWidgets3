@@ -1,0 +1,5 @@
+﻿GetSystemMetrics
+EnumDisplayMonitors
+MonitorFromWindow
+GetMonitorInfo
+MONITORINFOEXW

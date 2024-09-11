@@ -2,39 +2,42 @@
 
 public class DisplayMonitor
 {
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; internal set; } = string.Empty;
 
-    public RectSize RectMonitor { get; set; } = new();
+    public RectSize RectMonitor { get; internal set; }
 
-    public RectSize RectWork { get; set; } = new();
+    public RectSize RectWork { get; internal set; }
 
-    public bool IsPrimary { get; set; } = false;
+    public bool IsPrimary { get; internal set; }
 
-    public DisplayMonitor()
+    public static DisplayMonitor GetMonitorInfo(WindowEx? window)
     {
-    }
-
-    public DisplayMonitor(MonitorInfo displayInfo)
-    {
-        Name = displayInfo.Name;
-        RectMonitor = new(displayInfo.RectMonitor);
-        RectWork = new(displayInfo.RectWork);
-        // TODO: Add IsPrimary info.
-        IsPrimary = true;
-    }
-
-    public static MonitorInfo GetMonitorInfo(WindowEx? window)
-    {
-        return MonitorInfo.GetDisplayMonitors().First();
-        // TODO: get monitor info here.
-        /*if (window is null)
+        if (window is not null)
         {
-            var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().First();
-            return primaryMonitorInfo;
+            var monitorInfo = MonitorInfo.GetNearestDisplayMonitor(window.GetWindowHandle());
+            if (monitorInfo is not null)
+            {
+                return new()
+                {
+                    Name = monitorInfo.Name,
+                    RectMonitor = new RectSize(monitorInfo.RectMonitor),
+                    RectWork = new RectSize(monitorInfo.RectWork),
+                    IsPrimary = monitorInfo.IsPrimary
+                };
+            }
         }
-        else
+        return GetPrimaryMonitorInfo();
+    }
+
+    public static DisplayMonitor GetPrimaryMonitorInfo()
+    {
+        var primaryMonitorInfo = MonitorInfo.GetDisplayMonitors().FirstOrDefault(x => x.IsPrimary);
+        return new()
         {
-            
-        }*/
+            Name = primaryMonitorInfo!.Name,
+            RectMonitor = new RectSize(primaryMonitorInfo.RectMonitor),
+            RectWork = new RectSize(primaryMonitorInfo.RectWork),
+            IsPrimary = primaryMonitorInfo.IsPrimary
+        };
     }
 }
