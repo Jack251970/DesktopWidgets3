@@ -16,7 +16,7 @@
             UseSystemFocusVisuals="False"
             VerticalScrollBarVisibility="Hidden"
             VerticalScrollMode="Auto">
-            <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+            <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Spacing="{StaticResource SettingsCardSpacing}">
                 <!--  Apperance & behaviour  -->
                 <TextBlock x:Uid="Settings_Appearance" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
                 <controls:SettingsCard x:Uid="Settings_Theme_Card">

@@ -36,6 +36,9 @@
     <Thickness x:Key="NavigationViewPageContentMargin">56,24,56,0</Thickness>
     <Thickness x:Key="MenuBarContentMargin">36,24,36,0</Thickness>
 
+    <!--  Content  -->
+    <Thickness x:Key="ScrollViewerContentPadding">0,0,0,16</Thickness>
+
     <!--  Setting Page  -->
     <x:Double x:Key="SettingsCardSpacing">3</x:Double>
 

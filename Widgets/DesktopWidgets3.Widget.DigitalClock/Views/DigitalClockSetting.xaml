@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <UserControl
     x:Class="DesktopWidgets3.Widget.DigitalClock.Views.DigitalClockSetting"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -11,7 +10,7 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:DigitalClockSettingViewModel}"
     mc:Ignorable="d">
 
-    <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+    <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Spacing="{StaticResource SettingsCardSpacing}">
         <controls:SettingsCard Description="Show seconds in the widget" Header="Show seconds">
             <controls:SettingsCard.HeaderIcon>
                 <FontIcon Glyph="&#xE823;" />
