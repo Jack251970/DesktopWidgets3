@@ -12,6 +12,8 @@ public partial class App : Application
 {
     private static string ClassName => typeof(App).Name;
 
+    #region Host
+
     // The .NET Generic Host provides dependency injection, configuration, logging, and other services.
     // https://docs.microsoft.com/dotnet/core/extensions/generic-host
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -29,10 +31,25 @@ public partial class App : Application
         return service;
     }
 
+    #endregion
+
+    #region Main Window
+
     public static MainWindow MainWindow { get; set; } = null!;
 
     private static bool IsExistWindow { get; set; } = false;
     public static bool CanCloseWindow { get; set; } = false;
+
+    public static void ShowMainWindow(bool front)
+    {
+        MainWindow.Show();
+        if (front)
+        {
+            MainWindow.Activate();
+        }
+    }
+
+    #endregion
 
     public App()
     {
@@ -209,15 +226,6 @@ public partial class App : Application
             MainWindow = new MainWindow();
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
             LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
-        }
-    }
-
-    public static void ShowMainWindow(bool front)
-    {
-        MainWindow.Show();
-        if (front)
-        {
-            MainWindow.Activate();
         }
     }
 }

@@ -7,7 +7,6 @@ global using DesktopWidgets3.Behaviors;
 global using DesktopWidgets3.Contracts.Services;
 global using DesktopWidgets3.Contracts.Services.HardwareInfo;
 global using DesktopWidgets3.Contracts.ViewModels;
-global using DesktopWidgets3.Converts;
 global using DesktopWidgets3.Extensions;
 global using DesktopWidgets3.Services;
 global using DesktopWidgets3.Services.HardwareInfo;

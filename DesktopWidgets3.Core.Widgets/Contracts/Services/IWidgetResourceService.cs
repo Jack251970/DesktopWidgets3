@@ -36,7 +36,7 @@ public interface IWidgetResourceService
 
     List<WidgetStoreItem> GetPreinstalledAvailableWidgetStoreItems();
 
-    Task InstallWidget(string widgetId);
+    Task InstallWidgetAsync(string widgetId);
 
-    Task UninstallWidget(string widgetId);
+    Task UninstallWidgetAsync(string widgetId);
 }

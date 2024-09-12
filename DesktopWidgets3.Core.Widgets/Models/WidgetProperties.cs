@@ -18,7 +18,7 @@ public class WidgetProperties
         obj.SetValue(EditableProperty, value);
     }
 
-    // Widget Id
+    // Id
     public static readonly DependencyProperty IdProperty =
         DependencyProperty.RegisterAttached("Id", typeof(string), typeof(WidgetProperties), new PropertyMetadata(StringUtils.GetRandomWidgetId()));
 

@@ -36,7 +36,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
             _ = Task.Run(() =>
             {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
+                DependencyExtensions.GetRequiredService<IAppNotificationService>().Show(
+                    string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
                     $"{Environment.NewLine}{errorWidgetString}{Environment.NewLine}"));
             });
         }
@@ -171,7 +172,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     private async Task InitAllWidgetsAsync()
     {
-        var publicAPIService = App.GetService<IPublicAPIService>();
+        var publicAPIService = DependencyExtensions.GetRequiredService<IPublicAPIService>();
 
         var failedPlugins = new ConcurrentQueue<WidgetPair>();
 
@@ -197,7 +198,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
             _ = Task.Run(() =>
             {
-                App.GetService<IAppNotificationService>().Show(
+                DependencyExtensions.GetRequiredService<IAppNotificationService>().Show(
                     string.Format("AppNotificationWidgetInitializeErrorPayload".GetLocalized(),
                     $"{Environment.NewLine}{failedWidgetString}{Environment.NewLine}"));
             });
@@ -553,7 +554,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return widgetStoreItemList;
     }
 
-    public async Task InstallWidget(string widgetId)
+    public async Task InstallWidgetAsync(string widgetId)
     {
         var metadata = AllWidgetsMetadata.Find(x => x.ID == widgetId);
         var widgetStoreList = _appSettingsService.GetWidgetStoreList();
@@ -606,7 +607,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         // TODO: Restart app.
     }
 
-    public async Task UninstallWidget(string widgetId)
+    public async Task UninstallWidgetAsync(string widgetId)
     {
         var metadata = AllWidgetsMetadata.Find(x => x.ID == widgetId);
         if (metadata == null)

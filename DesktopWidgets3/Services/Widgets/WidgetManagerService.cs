@@ -46,7 +46,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    public async Task<int> AddWidget(string widgetId, bool refresh)
+    public async Task<int> AddWidgetAsync(string widgetId, bool refresh)
     {
         var widgetList = _appSettingsService.GetWidgetsList();
 
@@ -74,7 +74,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
             Settings = _widgetResourceService.GetDefaultSetting(widgetId),
         };
-        await _appSettingsService.AddWidget(widget);
+        await _appSettingsService.AddWidgetAsync(widget);
 
         // create widget window
         CreateWidgetWindow(widget);
@@ -94,19 +94,19 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         return indexTag;
     }
 
-    public async Task EnableWidget(string widgetId, int indexTag)
+    public async Task EnableWidgetAsync(string widgetId, int indexTag)
     {
         // update widget list
-        var widget = await _appSettingsService.EnableWidget(widgetId, indexTag);
+        var widget = await _appSettingsService.EnableWidgetAsync(widgetId, indexTag);
 
         // create widget window
         CreateWidgetWindow(widget);
     }
 
-    public async Task DisableWidget(string widgetId, int indexTag)
+    public async Task DisableWidgetAsync(string widgetId, int indexTag)
     {
         // update widget list
-        await _appSettingsService.DisableWidget(widgetId, indexTag);
+        await _appSettingsService.DisableWidgetAsync(widgetId, indexTag);
 
         // close widget window
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
@@ -116,10 +116,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    public async Task DeleteWidget(string widgetId, int indexTag, bool refresh)
+    public async Task DeleteWidgetAsync(string widgetId, int indexTag, bool refresh)
     {
         // update widget list
-        await _appSettingsService.DeleteWidget(widgetId, indexTag);
+        await _appSettingsService.DeleteWidgetAsync(widgetId, indexTag);
 
         // close widget window
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
@@ -141,7 +141,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    public async Task DisableAllWidgets()
+    public async Task DisableAllWidgetsAsync()
     {
         await AllWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindow);
     }
@@ -424,7 +424,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         var widgetId = _widgetId;
         var indexTag = _indexTag;
-        await DisableWidget(widgetId, indexTag);
+        await DisableWidgetAsync(widgetId, indexTag);
         var parameter = new Dictionary<string, object>
         {
             { "UpdateEvent", DashboardViewModel.UpdateEvent.Disable },
@@ -439,9 +439,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetId = _widgetId;
         var indexTag = _indexTag;
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
-        if (await widgetWindow!.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
+        if (await widgetWindow!.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
         {
-            await DeleteWidget(widgetId, indexTag, true);
+            await DeleteWidgetAsync(widgetId, indexTag, true);
         }
     }
 
@@ -473,7 +473,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         return widget?.Settings.Clone();
     }
 
-    public async Task UpdateWidgetSettings(string widgetId, int indexTag, BaseWidgetSettings settings)
+    public async Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings)
     {
         // update widget settings
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
@@ -487,7 +487,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         // update widget list
-        await _appSettingsService.UpdateWidgetSettings(widgetId, indexTag, settings);
+        await _appSettingsService.UpdateWidgetSettingsAsync(widgetId, indexTag, settings);
     }
 
     #endregion
@@ -580,7 +580,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 };
                 widgetList.Add(widget);
             }
-            await _appSettingsService.UpdateWidgetsListIgnoreSettings(widgetList);
+            await _appSettingsService.UpdateWidgetsListIgnoreSettingsAsync(widgetList);
         });
     }
 

@@ -9,14 +9,14 @@ public sealed partial class DashboardPage : Page
 {
     public DashboardViewModel ViewModel { get; }
 
-    private readonly IWidgetManagerService _widgetManagerService = App.GetService<IWidgetManagerService>();
+    private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
     private string _widgetId = string.Empty;
     private int _indexTag = -1;
 
     public DashboardPage()
     {
-        ViewModel = App.GetService<DashboardViewModel>();
+        ViewModel = DependencyExtensions.GetRequiredService<DashboardViewModel>();
         InitializeComponent();
     }
 
@@ -27,7 +27,7 @@ public sealed partial class DashboardPage : Page
         if (sender is FrameworkElement element)
         {
             var widgetId = WidgetProperties.GetId(element);
-            var indexTag = await _widgetManagerService.AddWidget(widgetId, false);
+            var indexTag = await _widgetManagerService.AddWidgetAsync(widgetId, false);
             ViewModel.RefreshAddedWidget(widgetId, indexTag);
         }
     }
@@ -53,9 +53,9 @@ public sealed partial class DashboardPage : Page
     {
         if (_indexTag != -1)
         {
-            if (await App.MainWindow.ShowDeleteWidgetDialog() == WidgetDialogResult.Left)
+            if (await App.MainWindow.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
             {
-                await _widgetManagerService.DeleteWidget(_widgetId, _indexTag, false);
+                await _widgetManagerService.DeleteWidgetAsync(_widgetId, _indexTag, false);
                 ViewModel.RefreshDisabledWidget(_widgetId, _indexTag);
             }
             _indexTag = -1;

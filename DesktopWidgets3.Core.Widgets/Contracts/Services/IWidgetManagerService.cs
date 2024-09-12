@@ -4,15 +4,15 @@ public interface IWidgetManagerService
 {
     Task InitializeAsync();
 
-    Task<int> AddWidget(string widgetId, bool refresh);
+    Task<int> AddWidgetAsync(string widgetId, bool refresh);
 
-    Task EnableWidget(string widgetId, int indexTag);
+    Task EnableWidgetAsync(string widgetId, int indexTag);
 
-    Task DisableWidget(string widgetId, int indexTag);
+    Task DisableWidgetAsync(string widgetId, int indexTag);
 
-    Task DeleteWidget(string widgetId, int indexTag, bool refresh);
+    Task DeleteWidgetAsync(string widgetId, int indexTag, bool refresh);
 
-    Task DisableAllWidgets();
+    Task DisableAllWidgetsAsync();
 
     bool IsWidgetEnabled(string widgetId, int indexTag);
 
@@ -28,5 +28,5 @@ public interface IWidgetManagerService
 
     BaseWidgetSettings? GetWidgetSettings(string widgetId, int indexTag);
 
-    Task UpdateWidgetSettings(string widgetId, int indexTag, BaseWidgetSettings settings);
+    Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings);
 }

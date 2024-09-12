@@ -8,7 +8,7 @@ public sealed partial class HomePage : Page
 
     public HomePage()
     {
-        ViewModel = App.GetService<HomeViewModel>();
+        ViewModel = DependencyExtensions.GetRequiredService<HomeViewModel>();
         InitializeComponent();
     }
 }

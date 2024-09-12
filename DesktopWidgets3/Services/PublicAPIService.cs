@@ -4,8 +4,8 @@ namespace DesktopWidgets3.Services;
 
 internal class PublicAPIService : IPublicAPIService
 {
-    private static IThemeSelectorService ThemeSelectorService => App.GetService<IThemeSelectorService>();
-    private static IWidgetManagerService WidgetManagerService => App.GetService<IWidgetManagerService>();
+    private static IThemeSelectorService ThemeSelectorService => DependencyExtensions.GetRequiredService<IThemeSelectorService>();
+    private static IWidgetManagerService WidgetManagerService => DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
     public ElementTheme RootTheme => ThemeSelectorService.Theme;
 
@@ -15,14 +15,14 @@ internal class PublicAPIService : IPublicAPIService
     {
         var widgetId = WidgetProperties.GetId(element);
         var indexTag = WidgetProperties.GetIndexTag(element);
-        await WidgetManagerService.UpdateWidgetSettings(widgetId, indexTag, settings);
+        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, indexTag, settings);
     }
 
     public async Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings)
     {
         if (viewModel.WidgetWindow is WidgetWindow widgetWindow)
         {
-            await WidgetManagerService.UpdateWidgetSettings(widgetWindow.Id, widgetWindow.IndexTag, settings);
+            await WidgetManagerService.UpdateWidgetSettingsAsync(widgetWindow.Id, widgetWindow.IndexTag, settings);
         }
     }
 }

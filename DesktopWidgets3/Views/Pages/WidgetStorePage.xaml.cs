@@ -9,13 +9,13 @@ public sealed partial class WidgetStorePage : Page
 {
     public WidgetStoreViewModel ViewModel { get; }
 
-    private readonly IWidgetResourceService _widgetResourceService = App.GetService<IWidgetResourceService>();
+    private readonly IWidgetResourceService _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
     private string _widgetId = string.Empty;
 
     public WidgetStorePage()
     {
-        ViewModel = App.GetService<WidgetStoreViewModel>();
+        ViewModel = DependencyExtensions.GetRequiredService<WidgetStoreViewModel>();
         InitializeComponent();
     }
 
@@ -37,7 +37,7 @@ public sealed partial class WidgetStorePage : Page
     {
         if (_widgetId != string.Empty)
         {
-            await _widgetResourceService.InstallWidget(_widgetId);
+            await _widgetResourceService.InstallWidgetAsync(_widgetId);
             _widgetId = string.Empty;
         }
     }
@@ -46,7 +46,7 @@ public sealed partial class WidgetStorePage : Page
     {
         if (_widgetId != string.Empty)
         {
-            await _widgetResourceService.UninstallWidget(_widgetId);
+            await _widgetResourceService.UninstallWidgetAsync(_widgetId);
             _widgetId = string.Empty;
         }
     }

@@ -19,7 +19,7 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
         // Set the MainWindow Content.
         if (App.MainWindow.Content == null)
         {
-            _shell = App.GetService<NavShellPage>();
+            _shell = DependencyExtensions.GetRequiredService<NavShellPage>();
             App.MainWindow.Content = _shell ?? new Frame();
         }
 

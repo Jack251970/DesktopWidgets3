@@ -26,8 +26,6 @@ public class BaseWidgetItem
     public BaseWidgetSettings Settings { get; set; } = new BaseWidgetSettings();
 }
 
-// TODO: Organize these classes.
-
 [JsonConverter(typeof(JsonWidgetItemConverter))]
 public class JsonWidgetItem : BaseWidgetItem
 {

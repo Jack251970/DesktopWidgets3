@@ -85,12 +85,12 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
     {
         if (dashboardListItem.IsEnabled)
         {
-            await _widgetManagerService.EnableWidget(dashboardListItem.Id, dashboardListItem.IndexTag);
+            await _widgetManagerService.EnableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag);
             yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = true;
         }
         else
         {
-            await _widgetManagerService.DisableWidget(dashboardListItem.Id, dashboardListItem.IndexTag);
+            await _widgetManagerService.DisableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag);
             yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = false;
         }
 

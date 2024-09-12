@@ -8,7 +8,7 @@ public sealed partial class EditModeOverlayPage : Page
 
     public EditModeOverlayPage()
     {
-        ViewModel = App.GetService<EditModeOverlayViewModel>();
+        ViewModel = DependencyExtensions.GetRequiredService<EditModeOverlayViewModel>();
         InitializeComponent();
     }
 }
