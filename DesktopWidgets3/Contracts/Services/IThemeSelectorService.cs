@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 
-namespace DesktopWidgets3.Core.Contracts.Services;
+namespace DesktopWidgets3.Contracts.Services;
 
 public interface IThemeSelectorService
 {

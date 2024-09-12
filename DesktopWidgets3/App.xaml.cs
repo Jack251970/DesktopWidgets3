@@ -131,9 +131,6 @@ public partial class App : Application
                 // System Info
                 services.AddSingleton<IHardwareInfoService, HardwareInfoService>();
 
-                // Window Registeration
-                services.AddSingleton<IWindowService, WindowService>();
-
                 #endregion
 
                 #region Views & ViewModels
@@ -179,7 +176,6 @@ public partial class App : Application
 
         // Initialize core extensions after injecting services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
-        WindowsExtensions.Initialize(GetService<IWindowService>());
         LogExtensions.Initialize(GetService<ILogger<App>>());
     }
 
@@ -200,8 +196,8 @@ public partial class App : Application
 
         if (showToastNotification)
         {
-                GetService<IAppNotificationService>().Show(string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
-                    $"{ex?.ToString()}{Environment.NewLine}"));
+            GetService<IAppNotificationService>().Show(string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
+                $"{ex?.ToString()}{Environment.NewLine}"));
         }
     }
 
@@ -211,7 +207,7 @@ public partial class App : Application
 
         if (!IsExistWindow && MainWindow is null)
         {
-            MainWindow = await WindowsExtensions.GetWindow<MainWindow>(WindowsExtensions.ActivationType.Main, args);
+            MainWindow = new MainWindow();
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
             LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
         }

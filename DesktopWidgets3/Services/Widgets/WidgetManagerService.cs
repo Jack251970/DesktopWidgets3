@@ -7,7 +7,7 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal class WidgetManagerService(IAppSettingsService appSettingsService, INavigationService navigationService, IActivationService activationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
     private readonly List<WidgetWindowPair> AllWidgets = [];
     private readonly List<WidgetWindow> AllWidgetWindows = [];
@@ -18,6 +18,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly INavigationService _navigationService = navigationService;
+    private readonly IActivationService _activationService = activationService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     #region widget window
@@ -32,13 +33,17 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             if (widget.IsEnabled)
             {
-                await CreateWidgetWindow(widget);
+                CreateWidgetWindow(widget);
             }
         }
 
         // initialize edit mode overlay window
-        EditModeOverlayWindow ??= await WindowsExtensions.GetWindow<OverlayWindow>(WindowsExtensions.ActivationType.Overlay);
-        (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
+        if (EditModeOverlayWindow == null)
+        {
+            EditModeOverlayWindow = WindowsExtensions.GetWindow<OverlayWindow>();
+            await _activationService.ActivateWindowAsync(EditModeOverlayWindow);
+            (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
+        }
     }
 
     public async Task<int> AddWidget(string widgetId, bool refresh)
@@ -72,7 +77,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await _appSettingsService.AddWidget(widget);
 
         // create widget window
-        await CreateWidgetWindow(widget);
+        CreateWidgetWindow(widget);
 
         // update dashboard page
         if (refresh)
@@ -95,7 +100,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widget = await _appSettingsService.EnableWidget(widgetId, indexTag);
 
         // create widget window
-        await CreateWidgetWindow(widget);
+        CreateWidgetWindow(widget);
     }
 
     public async Task DisableWidget(string widgetId, int indexTag)
@@ -185,7 +190,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    private async Task CreateWidgetWindow(JsonWidgetItem widget)
+    private void CreateWidgetWindow(JsonWidgetItem widget)
     {
         // configure widget window lifecycle actions
         var minSize = _widgetResourceService.GetMinSize(widget.Id);
@@ -199,7 +204,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
         // create widget window
         var newThread = _widgetResourceService.GetWidgetInNewThread(widget.Id);
-        var widgetWindow = await WindowsExtensions.GetWindow<WidgetWindow>(WindowsExtensions.ActivationType.Widget, widget.Settings, newThread, lifecycleActions);
+        var widgetWindow = WindowsExtensions.GetWindow<WidgetWindow>(newThread, lifecycleActions);
     }
 
     private async void WidgetWindow_Creating(JsonWidgetItem widgetItem)
@@ -212,10 +217,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await _widgetResourceService.EnvokeEnableWidgetAsync(widgetId, firstWidget).ConfigureAwait(false);
     }
 
-    private void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize)
+    private async void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize)
     {
         if (window is WidgetWindow widgetWindow)
         {
+            // activate window
+            await _activationService.ActivateWindowAsync(widgetWindow);
+
             // get widget id & index tag
             var widgetId = widgetItem.Id;
             var indexTag = widgetItem.IndexTag;

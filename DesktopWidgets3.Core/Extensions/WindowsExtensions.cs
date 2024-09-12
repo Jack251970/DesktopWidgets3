@@ -9,23 +9,14 @@ namespace DesktopWidgets3.Core.Extensions;
 /// </summary>
 public static class WindowsExtensions
 {
-    public static WindowEx MainWindow { get; private set; } = null!;
-
     private static readonly Dictionary<Window, WindowLifecycleHandler> WindowsAndLifecycle = [];
-
-    private static IWindowService? FallbackWindowService;
-
-    public static void Initialize(IWindowService windowService)
-    {
-        FallbackWindowService = windowService;
-    }
 
     public static List<Window> GetAllWindows()
     {
         return new List<Window>(WindowsAndLifecycle.Keys);
     }
 
-    public static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null, bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null) where T : Window, new()
+    public static T GetWindow<T>(bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null) where T : Window, new()
     {
         T window = null!;
         DispatcherExitDeferral? deferral = null;
@@ -36,7 +27,7 @@ public static class WindowsExtensions
 
             var signal = new ManualResetEvent(false);
 
-            var thread = new Thread(async () =>
+            var thread = new Thread(() =>
             {
                 // create a DispatcherQueue on this new thread
                 var dq = DispatcherQueueController.CreateOnCurrentThread();
@@ -48,7 +39,18 @@ public static class WindowsExtensions
                 lifecycleActions?.Window_Creating?.Invoke();
 
                 // create a new window
-                window = await GetWindow<T>(type, parameter);
+                var window = new T();
+
+                // register window in ui thread extension
+                ThreadExtensions.RegisterWindow(window);
+
+                // register window in ui element extension
+                var lifecycleHandler = new WindowLifecycleHandler
+                {
+                    ExitDeferral = deferral,
+                    LifecycleActions = lifecycleActions ?? new()
+                };
+                RegisterWindow(window, lifecycleHandler);
 
                 // invoke action after window creation
                 lifecycleActions?.Window_Created?.Invoke(window);
@@ -87,66 +89,22 @@ public static class WindowsExtensions
             lifecycleActions?.Window_Creating?.Invoke();
 
             // create a new window
-            window = await GetWindow<T>(type, parameter);
+            window = new T();
 
-            // invoke action after window creation
-            lifecycleActions?.Window_Created?.Invoke(window);
-        }
+            // register window in ui thread extension
+            ThreadExtensions.RegisterWindow(window);
 
-        if (type == ActivationType.Main)
-        {
-            // register main window in ui element extension
-            if (MainWindow is null)
-            {
-                MainWindow = window as WindowEx ?? throw new InvalidOperationException("MainWindow must be of type WindowEx.");
-            }
-            else
-            {
-                throw new InvalidOperationException("MainWindow can only be initialized once.");
-            }
-        }
-        else
-        {
-            // register non-main window in ui element extension
+            // register window in ui element extension
             var lifecycleHandler = new WindowLifecycleHandler
             {
                 ExitDeferral = deferral,
                 LifecycleActions = lifecycleActions ?? new()
             };
             RegisterWindow(window, lifecycleHandler);
+
+            // invoke action after window creation
+            lifecycleActions?.Window_Created?.Invoke(window);
         }
-
-        return window;
-    }
-
-    private static async Task<T> GetWindow<T>(ActivationType type, object? parameter = null) where T : Window, new()
-    {
-        if (FallbackWindowService is null)
-        {
-            throw new InvalidOperationException("Window service is not initialized.");
-        }
-
-        // create a new window
-        var window = new T();
-
-        switch (type)
-        {
-            case ActivationType.None:
-            case ActivationType.Main:
-                break;
-            case ActivationType.Widget:
-                await FallbackWindowService.ActivateWidgetWindowAsync(window);
-                break;
-            case ActivationType.Overlay:
-                await FallbackWindowService.ActivateOverlayWindowAsync(window);
-                break;
-            default:
-                await FallbackWindowService.ActivateBlankWindowAsync(window, parameter);
-                break;
-        }
-
-        // register window in ui thread extension
-        ThreadExtensions.RegisterWindow(window);
 
         return window;
     }
@@ -186,6 +144,8 @@ public static class WindowsExtensions
         }
     }
 
+    #region register & unregister
+
     private static void RegisterWindow(Window window, WindowLifecycleHandler lifecycleHandler)
     {
         if (WindowsAndLifecycle.TryAdd(window, lifecycleHandler))
@@ -199,14 +159,7 @@ public static class WindowsExtensions
         WindowsAndLifecycle.Remove(window);
     }
 
-    public enum ActivationType
-    {
-        None,
-        Main,
-        Widget,
-        Overlay,
-        Blank
-    }
+    #endregion
 
     private class WindowLifecycleHandler
     {

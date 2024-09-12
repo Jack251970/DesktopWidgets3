@@ -15,7 +15,6 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
     {
         // Execute tasks before activation.
         await InitializeAsync();
-        await _appSettingsService.InitializeAsync();
 
         // Set the MainWindow Content.
         if (App.MainWindow.Content == null)
@@ -37,56 +36,8 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
         await StartupAsync(App.MainWindow);
     }
 
-    public async Task ActivateWidgetWindowAsync(WidgetWindow window)
+    public async Task ActivateWindowAsync(Window window)
     {
-        // Execute tasks before activation.
-        await InitializeAsync();
-
-        // Set the Window Content and handle widget settings.
-        if (window.Content == null)
-        {
-            var shell = App.GetService<WidgetPage>();
-            if (shell == null)
-            {
-                window.Content = new Frame();
-            }
-            else
-            {
-                shell.InitializeWindow(window);
-                window.Content = shell;
-            }
-        }
-
-        // Execute tasks after activation.
-        await StartupAsync(window);
-    }
-
-    public async Task ActivateOverlayWindowAsync(OverlayWindow window)
-    {
-        // Execute tasks before activation.
-        await InitializeAsync();
-
-        // Set the Window Content.
-        if (window.Content == null)
-        {
-            window.Content = new Frame();
-        }
-
-        // Execute tasks after activation.
-        await StartupAsync(window);
-    }
-
-    public async Task ActivateWindowAsync(Window window, bool setContent = false)
-    {
-        // Execute tasks before activation.
-        await InitializeAsync();
-
-        // Set the Window Content.
-        if (setContent && window.Content == null)
-        {
-            window.Content = new Frame();
-        }
-
         // Execute tasks after activation.
         await StartupAsync(window);
     }
@@ -109,6 +60,8 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
     private async Task InitializeAsync()
     {
         await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
+
+        await _appSettingsService.InitializeAsync().ConfigureAwait(false);
 
         await Task.CompletedTask;
     }

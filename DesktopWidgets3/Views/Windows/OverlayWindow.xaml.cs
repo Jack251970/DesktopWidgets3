@@ -1,4 +1,5 @@
-﻿using Windows.Graphics;
+﻿using Microsoft.UI.Xaml.Controls;
+using Windows.Graphics;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -24,7 +25,7 @@ public sealed partial class OverlayWindow : WindowEx
     {
         InitializeComponent();
 
-        Content = null;
+        Content = new Frame();
         Title = string.Empty;
 
         Initialize();
