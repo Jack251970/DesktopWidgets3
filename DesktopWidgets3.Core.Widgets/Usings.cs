@@ -14,6 +14,7 @@ global using DesktopWidgets3.Core.Widgets.Views.Windows;
 global using DesktopWidgets3.Core.Contracts.Services;
 global using DesktopWidgets3.Core.Extensions;
 global using DesktopWidgets3.Core.Helpers;
+global using DesktopWidgets3.Core.Services;
 global using DesktopWidgets3.Core.Views.Windows;
 
 // DesktopWidgets3.Infrastructure

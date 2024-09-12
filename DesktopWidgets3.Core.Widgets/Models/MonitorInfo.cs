@@ -8,7 +8,7 @@ namespace DesktopWidgets3.Core.Widgets.Models;
 
 /// <summary>
 /// Contains full information about a display monitor.
-/// Edit from: https://github.com/dotMorten/WinUIEx.
+/// Codes are edited from: https://github.com/dotMorten/WinUIEx.
 /// </summary>
 internal class MonitorInfo
 {

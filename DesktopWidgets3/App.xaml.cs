@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System.Diagnostics;
 using UnhandledExceptionEventArgs = Microsoft.UI.Xaml.UnhandledExceptionEventArgs;
@@ -58,8 +57,7 @@ public partial class App : Application
         DispatcherShutdownMode = DispatcherShutdownMode.OnLastWindowClose;
 
         // Initialize core extensions before injecting services
-        LocalSettingsExtensions.Initialize();
-        LocalSettingsExtensions.RegisterSubFolder("Files");
+        LocalSettingsHelper.Initialize();
 
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
@@ -166,9 +164,8 @@ public partial class App : Application
 
                 #region Configurations
 
-                // Local Storage
+                // Local Stettings
                 services.Configure<LocalSettingsKeys>(context.Configuration.GetSection(nameof(LocalSettingsKeys)));
-                services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
 
                 #endregion
             })
@@ -182,8 +179,6 @@ public partial class App : Application
 
         // Initialize core extensions after injecting services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
-        LocalSettingsExtensions.RegisterService(GetService<ILocalSettingsService>());
-        ThreadExtensions.Initialize(DispatcherQueue.GetForCurrentThread());
         TitleBarHelper.Initialize(GetService<IThemeSelectorService>());
         WindowsExtensions.Initialize(GetService<IWindowService>());
         LogExtensions.Initialize(GetService<ILogger<App>>());

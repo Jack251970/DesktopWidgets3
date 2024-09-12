@@ -6,7 +6,7 @@ namespace DesktopWidgets3.Infrastructure.Helpers;
 /// <summary>
 /// Helper for startup register and unregister.
 /// For MSIX package, you need to add extension: uap5:StartupTask.
-/// Edit from: https://github.com/microsoft/terminal.
+/// Codes are edited from: https://github.com/microsoft/terminal.
 /// </summary>
 public class StartupHelper
 {

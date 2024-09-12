@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 namespace DesktopWidgets3.Core.Extensions;
 
 /// <summary>
-/// Provides static extension for resources.
+/// Provides static extension for resources management, support string caching.
 /// </summary>
 public static class ResourceExtensions
 {

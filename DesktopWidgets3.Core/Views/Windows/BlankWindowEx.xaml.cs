@@ -2,13 +2,13 @@
 
 namespace DesktopWidgets3.Core.Views.Windows;
 
-public sealed partial class BlankWindow : WindowEx
+public sealed partial class BlankWindowEx : WindowEx
 {
     public UIElement? TitleBar { get; set; }
 
     public UIElement? TitleBarText { get; set; }
 
-    public BlankWindow()
+    public BlankWindowEx()
     {
         InitializeComponent();
 

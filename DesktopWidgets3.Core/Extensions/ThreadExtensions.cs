@@ -6,21 +6,14 @@ using Microsoft.UI.Xaml;
 namespace DesktopWidgets3.Core.Extensions;
 
 /// <summary>
-/// Provides static extension for thread & UI thread.
+/// Provides static extension for threads.
+/// Codes in 'ignore exceptions' are edited from https://github.com/files-community/Files.
 /// </summary>
 public static class ThreadExtensions
 {
-    public static DispatcherQueue? MainDispatcherQueue { get; private set; }
-
-    public static int MainDispatcherThreadId { get; private set; }
-
     private static readonly Dictionary<Window, int> WindowsAndDispatcherThreads = [];
 
-    public static void Initialize(DispatcherQueue dispatcherQueue)
-    {
-        MainDispatcherQueue = dispatcherQueue;
-        MainDispatcherThreadId = Environment.CurrentManagedThreadId;
-    }
+    #region register & unregister
 
     public static void RegisterWindow<T>(T window) where T : Window
     {
@@ -38,15 +31,7 @@ public static class ThreadExtensions
         WindowsAndDispatcherThreads.Remove(window);
     }
 
-    private static bool IsDispatcherThreadDifferent<T>(this T window) where T : Window
-    {
-        return Environment.CurrentManagedThreadId != window.GetDispatcherThreadId();
-    }
-
-    private static int GetDispatcherThreadId<T>(this T window) where T : Window
-    {
-        return WindowsAndDispatcherThreads.FirstOrDefault(x => x.Key == window).Value;
-    }
+    #endregion
 
     #region ui thread extensions
 
@@ -195,47 +180,19 @@ public static class ThreadExtensions
 
     #endregion
 
-    #endregion
+    #region helper methods
 
-    #region dispatcher thread info
-
-    private class DispatcherThreadInfo
+    private static bool IsDispatcherThreadDifferent<T>(this T window) where T : Window
     {
-        public int ThreadId { get; set; } = MainDispatcherThreadId;
-
-        public DispatcherQueue DispatcherQueue { get; set; } = null!;
-
-        public override bool Equals(object? obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var other = (DispatcherThreadInfo)obj;
-            return ThreadId == other.ThreadId && DispatcherQueue == other.DispatcherQueue;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(ThreadId, DispatcherQueue);
-        }
-
-        public static bool operator ==(DispatcherThreadInfo left, DispatcherThreadInfo right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(DispatcherThreadInfo left, DispatcherThreadInfo right)
-        {
-            return !Equals(left, right);
-        }
-
-        public override string ToString()
-        {
-            return $"ThreadId: {ThreadId}, DispatcherQueue: {DispatcherQueue}";
-        }
+        return Environment.CurrentManagedThreadId != window.GetDispatcherThreadId();
     }
+
+    private static int GetDispatcherThreadId<T>(this T window) where T : Window
+    {
+        return WindowsAndDispatcherThreads.FirstOrDefault(x => x.Key == window).Value;
+    }
+
+    #endregion
 
     #endregion
 }

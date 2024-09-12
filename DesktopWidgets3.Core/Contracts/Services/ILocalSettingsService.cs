@@ -12,5 +12,5 @@ public interface ILocalSettingsService
 
     Task<T?> ReadJsonFileAsync<T>(string fileName, JsonSerializerSettings? jsonSerializerSettings = null);
 
-    Task SaveJsonFileAsync(string fileName, object value);
+    Task SaveJsonFileAsync<T>(string fileName, T value);
 }

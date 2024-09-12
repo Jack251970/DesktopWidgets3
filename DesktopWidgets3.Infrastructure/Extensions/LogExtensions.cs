@@ -10,7 +10,7 @@ namespace DesktopWidgets3.Infrastructure.Extensions;
 
 /// <summary>
 /// Provide static extension for logging.
-/// Edit from: Microsoft.Extensions.Logging.LoggerExtensions.
+/// Codes are edited from: Microsoft.Extensions.Logging.LoggerExtensions.
 /// </summary>
 public class LogExtensions
 {

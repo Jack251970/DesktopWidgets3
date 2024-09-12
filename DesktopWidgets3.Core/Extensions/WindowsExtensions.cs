@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Hosting;
 namespace DesktopWidgets3.Core.Extensions;
 
 /// <summary>
-/// Provides static extension for UI elements, e.g. Windows.
+/// Provides static extension for windows, support multi-thread.
 /// </summary>
 public static class WindowsExtensions
 {

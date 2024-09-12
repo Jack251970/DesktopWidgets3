@@ -1,19 +1,16 @@
-﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Windows.Storage;
 
-// TODO: Move to DesktopWidgets3.Core.Services namespace
-namespace DesktopWidgets3.Services;
+namespace DesktopWidgets3.Core.Services;
 
 // For MSIX package:
 // Settings saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\Settings\settings.dat
 // File saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\LocalState\{FileName}.json
-internal class LocalSettingsService : ILocalSettingsService
+public class LocalSettingsService : ILocalSettingsService
 {
     private readonly IFileService _fileService;
-    private readonly LocalSettingsOptions _options;
 
-    private readonly string _applicationDataFolder;
+    private readonly string _applicationDataPath;
 
     private readonly string _localsettingsFile;
 
@@ -21,18 +18,17 @@ internal class LocalSettingsService : ILocalSettingsService
 
     private bool _isInitialized;
 
-    public LocalSettingsService(IFileService fileService, IOptions<LocalSettingsOptions> options)
+    public LocalSettingsService(IFileService fileService)
     {
         _fileService = fileService;
-        _options = options.Value;
 
-        _localsettingsFile = _options.LocalSettingsFile ?? Constant.DefaultLocalSettingsFile;
+        _localsettingsFile = Constant.LocalSettingsFile;
 
-        _applicationDataFolder = LocalSettingsExtensions.GetApplicationDataFolder();
+        _applicationDataPath = LocalSettingsHelper.ApplicationDataPath;
 
-        if (!Directory.Exists(_applicationDataFolder))
+        if (!Directory.Exists(_applicationDataPath))
         {
-            Directory.CreateDirectory(_applicationDataFolder);
+            Directory.CreateDirectory(_applicationDataPath);
         }
     }
 
@@ -89,7 +85,7 @@ internal class LocalSettingsService : ILocalSettingsService
 
             _settings![key] = stringValue;
 
-            await _fileService.SaveAsync(_applicationDataFolder, _localsettingsFile, _settings, false);
+            await _fileService.SaveAsync(_applicationDataPath, _localsettingsFile, _settings, false);
         }
     }
 
@@ -97,7 +93,7 @@ internal class LocalSettingsService : ILocalSettingsService
     {
         if (!_isInitialized)
         {
-            _settings = await _fileService.ReadAsync<Dictionary<string, object>>(_applicationDataFolder, _localsettingsFile) ?? [];
+            _settings = await _fileService.ReadAsync<Dictionary<string, object>>(_applicationDataPath, _localsettingsFile) ?? [];
 
             _isInitialized = true;
         }
@@ -109,12 +105,12 @@ internal class LocalSettingsService : ILocalSettingsService
 
     public async Task<T?> ReadJsonFileAsync<T>(string fileName, JsonSerializerSettings? jsonSerializerSettings = null)
     {
-        return await _fileService.ReadAsync<T>(_applicationDataFolder, fileName, jsonSerializerSettings) ?? default;
+        return await _fileService.ReadAsync<T>(_applicationDataPath, fileName, jsonSerializerSettings) ?? default;
     }
 
-    public async Task SaveJsonFileAsync(string fileName, object value)
+    public async Task SaveJsonFileAsync<T>(string fileName, T value)
     {
-        await _fileService.SaveAsync(_applicationDataFolder, fileName, value, false);
+        await _fileService.SaveAsync(_applicationDataPath, fileName, value, false);
     }
 
     #endregion
