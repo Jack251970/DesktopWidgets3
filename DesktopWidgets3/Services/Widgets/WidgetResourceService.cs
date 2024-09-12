@@ -112,6 +112,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         }
     }
 
+    #endregion
+
     #region Xaml Resources
 
     private static List<string> InstallResourceFiles(WidgetMetadata metadata)
@@ -168,6 +170,28 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
+    #region Dispose
+
+    public async Task DisposeWidgetsAsync()
+    {
+        foreach (var widgetPair in AllWidgets)
+        {
+            switch (widgetPair.Widget)
+            {
+                case IDisposable disposable:
+                    disposable.Dispose();
+                    break;
+                case IAsyncDisposable asyncDisposable:
+                    await asyncDisposable.DisposeAsync();
+                    break;
+            }
+        }
+
+        await Task.CompletedTask;
+    }
+
+    #endregion
+
     #region IWidget
 
     private async Task InitAllWidgetsAsync()
@@ -204,34 +228,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             });
         }
     }
-
-    #endregion
-
-    #endregion
-
-    #region Dispose
-
-    public async Task DisposeWidgetsAsync()
-    {
-        foreach (var widgetPair in AllWidgets)
-        {
-            switch (widgetPair.Widget)
-            {
-                case IDisposable disposable:
-                    disposable.Dispose();
-                    break;
-                case IAsyncDisposable asyncDisposable:
-                    await asyncDisposable.DisposeAsync();
-                    break;
-            }
-        }
-
-        await Task.CompletedTask;
-    }
-
-    #endregion
-
-    #region IWidget
 
     public FrameworkElement GetWidgetFrameworkElement(string widgetId)
     {
