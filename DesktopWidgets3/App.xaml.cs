@@ -50,15 +50,14 @@ public partial class App : Application
             return;
         }
 #endif
+        // Initialize the component
         InitializeComponent();
 
         // The DispatcherQueue event loop exits when all XAML windows on a thread are closed
         // https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.dispatchershutdownmode
         DispatcherShutdownMode = DispatcherShutdownMode.OnLastWindowClose;
 
-        // Initialize core extensions before injecting services
-        LocalSettingsHelper.Initialize();
-
+        // Build the host
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
             .UseContentRoot(AppContext.BaseDirectory)
