@@ -264,6 +264,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             widgetWindow.IsResizable = false;
             widgetWindow.MinSize = minSize;
             widgetWindow.MaxSize = maxSize;
+            widgetWindow.Size = widgetItem.Size;
             if (widgetItem.Position.X != -1 && widgetItem.Position.Y != -1)
             {
                 widgetWindow.Position = widgetItem.Position;

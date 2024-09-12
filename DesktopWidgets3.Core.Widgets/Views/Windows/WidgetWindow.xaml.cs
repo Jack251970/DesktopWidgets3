@@ -47,11 +47,11 @@ public sealed partial class WidgetWindow : WindowEx
         {
             if (value.Width != null)
             {
-                MinHeight = value.Width.Value;
+                MinWidth = value.Width.Value;
             }
             if (value.Height != null)
             {
-                MinWidth = value.Height.Value;
+                MinHeight = value.Height.Value;
             }
         }
     }
@@ -63,11 +63,11 @@ public sealed partial class WidgetWindow : WindowEx
         {
             if (value.Width != null)
             {
-                MaxHeight = value.Width.Value;
+                MaxWidth = value.Width.Value;
             }
             if (value.Height != null)
             {
-                MaxWidth = value.Height.Value;
+                MaxHeight = value.Height.Value;
             }
         }
     }
