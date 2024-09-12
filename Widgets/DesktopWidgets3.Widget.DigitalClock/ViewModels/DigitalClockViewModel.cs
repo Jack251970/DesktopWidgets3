@@ -23,8 +23,6 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
 
     private readonly DispatcherQueueTimer dispatcherQueueTimer;
 
-    private bool updating = false;
-
     public DigitalClockViewModel()
     {
         dispatcherQueueTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
@@ -34,25 +32,14 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
 
     private void UpdateTime()
     {
-        if (updating)
-        {
-            return;
-        }
-
-        updating = true;
-
-        var nowTime = DateTime.Now;
-        var systemTime = nowTime.ToString(timingFormat);
-
-        SystemTime = systemTime;
-
-        updating = false;
+        SystemTime = DateTime.Now.ToString(timingFormat);
     }
 
     #region abstract methods
 
-    public override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
+        // initialize or update widget from settings
         if (settings is DigitalClockSettings digitalClockSetting)
         {
             if (digitalClockSetting.ShowSeconds != (timingFormat == "T"))
@@ -61,6 +48,7 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
             }
         }
 
+        // initialize widget
         if (initialized)
         {
             SystemTime = DateTime.Now.ToString(timingFormat);

@@ -43,7 +43,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         }
 
         // initialize all widgets
-        await InitAllWidgetsAsync();
+        await InitWidgetsAsync();
 
         // initialize widget list
         await _appSettingsService.InitializeWidgetListAsync();
@@ -126,7 +126,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         foreach (var resourceFile in resourceFiles)
         {
             var relativePath = Path.GetRelativePath(widgetDirectory, resourceFile);
-            // TODO: Initialize AppContext.BaseDirector in Constants.
             var destinationPath = Path.Combine(AppContext.BaseDirectory, relativePath);
 
             var destinationDirectory = Path.GetDirectoryName(destinationPath);
@@ -194,7 +193,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #region IWidget
 
-    private async Task InitAllWidgetsAsync()
+    private async Task InitWidgetsAsync()
     {
         var publicAPIService = DependencyExtensions.GetRequiredService<IPublicAPIService>();
 
@@ -231,18 +230,17 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public FrameworkElement GetWidgetFrameworkElement(string widgetId)
     {
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
         {
-            if (widget.Metadata.ID == widgetId)
+            var widget = AllWidgets[index];
+            try
             {
-                try
-                {
-                    return widget.Widget.CreateWidgetFrameworkElement();
-                }
-                catch (Exception e)
-                {
-                    LogExtensions.LogError(ClassName, e, $"Error creating widget framework element for widget {widget.Metadata.ID}");
-                }
+                return widget.Widget.CreateWidgetFrameworkElement();
+            }
+            catch (Exception e)
+            {
+                LogExtensions.LogError(ClassName, e, $"Error creating widget framework element for widget {widget.Metadata.ID}");
             }
         }
 
@@ -251,19 +249,18 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public async Task EnableWidgetAsync(string widgetId, bool firstWidget)
     {
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
         {
-            if (widget.Metadata.ID == widgetId)
+            var widget = AllWidgets[index];
+            switch (widget.Widget)
             {
-                switch (widget.Widget)
-                {
-                    case IWidgetEnableDisable enableDisable:
-                        enableDisable.EnableWidget(firstWidget);
-                        break;
-                    case IAsyncWidgetEnableDisable asyncEnableDisable:
-                        await asyncEnableDisable.EnableWidgetAsync(firstWidget);
-                        break;
-                }
+                case IWidgetEnableDisable enableDisable:
+                    enableDisable.EnableWidget(firstWidget);
+                    break;
+                case IAsyncWidgetEnableDisable asyncEnableDisable:
+                    await asyncEnableDisable.EnableWidgetAsync(firstWidget);
+                    break;
             }
         }
 
@@ -272,19 +269,18 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public async Task DisableWidgetAsync(string widgetId, bool lastWidget)
     {
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
         {
-            if (widget.Metadata.ID == widgetId)
+            var widget = AllWidgets[index];
+            switch (widget.Widget)
             {
-                switch (widget.Widget)
-                {
-                    case IWidgetEnableDisable enableDisable:
-                        enableDisable.DisableWidget(lastWidget);
-                        break;
-                    case IAsyncWidgetEnableDisable asyncEnableDisable:
-                        await asyncEnableDisable.DisableWidgetAsync(lastWidget);
-                        break;
-                }
+                case IWidgetEnableDisable enableDisable:
+                    enableDisable.DisableWidget(lastWidget);
+                    break;
+                case IAsyncWidgetEnableDisable asyncEnableDisable:
+                    await asyncEnableDisable.DisableWidgetAsync(lastWidget);
+                    break;
             }
         }
 
@@ -297,14 +293,13 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public BaseWidgetSettings GetDefaultSetting(string widgetId)
     {
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
         {
-            if (widget.Metadata.ID == widgetId)
+            var widget = AllWidgets[index];
+            if (widget.Widget is IWidgetSetting widgetSetting)
             {
-                if (widget.Widget is IWidgetSetting widgetSetting)
-                {
-                    return widgetSetting.GetDefaultSetting();
-                }
+                return widgetSetting.GetDefaultSetting();
             }
         }
 
@@ -313,20 +308,19 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public FrameworkElement GetWidgetSettingFrameworkElement(string widgetId)
     {
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
         {
-            if (widget.Metadata.ID == widgetId)
+            var widget = AllWidgets[index];
+            if (widget.Widget is IWidgetSetting widgetSetting)
             {
-                if (widget.Widget is IWidgetSetting widgetSetting)
+                try
                 {
-                    try
-                    {
-                        return widgetSetting.CreateWidgetSettingFrameworkElement();
-                    }
-                    catch (Exception e)
-                    {
-                        LogExtensions.LogError(ClassName, e, $"Error creating setting framework element for widget {widget.Metadata.ID}");
-                    }
+                    return widgetSetting.CreateWidgetSettingFrameworkElement();
+                }
+                catch (Exception e)
+                {
+                    LogExtensions.LogError(ClassName, e, $"Error creating setting framework element for widget {widget.Metadata.ID}");
                 }
             }
         }
@@ -340,12 +334,11 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public RectSize GetDefaultSize(string widgetId)
     {
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
         {
-            if (widget.Metadata.ID == widgetId)
-            {
-                return new RectSize(widget.Metadata.DefaultWidth, widget.Metadata.DefaultHeight);
-            }
+            var widget = AllWidgets[index];
+            return new RectSize(widget.Metadata.DefaultWidth, widget.Metadata.DefaultHeight);
         }
 
         return new RectSize(318, 200);
@@ -353,12 +346,11 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public RectSize GetMinSize(string widgetId)
     {
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
         {
-            if (widget.Metadata.ID == widgetId)
-            {
-                return new RectSize(widget.Metadata.MinWidth, widget.Metadata.MinHeight);
-            }
+            var widget = AllWidgets[index];
+            return new RectSize(widget.Metadata.MinWidth, widget.Metadata.MinHeight);
         }
 
         return new RectSize(318, 200);
@@ -371,12 +363,11 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             return false;
         }
 
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
         {
-            if (widget.Metadata.ID == widgetId)
-            {
-                return widget.Metadata.InNewThread;
-            }
+            var widget = AllWidgets[index];
+            return widget.Metadata.InNewThread;
         }
 
         return false;

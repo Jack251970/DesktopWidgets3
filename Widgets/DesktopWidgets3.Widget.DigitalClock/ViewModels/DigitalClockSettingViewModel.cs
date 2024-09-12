@@ -16,18 +16,23 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
 
     private DigitalClockSettings Settings = null!;
 
+    private bool isInitialized = false;
+
     #region abstract methods
 
-    public override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
+        // initialize or update properties by settings
         if (settings is DigitalClockSettings digitalClockSetting)
         {
             Settings = digitalClockSetting;
-        }
 
-        if (initialized)
-        {
             ShowSeconds = Settings.ShowSeconds;
+
+            if (!initialized)
+            {
+                isInitialized = true;
+            }
         }
     }
 
@@ -35,10 +40,10 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
 
     partial void OnShowSecondsChanged(bool value)
     {
-        if (Settings != null)
+        if (isInitialized)
         {
             Settings.ShowSeconds = value;
-            Context.API.UpdateWidgetSettings(this, Settings, true);
+            Context.API.UpdateWidgetSettings(this, Settings, true, true);
         }
     }
 }

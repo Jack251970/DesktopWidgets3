@@ -85,7 +85,7 @@ public class LocalSettingsService : ILocalSettingsService
 
             _settings![key] = stringValue;
 
-            await _fileService.SaveAsync(_applicationDataPath, _localsettingsFile, _settings, false);
+            await _fileService.SaveAsync(_applicationDataPath, _localsettingsFile, _settings, true);
         }
     }
 
@@ -110,7 +110,7 @@ public class LocalSettingsService : ILocalSettingsService
 
     public async Task SaveJsonFileAsync<T>(string fileName, T value)
     {
-        await _fileService.SaveAsync(_applicationDataPath, fileName, value, false);
+        await _fileService.SaveAsync(_applicationDataPath, fileName, value, true);
     }
 
     #endregion

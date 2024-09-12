@@ -18,19 +18,18 @@ internal class PublicAPIService : IPublicAPIService
 
     #region widget
 
-    public async Task UpdateWidgetSettings(FrameworkElement element, BaseWidgetSettings settings, bool loadSettings)
+    public async Task UpdateWidgetSettings(FrameworkElement element, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
     {
         var widgetId = WidgetProperties.GetId(element);
         var indexTag = WidgetProperties.GetIndexTag(element);
-        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, indexTag, settings, loadSettings);
+        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, indexTag, settings, updateWidget, updateWidgetSetting);
     }
 
-    public async Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings, bool loadSettings)
+    public async Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
     {
-        if (viewModel.WidgetWindow is WidgetWindow widgetWindow)
-        {
-            await WidgetManagerService.UpdateWidgetSettingsAsync(widgetWindow.Id, widgetWindow.IndexTag, settings, loadSettings);
-        }
+        var widgetId = viewModel.Id;
+        var indexTag = viewModel.IndexTag;
+        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, indexTag, settings, updateWidget, updateWidgetSetting);
     }
 
     #endregion

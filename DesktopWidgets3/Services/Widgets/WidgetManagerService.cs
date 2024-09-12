@@ -9,6 +9,11 @@ namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetManagerService(IAppSettingsService appSettingsService, INavigationService navigationService, IActivationService activationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
+    private readonly IAppSettingsService _appSettingsService = appSettingsService;
+    private readonly INavigationService _navigationService = navigationService;
+    private readonly IActivationService _activationService = activationService;
+    private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
+
     private readonly List<WidgetWindowPair> AllWidgets = [];
     private readonly List<WidgetWindow> AllWidgetWindows = [];
 
@@ -16,10 +21,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private string _widgetId = string.Empty;
     private int _indexTag = -1;
 
-    private readonly IAppSettingsService _appSettingsService = appSettingsService;
-    private readonly INavigationService _navigationService = navigationService;
-    private readonly IActivationService _activationService = activationService;
-    private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
+    private const int EditModeOverlayWindowXamlWidth = 136;
+    private const int EditModeOverlayWindowXamlHeight = 48;
+
+    private OverlayWindow EditModeOverlayWindow = null!;
+    private readonly List<JsonWidgetItem> originalWidgetList = [];
+    private bool restoreMainWindow = false;
 
     #region widget window
 
@@ -177,13 +184,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         if (frameworkElement is ISettingViewModel element)
         {
             var viewModel = element.ViewModel;
-            var widgetWindow = GetWidgetWindow(widgetId, indexTag);
             var widgetSetting = GetWidgetSettings(widgetId, indexTag);
-            if (widgetWindow != null && widgetSetting != null)
+            if (widgetSetting != null)
             {
                 viewModel.InitializeSettings(new WidgetNavigationParameter()
                 {
-                    Window = widgetWindow,
+                    Id = widgetId,
+                    IndexTag = indexTag,
                     Settings = widgetSetting
                 });
             }
@@ -246,7 +253,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 viewModel = element.ViewModel;
                 viewModel.InitializeSettings(new WidgetNavigationParameter()
                 {
-                    Window = window,
+                    Id = widgetId,
+                    IndexTag = indexTag,
                     Settings = widgetItem.Settings
                 });
             }
@@ -322,37 +330,34 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private WidgetWindow? GetWidgetWindow(string widgetId, int indexTag)
     {
-        foreach (var widgetWindow in AllWidgetWindows)
+        var index = AllWidgetWindows.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+        if (index != -1)
         {
-            if (widgetWindow.Id == widgetId && widgetWindow.IndexTag == indexTag)
-            {
-                return widgetWindow;
-            }
+            return AllWidgetWindows[index];
         }
+
         return null;
     }
 
     private BaseWidgetViewModel? GetWidgetViewModel(string widgetId, int indexTag)
     {
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+        if (index != -1)
         {
-            if (widget.Window.Id == widgetId && widget.Window.IndexTag == indexTag)
-            {
-                return widget.ViewModel;
-            }
+            return AllWidgets[index].ViewModel;
         }
+
         return null;
     }
 
     private MenuFlyout? GetWidgetMenu(string widgetId, int indexTag)
     {
-        foreach (var widget in AllWidgets)
+        var index = AllWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+        if (index != -1)
         {
-            if (widget.Window.Id == widgetId && widget.Window.IndexTag == indexTag)
-            {
-                return widget.Menu;
-            }
+            return AllWidgets[index].Menu;
         }
+
         return null;
     }
 
@@ -470,22 +475,41 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         var widgetList = _appSettingsService.GetWidgetsList();
         var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
+
         return widget?.Settings.Clone();
     }
 
-    public async Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings, bool loadSettings)
+    public async Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
     {
-        // load widget settings
-        if (loadSettings)
+        // update widget window
+        if (updateWidget)
         {
             var widgetWindow = GetWidgetWindow(widgetId, indexTag);
             if (widgetWindow != null)
             {
+                var viewModel = GetWidgetViewModel(widgetId, indexTag);
                 await widgetWindow.EnqueueOrInvokeAsync((window) =>
                 {
-                    var viewModel = GetWidgetViewModel(widgetId, indexTag);
-                    viewModel?.LoadSettings(settings, false);
+                    viewModel?.UpdateSettings(settings);
                 });
+            }
+        }
+
+        // update widget setting
+        if (updateWidgetSetting)
+        {
+            var widgetSettingPage = _navigationService.Frame?.Content as WidgetSettingPage;
+            if (widgetSettingPage != null)
+            {
+                var settingFrameworkElement = widgetSettingPage.ViewModel.WidgetFrameworkElement;
+                if (settingFrameworkElement is ISettingViewModel settingViewModel)
+                {
+                    var viewModel = settingViewModel.ViewModel;
+                    if (viewModel.Id == widgetId && viewModel.IndexTag == indexTag)
+                    {
+                        viewModel.UpdateSettings(settings);
+                    }
+                }
             }
         }
 
@@ -497,20 +521,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region edit mode
 
-    private const int EditModeOverlayWindowXamlWidth = 136;
-    private const int EditModeOverlayWindowXamlHeight = 48;
-
-    private OverlayWindow EditModeOverlayWindow = null!;
-    private readonly List<JsonWidgetItem> originalWidgetList = [];
-    private bool restoreMainWindow = false;
-
     public async void EnterEditMode()
     {
         // save original widget list
         originalWidgetList.Clear();
         foreach (var widgetWindow in AllWidgetWindows)
         {
-            var widget = new JsonWidgetItem()
+            originalWidgetList.Add(new JsonWidgetItem()
             {
                 Id = widgetWindow.Id,
                 IndexTag = widgetWindow.IndexTag,
@@ -519,8 +536,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 Size = widgetWindow.Size,
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
-            };
-            originalWidgetList.Add(widget);
+            });
         }
 
         // set edit mode for all widgets
@@ -571,7 +587,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             List<JsonWidgetItem> widgetList = [];
             foreach (var widgetWindow in AllWidgetWindows)
             {
-                var widget = new JsonWidgetItem()
+                widgetList.Add(new JsonWidgetItem()
                 {
                     Id = widgetWindow.Id,
                     IndexTag = widgetWindow.IndexTag,
@@ -580,9 +596,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                     Size = widgetWindow.Size,
                     DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                     Settings = null!,
-                };
-                widgetList.Add(widget);
+                });
             }
+
             await _appSettingsService.UpdateWidgetsListIgnoreSettingsAsync(widgetList);
         });
     }

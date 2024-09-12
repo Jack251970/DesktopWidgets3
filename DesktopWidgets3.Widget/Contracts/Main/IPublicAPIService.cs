@@ -9,9 +9,9 @@ public interface IPublicAPIService
 
     Action<ElementTheme>? ElementTheme_Changed { get; set; }
 
-    Task UpdateWidgetSettings(FrameworkElement element, BaseWidgetSettings settings, bool loadSettings);
+    Task UpdateWidgetSettings(FrameworkElement element, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
 
-    Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings, bool loadSettings);
+    Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
 
     /// <summary>
     /// Log trace message

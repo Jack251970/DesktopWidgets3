@@ -28,5 +28,5 @@ public interface IWidgetManagerService
 
     BaseWidgetSettings? GetWidgetSettings(string widgetId, int indexTag);
 
-    Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings, bool loadSettings);
+    Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
 }

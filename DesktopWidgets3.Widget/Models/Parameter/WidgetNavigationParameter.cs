@@ -1,10 +1,10 @@
-﻿using Microsoft.UI.Xaml;
-
-namespace DesktopWidgets3.Widget.Models.Parameter;
+﻿namespace DesktopWidgets3.Widget.Models.Parameter;
 
 public class WidgetNavigationParameter
 {
-    public required Window Window { get; set; }
+    public required string Id { get; set; }
+
+    public required int IndexTag { get; set; }
 
     public required BaseWidgetSettings Settings { get; set; }
 }
