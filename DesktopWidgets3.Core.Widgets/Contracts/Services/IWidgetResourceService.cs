@@ -10,9 +10,9 @@ public interface IWidgetResourceService
 
     FrameworkElement GetWidgetFrameworkElement(string widgetId);
 
-    Task EnvokeEnableWidgetAsync(string widgetId, bool firstWidget);
+    Task EnableWidgetAsync(string widgetId, bool firstWidget);
 
-    Task EnvokeDisableWidgetAsync(string widgetId, bool lastWidget);
+    Task DisableWidgetAsync(string widgetId, bool lastWidget);
 
     BaseWidgetSettings GetDefaultSetting(string widgetId);
 

@@ -249,26 +249,42 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return new UserControl();
     }
 
-    public async Task EnvokeEnableWidgetAsync(string widgetId, bool firstWidget)
+    public async Task EnableWidgetAsync(string widgetId, bool firstWidget)
     {
         foreach (var widget in AllWidgets)
         {
             if (widget.Metadata.ID == widgetId)
             {
-                await widget.Widget.EnableWidgetAsync(firstWidget);
+                switch (widget.Widget)
+                {
+                    case IWidgetEnableDisable enableDisable:
+                        enableDisable.EnableWidget(firstWidget);
+                        break;
+                    case IAsyncWidgetEnableDisable asyncEnableDisable:
+                        await asyncEnableDisable.EnableWidgetAsync(firstWidget);
+                        break;
+                }
             }
         }
 
         await Task.CompletedTask;
     }
 
-    public async Task EnvokeDisableWidgetAsync(string widgetId, bool lastWidget)
+    public async Task DisableWidgetAsync(string widgetId, bool lastWidget)
     {
         foreach (var widget in AllWidgets)
         {
             if (widget.Metadata.ID == widgetId)
             {
-                await widget.Widget.DisableWidgetAsync(lastWidget);
+                switch (widget.Widget)
+                {
+                    case IWidgetEnableDisable enableDisable:
+                        enableDisable.DisableWidget(lastWidget);
+                        break;
+                    case IAsyncWidgetEnableDisable asyncEnableDisable:
+                        await asyncEnableDisable.DisableWidgetAsync(lastWidget);
+                        break;
+                }
             }
         }
 

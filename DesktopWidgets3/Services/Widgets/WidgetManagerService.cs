@@ -214,7 +214,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
         // envoke disable widget interface
         var firstWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
-        await _widgetResourceService.EnvokeEnableWidgetAsync(widgetId, firstWidget).ConfigureAwait(false);
+        await _widgetResourceService.EnableWidgetAsync(widgetId, firstWidget);
     }
 
     private async void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize)
@@ -303,7 +303,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
         // envoke disable widget interface
         var lastWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
-        await _widgetResourceService.EnvokeDisableWidgetAsync(widgetId, lastWidget);
+        await _widgetResourceService.DisableWidgetAsync(widgetId, lastWidget);
     }
 
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)

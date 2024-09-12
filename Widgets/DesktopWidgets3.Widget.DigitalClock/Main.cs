@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.DigitalClock;
 
-public class Main : IWidget, IWidgetSetting, IDisposable
+public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 {
     #region IWidget
 
