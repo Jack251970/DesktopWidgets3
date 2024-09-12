@@ -43,6 +43,9 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         // initialize all widgets
         await InitAllWidgetsAsync();
+
+        // initialize widget list
+        await _appSettingsService.InitializeWidgetListAsync();
     }
 
     private async Task CheckPreinstalledWidgets()
@@ -390,9 +393,9 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return dashboardItemList;
     }
 
-    public async Task<List<DashboardWidgetItem>> GetYourDashboardItemsAsync()
+    public List<DashboardWidgetItem> GetYourDashboardItemsAsync()
     {
-        var widgetList = await _appSettingsService.GetWidgetsList();
+        var widgetList = _appSettingsService.GetWidgetsList();
         var unknownWidgetIdList = new List<string>();
 
         List<DashboardWidgetItem> dashboardItemList = [];

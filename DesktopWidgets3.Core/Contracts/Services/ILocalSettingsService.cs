@@ -1,20 +1,16 @@
-﻿namespace DesktopWidgets3.Core.Contracts.Services;
+﻿using Newtonsoft.Json;
+
+namespace DesktopWidgets3.Core.Contracts.Services;
 
 public interface ILocalSettingsService
 {
-    string GetApplicationDataFolder();
-
     Task<T?> ReadSettingAsync<T>(string key);
 
-    Task<T?> ReadSettingAsync<T>(string key, T value);
+    Task<T?> ReadSettingAsync<T>(string key, T defaultValue);
 
     Task SaveSettingAsync<T>(string key, T value);
 
-    Task<object> ReadWidgetListAsync();
+    Task<T?> ReadJsonFileAsync<T>(string fileName, JsonSerializerSettings? jsonSerializerSettings = null);
 
-    Task SaveWidgetListAsync(object value);
-
-    Task<object> ReadWidgetStoreListAsync();
-
-    Task SaveWidgetStoreListAsync(object value);
+    Task SaveJsonFileAsync(string fileName, object value);
 }

@@ -72,9 +72,9 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
         allWidgets = _widgetResourceService.GetAllDashboardItems();
     }
 
-    private async Task LoadYourWidgets()
+    private void LoadYourWidgets()
     {
-        yourWidgets = await _widgetResourceService.GetYourDashboardItemsAsync();
+        yourWidgets = _widgetResourceService.GetYourDashboardItemsAsync();
         foreach (var item in yourWidgets)
         {
             item.EnabledChangedCallback = WidgetEnabledChanged;
@@ -101,7 +101,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
 
     #region Navigation Aware
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
         if (!_isInitialized)
         {
@@ -109,7 +109,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
 
             RefreshAllWidgets();
 
-            await LoadYourWidgets();
+            LoadYourWidgets();
 
             RefreshYourWidgets();
 

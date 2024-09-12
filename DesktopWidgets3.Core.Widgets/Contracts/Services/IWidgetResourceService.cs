@@ -26,7 +26,7 @@ public interface IWidgetResourceService
 
     List<DashboardWidgetItem> GetAllDashboardItems();
 
-    Task<List<DashboardWidgetItem>> GetYourDashboardItemsAsync();
+    List<DashboardWidgetItem> GetYourDashboardItemsAsync();
 
     DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag);
 

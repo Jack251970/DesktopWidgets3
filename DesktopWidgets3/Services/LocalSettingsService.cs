@@ -2,29 +2,22 @@
 using Newtonsoft.Json;
 using Windows.Storage;
 
+// TODO: Move to DesktopWidgets3.Core.Services namespace
 namespace DesktopWidgets3.Services;
 
 // For MSIX package:
 // Settings saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\Settings\settings.dat
-// WidgetList saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\LocalState\WidgetList.json
+// File saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\LocalState\{FileName}.json
 internal class LocalSettingsService : ILocalSettingsService
 {
-    private const string _defaultLocalSettingsFile = "LocalSettings.json";
-    private const string _defaultWidgetListFile = "WidgetList.json";
-    private const string _defaultWidgetStoreListFile = "WidgetStoreList.json";
-
     private readonly IFileService _fileService;
     private readonly LocalSettingsOptions _options;
 
     private readonly string _applicationDataFolder;
 
     private readonly string _localsettingsFile;
-    private readonly string _widgetListFile;
-    private readonly string _widgetStoreListFile;
 
     private Dictionary<string, object>? _settings;
-
-    private JsonSerializerSettings? _widgetListJsonSerializerSettings;
 
     private bool _isInitialized;
 
@@ -33,9 +26,7 @@ internal class LocalSettingsService : ILocalSettingsService
         _fileService = fileService;
         _options = options.Value;
 
-        _localsettingsFile = _options.LocalSettingsFile ?? _defaultLocalSettingsFile;
-        _widgetListFile = _options.WidgetListFile ?? _defaultWidgetListFile;
-        _widgetStoreListFile = _options.WidgetStoreListFile ?? _defaultWidgetStoreListFile;
+        _localsettingsFile = _options.LocalSettingsFile ?? Constant.DefaultLocalSettingsFile;
 
         _applicationDataFolder = LocalSettingsExtensions.GetApplicationDataFolder();
 
@@ -45,27 +36,14 @@ internal class LocalSettingsService : ILocalSettingsService
         }
     }
 
-    public string GetApplicationDataFolder()
-    {
-        return _applicationDataFolder;
-    }
-
-    private async Task InitializeSettingsAsync()
-    {
-        if (!_isInitialized)
-        {
-            _settings = await Task.Run(() => _fileService.Read<Dictionary<string, object>>(_applicationDataFolder, _localsettingsFile)) ?? [];
-
-            _isInitialized = true;
-        }
-    }
+    #region App Settings
 
     public async Task<T?> ReadSettingAsync<T>(string key)
     {
         return await ReadSettingAsync(key, default(T));
     }
 
-    public async Task<T?> ReadSettingAsync<T>(string key, T value)
+    public async Task<T?> ReadSettingAsync<T>(string key, T defaultValue)
     {
         if (RuntimeHelper.IsMSIX)
         {
@@ -84,7 +62,7 @@ internal class LocalSettingsService : ILocalSettingsService
             }
         }
 
-        return value;
+        return defaultValue;
     }
 
     public async Task SaveSettingAsync<T>(string key, T value)
@@ -111,37 +89,33 @@ internal class LocalSettingsService : ILocalSettingsService
 
             _settings![key] = stringValue;
 
-            await Task.Run(() => _fileService.Save(_applicationDataFolder, _localsettingsFile, _settings, false));
+            await _fileService.SaveAsync(_applicationDataFolder, _localsettingsFile, _settings, false);
         }
     }
 
-    public async Task<object> ReadWidgetListAsync()
+    private async Task InitializeSettingsAsync()
     {
-        _widgetListJsonSerializerSettings ??= new JsonSerializerSettings { Converters = { new JsonWidgetItemConverter() } };
+        if (!_isInitialized)
+        {
+            _settings = await _fileService.ReadAsync<Dictionary<string, object>>(_applicationDataFolder, _localsettingsFile) ?? [];
 
-        var _widgetList = await Task.Run(() => _fileService.Read<List<JsonWidgetItem>>(_applicationDataFolder, _widgetListFile, _widgetListJsonSerializerSettings)) ?? [];
-
-        return _widgetList;
+            _isInitialized = true;
+        }
     }
 
-    public async Task SaveWidgetListAsync(object value)
-    {
-        var valueCopy = new List<JsonWidgetItem>((List<JsonWidgetItem>)value);
+    #endregion
 
-        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetListFile, valueCopy, true));
+    #region Json Files
+
+    public async Task<T?> ReadJsonFileAsync<T>(string fileName, JsonSerializerSettings? jsonSerializerSettings = null)
+    {
+        return await _fileService.ReadAsync<T>(_applicationDataFolder, fileName, jsonSerializerSettings) ?? default;
     }
 
-    public async Task<object> ReadWidgetStoreListAsync()
+    public async Task SaveJsonFileAsync(string fileName, object value)
     {
-        var widgetStoreList = await Task.Run(() => _fileService.Read<List<JsonWidgetStoreItem>>(_applicationDataFolder, _widgetStoreListFile)) ?? [];
-
-        return widgetStoreList;
+        await _fileService.SaveAsync(_applicationDataFolder, fileName, value, false);
     }
 
-    public async Task SaveWidgetStoreListAsync(object value)
-    {
-        var valueCopy = new List<JsonWidgetStoreItem>((List<JsonWidgetStoreItem>)value);
-
-        await Task.Run(() => _fileService.Save(_applicationDataFolder, _widgetStoreListFile, valueCopy, true));
-    }
+    #endregion
 }

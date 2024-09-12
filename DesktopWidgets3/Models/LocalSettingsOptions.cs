@@ -3,8 +3,4 @@
 internal class LocalSettingsOptions
 {
     public string? LocalSettingsFile { get; set; }
-
-    public string? WidgetListFile { get; set; }
-
-    public string? WidgetStoreListFile { get; set; }
 }

@@ -18,7 +18,7 @@ public interface IWidgetManagerService
 
     BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow);
 
-    Task NavigateToWidgetSettingPage(string widgetId, int indexTag);
+    void NavigateToWidgetSettingPage(string widgetId, int indexTag);
 
     void EnterEditMode();
 
@@ -26,7 +26,7 @@ public interface IWidgetManagerService
 
     void CancelAndExitEditMode();
 
-    Task<BaseWidgetSettings?> GetWidgetSettings(string widgetId, int indexTag);
+    BaseWidgetSettings? GetWidgetSettings(string widgetId, int indexTag);
 
     Task UpdateWidgetSettings(string widgetId, int indexTag, BaseWidgetSettings settings);
 }

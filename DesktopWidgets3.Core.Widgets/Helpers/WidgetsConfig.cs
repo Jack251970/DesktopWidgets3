@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace DesktopWidgets3.Core.Widgets.Helpers;
+﻿namespace DesktopWidgets3.Core.Widgets.Helpers;
 
 public static class WidgetsConfig
 {
@@ -24,24 +22,10 @@ public static class WidgetsConfig
         // FlowLauncherTODO: use linq when diable widget is implmented since parallel.foreach + list is not thread saft
         foreach (var directory in directories)
         {
-            if (File.Exists(Path.Combine(directory, "NeedDelete.txt")))
+            var metadata = GetWidgetMetadata(directory, preinstalled);
+            if (metadata != null)
             {
-                try
-                {
-                    Directory.Delete(directory, true);
-                }
-                catch (Exception e)
-                {
-                    LogExtensions.LogError(ClassName, e, $"Can't delete <{directory}>");
-                }
-            }
-            else
-            {
-                var metadata = GetWidgetMetadata(directory, preinstalled);
-                if (metadata != null)
-                {
-                    allWidgetMetadata.Add(metadata);
-                }
+                allWidgetMetadata.Add(metadata);
             }
         }
 
@@ -107,7 +91,8 @@ public static class WidgetsConfig
         WidgetMetadata? metadata;
         try
         {
-            metadata = JsonSerializer.Deserialize<WidgetMetadata>(File.ReadAllText(configPath));
+            var json = File.ReadAllText(configPath);
+            metadata = JsonHelper.ToObject<WidgetMetadata>(json);
             metadata!.WidgetDirectory = widgetDirectory;
             metadata.Preinstalled = preinstalled;
         }

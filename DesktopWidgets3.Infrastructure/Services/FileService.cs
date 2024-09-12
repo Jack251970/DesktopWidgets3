@@ -8,7 +8,17 @@ public class FileService : IFileService
 
     private readonly ConcurrentDictionary<string, SemaphoreSlim> semaphoreSlims = [];
 
-    public T Read<T>(string folderPath, string fileName, JsonSerializerSettings jsonSerializerSettings = null!)
+    public async Task<T> ReadAsync<T>(string folderPath, string fileName, JsonSerializerSettings? jsonSerializerSettings = null)
+    {
+        return await Task.Run(() => Read<T>(folderPath, fileName, jsonSerializerSettings));
+    }
+
+    public async Task<string?> SaveAsync<T>(string folderPath, string fileName, T content, bool indent)
+    {
+        return await Task.Run(() => Save(folderPath, fileName, content, indent));
+    }
+
+    public T Read<T>(string folderPath, string fileName, JsonSerializerSettings? jsonSerializerSettings = null)
     {
         var path = GetPath(folderPath, fileName);
         if (File.Exists(path))

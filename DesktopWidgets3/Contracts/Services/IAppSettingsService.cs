@@ -18,7 +18,9 @@ public interface IAppSettingsService
 
     Task SetMultiThreadAsync(bool value);
 
-    Task<List<JsonWidgetItem>> GetWidgetsList();
+    Task<List<JsonWidgetItem>> InitializeWidgetListAsync();
+
+    List<JsonWidgetItem> GetWidgetsList();
 
     Task AddWidget(JsonWidgetItem item);
 

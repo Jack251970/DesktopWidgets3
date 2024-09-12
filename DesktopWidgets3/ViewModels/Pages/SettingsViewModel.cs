@@ -44,7 +44,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     private async void InitializeSettings()
     {
         ThemeIndex = (int)_themeSelectorService.Theme;
-        RunStartup = await StartupHelper.GetStartup();
+        RunStartup = await StartupHelper.GetStartup(Constant.StartupTaskId, Constant.StartupRegistryKey);
         SilentStart = _appSettingsService.SilentStart;
         BatterySaver = _appSettingsService.BatterySaver;
         MultiThread = _appSettingsService.MultiThread;
@@ -74,9 +74,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     {
         if (_isInitialized)
         {
-#if !DEBUG
-            _ = StartupHelper.SetStartupAsync(value);
-#endif
+            _ = StartupHelper.SetStartupAsync(Constant.StartupTaskId, Constant.StartupRegistryKey, value);
         }
     }
 

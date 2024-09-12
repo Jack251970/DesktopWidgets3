@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace DesktopWidgets3.Services;
 
@@ -120,51 +121,52 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     private List<JsonWidgetItem> WidgetList = null!;
 
-    // TODO: Use await InitializeWidgetList() once.
-    // TODO: Check GetWidgetsListAsync.
-    public async Task<List<JsonWidgetItem>> GetWidgetsList()
-    {
-        await InitializeWidgetList();
+    private JsonSerializerSettings? WidgetListJsonSerializerSettings;
 
+    public async Task<List<JsonWidgetItem>> InitializeWidgetListAsync()
+    {
+        WidgetListJsonSerializerSettings = new JsonSerializerSettings { Converters = { new JsonWidgetItemConverter() } };
+
+        WidgetList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetItem>>(Constant.WidgetListFile, WidgetListJsonSerializerSettings) ?? [];
+
+        return WidgetList;
+    }
+
+    public List<JsonWidgetItem> GetWidgetsList()
+    {
         return WidgetList;
     }
 
     public async Task AddWidget(JsonWidgetItem widgetItem)
     {
-        await InitializeWidgetList();
-
         var index = WidgetList.FindIndex(x => x.Id == widgetItem.Id && x.IndexTag == widgetItem.IndexTag);
         if (index == -1)
         {
             WidgetList.Add(widgetItem);
 
-            await _localSettingsService.SaveWidgetListAsync(WidgetList);
+            await SaveWidgetListAsync();
         }
     }
 
     public async Task DeleteWidget(string widgetId, int indexTag)
     {
-        await InitializeWidgetList();
-
         var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
         if (index != -1)
         {
             WidgetList.RemoveAt(index);
 
-            await _localSettingsService.SaveWidgetListAsync(WidgetList);
+            await SaveWidgetListAsync();
         }
     }
 
     public async Task<JsonWidgetItem> EnableWidget(string widgetId, int indexTag)
     {
-        await InitializeWidgetList();
-
         var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
         if (index != -1 && WidgetList[index].IsEnabled == false)
         {
             WidgetList[index].IsEnabled = true;
 
-            await _localSettingsService.SaveWidgetListAsync(WidgetList);
+            await SaveWidgetListAsync();
         }
 
         return WidgetList[index];
@@ -172,34 +174,28 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     public async Task DisableWidget(string widgetId, int indexTag)
     {
-        await InitializeWidgetList();
-
         var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
         if (index != -1 && WidgetList[index].IsEnabled == true)
         {
             WidgetList[index].IsEnabled = false;
 
-            await _localSettingsService.SaveWidgetListAsync(WidgetList);
+            await SaveWidgetListAsync();
         }
     }
 
     public async Task UpdateWidgetSettings(string widgetId, int indexTag, BaseWidgetSettings settings)
     {
-        await InitializeWidgetList();
-
         var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
         if (index != -1)
         {
             WidgetList[index].Settings = settings;
 
-            await _localSettingsService.SaveWidgetListAsync(WidgetList);
+            await SaveWidgetListAsync();
         }
     }
 
     public async Task UpdateWidgetsListIgnoreSettings(List<JsonWidgetItem> widgetList)
     {
-        await InitializeWidgetList();
-
         foreach (var widget in widgetList)
         {
             var index = WidgetList.FindIndex(x => x.Id == widget.Id && x.IndexTag == widget.IndexTag);
@@ -211,12 +207,14 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
             }
         }
 
-        await _localSettingsService.SaveWidgetListAsync(WidgetList);
+        await SaveWidgetListAsync();
     }
 
-    private async Task InitializeWidgetList()
+    private async Task SaveWidgetListAsync()
     {
-        WidgetList ??= (List<JsonWidgetItem>)await _localSettingsService.ReadWidgetListAsync();
+        var valueCopy = new List<JsonWidgetItem>(WidgetList);
+
+        await _localSettingsService.SaveJsonFileAsync(Constant.WidgetListFile, valueCopy);
     }
 
     #endregion
@@ -227,21 +225,28 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     public async Task<List<JsonWidgetStoreItem>> InitializeWidgetStoreListAsync()
     {
-        WidgetStoreList = (List<JsonWidgetStoreItem>)await _localSettingsService.ReadWidgetStoreListAsync();
+        WidgetStoreList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetStoreItem>>(Constant.WidgetStoreListFile) ?? [];
 
         return WidgetStoreList;
     }
 
     public async Task SaveWidgetStoreListAsync(List<JsonWidgetStoreItem> widgetStoreList)
     {
-        await _localSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
-
         WidgetStoreList = widgetStoreList;
+
+        await SaveWidgetStoreListAsync();
     }
 
     public List<JsonWidgetStoreItem> GetWidgetStoreList()
     {
         return WidgetStoreList;
+    }
+
+    private async Task SaveWidgetStoreListAsync()
+    {
+        var valueCopy = new List<JsonWidgetStoreItem>(WidgetStoreList);
+
+        await _localSettingsService.SaveJsonFileAsync(Constant.WidgetStoreListFile, valueCopy);
     }
 
     #endregion

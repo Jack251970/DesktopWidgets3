@@ -27,7 +27,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await _widgetResourceService.InitalizeAsync();
 
         // enable all enabled widgets
-        var widgetList = await _appSettingsService.GetWidgetsList();
+        var widgetList = _appSettingsService.GetWidgetsList();
         foreach (var widget in widgetList)
         {
             if (widget.IsEnabled)
@@ -43,7 +43,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public async Task<int> AddWidget(string widgetId, bool refresh)
     {
-        var widgetList = await _appSettingsService.GetWidgetsList();
+        var widgetList = _appSettingsService.GetWidgetsList();
 
         // find index tag
         var indexTags = widgetList.Where(x => x.Id == widgetId).Select(x => x.IndexTag).ToList();
@@ -151,7 +151,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         return GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
     }
 
-    public async Task NavigateToWidgetSettingPage(string widgetId, int indexTag)
+    public void NavigateToWidgetSettingPage(string widgetId, int indexTag)
     {
         // navigate to widget setting page
         _navigationService.NavigateTo(typeof(WidgetSettingViewModel).FullName!);
@@ -173,7 +173,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             var viewModel = element.ViewModel;
             var widgetWindow = GetWidgetWindow(widgetId, indexTag);
-            var widgetSetting = await GetWidgetSettings(widgetId, indexTag);
+            var widgetSetting = GetWidgetSettings(widgetId, indexTag);
             if (widgetWindow != null && widgetSetting != null)
             {
                 viewModel.InitializeSettings(new WidgetNavigationParameter()
@@ -458,9 +458,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region widget settings
 
-    public async Task<BaseWidgetSettings?> GetWidgetSettings(string widgetId, int indexTag)
+    public BaseWidgetSettings? GetWidgetSettings(string widgetId, int indexTag)
     {
-        var widgetList = await _appSettingsService.GetWidgetsList();
+        var widgetList = _appSettingsService.GetWidgetsList();
         var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
         return widget?.Settings.Clone();
     }
