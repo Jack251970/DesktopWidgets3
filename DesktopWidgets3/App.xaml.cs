@@ -179,14 +179,13 @@ public partial class App : Application
 
         // Initialize core extensions after injecting services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
-        TitleBarHelper.Initialize(GetService<IThemeSelectorService>());
         WindowsExtensions.Initialize(GetService<IWindowService>());
         LogExtensions.Initialize(GetService<ILogger<App>>());
     }
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        HandleAppUnhandledException(e.Exception, true);
+        HandleAppUnhandledException(e.Exception, false);
     }
 
 	public static void HandleAppUnhandledException(Exception? ex, bool showToastNotification)
@@ -201,11 +200,8 @@ public partial class App : Application
 
         if (showToastNotification)
         {
-            _ = Task.Run(() =>
-            {
                 GetService<IAppNotificationService>().Show(string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
                     $"{ex?.ToString()}{Environment.NewLine}"));
-            });
         }
     }
 

@@ -14,13 +14,6 @@ namespace DesktopWidgets3.Core.Helpers;
 // https://github.com/microsoft/TemplateStudio/issues/4516
 public partial class TitleBarHelper
 {
-    private static IThemeSelectorService? FallbackThemeSelectorService;
-
-    public static void Initialize(IThemeSelectorService themeSelectorService)
-    {
-        FallbackThemeSelectorService = themeSelectorService;
-    }
-
     private const int WAINACTIVE = 0x00;
     private const int WAACTIVE = 0x01;
     private const int WMACTIVATE = 0x0006;
@@ -31,12 +24,8 @@ public partial class TitleBarHelper
     [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
     private static partial IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
 
-    public static void UpdateTitleBar(Window? window = null, AppWindowTitleBar? titleBar = null, ElementTheme? theme = null)
+    public static void UpdateTitleBar(Window window, AppWindowTitleBar titleBar, ElementTheme theme)
     {
-        window ??= WindowsExtensions.MainWindow;
-        titleBar ??= WindowsExtensions.MainWindow.AppWindow.TitleBar;
-        theme ??= FallbackThemeSelectorService?.Theme ?? ElementTheme.Default;
-
         if (window.ExtendsContentIntoTitleBar)
         {
             if (theme == ElementTheme.Default)
@@ -97,7 +86,7 @@ public partial class TitleBarHelper
         }
     }
 
-    public static void ApplySystemThemeToCaptionButtons(Window? window, AppWindowTitleBar? titleBar, UIElement? customTitleBar)
+    public static void ApplySystemThemeToCaptionButtons(Window window, AppWindowTitleBar titleBar, UIElement? customTitleBar)
     {
         var frame = customTitleBar as FrameworkElement;
         if (frame != null)
