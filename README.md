@@ -11,13 +11,15 @@ Build the solution in Visual Studio or run `dotnet build` from the command line.
 
 ## Reference
 * Files: https://github.com/files-community/Files
+* Flow.Launcher: https://github.com/Flow-Launcher/Flow.Launcher
+* fluentui-system-icons: https://github.com/microsoft/fluentui-system-icons
 * H.NotifyIcon: https://github.com/HavenDV/H.NotifyIcon
+* ICONS8: https://icons8.com/icons
 * Newtonsoft.Json: https://github.com/JamesNK/Newtonsoft.Json
 * PowerToys: https://github.com/microsoft/PowerToys
 * Template Studio for WinUI (C#): https://github.com/microsoft/TemplateStudio
-* TimeManager3: https://github.com/Jack251970/TimeManager3
+* terminal: https://github.com/microsoft/terminal
 * Vanara: https://github.com/dahall/vanara
 * WinUI3Windows: https://github.com/smourier/WinUI3Windows
 * Windows Community Toolkit: https://github.com/CommunityToolkit/WindowsCommunityToolkit
-* Windows Community Toolkit Labs: https://github.com/CommunityToolkit/Labs-Windows
 * WinUIEx: https://github.com/dotMorten/WinUIEx

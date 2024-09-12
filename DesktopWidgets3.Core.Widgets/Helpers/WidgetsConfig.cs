@@ -19,7 +19,7 @@ public static class WidgetsConfig
     {
         var allWidgetMetadata = new List<WidgetMetadata>();
 
-        // FlowLauncherTODO: use linq when diable widget is implmented since parallel.foreach + list is not thread saft
+        // Flow.LauncherTODO: use linq when diable widget is implmented since parallel.foreach + list is not thread saft
         foreach (var directory in directories)
         {
             var metadata = GetWidgetMetadata(directory, preinstalled);
