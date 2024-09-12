@@ -27,32 +27,6 @@ public class LogExtensions
         return string.IsNullOrEmpty(className) ? $"{methodName}|{message}" : $"{className}.{methodName}|{message}";
     }
 
-    //------------------------------------------DEBUG------------------------------------------//
-
-    public static void LogDebug(string className, EventId eventId, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
-    {
-        message = GetFullMessage(message, className, methodName);
-        logger?.Log(LogLevel.Debug, eventId, exception, message, args);
-    }
-
-    public static void LogDebug(string className, EventId eventId, string? message, [CallerMemberName] string methodName = "", params object?[] args)
-    {
-        message = GetFullMessage(message, className, methodName);
-        logger?.Log(LogLevel.Debug, eventId, message, args);
-    }
-
-    public static void LogDebug(string className, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
-    {
-        message = GetFullMessage(message, className, methodName);
-        logger?.Log(LogLevel.Debug, exception, message, args);
-    }
-
-    public static void LogDebug(string className, string? message, [CallerMemberName] string methodName = "", params object?[] args)
-    {
-        message = GetFullMessage(message, className, methodName);
-        logger?.Log(LogLevel.Debug, message, args);
-    }
-
     //------------------------------------------TRACE------------------------------------------//
 
     public static void LogTrace(string className, EventId eventId, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
@@ -77,6 +51,32 @@ public class LogExtensions
     {
         message = GetFullMessage(message, className, methodName);
         logger?.Log(LogLevel.Trace, message, args);
+    }
+
+    //------------------------------------------DEBUG------------------------------------------//
+
+    public static void LogDebug(string className, EventId eventId, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
+    {
+        message = GetFullMessage(message, className, methodName);
+        logger?.Log(LogLevel.Debug, eventId, exception, message, args);
+    }
+
+    public static void LogDebug(string className, EventId eventId, string? message, [CallerMemberName] string methodName = "", params object?[] args)
+    {
+        message = GetFullMessage(message, className, methodName);
+        logger?.Log(LogLevel.Debug, eventId, message, args);
+    }
+
+    public static void LogDebug(string className, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
+    {
+        message = GetFullMessage(message, className, methodName);
+        logger?.Log(LogLevel.Debug, exception, message, args);
+    }
+
+    public static void LogDebug(string className, string? message, [CallerMemberName] string methodName = "", params object?[] args)
+    {
+        message = GetFullMessage(message, className, methodName);
+        logger?.Log(LogLevel.Debug, message, args);
     }
 
     //------------------------------------------INFORMATION------------------------------------------//
@@ -175,11 +175,24 @@ public class LogExtensions
     {
         message = GetFullMessage(message, className, methodName);
         logger?.Log(LogLevel.Critical, exception, message, args);
+#if DEBUG
+        if (exception != null)
+        {
+            throw exception;
+        }
+        else
+        {
+            throw new Exception(message);
+        }
+#endif
     }
 
     public static void LogCritical(string className, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
         message = GetFullMessage(message, className, methodName);
         logger?.Log(LogLevel.Critical, message, args);
+#if DEBUG
+        throw new Exception(message);
+#endif
     }
 }

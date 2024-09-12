@@ -473,17 +473,20 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         return widget?.Settings.Clone();
     }
 
-    public async Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings)
+    public async Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings, bool loadSettings)
     {
-        // update widget settings
-        var widgetWindow = GetWidgetWindow(widgetId, indexTag);
-        if (widgetWindow != null)
+        // load widget settings
+        if (loadSettings)
         {
-            await widgetWindow.EnqueueOrInvokeAsync((window) =>
+            var widgetWindow = GetWidgetWindow(widgetId, indexTag);
+            if (widgetWindow != null)
             {
-                var viewModel = GetWidgetViewModel(widgetId, indexTag);
-                viewModel?.LoadSettings(settings, false);
-            });
+                await widgetWindow.EnqueueOrInvokeAsync((window) =>
+                {
+                    var viewModel = GetWidgetViewModel(widgetId, indexTag);
+                    viewModel?.LoadSettings(settings, false);
+                });
+            }
         }
 
         // update widget list
