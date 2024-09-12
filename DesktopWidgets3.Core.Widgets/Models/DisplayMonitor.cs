@@ -4,11 +4,23 @@ public class DisplayMonitor
 {
     public string Name { get; set; } = string.Empty;
 
-    public RectSize RectMonitor { get; set; }
+    public RectSize RectMonitor { get; set; } = new(null, null);
 
-    public RectSize RectWork { get; set; }
+    public RectSize RectWork { get; set; } = new(null, null);
 
-    public bool IsPrimary { get; set; }
+    public bool IsPrimary { get; set; } = false;
+
+    public static List<DisplayMonitor> GetMonitorInfo()
+    {
+        var monitorInfos = MonitorInfo.GetDisplayMonitors();
+        return monitorInfos.Select(x => new DisplayMonitor
+        {
+            Name = x.Name,
+            RectMonitor = new RectSize(x.RectMonitor),
+            RectWork = new RectSize(x.RectWork),
+            IsPrimary = x.IsPrimary
+        }).ToList();
+    }
 
     public static DisplayMonitor GetMonitorInfo(WindowEx? window)
     {

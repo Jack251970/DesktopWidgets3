@@ -350,10 +350,22 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         if (index != -1)
         {
             var widget = AllWidgets[index];
-            return new RectSize(widget.Metadata.MinWidth, widget.Metadata.MinHeight);
+            return new(widget.Metadata.MinWidth, widget.Metadata.MinHeight);
         }
 
-        return new RectSize(318, 200);
+        return new(null, null);
+    }
+
+    public RectSize GetMaxSize(string widgetId)
+    {
+        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
+        {
+            var widget = AllWidgets[index];
+            return new(widget.Metadata.MaxWidth, widget.Metadata.MaxHeight);
+        }
+
+        return new(null, null);
     }
 
     public bool GetWidgetInNewThread(string widgetId)
@@ -563,8 +575,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         var widgetStoreList = _appSettingsService.GetWidgetStoreList();
         if (metadata == null)
         {
-            // TODO: Install widget from Github, currently not supported.
-
+            // TODO: Install widget from Github, not supported yet.
         }
         else
         {
@@ -607,7 +618,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
         }
 
-        // TODO: Restart app.
+        App.RestartApplication();
     }
 
     public async Task UninstallWidgetAsync(string widgetId)
@@ -634,7 +645,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
         }
 
-        // TODO: Restart app.
+        App.RestartApplication();
     }
 
     #endregion

@@ -84,6 +84,15 @@ public class BaseWidgetStoreItem()
     public required string Version { get; set; }
 }
 
+public class JsonWidgetStoreItem : BaseWidgetStoreItem
+{
+    public required bool IsPreinstalled { get; set; } = false;
+
+    public required bool IsInstalled { get; set; } = false;
+
+    public required List<string> ResourcesFile { get; set; }
+}
+
 public class WidgetStoreItem : BaseWidgetStoreItem
 {
     public required string Name { get; set; }
@@ -95,13 +104,4 @@ public class WidgetStoreItem : BaseWidgetStoreItem
     public required string Website { get; set; }
 
     public required string IcoPath { get; set; }
-}
-
-public class JsonWidgetStoreItem : BaseWidgetStoreItem
-{
-    public required bool IsPreinstalled { get; set; } = false;
-
-    public required bool IsInstalled { get; set; } = false;
-
-    public required List<string> ResourcesFile { get; set; }
 }

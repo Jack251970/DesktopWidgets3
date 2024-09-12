@@ -22,6 +22,8 @@ public interface IWidgetResourceService
 
     RectSize GetMinSize(string widgetId);
 
+    RectSize GetMaxSize(string widgetId);
+
     bool GetWidgetInNewThread(string widgetId);
 
     List<DashboardWidgetItem> GetAllDashboardItems();

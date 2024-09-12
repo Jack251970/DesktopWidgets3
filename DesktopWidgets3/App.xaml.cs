@@ -184,38 +184,18 @@ public partial class App : Application
             })
             .Build();
 
-        // Initialize core services
-        GetService<IAppNotificationService>().Initialize();
-
         // Configure exception handlers
         UnhandledException += App_UnhandledException;
+
+        // Initialize core services
+        GetService<IAppNotificationService>().Initialize();
 
         // Initialize core extensions after injecting services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
         LogExtensions.Initialize(GetService<ILogger<App>>());
     }
 
-    private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-    {
-        HandleAppUnhandledException(e.Exception, false);
-    }
-
-	public static void HandleAppUnhandledException(Exception? ex, bool showToastNotification)
-    {
-        var exceptionString = ExceptionFormatter.FormatExcpetion(ex);
-
-        Debug.WriteLine(exceptionString);
-
-        Debugger.Break();
-
-        LogExtensions.LogError(ClassName, ex, "An unhandled error occurred.");
-
-        if (showToastNotification)
-        {
-            GetService<IAppNotificationService>().Show(string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
-                $"{ex?.ToString()}{Environment.NewLine}"));
-        }
-    }
+    #region App Lifecycle
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
@@ -228,4 +208,48 @@ public partial class App : Application
             LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
         }
     }
+
+    private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        var ex = e.Exception;
+        var exceptionString = ExceptionFormatter.FormatExcpetion(ex);
+
+        Debug.WriteLine(exceptionString);
+
+        Debugger.Break();
+
+        LogExtensions.LogError(ClassName, ex, "An unhandled error occurred.");
+
+        try
+        {
+            GetService<IAppNotificationService>().Show(string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
+                $"{ex?.ToString()}{Environment.NewLine}"));
+        }
+        catch (Exception)
+        {
+            // Ignore
+        }
+    }
+
+    public static void RestartApplication()
+    {
+        // Get the path to the executable
+        var exePath = Process.GetCurrentProcess().MainModule?.FileName;
+
+        if (!string.IsNullOrEmpty(exePath) && File.Exists(exePath))
+        {
+            // Start a new instance of the application
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = exePath,
+                UseShellExecute = true
+            });
+
+            // exit the current application
+            CanCloseWindow = true;
+            MainWindow.Close();
+        }
+    }
+
+    #endregion
 }

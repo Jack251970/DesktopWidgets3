@@ -1,51 +1,51 @@
-﻿using Windows.Foundation;
+﻿namespace DesktopWidgets3.Core.Widgets.Models;
 
-namespace DesktopWidgets3.Core.Widgets.Models;
-
+/// <summary>
+/// Represents the size of a rectangle.
+/// Codes are edited from: Windows.Foundation.Size.
+/// </summary>
 public struct RectSize
 {
-    private float _width;
+    private float? _width;
 
-    private float _height;
+    private float? _height;
 
-    public double Width
+    public double? Width
     {
         readonly get => _width;
         set
         {
-            if (value < 0.0)
+            if (value != null && value < 0.0)
             {
                 throw new ArgumentOutOfRangeException("Width", GSR.ArgumentOutOfRange_NeedNonNegNum);
             }
 
-            _width = (float)value;
+            _width = (float?)value;
         }
     }
 
-    public double Height
+    public double? Height
     {
         readonly get => _height;
         set
         {
-            if (value < 0.0)
+            if (value != null && value < 0.0)
             {
                 throw new ArgumentOutOfRangeException("Height", GSR.ArgumentOutOfRange_NeedNonNegNum);
             }
 
-            _height = (float)value;
+            _height = (float?)value;
         }
     }
 
-    private readonly bool IsEmpty => Width < 0.0;
-
-    public RectSize(float width, float height)
+    public RectSize(float? width, float? height)
     {
-        if (width < 0f)
+        if (width != null && width < 0f)
         {
             throw new ArgumentOutOfRangeException(nameof(width), GSR.ArgumentOutOfRange_NeedNonNegNum);
         }
 
-        if (height < 0f)
+        if (height != null && height < 0f)
         {
             throw new ArgumentOutOfRangeException(nameof(height), GSR.ArgumentOutOfRange_NeedNonNegNum);
         }
@@ -54,12 +54,14 @@ public struct RectSize
         _height = height;
     }
 
-    public RectSize(double width, double height)
-        : this((float)width, (float)height)
+    private readonly bool IsEmpty => Width == null && Height == null;
+
+    public RectSize(double? width, double? height)
+        : this((float?)width, (float?)height)
     {
     }
 
-    public RectSize(Rect size)
+    public RectSize(Windows.Foundation.Rect size)
         : this(size.Width, size.Height)
     {
     }
@@ -96,7 +98,7 @@ public struct RectSize
 
     public readonly override int GetHashCode()
     {
-        if (IsEmpty)
+        if (_width == null && _height == null)
         {
             return 0;
         }

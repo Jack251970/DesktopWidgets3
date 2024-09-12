@@ -201,10 +201,11 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         // configure widget window lifecycle actions
         var minSize = _widgetResourceService.GetMinSize(widget.Id);
+        var maxSize = _widgetResourceService.GetMaxSize(widget.Id);
         var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
         {
             Window_Creating = () => WidgetWindow_Creating(widget),
-            Window_Created = (window) => WidgetWindow_Created(window, widget, minSize),
+            Window_Created = (window) => WidgetWindow_Created(window, widget, minSize, maxSize),
             Window_Closing = WidgetWindow_Closing,
             Window_Closed = () => WidgetWindow_Closed(widget)
         };
@@ -224,7 +225,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await _widgetResourceService.EnableWidgetAsync(widgetId, firstWidget);
     }
 
-    private async void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize)
+    private async void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize, RectSize maxSize)
     {
         if (window is WidgetWindow widgetWindow)
         {
@@ -262,7 +263,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             // set window style, size and position
             widgetWindow.IsResizable = false;
             widgetWindow.MinSize = minSize;
-            widgetWindow.Size = widgetItem.Size;
+            widgetWindow.MaxSize = maxSize;
             if (widgetItem.Position.X != -1 && widgetItem.Position.Y != -1)
             {
                 widgetWindow.Position = widgetItem.Position;
@@ -559,7 +560,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
             // move to center top
             var windowWidth = EditModeOverlayWindow.AppWindow.Size.Width;
-            EditModeOverlayWindow.Position = new PointInt32((int)((screenWidth - windowWidth) / 2), 0);
+            EditModeOverlayWindow.Position = new PointInt32((int)((screenWidth! - windowWidth) / 2), 0);
 
             // show edit mode overlay window
             EditModeOverlayWindow.Show(true);

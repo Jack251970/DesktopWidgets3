@@ -1,8 +1,6 @@
 ﻿using H.NotifyIcon;
-
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-
 using Windows.UI.ViewManagement;
 
 namespace DesktopWidgets3.Views.Windows;

@@ -1,7 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-
 using Windows.Graphics;
-
 using WinUIEx.Messaging;
 using Windows.Foundation;
 using Microsoft.UI.Xaml;
@@ -32,8 +30,8 @@ public sealed partial class WidgetWindow : WindowEx
         get => new(size.Width, size.Height);
         set
         {
-            var width = value.Width;
-            var height = value.Height;
+            var width = value.Width!.Value;
+            var height = value.Height!.Value;
             if (size.Width != width || size.Height != height)
             {
                 size = new(width, height);
@@ -47,8 +45,30 @@ public sealed partial class WidgetWindow : WindowEx
         get => new(MinWidth, MinHeight);
         set
         {
-            MinWidth = value.Width;
-            MinHeight = value.Height;
+            if (value.Width != null)
+            {
+                MinHeight = value.Width.Value;
+            }
+            if (value.Height != null)
+            {
+                MinWidth = value.Height.Value;
+            }
+        }
+    }
+
+    public RectSize MaxSize
+    {
+        get => new(MaxWidth, MaxHeight);
+        set
+        {
+            if (value.Width != null)
+            {
+                MaxHeight = value.Width.Value;
+            }
+            if (value.Height != null)
+            {
+                MaxWidth = value.Height.Value;
+            }
         }
     }
 

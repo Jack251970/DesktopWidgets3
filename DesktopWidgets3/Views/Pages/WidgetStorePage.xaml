@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="DesktopWidgets3.Views.Pages.WidgetStorePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -53,9 +52,13 @@
                                 BorderThickness="1"
                                 CornerRadius="{StaticResource OverlayCornerRadius}"
                                 RowSpacing="12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
                                 <Grid ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
@@ -70,6 +73,30 @@
                                         FontWeight="SemiBold"
                                         Text="{x:Bind Name, Mode=OneTime}"
                                         TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind Description, Mode=OneTime}"
+                                    TextTrimming="CharacterEllipsis" />
+                                <Grid Grid.Row="2" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        FontWeight="Light"
+                                        Text="{x:Bind Version, Mode=OneTime}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <HyperlinkButton
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Content="{x:Bind Author, Mode=OneTime}"
+                                        FontWeight="Light"
+                                        NavigateUri="{x:Bind Website, Mode=OneTime}" />
                                 </Grid>
                             </Grid>
                         </Button>
@@ -107,9 +134,13 @@
                                 BorderThickness="1"
                                 CornerRadius="{StaticResource OverlayCornerRadius}"
                                 RowSpacing="12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
                                 <Grid ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
@@ -124,6 +155,30 @@
                                         FontWeight="SemiBold"
                                         Text="{x:Bind Name, Mode=OneTime}"
                                         TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind Description, Mode=OneTime}"
+                                    TextTrimming="CharacterEllipsis" />
+                                <Grid Grid.Row="2" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        FontWeight="Light"
+                                        Text="{x:Bind Version, Mode=OneTime}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <HyperlinkButton
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Content="{x:Bind Author, Mode=OneTime}"
+                                        FontWeight="Light"
+                                        NavigateUri="{x:Bind Website, Mode=OneTime}" />
                                 </Grid>
                             </Grid>
                         </Button>
