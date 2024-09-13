@@ -1,5 +1,4 @@
 ﻿using System.Timers;
-using DesktopWidgets3.Contracts.Services.HardwareInfo;
 using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Services.HardwareInfo;
