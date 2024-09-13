@@ -332,6 +332,19 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #region Metadata
 
+    public string GetWidgetName(string widgetId)
+    {
+        foreach (var metadata in AllWidgetsMetadata)
+        {
+            if (metadata.ID == widgetId)
+            {
+                return metadata.Name;
+            }
+        }
+
+        return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
+    }
+
     public RectSize GetDefaultSize(string widgetId)
     {
         var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
@@ -476,19 +489,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             Name = string.Format("Unknown_Widget_Name".GetLocalized(), widgetIndex),
             IcoPath = Constant.UnknownWidgetIcoPath,
         };
-    }
-
-    private string GetWidgetName(string widgetId)
-    {
-        foreach (var metadata in AllWidgetsMetadata)
-        {
-            if (metadata.ID == widgetId)
-            {
-                return metadata.Name;
-            }
-        }
-
-        return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
     }
 
     private string GetWidgetIcoPath(string widgetId)

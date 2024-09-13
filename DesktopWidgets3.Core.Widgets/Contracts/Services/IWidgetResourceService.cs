@@ -18,6 +18,8 @@ public interface IWidgetResourceService
 
     FrameworkElement GetWidgetSettingFrameworkElement(string widgetId);
 
+    string GetWidgetName(string widgetId);
+
     RectSize GetDefaultSize(string widgetId);
 
     RectSize GetMinSize(string widgetId);

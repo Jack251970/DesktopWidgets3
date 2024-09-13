@@ -6,8 +6,8 @@ internal static class DialogFactory
 
     public static async Task<WidgetDialogResult> ShowDeleteWidgetDialogAsync(this WindowEx window)
     {
-        var title = "Dialog_DeleteWidget_Title".GetLocalized();
-        var content = "Dialog_DeleteWidget_Content".GetLocalized();
+        var title = "Dialog_DeleteWidget.Title".GetLocalized();
+        var content = "Dialog_DeleteWidget.Content".GetLocalized();
         return await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content);
     }
 }

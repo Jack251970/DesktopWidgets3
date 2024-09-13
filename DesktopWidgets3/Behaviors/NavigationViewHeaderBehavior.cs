@@ -27,7 +27,7 @@ public class NavigationViewHeaderBehavior : Behavior<NavigationView>
     public static void SetHeaderMode(Page item, NavigationViewHeaderMode value) => item.SetValue(HeaderModeProperty, value);
 
     public static readonly DependencyProperty HeaderModeProperty =
-        DependencyProperty.RegisterAttached("HeaderMode", typeof(bool), typeof(NavigationViewHeaderBehavior), new PropertyMetadata(NavigationViewHeaderMode.Always, (d, e) => _current!.UpdateHeader()));
+        DependencyProperty.RegisterAttached("HeaderMode", typeof(NavigationViewHeaderMode), typeof(NavigationViewHeaderBehavior), new PropertyMetadata(NavigationViewHeaderMode.Always, (d, e) => _current!.UpdateHeader()));
 
     public static object GetHeaderContext(Page item) => item.GetValue(HeaderContextProperty);
 
@@ -35,6 +35,13 @@ public class NavigationViewHeaderBehavior : Behavior<NavigationView>
 
     public static readonly DependencyProperty HeaderContextProperty =
         DependencyProperty.RegisterAttached("HeaderContext", typeof(object), typeof(NavigationViewHeaderBehavior), new PropertyMetadata(null, (d, e) => _current!.UpdateHeader()));
+
+    public static bool GetHeaderLocalize(Page item) => (bool)item.GetValue(HeaderLocalizeProperty);
+
+    public static void SetHeaderLocalize(Page item, bool value) => item.SetValue(HeaderLocalizeProperty, value);
+
+    public static readonly DependencyProperty HeaderLocalizeProperty =
+        DependencyProperty.RegisterAttached("HeaderLocalize", typeof(bool), typeof(NavigationViewHeaderBehavior), new PropertyMetadata(true, (d, e) => _current!.UpdateHeader()));
 
     public static DataTemplate GetHeaderTemplate(Page item) => (DataTemplate)item.GetValue(HeaderTemplateProperty);
 
@@ -85,9 +92,14 @@ public class NavigationViewHeaderBehavior : Behavior<NavigationView>
             else
             {
                 var headerFromPage = GetHeaderContext(_currentPage);
+                var headerLocalize = GetHeaderLocalize(_currentPage);
                 if (headerFromPage != null && headerFromPage.ToString() is string header)
                 {
-                    AssociatedObject.Header = header.GetLocalized();
+                    if (headerLocalize)
+                    {
+                        AssociatedObject.Header = header.GetLocalized();
+                    }
+                    AssociatedObject.Header = header;
                 }
                 else
                 {

@@ -26,12 +26,17 @@ public static class ResourceExtensions
 
     public static string GetLocalized(this string resourceKey, string resourceFileName = "Resources")
     {
+        // Fix resource key
+        resourceKey = resourceKey.Replace(".", "/");
+
+        // Try to get cached value
         var cachedResourceKey = $"{resourceFileName}/{resourceKey}";
         if (cachedResources.TryGetValue(cachedResourceKey, out var value))
         {
             return value;
         }
 
+        // Get resource value
         var resourcesTree = resourcesTrees[resourceFileName];
         value = resourcesTree.TryGetValue(resourceKey)?.ValueAsString;
 

@@ -174,6 +174,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         if (widgetSettingPage != null)
         {
             widgetSettingPage.ViewModel.WidgetFrameworkElement = frameworkElement;
+            var widgetName = _widgetResourceService.GetWidgetName(widgetId);
+            NavigationViewHeaderBehavior.SetHeaderLocalize(widgetSettingPage, false);
+            NavigationViewHeaderBehavior.SetHeaderContext(widgetSettingPage, widgetName);
         }
 
         // set widget properties
@@ -389,14 +392,14 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var menuFlyout = new MenuFlyout();
         var disableMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_DisableWidget/Text".GetLocalized()
+            Text = "MenuFlyoutItem_DisableWidget.Text".GetLocalized()
         };
         disableMenuItem.Click += (s, e) => DisableWidget();
         menuFlyout.Items.Add(disableMenuItem);
 
         var deleteMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_DeleteWidget/Text".GetLocalized()
+            Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalized()
         };
         deleteMenuItem.Click += (s, e) => DeleteWidget();
         menuFlyout.Items.Add(deleteMenuItem);
@@ -405,7 +408,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
         var enterMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_EnterEditMode/Text".GetLocalized()
+            Text = "MenuFlyoutItem_EnterEditMode.Text".GetLocalized()
         };
         enterMenuItem.Click += (s, e) => EnterEditMode();
         menuFlyout.Items.Add(enterMenuItem);
