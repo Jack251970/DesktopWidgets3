@@ -21,12 +21,12 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
 
     private void LoadAllWidgets()
     {
-        allWidgets = _widgetResourceService.GetAllDashboardItems();
+        allWidgets = _widgetResourceService.GetInstalledDashboardItems();
     }
 
     private void LoadYourWidgets()
     {
-        yourWidgets = _widgetResourceService.GetYourDashboardItemsAsync();
+        yourWidgets = _widgetResourceService.GetYourDashboardItems();
         foreach (var item in yourWidgets)
         {
             item.EnabledChangedCallback = WidgetEnabledChanged;

@@ -22,15 +22,11 @@ public interface IWidgetResourceService
 
     RectSize GetDefaultSize(string widgetId);
 
-    RectSize GetMinSize(string widgetId);
+    (RectSize MinSize, RectSize MaxSize, bool NewThread) GetMinMaxSizeNewThread(string widgetId);
 
-    RectSize GetMaxSize(string widgetId);
+    List<DashboardWidgetItem> GetInstalledDashboardItems();
 
-    bool GetWidgetInNewThread(string widgetId);
-
-    List<DashboardWidgetItem> GetAllDashboardItems();
-
-    List<DashboardWidgetItem> GetYourDashboardItemsAsync();
+    List<DashboardWidgetItem> GetYourDashboardItems();
 
     DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag);
 

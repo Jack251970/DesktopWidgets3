@@ -203,8 +203,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private void CreateWidgetWindow(JsonWidgetItem widget)
     {
         // configure widget window lifecycle actions
-        var minSize = _widgetResourceService.GetMinSize(widget.Id);
-        var maxSize = _widgetResourceService.GetMaxSize(widget.Id);
+        (var minSize, var maxSize, var newThread) = _widgetResourceService.GetMinMaxSizeNewThread(widget.Id);
         var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
         {
             Window_Creating = () => WidgetWindow_Creating(widget),
@@ -214,7 +213,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         };
 
         // create widget window
-        var newThread = _widgetResourceService.GetWidgetInNewThread(widget.Id);
         var widgetWindow = WindowsExtensions.GetWindow<WidgetWindow>(newThread, lifecycleActions);
     }
 
