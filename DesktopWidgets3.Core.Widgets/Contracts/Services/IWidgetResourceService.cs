@@ -28,7 +28,7 @@ public interface IWidgetResourceService
 
     List<DashboardWidgetItem> GetYourDashboardItems();
 
-    DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag);
+    DashboardWidgetItem? GetDashboardItem(string widgetId, int indexTag);
 
     bool IsWidgetUnknown(string widgetId);
 

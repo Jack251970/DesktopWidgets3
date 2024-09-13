@@ -56,11 +56,13 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
     internal void RefreshAddedWidget(string widgetId, int indexTag)
     {
         var widgetItem = _widgetResourceService.GetDashboardItem(widgetId, indexTag);
-        widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+        if (widgetItem != null)
+        {
+            widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+            yourWidgets.Add(widgetItem);
 
-        yourWidgets.Add(widgetItem);
-
-        RefreshYourWidgets();
+            RefreshYourWidgets();
+        }
     }
 
     internal void RefreshDisabledWidget(string widgetId, int indexTag)
@@ -107,11 +109,8 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
         if (!_isInitialized)
         {
             LoadAllWidgets();
-
             RefreshAllWidgets();
-
             LoadYourWidgets();
-
             RefreshYourWidgets();
 
             _isInitialized = true;
@@ -119,40 +118,41 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
             return;
         }
 
-        if (parameter is Dictionary<string, object> param)
+        if (parameter is DashboardViewModelNavigationParameter navigationParameter)
         {
-            if (param.TryGetValue("UpdateEvent", out var updateEventObj) && param.TryGetValue("Id", out var widgetIdObj) && param.TryGetValue("IndexTag", out var indexTagObj))
+            var widgetId = navigationParameter.Id;
+            var indexTag = navigationParameter.IndexTag;
+            switch (navigationParameter.Event)
             {
-                var updateEvent = (UpdateEvent)updateEventObj;
-                var widgetId = (string)widgetIdObj;
-                var indexTag = (int)indexTagObj;
-
-                if (updateEvent == UpdateEvent.Add)
-                {
+                case DashboardViewModelNavigationParameter.UpdateEvent.Add:
                     var widgetItem = _widgetResourceService.GetDashboardItem(widgetId, indexTag);
-                    widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
-                    yourWidgets.Add(widgetItem);
-                    RefreshYourWidgets();
-                }
-                else if (updateEvent == UpdateEvent.Disable)
-                {
+                    if (widgetItem != null)
+                    {
+                        widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+                        yourWidgets.Add(widgetItem);
+
+                        RefreshYourWidgets();
+                    }
+                    break;
+                case DashboardViewModelNavigationParameter.UpdateEvent.Disable:
                     var widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
                     if (widgetIndex != -1)
                     {
                         yourWidgets[widgetIndex].IsEnabled = false;
                         yourWidgets[widgetIndex].EnabledChangedCallback = WidgetEnabledChanged;
+
                         RefreshYourWidgets();
                     }
-                }
-                else if (updateEvent == UpdateEvent.Delete)
-                {
-                    var widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+                    break;
+                case DashboardViewModelNavigationParameter.UpdateEvent.Delete:
+                    widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
                     if (widgetIndex != -1)
                     {
                         yourWidgets.RemoveAt(widgetIndex);
+
                         RefreshYourWidgets();
                     }
-                }
+                    break;
             }
         }
     }
@@ -163,11 +163,4 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
     }
 
     #endregion
-
-    public enum UpdateEvent
-    {
-        Add,
-        Disable,
-        Delete
-    }
 }

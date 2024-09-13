@@ -20,25 +20,25 @@ public abstract class BaseWidgetViewModel : ObservableRecipient
 
     public void InitializeSettings(object parameter)
     {
+        // return if already initialized
+        if (_isInitialized)
+        {
+            return;
+        }
+
         // load settings from navigation parameter
-        if (parameter is WidgetNavigationParameter navigationParameter)
+        if (parameter is WidgetViewModelNavigationParameter navigationParameter)
         {
             Id = navigationParameter.Id;
             IndexTag = navigationParameter.IndexTag;
-
-            if (navigationParameter.Settings is BaseWidgetSettings settings)
-            {
-                LoadSettings(settings, true);
-
-                _isInitialized = true;
-            }
+            LoadSettings(navigationParameter.Settings, true);
+            _isInitialized = true;
         }
 
         // force load settings if not initialized
         if (!_isInitialized)
         {
             LoadSettings(new BaseWidgetSettings(), true);
-
             _isInitialized = true;
         }
     }

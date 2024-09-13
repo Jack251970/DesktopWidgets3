@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Widget.Models.Parameter;
 
-public class WidgetNavigationParameter
+public class WidgetViewModelNavigationParameter
 {
     public required string Id { get; set; }
 

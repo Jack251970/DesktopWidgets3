@@ -495,19 +495,24 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return dashboardItemList;
     }
 
-    public DashboardWidgetItem GetDashboardItem(string widgetId, int indexTag)
+    public DashboardWidgetItem? GetDashboardItem(string widgetId, int indexTag)
     {
         var index = GetWidgetIndex(widgetId);
-        return new DashboardWidgetItem()
+        if (index != -1)
         {
-            IsUnknown = false,
-            IsInstalled = GetInstalled(index),
-            Id = widgetId,
-            IndexTag = indexTag,
-            IsEnabled = true,
-            Name = GetWidgetName(index),
-            IcoPath = GetWidgetIcoPath(index),
-        };
+            return new DashboardWidgetItem()
+            {
+                IsUnknown = false,
+                IsInstalled = GetInstalled(index),
+                Id = widgetId,
+                IndexTag = indexTag,
+                IsEnabled = true,
+                Name = GetWidgetName(index),
+                IcoPath = GetWidgetIcoPath(index),
+            };
+        }
+
+        return null;
     }
 
     public bool IsWidgetUnknown(string widgetId)

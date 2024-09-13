@@ -15,6 +15,7 @@ global using DesktopWidgets3.Helpers;
 global using DesktopWidgets3.Helpers.Dialog;
 global using DesktopWidgets3.Helpers.Navigation;
 global using DesktopWidgets3.Models;
+global using DesktopWidgets3.Models.Parameter;
 global using DesktopWidgets3.ViewModels.Commands;
 global using DesktopWidgets3.ViewModels.Pages;
 global using DesktopWidgets3.Views.Pages;

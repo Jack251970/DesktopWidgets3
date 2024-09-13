@@ -89,13 +89,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // update dashboard page
         if (refresh)
         {
-            var parameter = new Dictionary<string, object>
+            RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
-                { "UpdateEvent", DashboardViewModel.UpdateEvent.Add },
-                { "Id", widget.Id },
-                { "IndexTag", widget.IndexTag }
-            };
-            RefreshDashboardPage(parameter);
+                Event = DashboardViewModelNavigationParameter.UpdateEvent.Add,
+                Id = widgetId,
+                IndexTag = indexTag
+            });
         }
 
         return indexTag;
@@ -138,13 +137,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // refresh dashboard page
         if (refresh)
         {
-            var parameter = new Dictionary<string, object>
+            RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
-                { "UpdateEvent", DashboardViewModel.UpdateEvent.Delete },
-                { "Id", widgetId },
-                { "IndexTag", indexTag }
-            };
-            RefreshDashboardPage(parameter);
+                Event = DashboardViewModelNavigationParameter.UpdateEvent.Delete,
+                Id = widgetId,
+                IndexTag = indexTag
+            });
         }
     }
 
@@ -190,7 +188,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             var widgetSetting = GetWidgetSettings(widgetId, indexTag);
             if (widgetSetting != null)
             {
-                viewModel.InitializeSettings(new WidgetNavigationParameter()
+                viewModel.InitializeSettings(new WidgetViewModelNavigationParameter()
                 {
                     Id = widgetId,
                     IndexTag = indexTag,
@@ -253,7 +251,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             if (frameworkElement is IViewModel element)
             {
                 viewModel = element.ViewModel;
-                viewModel.InitializeSettings(new WidgetNavigationParameter()
+                viewModel.InitializeSettings(new WidgetViewModelNavigationParameter()
                 {
                     Id = widgetId,
                     IndexTag = indexTag,
@@ -433,13 +431,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetId = _widgetId;
         var indexTag = _indexTag;
         await DisableWidgetAsync(widgetId, indexTag);
-        var parameter = new Dictionary<string, object>
+        RefreshDashboardPage(new DashboardViewModelNavigationParameter()
         {
-            { "UpdateEvent", DashboardViewModel.UpdateEvent.Disable },
-            { "Id", widgetId },
-            { "IndexTag", indexTag }
-        };
-        RefreshDashboardPage(parameter);
+            Event = DashboardViewModelNavigationParameter.UpdateEvent.Disable,
+            Id = widgetId,
+            IndexTag = indexTag
+        });
     }
 
     private async void DeleteWidget()
