@@ -1,7 +1,7 @@
 ﻿{
-  "ID": "7A0C8F221280461E9B02D3CFF2D2BD35",
-  "Name": "Digital Clock",
-  "Description": "Show system time with digital clock",
+  "ID": "949ADC2E912C4772BC3025A1E9DA32A0",
+  "Name": "Analog Clock",
+  "Description": "Show system time with analog clock",
   "Author": "Jack251970",
   "Version": "1.0.0",
   "Language": "csharp",

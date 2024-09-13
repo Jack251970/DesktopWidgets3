@@ -2,13 +2,20 @@
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopWidgets3.Widget.Jack251970.AnalogClock.Setting;
+using DesktopWidgets3.Widget.Jack251970.AnalogClock.UserControls;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 
-public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing
+public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing, IBatterySaver
 {
     #region view properties
+
+    [ObservableProperty]
+    private HandsMode _handsMode = HandsMode.Precise;
+
+    [ObservableProperty]
+    private DateTime _dateTime = DateTime.Now;
 
     [ObservableProperty]
     private string _systemTime = string.Empty;
@@ -32,7 +39,11 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
 
     private void UpdateTime()
     {
-        SystemTime = DateTime.Now.ToString(timingFormat);
+        var nowTime = DateTime.Now;
+        var systemTime = nowTime.ToString(timingFormat);
+
+        DateTime = nowTime;
+        SystemTime = systemTime;
     }
 
     #region abstract methods
@@ -82,6 +93,15 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
     {
         dispatcherQueueTimer.Stop();
         dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
+    }
+
+    #endregion
+
+    #region battery saver
+
+    public void EnableBatterySaver(bool enable)
+    {
+        HandsMode = enable ? HandsMode.Normal : HandsMode.Precise;
     }
 
     #endregion
