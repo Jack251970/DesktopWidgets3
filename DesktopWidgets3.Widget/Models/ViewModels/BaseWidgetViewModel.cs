@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace DesktopWidgets3.Widget.Models.ViewModel;
+namespace DesktopWidgets3.Widget.Models.ViewModels;
 
 public abstract class BaseWidgetViewModel : ObservableRecipient
 {
