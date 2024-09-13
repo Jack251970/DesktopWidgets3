@@ -10,7 +10,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
 
-    private List<WidgetPair> AllWidgets { get; set; } = null!;
+    private List<WidgetPair> InstalledWidgets { get; set; } = null!;
     private List<WidgetMetadata> AllWidgetsMetadata { get; set; } = null!;
 
     private static readonly string[] WidgetsDirectories = [];  // TODO: Add user widget directory.
@@ -27,7 +27,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         // load all installed widgets
         var installedWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Installed).ToList();
-        (AllWidgets, var errorWidgets) = WidgetsLoader.Widgets(installedWidgetsMetadata);
+        (InstalledWidgets, var errorWidgets) = WidgetsLoader.Widgets(installedWidgetsMetadata);
 
         // show error notification
         if (errorWidgets.Count > 0)
@@ -173,7 +173,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public async Task DisposeWidgetsAsync()
     {
-        foreach (var widgetPair in AllWidgets)
+        foreach (var widgetPair in InstalledWidgets)
         {
             switch (widgetPair.Widget)
             {
@@ -199,7 +199,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         var failedPlugins = new ConcurrentQueue<WidgetPair>();
 
-        var InitTasks = AllWidgets.Select(pair => Task.Run(delegate
+        var initTasks = InstalledWidgets.Select(pair => Task.Run(delegate
         {
             try
             {
@@ -213,7 +213,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             }
         }));
 
-        await Task.WhenAll(InitTasks);
+        await Task.WhenAll(initTasks);
 
         if (!failedPlugins.IsEmpty)
         {
@@ -230,10 +230,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public FrameworkElement GetWidgetFrameworkElement(string widgetId)
     {
-        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = AllWidgets[index];
+            var widget = InstalledWidgets[index];
             try
             {
                 return widget.Widget.CreateWidgetFrameworkElement();
@@ -249,10 +249,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public async Task EnableWidgetAsync(string widgetId, bool firstWidget)
     {
-        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = AllWidgets[index];
+            var widget = InstalledWidgets[index];
             switch (widget.Widget)
             {
                 case IWidgetEnableDisable enableDisable:
@@ -269,10 +269,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public async Task DisableWidgetAsync(string widgetId, bool lastWidget)
     {
-        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = AllWidgets[index];
+            var widget = InstalledWidgets[index];
             switch (widget.Widget)
             {
                 case IWidgetEnableDisable enableDisable:
@@ -293,10 +293,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public BaseWidgetSettings GetDefaultSetting(string widgetId)
     {
-        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = AllWidgets[index];
+            var widget = InstalledWidgets[index];
             if (widget.Widget is IWidgetSetting widgetSetting)
             {
                 return widgetSetting.GetDefaultSetting();
@@ -308,10 +308,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public FrameworkElement GetWidgetSettingFrameworkElement(string widgetId)
     {
-        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = AllWidgets[index];
+            var widget = InstalledWidgets[index];
             if (widget.Widget is IWidgetSetting widgetSetting)
             {
                 try
@@ -334,23 +334,32 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public string GetWidgetName(string widgetId)
     {
-        foreach (var metadata in AllWidgetsMetadata)
+        var index = AllWidgetsMetadata.FindIndex(x => x.ID == widgetId);
+        if (index != -1)
         {
-            if (metadata.ID == widgetId)
-            {
-                return metadata.Name;
-            }
+            return AllWidgetsMetadata[index].Name;
         }
 
         return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
     }
 
-    public RectSize GetDefaultSize(string widgetId)
+    private string GetWidgetIcoPath(string widgetId)
     {
-        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = AllWidgetsMetadata.FindIndex(x => x.ID == widgetId);
         if (index != -1)
         {
-            var widget = AllWidgets[index];
+            return AllWidgetsMetadata[index].IcoPath;
+        }
+
+        return Constant.UnknownWidgetIcoPath;
+    }
+
+    public RectSize GetDefaultSize(string widgetId)
+    {
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
+        {
+            var widget = InstalledWidgets[index];
             return new RectSize(widget.Metadata.DefaultWidth, widget.Metadata.DefaultHeight);
         }
 
@@ -359,10 +368,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public RectSize GetMinSize(string widgetId)
     {
-        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = AllWidgets[index];
+            var widget = InstalledWidgets[index];
             return new(widget.Metadata.MinWidth, widget.Metadata.MinHeight);
         }
 
@@ -371,10 +380,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public RectSize GetMaxSize(string widgetId)
     {
-        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = AllWidgets[index];
+            var widget = InstalledWidgets[index];
             return new(widget.Metadata.MaxWidth, widget.Metadata.MaxHeight);
         }
 
@@ -388,11 +397,22 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             return false;
         }
 
-        var index = AllWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = AllWidgets[index];
+            var widget = InstalledWidgets[index];
             return widget.Metadata.InNewThread;
+        }
+
+        return false;
+    }
+
+    private bool IsInstalled(string widgetId)
+    {
+        var index = AllWidgetsMetadata.FindIndex(x => x.ID == widgetId);
+        if (index != -1)
+        {
+            return AllWidgetsMetadata[index].Installed;
         }
 
         return false;
@@ -404,9 +424,9 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public List<DashboardWidgetItem> GetAllDashboardItems()
     {
-        List<DashboardWidgetItem> dashboardItemList = [];
+        var dashboardItemList = new List<DashboardWidgetItem>();
 
-        foreach (var widget in AllWidgets)
+        foreach (var widget in InstalledWidgets)
         {
             dashboardItemList.Add(new DashboardWidgetItem()
             {
@@ -425,9 +445,9 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     public List<DashboardWidgetItem> GetYourDashboardItemsAsync()
     {
         var widgetList = _appSettingsService.GetWidgetsList();
+        var dashboardItemList = new List<DashboardWidgetItem>();
         var unknownWidgetIdList = new List<string>();
 
-        List<DashboardWidgetItem> dashboardItemList = [];
         foreach (var widget in widgetList)
         {
             var widgetId = widget.Id;
@@ -489,32 +509,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             Name = string.Format("Unknown_Widget_Name".GetLocalized(), widgetIndex),
             IcoPath = Constant.UnknownWidgetIcoPath,
         };
-    }
-
-    private string GetWidgetIcoPath(string widgetId)
-    {
-        foreach (var metadata in AllWidgetsMetadata)
-        {
-            if (metadata.ID == widgetId)
-            {
-                return metadata.IcoPath;
-            }
-        }
-
-        return Constant.UnknownWidgetIcoPath;
-    }
-
-    private bool IsInstalled(string widgetId)
-    {
-        foreach (var metadata in AllWidgetsMetadata)
-        {
-            if (metadata.ID == widgetId)
-            {
-                return metadata.Installed;
-            }
-        }
-
-        return false;
     }
 
     #endregion

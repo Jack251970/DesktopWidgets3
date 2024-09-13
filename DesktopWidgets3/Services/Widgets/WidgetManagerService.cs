@@ -14,8 +14,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private readonly IActivationService _activationService = activationService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
-    private readonly List<WidgetWindowPair> AllWidgets = [];
-    private readonly List<WidgetWindow> AllWidgetWindows = [];
+    private readonly List<WidgetWindowPair> EnabledWidgets = [];
+    private readonly List<WidgetWindow> EnabledWidgetWindows = [];
 
     // cached widget id and index tag for widget menu
     private string _widgetId = string.Empty;
@@ -23,10 +23,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private const int EditModeOverlayWindowXamlWidth = 136;
     private const int EditModeOverlayWindowXamlHeight = 48;
-
     private OverlayWindow EditModeOverlayWindow = null!;
-    private readonly List<JsonWidgetItem> originalWidgetList = [];
-    private bool restoreMainWindow = false;
+
+    private readonly List<JsonWidgetItem> _originalWidgetList = [];
+    private bool _restoreMainWindow = false;
 
     #region widget window
 
@@ -150,7 +150,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public async Task DisableAllWidgetsAsync()
     {
-        await AllWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindow);
+        await EnabledWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindow);
     }
 
     public bool IsWidgetEnabled(string widgetId, int indexTag)
@@ -224,7 +224,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetId = widgetItem.Id;
 
         // envoke disable widget interface
-        var firstWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
+        var firstWidget = !EnabledWidgetWindows.Any(x => x.Id == widgetId);
         await _widgetResourceService.EnableWidgetAsync(widgetId, firstWidget);
     }
 
@@ -283,13 +283,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             widgetWindow.Show(true);
 
             // add to widget list & widget window list
-            AllWidgets.Add(new WidgetWindowPair()
+            EnabledWidgets.Add(new WidgetWindowPair()
             {
                 Window = widgetWindow,
                 ViewModel = viewModel,
                 Menu = widgetMenu
             });
-            AllWidgetWindows.Add(widgetWindow);
+            EnabledWidgetWindows.Add(widgetWindow);
         }
     }
 
@@ -315,7 +315,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetId = widgetItem.Id;
 
         // envoke disable widget interface
-        var lastWidget = !AllWidgetWindows.Any(x => x.Id == widgetId);
+        var lastWidget = !EnabledWidgetWindows.Any(x => x.Id == widgetId);
         await _widgetResourceService.DisableWidgetAsync(widgetId, lastWidget);
     }
 
@@ -326,8 +326,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var indexTag = widgetWindow.IndexTag;
 
         // remove from widget list & widget window list
-        AllWidgets.RemoveAll(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
-        AllWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
+        EnabledWidgets.RemoveAll(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+        EnabledWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
 
         // close window
         await WindowsExtensions.CloseWindow(widgetWindow);
@@ -335,10 +335,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private WidgetWindow? GetWidgetWindow(string widgetId, int indexTag)
     {
-        var index = AllWidgetWindows.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+        var index = EnabledWidgetWindows.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
         if (index != -1)
         {
-            return AllWidgetWindows[index];
+            return EnabledWidgetWindows[index];
         }
 
         return null;
@@ -346,10 +346,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private BaseWidgetViewModel? GetWidgetViewModel(string widgetId, int indexTag)
     {
-        var index = AllWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+        var index = EnabledWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
         if (index != -1)
         {
-            return AllWidgets[index].ViewModel;
+            return EnabledWidgets[index].ViewModel;
         }
 
         return null;
@@ -357,10 +357,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private MenuFlyout? GetWidgetMenu(string widgetId, int indexTag)
     {
-        var index = AllWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+        var index = EnabledWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
         if (index != -1)
         {
-            return AllWidgets[index].Menu;
+            return EnabledWidgets[index].Menu;
         }
 
         return null;
@@ -529,10 +529,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async void EnterEditMode()
     {
         // save original widget list
-        originalWidgetList.Clear();
-        foreach (var widgetWindow in AllWidgetWindows)
+        _originalWidgetList.Clear();
+        foreach (var widgetWindow in EnabledWidgetWindows)
         {
-            originalWidgetList.Add(new JsonWidgetItem()
+            _originalWidgetList.Add(new JsonWidgetItem()
             {
                 Id = widgetWindow.Id,
                 IndexTag = widgetWindow.IndexTag,
@@ -545,13 +545,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         // set edit mode for all widgets
-        await AllWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true));
+        await EnabledWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true));
 
         // hide main window if visible
         if (App.MainWindow.Visible)
         {
             await App.MainWindow.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindow);
-            restoreMainWindow = true;
+            _restoreMainWindow = true;
         }
 
         // get primary monitor info & show edit mode overlay window
@@ -574,23 +574,23 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async void SaveAndExitEditMode()
     {
         // restore edit mode for all widgets
-        await AllWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false));
+        await EnabledWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false));
 
         // hide edit mode overlay window
         EditModeOverlayWindow?.Hide(true);
 
         // restore main window if needed
-        if (restoreMainWindow)
+        if (_restoreMainWindow)
         {
             App.MainWindow.Show();
-            restoreMainWindow = false;
+            _restoreMainWindow = false;
         }
 
         // save widget list
         await Task.Run(async () =>
         {
             List<JsonWidgetItem> widgetList = [];
-            foreach (var widgetWindow in AllWidgetWindows)
+            foreach (var widgetWindow in EnabledWidgetWindows)
             {
                 widgetList.Add(new JsonWidgetItem()
                 {
@@ -611,13 +611,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async void CancelAndExitEditMode()
     {
         // restore position, size, edit mode for all widgets
-        await AllWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
+        await EnabledWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
         {
             // set edit mode for all widgets
             await window.SetEditMode(false);
 
             // read original position and size
-            var originalWidget = originalWidgetList.First(x => x.Id == window.Id && x.IndexTag == window.IndexTag);
+            var originalWidget = _originalWidgetList.First(x => x.Id == window.Id && x.IndexTag == window.IndexTag);
 
             // restore position and size
             if (originalWidget != null)
@@ -632,10 +632,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         EditModeOverlayWindow?.Hide(true);
 
         // restore main window if needed
-        if (restoreMainWindow)
+        if (_restoreMainWindow)
         {
             App.MainWindow.Show();
-            restoreMainWindow = false;
+            _restoreMainWindow = false;
         }
     }
 

@@ -48,15 +48,7 @@ public class DashboardWidgetItem : BaseWidgetItem
 {
     public required string Name { get; set; }
 
-    public required bool IsUnknown { get; set; }
-
-    public required bool IsInstalled { get; set; }
-
-    public bool Editable => (!IsUnknown) && IsInstalled;
-
-    public string? Description { get; set; }
-
-    public string? IcoPath { get; set; }
+    public required string IcoPath { get; set; }
 
     public new bool IsEnabled
     {
@@ -73,6 +65,12 @@ public class DashboardWidgetItem : BaseWidgetItem
             }
         }
     }
+
+    public required bool IsUnknown { get; set; }
+
+    public required bool IsInstalled { get; set; }
+
+    public bool Editable => (!IsUnknown) && IsInstalled;
 
     public Action<DashboardWidgetItem>? EnabledChangedCallback { get; set; }
 }

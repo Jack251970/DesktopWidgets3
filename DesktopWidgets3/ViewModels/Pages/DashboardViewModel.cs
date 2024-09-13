@@ -17,12 +17,47 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
 
     private bool _isInitialized;
 
+    #region Load
+
+    private void LoadAllWidgets()
+    {
+        allWidgets = _widgetResourceService.GetAllDashboardItems();
+    }
+
+    private void LoadYourWidgets()
+    {
+        yourWidgets = _widgetResourceService.GetYourDashboardItemsAsync();
+        foreach (var item in yourWidgets)
+        {
+            item.EnabledChangedCallback = WidgetEnabledChanged;
+        }
+    }
+
+    private async void WidgetEnabledChanged(DashboardWidgetItem dashboardListItem)
+    {
+        if (dashboardListItem.IsEnabled)
+        {
+            await _widgetManagerService.EnableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag);
+            yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = true;
+        }
+        else
+        {
+            await _widgetManagerService.DisableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag);
+            yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = false;
+        }
+
+        RefreshYourWidgets();
+    }
+
+    #endregion
+
     #region Refresh
 
     internal void RefreshAddedWidget(string widgetId, int indexTag)
     {
         var widgetItem = _widgetResourceService.GetDashboardItem(widgetId, indexTag);
         widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+
         yourWidgets.Add(widgetItem);
 
         RefreshYourWidgets();
@@ -61,40 +96,6 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
                 DisabledWidgets.Add(item);
             }
         }
-    }
-
-    #endregion
-
-    #region Load
-
-    private void LoadAllWidgets()
-    {
-        allWidgets = _widgetResourceService.GetAllDashboardItems();
-    }
-
-    private void LoadYourWidgets()
-    {
-        yourWidgets = _widgetResourceService.GetYourDashboardItemsAsync();
-        foreach (var item in yourWidgets)
-        {
-            item.EnabledChangedCallback = WidgetEnabledChanged;
-        }
-    }
-
-    private async void WidgetEnabledChanged(DashboardWidgetItem dashboardListItem)
-    {
-        if (dashboardListItem.IsEnabled)
-        {
-            await _widgetManagerService.EnableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag);
-            yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = true;
-        }
-        else
-        {
-            await _widgetManagerService.DisableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag);
-            yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = false;
-        }
-
-        RefreshYourWidgets();
     }
 
     #endregion
