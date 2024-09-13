@@ -10,6 +10,7 @@ Before building, you need to add these package sources.
 Build the solution in Visual Studio or run `dotnet build` from the command line.
 
 ## Reference
+* devhome: https://github.com/microsoft/devhome
 * Files: https://github.com/files-community/Files
 * Flow.Launcher: https://github.com/Flow-Launcher/Flow.Launcher
 * fluentui-system-icons: https://github.com/microsoft/fluentui-system-icons
