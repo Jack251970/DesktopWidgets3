@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace DesktopWidgets3.Core.Widgets.Helpers;
 
@@ -6,25 +7,27 @@ public static class WidgetsLoader
 {
     private static string ClassName => typeof(WidgetsLoader).Name;
 
+    private static readonly ConcurrentQueue<WidgetPair> Widgets = [];
+
+    private static readonly ConcurrentQueue<string> ErrorWidgets = [];
+
     public static async Task<(List<WidgetPair> allWidgets, List<string> errorWidgets)> WidgetsAsync(List<WidgetMetadata> metadatas)
     {
-        (var dotnetWidgets, var errorDotNetWidgets) = await DotNetWidgetsAsync(metadatas);
+        Widgets.Clear();
+        ErrorWidgets.Clear();
 
-        var allWidgets = dotnetWidgets;
-        var errorWidgets = errorDotNetWidgets;
+        var tasks = DotNetWidgets(metadatas);
 
-        return (allWidgets, errorWidgets);
+        await Task.WhenAll(tasks);
+
+        return (Widgets.ToList(), ErrorWidgets.ToList());
     }
 
-    private static async Task<(List<WidgetPair> dotNetWidgets, List<string> errorDotNetWidgets)> DotNetWidgetsAsync(List<WidgetMetadata> source)
+    private static IEnumerable<Task> DotNetWidgets(List<WidgetMetadata> metadatas)
     {
-        var erroredWidgets = new List<string>();
+        var dotnetMetadatas = metadatas.Where(o => AllowedLanguage.IsDotNet(o.Language)).ToList();
 
-        var widgets = new List<WidgetPair>();
-        var metadatas = source.Where(o => AllowedLanguage.IsDotNet(o.Language));
-
-        // TODO: Use task.WhenAll
-        foreach (var metadata in metadatas)
+        return metadatas.Select(async metadata =>
         {
             Assembly? assembly = null;
             IAsyncWidget? widget = null;
@@ -59,13 +62,11 @@ public static class WidgetsLoader
 
             if (widget == null)
             {
-                erroredWidgets.Add(metadata.Name);
-                continue;
+                ErrorWidgets.Enqueue(metadata.Name);
+                return;
             }
 
-            widgets.Add(new WidgetPair { Widget = widget, Metadata = metadata });
-        }
-
-        return (widgets, erroredWidgets);
+            Widgets.Enqueue(new WidgetPair { Widget = widget, Metadata = metadata });
+        });
     }
 }
