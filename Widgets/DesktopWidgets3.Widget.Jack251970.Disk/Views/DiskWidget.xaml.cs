@@ -1,18 +1,17 @@
-using DesktopWidgets3.Widget.Jack251970.Disk.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.Disk.Views;
 
-public sealed partial class ClockWidget : UserControl, IViewModel, IWidgetMenu
+public sealed partial class DiskWidget : UserControl, IViewModel, IWidgetMenu
 {
-    public DigitalClockViewModel ViewModel = new();
+    public DiskViewModel ViewModel;
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 
-    public ClockWidget()
+    public DiskWidget(WidgetInitContext context, HardwareInfoService hardwareInfoService)
     {
-        DataContext = ViewModel;
+        ViewModel = new DiskViewModel(context, hardwareInfoService);
         InitializeComponent();
     }
 

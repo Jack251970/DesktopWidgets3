@@ -1,6 +1,4 @@
 using System;
-using DesktopWidgets3.Widget.Jack251970.Disk.Setting;
-using DesktopWidgets3.Widget.Jack251970.Disk.Views;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Jack251970.Disk;
@@ -11,14 +9,19 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     private WidgetInitContext Context = null!;
 
-    public FrameworkElement CreateWidgetFrameworkElement()
-    {
-        return new ClockWidget();
-    }
+    private HardwareInfoService HardwareInfoService = null!;
 
     public void InitWidget(WidgetInitContext context)
     {
         Context = context;
+
+        HardwareInfoService = new HardwareInfoService(context.API);
+        HardwareInfoService.StartMonitor(HardwareType.Disk);
+    }
+
+    public FrameworkElement CreateWidgetFrameworkElement()
+    {
+        return new DiskWidget(Context, HardwareInfoService);
     }
 
     public void EnableWidget(bool firstWidget)
@@ -37,12 +40,12 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public BaseWidgetSettings GetDefaultSetting()
     {
-        return new DigitalClockSettings();
+        return new DiskSettings();
     }
 
     public FrameworkElement CreateWidgetSettingFrameworkElement()
     {
-        return new DigitalClockSetting(Context);
+        return new DiskSetting(Context);
     }
 
     #endregion

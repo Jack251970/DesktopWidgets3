@@ -1,38 +1,147 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Widget.Jack251970.Disk.Setting;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.Disk.ViewModels;
 
-public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing
+public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing
 {
+    private static string ClassName => typeof(DiskViewModel).Name;
+
     #region view properties
 
-    [ObservableProperty]
-    private string _systemTime = string.Empty;
+    public ObservableCollection<ProgressCardData> ProgressCardItems { get; set; } = [];
 
     #endregion
 
     #region settings
 
-    private string timingFormat = "T";
-
     #endregion
 
-    private readonly DispatcherQueueTimer dispatcherQueueTimer;
+    private readonly WidgetInitContext Context;
 
-    public DigitalClockViewModel()
+    private readonly HardwareInfoService _hardwareInfoService;
+
+    private bool updating = false;
+
+    public DiskViewModel(WidgetInitContext context, HardwareInfoService hardwareInfoService)
     {
-        dispatcherQueueTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
-        dispatcherQueueTimer.Interval = TimeSpan.FromSeconds(1);
-        dispatcherQueueTimer.Tick += (_, _) => UpdateTime();
+        Context = context;
+
+        _hardwareInfoService = hardwareInfoService;
+        _hardwareInfoService.RegisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
     }
 
-    private void UpdateTime()
+    private void UpdateDisk()
     {
-        SystemTime = DateTime.Now.ToString(timingFormat);
+        try
+        {
+            var diskStats = _hardwareInfoService.GetDiskStats();
+
+            if (diskStats == null)
+            {
+                return;
+            }
+
+            var progressCardData = new List<ProgressCardData>();
+
+            for (var i = 0; i < diskStats.GetDiskCount(); i++)
+            {
+                var diskUsage = diskStats.GetDiskUsage(i);
+                var diskPartitions = diskUsage.PartitionDatas;
+                foreach (var partition in diskPartitions)
+                {
+                    if (partition.Name != null)
+                    {
+                        var loadValue = partition.Size == 0 ? 0f : (partition.Size - partition.FreeSpace) * 100f / partition.Size;
+
+                        progressCardData.Add(new ProgressCardData()
+                        {
+                            LeftTitle = partition.Name,
+                            RightTitle = FormatUtils.FormatUsedInfoByte(partition.Size - partition.FreeSpace, partition.Size),
+                            ProgressValue = loadValue
+                        });
+                    }
+                }
+            }
+
+            progressCardData.Sort((x, y) => string.Compare(x.LeftTitle, y.LeftTitle, StringComparison.Ordinal));
+
+            if (progressCardData.Count == 0)
+            {
+                return;
+            }
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (updating)
+                {
+                    return;
+                }
+
+                updating = true;
+
+                try
+                {
+                    var dataCount = progressCardData.Count;
+                    var itemsCount = ProgressCardItems.Count;
+
+                    // Remove extra items
+                    if (dataCount < itemsCount)
+                    {
+                        for (var i = dataCount; i < itemsCount; i++)
+                        {
+                            ProgressCardItems.RemoveAt(i);
+                        }
+
+                        itemsCount = dataCount;
+                    }
+
+                    // Update items
+                    for (var i = 0; i < itemsCount; i++)
+                    {
+                        if (ProgressCardItems[i].LeftTitle != progressCardData[i].LeftTitle)
+                        {
+                            var data = progressCardData[i].LeftTitle;
+                            ProgressCardItems[i].LeftTitle = data;
+                        }
+                        if (ProgressCardItems[i].RightTitle != progressCardData[i].RightTitle)
+                        {
+                            var data = progressCardData[i].RightTitle;
+                            ProgressCardItems[i].RightTitle = data;
+                        }
+                        if (ProgressCardItems[i].ProgressValue != progressCardData[i].ProgressValue)
+                        {
+                            var data = progressCardData[i].ProgressValue;
+                            ProgressCardItems[i].ProgressValue = data;
+                        }
+                    }
+
+                    // Add extra items
+                    if (dataCount > itemsCount)
+                    {
+                        var data = progressCardData.Skip(itemsCount).ToList();
+                        foreach (var item in data)
+                        {
+                            ProgressCardItems.Add(item);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Context.API.LogError(ClassName, e, "Disk Widget Update Error on DispatcherQueue");
+                }
+
+                updating = false;
+            });
+        }
+        catch (Exception e)
+        {
+            Context.API.LogError(ClassName, e, "Disk Widget Update Error");
+        }
     }
 
     #region abstract methods
@@ -40,19 +149,20 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
         // initialize or update widget from settings
-        if (settings is DigitalClockSettings digitalClockSetting)
+        if (settings is DiskSettings)
         {
-            if (digitalClockSetting.ShowSeconds != (timingFormat == "T"))
-            {
-                timingFormat = digitalClockSetting.ShowSeconds ? "T" : "t";
-            }
+
         }
 
         // initialize widget
         if (initialized)
         {
-            SystemTime = DateTime.Now.ToString(timingFormat);
-            dispatcherQueueTimer.Start();
+            ProgressCardItems.Add(new ProgressCardData()
+            {
+                LeftTitle = "C:",
+                RightTitle = "--",
+                ProgressValue = 0
+            });
         }
     }
 
@@ -64,11 +174,11 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
     {
         if (enable)
         {
-            dispatcherQueueTimer.Start();
+            _hardwareInfoService.RegisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
         }
         else
         {
-            dispatcherQueueTimer.Stop();
+            _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
         }
 
         await Task.CompletedTask;
@@ -80,8 +190,7 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
 
     public void WidgetWindow_Closing()
     {
-        dispatcherQueueTimer.Stop();
-        dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
+        _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
     }
 
     #endregion
