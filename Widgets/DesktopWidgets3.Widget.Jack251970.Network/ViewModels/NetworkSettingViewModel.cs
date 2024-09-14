@@ -15,7 +15,7 @@ public partial class NetworkSettingViewModel(WidgetInitContext context) : BaseWi
 
     private NetworkSettings Settings = null!;
 
-    private bool isInitialized = false;
+    private bool _initialized = false;
 
     #region abstract methods
 
@@ -28,9 +28,9 @@ public partial class NetworkSettingViewModel(WidgetInitContext context) : BaseWi
 
             UseBps = Settings.UseBps;
 
-            if (!initialized)
+            if (!_initialized)
             {
-                isInitialized = true;
+                _initialized = true;
             }
         }
     }
@@ -39,7 +39,7 @@ public partial class NetworkSettingViewModel(WidgetInitContext context) : BaseWi
 
     partial void OnUseBpsChanged(bool value)
     {
-        if (isInitialized)
+        if (_initialized)
         {
             Settings.UseBps = value;
             Context.API.UpdateWidgetSettings(this, Settings, true, false);

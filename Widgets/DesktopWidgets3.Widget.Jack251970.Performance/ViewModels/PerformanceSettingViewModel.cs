@@ -16,7 +16,7 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
 
     private DigitalClockSettings Settings = null!;
 
-    private bool isInitialized = false;
+    private bool _initialized = false;
 
     #region abstract methods
 
@@ -29,9 +29,9 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
 
             ShowSeconds = Settings.ShowSeconds;
 
-            if (!initialized)
+            if (!_initialized)
             {
-                isInitialized = true;
+                _initialized = true;
             }
         }
     }
@@ -40,7 +40,7 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
 
     partial void OnShowSecondsChanged(bool value)
     {
-        if (isInitialized)
+        if (_initialized)
         {
             Settings.ShowSeconds = value;
             Context.API.UpdateWidgetSettings(this, Settings, true, false);
