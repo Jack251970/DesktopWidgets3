@@ -7,13 +7,14 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 {
     #region IWidget
 
-    private HardwareInfoService HardwareInfoService = null!;
-
     private WidgetInitContext Context = null!;
+
+    private HardwareInfoService HardwareInfoService = null!;
 
     public void InitWidget(WidgetInitContext context)
     {
         Context = context;
+
         HardwareInfoService = new HardwareInfoService(context.API);
         HardwareInfoService.StartMonitor(HardwareType.Network);
     }
