@@ -11,7 +11,9 @@ global using DesktopWidgets3.Core.Widgets.Views.Pages;
 global using DesktopWidgets3.Core.Widgets.Views.Windows;
 
 // CustomExtensions.WinUI
-global using CustomExtensions.WinUI;
+global using CustomExtensions.WinUI.Contracts;
+global using CustomExtensions.WinUI.Extensions;
+global using CustomExtensions.WinUI.Models;
 
 // DesktopWidgets3.Core
 global using DesktopWidgets3.Core.Contracts.Services;

@@ -32,12 +32,9 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 
 	public async Task LoadAsync()
 	{
-		if (IsDisposed)
-		{
-			throw new ObjectDisposedException(nameof(ExtensionAssembly));
-		}
+		ObjectDisposedException.ThrowIf(IsDisposed, new ObjectDisposedException(nameof(ExtensionAssembly)));
 
-		await LoadResources();
+        await LoadResources();
 		RegisterXamlTypeMetadataProviders();
 	}
 
@@ -54,16 +51,13 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 			return;
 		}
 
-		StorageFile file = await StorageFile.GetFileFromPathAsync(resourcePriFileInfo.FullName);
-		ResourceManager.Current.LoadPriFiles(new[] { file });
+		var file = await StorageFile.GetFileFromPathAsync(resourcePriFileInfo.FullName);
+		ResourceManager.Current.LoadPriFiles([file]);
 	}
 
 	private void RegisterXamlTypeMetadataProviders()
 	{
-		if (IsDisposed)
-		{
-			throw new ObjectDisposedException(nameof(ExtensionAssembly));
-		}
+		ObjectDisposedException.ThrowIf(IsDisposed, new ObjectDisposedException(nameof(ExtensionAssembly)));
 
 		_ = Disposables.AddRange(ForeignAssembly.ExportedTypes
 					.Where(type => type.IsAssignableTo(typeof(IXamlMetadataProvider)))
@@ -91,17 +85,17 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 			return false;
 		}
 
-		// NB: this assumes all your resources exist under the current assembly name
+		// Note: this assumes all your resources exist under the current assembly name
 		// this won't be true for nested dependencies or the like, so they will need to 
 		// enable the same capabilities or they may crash when using hot reload
-		string assemblyResDir = Path.Combine(ForeignAssemblyDir, ForeignAssemblyName);
+		var assemblyResDir = Path.Combine(ForeignAssemblyDir, ForeignAssemblyName);
 		if (!Directory.Exists(assemblyResDir))
 		{
 			Trace.TraceError($"HotReload(Debug) : Cannot enable hot reload for {ForeignAssembly.FullName} because {assemblyResDir} does not exist on the system");
 			IsHotReloadAvailable = false;
 			return false;
 		}
-		string debugTargetResDir = Path.Combine(HostingProcessDir, ForeignAssemblyName);
+		var debugTargetResDir = Path.Combine(HostingProcessDir, ForeignAssemblyName);
 		DirectoryInfo debugTargetResDirInfo = new(debugTargetResDir);
 		if (debugTargetResDirInfo.Exists)
 		{

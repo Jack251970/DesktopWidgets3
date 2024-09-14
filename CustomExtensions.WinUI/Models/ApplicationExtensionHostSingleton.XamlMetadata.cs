@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Markup;
-
 using System.Reflection;
 
 namespace CustomExtensions.WinUI;
@@ -13,7 +12,7 @@ internal partial class ApplicationExtensionHostSingleton<T> where T : Applicatio
 			BindingFlags.NonPublic | BindingFlags.Instance,
 			null,
 			null,
-			Array.Empty<Type>(),
+            [],
 			null)
 		?? throw new AccessViolationException();
 
@@ -23,7 +22,7 @@ internal partial class ApplicationExtensionHostSingleton<T> where T : Applicatio
 			BindingFlags.NonPublic | BindingFlags.Instance,
 			null,
 			null,
-			Array.Empty<Type>(),
+            [],
 			null)
 		?? throw new AccessViolationException();
 
@@ -33,7 +32,7 @@ internal partial class ApplicationExtensionHostSingleton<T> where T : Applicatio
 			BindingFlags.NonPublic | BindingFlags.Instance,
 			null,
 			typeof(List<IXamlMetadataProvider>),
-			Array.Empty<Type>(),
+            [],
 			null)
 		?? throw new AccessViolationException();
 
@@ -41,9 +40,9 @@ internal partial class ApplicationExtensionHostSingleton<T> where T : Applicatio
 	{
 		get
 		{
-			object appProvider = MetadataProviderProperty.GetValue(Application) ?? throw new AccessViolationException();
-			object provider = TypeInfoProviderProperty.GetValue(appProvider) ?? throw new AccessViolationException();
-			List<IXamlMetadataProvider> otherProviders = (OtherProvidersProperty.GetValue(provider) as List<IXamlMetadataProvider>) ?? throw new AccessViolationException();
+			var appProvider = MetadataProviderProperty.GetValue(Application) ?? throw new AccessViolationException();
+            var provider = TypeInfoProviderProperty.GetValue(appProvider) ?? throw new AccessViolationException();
+            var otherProviders = (OtherProvidersProperty.GetValue(provider) as List<IXamlMetadataProvider>) ?? throw new AccessViolationException();
 			return otherProviders;
 		}
 	}
@@ -51,6 +50,6 @@ internal partial class ApplicationExtensionHostSingleton<T> where T : Applicatio
 	public IDisposable RegisterXamlTypeMetadataProvider(IXamlMetadataProvider provider)
 	{
 		OtherProviders.Add(provider);
-		return new RunOnDispose(() => OtherProviders.Remove(provider));
+		return new DisposableObject(() => OtherProviders.Remove(provider));
 	}
 }

@@ -16,13 +16,13 @@ internal partial class ExtensionAssembly
 		{
 			throw new InvalidProgramException();
 		}
-		string resourceName = Path.GetFileName(callerFilePath)[..^3];
+		var resourceName = Path.GetFileName(callerFilePath)[..^3];
 		TryEnableHotReload();
 
-		string[] pathParts = callerFilePath.Split('\\')[..^1];
-		for (int i = pathParts.Length - 1; i > 1; i++)
+		var pathParts = callerFilePath.Split('\\')[..^1];
+		for (var i = pathParts.Length - 1; i > 1; i++)
 		{
-			string pathCandidate = Path.Join(pathParts[i..pathParts.Length].Append(resourceName).Prepend(ForeignAssemblyName).ToArray());
+			var pathCandidate = Path.Join(pathParts[i..pathParts.Length].Append(resourceName).Prepend(ForeignAssemblyName).ToArray());
 			FileInfo sourceResource = new(Path.Combine(ForeignAssemblyDir, pathCandidate));
 			FileInfo colocatedResource = new(Path.Combine(HostingProcessDir, pathCandidate));
 			if (colocatedResource.Exists)
