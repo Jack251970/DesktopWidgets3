@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Widget.Jack251970.DigitalClock.Setting;
+﻿namespace DesktopWidgets3.Widget.Jack251970.DigitalClock.Models;
 
 internal class DigitalClockSettings : BaseWidgetSettings
 {

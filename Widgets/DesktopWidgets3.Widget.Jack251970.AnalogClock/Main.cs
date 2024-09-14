@@ -1,6 +1,4 @@
 using System;
-using DesktopWidgets3.Widget.Jack251970.AnalogClock.Setting;
-using DesktopWidgets3.Widget.Jack251970.AnalogClock.Views;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock;
@@ -11,14 +9,14 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     private WidgetInitContext Context = null!;
 
-    public FrameworkElement CreateWidgetFrameworkElement()
-    {
-        return new ClockWidget();
-    }
-
     public void InitWidget(WidgetInitContext context)
     {
         Context = context;
+    }
+
+    public FrameworkElement CreateWidgetFrameworkElement()
+    {
+        return new ClockWidget();
     }
 
     public void EnableWidget(bool firstWidget)

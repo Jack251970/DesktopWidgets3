@@ -11,16 +11,16 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     private WidgetInitContext Context = null!;
 
-    public FrameworkElement CreateWidgetFrameworkElement()
-    {
-        return new NetworkWidget(Context, HardwareInfoService);
-    }
-
     public void InitWidget(WidgetInitContext context)
     {
         Context = context;
         HardwareInfoService = new HardwareInfoService(context.API);
         HardwareInfoService.StartMonitor(HardwareType.Network);
+    }
+
+    public FrameworkElement CreateWidgetFrameworkElement()
+    {
+        return new NetworkWidget(Context, HardwareInfoService);
     }
 
     public void EnableWidget(bool firstWidget)

@@ -1,5 +1,4 @@
-﻿using DesktopWidgets3.Widget.Jack251970.AnalogClock.Extensions;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;

@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Widget.Jack251970.AnalogClock.Setting;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 
@@ -18,14 +17,23 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
 
     private bool _initialized = false;
 
+    partial void OnShowSecondsChanged(bool value)
+    {
+        if (_initialized)
+        {
+            Settings.ShowSeconds = value;
+            Context.API.UpdateWidgetSettings(this, Settings, true, false);
+        }
+    }
+
     #region abstract methods
 
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
         // initialize or update properties by settings
-        if (settings is DigitalClockSettings digitalClockSetting)
+        if (settings is DigitalClockSettings digitalClockSettings)
         {
-            Settings = digitalClockSetting;
+            Settings = digitalClockSettings;
 
             ShowSeconds = Settings.ShowSeconds;
 
@@ -37,13 +45,4 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
     }
 
     #endregion
-
-    partial void OnShowSecondsChanged(bool value)
-    {
-        if (_initialized)
-        {
-            Settings.ShowSeconds = value;
-            Context.API.UpdateWidgetSettings(this, Settings, true, false);
-        }
-    }
 }

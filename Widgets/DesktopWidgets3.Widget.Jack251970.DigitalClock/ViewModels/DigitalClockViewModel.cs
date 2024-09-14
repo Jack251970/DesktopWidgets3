@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Widget.Jack251970.DigitalClock.Setting;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.DigitalClock.ViewModels;
@@ -40,11 +39,11 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
         // initialize or update widget from settings
-        if (settings is DigitalClockSettings digitalClockSetting)
+        if (settings is DigitalClockSettings digitalClockSettings)
         {
-            if (digitalClockSetting.ShowSeconds != (timingFormat == "T"))
+            if (digitalClockSettings.ShowSeconds != (timingFormat == "T"))
             {
-                timingFormat = digitalClockSetting.ShowSeconds ? "T" : "t";
+                timingFormat = digitalClockSettings.ShowSeconds ? "T" : "t";
             }
         }
 

@@ -1,4 +1,3 @@
-using DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -6,13 +5,13 @@ namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.Views;
 
 public sealed partial class ClockWidget : UserControl, IViewModel, IWidgetMenu
 {
-    public DigitalClockViewModel ViewModel = new();
+    public DigitalClockViewModel ViewModel;
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 
     public ClockWidget()
     {
-        DataContext = ViewModel;
+        ViewModel = new DigitalClockViewModel();
         InitializeComponent();
     }
 

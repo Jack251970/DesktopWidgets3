@@ -1,4 +1,3 @@
-using DesktopWidgets3.Widget.Jack251970.DigitalClock.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.DigitalClock.Views;
