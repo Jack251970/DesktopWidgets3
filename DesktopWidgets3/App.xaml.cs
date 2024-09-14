@@ -105,8 +105,8 @@ public partial class App : Application
                 // Dependency Injection
                 services.AddSingleton<IDependencyService, DependencyService>();
 
-                // Public API
-                services.AddSingleton<IPublicAPIService, PublicAPIService>();
+                // Dialog Managment
+                services.AddSingleton<IDialogService, DialogService>();
 
                 #endregion
 
@@ -133,10 +133,7 @@ public partial class App : Application
 
                 #endregion
 
-                #region Functional Service
-
-                // Widget Dialogs
-                services.AddSingleton<IDialogService, DialogService>();
+                #region Widget Service
 
                 // Widgets Management
                 services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
@@ -144,8 +141,8 @@ public partial class App : Application
                 // Widgets Resources
                 services.AddSingleton<IWidgetResourceService, WidgetResourceService>();
 
-                // System Info
-                services.AddSingleton<IHardwareInfoService, HardwareInfoService>();
+                // Public API
+                services.AddSingleton<IPublicAPIService, PublicAPIService>();
 
                 #endregion
 
