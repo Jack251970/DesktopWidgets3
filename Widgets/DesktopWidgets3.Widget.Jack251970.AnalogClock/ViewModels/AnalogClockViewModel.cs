@@ -5,7 +5,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 
-public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing, IBatterySaver
+public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing, IBatterySaver
 {
     #region view properties
 
@@ -28,7 +28,7 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
 
     private readonly DispatcherQueueTimer dispatcherQueueTimer;
 
-    public DigitalClockViewModel()
+    public AnalogClockViewModel()
     {
         dispatcherQueueTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
         dispatcherQueueTimer.Interval = TimeSpan.FromSeconds(1);
@@ -49,11 +49,11 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
         // initialize or update widget from settings
-        if (settings is DigitalClockSettings digitalClockSettings)
+        if (settings is AnalogClockSettings analogClockSettings)
         {
-            if (digitalClockSettings.ShowSeconds != (timingFormat == "T"))
+            if (analogClockSettings.ShowSeconds != (timingFormat == "T"))
             {
-                timingFormat = digitalClockSettings.ShowSeconds ? "T" : "t";
+                timingFormat = analogClockSettings.ShowSeconds ? "T" : "t";
             }
         }
 

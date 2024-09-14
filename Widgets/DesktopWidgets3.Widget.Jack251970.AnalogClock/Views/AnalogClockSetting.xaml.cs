@@ -2,15 +2,15 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.Views;
 
-public sealed partial class DigitalClockSetting : UserControl, ISettingViewModel
+public sealed partial class AnalogClockSetting : UserControl, ISettingViewModel
 {
-    public DigitalClockSettingViewModel ViewModel;
+    public AnalogClockSettingViewModel ViewModel;
 
     BaseWidgetSettingViewModel ISettingViewModel.ViewModel => ViewModel;
 
-    public DigitalClockSetting(WidgetInitContext context)
+    public AnalogClockSetting(WidgetInitContext context)
     {
-        ViewModel = new DigitalClockSettingViewModel(context);
+        ViewModel = new AnalogClockSettingViewModel(context);
         InitializeComponent();
     }
 }

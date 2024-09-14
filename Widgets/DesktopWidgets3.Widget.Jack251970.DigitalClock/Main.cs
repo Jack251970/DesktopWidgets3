@@ -16,7 +16,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public FrameworkElement CreateWidgetFrameworkElement()
     {
-        return new ClockWidget();
+        return new DigitalClockWidget();
     }
 
     public void EnableWidget(bool firstWidget)

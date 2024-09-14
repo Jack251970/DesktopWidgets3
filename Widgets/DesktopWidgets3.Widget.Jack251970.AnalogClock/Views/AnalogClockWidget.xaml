@@ -1,12 +1,12 @@
 <UserControl
-    x:Class="DesktopWidgets3.Widget.Jack251970.AnalogClock.Views.ClockWidget"
+    x:Class="DesktopWidgets3.Widget.Jack251970.AnalogClock.Views.AnalogClockWidget"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:usercontrols="using:DesktopWidgets3.Widget.Jack251970.AnalogClock.UserControls"
     xmlns:viewmodels="using:DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels"
-    d:DataContext="{d:DesignInstance Type=viewmodels:DigitalClockViewModel}"
+    d:DataContext="{d:DesignInstance Type=viewmodels:AnalogClockViewModel}"
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea" Background="Transparent">

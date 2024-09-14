@@ -16,7 +16,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public FrameworkElement CreateWidgetFrameworkElement()
     {
-        return new ClockWidget();
+        return new AnalogClockWidget();
     }
 
     public void EnableWidget(bool firstWidget)
@@ -35,12 +35,12 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public BaseWidgetSettings GetDefaultSetting()
     {
-        return new DigitalClockSettings();
+        return new AnalogClockSettings();
     }
 
     public FrameworkElement CreateWidgetSettingFrameworkElement()
     {
-        return new DigitalClockSetting(Context);
+        return new AnalogClockSetting(Context);
     }
 
     #endregion

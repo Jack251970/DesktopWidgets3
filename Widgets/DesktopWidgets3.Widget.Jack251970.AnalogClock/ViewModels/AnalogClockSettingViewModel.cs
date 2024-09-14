@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 
-public partial class DigitalClockSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
+public partial class AnalogClockSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
 {
     #region view properties
 
@@ -13,7 +13,7 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
 
     public readonly WidgetInitContext Context = context;
 
-    private DigitalClockSettings Settings = null!;
+    private AnalogClockSettings Settings = null!;
 
     private bool _initialized = false;
 
@@ -31,9 +31,9 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
         // initialize or update properties by settings
-        if (settings is DigitalClockSettings digitalClockSettings)
+        if (settings is AnalogClockSettings analogClockSettings)
         {
-            Settings = digitalClockSettings;
+            Settings = analogClockSettings;
 
             ShowSeconds = Settings.ShowSeconds;
 
