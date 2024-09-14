@@ -223,15 +223,9 @@ public partial class App : Application
 
         LogExtensions.LogError(ClassName, ex, "An unhandled error occurred.");
 
-        try
-        {
-            GetService<IAppNotificationService>().Show(string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
-                $"{ex?.ToString()}{Environment.NewLine}"));
-        }
-        catch (Exception)
-        {
-            // Ignore
-        }
+        GetService<IAppNotificationService>().TryShow(
+            string.Format("AppNotificationUnhandledExceptionPayload".GetLocalized(),
+            $"{ex?.ToString()}{Environment.NewLine}"));
     }
 
     public static void RestartApplication()

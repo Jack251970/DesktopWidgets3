@@ -112,13 +112,9 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         {
             var errorWidgetString = string.Join(Environment.NewLine, errorWidgets);
 
-            // TODO: Add TryShow function.
-            _ = Task.Run(() =>
-            {
-                DependencyExtensions.GetRequiredService<IAppNotificationService>().Show(
-                    string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
-                    $"{Environment.NewLine}{errorWidgetString}{Environment.NewLine}"));
-            });
+            DependencyExtensions.GetRequiredService<IAppNotificationService>().RunShow(
+                string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
+                $"{Environment.NewLine}{errorWidgetString}{Environment.NewLine}"));
         }
     }
 
@@ -189,12 +185,9 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         {
             var failedWidgetString = string.Join(Environment.NewLine, failedPlugins.Select(x => x.Metadata.Name));
 
-            _ = Task.Run(() =>
-            {
-                DependencyExtensions.GetRequiredService<IAppNotificationService>().Show(
-                    string.Format("AppNotificationWidgetInitializeErrorPayload".GetLocalized(),
-                    $"{Environment.NewLine}{failedWidgetString}{Environment.NewLine}"));
-            });
+            DependencyExtensions.GetRequiredService<IAppNotificationService>().RunShow(
+                string.Format("AppNotificationWidgetInitializeErrorPayload".GetLocalized(),
+                $"{Environment.NewLine}{failedWidgetString}{Environment.NewLine}"));
         }
     }
 

@@ -45,6 +45,23 @@ internal class AppNotificationService(INavigationService navigationService) : IA
         return appNotification.Id != 0;
     }
 
+    public void TryShow(string payload)
+    {
+        try
+        {
+            Show(payload);
+        }
+        catch (Exception)
+        {
+            // Ignore
+        }
+    }
+
+    public void RunShow(string payload)
+    {
+        Task.Run(() => TryShow(payload));
+    }
+
     public NameValueCollection ParseArguments(string arguments)
     {
         return HttpUtility.ParseQueryString(arguments);
