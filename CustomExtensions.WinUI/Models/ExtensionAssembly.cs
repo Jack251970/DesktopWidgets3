@@ -59,31 +59,39 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 	{
 		ObjectDisposedException.ThrowIf(IsDisposed, new ObjectDisposedException(nameof(ExtensionAssembly)));
 
-		_ = Disposables.AddRange(ForeignAssembly.ExportedTypes
-					.Where(type => type.IsAssignableTo(typeof(IXamlMetadataProvider)))
-					.Select(metadataType => (Activator.CreateInstance(metadataType) as IXamlMetadataProvider).AssertDefined())
-					.Select(ApplicationExtensionHost.Current.RegisterXamlTypeMetadataProvider));
+		Disposables.AddRange(ForeignAssembly.ExportedTypes
+            .Where(type => type.IsAssignableTo(typeof(IXamlMetadataProvider)))
+            .Select(metadataType => (Activator.CreateInstance(metadataType) as IXamlMetadataProvider).AssertDefined())
+            .Select(ApplicationExtensionHost.Current.RegisterXamlTypeMetadataProvider));
 	}
 
-	public bool TryEnableHotReload()
+    // TODO: Use hot reload support.
+	public (bool isHotReloadAvailable, string? targetResDir) TryEnableHotReload()
 	{
 		if (IsHotReloadAvailable.HasValue)
 		{
-			return IsHotReloadAvailable.Value;
+            if (IsHotReloadAvailable.Value)
+            {
+                return (true, Path.Combine(HostingProcessDir, ForeignAssemblyName));
+            }
+            else
+            {
+                return (false, null);
+            }
 		}
 
 		if (!ApplicationExtensionHost.IsHotReloadEnabled)
 		{
 			IsHotReloadAvailable = false;
-			return false;
+			return (false, null);
 		}
 
 		if (ForeignAssemblyDir == HostingProcessDir)
 		{
 			Trace.TraceWarning($"HotReload(Debug) : Output directory for {ForeignAssembly.FullName} appears to be in the same location as the application directory. HotReload may not function in this environment.");
 			IsHotReloadAvailable = false;
-			return false;
-		}
+			return (false, null);
+        }
 
 		// Note: this assumes all your resources exist under the current assembly name
 		// this won't be true for nested dependencies or the like, so they will need to 
@@ -93,24 +101,29 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 		{
 			Trace.TraceError($"HotReload(Debug) : Cannot enable hot reload for {ForeignAssembly.FullName} because {assemblyResDir} does not exist on the system");
 			IsHotReloadAvailable = false;
-			return false;
-		}
-		var debugTargetResDir = Path.Combine(HostingProcessDir, ForeignAssemblyName);
-		DirectoryInfo debugTargetResDirInfo = new(debugTargetResDir);
+			return (false, null);
+        }
+
+		var targetResDir = Path.Combine(HostingProcessDir, ForeignAssemblyName);
+		DirectoryInfo debugTargetResDirInfo = new(targetResDir);
 		if (debugTargetResDirInfo.Exists)
 		{
 			if (!debugTargetResDirInfo.Attributes.HasFlag(FileAttributes.ReparsePoint))
 			{
-				Trace.TraceError($"HotReload(Debug) : Cannot enable hot reload for {ForeignAssembly.FullName} because {debugTargetResDir} already exists as a non-symbolic linked directory");
+				Trace.TraceError($"HotReload(Debug) : Cannot enable hot reload for {ForeignAssembly.FullName} because {targetResDir} already exists as a non-symbolic linked directory");
 				IsHotReloadAvailable = false;
-				return false;
-			}
-			Directory.Delete(debugTargetResDir, recursive: true);
+				return (false, null);
+            }
+			Directory.Delete(targetResDir, recursive: true);
 		}
-		Directory.CreateSymbolicLink(debugTargetResDir, assemblyResDir);
-		IsHotReloadAvailable = true;
-		return true;
-	}
+        if (!Directory.Exists(targetResDir))
+        {
+            Directory.CreateSymbolicLink(targetResDir, assemblyResDir);
+        }
+
+        IsHotReloadAvailable = true;
+		return (true, targetResDir);
+    }
 
 	protected virtual void Dispose(bool disposing)
 	{

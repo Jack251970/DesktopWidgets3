@@ -9,7 +9,7 @@ public interface IExtensionAssembly : IDisposable
 
     Task LoadAsync();
 
-    bool TryEnableHotReload();
+    (bool isHotReloadAvailable, string? targetResDir) TryEnableHotReload();
 
     Uri LocateResource(object component, [CallerFilePath] string callerFilePath = "");
 }

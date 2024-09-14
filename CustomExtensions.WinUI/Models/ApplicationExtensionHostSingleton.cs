@@ -36,15 +36,16 @@ internal partial class ApplicationExtensionHostSingleton<T> : IApplicationExtens
 
 	private IExtensionAssembly GetExtensionAssembly(AssemblyName assemblyName)
 	{
-		return !AssembliesByAssemblyName.TryGetValue(assemblyName.FullName, out IExtensionAssembly? extensionAssembly)
+		return !AssembliesByAssemblyName.TryGetValue(assemblyName.FullName, out var extensionAssembly)
 			? throw new EntryPointNotFoundException()
 			: extensionAssembly;
 	}
+
 	private IExtensionAssembly GetExtensionAssembly(string pathToAssembly)
 	{
 		var fi = new FileInfo(pathToAssembly);
 		var asm = AssembliesByPath.GetOrAdd(fi.FullName, asm => new ExtensionAssembly(pathToAssembly));
-		_ = AssembliesByAssemblyName.AddOrUpdate(asm.ForeignAssembly.GetName().FullName, asm, (_, _) => asm);
+		AssembliesByAssemblyName.AddOrUpdate(asm.ForeignAssembly.GetName().FullName, asm, (_, _) => asm);
 		return asm;
 	}
 }

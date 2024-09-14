@@ -11,30 +11,33 @@ public static class WidgetsLoader
 
     private static readonly ConcurrentQueue<string> ErrorWidgets = [];
 
-    public static async Task<(List<WidgetPair> allWidgets, List<string> errorWidgets)> WidgetsAsync(List<WidgetMetadata> metadatas)
+    private static readonly ConcurrentDictionary<string, string> InstalledWidgets = [];
+
+    public static async Task<(List<WidgetPair> allWidgets, List<string> errorWidgets, Dictionary<string, string> installedWidgets)> WidgetsAsync(List<WidgetMetadata> metadatas, List<string> installingIds)
     {
         Widgets.Clear();
         ErrorWidgets.Clear();
 
-        var tasks = DotNetWidgets(metadatas);
+        var tasks = DotNetWidgets(metadatas, installingIds);
 
         await Task.WhenAll(tasks);
 
-        return (Widgets.ToList(), ErrorWidgets.ToList());
+        return (Widgets.ToList(), ErrorWidgets.ToList(), InstalledWidgets.ToDictionary());
     }
 
-    private static IEnumerable<Task> DotNetWidgets(List<WidgetMetadata> metadatas)
+    private static IEnumerable<Task> DotNetWidgets(List<WidgetMetadata> metadatas, List<string> installingIds)
     {
         var dotnetMetadatas = metadatas.Where(o => AllowedLanguage.IsDotNet(o.Language)).ToList();
 
         return metadatas.Select(async metadata =>
         {
+            IExtensionAssembly? extensionAssembly = null;
             Assembly? assembly = null;
             IAsyncWidget? widget = null;
 
             try
             {
-                var extensionAssembly = await ApplicationExtensionHost.Current.LoadExtensionAsync(metadata.ExecuteFilePath);
+                extensionAssembly = await ApplicationExtensionHost.Current.LoadExtensionAsync(metadata.ExecuteFilePath);
 
                 assembly = extensionAssembly.ForeignAssembly;
 
@@ -42,6 +45,16 @@ public static class WidgetsLoader
                     typeof(IAsyncWidget));
 
                 widget = Activator.CreateInstance(type) as IAsyncWidget;
+
+                if (installingIds.Contains(metadata.ID))
+                {
+                    var resourcesFolder = InstallResourceFolder(extensionAssembly);
+                    InstalledWidgets.AddOrUpdate(metadata.ID, resourcesFolder, (key, oldValue) => resourcesFolder);
+                }
+            }
+            catch (Exception e) when (extensionAssembly == null)
+            {
+                LogExtensions.LogError(ClassName, e, $"Couldn't load extension assembly for the widget: {metadata.Name}");
             }
             catch (Exception e) when (assembly == null)
             {
@@ -68,5 +81,14 @@ public static class WidgetsLoader
 
             Widgets.Enqueue(new WidgetPair { Widget = widget, Metadata = metadata });
         });
+    }
+
+    private static string InstallResourceFolder(IExtensionAssembly extensionAssembly)
+    {
+        var extensionsEssembly = extensionAssembly;
+
+        (var hotReloadAvailable, var resourceFolder) = extensionsEssembly.TryEnableHotReload();
+
+        return hotReloadAvailable == true ? resourceFolder! : string.Empty;
     }
 }

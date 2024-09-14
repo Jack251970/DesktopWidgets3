@@ -84,11 +84,11 @@ public class BaseWidgetStoreItem()
 
 public class JsonWidgetStoreItem : BaseWidgetStoreItem
 {
-    public required bool IsPreinstalled { get; set; } = false;
+    public required bool IsPreinstalled { get; set; }
 
-    public required bool IsInstalled { get; set; } = false;
+    public required bool IsInstalled { get; set; }
 
-    public required List<string> ResourcesFile { get; set; }
+    public required string ResourcesFolder { get; set; }
 }
 
 public class WidgetStoreItem : BaseWidgetStoreItem

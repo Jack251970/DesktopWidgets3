@@ -22,25 +22,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         // get all widget metadata
         AllWidgetsMetadata = WidgetsConfig.Parse(WidgetsDirectories, Constant.WidgetsPreinstalledDirectory);
 
-        // check preinstalled widgets
-        await CheckPreinstalledWidgets();
-
         // load all installed widgets
-        var installedWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Installed).ToList();
-        (InstalledWidgets, var errorWidgets) = await WidgetsLoader.WidgetsAsync(installedWidgetsMetadata);
-
-        // show error notification
-        if (errorWidgets.Count > 0)
-        {
-            var errorWidgetString = string.Join(Environment.NewLine, errorWidgets);
-
-            _ = Task.Run(() =>
-            {
-                DependencyExtensions.GetRequiredService<IAppNotificationService>().Show(
-                    string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
-                    $"{Environment.NewLine}{errorWidgetString}{Environment.NewLine}"));
-            });
-        }
+        await LoadAllInstalledWidgets();
 
         // initialize all widgets
         await InitWidgetsAsync();
@@ -49,7 +32,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         await _appSettingsService.InitializeWidgetListAsync();
     }
 
-    private async Task CheckPreinstalledWidgets()
+    private async Task LoadAllInstalledWidgets()
     {
         // load widget store list
         var widgetStoreList = await _appSettingsService.InitializeWidgetStoreListAsync();
@@ -58,23 +41,22 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         var preinstalledWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Preinstalled).ToList();
 
         // check all preinstalled widgets
-        var needSave = false;
+        var installingIds = new List<string>();
         foreach (var metadata in preinstalledWidgetsMetadata)
         {
             var index = widgetStoreList.FindIndex(x => x.Id == metadata.ID && x.IsPreinstalled);
             if (index == -1)
             {
                 // install new preinstalled widgets
-                var resourcesFile = InstallResourceFiles(metadata);
                 widgetStoreList.Add(new JsonWidgetStoreItem()
                 {
                     Id = metadata.ID,
                     Version = metadata.Version,
                     IsPreinstalled = true,
                     IsInstalled = true,
-                    ResourcesFile = resourcesFile,
+                    ResourcesFolder = string.Empty,
                 });
-                needSave = true;
+                installingIds.Add(metadata.ID);
             }
             else
             {
@@ -86,11 +68,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                     // update installed, preinstalled widgets
                     if (version != metadata.Version)
                     {
-                        UninstallResourceFiles(widgetStoreItem.ResourcesFile);
-                        var resourcesFile = InstallResourceFiles(metadata);
+                        UninstallResourceFolder(widgetStoreItem.ResourcesFolder);
                         widgetStoreList[index].Version = metadata.Version;
-                        widgetStoreList[index].ResourcesFile = resourcesFile;
-                        needSave = true;
+                        widgetStoreList[index].ResourcesFolder = string.Empty;
+                        installingIds.Add(metadata.ID);
                     }
                 }
                 else
@@ -105,65 +86,54 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             }
         }
 
+        // load all installed widgets
+        var installWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Installed).ToList();
+        (InstalledWidgets, var errorWidgets, var installedWidgets) = await WidgetsLoader.WidgetsAsync(installWidgetsMetadata, installingIds);
+
         // save widget store list
-        if (needSave)
+        if (installingIds.Count != 0)
         {
+            foreach (var item in installedWidgets)
+            {
+                var id = item.Key;
+                var resourcesFolder = item.Value;
+                var index = widgetStoreList.FindIndex(x => x.Id == id);
+                if (index != -1)
+                {
+                    var relativeResourcesFolder = Path.GetRelativePath(AppContext.BaseDirectory, resourcesFolder);
+                    widgetStoreList[index].ResourcesFolder = relativeResourcesFolder;
+                }
+            }
             await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
+        }
+
+        // show error notification
+        if (errorWidgets.Count > 0)
+        {
+            var errorWidgetString = string.Join(Environment.NewLine, errorWidgets);
+
+            // TODO: Add TryShow function.
+            _ = Task.Run(() =>
+            {
+                DependencyExtensions.GetRequiredService<IAppNotificationService>().Show(
+                    string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
+                    $"{Environment.NewLine}{errorWidgetString}{Environment.NewLine}"));
+            });
         }
     }
 
     #endregion
 
-    #region Xaml Resources
+    #region Widget Resources
 
-    private static List<string> InstallResourceFiles(WidgetMetadata metadata)
+    // Note: InstallResourceFolder is in WidgetsLoader.cs.
+
+    private static void UninstallResourceFolder(string resourcesFolder)
     {
-        var widgetDirectory = metadata.WidgetDirectory;
-        var xbfFiles = Directory.EnumerateFiles(widgetDirectory, "*.xbf", SearchOption.AllDirectories);
-        var resourceFiles = xbfFiles;
-        var destinationResources = new List<string>();
-
-        foreach (var resourceFile in resourceFiles)
+        resourcesFolder = Path.Combine(AppContext.BaseDirectory, resourcesFolder);
+        if (Directory.Exists(resourcesFolder))
         {
-            var relativePath = Path.GetRelativePath(widgetDirectory, resourceFile);
-            var destinationPath = Path.Combine(AppContext.BaseDirectory, relativePath);
-
-            var destinationDirectory = Path.GetDirectoryName(destinationPath);
-            if (!(string.IsNullOrEmpty(destinationDirectory) || Directory.Exists(destinationDirectory)))
-            {
-                Directory.CreateDirectory(destinationDirectory);
-            }
-            File.Copy(resourceFile, destinationPath, true);
-
-            destinationResources.Add(destinationPath);
-        }
-
-        return destinationResources;
-    }
-
-    private static void UninstallResourceFiles(List<string> resourcesFiles)
-    {
-        foreach (var resourceFile in resourcesFiles)
-        {
-            if (resourceFile != null && File.Exists(resourceFile))
-            {
-                File.Delete(resourceFile);
-                DeleteEmptyDirectory(resourceFile);
-            }
-        }
-    }
-
-    private static void DeleteEmptyDirectory(string path)
-    {
-        var directory = Path.GetDirectoryName(path)!;
-        if (directory == AppContext.BaseDirectory)
-        {
-            return;
-        }
-        if (Directory.Exists(directory) && Directory.GetFileSystemEntries(directory).Length == 0)
-        {
-            Directory.Delete(directory);
-            DeleteEmptyDirectory(directory);
+            Directory.Delete(resourcesFolder);
         }
     }
 
@@ -588,41 +558,18 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         {
             // install widget from preinstalled widgets
             var index = widgetStoreList.FindIndex(x => x.Id == widgetId);
-            if (index == -1)
-            {
-                // install new preinstalled widgets
-                var resourcesFile = InstallResourceFiles(metadata);
-                widgetStoreList.Add(new JsonWidgetStoreItem()
-                {
-                    Id = metadata.ID,
-                    Version = metadata.Version,
-                    IsPreinstalled = metadata.Preinstalled,
-                    IsInstalled = true,
-                    ResourcesFile = resourcesFile,
-                });
-            }
-            else
+            if (index != -1)
             {
                 var widgetStoreItem = widgetStoreList[index];
                 if (widgetStoreItem.IsInstalled)
                 {
-                    if (widgetStoreItem.Version == metadata.Version)
-                    {
-                        // already installed and up to date
-                        return;
-                    }
-                    // already installed and need to uninstall
-                    UninstallResourceFiles(widgetStoreItem.ResourcesFile);
+                    UninstallResourceFolder(widgetStoreItem.ResourcesFolder);
                 }
-                else
-                {
-                    widgetStoreList[index].IsInstalled = true;
-                }
-                var resourcesFile = InstallResourceFiles(metadata);
-                widgetStoreList[index].ResourcesFile = resourcesFile;
-            }
 
-            await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
+                // remove widget from widget store list
+                widgetStoreList.RemoveAt(index);
+                await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
+            }
         }
 
         App.RestartApplication();
@@ -646,9 +593,9 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         var widgetStoreItem = widgetStoreList[index];
         if (widgetStoreItem.IsInstalled)
         {
-            UninstallResourceFiles(widgetStoreItem.ResourcesFile);
+            UninstallResourceFolder(widgetStoreItem.ResourcesFolder);
             widgetStoreList[index].IsInstalled = false;
-            widgetStoreList[index].ResourcesFile = [];
+            widgetStoreList[index].ResourcesFolder = string.Empty;
             await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
         }
 
