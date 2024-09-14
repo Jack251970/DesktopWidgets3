@@ -61,6 +61,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
             if (disposing)
             {
                 Context = null!;
+                HardwareInfoService.Dispose();
             }
 
             disposed = true;
