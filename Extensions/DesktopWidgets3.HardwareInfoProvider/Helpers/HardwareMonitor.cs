@@ -1,8 +1,5 @@
 ﻿namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
 
-/// <summary>
-/// Hardware monitor.
-/// </summary>
 public class HardwareMonitor: IDisposable
 {
     #region enable properties
