@@ -1,20 +1,19 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Widget.Jack251970.Network.Setting;
 
 namespace DesktopWidgets3.Widget.Jack251970.Network.ViewModels;
 
-public partial class DigitalClockSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
+public partial class NetworkSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
 {
     #region view properties
 
     [ObservableProperty]
-    private bool _showSeconds = true;
+    private bool _useBps = false;
 
     #endregion
 
     public readonly WidgetInitContext Context = context;
 
-    private DigitalClockSettings Settings = null!;
+    private NetworkSettings Settings = null!;
 
     private bool isInitialized = false;
 
@@ -23,11 +22,11 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
         // initialize or update properties by settings
-        if (settings is DigitalClockSettings digitalClockSetting)
+        if (settings is NetworkSettings networkSettings)
         {
-            Settings = digitalClockSetting;
+            Settings = networkSettings;
 
-            ShowSeconds = Settings.ShowSeconds;
+            UseBps = Settings.UseBps;
 
             if (!initialized)
             {
@@ -38,11 +37,11 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
 
     #endregion
 
-    partial void OnShowSecondsChanged(bool value)
+    partial void OnUseBpsChanged(bool value)
     {
         if (isInitialized)
         {
-            Settings.ShowSeconds = value;
+            Settings.UseBps = value;
             Context.API.UpdateWidgetSettings(this, Settings, true, false);
         }
     }

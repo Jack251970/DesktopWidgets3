@@ -1,18 +1,17 @@
-using DesktopWidgets3.Widget.Jack251970.Network.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.Network.Views;
 
-public sealed partial class ClockWidget : UserControl, IViewModel, IWidgetMenu
+public sealed partial class NetworkWidget : UserControl, IViewModel, IWidgetMenu
 {
-    public DigitalClockViewModel ViewModel = new();
+    public NetworkViewModel ViewModel;
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 
-    public ClockWidget()
+    public NetworkWidget(WidgetInitContext context, HardwareInfoService hardwareInfoService)
     {
-        DataContext = ViewModel;
+        ViewModel = new NetworkViewModel(context, hardwareInfoService);
         InitializeComponent();
     }
 

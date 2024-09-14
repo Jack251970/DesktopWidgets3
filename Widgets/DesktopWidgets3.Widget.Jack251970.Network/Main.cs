@@ -1,6 +1,4 @@
 using System;
-using DesktopWidgets3.Widget.Jack251970.Network.Setting;
-using DesktopWidgets3.Widget.Jack251970.Network.Views;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Jack251970.Network;
@@ -9,16 +7,20 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 {
     #region IWidget
 
+    private HardwareInfoService HardwareInfoService = null!;
+
     private WidgetInitContext Context = null!;
 
     public FrameworkElement CreateWidgetFrameworkElement()
     {
-        return new ClockWidget();
+        return new NetworkWidget(Context, HardwareInfoService);
     }
 
     public void InitWidget(WidgetInitContext context)
     {
         Context = context;
+        HardwareInfoService = new HardwareInfoService(context.API);
+        HardwareInfoService.StartMonitor(HardwareType.Network);
     }
 
     public void EnableWidget(bool firstWidget)
@@ -37,12 +39,12 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public BaseWidgetSettings GetDefaultSetting()
     {
-        return new DigitalClockSettings();
+        return new NetworkSettings();
     }
 
     public FrameworkElement CreateWidgetSettingFrameworkElement()
     {
-        return new DigitalClockSetting(Context);
+        return new NetworkSetting(Context);
     }
 
     #endregion
@@ -58,6 +60,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
             if (disposing)
             {
                 Context = null!;
+                HardwareInfoService.Dispose();
             }
 
             disposed = true;
