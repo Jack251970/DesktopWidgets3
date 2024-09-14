@@ -14,7 +14,7 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 	private readonly string ForeignAssemblyDir;
 	private readonly string ForeignAssemblyName;
 	private bool? IsHotReloadAvailable;
-	private readonly DisposableCollection Disposables = new();
+	private readonly DisposableCollection Disposables = [];
 	private bool IsDisposed;
 
 	internal ExtensionAssembly(string assemblyPath)
@@ -107,7 +107,7 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 			}
 			Directory.Delete(debugTargetResDir, recursive: true);
 		}
-		_ = Directory.CreateSymbolicLink(debugTargetResDir, assemblyResDir);
+		Directory.CreateSymbolicLink(debugTargetResDir, assemblyResDir);
 		IsHotReloadAvailable = true;
 		return true;
 	}
