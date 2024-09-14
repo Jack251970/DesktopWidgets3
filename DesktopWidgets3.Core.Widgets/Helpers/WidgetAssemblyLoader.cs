@@ -3,6 +3,7 @@ using System.Runtime.Loader;
 
 namespace DesktopWidgets3.Core.Widgets.Helpers;
 
+// TODO: Integrate this class into the CustomExtensions.WinUI project
 public class WidgetAssemblyLoader : AssemblyLoadContext
 {
     private readonly AssemblyDependencyResolver dependencyResolver;

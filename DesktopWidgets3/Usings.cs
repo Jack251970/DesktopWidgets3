@@ -23,6 +23,9 @@ global using DesktopWidgets3.Views.Windows;
 global using DesktopWidgets3.Utils;
 global using DesktopWidgets3.Utils.Logger;
 
+// CustomExtensions.WinUI
+global using CustomExtensions.WinUI;
+
 // DesktopWidgets3.Core
 global using DesktopWidgets3.Core.Contracts.Services;
 global using DesktopWidgets3.Core.Extensions;

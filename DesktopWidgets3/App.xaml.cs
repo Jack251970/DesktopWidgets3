@@ -193,6 +193,9 @@ public partial class App : Application
         // Initialize core extensions after injecting services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
         LogExtensions.Initialize(GetService<ILogger<App>>());
+
+        // Initialize custom extension host
+        ApplicationExtensionHost.Initialize(this);
     }
 
     #region App Lifecycle

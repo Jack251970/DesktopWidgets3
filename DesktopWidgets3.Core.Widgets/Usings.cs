@@ -10,6 +10,9 @@ global using DesktopWidgets3.Core.Widgets.ViewModels;
 global using DesktopWidgets3.Core.Widgets.Views.Pages;
 global using DesktopWidgets3.Core.Widgets.Views.Windows;
 
+// CustomExtensions.WinUI
+global using CustomExtensions.WinUI;
+
 // DesktopWidgets3.Core
 global using DesktopWidgets3.Core.Contracts.Services;
 global using DesktopWidgets3.Core.Extensions;

@@ -27,7 +27,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         // load all installed widgets
         var installedWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Installed).ToList();
-        (InstalledWidgets, var errorWidgets) = WidgetsLoader.Widgets(installedWidgetsMetadata);
+        (InstalledWidgets, var errorWidgets) = await WidgetsLoader.WidgetsAsync(installedWidgetsMetadata);
 
         // show error notification
         if (errorWidgets.Count > 0)

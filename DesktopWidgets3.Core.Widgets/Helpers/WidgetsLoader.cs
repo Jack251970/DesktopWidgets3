@@ -6,9 +6,9 @@ public static class WidgetsLoader
 {
     private static string ClassName => typeof(WidgetsLoader).Name;
 
-    public static (List<WidgetPair> allWidgets, List<string> errorWidgets) Widgets(List<WidgetMetadata> metadatas)
+    public static async Task<(List<WidgetPair> allWidgets, List<string> errorWidgets)> WidgetsAsync(List<WidgetMetadata> metadatas)
     {
-        (var dotnetWidgets, var errorDotNetWidgets) = DotNetWidgets(metadatas);
+        (var dotnetWidgets, var errorDotNetWidgets) = await DotNetWidgetsAsync(metadatas);
 
         var allWidgets = dotnetWidgets;
         var errorWidgets = errorDotNetWidgets;
@@ -16,13 +16,14 @@ public static class WidgetsLoader
         return (allWidgets, errorWidgets);
     }
 
-    private static (List<WidgetPair> dotNetWidgets, List<string> errorDotNetWidgets) DotNetWidgets(List<WidgetMetadata> source)
+    private static async Task<(List<WidgetPair> dotNetWidgets, List<string> errorDotNetWidgets)> DotNetWidgetsAsync(List<WidgetMetadata> source)
     {
         var erroredWidgets = new List<string>();
 
         var widgets = new List<WidgetPair>();
         var metadatas = source.Where(o => AllowedLanguage.IsDotNet(o.Language));
 
+        // TODO: Use task.WhenAll
         foreach (var metadata in metadatas)
         {
             Assembly? assembly = null;
@@ -30,8 +31,9 @@ public static class WidgetsLoader
 
             try
             {
-                var assemblyLoader = new WidgetAssemblyLoader(metadata.ExecuteFilePath);
-                assembly = assemblyLoader.LoadAssemblyAndDependencies();
+                var extensionAssembly = await ApplicationExtensionHost.Current.LoadExtensionAsync(metadata.ExecuteFilePath);
+
+                assembly = extensionAssembly.ForeignAssembly;
 
                 var type = WidgetAssemblyLoader.FromAssemblyGetTypeOfInterface(assembly,
                     typeof(IAsyncWidget));
