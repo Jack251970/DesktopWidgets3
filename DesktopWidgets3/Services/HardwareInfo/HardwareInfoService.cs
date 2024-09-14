@@ -36,7 +36,7 @@ internal class HardwareInfoService : IHardwareInfoService
         hardwareMonitor.Update();
     }
 
-    private void AppSettingsService_OnBatterySaverChanged(object? _, bool batterySaver)
+    private void AppSettingsService_OnBatterySaverChanged(bool batterySaver)
     {
         var enabled = sampleTimer.Enabled;
         sampleTimer.Enabled = false;

@@ -37,7 +37,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public event EventHandler<bool>? OnBatterySaverChanged;
+    public event Action<bool>? OnBatterySaverChanged;
 
     private bool batterySaver;
     public bool BatterySaver
@@ -50,7 +50,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
                 batterySaver = value;
                 if (_isInitialized)
                 {
-                    OnBatterySaverChanged?.Invoke(this, value);
+                    OnBatterySaverChanged?.Invoke(value);
                 }
             }
         }

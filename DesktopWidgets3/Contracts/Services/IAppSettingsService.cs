@@ -8,9 +8,9 @@ public interface IAppSettingsService
 
     Task SetSilentStartAsync(bool value);
 
-    event EventHandler<bool>? OnBatterySaverChanged;
-
     bool BatterySaver { get; }
+
+    event Action<bool>? OnBatterySaverChanged;
 
     Task SetBatterySaverAsync(bool value);
 
