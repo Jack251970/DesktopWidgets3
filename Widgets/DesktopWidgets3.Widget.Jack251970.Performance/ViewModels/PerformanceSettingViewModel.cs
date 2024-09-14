@@ -1,33 +1,41 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DesktopWidgets3.Widget.Jack251970.Performance.Setting;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.ViewModels;
 
-public partial class DigitalClockSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
+public partial class PerformanceSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
 {
     #region view properties
 
     [ObservableProperty]
-    private bool _showSeconds = true;
+    private bool _useCelsius = false;
 
     #endregion
 
     public readonly WidgetInitContext Context = context;
 
-    private DigitalClockSettings Settings = null!;
+    private PerformanceSettings Settings = null!;
 
     private bool _initialized = false;
+
+    partial void OnUseCelsiusChanged(bool value)
+    {
+        if (_initialized)
+        {
+            Settings.UseCelsius = value;
+            Context.API.UpdateWidgetSettings(this, Settings, true, false);
+        }
+    }
 
     #region abstract methods
 
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
         // initialize or update properties by settings
-        if (settings is DigitalClockSettings digitalClockSetting)
+        if (settings is PerformanceSettings performanceSettings)
         {
-            Settings = digitalClockSetting;
+            Settings = performanceSettings;
 
-            ShowSeconds = Settings.ShowSeconds;
+            UseCelsius = Settings.UseCelsius;
 
             if (!_initialized)
             {
@@ -37,13 +45,4 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
     }
 
     #endregion
-
-    partial void OnShowSecondsChanged(bool value)
-    {
-        if (_initialized)
-        {
-            Settings.ShowSeconds = value;
-            Context.API.UpdateWidgetSettings(this, Settings, true, false);
-        }
-    }
 }

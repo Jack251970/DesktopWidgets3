@@ -1,17 +1,16 @@
-using DesktopWidgets3.Widget.Jack251970.Performance.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.Views;
 
-public sealed partial class DigitalClockSetting : UserControl, ISettingViewModel
+public sealed partial class PerformanceSetting : UserControl, ISettingViewModel
 {
-    public DigitalClockSettingViewModel ViewModel;
+    public PerformanceSettingViewModel ViewModel;
 
     BaseWidgetSettingViewModel ISettingViewModel.ViewModel => ViewModel;
 
-    public DigitalClockSetting(WidgetInitContext context)
+    public PerformanceSetting(WidgetInitContext context)
     {
-        ViewModel = new DigitalClockSettingViewModel(context);
+        ViewModel = new PerformanceSettingViewModel(context);
         InitializeComponent();
     }
 }

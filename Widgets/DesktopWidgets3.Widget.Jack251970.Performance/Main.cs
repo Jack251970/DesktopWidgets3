@@ -1,6 +1,4 @@
 using System;
-using DesktopWidgets3.Widget.Jack251970.Performance.Setting;
-using DesktopWidgets3.Widget.Jack251970.Performance.Views;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance;
@@ -11,14 +9,21 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     private WidgetInitContext Context = null!;
 
-    public FrameworkElement CreateWidgetFrameworkElement()
-    {
-        return new ClockWidget();
-    }
+    private HardwareInfoService HardwareInfoService = null!;
 
     public void InitWidget(WidgetInitContext context)
     {
         Context = context;
+
+        HardwareInfoService = new HardwareInfoService(context.API);
+        HardwareInfoService.StartMonitor(HardwareType.CPU);
+        HardwareInfoService.StartMonitor(HardwareType.GPU);
+        HardwareInfoService.StartMonitor(HardwareType.Memory);
+    }
+
+    public FrameworkElement CreateWidgetFrameworkElement()
+    {
+        return new PerformanceWidget(Context, HardwareInfoService);
     }
 
     public void EnableWidget(bool firstWidget)
@@ -37,12 +42,12 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public BaseWidgetSettings GetDefaultSetting()
     {
-        return new DigitalClockSettings();
+        return new PerformanceSettings();
     }
 
     public FrameworkElement CreateWidgetSettingFrameworkElement()
     {
-        return new DigitalClockSetting(Context);
+        return new PerformanceSetting(Context);
     }
 
     #endregion
@@ -58,6 +63,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
             if (disposing)
             {
                 Context = null!;
+                HardwareInfoService.Dispose();
             }
 
             disposed = true;

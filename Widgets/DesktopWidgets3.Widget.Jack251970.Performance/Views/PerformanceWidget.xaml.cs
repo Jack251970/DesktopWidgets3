@@ -1,18 +1,17 @@
-using DesktopWidgets3.Widget.Jack251970.Performance.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.Views;
 
-public sealed partial class ClockWidget : UserControl, IViewModel, IWidgetMenu
+public sealed partial class PerformanceWidget : UserControl, IViewModel, IWidgetMenu
 {
-    public DigitalClockViewModel ViewModel = new();
+    public PerformanceViewModel ViewModel;
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 
-    public ClockWidget()
+    public PerformanceWidget(WidgetInitContext context, HardwareInfoService hardwareInfoService)
     {
-        DataContext = ViewModel;
+        ViewModel = new PerformanceViewModel(context, hardwareInfoService);
         InitializeComponent();
     }
 
