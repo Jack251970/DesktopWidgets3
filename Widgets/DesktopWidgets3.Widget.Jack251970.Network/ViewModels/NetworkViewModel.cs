@@ -101,7 +101,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
             if (lastNetworkNamesIdentifiers.Count != networkNamesIdentifiers.Count ||
                 !lastNetworkNamesIdentifiers.SequenceEqual(networkNamesIdentifiers))
             {
-                DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+                DispatcherQueue.TryEnqueue(() =>
                 {
                     if (listUpdating)
                     {
@@ -122,7 +122,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
             lastNetworkNamesIdentifiers = networkNamesIdentifiers;
 
-            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+            DispatcherQueue.TryEnqueue(() =>
             {
                 if (updating)
                 {

@@ -192,6 +192,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 {
                     Id = widgetId,
                     IndexTag = indexTag,
+                    DispatcherQueue = App.MainWindow.DispatcherQueue,
                     Settings = widgetSetting
                 });
             }
@@ -255,6 +256,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 {
                     Id = widgetId,
                     IndexTag = indexTag,
+                    DispatcherQueue = widgetWindow.DispatcherQueue,
                     Settings = widgetItem.Settings
                 });
             }

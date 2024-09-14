@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Models.ViewModels;
 
@@ -7,6 +8,8 @@ public abstract class BaseWidgetViewModel : ObservableRecipient
     public string Id { get; private set; } = string.Empty;
 
     public int IndexTag { get; private set; } = 0;
+
+    protected DispatcherQueue DispatcherQueue { get; private set; } = null!;
 
     private bool _isInitialized = false;
 
@@ -31,6 +34,7 @@ public abstract class BaseWidgetViewModel : ObservableRecipient
         {
             Id = navigationParameter.Id;
             IndexTag = navigationParameter.IndexTag;
+            DispatcherQueue = navigationParameter.DispatcherQueue;
             LoadSettings(navigationParameter.Settings, true);
             _isInitialized = true;
         }
