@@ -28,7 +28,13 @@ internal partial class ApplicationExtensionHostSingleton<T> : IApplicationExtens
 		return asm;
 	}
 
-	public Uri LocateResource(object component, [CallerFilePath] string callerFilePath = "")
+    public Type FromAssemblyGetTypeOfInterface(Assembly assembly, Type type)
+    {
+        var allTypes = assembly.ExportedTypes;
+        return allTypes.First(o => o.IsClass && !o.IsAbstract && o.GetInterfaces().Any(t => t == type));
+    }
+
+    public Uri LocateResource(object component, [CallerFilePath] string callerFilePath = "")
 	{
 		var extensionAsm = GetExtensionAssembly(component.GetType().Assembly.GetName());
 		return extensionAsm.LocateResource(component, callerFilePath);

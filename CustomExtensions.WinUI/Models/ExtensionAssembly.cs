@@ -19,7 +19,7 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 
 	internal ExtensionAssembly(string assemblyPath)
 	{
-		// TODO: For some reason WinUI gets very angry when loading via AssemblyLoadContext,
+		// Note: For some reason WinUI gets very angry when loading via AssemblyLoadContext,
 		// even if using AssemblyLoadContext.Default which *should* have no difference than
 		// Assembly.LoadFrom(), but it does.
 		//

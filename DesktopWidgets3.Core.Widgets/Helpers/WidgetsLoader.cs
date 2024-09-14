@@ -41,7 +41,7 @@ public static class WidgetsLoader
 
                 assembly = extensionAssembly.ForeignAssembly;
 
-                var type = WidgetAssemblyLoader.FromAssemblyGetTypeOfInterface(assembly,
+                var type = ApplicationExtensionHost.Current.FromAssemblyGetTypeOfInterface(assembly,
                     typeof(IAsyncWidget));
 
                 widget = Activator.CreateInstance(type) as IAsyncWidget;
