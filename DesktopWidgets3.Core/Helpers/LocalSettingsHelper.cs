@@ -2,20 +2,15 @@
 
 namespace DesktopWidgets3.Core.Helpers;
 
+/// <summary>
+/// Helpers for local settings.
+/// </summary>
 public class LocalSettingsHelper
 {
     private static string applicationDataPath = string.Empty;
-    public static string ApplicationDataPath
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(applicationDataPath))
-            {
-                Initialize();
-            }
-            return applicationDataPath;
-        }
-    }
+    public static string ApplicationDataPath => applicationDataPath;
+
+    public static string WidgetsDirectory => Path.Combine(ApplicationDataPath, Constant.WidgetsFolder);
 
     public static void Initialize()
     {

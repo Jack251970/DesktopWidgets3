@@ -70,6 +70,9 @@ public partial class App : Application
         // Initialize the component
         InitializeComponent();
 
+        // Initialize core helpers before services
+        LocalSettingsHelper.Initialize();
+
         // The DispatcherQueue event loop exits when all XAML windows on a thread are closed
         // https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.dispatchershutdownmode
         DispatcherShutdownMode = DispatcherShutdownMode.OnLastWindowClose;
@@ -187,7 +190,7 @@ public partial class App : Application
         // Initialize core services
         GetService<IAppNotificationService>().Initialize();
 
-        // Initialize core extensions after injecting services
+        // Initialize core extensions after services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
         LogExtensions.Initialize(GetService<ILogger<App>>());
 

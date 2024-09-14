@@ -5,7 +5,7 @@ namespace DesktopWidgets3.Core.Services;
 
 // For MSIX package:
 // Settings saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\Settings\settings.dat
-// File saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\LocalState\{FileName}.json
+// File saved in C:\Users\<UserName>\AppData\Local\Packages\<PackageFamilyName>\LocalState\{FileName}
 public class LocalSettingsService : ILocalSettingsService
 {
     private readonly IFileService _fileService;

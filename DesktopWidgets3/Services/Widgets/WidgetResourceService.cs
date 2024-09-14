@@ -13,7 +13,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     private List<WidgetPair> InstalledWidgets { get; set; } = null!;
     private List<WidgetMetadata> AllWidgetsMetadata { get; set; } = null!;
 
-    private static readonly string[] WidgetsDirectories = [];  // TODO: Add user widget directory.
+    private static readonly string[] WidgetsDirectories =
+    [
+        LocalSettingsHelper.WidgetsDirectory
+    ];
 
     #region Initialization
 
@@ -565,7 +568,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         var widgetStoreList = _appSettingsService.GetWidgetStoreList();
         if (metadata == null)
         {
-            // TODO: Install widget from Github, not supported yet.
+            // TODO: Install available widget from Github, not supported yet.
         }
         else
         {
