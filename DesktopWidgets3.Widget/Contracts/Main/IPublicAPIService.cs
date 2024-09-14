@@ -5,6 +5,10 @@ namespace DesktopWidgets3.Widget.Contracts.Main;
 
 public interface IPublicAPIService
 {
+    bool BatterySaver { get; }
+
+    event Action<bool>? OnBatterySaverChanged;
+
     ElementTheme RootTheme { get; }
 
     Action<ElementTheme>? ElementTheme_Changed { get; set; }

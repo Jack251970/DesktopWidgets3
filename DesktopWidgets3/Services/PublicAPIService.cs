@@ -5,14 +5,30 @@ namespace DesktopWidgets3.Services;
 
 internal class PublicAPIService : IPublicAPIService
 {
+    private static IAppSettingsService AppSettingsService => DependencyExtensions.GetRequiredService<IAppSettingsService>();
     private static IThemeSelectorService ThemeSelectorService => DependencyExtensions.GetRequiredService<IThemeSelectorService>();
     private static IWidgetManagerService WidgetManagerService => DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
+    #region app settings
+
+    bool IPublicAPIService.BatterySaver => AppSettingsService.BatterySaver;
+
+    event Action<bool>? IPublicAPIService.OnBatterySaverChanged
+    {
+        add => AppSettingsService.OnBatterySaverChanged += value;
+        remove => AppSettingsService.OnBatterySaverChanged -= value;
+    }
+
+    #endregion
+
     #region theme
 
-    public ElementTheme RootTheme => ThemeSelectorService.Theme;
+    ElementTheme IPublicAPIService.RootTheme => ThemeSelectorService.Theme;
 
+    // TODO: Change to IPublicAPIService.ElementTheme_Changed like IPublicAPIService.OnBatterySaverChanged
     public Action<ElementTheme>? ElementTheme_Changed { get; set; }
+
+    Action<ElementTheme>? IPublicAPIService.ElementTheme_Changed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     #endregion
 
