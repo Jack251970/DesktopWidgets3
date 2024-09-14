@@ -18,20 +18,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" >
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2">
         <ExcludeAssets>runtime</ExcludeAssets>
       </PackageReference>
-      <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821" >
+      <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821">
         <ExcludeAssets>runtime</ExcludeAssets>
       </PackageReference>
-      <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" >
+      <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000">
         <ExcludeAssets>runtime</ExcludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj" >
+    <ProjectReference Include="..\..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj">
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>
