@@ -51,6 +51,8 @@ public static class WidgetsLoader
                 {
                     InstalledWidgets.AddOrUpdate(metadata.ID, resourcesFolder, (key, oldValue) => resourcesFolder);
                 }
+
+                extensionAssembly.Dispose();
             }
             catch (Exception e) when (extensionAssembly == null)
             {
@@ -85,9 +87,7 @@ public static class WidgetsLoader
 
     private static string InstallResourceFolder(IExtensionAssembly extensionAssembly)
     {
-        var extensionsEssembly = extensionAssembly;
-
-        (var hotReloadAvailable, var resourceFolder) = extensionsEssembly.TryEnableHotReload();
+        (var hotReloadAvailable, var resourceFolder) = extensionAssembly.TryEnableHotReload();
 
         return hotReloadAvailable == true ? resourceFolder! : string.Empty;
     }
