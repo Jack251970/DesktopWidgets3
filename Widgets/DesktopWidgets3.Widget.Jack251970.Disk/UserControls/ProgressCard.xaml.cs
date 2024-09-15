@@ -1,7 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DesktopWidgets3.Widget.Jack251970.Performance.UserControls;
+namespace DesktopWidgets3.Widget.Jack251970.Disk.UserControls;
 
 public sealed partial class ProgressCard : UserControl
 {

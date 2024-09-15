@@ -1,5 +1,6 @@
 ﻿// DesktopWidget3.Widget.Jack251970.Disk
 global using DesktopWidgets3.Widget.Jack251970.Disk.Models;
+global using DesktopWidgets3.Widget.Jack251970.Disk.UserControls;
 global using DesktopWidgets3.Widget.Jack251970.Disk.Utils;
 global using DesktopWidgets3.Widget.Jack251970.Disk.ViewModels;
 global using DesktopWidgets3.Widget.Jack251970.Disk.Views;
