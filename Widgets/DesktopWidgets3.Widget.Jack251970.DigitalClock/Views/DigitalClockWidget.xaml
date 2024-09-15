@@ -13,7 +13,12 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Orientation="Vertical">
-            <TextBlock HorizontalAlignment="Center" Text="{x:Bind ViewModel.SystemTime, Mode=OneWay}" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontFamily="Comic Sans MS"
+                FontSize="24"
+                FontStyle="Italic"
+                Text="{x:Bind ViewModel.SystemTime, Mode=OneWay}" />
         </StackPanel>
     </Grid>
 </UserControl>
