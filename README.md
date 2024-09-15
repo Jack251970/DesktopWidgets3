@@ -24,3 +24,4 @@ Build the solution in Visual Studio or run `dotnet build` from the command line.
 * WinUI3Windows: https://github.com/smourier/WinUI3Windows
 * Windows Community Toolkit: https://github.com/CommunityToolkit/WindowsCommunityToolkit
 * WinUIEx: https://github.com/dotMorten/WinUIEx
+* winui-extensions: https://github.com/dnchattan/winui-extensions
