@@ -1,15 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
+    <!-- General Properties -->
     <OutputType>Library</OutputType>
-    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
-    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <RootNamespace>DesktopWidgets3.Widget.Jack251970.AnalogClock</RootNamespace>
-    <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <UseWinUI>true</UseWinUI>
-    <Nullable>enable</Nullable>
+    <!-- Assembly Info Properties -->
     <AssemblyName>DesktopWidgets3.Widget.Jack251970.AnalogClock</AssemblyName>
+    <!-- Target Settings -->
+    <Platforms>x86;x64;arm64</Platforms>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <!-- WinUI Properties -->
+    <UseWinUI>true</UseWinUI>
+    <!-- Other Settings -->
+    <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <WindowsPackageType>None</WindowsPackageType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
