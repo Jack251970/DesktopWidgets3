@@ -6,7 +6,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.ViewModels;
 
-public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing
+public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
 {
     private static string ClassName => typeof(PerformanceViewModel).Name;
 
@@ -210,7 +210,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     #region widget closing
 
-    public void WidgetWindow_Closing()
+    public void OnWidgetClose()
     {
         cpuUpdateTimer.Dispose();
         gpuUpdateTimer.Dispose();

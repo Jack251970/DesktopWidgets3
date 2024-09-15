@@ -300,9 +300,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
             // widget close event
             var viewModel = GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
-            if (viewModel is IWidgetClosing close)
+            if (viewModel is IWidgetClose close)
             {
-                close.WidgetWindow_Closing();
+                close.OnWidgetClose();
             }
         }
     }

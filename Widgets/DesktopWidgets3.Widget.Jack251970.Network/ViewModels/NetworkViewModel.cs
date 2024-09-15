@@ -9,7 +9,7 @@ using System.Timers;
 
 namespace DesktopWidgets3.Widget.Jack251970.Network.ViewModels;
 
-public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing
+public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
 {
     private static string ClassName => typeof(NetworkViewModel).Name;
 
@@ -240,7 +240,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
     #region widget closing
 
-    public void WidgetWindow_Closing()
+    public void OnWidgetClose()
     {
         updateTimer.Dispose();
     }

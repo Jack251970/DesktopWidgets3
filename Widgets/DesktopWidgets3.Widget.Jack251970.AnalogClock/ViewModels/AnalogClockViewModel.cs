@@ -5,7 +5,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 
-public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing
+public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
 {
     #region view properties
 
@@ -97,7 +97,7 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     #region widget closing
 
-    public void WidgetWindow_Closing()
+    public void OnWidgetClose()
     {
         Context.API.OnBatterySaverChanged -= OnBatterySaverChanged;
         dispatcherQueueTimer.Stop();

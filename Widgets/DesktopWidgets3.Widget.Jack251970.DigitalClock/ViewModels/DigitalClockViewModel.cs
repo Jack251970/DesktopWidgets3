@@ -5,7 +5,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.DigitalClock.ViewModels;
 
-public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing
+public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
 {
     #region view properties
 
@@ -77,7 +77,7 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
 
     #region widget closing
 
-    public void WidgetWindow_Closing()
+    public void OnWidgetClose()
     {
         dispatcherQueueTimer.Stop();
         dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
