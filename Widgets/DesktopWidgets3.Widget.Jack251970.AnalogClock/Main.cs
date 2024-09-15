@@ -16,7 +16,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public FrameworkElement CreateWidgetFrameworkElement()
     {
-        return new AnalogClockWidget();
+        return new AnalogClockWidget(Context);
     }
 
     public void EnableWidget(bool firstWidget)

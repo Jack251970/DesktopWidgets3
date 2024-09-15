@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Services;
 
-internal class ThemeSelectorService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys, IPublicAPIService publicAPIService) : IThemeSelectorService
+internal class ThemeSelectorService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys) : IThemeSelectorService
 {
     private ElementTheme theme = ElementTheme.Default;
     public ElementTheme Theme {
@@ -13,14 +13,18 @@ internal class ThemeSelectorService(ILocalSettingsService localSettingsService, 
             if (theme != value)
             {
                 theme = value;
-                _publicAPIService.ElementTheme_Changed?.Invoke(value);
+                if (_isInitialized)
+                {
+                    OnThemeChanged?.Invoke(value);
+                }
             }
         } 
     }
 
+    public event Action<ElementTheme>? OnThemeChanged;
+
     private readonly ILocalSettingsService _localSettingsService = localSettingsService;
     private readonly LocalSettingsKeys _localSettingsKeys = localSettingsKeys.Value;
-    private readonly IPublicAPIService _publicAPIService = publicAPIService;
 
     private string SettingsKey => _localSettingsKeys.ThemeKey;
 

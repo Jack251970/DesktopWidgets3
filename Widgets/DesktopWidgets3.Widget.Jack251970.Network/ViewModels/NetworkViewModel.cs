@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace DesktopWidgets3.Widget.Jack251970.Network.ViewModels;
 
@@ -41,15 +42,49 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
     private readonly HardwareInfoService _hardwareInfoService;
 
+    private readonly Timer updateTimer = new();
+
     private bool listUpdating = false;
-    private bool updating = false;
 
     public NetworkViewModel(WidgetInitContext context, HardwareInfoService hardwareInfoService)
     {
         Context = context;
 
         _hardwareInfoService = hardwareInfoService;
+
+        InitializeTimer(updateTimer, UpdateNetwork);
     }
+
+    private static void InitializeTimer(Timer timer, Action action)
+    {
+        timer.AutoReset = true;
+        timer.Enabled = false;
+        timer.Interval = 1000;
+        timer.Elapsed += (s, e) => action();
+    }
+
+    partial void OnSelectedIndexChanged(int value)
+    {
+        if (value < 0 || value >= NetworkNames.Count)
+        {
+            return;
+        }
+
+        var newHardwareIdentifier = NetworkNames[value].Item2;
+
+        if (hardwareIdentifier != newHardwareIdentifier)
+        {
+            hardwareIdentifier = newHardwareIdentifier;
+            var newSettings = new NetworkSettings()
+            {
+                UseBps = useBps,
+                HardwareIdentifier = hardwareIdentifier
+            };
+            Context.API.UpdateWidgetSettings(this, newSettings, false, false);
+        }
+    }
+
+    #region update methods
 
     private void UpdateNetwork()
     {
@@ -124,18 +159,9 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (updating)
-                {
-                    return;
-                }
-
-                updating = true;
-
                 SelectedIndex = selectedIndex;
                 UploadSpeed = selectedUploadSpeed;
                 DownloadSpeed = selectedDownloadSpeed;
-
-                updating = false;
             });
         }
         catch (Exception e)
@@ -160,26 +186,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
         return FormatUtils.FormatBytes(bytes.Value, unit);
     }
 
-    partial void OnSelectedIndexChanged(int value)
-    {
-        if (value < 0 || value >= NetworkNames.Count)
-        {
-            return;
-        }
-
-        var newHardwareIdentifier = NetworkNames[value].Item2;
-
-        if (hardwareIdentifier != newHardwareIdentifier)
-        {
-            hardwareIdentifier = newHardwareIdentifier;
-            var newSettings = new NetworkSettings()
-            {
-                UseBps = useBps,
-                HardwareIdentifier = hardwareIdentifier
-            };
-            Context.API.UpdateWidgetSettings(this, newSettings, false, true);
-        }
-    }
+    #endregion
 
     #region abstract methods
 
@@ -214,7 +221,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
             UploadSpeed = "--";
             DownloadSpeed = "--";
 
-            _hardwareInfoService.RegisterUpdatedCallback(HardwareType.Network, UpdateNetwork);
+            updateTimer.Start();
         }
     }
 
@@ -224,14 +231,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
     public async Task EnableUpdate(bool enable)
     {
-        if (enable)
-        {
-            _hardwareInfoService.RegisterUpdatedCallback(HardwareType.Network, UpdateNetwork);
-        }
-        else
-        {
-            _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.Network, UpdateNetwork);
-        }
+        updateTimer.Enabled = enable;
 
         await Task.CompletedTask;
     }
@@ -242,7 +242,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
     public void WidgetWindow_Closing()
     {
-        _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.Network, UpdateNetwork);
+        updateTimer.Dispose();
     }
 
     #endregion

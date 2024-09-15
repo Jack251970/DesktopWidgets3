@@ -5,7 +5,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 
-public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing, IBatterySaver
+public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClosing
 {
     #region view properties
 
@@ -26,13 +26,23 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     #endregion
 
+    private readonly WidgetInitContext Context;
+
     private readonly DispatcherQueueTimer dispatcherQueueTimer;
 
-    public AnalogClockViewModel()
+    public AnalogClockViewModel(WidgetInitContext context)
     {
+        Context = context;
+        Context.API.OnBatterySaverChanged += OnBatterySaverChanged;
+
         dispatcherQueueTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
         dispatcherQueueTimer.Interval = TimeSpan.FromSeconds(1);
         dispatcherQueueTimer.Tick += (_, _) => UpdateTime();
+    }
+
+    private void OnBatterySaverChanged(bool enable)
+    {
+        HandsMode = enable ? HandsMode.Normal : HandsMode.Precise;
     }
 
     private void UpdateTime()
@@ -89,17 +99,9 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     public void WidgetWindow_Closing()
     {
+        Context.API.OnBatterySaverChanged -= OnBatterySaverChanged;
         dispatcherQueueTimer.Stop();
         dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
-    }
-
-    #endregion
-
-    #region battery saver
-
-    public void EnableBatterySaver(bool enable)
-    {
-        HandsMode = enable ? HandsMode.Normal : HandsMode.Precise;
     }
 
     #endregion

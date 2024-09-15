@@ -13,12 +13,12 @@ public class HardwareInfoService : IDisposable
     {
         sampleTimer.AutoReset = true;
         sampleTimer.Enabled = false;
-        sampleTimer.Interval = publicAPIService.BatterySaver ? 1000 : 500;
+        sampleTimer.Interval = publicAPIService.BatterySaver ? 1000 : 200;
         sampleTimer.Elapsed += SampleTimer_Elapsed;
 
         hardwareMonitor.EnabledChanged += HardwareMonitor_OnEnabledChanged;
 
-        publicAPIService.OnBatterySaverChanged += AppSettingsService_OnBatterySaverChanged;
+        publicAPIService.OnBatterySaverChanged += OnBatterySaverChanged;
     }
 
     private void SampleTimer_Elapsed(object? sender, ElapsedEventArgs e)
@@ -26,11 +26,11 @@ public class HardwareInfoService : IDisposable
         hardwareMonitor.Update();
     }
 
-    public void AppSettingsService_OnBatterySaverChanged(bool batterySaver)
+    public void OnBatterySaverChanged(bool enable)
     {
         var enabled = sampleTimer.Enabled;
         sampleTimer.Enabled = false;
-        sampleTimer.Interval = batterySaver ? 1000 : 100;
+        sampleTimer.Interval = enable ? 1000 : 200;
         sampleTimer.Enabled = enabled;
     }
 

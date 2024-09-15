@@ -5,11 +5,9 @@ namespace DesktopWidgets3.Services;
 
 internal class PublicAPIService : IPublicAPIService
 {
-    private static IAppSettingsService AppSettingsService => DependencyExtensions.GetRequiredService<IAppSettingsService>();
-    private static IThemeSelectorService ThemeSelectorService => DependencyExtensions.GetRequiredService<IThemeSelectorService>();
-    private static IWidgetManagerService WidgetManagerService => DependencyExtensions.GetRequiredService<IWidgetManagerService>();
-
     #region app settings
+
+    private static IAppSettingsService AppSettingsService => DependencyExtensions.GetRequiredService<IAppSettingsService>();
 
     bool IPublicAPIService.BatterySaver => AppSettingsService.BatterySaver;
 
@@ -23,16 +21,21 @@ internal class PublicAPIService : IPublicAPIService
 
     #region theme
 
+    private static IThemeSelectorService ThemeSelectorService => DependencyExtensions.GetRequiredService<IThemeSelectorService>();
+
     ElementTheme IPublicAPIService.RootTheme => ThemeSelectorService.Theme;
 
-    // TODO: Change to IPublicAPIService.ElementTheme_Changed like IPublicAPIService.OnBatterySaverChanged
-    public Action<ElementTheme>? ElementTheme_Changed { get; set; }
-
-    Action<ElementTheme>? IPublicAPIService.ElementTheme_Changed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    event Action<ElementTheme>? IPublicAPIService.OnThemeChanged
+    {
+        add => ThemeSelectorService.OnThemeChanged += value;
+        remove => ThemeSelectorService.OnThemeChanged -= value;
+    }
 
     #endregion
 
     #region widget
+
+    private static IWidgetManagerService WidgetManagerService => DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
     public async Task UpdateWidgetSettings(FrameworkElement element, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
     {

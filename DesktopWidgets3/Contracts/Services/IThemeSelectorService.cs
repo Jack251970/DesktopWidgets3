@@ -6,6 +6,8 @@ public interface IThemeSelectorService
 {
     ElementTheme Theme { get; }
 
+    event Action<ElementTheme>? OnThemeChanged;
+
     Task InitializeAsync();
 
     Task SetRequestedThemeAsync(Window window);

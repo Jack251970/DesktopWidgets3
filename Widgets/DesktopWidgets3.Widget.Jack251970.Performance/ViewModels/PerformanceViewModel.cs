@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Timers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 
@@ -50,19 +51,30 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     private readonly HardwareInfoService _hardwareInfoService;
 
-    private bool cpuUpdating = false;
-    private bool gpuUpdating = false;
-    private bool memoryUpdating = false;
+    private readonly Timer cpuUpdateTimer = new();
+    private readonly Timer gpuUpdateTimer = new();
+    private readonly Timer memoryUpdateTimer = new();
 
     public PerformanceViewModel(WidgetInitContext context, HardwareInfoService hardwareInfoService)
     {
         Context = context;
 
         _hardwareInfoService = hardwareInfoService;
-        _hardwareInfoService.RegisterUpdatedCallback(HardwareType.CPU, UpdateCPU);
-        _hardwareInfoService.RegisterUpdatedCallback(HardwareType.GPU, UpdateGPU);
-        _hardwareInfoService.RegisterUpdatedCallback(HardwareType.Memory, UpdateMemory);
+
+        InitializeTimer(cpuUpdateTimer, UpdateCPU);
+        InitializeTimer(gpuUpdateTimer, UpdateGPU);
+        InitializeTimer(memoryUpdateTimer, UpdateMemory);
     }
+
+    private static void InitializeTimer(Timer timer, Action action)
+    {
+        timer.AutoReset = true;
+        timer.Enabled = false;
+        timer.Interval = 1000;
+        timer.Elapsed += (s, e) => action();
+    }
+
+    #region update methods
 
     private void UpdateCPU()
     {
@@ -80,18 +92,9 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (cpuUpdating)
-                {
-                    return;
-                }
-
-                cpuUpdating = true;
-
                 CpuLeftInfo = "Cpu";
                 CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? FormatUtils.FormatPercentage(cpuUsage) : cpuSpeed;
                 CpuLoadValue = cpuUsage * 100;
-
-                cpuUpdating = false;
             });
         }
         catch (Exception e)
@@ -119,18 +122,9 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (gpuUpdating)
-                {
-                    return;
-                }
-
-                gpuUpdating = true;
-
                 GpuLeftInfo = string.IsNullOrEmpty(gpuName) ? "Gpu" : "Gpu" + $" ({gpuName})";
                 GpuRightInfo = gpuTemperature == 0 ? FormatUtils.FormatPercentage(gpuUsage) : FormatUtils.FormatTemperature(gpuTemperature, useCelsius);
                 GpuLoadValue = gpuUsage * 100;
-
-                gpuUpdating = false;
             });
         }
         catch (Exception e)
@@ -157,18 +151,9 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (memoryUpdating)
-                {
-                    return;
-                }
-
-                memoryUpdating = true;
-
                 MemoryLeftInfo = "Memory";
                 MemoryRightInfo = allMem == 0 ? FormatUtils.FormatPercentage(memoryUsage) : memoryUsedInfo;
                 MemoryLoadValue = memoryUsage * 100;
-
-                memoryUpdating = false;
             });
         }
         catch (Exception e)
@@ -176,6 +161,8 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
             Context.API.LogError(ClassName, e, "Error updating performance widget.");
         }
     }
+
+    #endregion
 
     #region abstract methods
 
@@ -199,6 +186,10 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
             GpuRightInfo = "--";
             MemoryLeftInfo = "--";
             MemoryRightInfo = "--";
+
+            cpuUpdateTimer.Start();
+            gpuUpdateTimer.Start();
+            memoryUpdateTimer.Start();
         }
     }
 
@@ -208,18 +199,9 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     public async Task EnableUpdate(bool enable)
     {
-        if (enable)
-        {
-            _hardwareInfoService.RegisterUpdatedCallback(HardwareType.CPU, UpdateCPU);
-            _hardwareInfoService.RegisterUpdatedCallback(HardwareType.GPU, UpdateGPU);
-            _hardwareInfoService.RegisterUpdatedCallback(HardwareType.Memory, UpdateMemory);
-        }
-        else
-        {
-            _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.CPU, UpdateCPU);
-            _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.GPU, UpdateGPU);
-            _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.Memory, UpdateMemory);
-        }
+        cpuUpdateTimer.Enabled = enable;
+        gpuUpdateTimer.Enabled = enable;
+        memoryUpdateTimer.Enabled = enable;
 
         await Task.CompletedTask;
     }
@@ -230,9 +212,9 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     public void WidgetWindow_Closing()
     {
-        _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.CPU, UpdateCPU);
-        _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.GPU, UpdateGPU);
-        _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.Memory, UpdateMemory);
+        cpuUpdateTimer.Dispose();
+        gpuUpdateTimer.Dispose();
+        memoryUpdateTimer.Dispose();
     }
 
     #endregion

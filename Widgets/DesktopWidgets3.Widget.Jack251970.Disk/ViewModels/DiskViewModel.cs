@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.Disk.ViewModels;
@@ -19,21 +20,36 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
 
     #region settings
 
+
+
     #endregion
 
     private readonly WidgetInitContext Context;
 
     private readonly HardwareInfoService _hardwareInfoService;
 
-    private bool updating = false;
+    private readonly Timer updateTimer = new();
+
+    private bool listUpdating = false;
 
     public DiskViewModel(WidgetInitContext context, HardwareInfoService hardwareInfoService)
     {
         Context = context;
 
         _hardwareInfoService = hardwareInfoService;
-        _hardwareInfoService.RegisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
+
+        InitializeTimer(updateTimer, UpdateDisk);
     }
+
+    private static void InitializeTimer(Timer timer, Action action)
+    {
+        timer.AutoReset = true;
+        timer.Enabled = false;
+        timer.Interval = 1000;
+        timer.Elapsed += (s, e) => action();
+    }
+
+    #region update methods
 
     private void UpdateDisk()
     {
@@ -77,12 +93,12 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                if (updating)
+                if (listUpdating)
                 {
                     return;
                 }
 
-                updating = true;
+                listUpdating = true;
 
                 try
                 {
@@ -135,7 +151,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
                     Context.API.LogError(ClassName, e, "Disk Widget Update Error on DispatcherQueue");
                 }
 
-                updating = false;
+                listUpdating = false;
             });
         }
         catch (Exception e)
@@ -143,6 +159,8 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
             Context.API.LogError(ClassName, e, "Disk Widget Update Error");
         }
     }
+
+    #endregion
 
     #region abstract methods
 
@@ -163,6 +181,8 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
                 RightTitle = "--",
                 ProgressValue = 0
             });
+
+            updateTimer.Start();
         }
     }
 
@@ -172,14 +192,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
 
     public async Task EnableUpdate(bool enable)
     {
-        if (enable)
-        {
-            _hardwareInfoService.RegisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
-        }
-        else
-        {
-            _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
-        }
+        updateTimer.Enabled = enable;
 
         await Task.CompletedTask;
     }
@@ -190,7 +203,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
 
     public void WidgetWindow_Closing()
     {
-        _hardwareInfoService.UnregisterUpdatedCallback(HardwareType.Disk, UpdateDisk);
+        updateTimer.Dispose();
     }
 
     #endregion

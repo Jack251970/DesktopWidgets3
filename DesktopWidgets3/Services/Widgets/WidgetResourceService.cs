@@ -33,9 +33,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         // initialize widget list
         await _appSettingsService.InitializeWidgetListAsync();
-
-        // register battery saver event
-        _appSettingsService.OnBatterySaverChanged += EnableWidgetsBatterySaver;
     }
 
     private async Task LoadAllInstalledWidgets()
@@ -295,23 +292,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         }
 
         return new UserControl();
-    }
-
-    #endregion
-
-    #region IBatterySaver
-
-    public void EnableWidgetsBatterySaver(bool enable)
-    {
-        foreach (var widgetPair in InstalledWidgets)
-        {
-            switch (widgetPair.Widget)
-            {
-                case IBatterySaver batterySaver:
-                    batterySaver.EnableBatterySaver(enable);
-                    break;
-            }
-        }
     }
 
     #endregion

@@ -16,9 +16,9 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <TextBlock
-                x:Uid="Widget_Disk_Title"
                 Grid.Row="0"
-                Margin="20,20,20,10" />
+                Margin="20,20,20,10"
+                Text="Disk" />
             <ListView
                 Grid.Row="1"
                 Margin="5,0,10,0"
