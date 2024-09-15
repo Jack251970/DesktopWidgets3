@@ -42,8 +42,6 @@ public class WidgetMetadata
 
     public string ExecuteFilePath { get; private set; } = string.Empty;
 
-    public string AssemblyName { get; private set; } = string.Empty;
-
     private string _widgetDirectory = string.Empty;
     public string WidgetDirectory
     {
@@ -53,7 +51,6 @@ public class WidgetMetadata
             _widgetDirectory = value;
             ExecuteFilePath = Path.Combine(value, ExecuteFileName);
             IcoPath = Path.Combine(value, IcoPath);
-            AssemblyName = Path.GetFileNameWithoutExtension(ExecuteFileName);
         }
     }
 

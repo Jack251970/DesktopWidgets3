@@ -72,16 +72,10 @@
                         Text="{x:Bind ViewModel.Version, Mode=OneTime}" />
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard x:Uid="Settings_Repository_Card">
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                IsTextSelectionEnabled="True"
-                                Text="https://github.com/Jack251970/DesktopWidgets3" />
+                            <HyperlinkButton Content="https://github.com/Jack251970/DesktopWidgets3" NavigateUri="https://github.com/Jack251970/DesktopWidgets3" />
                         </controls:SettingsCard>
                         <controls:SettingsCard x:Uid="Settings_Feedback_Card">
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                IsTextSelectionEnabled="True"
-                                Text="jack1160210343@gmail.com" />
+                            <HyperlinkButton Content="https://github.com/Jack251970/DesktopWidgets3/issues" NavigateUri="https://github.com/Jack251970/DesktopWidgets3/issues" />
                         </controls:SettingsCard>
                         <controls:SettingsCard
                             x:Uid="Settings_Dependencies_Card"
@@ -105,11 +99,11 @@
                             </StackPanel>
                         </controls:SettingsCard>
                         <controls:SettingsCard
-                            x:Uid="Settings_CopyRight_Card"
                             HorizontalContentAlignment="Left"
-                            ContentAlignment="Vertical">
+                            ContentAlignment="Vertical"
+                            Description="{x:Bind ViewModel.CopyRight, Mode=OneTime}">
                             <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                <HyperlinkButton x:Uid="Settings_LicenseLink" />
+                                <HyperlinkButton x:Uid="Settings_LicenseLink" NavigateUri="https://github.com/Jack251970/DesktopWidgets3/blob/master/LICENSE" />
                             </StackPanel>
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>

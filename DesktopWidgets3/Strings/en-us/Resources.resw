@@ -123,9 +123,6 @@
   <data name="Settings_LicenseLink.Content" xml:space="preserve">
     <value>Open-source License</value>
   </data>
-  <data name="Settings_LicenseLink.NavigateUri" xml:space="preserve">
-    <value>https://github.com/Jack251970/DesktopWidgets3/blob/master/LICENSE</value>
-  </data>
   <data name="Settings_About.Text" xml:space="preserve">
     <value>About</value>
   </data>

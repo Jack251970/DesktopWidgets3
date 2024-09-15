@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿// Copyright (c) 2024 Jack251970
+// Licensed under the GPL License. See the LICENSE.
+
+using System.Runtime.InteropServices;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;

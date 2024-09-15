@@ -1,11 +1,8 @@
 # Desktop Widgets 3
-**An app for many useful desktop widgets based on WinUI 3.(By [Jack251970](https://github.com/Jack251970))**
+
+**An app for many useful desktop widgets based on WinUI 3.**
 
 ## Building
-
-Before building, you need to add these package sources.
-
-1. Local Packages: ...\DesktopWidgets3\Files.App\nupkgs
 
 Build the solution in Visual Studio or run `dotnet build` from the command line.
 

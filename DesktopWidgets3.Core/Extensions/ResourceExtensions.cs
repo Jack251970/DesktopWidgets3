@@ -1,4 +1,7 @@
-﻿using Microsoft.Windows.ApplicationModel.Resources;
+﻿// Copyright (c) 2024 Jack251970
+// Licensed under the GPL License. See the LICENSE.
+
+using Microsoft.Windows.ApplicationModel.Resources;
 
 using System.Collections.Concurrent;
 

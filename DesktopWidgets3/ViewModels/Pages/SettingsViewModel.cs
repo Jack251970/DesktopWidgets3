@@ -26,6 +26,9 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     private string _version = $"v{InfoHelper.GetVersion()}";
 
+    [ObservableProperty]
+    private string _copyRight = $"{InfoHelper.GetCopyright()}";
+
     #endregion
 
     private readonly IAppSettingsService _appSettingsService;

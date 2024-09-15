@@ -219,9 +219,6 @@
   <data name="Settings_LicenseLink.Content" xml:space="preserve">
     <value>开源协议</value>
   </data>
-  <data name="Settings_LicenseLink.NavigateUri" xml:space="preserve">
-    <value>https://github.com/Jack251970/DesktopWidgets3/blob/master/LICENSE</value>
-  </data>
   <data name="Settings_MultiThread_Card.Description" xml:space="preserve">
     <value>使用多个线程加载组件</value>
   </data>

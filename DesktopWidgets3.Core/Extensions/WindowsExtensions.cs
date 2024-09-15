@@ -1,11 +1,14 @@
-﻿using Microsoft.UI.Dispatching;
+﻿// Copyright (c) 2024 Jack251970
+// Licensed under the GPL License. See the LICENSE.
+
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
 
 namespace DesktopWidgets3.Core.Extensions;
 
 /// <summary>
-/// Provides static extension for windows, support multi-thread.
+/// Provides static extension for windows, support multi-thread windows.
 /// </summary>
 public static class WindowsExtensions
 {
