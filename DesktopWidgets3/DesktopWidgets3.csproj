@@ -123,7 +123,7 @@
       <WidgetProjects Include="$(WidgetProjects)" />
     </ItemGroup>
 
-    <MSBuild Projects="@(WidgetProjects)" Targets="Build" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+    <MSBuild Projects="@(WidgetProjects)" Targets="Build" Properties="Platform=$(Platform);Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
 
     <!-- Copy project file -->
     <!--<Copy SourceFiles="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.AnalogClock\bin\$(Platform)\$(Configuration)\$(TargetFramework)\DesktopWidgets3.Widget.Jack251970.AnalogClock.dll" 
