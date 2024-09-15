@@ -175,9 +175,9 @@ public sealed partial class WidgetWindow : WindowEx
 
         // set page update status
         var viewModel = _widgetManagerService.GetWidgetViewModel(this);
-        if (viewModel is IWidgetUpdate update)
+        if (viewModel is IAsyncWidgetUpdate update)
         {
-            await update.EnableUpdate(!isEditMode);
+            await update.EnableUpdateAsync(!isEditMode);
         }
 
         // set window size

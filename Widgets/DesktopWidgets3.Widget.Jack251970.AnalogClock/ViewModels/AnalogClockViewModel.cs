@@ -5,7 +5,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 
-public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
+public partial class AnalogClockViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
 {
     #region view properties
 
@@ -79,7 +79,7 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     #region widget update
 
-    public async Task EnableUpdate(bool enable)
+    public async Task EnableUpdateAsync(bool enable)
     {
         if (enable)
         {

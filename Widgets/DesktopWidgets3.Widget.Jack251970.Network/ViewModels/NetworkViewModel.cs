@@ -9,7 +9,7 @@ using System.Timers;
 
 namespace DesktopWidgets3.Widget.Jack251970.Network.ViewModels;
 
-public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
+public partial class NetworkViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
 {
     private static string ClassName => typeof(NetworkViewModel).Name;
 
@@ -229,7 +229,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
     #region widget update
 
-    public async Task EnableUpdate(bool enable)
+    public async Task EnableUpdateAsync(bool enable)
     {
         updateTimer.Enabled = enable;
 

@@ -6,7 +6,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.ViewModels;
 
-public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
+public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
 {
     private static string ClassName => typeof(PerformanceViewModel).Name;
 
@@ -197,7 +197,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     #region widget update
 
-    public async Task EnableUpdate(bool enable)
+    public async Task EnableUpdateAsync(bool enable)
     {
         cpuUpdateTimer.Enabled = enable;
         gpuUpdateTimer.Enabled = enable;

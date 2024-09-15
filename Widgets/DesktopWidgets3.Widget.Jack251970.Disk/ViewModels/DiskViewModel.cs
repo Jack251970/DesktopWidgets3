@@ -8,7 +8,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.Disk.ViewModels;
 
-public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
+public partial class DiskViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
 {
     private static string ClassName => typeof(DiskViewModel).Name;
 
@@ -190,7 +190,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
 
     #region widget update
 
-    public async Task EnableUpdate(bool enable)
+    public async Task EnableUpdateAsync(bool enable)
     {
         updateTimer.Enabled = enable;
 

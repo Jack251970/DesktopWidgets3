@@ -5,7 +5,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.DigitalClock.ViewModels;
 
-public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetClose
+public partial class DigitalClockViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
 {
     #region view properties
 
@@ -59,7 +59,7 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
 
     #region widget update
 
-    public async Task EnableUpdate(bool enable)
+    public async Task EnableUpdateAsync(bool enable)
     {
         if (enable)
         {
