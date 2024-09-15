@@ -46,9 +46,9 @@ public static class WidgetsLoader
 
                 widget = Activator.CreateInstance(type) as IAsyncWidget;
 
+                var resourcesFolder = InstallResourceFolder(extensionAssembly);
                 if (installingIds.Contains(metadata.ID))
                 {
-                    var resourcesFolder = InstallResourceFolder(extensionAssembly);
                     InstalledWidgets.AddOrUpdate(metadata.ID, resourcesFolder, (key, oldValue) => resourcesFolder);
                 }
             }
