@@ -1,60 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
-using Microsoft.UI.Xaml;
 
-namespace DesktopWidgets3.Services;
+namespace DesktopWidgets3.Services.Widgets;
 
-internal class PublicAPIService : IPublicAPIService
+internal class LogService : ILogService
 {
-    #region app settings
-
-    private static IAppSettingsService AppSettingsService => DependencyExtensions.GetRequiredService<IAppSettingsService>();
-
-    bool IPublicAPIService.BatterySaver => AppSettingsService.BatterySaver;
-
-    event Action<bool>? IPublicAPIService.OnBatterySaverChanged
-    {
-        add => AppSettingsService.OnBatterySaverChanged += value;
-        remove => AppSettingsService.OnBatterySaverChanged -= value;
-    }
-
-    #endregion
-
-    #region theme
-
-    private static IThemeSelectorService ThemeSelectorService => DependencyExtensions.GetRequiredService<IThemeSelectorService>();
-
-    ElementTheme IPublicAPIService.RootTheme => ThemeSelectorService.Theme;
-
-    event Action<ElementTheme>? IPublicAPIService.OnThemeChanged
-    {
-        add => ThemeSelectorService.OnThemeChanged += value;
-        remove => ThemeSelectorService.OnThemeChanged -= value;
-    }
-
-    #endregion
-
-    #region widget
-
-    private static IWidgetManagerService WidgetManagerService => DependencyExtensions.GetRequiredService<IWidgetManagerService>();
-
-    public async Task UpdateWidgetSettings(FrameworkElement element, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
-    {
-        var widgetId = WidgetProperties.GetId(element);
-        var indexTag = WidgetProperties.GetIndexTag(element);
-        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, indexTag, settings, updateWidget, updateWidgetSetting);
-    }
-
-    public async Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
-    {
-        var widgetId = viewModel.Id;
-        var indexTag = viewModel.IndexTag;
-        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, indexTag, settings, updateWidget, updateWidgetSetting);
-    }
-
-    #endregion
-
-    #region log
-
     //------------------------------------------TRACE------------------------------------------//
 
     public void LogTrace(string className, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
@@ -129,6 +78,4 @@ internal class PublicAPIService : IPublicAPIService
     {
         LogExtensions.LogCritical(className, message, methodName, args);
     }
-
-    #endregion
 }

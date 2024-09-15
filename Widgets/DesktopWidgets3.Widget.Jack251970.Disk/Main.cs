@@ -15,7 +15,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
     {
         Context = context;
 
-        HardwareInfoService = new HardwareInfoService(context.API);
+        HardwareInfoService = new HardwareInfoService(context);
         HardwareInfoService.StartMonitor(HardwareType.Disk);
     }
 

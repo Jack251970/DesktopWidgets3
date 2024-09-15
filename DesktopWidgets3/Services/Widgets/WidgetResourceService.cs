@@ -187,7 +187,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     private async Task InitWidgetsAsync()
     {
-        var publicAPIService = DependencyExtensions.GetRequiredService<IPublicAPIService>();
+        var logService = DependencyExtensions.GetRequiredService<ILogService>();
+        var settingsService = DependencyExtensions.GetRequiredService<ISettingsService>();
+        var themeService = DependencyExtensions.GetRequiredService<IThemeService>();
+        var widgetService = DependencyExtensions.GetRequiredService<IWidgetService>();
 
         var failedPlugins = new ConcurrentQueue<WidgetPair>();
 
@@ -195,7 +198,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         {
             try
             {
-                pair.Widget.InitWidgetAsync(new WidgetInitContext(pair.Metadata, publicAPIService));
+                pair.Widget.InitWidgetAsync(new WidgetInitContext(pair.Metadata, logService, settingsService, themeService, widgetService));
             }
             catch (Exception e)
             {

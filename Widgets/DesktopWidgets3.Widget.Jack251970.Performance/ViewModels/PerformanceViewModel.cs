@@ -99,7 +99,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
         }
         catch (Exception e)
         {
-            Context.API.LogError(ClassName, e, "Error updating performance widget.");
+            Context.LogService.LogError(ClassName, e, "Error updating performance widget.");
         }
     }
 
@@ -129,7 +129,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
         }
         catch (Exception e)
         {
-            Context.API.LogError(ClassName, e, "Error updating performance widget.");
+            Context.LogService.LogError(ClassName, e, "Error updating performance widget.");
         }
     }
 
@@ -158,7 +158,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
         }
         catch (Exception e)
         {
-            Context.API.LogError(ClassName, e, "Error updating performance widget.");
+            Context.LogService.LogError(ClassName, e, "Error updating performance widget.");
         }
     }
 

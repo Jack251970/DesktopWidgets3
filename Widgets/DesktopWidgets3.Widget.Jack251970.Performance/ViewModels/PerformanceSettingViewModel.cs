@@ -22,7 +22,7 @@ public partial class PerformanceSettingViewModel(WidgetInitContext context) : Ba
         if (_initialized)
         {
             Settings.UseCelsius = value;
-            Context.API.UpdateWidgetSettings(this, Settings, true, false);
+            Context.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
         }
     }
 

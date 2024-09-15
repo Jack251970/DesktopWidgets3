@@ -22,7 +22,7 @@ public partial class DigitalClockSettingViewModel(WidgetInitContext context) : B
         if (_initialized)
         {
             Settings.ShowSeconds = value;
-            Context.API.UpdateWidgetSettings(this, Settings, true, false);
+            Context.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
         }
     }
 

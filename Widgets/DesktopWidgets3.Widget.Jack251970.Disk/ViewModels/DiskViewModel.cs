@@ -148,7 +148,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IW
                 }
                 catch (Exception e)
                 {
-                    Context.API.LogError(ClassName, e, "Disk Widget Update Error on DispatcherQueue");
+                    Context.LogService.LogError(ClassName, e, "Disk Widget Update Error on DispatcherQueue");
                 }
 
                 listUpdating = false;
@@ -156,7 +156,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IW
         }
         catch (Exception e)
         {
-            Context.API.LogError(ClassName, e, "Disk Widget Update Error");
+            Context.LogService.LogError(ClassName, e, "Disk Widget Update Error");
         }
     }
 

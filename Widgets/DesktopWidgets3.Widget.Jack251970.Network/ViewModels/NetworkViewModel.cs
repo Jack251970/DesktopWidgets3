@@ -80,7 +80,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate,
                 UseBps = useBps,
                 HardwareIdentifier = hardwareIdentifier
             };
-            Context.API.UpdateWidgetSettings(this, newSettings, false, false);
+            Context.WidgetService.UpdateWidgetSettings(this, newSettings, false, false);
         }
     }
 
@@ -166,7 +166,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate,
         }
         catch (Exception e)
         {
-            Context.API.LogError(ClassName, e, "Failed to update network card.");
+            Context.LogService.LogError(ClassName, e, "Failed to update network card.");
         }
     }
 

@@ -42,7 +42,7 @@ public partial class NetworkSettingViewModel(WidgetInitContext context) : BaseWi
         if (_initialized)
         {
             Settings.UseBps = value;
-            Context.API.UpdateWidgetSettings(this, Settings, true, false);
+            Context.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
         }
     }
 }

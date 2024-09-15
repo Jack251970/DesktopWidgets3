@@ -32,6 +32,7 @@ global using DesktopWidgets3.Infrastructure.Services;
 // DesktopWidgets3.Widget
 global using DesktopWidgets3.Widget.Contracts.Views;
 global using DesktopWidgets3.Widget.Contracts.Main;
+global using DesktopWidgets3.Widget.Contracts.Services;
 global using DesktopWidgets3.Widget.Contracts.ViewModel;
 global using DesktopWidgets3.Widget.Models.Main;
 global using DesktopWidgets3.Widget.Models.Parameter;

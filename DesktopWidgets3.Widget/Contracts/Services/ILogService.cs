@@ -1,22 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
-using Microsoft.UI.Xaml;
 
-namespace DesktopWidgets3.Widget.Contracts.Main;
+namespace DesktopWidgets3.Widget.Contracts.Services;
 
-public interface IPublicAPIService
+public interface ILogService
 {
-    bool BatterySaver { get; }
-
-    event Action<bool>? OnBatterySaverChanged;
-
-    ElementTheme RootTheme { get; }
-
-    event Action<ElementTheme>? OnThemeChanged;
-
-    Task UpdateWidgetSettings(FrameworkElement element, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
-
-    Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
-
     /// <summary>
     /// Log trace message
     /// Message will only be logged in Debug mode

@@ -5,25 +5,23 @@ namespace DesktopWidgets3.Widget.Jack251970.Disk.Models;
 
 public class HardwareInfoService : IDisposable
 {
+    private readonly WidgetInitContext Context;
+
     private readonly HardwareMonitor hardwareMonitor = new();
 
     private readonly Timer sampleTimer = new();
 
-    public HardwareInfoService(IPublicAPIService publicAPIService)
+    public HardwareInfoService(WidgetInitContext context)
     {
+        Context = context;
+        Context.SettingsService.OnBatterySaverChanged += OnBatterySaverChanged;
+
         sampleTimer.AutoReset = true;
         sampleTimer.Enabled = false;
-        sampleTimer.Interval = publicAPIService.BatterySaver ? 1000 : 200;
-        sampleTimer.Elapsed += SampleTimer_Elapsed;
+        sampleTimer.Interval = context.SettingsService.BatterySaver ? 1000 : 200;
+        sampleTimer.Elapsed += (s, e) => hardwareMonitor.Update();
 
         hardwareMonitor.EnabledChanged += HardwareMonitor_OnEnabledChanged;
-
-        publicAPIService.OnBatterySaverChanged += OnBatterySaverChanged;
-    }
-
-    private void SampleTimer_Elapsed(object? sender, ElapsedEventArgs e)
-    {
-        hardwareMonitor.Update();
     }
 
     public void OnBatterySaverChanged(bool enable)
@@ -177,6 +175,7 @@ public class HardwareInfoService : IDisposable
         {
             if (disposing)
             {
+                Context.SettingsService.OnBatterySaverChanged -= OnBatterySaverChanged;
                 hardwareMonitor.Dispose();
                 sampleTimer.Dispose();
             }

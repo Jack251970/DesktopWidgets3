@@ -33,7 +33,7 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
     public AnalogClockViewModel(WidgetInitContext context)
     {
         Context = context;
-        Context.API.OnBatterySaverChanged += OnBatterySaverChanged;
+        Context.SettingsService.OnBatterySaverChanged += OnBatterySaverChanged;
 
         dispatcherQueueTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
         dispatcherQueueTimer.Interval = TimeSpan.FromSeconds(1);
@@ -99,7 +99,7 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
 
     public void OnWidgetClose()
     {
-        Context.API.OnBatterySaverChanged -= OnBatterySaverChanged;
+        Context.SettingsService.OnBatterySaverChanged -= OnBatterySaverChanged;
         dispatcherQueueTimer.Stop();
         dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
     }

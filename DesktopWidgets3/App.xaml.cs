@@ -138,14 +138,27 @@ public partial class App : Application
 
                 #region Widget Service
 
+                #region Widget Management
+
                 // Widgets Management
                 services.AddSingleton<IWidgetManagerService, WidgetManagerService>();
 
                 // Widgets Resources
                 services.AddSingleton<IWidgetResourceService, WidgetResourceService>();
 
-                // Public API
-                services.AddSingleton<IPublicAPIService, PublicAPIService>();
+                #endregion
+
+                #region Widget API
+
+                services.AddSingleton<ILogService, LogService>();
+
+                services.AddSingleton<ISettingsService, SettingsService>();
+
+                services.AddSingleton<IThemeService, ThemeService>();
+
+                services.AddSingleton<IWidgetService, WidgetService>();
+
+                #endregion
 
                 #endregion
 
