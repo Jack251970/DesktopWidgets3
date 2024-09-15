@@ -18,12 +18,21 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         LocalSettingsHelper.WidgetsDirectory
     ];
 
+    private static readonly string[] PreinstalledWigdetsIds =
+    [
+        "949ADC2E912C4772BC3025A1E9DA32A0",  // Analog Clock
+        "7A0C8F221280461E9B02D3CFF2D2BD35",  // Digital Clock
+        "09613A71F3FE40E4AC5FF91563BD52B2",  // Disk
+        "DB86CAFACFF0436C961D91E06B6F7FFC",  // Network
+        "34EAD000AD4840E985009002128F654C",  // Performance
+    ];
+
     #region Initialization
 
     public async Task InitalizeAsync()
     {
         // get all widget metadata
-        AllWidgetsMetadata = WidgetsConfig.Parse(WidgetsDirectories, Constant.WidgetsPreinstalledDirectory);
+        GetAllWidgetsMetadata();
 
         // load all installed widgets
         await LoadAllInstalledWidgets();
@@ -33,6 +42,20 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         // initialize widget list
         await _appSettingsService.InitializeWidgetListAsync();
+    }
+
+    private void GetAllWidgetsMetadata()
+    {
+        // get all widget metadata
+        AllWidgetsMetadata = WidgetsConfig.Parse(WidgetsDirectories, Constant.WidgetsPreinstalledDirectory);
+
+        // check preinstalled widgets
+        var errorPreinstalledWidgetsIds = AllWidgetsMetadata
+            .Where(x => x.Preinstalled && (!PreinstalledWigdetsIds.Contains(x.ID)))
+            .Select(x => x.ID).ToList();
+
+        // remove error preinstalled widgets
+        AllWidgetsMetadata = AllWidgetsMetadata.Where(x => !errorPreinstalledWidgetsIds.Contains(x.ID)).ToList();
     }
 
     private async Task LoadAllInstalledWidgets()
