@@ -4,7 +4,7 @@ public interface IWidgetManagerService
 {
     Task InitializeAsync();
 
-    Task<int> AddWidgetAsync(string widgetId, bool refresh);
+    Task<int> AddWidgetAsync(string widgetId, Action<string, int> action, bool updateDashboard);
 
     Task EnableWidgetAsync(string widgetId, int indexTag);
 

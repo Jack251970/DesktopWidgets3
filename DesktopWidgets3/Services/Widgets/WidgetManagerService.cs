@@ -53,7 +53,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    public async Task<int> AddWidgetAsync(string widgetId, bool refresh)
+    public async Task<int> AddWidgetAsync(string widgetId, Action<string, int> action, bool updateDashboard)
     {
         var widgetList = _appSettingsService.GetWidgetsList();
 
@@ -69,6 +69,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             }
             indexTag++;
         }
+
+        // invoke action
+        action(widgetId, indexTag);
 
         // save widget item
         var widget = new JsonWidgetItem()
@@ -87,7 +90,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         CreateWidgetWindow(widget);
 
         // update dashboard page
-        if (refresh)
+        if (updateDashboard)
         {
             RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {

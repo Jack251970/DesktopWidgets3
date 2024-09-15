@@ -27,8 +27,7 @@ public sealed partial class DashboardPage : Page
         if (sender is FrameworkElement element)
         {
             var widgetId = WidgetProperties.GetId(element);
-            var indexTag = await _widgetManagerService.AddWidgetAsync(widgetId, false);
-            ViewModel.RefreshAddedWidget(widgetId, indexTag);
+            var indexTag = await _widgetManagerService.AddWidgetAsync(widgetId, ViewModel.RefreshAddedWidget, false);
         }
     }
 
@@ -55,8 +54,8 @@ public sealed partial class DashboardPage : Page
         {
             if (await App.MainWindow.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
             {
-                await _widgetManagerService.DeleteWidgetAsync(_widgetId, _indexTag, false);
                 ViewModel.RefreshDisabledWidget(_widgetId, _indexTag);
+                await _widgetManagerService.DeleteWidgetAsync(_widgetId, _indexTag, false);
             }
             _indexTag = -1;
         }
