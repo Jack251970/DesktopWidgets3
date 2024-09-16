@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Widget.Models.Main;
+﻿namespace DesktopWidgets3.Widget.Models;
 
 public class WidgetMetadata
 {
