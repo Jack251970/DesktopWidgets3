@@ -11,12 +11,15 @@ public sealed partial class DashboardPage : Page
 
     private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
+    private readonly MenuFlyout RightClickMenu;
+
     private string _widgetId = string.Empty;
     private int _indexTag = -1;
 
     public DashboardPage()
     {
         ViewModel = DependencyExtensions.GetRequiredService<DashboardViewModel>();
+        RightClickMenu = GetRightClickMenu();
         InitializeComponent();
     }
 
@@ -37,18 +40,32 @@ public sealed partial class DashboardPage : Page
 
     #region Context Menu
 
+    private MenuFlyout GetRightClickMenu()
+    {
+        var menuFlyout = new MenuFlyout();
+
+        var deleteMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalized()
+        };
+        deleteMenuItem.Click += (s, e) => DeleteWidget();
+        menuFlyout.Items.Add(deleteMenuItem);
+
+        return menuFlyout;
+    }
+
     private void WidgetItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
         if (sender is FrameworkElement element)
         {
             _widgetId = WidgetProperties.GetId(element);
             _indexTag = WidgetProperties.GetIndexTag(element);
-            element.ContextFlyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
+            RightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
         }
     }
 
-    private async void MenuFlyoutItemDeleteWidget_Click(object sender, RoutedEventArgs e)
+    private async void DeleteWidget()
     {
         if (_indexTag != -1)
         {

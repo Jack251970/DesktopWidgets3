@@ -11,11 +11,16 @@ public sealed partial class WidgetStorePage : Page
 
     private readonly IWidgetResourceService _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
+    private readonly MenuFlyout InstallRightClickMenu;
+    private readonly MenuFlyout UninstallRightClickMenu;
+
     private string _widgetId = string.Empty;
 
     public WidgetStorePage()
     {
         ViewModel = DependencyExtensions.GetRequiredService<WidgetStoreViewModel>();
+        InstallRightClickMenu = GetInstalledRightClickMenu();
+        UninstallRightClickMenu = GetUninstalledRightClickMenu();
         InitializeComponent();
     }
 
@@ -23,17 +28,55 @@ public sealed partial class WidgetStorePage : Page
 
     #region Context Menu
 
-    private void WidgetStoreItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    private MenuFlyout GetInstalledRightClickMenu()
+    {
+        var menuFlyout = new MenuFlyout();
+
+        var installMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_InstallWidget.Text".GetLocalized()
+        };
+        installMenuItem.Click += (s, e) => InstallWidget();
+        menuFlyout.Items.Add(installMenuItem);
+
+        return menuFlyout;
+    }
+
+    private MenuFlyout GetUninstalledRightClickMenu()
+    {
+        var menuFlyout = new MenuFlyout();
+
+        var uninstallMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_UninstallWidget.Text".GetLocalized()
+        };
+        uninstallMenuItem.Click += (s, e) => UninstallWidget();
+        menuFlyout.Items.Add(uninstallMenuItem);
+
+        return menuFlyout;
+    }
+
+    private void AvailableWidgetStoreItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
         if (sender is FrameworkElement element)
         {
             _widgetId = WidgetProperties.GetId(element);
-            element.ContextFlyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
+            InstallRightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
         }
     }
 
-    private async void MenuFlyoutItemInstallWidget_Click(object sender, RoutedEventArgs e)
+    private void InstalledWidgetStoreItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        if (sender is FrameworkElement element)
+        {
+            _widgetId = WidgetProperties.GetId(element);
+            UninstallRightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
+            e.Handled = true;
+        }
+    }
+
+    private async void InstallWidget()
     {
         if (_widgetId != string.Empty)
         {
@@ -42,7 +85,7 @@ public sealed partial class WidgetStorePage : Page
         }
     }
 
-    private async void MenuFlyoutItemUninstallWidget_Click(object sender, RoutedEventArgs e)
+    private async void UninstallWidget()
     {
         if (_widgetId != string.Empty)
         {

@@ -13,12 +13,6 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <MenuFlyout x:Key="DashboardItemMenuFlyout">
-            <MenuFlyoutItem x:Uid="MenuFlyoutItem_DeleteWidget" Click="MenuFlyoutItemDeleteWidget_Click" />
-        </MenuFlyout>
-    </Page.Resources>
-
     <ScrollViewer x:Name="MainScrollViewer">
         <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Orientation="Vertical">
             <TextBlock
@@ -112,7 +106,6 @@
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
-                            ContextFlyout="{StaticResource DashboardItemMenuFlyout}"
                             RightTapped="WidgetItem_RightTapped">
                             <Grid
                                 Padding="16,12"
@@ -178,7 +171,6 @@
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
-                            ContextFlyout="{StaticResource DashboardItemMenuFlyout}"
                             RightTapped="WidgetItem_RightTapped">
                             <Grid
                                 Padding="16,12"
