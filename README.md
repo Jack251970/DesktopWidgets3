@@ -17,7 +17,6 @@ Build the solution in Visual Studio or run `dotnet build` from the command line.
 * PowerToys: https://github.com/microsoft/PowerToys
 * Template Studio for WinUI (C#): https://github.com/microsoft/TemplateStudio
 * terminal: https://github.com/microsoft/terminal
-* Vanara: https://github.com/dahall/vanara
 * WinUI3Windows: https://github.com/smourier/WinUI3Windows
 * Windows Community Toolkit: https://github.com/CommunityToolkit/WindowsCommunityToolkit
 * WinUIEx: https://github.com/dotMorten/WinUIEx
