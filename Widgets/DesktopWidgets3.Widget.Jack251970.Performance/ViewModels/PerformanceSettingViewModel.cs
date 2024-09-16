@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.ViewModels;
 
-public partial class PerformanceSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
+public partial class PerformanceSettingViewModel : BaseWidgetSettingViewModel
 {
     #region view properties
 
@@ -10,8 +10,6 @@ public partial class PerformanceSettingViewModel(WidgetInitContext context) : Ba
     private bool _useCelsius = false;
 
     #endregion
-
-    public readonly WidgetInitContext Context = context;
 
     private PerformanceSettings Settings = null!;
 
@@ -22,7 +20,7 @@ public partial class PerformanceSettingViewModel(WidgetInitContext context) : Ba
         if (_initialized)
         {
             Settings.UseCelsius = value;
-            Context.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
+            Main.Context.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
         }
     }
 

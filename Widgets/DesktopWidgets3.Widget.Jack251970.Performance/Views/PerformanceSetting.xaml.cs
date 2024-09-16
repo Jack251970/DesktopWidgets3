@@ -8,9 +8,9 @@ public sealed partial class PerformanceSetting : UserControl, ISettingViewModel
 
     BaseWidgetSettingViewModel ISettingViewModel.ViewModel => ViewModel;
 
-    public PerformanceSetting(WidgetInitContext context)
+    public PerformanceSetting()
     {
-        ViewModel = new PerformanceSettingViewModel(context);
+        ViewModel = new PerformanceSettingViewModel();
         InitializeComponent();
     }
 }

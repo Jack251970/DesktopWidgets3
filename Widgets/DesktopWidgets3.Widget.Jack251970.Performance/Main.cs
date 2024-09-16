@@ -3,17 +3,18 @@ using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance;
 
-public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
+public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocalization, IDisposable
 {
     #region IWidget
 
-    private WidgetInitContext Context = null!;
+    public static WidgetInitContext Context => context;
+    private static WidgetInitContext context = null!;
 
     private HardwareInfoService HardwareInfoService = null!;
 
     public void InitWidget(WidgetInitContext context)
     {
-        Context = context;
+        Main.context = context;
 
         HardwareInfoService = new HardwareInfoService(context);
         HardwareInfoService.StartMonitor(HardwareType.CPU);
@@ -23,7 +24,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public FrameworkElement CreateWidgetFrameworkElement()
     {
-        return new PerformanceWidget(Context, HardwareInfoService);
+        return new PerformanceWidget(HardwareInfoService);
     }
 
     public void EnableWidget(bool firstWidget)
@@ -47,7 +48,21 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public FrameworkElement CreateWidgetSettingFrameworkElement()
     {
-        return new PerformanceSetting(Context);
+        return new PerformanceSetting();
+    }
+
+    #endregion
+
+    #region IWidgetLocalization
+
+    public string GetLocalizatedTitle()
+    {
+        return Context.LocalizationService.GetLocalizedString("DekstopWidgets3_Widget_Performance_Title");
+    }
+
+    public string GetLocalizatedDescription()
+    {
+        return Context.LocalizationService.GetLocalizedString("DekstopWidgets3_Widget_Performance_Description");
     }
 
     #endregion
@@ -62,7 +77,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
         {
             if (disposing)
             {
-                Context = null!;
+                context = null!;
                 HardwareInfoService.Dispose();
             }
 

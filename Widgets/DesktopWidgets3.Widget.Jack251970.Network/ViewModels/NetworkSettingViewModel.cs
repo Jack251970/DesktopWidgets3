@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Widget.Jack251970.Network.ViewModels;
 
-public partial class NetworkSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
+public partial class NetworkSettingViewModel : BaseWidgetSettingViewModel
 {
     #region view properties
 
@@ -10,8 +10,6 @@ public partial class NetworkSettingViewModel(WidgetInitContext context) : BaseWi
     private bool _useBps = false;
 
     #endregion
-
-    public readonly WidgetInitContext Context = context;
 
     private NetworkSettings Settings = null!;
 
@@ -42,7 +40,7 @@ public partial class NetworkSettingViewModel(WidgetInitContext context) : BaseWi
         if (_initialized)
         {
             Settings.UseBps = value;
-            Context.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
+            Main.Context.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
         }
     }
 }

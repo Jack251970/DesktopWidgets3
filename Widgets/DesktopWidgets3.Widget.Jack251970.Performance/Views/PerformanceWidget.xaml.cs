@@ -9,9 +9,9 @@ public sealed partial class PerformanceWidget : UserControl, IViewModel, IWidget
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 
-    public PerformanceWidget(WidgetInitContext context, HardwareInfoService hardwareInfoService)
+    public PerformanceWidget(HardwareInfoService hardwareInfoService)
     {
-        ViewModel = new PerformanceViewModel(context, hardwareInfoService);
+        ViewModel = new PerformanceViewModel(hardwareInfoService);
         InitializeComponent();
     }
 

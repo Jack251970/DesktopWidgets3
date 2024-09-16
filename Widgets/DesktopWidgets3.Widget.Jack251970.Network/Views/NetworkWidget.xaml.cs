@@ -9,9 +9,9 @@ public sealed partial class NetworkWidget : UserControl, IViewModel, IWidgetMenu
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 
-    public NetworkWidget(WidgetInitContext context, HardwareInfoService hardwareInfoService)
+    public NetworkWidget(HardwareInfoService hardwareInfoService)
     {
-        ViewModel = new NetworkViewModel(context, hardwareInfoService);
+        ViewModel = new NetworkViewModel(hardwareInfoService);
         InitializeComponent();
     }
 

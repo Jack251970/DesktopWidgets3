@@ -47,18 +47,14 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
 
     #endregion
 
-    private readonly WidgetInitContext Context;
-
     private readonly HardwareInfoService _hardwareInfoService;
 
     private readonly Timer cpuUpdateTimer = new();
     private readonly Timer gpuUpdateTimer = new();
     private readonly Timer memoryUpdateTimer = new();
 
-    public PerformanceViewModel(WidgetInitContext context, HardwareInfoService hardwareInfoService)
+    public PerformanceViewModel(HardwareInfoService hardwareInfoService)
     {
-        Context = context;
-
         _hardwareInfoService = hardwareInfoService;
 
         InitializeTimer(cpuUpdateTimer, UpdateCPU);
@@ -92,14 +88,14 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                CpuLeftInfo = "Cpu";
+                CpuLeftInfo = "CPU";
                 CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? FormatUtils.FormatPercentage(cpuUsage) : cpuSpeed;
                 CpuLoadValue = cpuUsage * 100;
             });
         }
         catch (Exception e)
         {
-            Context.LogService.LogError(ClassName, e, "Error updating performance widget.");
+            Main.Context.LogService.LogError(ClassName, e, "Error updating performance widget.");
         }
     }
 
@@ -122,14 +118,14 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                GpuLeftInfo = string.IsNullOrEmpty(gpuName) ? "Gpu" : "Gpu" + $" ({gpuName})";
+                GpuLeftInfo = string.IsNullOrEmpty(gpuName) ? "GPU" : "GPU" + $" ({gpuName})";
                 GpuRightInfo = gpuTemperature == 0 ? FormatUtils.FormatPercentage(gpuUsage) : FormatUtils.FormatTemperature(gpuTemperature, useCelsius);
                 GpuLoadValue = gpuUsage * 100;
             });
         }
         catch (Exception e)
         {
-            Context.LogService.LogError(ClassName, e, "Error updating performance widget.");
+            Main.Context.LogService.LogError(ClassName, e, "Error updating performance widget.");
         }
     }
 
@@ -151,14 +147,14 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                MemoryLeftInfo = "Memory";
+                MemoryLeftInfo = Main.Context.LocalizationService.GetLocalizedString("DekstopWidgets3_Widget_Performance_Memory");
                 MemoryRightInfo = allMem == 0 ? FormatUtils.FormatPercentage(memoryUsage) : memoryUsedInfo;
                 MemoryLoadValue = memoryUsage * 100;
             });
         }
         catch (Exception e)
         {
-            Context.LogService.LogError(ClassName, e, "Error updating performance widget.");
+            Main.Context.LogService.LogError(ClassName, e, "Error updating performance widget.");
         }
     }
 

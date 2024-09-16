@@ -8,9 +8,9 @@ public sealed partial class DigitalClockSetting : UserControl, ISettingViewModel
 
     BaseWidgetSettingViewModel ISettingViewModel.ViewModel => ViewModel;
 
-    public DigitalClockSetting(WidgetInitContext context)
+    public DigitalClockSetting()
     {
-        ViewModel = new DigitalClockSettingViewModel(context);
+        ViewModel = new DigitalClockSettingViewModel();
         InitializeComponent();
     }
 }

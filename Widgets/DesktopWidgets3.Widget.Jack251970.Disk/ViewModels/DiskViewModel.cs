@@ -24,18 +24,14 @@ public partial class DiskViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IW
 
     #endregion
 
-    private readonly WidgetInitContext Context;
-
     private readonly HardwareInfoService _hardwareInfoService;
 
     private readonly Timer updateTimer = new();
 
     private bool listUpdating = false;
 
-    public DiskViewModel(WidgetInitContext context, HardwareInfoService hardwareInfoService)
+    public DiskViewModel(HardwareInfoService hardwareInfoService)
     {
-        Context = context;
-
         _hardwareInfoService = hardwareInfoService;
 
         InitializeTimer(updateTimer, UpdateDisk);
@@ -148,7 +144,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IW
                 }
                 catch (Exception e)
                 {
-                    Context.LogService.LogError(ClassName, e, "Disk Widget Update Error on DispatcherQueue");
+                    Main.Context.LogService.LogError(ClassName, e, "Disk Widget Update Error on DispatcherQueue");
                 }
 
                 listUpdating = false;
@@ -156,7 +152,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IW
         }
         catch (Exception e)
         {
-            Context.LogService.LogError(ClassName, e, "Disk Widget Update Error");
+            Main.Context.LogService.LogError(ClassName, e, "Disk Widget Update Error");
         }
     }
 

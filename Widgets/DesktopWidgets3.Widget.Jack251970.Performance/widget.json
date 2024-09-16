@@ -1,7 +1,7 @@
 ﻿{
   "ID": "34EAD000AD4840E985009002128F654C",
   "Name": "Performance",
-  "Description": "Show system cpu, gpu and memory status",
+  "Description": "Show system CPU, GPU and memory status",
   "Author": "Jack251970",
   "Version": "1.0.0",
   "Language": "csharp",

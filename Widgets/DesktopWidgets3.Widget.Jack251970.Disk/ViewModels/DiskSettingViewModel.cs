@@ -1,9 +1,7 @@
 ﻿namespace DesktopWidgets3.Widget.Jack251970.Disk.ViewModels;
 
-public partial class DiskSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
+public partial class DiskSettingViewModel : BaseWidgetSettingViewModel
 {
-    public readonly WidgetInitContext Context = context;
-
     private DiskSettings Settings = null!;
 
     private bool _initialized = false;

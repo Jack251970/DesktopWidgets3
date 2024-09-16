@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 
-public partial class AnalogClockSettingViewModel(WidgetInitContext context) : BaseWidgetSettingViewModel
+public partial class AnalogClockSettingViewModel : BaseWidgetSettingViewModel
 {
     #region view properties
 
@@ -10,8 +10,6 @@ public partial class AnalogClockSettingViewModel(WidgetInitContext context) : Ba
     private bool _showSeconds = true;
 
     #endregion
-
-    public readonly WidgetInitContext Context = context;
 
     private AnalogClockSettings Settings = null!;
 
@@ -22,7 +20,7 @@ public partial class AnalogClockSettingViewModel(WidgetInitContext context) : Ba
         if (_initialized)
         {
             Settings.ShowSeconds = value;
-            Context.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
+            Main.Context.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
         }
     }
 

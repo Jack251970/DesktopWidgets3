@@ -8,9 +8,9 @@ public sealed partial class NetworkSetting : UserControl, ISettingViewModel
 
     BaseWidgetSettingViewModel ISettingViewModel.ViewModel => ViewModel;
 
-    public NetworkSetting(WidgetInitContext context)
+    public NetworkSetting()
     {
-        ViewModel = new NetworkSettingViewModel(context);
+        ViewModel = new NetworkSettingViewModel();
         InitializeComponent();
     }
 }

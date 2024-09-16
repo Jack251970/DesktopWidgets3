@@ -8,9 +8,9 @@ public sealed partial class DiskSetting : UserControl, ISettingViewModel
 
     BaseWidgetSettingViewModel ISettingViewModel.ViewModel => ViewModel;
 
-    public DiskSetting(WidgetInitContext context)
+    public DiskSetting()
     {
-        ViewModel = new DiskSettingViewModel(context);
+        ViewModel = new DiskSettingViewModel();
         InitializeComponent();
     }
 }

@@ -11,7 +11,7 @@
     mc:Ignorable="d">
 
     <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Spacing="{StaticResource SettingsCardSpacing}">
-        <controls:SettingsCard Description="Show seconds in the widget" Header="Show seconds">
+        <controls:SettingsCard Description="{StaticResource DekstopWidgets3_Widget_AnalogClock_WidgetSettings_ShowSeconds_SettingsCard_Description}" Header="{StaticResource DekstopWidgets3_Widget_AnalogClock_WidgetSettings_ShowSeconds_SettingsCard_Header}">
             <controls:SettingsCard.HeaderIcon>
                 <FontIcon Glyph="&#xE823;" />
             </controls:SettingsCard.HeaderIcon>

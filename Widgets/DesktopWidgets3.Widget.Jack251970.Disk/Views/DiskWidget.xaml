@@ -16,7 +16,7 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Margin="20,20,20,10" Text="Disk" />
+            <TextBlock Margin="20,20,20,10" Text="{StaticResource DekstopWidgets3_Widget_Disk_Widget_Disk_TextBlock_Text}" />
             <ListView
                 Grid.Row="1"
                 Margin="5,0,10,0"

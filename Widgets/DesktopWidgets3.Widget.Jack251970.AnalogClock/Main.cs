@@ -3,20 +3,21 @@ using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock;
 
-public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
+public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocalization, IDisposable
 {
     #region IWidget
 
-    private WidgetInitContext Context = null!;
+    public static WidgetInitContext Context => context;
+    private static WidgetInitContext context = null!;
 
     public void InitWidget(WidgetInitContext context)
     {
-        Context = context;
+        Main.context = context;
     }
 
     public FrameworkElement CreateWidgetFrameworkElement()
     {
-        return new AnalogClockWidget(Context);
+        return new AnalogClockWidget();
     }
 
     public void EnableWidget(bool firstWidget)
@@ -40,7 +41,21 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
 
     public FrameworkElement CreateWidgetSettingFrameworkElement()
     {
-        return new AnalogClockSetting(Context);
+        return new AnalogClockSetting();
+    }
+
+    #endregion
+
+    #region IWidgetLocalization
+
+    public string GetLocalizatedTitle()
+    {
+        return Context.LocalizationService.GetLocalizedString("DekstopWidgets3_Widget_AnalogClock_Title");
+    }
+
+    public string GetLocalizatedDescription()
+    {
+        return Context.LocalizationService.GetLocalizedString("DekstopWidgets3_Widget_AnalogClock_Description");
     }
 
     #endregion
@@ -55,7 +70,7 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IDisposable
         {
             if (disposing)
             {
-                Context = null!;
+                context = null!;
             }
 
             disposed = true;

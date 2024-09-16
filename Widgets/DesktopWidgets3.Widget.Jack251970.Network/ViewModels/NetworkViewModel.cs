@@ -38,18 +38,14 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate,
 
     private List<Tuple<string, string>> lastNetworkNamesIdentifiers = [];
 
-    private readonly WidgetInitContext Context;
-
     private readonly HardwareInfoService _hardwareInfoService;
 
     private readonly Timer updateTimer = new();
 
     private bool listUpdating = false;
 
-    public NetworkViewModel(WidgetInitContext context, HardwareInfoService hardwareInfoService)
+    public NetworkViewModel(HardwareInfoService hardwareInfoService)
     {
-        Context = context;
-
         _hardwareInfoService = hardwareInfoService;
 
         InitializeTimer(updateTimer, UpdateNetwork);
@@ -80,7 +76,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate,
                 UseBps = useBps,
                 HardwareIdentifier = hardwareIdentifier
             };
-            Context.WidgetService.UpdateWidgetSettings(this, newSettings, false, false);
+            Main.Context.WidgetService.UpdateWidgetSettings(this, newSettings, false, false);
         }
     }
 
@@ -166,7 +162,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate,
         }
         catch (Exception e)
         {
-            Context.LogService.LogError(ClassName, e, "Failed to update network card.");
+            Main.Context.LogService.LogError(ClassName, e, "Failed to update network card.");
         }
     }
 
