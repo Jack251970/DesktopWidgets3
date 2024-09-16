@@ -25,7 +25,9 @@
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2">
         <ExcludeAssets>runtime</ExcludeAssets>
       </PackageReference>
-      <PackageReference Include="CommunityToolkit.WinUI.Controls.RadialGauge" Version="8.1.240821" />
+      <PackageReference Include="CommunityToolkit.WinUI.Controls.RadialGauge" Version="8.1.240821">
+        <ExcludeAssets>runtime</ExcludeAssets>
+      </PackageReference>
       <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821">
         <ExcludeAssets>runtime</ExcludeAssets>
       </PackageReference>

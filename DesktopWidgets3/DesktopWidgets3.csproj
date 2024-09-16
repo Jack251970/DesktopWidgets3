@@ -56,8 +56,21 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="CommunityToolkit.Uwp.Controls.MetadataControl" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.Uwp.Controls.RichSuggestBox" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.Uwp.Controls.TokenizingTextBox" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.CameraPreview" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.ColorPicker" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.HeaderedControls" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.ImageCropper" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.LayoutTransformControl" Version="8.1.240821" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.RadialGauge" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.RangeSelector" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.1.240821" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.TabbedCommandBar" Version="8.1.240821" />
     <PackageReference Include="H.NotifyIcon.WinUI" Version="2.1.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
