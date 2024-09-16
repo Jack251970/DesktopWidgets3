@@ -41,8 +41,7 @@ public static class WidgetsLoader
 
                 assembly = extensionAssembly.ForeignAssembly;
 
-                var type = ApplicationExtensionHost.Current.FromAssemblyGetTypeOfInterface(assembly,
-                    typeof(IAsyncWidget));
+                var type = ApplicationExtensionHost.Current.FromAssemblyGetTypeOfInterface(assembly, typeof(IAsyncWidget));
 
                 widget = Activator.CreateInstance(type) as IAsyncWidget;
 
@@ -51,8 +50,6 @@ public static class WidgetsLoader
                 {
                     InstalledWidgets.AddOrUpdate(metadata.ID, resourcesFolder, (key, oldValue) => resourcesFolder);
                 }
-
-                extensionAssembly.Dispose();
             }
             catch (Exception e) when (extensionAssembly == null)
             {
@@ -80,6 +77,16 @@ public static class WidgetsLoader
                 ErrorWidgets.Enqueue(metadata.Name);
                 return;
             }
+
+            var assemblyName = assembly!.GetName().Name;
+            if (assemblyName != null)
+            {
+                metadata.AssemblyName = assemblyName;
+            }
+
+            ResourceExtensions.AddExternalResource(assembly!);
+
+            extensionAssembly?.Dispose();
 
             Widgets.Enqueue(new WidgetPair { Widget = widget, Metadata = metadata });
         });

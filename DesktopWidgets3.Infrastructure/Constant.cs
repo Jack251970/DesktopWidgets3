@@ -29,4 +29,6 @@ public static class Constant
 #endif
 
     public const string LogsFolder = "Logs";
+
+    public const string DefaultResourceFileName = "Resources";
 }

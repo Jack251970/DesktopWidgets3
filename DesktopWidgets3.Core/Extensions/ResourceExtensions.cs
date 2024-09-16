@@ -4,6 +4,7 @@
 using Microsoft.Windows.ApplicationModel.Resources;
 
 using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace DesktopWidgets3.Core.Extensions;
 
@@ -12,22 +13,50 @@ namespace DesktopWidgets3.Core.Extensions;
 /// </summary>
 public static class ResourceExtensions
 {
-    private static readonly string DefaultResourceFileName = "Resources";
-
     private static readonly ConcurrentDictionary<string, string> cachedResources = new();
+
+    private static readonly ResourceMap HostResourceMap = new ResourceManager().MainResourceMap;
 
     private static readonly Dictionary<string, ResourceMap> resourcesTrees = new()
     {
-        { DefaultResourceFileName, new ResourceManager().MainResourceMap.TryGetSubtree(DefaultResourceFileName) }
+        { Constant.DefaultResourceFileName, HostResourceMap.TryGetSubtree(Constant.DefaultResourceFileName) }
     };
 
-    public static void AddStringResource(string resourceFileName)
+    #region resource management
+
+    /// <summary>
+    /// Add resource file of the host project.
+    /// </summary>
+    /// <param name="resourceFileName">
+    /// The name of the resource file.
+    /// </param>
+    public static void AddLocalResource(string resourceFileName)
     {
-        var resourceMap = new ResourceManager().MainResourceMap.TryGetSubtree(resourceFileName);
+        var resourceMap = HostResourceMap.TryGetSubtree(resourceFileName);
         resourcesTrees.Add(resourceFileName, resourceMap);
     }
 
-    public static string GetLocalized(this string resourceKey, string resourceFileName = "Resources")
+    /// <summary>
+    /// Add resource file of a extension project.
+    /// </summary>
+    /// <param name="assembly">
+    /// The assembly of the extension project.
+    /// </param>
+    public static void AddExternalResource(Assembly assembly)
+    {
+        var assemblyName = assembly.GetName().Name;
+        var resourceMap = ApplicationExtensionHost.GetWinResourceMapForAssembly(assembly);
+        if (assemblyName != null && resourceMap != null)
+        {
+            resourcesTrees.Add(assemblyName, resourceMap);
+        }
+    }
+
+    #endregion
+
+    #region extension methods
+
+    public static string GetLocalized(this string resourceKey, string resourceFileName = Constant.DefaultResourceFileName)
     {
         // Fix resource key
         resourceKey = resourceKey.Replace(".", "/");
@@ -46,4 +75,6 @@ public static class ResourceExtensions
         // Return empty string if the resource key is not found.
         return cachedResources[cachedResourceKey] = value ?? string.Empty;
     }
+
+    #endregion
 }
