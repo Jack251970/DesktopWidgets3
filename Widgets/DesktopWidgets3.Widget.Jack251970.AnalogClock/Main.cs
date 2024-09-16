@@ -15,9 +15,9 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
         Main.context = context;
     }
 
-    public FrameworkElement CreateWidgetFrameworkElement()
+    public FrameworkElement CreateWidgetFrameworkElement(ResourceDictionary? resourceDictionary)
     {
-        return new AnalogClockWidget();
+        return new AnalogClockWidget(resourceDictionary);
     }
 
     public void EnableWidget(bool firstWidget)
@@ -39,9 +39,9 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
         return new AnalogClockSettings();
     }
 
-    public FrameworkElement CreateWidgetSettingFrameworkElement()
+    public FrameworkElement CreateWidgetSettingFrameworkElement(ResourceDictionary? resourceDictionary)
     {
-        return new AnalogClockSetting();
+        return new AnalogClockSetting(resourceDictionary);
     }
 
     #endregion

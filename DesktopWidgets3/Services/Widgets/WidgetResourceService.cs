@@ -13,6 +13,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     private List<WidgetPair> InstalledWidgets { get; set; } = null!;
     private List<WidgetMetadata> AllWidgetsMetadata { get; set; } = null!;
 
+    private readonly ConcurrentDictionary<string, Dictionary<string, string>> WidgetsLanguageResources = [];
+
     private static readonly string[] WidgetsDirectories =
     [
         LocalSettingsHelper.WidgetsDirectory
@@ -243,7 +245,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             var widget = InstalledWidgets[index];
             try
             {
-                return widget.Widget.CreateWidgetFrameworkElement();
+                return widget.Widget.CreateWidgetFrameworkElement(GetWidgetLanguageResources(widget.Metadata.ID));
             }
             catch (Exception e)
             {
@@ -323,7 +325,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             {
                 try
                 {
-                    return widgetSetting.CreateWidgetSettingFrameworkElement();
+                    return widgetSetting.CreateWidgetSettingFrameworkElement(GetWidgetLanguageResources(widget.Metadata.ID));
                 }
                 catch (Exception e)
                 {
@@ -341,24 +343,38 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     private async Task InitWidgetsLocalizationAsync()
     {
-        var widgetLanguageResources = new ConcurrentDictionary<string, string>();
-
         var initTasks = InstalledWidgets.Select(pair => Task.Run(delegate
         {
-            var resourceMap = ResourceExtensions.TryGetResourceMap(pair.Metadata.AssemblyName);
-            if (resourceMap != null)
+            if (pair.Widget is IWidgetLocalization widgetLocalization)
             {
-                for (uint i = 0; i < resourceMap.ResourceCount; i++)
+                var widgetLanguageResources = new Dictionary<string, string>();
+
+                var resourceMap = ResourceExtensions.TryGetResourceMap(pair.Metadata.AssemblyName);
+                if (resourceMap != null)
                 {
-                    (var key, var value) = resourceMap.GetValueByIndex(i);
-                    widgetLanguageResources.TryAdd(key, value.ValueAsString);
+                    for (uint i = 0; i < resourceMap.ResourceCount; i++)
+                    {
+                        (var key, var value) = resourceMap.GetValueByIndex(i);
+                        widgetLanguageResources.TryAdd(key, value.ValueAsString);
+                    }
                 }
+
+                WidgetsLanguageResources.TryAdd(pair.Metadata.ID, widgetLanguageResources);
             }
         }));
 
         await Task.WhenAll(initTasks);
+    }
 
-        Application.Current.Resources.MergedDictionaries.Add(new LanguageResourceDictionary(widgetLanguageResources));
+    private LanguageResourceDictionary? GetWidgetLanguageResources(string widgetId)
+    {
+        WidgetsLanguageResources.TryGetValue(widgetId, out var widgetLanguageResources);
+        if (widgetLanguageResources == null)
+        {
+            return null;
+        }
+
+        return new LanguageResourceDictionary(widgetLanguageResources);
     }
 
     #endregion

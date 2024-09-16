@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.Views;
@@ -8,9 +9,13 @@ public sealed partial class PerformanceSetting : UserControl, ISettingViewModel
 
     BaseWidgetSettingViewModel ISettingViewModel.ViewModel => ViewModel;
 
-    public PerformanceSetting()
+    public PerformanceSetting(ResourceDictionary? resourceDictionary)
     {
         ViewModel = new PerformanceSettingViewModel();
+        if (resourceDictionary != null)
+        {
+            Resources.MergedDictionaries.Add(resourceDictionary);
+        }
         InitializeComponent();
     }
 }

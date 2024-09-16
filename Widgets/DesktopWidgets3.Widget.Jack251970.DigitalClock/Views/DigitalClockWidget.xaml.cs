@@ -9,9 +9,13 @@ public sealed partial class DigitalClockWidget : UserControl, IViewModel, IWidge
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 
-    public DigitalClockWidget()
+    public DigitalClockWidget(ResourceDictionary? resourceDictionary)
     {
         ViewModel = new DigitalClockViewModel();
+        if (resourceDictionary != null)
+        {
+            Resources.MergedDictionaries.Add(resourceDictionary);
+        }
         InitializeComponent();
     }
 

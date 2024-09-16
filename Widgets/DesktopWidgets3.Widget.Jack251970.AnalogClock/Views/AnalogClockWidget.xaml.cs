@@ -9,9 +9,13 @@ public sealed partial class AnalogClockWidget : UserControl, IViewModel, IWidget
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 
-    public AnalogClockWidget()
+    public AnalogClockWidget(ResourceDictionary? resourceDictionary)
     {
         ViewModel = new AnalogClockViewModel();
+        if (resourceDictionary != null)
+        {
+            Resources.MergedDictionaries.Add(resourceDictionary);
+        }
         InitializeComponent();
     }
 

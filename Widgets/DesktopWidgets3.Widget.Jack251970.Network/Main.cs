@@ -20,9 +20,9 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
         HardwareInfoService.StartMonitor(HardwareType.Network);
     }
 
-    public FrameworkElement CreateWidgetFrameworkElement()
+    public FrameworkElement CreateWidgetFrameworkElement(ResourceDictionary? resourceDictionary)
     {
-        return new NetworkWidget(HardwareInfoService);
+        return new NetworkWidget(resourceDictionary, HardwareInfoService);
     }
 
     public void EnableWidget(bool firstWidget)
@@ -44,9 +44,9 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
         return new NetworkSettings();
     }
 
-    public FrameworkElement CreateWidgetSettingFrameworkElement()
+    public FrameworkElement CreateWidgetSettingFrameworkElement(ResourceDictionary? resourceDictionary)
     {
-        return new NetworkSetting();
+        return new NetworkSetting(resourceDictionary);
     }
 
     #endregion

@@ -9,9 +9,13 @@ public sealed partial class DiskWidget : UserControl, IViewModel, IWidgetMenu
 
     BaseWidgetViewModel IViewModel.ViewModel => ViewModel;
 
-    public DiskWidget(HardwareInfoService hardwareInfoService)
+    public DiskWidget(ResourceDictionary? resourceDictionary, HardwareInfoService hardwareInfoService)
     {
         ViewModel = new DiskViewModel(hardwareInfoService);
+        if (resourceDictionary != null)
+        {
+            Resources.MergedDictionaries.Add(resourceDictionary);
+        }
         InitializeComponent();
     }
 

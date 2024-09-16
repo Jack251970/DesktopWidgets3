@@ -20,9 +20,9 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
         HardwareInfoService.StartMonitor(HardwareType.Disk);
     }
 
-    public FrameworkElement CreateWidgetFrameworkElement()
+    public FrameworkElement CreateWidgetFrameworkElement(ResourceDictionary? resourceDictionary)
     {
-        return new DiskWidget(HardwareInfoService);
+        return new DiskWidget(resourceDictionary, HardwareInfoService);
     }
 
     public void EnableWidget(bool firstWidget)
@@ -44,9 +44,9 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
         return new DiskSettings();
     }
 
-    public FrameworkElement CreateWidgetSettingFrameworkElement()
+    public FrameworkElement CreateWidgetSettingFrameworkElement(ResourceDictionary? resourceDictionary)
     {
-        return new DiskSetting();
+        return new DiskSetting(resourceDictionary);
     }
 
     #endregion

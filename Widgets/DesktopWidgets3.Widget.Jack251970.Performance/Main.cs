@@ -22,9 +22,9 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
         HardwareInfoService.StartMonitor(HardwareType.Memory);
     }
 
-    public FrameworkElement CreateWidgetFrameworkElement()
+    public FrameworkElement CreateWidgetFrameworkElement(ResourceDictionary? resourceDictionary)
     {
-        return new PerformanceWidget(HardwareInfoService);
+        return new PerformanceWidget(resourceDictionary, HardwareInfoService);
     }
 
     public void EnableWidget(bool firstWidget)
@@ -46,9 +46,9 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
         return new PerformanceSettings();
     }
 
-    public FrameworkElement CreateWidgetSettingFrameworkElement()
+    public FrameworkElement CreateWidgetSettingFrameworkElement(ResourceDictionary? resourceDictionary)
     {
-        return new PerformanceSetting();
+        return new PerformanceSetting(resourceDictionary);
     }
 
     #endregion

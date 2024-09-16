@@ -6,5 +6,5 @@ public interface IWidgetSetting
 {
     BaseWidgetSettings GetDefaultSetting();
 
-    FrameworkElement CreateWidgetSettingFrameworkElement();
+    FrameworkElement CreateWidgetSettingFrameworkElement(ResourceDictionary? resourceDictionary);
 }

@@ -58,7 +58,7 @@ public static class WidgetsLoader
                 var resourcesFolder = InstallResourceFolder(extensionAssembly);
                 if (installingIds.Contains(metadata.ID))
                 {
-                    InstalledWidgets.AddOrUpdate(metadata.ID, resourcesFolder, (key, oldValue) => resourcesFolder);
+                    InstalledWidgets.TryAdd(metadata.ID, resourcesFolder);
                 }
             }
             catch (Exception e) when (extensionAssembly == null)
