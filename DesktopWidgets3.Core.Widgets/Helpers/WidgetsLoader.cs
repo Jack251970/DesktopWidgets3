@@ -13,6 +13,8 @@ public static class WidgetsLoader
 
     private static readonly ConcurrentDictionary<string, string> InstalledWidgets = [];
 
+    private static readonly ConcurrentQueue<IExtensionAssembly> ExtensionAssemblies = [];
+
     public static async Task<(List<WidgetPair> allWidgets, List<string> errorWidgets, Dictionary<string, string> installedWidgets)> WidgetsAsync(List<WidgetMetadata> metadatas, List<string> installingIds)
     {
         Widgets.Clear();
@@ -23,6 +25,14 @@ public static class WidgetsLoader
         await Task.WhenAll(tasks);
 
         return (Widgets.ToList(), ErrorWidgets.ToList(), InstalledWidgets.ToDictionary());
+    }
+
+    public static void DisposeExtensionAssemblies()
+    {
+        foreach (var extensionAssembly in ExtensionAssemblies)
+        {
+            extensionAssembly?.Dispose();
+        }
     }
 
     private static IEnumerable<Task> DotNetWidgets(List<WidgetMetadata> metadatas, List<string> installingIds)
@@ -86,7 +96,7 @@ public static class WidgetsLoader
 
             ResourceExtensions.AddExternalResource(assembly!);
 
-            extensionAssembly?.Dispose();
+            ExtensionAssemblies.Enqueue(extensionAssembly!);
 
             Widgets.Enqueue(new WidgetPair { Widget = widget, Metadata = metadata });
         });
