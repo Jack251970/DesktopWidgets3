@@ -557,16 +557,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         // get primary monitor info & show edit mode overlay window
-        var primaryMonitorInfo = DisplayMonitor.GetPrimaryMonitorInfo();
-        var screenWidth = primaryMonitorInfo.RectWork.Width;
         await EditModeOverlayWindow.EnqueueOrInvokeAsync((window) =>
         {
             // set window size according to xaml, rember larger than 136 x 39
             EditModeOverlayWindow.Size = new SizeInt32(EditModeOverlayWindowXamlWidth, EditModeOverlayWindowXamlHeight);
 
             // move to center top
-            var windowWidth = EditModeOverlayWindow.AppWindow.Size.Width;
-            EditModeOverlayWindow.Position = new PointInt32((int)((screenWidth! - windowWidth) / 2), 0);
+            EditModeOverlayWindow.CenterOnTop();
 
             // show edit mode overlay window
             EditModeOverlayWindow.Show(true);

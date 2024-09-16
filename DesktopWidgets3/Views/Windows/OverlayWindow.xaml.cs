@@ -10,13 +10,13 @@ public sealed partial class OverlayWindow : WindowEx
     public PointInt32 Position
     {
         get => AppWindow.Position;
-        set => WindowExtensions.Move(this, value.X, value.Y);
+        set => this.Move(value.X, value.Y);
     }
 
     public SizeInt32 Size
     {
-        get => new((int)(AppWindow.Size.Width * 96f / WindowExtensions.GetDpiForWindow(this)), (int)(AppWindow.Size.Height * 96f / WindowExtensions.GetDpiForWindow(this)));
-        set => WindowExtensions.SetWindowSize(this, value.Width, value.Height);
+        get => new((int)(AppWindow.Size.Width * 96f / this.GetDpiForWindow()), (int)(AppWindow.Size.Height * 96f / this.GetDpiForWindow()));
+        set => this.SetWindowSize(value.Width, value.Height);
     }
 
     #endregion
@@ -41,5 +41,13 @@ public sealed partial class OverlayWindow : WindowEx
 
         // Hide window icon from taskbar
         SystemHelper.HideWindowIconFromTaskbar(this.GetWindowHandle());
+    }
+
+    public void CenterOnTop()
+    {
+        var primaryMonitorInfo = DisplayMonitor.GetMonitorInfo(this);
+        var screenWidth = primaryMonitorInfo.RectWork.Width;
+        var windowWidth = AppWindow.Size.Width;
+        Position = new PointInt32((int)((screenWidth! - windowWidth) / 2), 0);
     }
 }

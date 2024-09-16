@@ -19,7 +19,7 @@ public sealed partial class WidgetWindow : WindowEx
             if (position != value)
             {
                 position = value;
-                WindowExtensions.Move(this, value.X, value.Y);
+                this.Move(value.X, value.Y);
             }
         }
     }
@@ -35,7 +35,7 @@ public sealed partial class WidgetWindow : WindowEx
             if (size.Width != width || size.Height != height)
             {
                 size = new(width, height);
-                WindowExtensions.SetWindowSize(this, width, height);
+                this.SetWindowSize(width, height);
             }
         }
     }
@@ -129,7 +129,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     private Size GetAppWindowSize()
     {
-        var windowDpi = WindowExtensions.GetDpiForWindow(this);
+        var windowDpi = this.GetDpiForWindow();
         return new(AppWindow.Size.Width * 96f / windowDpi, AppWindow.Size.Height * 96f / windowDpi);
     }
 
