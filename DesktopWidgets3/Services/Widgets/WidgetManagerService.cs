@@ -76,6 +76,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // save widget item
         var widget = new JsonWidgetItem()
         {
+            Name = _widgetResourceService.GetWidgetName(widgetId),
             Id = widgetId,
             IndexTag = indexTag,
             IsEnabled = true,
@@ -534,6 +535,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             _originalWidgetList.Add(new JsonWidgetItem()
             {
+                Name = _widgetResourceService.GetWidgetName(widgetWindow.Id),
                 Id = widgetWindow.Id,
                 IndexTag = widgetWindow.IndexTag,
                 IsEnabled = true,
@@ -594,6 +596,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             {
                 widgetList.Add(new JsonWidgetItem()
                 {
+                    Name = _widgetResourceService.GetWidgetName(widgetWindow.Id),
                     Id = widgetWindow.Id,
                     IndexTag = widgetWindow.IndexTag,
                     IsEnabled = true,

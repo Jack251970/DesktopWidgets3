@@ -29,6 +29,8 @@ public class BaseWidgetItem
 [JsonConverter(typeof(JsonWidgetItemConverter))]
 public class JsonWidgetItem : BaseWidgetItem
 {
+    public required string Name { get; set; }
+
     public required PointInt32 Position { get; set; }
 
     public required RectSize Size { get; set; }

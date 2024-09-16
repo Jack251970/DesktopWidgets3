@@ -17,6 +17,7 @@ public class JsonWidgetItemConverter : JsonConverter
     {
         var jsonObject = JObject.Load(reader);
 
+        var widgetName = jsonObject["Name"]?.Value<string>() ?? string.Empty;
         var widgetId = jsonObject["Id"]?.Value<string>() ?? StringUtils.GetRandomWidgetId();
         var indexTag = jsonObject["IndexTag"]?.Value<int>() ?? new Random().Next(100, 999);
         var isEnabled = jsonObject["IsEnabled"]?.Value<bool>() ?? false;
@@ -29,6 +30,7 @@ public class JsonWidgetItemConverter : JsonConverter
 
         return new JsonWidgetItem
         {
+            Name = widgetName,
             Id = widgetId,
             IndexTag = indexTag,
             IsEnabled = isEnabled,
@@ -46,6 +48,7 @@ public class JsonWidgetItemConverter : JsonConverter
 
         var widgetId = widgetItem!.Id;
         var jsonObject = new JObject(
+            new JProperty("Name", widgetItem.Name),
             new JProperty("Id", widgetId),
             new JProperty("IndexTag", widgetItem.IndexTag),
             new JProperty("IsEnabled", widgetItem.IsEnabled),
