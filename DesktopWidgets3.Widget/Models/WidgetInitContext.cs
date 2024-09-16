@@ -2,6 +2,7 @@
 
 public class WidgetInitContext(
     WidgetMetadata metadata,
+    ILocalizationService localizationService,
     ILogService logService,
     ISettingsService settingsService,
     IThemeService themeService,
@@ -9,9 +10,11 @@ public class WidgetInitContext(
 {
     public WidgetMetadata WidgetMetadata { get; private set; } = metadata;
 
-    public ISettingsService SettingsService { get; private set; } = settingsService;
+    public ILocalizationService LocalizationService { get; private set; } = localizationService;
 
     public ILogService LogService { get; private set; } = logService;
+
+    public ISettingsService SettingsService { get; private set; } = settingsService;
 
     public IThemeService ThemeService { get; private set; } = themeService;
 

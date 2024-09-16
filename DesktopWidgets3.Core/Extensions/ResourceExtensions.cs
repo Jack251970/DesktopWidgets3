@@ -52,6 +52,18 @@ public static class ResourceExtensions
         }
     }
 
+    /// <summary>
+    /// Get resource map by resource file name.
+    /// </summary>
+    /// <param name="resourceFileName">
+    /// The name of the resource file or the assembly of the extension project.
+    /// </param>
+    /// <returns></returns>
+    public static ResourceMap? TryGetResourceMap(string resourceFileName = Constant.DefaultResourceFileName)
+    {
+        return resourcesTrees.TryGetValue(resourceFileName, out var resourceMap) ? resourceMap : null;
+    }
+
     #endregion
 
     #region extension methods

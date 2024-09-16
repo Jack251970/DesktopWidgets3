@@ -40,6 +40,9 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         // initialize all widgets
         await InitWidgetsAsync();
 
+        // initialize widgets localization
+        await InitWidgetsLocalizationAsync();
+
         // initialize widget list
         await _appSettingsService.InitializeWidgetListAsync();
     }
@@ -198,7 +201,19 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         {
             try
             {
-                pair.Widget.InitWidgetAsync(new WidgetInitContext(pair.Metadata, logService, settingsService, themeService, widgetService));
+                var localizationService = (LocalizationService)DependencyExtensions.GetRequiredService<ILocalizationService>();
+                if (pair.Widget is IWidgetLocalization widgetLocalization)
+                {
+                    localizationService.AssemblyName = pair.Metadata.AssemblyName;
+                }
+                pair.Widget.InitWidgetAsync(
+                    new WidgetInitContext(
+                        pair.Metadata,
+                        localizationService,
+                        logService,
+                        settingsService,
+                        themeService,
+                        widgetService));
             }
             catch (Exception e)
             {
@@ -322,6 +337,32 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
+    #region IWidgetLocalization
+
+    private async Task InitWidgetsLocalizationAsync()
+    {
+        var widgetLanguageResources = new ConcurrentDictionary<string, string>();
+
+        var initTasks = InstalledWidgets.Select(pair => Task.Run(delegate
+        {
+            var resourceMap = ResourceExtensions.TryGetResourceMap(pair.Metadata.AssemblyName);
+            if (resourceMap != null)
+            {
+                for (uint i = 0; i < resourceMap.ResourceCount; i++)
+                {
+                    (var key, var value) = resourceMap.GetValueByIndex(i);
+                    widgetLanguageResources.TryAdd(key, value.ValueAsString);
+                }
+            }
+        }));
+
+        await Task.WhenAll(initTasks);
+
+        Application.Current.Resources.MergedDictionaries.Add(new LanguageResourceDictionary(widgetLanguageResources));
+    }
+
+    #endregion
+
     #region Metadata
 
     #region Public
@@ -331,7 +372,14 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            return InstalledWidgets[index].Metadata.Name;
+            if (InstalledWidgets[index].Widget is IWidgetLocalization localization)
+            {
+                return localization.GetLocalizatedTitle();
+            }
+            else
+            {
+                return InstalledWidgets[index].Metadata.Name;
+            }
         }
 
         return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
@@ -368,13 +416,48 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #region private
 
-    private int GetWidgetIndex(string widgetId)
+    private (bool Installed, int AllIndex, int? InstalledIndex) GetWidgetIndex(string widgetId, bool? installed)
     {
-        return AllWidgetsMetadata.FindIndex(x => x.ID == widgetId);
+        if (installed == true)
+        {
+            var installedIndex = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+            return (true, 0, installedIndex);
+        }
+        else if (installed == false)
+        {
+            var allIndex = AllWidgetsMetadata.FindIndex(x => x.ID == widgetId);
+            return (false, allIndex, null);
+        }
+        else
+        {
+            var allIndex = AllWidgetsMetadata.FindIndex(x => x.ID == widgetId);
+            installed = AllWidgetsMetadata[allIndex].Installed;
+            if (installed == true)
+            {
+                var installedIndex = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+                return (true, allIndex, installedIndex);
+            }
+            else
+            {
+                return (false, allIndex, null);
+            }
+        }
     }
 
-    private string GetWidgetName(int index)
+    private string GetWidgetName(int index, int? installedIndex)
     {
+        if (installedIndex != null && installedIndex < InstalledWidgets.Count)
+        {
+            if (InstalledWidgets[installedIndex.Value].Widget is IWidgetLocalization localization)
+            {
+                return localization.GetLocalizatedTitle();
+            }
+            else
+            {
+                return InstalledWidgets[installedIndex.Value].Metadata.Name;
+            }
+        }
+
         if (index < AllWidgetsMetadata.Count)
         {
             return AllWidgetsMetadata[index].Name;
@@ -383,8 +466,20 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
     }
 
-    private string GetWidgetDescription(int index)
+    private string GetWidgetDescription(int index, int? installedIndex)
     {
+        if (installedIndex != null && installedIndex < InstalledWidgets.Count)
+        {
+            if (InstalledWidgets[installedIndex.Value].Widget is IWidgetLocalization localization)
+            {
+                return localization.GetLocalizatedDescription();
+            }
+            else
+            {
+                return InstalledWidgets[installedIndex.Value].Metadata.Description;
+            }
+        }
+
         if (index < AllWidgetsMetadata.Count)
         {
             return AllWidgetsMetadata[index].Description;
@@ -393,24 +488,19 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return string.Empty;
     }
 
-    private string GetWidgetIcoPath(int index)
+    private string GetWidgetIcoPath(int index, int? installedIndex)
     {
+        if (installedIndex != null && installedIndex < InstalledWidgets.Count)
+        {
+            return InstalledWidgets[installedIndex.Value].Metadata.IcoPath;
+        }
+
         if (index < AllWidgetsMetadata.Count)
         {
             return AllWidgetsMetadata[index].IcoPath;
         }
 
         return Constant.UnknownWidgetIcoPath;
-    }
-
-    private bool GetInstalled(int index)
-    {
-        if (index < AllWidgetsMetadata.Count)
-        {
-            return AllWidgetsMetadata[index].Installed;
-        }
-
-        return false;
     }
 
     #endregion
@@ -426,15 +516,15 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         foreach (var widget in InstalledWidgets)
         {
             var widgetId = widget.Metadata.ID;
-            var index = GetWidgetIndex(widgetId);
+            (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, true);
             dashboardItemList.Add(new DashboardWidgetItem()
             {
                 Id = widgetId,
                 IndexTag = 0,
-                Name = GetWidgetName(index),
-                IcoPath = GetWidgetIcoPath(index),
+                Name = GetWidgetName(allIndex, installedIndex),
+                IcoPath = GetWidgetIcoPath(allIndex, installedIndex),
                 IsUnknown = false,
-                IsInstalled = true,
+                IsInstalled = installed,
             });
         }
 
@@ -470,16 +560,16 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             }
             else
             {
-                var index = GetWidgetIndex(widgetId);
+                (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, null);
                 dashboardItemList.Add(new DashboardWidgetItem()
                 {
                     Id = widgetId,
                     IndexTag = indexTag,
-                    Name = GetWidgetName(index),
-                    IcoPath = GetWidgetIcoPath(index),
+                    Name = GetWidgetName(allIndex, installedIndex),
+                    IcoPath = GetWidgetIcoPath(allIndex, installedIndex),
                     IsEnabled = widget.IsEnabled,
                     IsUnknown = false,
-                    IsInstalled = GetInstalled(index),
+                    IsInstalled = installed
                 });
             }
         }
@@ -489,18 +579,18 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public DashboardWidgetItem? GetDashboardItem(string widgetId, int indexTag)
     {
-        var index = GetWidgetIndex(widgetId);
-        if (index != -1)
+        (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, null);
+        if (allIndex != -1)
         {
             return new DashboardWidgetItem()
             {
-                IsUnknown = false,
-                IsInstalled = GetInstalled(index),
                 Id = widgetId,
                 IndexTag = indexTag,
+                Name = GetWidgetName(allIndex, installedIndex),
+                IcoPath = GetWidgetIcoPath(allIndex, installedIndex),
                 IsEnabled = true,
-                Name = GetWidgetName(index),
-                IcoPath = GetWidgetIcoPath(index),
+                IsUnknown = false,
+                IsInstalled = installed
             };
         }
 
@@ -525,16 +615,16 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             if (metadata.Installed)
             {
                 var widgetId = metadata.ID;
-                var index = GetWidgetIndex(widgetId);
+                (var _, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, true);
                 widgetStoreItemList.Add(new WidgetStoreItem()
                 {
                     Id = widgetId,
-                    Name = GetWidgetName(index),
-                    Description = GetWidgetDescription(index),
+                    Name = GetWidgetName(allIndex, installedIndex),
+                    Description = GetWidgetDescription(allIndex, installedIndex),
                     Author = metadata.Author,
                     Version = metadata.Version,
                     Website = metadata.Website,
-                    IcoPath = GetWidgetIcoPath(index)
+                    IcoPath = GetWidgetIcoPath(allIndex, installedIndex)
                 });
             }
         }
@@ -551,16 +641,16 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             if (metadata.Preinstalled && (!metadata.Installed))
             {
                 var widgetId = metadata.ID;
-                var index = GetWidgetIndex(widgetId);
+                (var _, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, false);
                 widgetStoreItemList.Add(new WidgetStoreItem()
                 {
                     Id = metadata.ID,
-                    Name = GetWidgetName(index),
-                    Description = GetWidgetDescription(index),
+                    Name = GetWidgetName(allIndex, installedIndex),
+                    Description = GetWidgetDescription(allIndex, installedIndex),
                     Author = metadata.Author,
                     Version = metadata.Version,
                     Website = metadata.Website,
-                    IcoPath = GetWidgetIcoPath(index)
+                    IcoPath = GetWidgetIcoPath(allIndex, installedIndex)
                 });
             }
         }

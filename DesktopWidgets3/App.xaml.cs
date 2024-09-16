@@ -150,6 +150,8 @@ public partial class App : Application
 
                 #region Widget API
 
+                services.AddTransient<ILocalizationService, LocalizationService>();
+
                 services.AddSingleton<ILogService, LogService>();
 
                 services.AddSingleton<ISettingsService, SettingsService>();

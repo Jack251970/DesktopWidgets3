@@ -134,36 +134,31 @@
       <AnalogClockFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.AnalogClock\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(AnalogClockFiles)"
-          DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.AnalogClock\%(RecursiveDir)" />
+    <Copy SourceFiles="@(AnalogClockFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.AnalogClock\%(RecursiveDir)" />
     
     <ItemGroup>
       <DigitalClockFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.DigitalClock\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(DigitalClockFiles)"
-          DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.DigitalClock\%(RecursiveDir)" />
+    <Copy SourceFiles="@(DigitalClockFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.DigitalClock\%(RecursiveDir)" />
     
     <ItemGroup>
       <DiskFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.Disk\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(DiskFiles)"
-          DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Disk\%(RecursiveDir)" />
+    <Copy SourceFiles="@(DiskFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Disk\%(RecursiveDir)" />
     
     <ItemGroup>
       <NetworkFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.Network\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(NetworkFiles)"
-          DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Network\%(RecursiveDir)" />
+    <Copy SourceFiles="@(NetworkFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Network\%(RecursiveDir)" />
     
     <ItemGroup>
       <PerformanceFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.Performance\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(PerformanceFiles)"
-          DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Performance\%(RecursiveDir)" />
+    <Copy SourceFiles="@(PerformanceFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Performance\%(RecursiveDir)" />
   </Target>
   
 </Project>
