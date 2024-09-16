@@ -11,7 +11,7 @@
     mc:Ignorable="d">
 
     <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Spacing="{StaticResource SettingsCardSpacing}">
-        <controls:SettingsCard Description="{StaticResource DekstopWidgets3_Widget_Performance_WidgetSettings_UseCelsius_SettingsCard_Description}" Header="{StaticResource DekstopWidgets3_Widget_Performance_WidgetSettings_UseCelsius_SettingsCard_Header}">
+        <controls:SettingsCard Description="{StaticResource WidgetSettings_UseCelsius_SettingsCard_Description}" Header="{StaticResource WidgetSettings_UseCelsius_SettingsCard_Header}">
             <ToggleSwitch IsOn="{x:Bind ViewModel.UseCelsius, Mode=TwoWay}" />
         </controls:SettingsCard>
     </StackPanel>

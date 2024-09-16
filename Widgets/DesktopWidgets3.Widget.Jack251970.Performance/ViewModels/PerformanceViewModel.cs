@@ -147,7 +147,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
 
             DispatcherQueue.TryEnqueue(() =>
             {
-                MemoryLeftInfo = Main.Context.LocalizationService.GetLocalizedString("DekstopWidgets3_Widget_Performance_Memory");
+                MemoryLeftInfo = Main.Context.LocalizationService.GetLocalizedString("Memory");
                 MemoryRightInfo = allMem == 0 ? FormatUtils.FormatPercentage(memoryUsage) : memoryUsedInfo;
                 MemoryLoadValue = memoryUsage * 100;
             });

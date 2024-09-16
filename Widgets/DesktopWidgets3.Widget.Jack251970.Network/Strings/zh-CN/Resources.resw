@@ -117,22 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DekstopWidgets3_Widget_Network_WidgetSettings_UseBps_SettingsCard_Header" xml:space="preserve">
+  <data name="WidgetSettings_UseBps_SettingsCard_Header" xml:space="preserve">
     <value>显示Bps</value>
   </data>
-  <data name="DekstopWidgets3_Widget_Network_WidgetSettings_UseBps_SettingsCard_Description" xml:space="preserve">
+  <data name="WidgetSettings_UseBps_SettingsCard_Description" xml:space="preserve">
     <value>使用Bps而不是B/s作为网络单位</value>
   </data>
-  <data name="DekstopWidgets3_Widget_Network_Description" xml:space="preserve">
+  <data name="Description" xml:space="preserve">
     <value>显示系统网络状态</value>
   </data>
-  <data name="DekstopWidgets3_Widget_Network_Title" xml:space="preserve">
+  <data name="Title" xml:space="preserve">
     <value>网络</value>
   </data>
-  <data name="DekstopWidgets3_Widget_Network_Widget_UploadSpeed_TextBlock_Text" xml:space="preserve">
+  <data name="Widget_UploadSpeed_TextBlock_Text" xml:space="preserve">
     <value>上传速度：</value>
   </data>
-  <data name="DekstopWidgets3_Widget_Network_Widget_DownloadSpeed_TextBlock_Text" xml:space="preserve">
+  <data name="Widget_DownloadSpeed_TextBlock_Text" xml:space="preserve">
     <value>下载速度：</value>
   </data>
 </root>

@@ -48,7 +48,7 @@
             <TextBlock
                 Margin="10,0,0,0"
                 VerticalAlignment="Center"
-                Text="{StaticResource DekstopWidgets3_Widget_Network_Widget_UploadSpeed_TextBlock_Text}" />
+                Text="{StaticResource Widget_UploadSpeed_TextBlock_Text}" />
         </StackPanel>
         <TextBlock
             Grid.Row="1"
@@ -68,7 +68,7 @@
             <TextBlock
                 Margin="10,0,0,0"
                 VerticalAlignment="Center"
-                Text="{StaticResource DekstopWidgets3_Widget_Network_Widget_DownloadSpeed_TextBlock_Text}" />
+                Text="{StaticResource Widget_DownloadSpeed_TextBlock_Text}" />
         </StackPanel>
         <TextBlock
             Grid.Row="2"

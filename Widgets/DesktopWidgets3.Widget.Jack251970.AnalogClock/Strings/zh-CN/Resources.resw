@@ -117,16 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DekstopWidgets3_Widget_AnalogClock_Description" xml:space="preserve">
+  <data name="Description" xml:space="preserve">
     <value>在模拟时钟中显示系统时间</value>
   </data>
-  <data name="DekstopWidgets3_Widget_AnalogClock_Title" xml:space="preserve">
+  <data name="Title" xml:space="preserve">
     <value>模拟时钟</value>
   </data>
-  <data name="DekstopWidgets3_Widget_AnalogClock_WidgetSettings_ShowSeconds_SettingsCard_Header" xml:space="preserve">
+  <data name="WidgetSettings_ShowSeconds_SettingsCard_Header" xml:space="preserve">
     <value>显示秒数</value>
   </data>
-  <data name="DekstopWidgets3_Widget_AnalogClock_WidgetSettings_ShowSeconds_SettingsCard_Description" xml:space="preserve">
+  <data name="WidgetSettings_ShowSeconds_SettingsCard_Description" xml:space="preserve">
     <value>在组件中显示秒数</value>
   </data>
 </root>

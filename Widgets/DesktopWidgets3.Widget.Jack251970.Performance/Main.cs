@@ -57,12 +57,12 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
 
     public string GetLocalizatedTitle()
     {
-        return Context.LocalizationService.GetLocalizedString("DekstopWidgets3_Widget_Performance_Title");
+        return Context.LocalizationService.GetLocalizedString("Title");
     }
 
     public string GetLocalizatedDescription()
     {
-        return Context.LocalizationService.GetLocalizedString("DekstopWidgets3_Widget_Performance_Description");
+        return Context.LocalizationService.GetLocalizedString("Description");
     }
 
     #endregion
