@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Microsoft.UI.Xaml;
-using Windows.ApplicationModel.Resources.Core;
 
 namespace CustomExtensions.WinUI.Models;
 
@@ -22,11 +21,11 @@ public static partial class ApplicationExtensionHost
     }
 
     /// <summary>
-    /// Gets the default resource map for the specified assembly, or the caller's executing assembly if not provided.
-    /// </summary>
-    /// <param name="assembly">Assembly for which to load the default resource map</param>
-    /// <returns>A ResourceMap if one is found, otherwise null</returns>
-    public static ResourceMap? GetResourceMapForAssembly(Assembly? assembly = null)
+	/// Gets the default resource map for the specified assembly, or the caller's executing assembly if not provided.
+	/// </summary>
+	/// <param name="assembly">Assembly for which to load the default resource map</param>
+	/// <returns>A ResourceMap if one is found, otherwise null</returns>
+	public static Windows.ApplicationModel.Resources.Core.ResourceMap? GetCoreResourceMapForAssembly(Assembly? assembly = null)
     {
         assembly ??= Assembly.GetCallingAssembly();
         var assemblyName = assembly.GetName().Name;
@@ -35,8 +34,27 @@ public static partial class ApplicationExtensionHost
             return null;
         }
 
-        return !ResourceManager.Current.AllResourceMaps.TryGetValue(assemblyName, out var map)
+        return !Windows.ApplicationModel.Resources.Core.ResourceManager.Current.AllResourceMaps.TryGetValue(assemblyName, out var map)
             ? null
             : map.GetSubtree($"{assemblyName}/Resources");
+    }
+
+    /// <summary>
+    /// Gets the default resource map for the specified assembly, or the caller's executing assembly if not provided.
+    /// </summary>
+    /// <param name="assembly">Assembly for which to load the default resource map</param>
+    /// <returns>A ResourceMap if one is found, otherwise null</returns>
+    public static Microsoft.Windows.ApplicationModel.Resources.ResourceMap? GetWinResourceMapForAssembly(Assembly? assembly = null)
+    {
+        assembly ??= Assembly.GetCallingAssembly();
+        var assemblyName = assembly.GetName().Name;
+        var assemblyPath = assembly.Location;
+        var assemblyDirectory = Path.GetDirectoryName(assemblyPath);
+        if (assemblyName == null)
+        {
+            return null;
+        }
+
+        return new Microsoft.Windows.ApplicationModel.Resources.ResourceManager($"{assemblyDirectory}\\{assemblyName}.pri").MainResourceMap.TryGetSubtree($"{assemblyName}/Resources");
     }
 }
