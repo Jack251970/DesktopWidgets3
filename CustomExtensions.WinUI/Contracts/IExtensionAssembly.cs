@@ -11,7 +11,9 @@ public interface IExtensionAssembly : IDisposable
 
     Task LoadResourcesAsync();
 
-    (bool isHotReloadAvailable, string? targetResDir) TryEnableHotReload();
+    bool TryEnableHotReload();
+
+    string? TryLoadXamlResources();
 
     Uri LocateResource(object component, [CallerFilePath] string callerFilePath = "");
 }

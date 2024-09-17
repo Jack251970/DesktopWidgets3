@@ -131,10 +131,20 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 var index = widgetStoreList.FindIndex(x => x.Id == id);
                 if (index != -1)
                 {
-                    var relativeResourcesFolder = Path.GetRelativePath(AppContext.BaseDirectory, resourcesFolder);
-                    widgetStoreList[index].ResourcesFolder = relativeResourcesFolder;
+                    if (resourcesFolder != string.Empty)
+                    {
+                        var relativeResourcesFolder = Path.GetRelativePath(AppContext.BaseDirectory, resourcesFolder);
+                        widgetStoreList[index].ResourcesFolder = relativeResourcesFolder;
+                    }
+                    else
+                    {
+                        // user failed widgets will be reinstalled in the next time opening the app
+                        // preinstalled failed widgets will only be reinstalled in the next version
+                        widgetStoreList[index].IsInstalled = widgetStoreList[index].IsPreinstalled;
+                    }
                 }
             }
+
             await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
         }
 
@@ -446,11 +456,11 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         }
         else
         {
+            var installedIndex = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
             var allIndex = AllWidgetsMetadata.FindIndex(x => x.ID == widgetId);
-            installed = AllWidgetsMetadata[allIndex].Installed;
+            installed = installedIndex != -1;
             if (installed == true)
             {
-                var installedIndex = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
                 return (true, allIndex, installedIndex);
             }
             else
@@ -628,10 +638,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         foreach (var metadata in AllWidgetsMetadata)
         {
-            if (metadata.Installed)
+            var widgetId = metadata.ID;
+            (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, null);
+            if (installed)
             {
-                var widgetId = metadata.ID;
-                (var _, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, true);
                 widgetStoreItemList.Add(new WidgetStoreItem()
                 {
                     Id = widgetId,
@@ -654,20 +664,23 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         foreach (var metadata in AllWidgetsMetadata)
         {
-            if (metadata.Preinstalled && (!metadata.Installed))
+            if (metadata.Preinstalled)
             {
                 var widgetId = metadata.ID;
-                (var _, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, false);
-                widgetStoreItemList.Add(new WidgetStoreItem()
+                (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, null);
+                if (!installed)
                 {
-                    Id = metadata.ID,
-                    Name = GetWidgetName(allIndex, installedIndex),
-                    Description = GetWidgetDescription(allIndex, installedIndex),
-                    Author = metadata.Author,
-                    Version = metadata.Version,
-                    Website = metadata.Website,
-                    IcoPath = GetWidgetIcoPath(allIndex, installedIndex)
-                });
+                    widgetStoreItemList.Add(new WidgetStoreItem()
+                    {
+                        Id = metadata.ID,
+                        Name = GetWidgetName(allIndex, installedIndex),
+                        Description = GetWidgetDescription(allIndex, installedIndex),
+                        Author = metadata.Author,
+                        Version = metadata.Version,
+                        Website = metadata.Website,
+                        IcoPath = GetWidgetIcoPath(allIndex, installedIndex)
+                    });
+                }
             }
         }
 

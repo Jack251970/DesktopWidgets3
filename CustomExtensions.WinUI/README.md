@@ -40,7 +40,7 @@ IExtension? LoadMyExtensionAndCreateInstance(string assemblyLoadPath, bool loadX
     if (loadXamlResources)
     {
         // resourceFolder is the symbolic path to the resource folder in the host project directory.
-        (bool hotReloadAvailable, string? resourceFolder) = extensionAssembly.TryEnableHotReload();
+        string? resourceFolder = extensionAssembly.TryLoadXamlResources();
     }
 
     // get the actual assembly object
@@ -66,7 +66,7 @@ When your application are closing, it is recommanded to dispose the extensionAss
 
 When loading the extension, the extension assembly can attempt to enable hot reload and create symbolic link to the according path in the host project directory by calling the `TryEnableHotReload` method.
 
-The codes is in the `LoadMyExtensionAndCreateInstance()` as above.
+The codes is in the `LoadMyExtensionAndCreateInstance()` function as above.
 
 * Method 2: Load the Xaml files every time when they are needed.
 

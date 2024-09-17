@@ -16,9 +16,15 @@ internal partial class ExtensionAssembly
         {
             throw new InvalidProgramException();
         }
-        var resourceName = Path.GetFileName(callerFilePath)[..^3];
-        TryEnableHotReload();
 
+        // load project xaml resources
+        if (!TryEnableHotReload())
+        {
+            TryLoadXamlResources();
+        }
+
+        // find resource in project
+        var resourceName = Path.GetFileName(callerFilePath)[..^3];
         var pathParts = callerFilePath.Split('\\')[..^1];
         for (var i = pathParts.Length - 1; i > 1; i--)
         {

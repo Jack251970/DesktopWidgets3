@@ -42,6 +42,7 @@ public static class WidgetsLoader
             IExtensionAssembly? extensionAssembly = null;
             Assembly? assembly = null;
             IAsyncWidget? widget = null;
+            var resourcesFolder = string.Empty;
 
             try
             {
@@ -53,7 +54,7 @@ public static class WidgetsLoader
 
                 widget = Activator.CreateInstance(type) as IAsyncWidget;
 
-                var resourcesFolder = InstallResourceFolder(extensionAssembly);
+                resourcesFolder = InstallResourceFolder(extensionAssembly);
                 if (installingIds.Contains(metadata.ID))
                 {
                     dotnetInstalledWidgets.TryAdd(metadata.ID, resourcesFolder);
@@ -80,7 +81,7 @@ public static class WidgetsLoader
                 LogExtensions.LogError(ClassName, e, $"The following widget has errored and can not be loaded: <{metadata.Name}>");
             }
 
-            if (widget == null)
+            if (widget == null || resourcesFolder == string.Empty)
             {
                 dotnetErrorWidgets.Add(metadata.Name);
                 continue;
@@ -104,8 +105,8 @@ public static class WidgetsLoader
 
     private static string InstallResourceFolder(IExtensionAssembly extensionAssembly)
     {
-        (var hotReloadAvailable, var resourceFolder) = extensionAssembly.TryEnableHotReload();
+        var resourceFolder = extensionAssembly.TryLoadXamlResources();
 
-        return hotReloadAvailable == true ? resourceFolder! : string.Empty;
+        return resourceFolder ?? string.Empty;
     }
 }

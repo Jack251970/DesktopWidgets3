@@ -74,67 +74,65 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 	}
 
     // TODO: Use hot reload support.
-	public (bool isHotReloadAvailable, string? targetResDir) TryEnableHotReload()
+	public bool TryEnableHotReload()
 	{
 		if (IsHotReloadAvailable.HasValue)
 		{
-            if (IsHotReloadAvailable.Value)
-            {
-                return (true, Path.Combine(HostingProcessDir, ForeignAssemblyName));
-            }
-            else
-            {
-                return (false, null);
-            }
-		}
+            return IsHotReloadAvailable.Value;
+        }
 
 		if (!ApplicationExtensionHost.IsHotReloadEnabled)
 		{
             Trace.TraceWarning("HotReload(Debug) : Hot reload is not enabled in the current environment");
             IsHotReloadAvailable = false;
-			return (false, null);
+            return false;
 		}
 
 		if (ForeignAssemblyDir == HostingProcessDir)
 		{
 			Trace.TraceWarning($"HotReload(Debug) : Output directory for {ForeignAssembly.FullName} appears to be in the same location as the application directory. HotReload may not function in this environment.");
 			IsHotReloadAvailable = false;
-			return (false, null);
+            return false;
         }
 
-		// Note: this assumes all your resources exist under the current assembly name
-		// this won't be true for nested dependencies or the like, so they will need to 
-		// enable the same capabilities or they may crash when using hot reload
-		var assemblyResDir = Path.Combine(ForeignAssemblyDir, ForeignAssemblyName);
-		if (!Directory.Exists(assemblyResDir))
-		{
-			Trace.TraceError($"HotReload(Debug) : Cannot enable hot reload for {ForeignAssembly.FullName} because {assemblyResDir} does not exist on the system");
-			IsHotReloadAvailable = false;
-			return (false, null);
+		var targetResDir = TryLoadXamlResources();
+        IsHotReloadAvailable = targetResDir != null;
+
+		return IsHotReloadAvailable.Value;
+    }
+
+    public string? TryLoadXamlResources()
+    {
+        // Note: this assumes all your resources exist under the current assembly name
+        // this won't be true for nested dependencies or the like, so they will need to 
+        // enable the same capabilities or they may crash when using hot reload
+        var assemblyResDir = Path.Combine(ForeignAssemblyDir, ForeignAssemblyName);
+        if (!Directory.Exists(assemblyResDir))
+        {
+            Trace.TraceError($"XamlLoad(Debug) : Cannot load xaml resources for {ForeignAssembly.FullName} because {assemblyResDir} does not exist on the system");
+            return null;
         }
 
-		var targetResDir = Path.Combine(HostingProcessDir, ForeignAssemblyName);
-		DirectoryInfo debugTargetResDirInfo = new(targetResDir);
-		if (debugTargetResDirInfo.Exists)
-		{
-			if (!debugTargetResDirInfo.Attributes.HasFlag(FileAttributes.ReparsePoint))
-			{
-				Trace.TraceError($"HotReload(Debug) : Cannot enable hot reload for {ForeignAssembly.FullName} because {targetResDir} already exists as a non-symbolic linked directory");
-				IsHotReloadAvailable = false;
-				return (false, null);
+        var targetResDir = Path.Combine(HostingProcessDir, ForeignAssemblyName);
+        DirectoryInfo debugTargetResDirInfo = new(targetResDir);
+        if (debugTargetResDirInfo.Exists)
+        {
+            if (!debugTargetResDirInfo.Attributes.HasFlag(FileAttributes.ReparsePoint))
+            {
+                Trace.TraceError($"XamlLoad(Debug) : Cannot load xaml resources for {ForeignAssembly.FullName} because {targetResDir} already exists as a non-symbolic linked directory");
+                return null;
             }
-			Directory.Delete(targetResDir, recursive: true);
-		}
+            Directory.Delete(targetResDir, recursive: true);
+        }
         if (!Directory.Exists(targetResDir))
         {
             Directory.CreateSymbolicLink(targetResDir, assemblyResDir);
         }
 
-        IsHotReloadAvailable = true;
-		return (true, targetResDir);
+        return targetResDir;
     }
 
-	protected virtual void Dispose(bool disposing)
+    protected virtual void Dispose(bool disposing)
 	{
 		if (!IsDisposed)
 		{
