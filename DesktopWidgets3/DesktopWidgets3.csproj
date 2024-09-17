@@ -4,7 +4,6 @@
     <!-- General Properties -->
     <OutputType>WinExe</OutputType>
     <Title>Desktop Widgets 3</Title>
-    <ApplicationIcon>Assets\WindowIcon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>DesktopWidgets3</RootNamespace>
@@ -38,6 +37,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnableMsixTooling>true</EnableMsixTooling>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <ApplicationIcon>Assets\Icon(Debug).ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
@@ -98,11 +105,16 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Assets\WindowIcon.ico">
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <Content Update="Assets\Icon(Debug).ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Remove="Assets\PackageIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <Content Update="Assets\Icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -123,6 +135,11 @@
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
   </ItemGroup>
+
+  <Target Name="RenameIconFile" AfterTargets="Build" Condition="'$(Configuration)'=='Debug'">
+    <!-- Icon.ico -->
+    <Copy SourceFiles="$(TargetDir)Assets\Icon(Debug).ico" DestinationFiles="$(TargetDir)Assets\Icon.ico" />
+  </Target>
 
   <Target Name="BuildWidgetProjectsAndCopy" AfterTargets="Build">
     <!-- Build widget projects -->

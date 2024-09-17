@@ -12,7 +12,7 @@
         x:Uid="TrayMenu_TaskBarIcon"
         ContextMenuMode="SecondWindow"
         DoubleClickCommand="{x:Bind ShowWindowCommand}"
-        IconSource="/Assets/WindowIcon.ico"
+        IconSource="ms-appx:///Assets/Icon.ico"
         MenuActivation="RightClick"
         NoLeftClickDelay="True">
         <tb:TaskbarIcon.ContextFlyout>

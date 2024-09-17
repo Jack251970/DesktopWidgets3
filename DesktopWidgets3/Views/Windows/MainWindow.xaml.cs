@@ -40,7 +40,7 @@ public sealed partial class MainWindow : WindowEx
         _manager = WindowManager.Get(this);
         _handle = this.GetWindowHandle();
 
-        AppWindow.SetIcon("/Assets/WindowIcon.ico");
+        AppWindow.SetIcon(Constant.AppIconPath);
         Content = null;
         Title = "AppDisplayName".GetLocalized();
 

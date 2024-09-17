@@ -16,6 +16,8 @@ public static class Constant
 
     public const string DefaultResourceFileName = "Resources";
 
+    public static readonly string AppIconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "Icon.ico");
+
     public const string UnknownWidgetIcoPath = $"ms-appx:///Assets/FluentIcons/Unknown.png";
 
     #endregion

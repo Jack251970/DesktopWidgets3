@@ -64,7 +64,7 @@
                 <TextBlock x:Uid="Settings_About" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
                 <controls:SettingsExpander x:Uid="Settings_AboutApp_Card">
                     <controls:SettingsExpander.HeaderIcon>
-                        <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/WindowIcon.ico" />
+                        <BitmapIcon ShowAsMonochrome="False" UriSource="ms-appx:///Assets/Icon.ico" />
                     </controls:SettingsExpander.HeaderIcon>
                     <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
