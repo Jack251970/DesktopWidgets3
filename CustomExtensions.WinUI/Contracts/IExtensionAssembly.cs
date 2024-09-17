@@ -7,7 +7,9 @@ public interface IExtensionAssembly : IDisposable
 {
     Assembly ForeignAssembly { get; }
 
-    Task LoadAsync();
+    void LoadResources();
+
+    Task LoadResourcesAsync();
 
     (bool isHotReloadAvailable, string? targetResDir) TryEnableHotReload();
 

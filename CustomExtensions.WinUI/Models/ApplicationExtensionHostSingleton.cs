@@ -21,10 +21,17 @@ internal partial class ApplicationExtensionHostSingleton<T> : IApplicationExtens
 		HostingProcessDir = Path.GetDirectoryName(EntryAssembly.AssertDefined().Location).AssertDefined();
 	}
 
-	public async Task<IExtensionAssembly> LoadExtensionAsync(string pathToAssembly)
+    public IExtensionAssembly LoadExtension(string pathToAssembly)
+    {
+        var asm = GetExtensionAssembly(pathToAssembly);
+        asm.LoadResources();
+        return asm;
+    }
+
+    public async Task<IExtensionAssembly> LoadExtensionAndResourcesAsync(string pathToAssembly)
 	{
 		var asm = GetExtensionAssembly(pathToAssembly);
-		await asm.LoadAsync();
+		await asm.LoadResourcesAsync();
 		return asm;
 	}
 

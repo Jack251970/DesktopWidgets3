@@ -119,7 +119,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
         // load all installed widgets
         var installWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Installed).ToList();
-        (InstalledWidgets, var errorWidgets, var installedWidgets) = await WidgetsLoader.WidgetsAsync(installWidgetsMetadata, installingIds);
+        (InstalledWidgets, var errorWidgets, var installedWidgets) = WidgetsLoader.Widgets(installWidgetsMetadata, installingIds);
 
         // save widget store list
         if (installingIds.Count != 0)

@@ -30,15 +30,23 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 		ForeignAssemblyName = ForeignAssembly.GetName().Name.AssertDefined();
 	}
 
-	public async Task LoadAsync()
+    public void LoadResources()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, new ObjectDisposedException(nameof(ExtensionAssembly)));
+
+        RegisterXamlTypeMetadataProviders();
+    }
+
+    public async Task LoadResourcesAsync()
 	{
 		ObjectDisposedException.ThrowIf(IsDisposed, new ObjectDisposedException(nameof(ExtensionAssembly)));
 
-        await LoadResources();
+        await LoadPriResourcesAsync();
+
 		RegisterXamlTypeMetadataProviders();
 	}
 
-	private async Task LoadResources()
+    private async Task LoadPriResourcesAsync()
 	{
 		FileInfo resourcePriFileInfo = new(Path.Combine(ForeignAssemblyDir, "resources.pri"));
 		if (!resourcePriFileInfo.Exists)
@@ -51,9 +59,9 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 			return;
 		}
 
-		var file = await StorageFile.GetFileFromPathAsync(resourcePriFileInfo.FullName);
-		ResourceManager.Current.LoadPriFiles([file]);
-	}
+        var file = await StorageFile.GetFileFromPathAsync(resourcePriFileInfo.FullName);
+        ResourceManager.Current.LoadPriFiles([file]);
+    }
 
 	private void RegisterXamlTypeMetadataProviders()
 	{

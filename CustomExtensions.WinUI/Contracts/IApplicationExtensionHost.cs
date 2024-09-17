@@ -6,7 +6,9 @@ namespace CustomExtensions.WinUI.Contracts;
 
 public interface IApplicationExtensionHost
 {
-    Task<IExtensionAssembly> LoadExtensionAsync(string pathToAssembly);
+    IExtensionAssembly LoadExtension(string pathToAssembly);
+
+    Task<IExtensionAssembly> LoadExtensionAndResourcesAsync(string pathToAssembly);
 
     Type FromAssemblyGetTypeOfInterface(Assembly assembly, Type type);
 

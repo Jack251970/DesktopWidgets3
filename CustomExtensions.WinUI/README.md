@@ -14,7 +14,9 @@ Before any other APIs are called, you must first initialize the host application
 
 ### 2. Loading an extension
 
-Where you would normally loaded the extension assembly (`Assembly.LoadFrom` recommanded), you should instead call the `ApplicationExtensionHost.Current.LoadExtensionAsync` method, which will return an `IExtensionAssembly` handle that can be used to unload the extension later.
+Where you would normally loaded the extension assembly (`Assembly.LoadFrom` recommanded), you should instead call the `ApplicationExtensionHost.Current.LoadExtension` method, which will return an `IExtensionAssembly` handle that can be used to unload the extension later.
+
+If you want to load the pri resources in the extension, you should call `ApplicationExtensionHost.Current.LoadExtensionAndResourcesAsync` method instead of `LoadExtension` method.
 
 > Note: For some reason, AssemblyLoadContext will cause issues, such as unable to find secondary reference.
 Even if using AssemblyLoadContext.Default which should have no difference thanAssembly.LoadFrom(), but it does.
@@ -27,13 +29,15 @@ using CustomExtensions.WinUI.Contracts;
 
 /* ... */
 
-IExtension? LoadMyExtensionAndCreateInstance(string assemblyLoadPath, bool loadXaml)
+IExtension? LoadMyExtensionAndCreateInstance(string assemblyLoadPath, bool loadXamlResources)
 {
     // save off the handle so we can clean up our registration with the hosting process later if desired.
-    IExtensionAssembly extensionAssembly = await ApplicationExtensionHost.Current.LoadExtensionAsync(assemblyLoadPath);
+    // LoadExtensionAndResourcesAsync will load extension assembly and pri resources to the host process.
+    // LoadExtension will only load extension assembly to the host process.
+    IExtensionAssembly extensionAssembly = await ApplicationExtensionHost.Current.LoadExtensionAndResourcesAsync(assemblyLoadPath);
 
     // load xaml files when the extension is loading
-    if (loadXaml)
+    if (loadXamlResources)
     {
         // resourceFolder is the symbolic path to the resource folder in the host project directory.
         (bool hotReloadAvailable, string? resourceFolder) = extensionAssembly.TryEnableHotReload();
@@ -48,14 +52,13 @@ IExtension? LoadMyExtensionAndCreateInstance(string assemblyLoadPath, bool loadX
     // create an instance of the extension
     IExtension? extension = Activator.CreateInstance(type) as IExtension;
 
-    // dispose the extensionAssembly when you're done with it
-    extensionAssembly.Dispose();
-
     return extension;
 }
 ```
 
 The `IExtensionAssembly` interface also implements `IDisposable` to remove your extension's resources and Xaml type metadata registration from the hosting assembly. This will not unload the extension assembly, however.
+
+When your application are closing, it is recommanded to dispose the extensionAssembly to remove your extension's resources and Xaml type metadata registration from the hosting assembly.
 
 ### 3. Extension UI Requirements
 
@@ -83,11 +86,11 @@ public sealed partial class SamplePage : Page
 }
 ```
 
-### 4. Using resources in an extension
+### 4. Using pri resources in an extension
 
 * Method 1: Use `Microsoft.Windows.ApplicationModel.ResourceMap` (Recommended)
 
-Resources can be accessed via the `ApplicationExtensionHost.GetWinResourceMapForAssembly` method, which will return a `Microsoft.Windows.ApplicationModel.ResourceMap` for the extension's resources:
+Pri resources can be accessed via the `ApplicationExtensionHost.GetWinResourceMapForAssembly` method, which will return a `Microsoft.Windows.ApplicationModel.ResourceMap` for the extension's resources:
 
 ```cs
 private void Loaded(object sender, RoutedEventArgs e)
@@ -99,7 +102,7 @@ private void Loaded(object sender, RoutedEventArgs e)
 
 * Method 2: Use `Windows.ApplicationModel.Resources.Core.ResourceMap`
 
-Resources can be accessed via the `ApplicationExtensionHost.GetCoreResourceMapForAssembly` method, which will return a `Windows.ApplicationModel.Resources.Core.ResourceMap` for the extension's resources:
+Pri resources can be accessed via the `ApplicationExtensionHost.GetCoreResourceMapForAssembly` method, which will return a `Windows.ApplicationModel.Resources.Core.ResourceMap` for the extension's resources:
 
 ```cs
 private void Loaded(object sender, RoutedEventArgs e)
@@ -108,6 +111,8 @@ private void Loaded(object sender, RoutedEventArgs e)
 	Greeting.Text = resources.GetValue("Greeting/Text").ValueAsString;
 }
 ```
+
+Rememeber you have called `LoadExtensionAndResourcesAsync` function instead of `LoadExtension`.
 
 > Note: The `x:Uid="Greeting"` pattern will **not** work for extensions to bind their resources to `FrameworkElements` in their own UI.
 So, do **not** use x:Uid in the Xaml files, like this:

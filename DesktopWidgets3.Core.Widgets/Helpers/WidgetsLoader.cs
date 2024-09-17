@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace DesktopWidgets3.Core.Widgets.Helpers;
 
@@ -7,24 +6,19 @@ public static class WidgetsLoader
 {
     private static string ClassName => typeof(WidgetsLoader).Name;
 
-    private static readonly ConcurrentQueue<WidgetPair> Widgets = [];
+    private static readonly List<IExtensionAssembly> ExtensionAssemblies = [];
 
-    private static readonly ConcurrentQueue<string> ErrorWidgets = [];
-
-    private static readonly ConcurrentDictionary<string, string> InstalledWidgets = [];
-
-    private static readonly ConcurrentQueue<IExtensionAssembly> ExtensionAssemblies = [];
-
-    public static async Task<(List<WidgetPair> allWidgets, List<string> errorWidgets, Dictionary<string, string> installedWidgets)> WidgetsAsync(List<WidgetMetadata> metadatas, List<string> installingIds)
+    public static (List<WidgetPair> allWidgets, List<string> errorWidgets, Dictionary<string, string> installedWidgets) Widgets(List<WidgetMetadata> metadatas, List<string> installingIds)
     {
-        Widgets.Clear();
-        ErrorWidgets.Clear();
+        (var dotnetWidgets, var dotnetErrorWidgets, var dotnetInstalledWidgets) = DotNetWidgets(metadatas, installingIds);
 
-        var tasks = DotNetWidgets(metadatas, installingIds);
+        var widgets = dotnetWidgets;
 
-        await Task.WhenAll(tasks);
+        var errorWidgets = dotnetErrorWidgets;
 
-        return (Widgets.ToList(), ErrorWidgets.ToList(), InstalledWidgets.ToDictionary());
+        var installedWidgets = dotnetInstalledWidgets;
+
+        return (widgets, errorWidgets, installedWidgets);
     }
 
     public static void DisposeExtensionAssemblies()
@@ -35,11 +29,15 @@ public static class WidgetsLoader
         }
     }
 
-    private static IEnumerable<Task> DotNetWidgets(List<WidgetMetadata> metadatas, List<string> installingIds)
+    private static (List<WidgetPair> dotnetWidgets, List<string> dotnetErrorWidgets, Dictionary<string, string> dotnetInstalledWidgets) DotNetWidgets(List<WidgetMetadata> metadatas, List<string> installingIds)
     {
         var dotnetMetadatas = metadatas.Where(o => AllowedLanguage.IsDotNet(o.Language)).ToList();
 
-        return metadatas.Select(async metadata =>
+        var dotnetWidgets = new List<WidgetPair>();
+        var dotnetErrorWidgets = new List<string>();
+        var dotnetInstalledWidgets = new Dictionary<string, string>();
+
+        foreach (var metadata in dotnetMetadatas)
         {
             IExtensionAssembly? extensionAssembly = null;
             Assembly? assembly = null;
@@ -47,7 +45,7 @@ public static class WidgetsLoader
 
             try
             {
-                extensionAssembly = await ApplicationExtensionHost.Current.LoadExtensionAsync(metadata.ExecuteFilePath);
+                extensionAssembly = ApplicationExtensionHost.Current.LoadExtension(metadata.ExecuteFilePath);
 
                 assembly = extensionAssembly.ForeignAssembly;
 
@@ -58,7 +56,7 @@ public static class WidgetsLoader
                 var resourcesFolder = InstallResourceFolder(extensionAssembly);
                 if (installingIds.Contains(metadata.ID))
                 {
-                    InstalledWidgets.TryAdd(metadata.ID, resourcesFolder);
+                    dotnetInstalledWidgets.TryAdd(metadata.ID, resourcesFolder);
                 }
             }
             catch (Exception e) when (extensionAssembly == null)
@@ -84,8 +82,8 @@ public static class WidgetsLoader
 
             if (widget == null)
             {
-                ErrorWidgets.Enqueue(metadata.Name);
-                return;
+                dotnetErrorWidgets.Add(metadata.Name);
+                continue;
             }
 
             var assemblyName = assembly!.GetName().Name;
@@ -96,10 +94,12 @@ public static class WidgetsLoader
 
             ResourceExtensions.AddExternalResource(assembly!);
 
-            ExtensionAssemblies.Enqueue(extensionAssembly!);
+            ExtensionAssemblies.Add(extensionAssembly!);
 
-            Widgets.Enqueue(new WidgetPair { Widget = widget, Metadata = metadata });
-        });
+            dotnetWidgets.Add(new WidgetPair { Widget = widget, Metadata = metadata });
+        };
+
+        return (dotnetWidgets, dotnetErrorWidgets, dotnetInstalledWidgets);
     }
 
     private static string InstallResourceFolder(IExtensionAssembly extensionAssembly)
