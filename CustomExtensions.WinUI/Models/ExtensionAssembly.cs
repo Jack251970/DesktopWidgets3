@@ -90,7 +90,8 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 
 		if (!ApplicationExtensionHost.IsHotReloadEnabled)
 		{
-			IsHotReloadAvailable = false;
+            Trace.TraceWarning("HotReload(Debug) : Hot reload is not enabled in the current environment");
+            IsHotReloadAvailable = false;
 			return (false, null);
 		}
 
