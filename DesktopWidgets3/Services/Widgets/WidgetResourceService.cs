@@ -17,7 +17,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     private static readonly string[] WidgetsDirectories =
     [
-        LocalSettingsHelper.WidgetsDirectory
+        LocalSettingsHelper.DefaultUserWidgetsDirectory
     ];
 
     private static readonly string[] PreinstalledWigdetsIds =
@@ -52,7 +52,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     private void GetAllWidgetsMetadata()
     {
         // get all widget metadata
-        AllWidgetsMetadata = WidgetsConfig.Parse(WidgetsDirectories, Constant.WidgetsPreinstalledDirectory);
+        AllWidgetsMetadata = WidgetsConfig.Parse(WidgetsDirectories, Constant.PreinstalledWidgetsDirectory);
 
         // check preinstalled widgets
         var errorPreinstalledWidgetsIds = AllWidgetsMetadata

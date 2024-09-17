@@ -10,7 +10,18 @@ public class LocalSettingsHelper
     private static string applicationDataPath = string.Empty;
     public static string ApplicationDataPath => applicationDataPath;
 
-    public static string WidgetsDirectory => Path.Combine(ApplicationDataPath, Constant.WidgetsFolder);
+    public static string DefaultUserWidgetsDirectory
+    {
+        get
+        {
+            var userWidgetsDirectory = Path.Combine(applicationDataPath, Constant.WidgetsFolder);
+            if (!Directory.Exists(userWidgetsDirectory))
+            {
+                Directory.CreateDirectory(userWidgetsDirectory);
+            }
+            return userWidgetsDirectory;
+        }
+    }
 
     public static void Initialize()
     {
