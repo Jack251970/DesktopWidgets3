@@ -19,7 +19,9 @@ public static class WindowsExtensions
         return new List<Window>(WindowsAndLifecycle.Keys);
     }
 
-    public static T GetWindow<T>(bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null) where T : Window, new()
+    #region create & close
+
+    public static T CreateWindow<T>(bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null) where T : Window, new()
     {
         T window = null!;
         DispatcherExitDeferral? deferral = null;
@@ -114,6 +116,11 @@ public static class WindowsExtensions
 
     public static async Task CloseWindow(Window window)
     {
+        if (window == null)
+        {
+            return;
+        }
+
         var lifecycleHandler = WindowsAndLifecycle.TryGetValue(window, out var value) ? value : null;
         if (lifecycleHandler?.ExitDeferral is not null)
         {
@@ -146,6 +153,8 @@ public static class WindowsExtensions
             await CloseWindow(window);
         }
     }
+
+    #endregion
 
     #region register & unregister
 

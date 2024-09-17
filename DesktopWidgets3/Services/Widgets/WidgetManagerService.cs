@@ -47,7 +47,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // initialize edit mode overlay window
         if (EditModeOverlayWindow == null)
         {
-            EditModeOverlayWindow = WindowsExtensions.GetWindow<OverlayWindow>();
+            EditModeOverlayWindow = WindowsExtensions.CreateWindow<OverlayWindow>();
             await _activationService.ActivateWindowAsync(EditModeOverlayWindow);
             (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
         }
@@ -216,7 +216,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         };
 
         // create widget window
-        var widgetWindow = WindowsExtensions.GetWindow<WidgetWindow>(newThread, lifecycleActions);
+        var widgetWindow = WindowsExtensions.CreateWindow<WidgetWindow>(newThread, lifecycleActions);
     }
 
     private async void WidgetWindow_Creating(JsonWidgetItem widgetItem)
