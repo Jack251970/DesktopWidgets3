@@ -23,7 +23,7 @@
   <mp:PhoneIdentity PhoneProductId="46683a90-386e-4b53-8475-1c82074bdb74" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     
   <Properties>
-    <DisplayName>Time Manager 3</DisplayName>
+    <DisplayName>Desktop Widgets 3</DisplayName>
     <PublisherDisplayName>Jack251970</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
     <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
@@ -36,7 +36,7 @@
 
   <Resources>
     <Resource Language="en-US" />
-    <Resource Language="zh-Hans" />
+    <Resource Language="zh-CN" />
   </Resources>
 
   <Applications>
