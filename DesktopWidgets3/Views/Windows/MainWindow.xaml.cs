@@ -36,7 +36,7 @@ public sealed partial class MainWindow : WindowEx
 
     public UIElement? TitleBarText { get; set; }
 
-    public new bool Visible { get; set; } = true;
+    public new bool Visible { get; set; } = false;
 
     #endregion
 
@@ -79,7 +79,9 @@ public sealed partial class MainWindow : WindowEx
         Position = new PointInt32((int)((rectWorkWidth! - windowWidth) / 2), (int)((rectWorkHeight! - windowHeight) / 2));
     }
 
-    #region Hide & Show
+    #region Hide & Show & Activate
+
+    private bool activated = false;
 
     public void Hide()
     {
@@ -89,8 +91,21 @@ public sealed partial class MainWindow : WindowEx
 
     public void Show()
     {
-        this.Show(true);
+        if (!activated)
+        {
+            Activate();
+        }
+        else
+        {
+            this.Show(true);
+        }
         Visible = true;
+    }
+
+    public new void Activate()
+    {
+        base.Activate();
+        activated = true;
     }
 
     #endregion

@@ -32,6 +32,7 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
         // Activate the MainWindow if want to show window.
         if (!_appSettingsService.SilentStart)
         {
+            App.MainWindow.Visible = true;
             App.MainWindow.Activate();
         }
 
