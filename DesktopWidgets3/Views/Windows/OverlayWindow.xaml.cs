@@ -43,11 +43,11 @@ public sealed partial class OverlayWindow : WindowEx
         SystemHelper.HideWindowIconFromTaskbar(this.GetWindowHandle());
     }
 
-    public void CenterOnTop()
+    public void CenterTopOnMonitor()
     {
-        var primaryMonitorInfo = DisplayMonitor.GetMonitorInfo(this);
-        var screenWidth = primaryMonitorInfo.RectWork.Width;
+        var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
+        var monitorWidth = monitorInfo.RectMonitor.Width;
         var windowWidth = AppWindow.Size.Width;
-        Position = new PointInt32((int)((screenWidth! - windowWidth) / 2), 0);
+        Position = new PointInt32((int)((monitorWidth! - windowWidth) / 2), 0);
     }
 }

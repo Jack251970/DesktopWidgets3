@@ -26,7 +26,10 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
         // Handle activation via ActivationHandlers.
         await HandleActivationAsync(activationArgs);
 
-        // Activate the MainWindow.
+        // Move the window to the center of the work rectangle.
+        App.MainWindow.CenterOnRectWork();
+
+        // Activate the MainWindow if want to show window.
         if (!_appSettingsService.SilentStart)
         {
             App.MainWindow.Activate();

@@ -1,6 +1,7 @@
 ﻿using H.NotifyIcon;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Windows.Graphics;
 using Windows.UI.ViewManagement;
 
 namespace DesktopWidgets3.Views.Windows;
@@ -12,6 +13,22 @@ public sealed partial class MainWindow : WindowEx
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
+
+    #region position & size
+
+    public PointInt32 Position
+    {
+        get => AppWindow.Position;
+        set => this.Move(value.X, value.Y);
+    }
+
+    public SizeInt32 Size
+    {
+        get => new((int)(AppWindow.Size.Width * 96f / this.GetDpiForWindow()), (int)(AppWindow.Size.Height * 96f / this.GetDpiForWindow()));
+        set => this.SetWindowSize(value.Width, value.Height);
+    }
+
+    #endregion
 
     #region ui elements
 
@@ -50,6 +67,16 @@ public sealed partial class MainWindow : WindowEx
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
         Closed += WindowEx_Closed;
+    }
+
+    public void CenterOnRectWork()
+    {
+        var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
+        var rectWorkWidth = monitorInfo.RectWork.Width;
+        var rectWorkHeight = monitorInfo.RectWork.Height;
+        var windowWidth = AppWindow.Size.Width;
+        var windowHeight = AppWindow.Size.Height;
+        Position = new PointInt32((int)((rectWorkWidth! - windowWidth) / 2), (int)((rectWorkHeight! - windowHeight) / 2));
     }
 
     #region Hide & Show

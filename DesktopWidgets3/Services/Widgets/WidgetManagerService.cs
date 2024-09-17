@@ -563,7 +563,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             EditModeOverlayWindow.Size = new SizeInt32(EditModeOverlayWindowXamlWidth, EditModeOverlayWindowXamlHeight);
 
             // move to center top
-            EditModeOverlayWindow.CenterOnTop();
+            EditModeOverlayWindow.CenterTopOnMonitor();
 
             // show edit mode overlay window
             EditModeOverlayWindow.Show(true);
