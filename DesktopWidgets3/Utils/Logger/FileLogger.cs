@@ -30,7 +30,7 @@ public sealed class FileLogger(string logDirectory) : ILogger
         {
             var message = formatter(state, exception);
 
-            if (ExceptionFormatter.FormatExcpetion(exception) is string str && (!string.IsNullOrEmpty(str)))
+            if (exception is not null && ExceptionFormatter.FormatExcpetion(exception) is string str && (!string.IsNullOrEmpty(str)))
             {
                 message = $"{message}" + Environment.NewLine + $"{str}";
             }
