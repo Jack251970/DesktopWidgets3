@@ -89,10 +89,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\FluentIcons\Unknown.png">
+    <None Update="Assets\FluentIcons\*.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Assets\PackageIcon.png">
@@ -105,10 +102,6 @@
     <Content Update="Assets\WindowIcon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Assets\FluentIcons\*.png" />
     <Content Remove="Assets\PackageIcon.png" />
   </ItemGroup>
 
