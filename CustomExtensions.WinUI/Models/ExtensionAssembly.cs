@@ -10,7 +10,7 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 {
 	public Assembly ForeignAssembly { get; }
 
-	private readonly ExtensionLoadContext? ExtensionContext;
+	// private readonly ExtensionLoadContext? ExtensionContext;
 	private readonly string ForeignAssemblyDir;
 	private readonly string ForeignAssemblyName;
 	private bool? IsHotReloadAvailable;
@@ -19,13 +19,15 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 
 	internal ExtensionAssembly(string assemblyPath)
 	{
-		// Note: For some reason WinUI gets very angry when loading via AssemblyLoadContext,
-		// even if using AssemblyLoadContext.Default which *should* have no difference than
-		// Assembly.LoadFrom(), but it does.
-		//
-		// ExtensionContext = new(assemblyPath);
-		// ForeignAssembly = ExtensionContext.LoadFromAssemblyPath(assemblyPath);
-		ForeignAssembly = Assembly.LoadFrom(assemblyPath);
+        // Note: For some reason WinUI gets very angry when loading via AssemblyLoadContext,
+        // even if using AssemblyLoadContext.Default which should have no difference than
+        // Assembly.LoadFrom(), but it does.
+        //
+        // ExtensionContext = new(assemblyPath);
+        // ForeignAssembly = ExtensionContext.LoadFromAssemblyPath(assemblyPath);
+        // So use Assembly.LoadFrom() instead.
+
+        ForeignAssembly = Assembly.LoadFrom(assemblyPath);
 		ForeignAssemblyDir = Path.GetDirectoryName(ForeignAssembly.Location.AssertDefined()).AssertDefined();
 		ForeignAssemblyName = ForeignAssembly.GetName().Name.AssertDefined();
 	}
@@ -139,7 +141,7 @@ internal partial class ExtensionAssembly : IExtensionAssembly
 			if (disposing)
 			{
 				Disposables?.Dispose();
-				ExtensionContext?.Unload();
+				// ExtensionContext?.Unload();
 			}
 
 			IsDisposed = true;

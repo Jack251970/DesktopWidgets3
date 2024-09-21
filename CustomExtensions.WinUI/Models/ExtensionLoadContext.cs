@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿/*using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -39,4 +39,4 @@ internal class ExtensionLoadContext(string assemblyPath) : AssemblyLoadContext(t
 
         return nint.Zero;
     }
-}
+}*/
