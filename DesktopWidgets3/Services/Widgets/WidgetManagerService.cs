@@ -21,8 +21,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private string _widgetId = string.Empty;
     private int _indexTag = -1;
 
-    private const int EditModeOverlayWindowXamlWidth = 136;
-    private const int EditModeOverlayWindowXamlHeight = 48;
     private OverlayWindow EditModeOverlayWindow = null!;
 
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
@@ -43,6 +41,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         if (EditModeOverlayWindow == null)
         {
             EditModeOverlayWindow = WindowsExtensions.CreateWindow<OverlayWindow>();
+            EditModeOverlayWindow.Initialize();
             await _activationService.ActivateWindowAsync(EditModeOverlayWindow);
             (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
         }
@@ -77,6 +76,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     #endregion
 
     #region single widget management
+
+    #region public
 
     public async Task<int> AddWidgetAsync(string widgetId, Action<string, int> action, bool updateDashboard)
     {
@@ -188,7 +189,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await _appSettingsService.DeleteWidgetAsync(widgetId, indexTag);
     }
 
-    #region private field
+    #endregion
+
+    #region private
 
     private void CreateWidgetWindow(JsonWidgetItem widget)
     {
@@ -272,6 +275,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
             // show window
             widgetWindow.Show(true);
+
+            // set edit mode
+            await widgetWindow.SetEditMode(false);
 
             // add to widget list & widget window list
             EnabledWidgets.Add(new WidgetWindowPair()
@@ -605,9 +611,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // get primary monitor info & show edit mode overlay window
         await EditModeOverlayWindow.EnqueueOrInvokeAsync((window) =>
         {
-            // set window size according to xaml, rember larger than 136 x 39
-            EditModeOverlayWindow.Size = new SizeInt32(EditModeOverlayWindowXamlWidth, EditModeOverlayWindowXamlHeight);
-
             // move to center top
             EditModeOverlayWindow.CenterTopOnMonitor();
 
@@ -616,7 +619,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         });
     }
 
-    public async void SaveAndExitEditMode()
+    public async Task SaveAndExitEditMode()
     {
         // restore edit mode for all widgets
         await EnabledWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false));
@@ -632,26 +635,22 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         // save widget list
-        await Task.Run(async () =>
+        List<JsonWidgetItem> widgetList = [];
+        foreach (var widgetWindow in EnabledWidgetWindows)
         {
-            List<JsonWidgetItem> widgetList = [];
-            foreach (var widgetWindow in EnabledWidgetWindows)
+            widgetList.Add(new JsonWidgetItem()
             {
-                widgetList.Add(new JsonWidgetItem()
-                {
-                    Name = _widgetResourceService.GetWidgetName(widgetWindow.Id),
-                    Id = widgetWindow.Id,
-                    IndexTag = widgetWindow.IndexTag,
-                    IsEnabled = true,
-                    Position = widgetWindow.Position,
-                    Size = widgetWindow.Size,
-                    DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
-                    Settings = null!,
-                });
-            }
-
-            await _appSettingsService.UpdateWidgetsListIgnoreSettingsAsync(widgetList);
-        });
+                Name = _widgetResourceService.GetWidgetName(widgetWindow.Id),
+                Id = widgetWindow.Id,
+                IndexTag = widgetWindow.IndexTag,
+                IsEnabled = true,
+                Position = widgetWindow.Position,
+                Size = widgetWindow.Size,
+                DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
+                Settings = null!,
+            });
+        }
+        await _appSettingsService.UpdateWidgetsListIgnoreSettingsAsync(widgetList);
     }
 
     public async void CancelAndExitEditMode()

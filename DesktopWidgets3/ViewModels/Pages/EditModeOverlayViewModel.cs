@@ -9,9 +9,9 @@ public partial class EditModeOverlayViewModel(INavigationService navigationServi
     private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
 
     [RelayCommand]
-    private void SaveAndExitEditMode()
+    private async Task SaveAndExitEditMode()
     {
-        _widgetManagerService.SaveAndExitEditMode();
+        await _widgetManagerService.SaveAndExitEditMode();
     }
 
     [RelayCommand]

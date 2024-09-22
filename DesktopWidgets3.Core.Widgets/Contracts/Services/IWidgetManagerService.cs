@@ -20,13 +20,13 @@ public interface IWidgetManagerService
 
     void NavigateToWidgetSettingPage(string widgetId, int indexTag);
 
-    void EnterEditMode();
-
-    void SaveAndExitEditMode();
-
-    void CancelAndExitEditMode();
-
     BaseWidgetSettings? GetWidgetSettings(string widgetId, int indexTag);
 
     Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
+
+    void EnterEditMode();
+
+    Task SaveAndExitEditMode();
+
+    void CancelAndExitEditMode();
 }

@@ -21,17 +21,18 @@ public sealed partial class OverlayWindow : WindowEx
 
     #endregion
 
+    private const int EditModeOverlayWindowXamlWidth = 136;  // 40 * 3 + 4 * 2 * 2
+    private const int EditModeOverlayWindowXamlHeight = 48;  // 40 + 4 * 2
+
     public OverlayWindow()
     {
         InitializeComponent();
 
         Content = new Frame();
         Title = string.Empty;
-
-        Initialize();
     }
 
-    private void Initialize()
+    public void Initialize()
     {
         // Hide title bar, set window unresizable
         IsTitleBarVisible = IsMaximizable = IsMaximizable = IsResizable = false;
@@ -41,6 +42,9 @@ public sealed partial class OverlayWindow : WindowEx
 
         // Hide window icon from taskbar
         SystemHelper.HideWindowIconFromTaskbar(this.GetWindowHandle());
+
+        // set window size according to xaml, rember larger than 136 x 39
+        Size = new SizeInt32(EditModeOverlayWindowXamlWidth, EditModeOverlayWindowXamlHeight);
     }
 
     public void CenterTopOnMonitor()
