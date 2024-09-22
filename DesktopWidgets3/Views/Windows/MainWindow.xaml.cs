@@ -68,7 +68,7 @@ public sealed partial class MainWindow : WindowEx
 
         Closed += WindowEx_Closed;
     }
-
+    
     public void CenterOnRectWork()
     {
         var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
@@ -110,6 +110,8 @@ public sealed partial class MainWindow : WindowEx
 
     #endregion
 
+    #region Events
+
     // This handles updating the caption button colors correctly when windows system theme is changed while the app is open
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
@@ -122,7 +124,7 @@ public sealed partial class MainWindow : WindowEx
     {
         if (App.CanCloseWindow)
         {
-            await DependencyExtensions.GetRequiredService<IWidgetManagerService>().DisableAllWidgetsAsync();
+            await DependencyExtensions.GetRequiredService<IWidgetManagerService>().CloseAllWidgetsAsync();
             await WindowsExtensions.CloseAllWindowsAsync();
             await DependencyExtensions.GetRequiredService<IWidgetResourceService>().DisposeWidgetsAsync();
             WidgetsLoader.DisposeExtensionAssemblies();
@@ -136,4 +138,6 @@ public sealed partial class MainWindow : WindowEx
             Visible = false;
         }
     }
+
+    #endregion
 }
