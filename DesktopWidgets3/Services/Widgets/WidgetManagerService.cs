@@ -347,6 +347,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #endregion
 
+    #endregion
+
     #region widget view model
 
     public BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow)
@@ -406,8 +408,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             }
         }
     }
-
-    #endregion
 
     #endregion
 
