@@ -137,6 +137,17 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         return WidgetList;
     }
 
+    public JsonWidgetItem? GetWidget(string widgetId, int indexTag)
+    {
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+        if (index != -1)
+        {
+            return WidgetList[index];
+        }
+
+        return null;
+    }
+
     public async Task AddWidgetAsync(JsonWidgetItem widgetItem)
     {
         var index = WidgetList.FindIndex(x => x.Id == widgetItem.Id && x.IndexTag == widgetItem.IndexTag);
@@ -159,7 +170,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task<JsonWidgetItem> EnableWidgetAsync(string widgetId, int indexTag)
+    public async Task EnableWidgetAsync(string widgetId, int indexTag)
     {
         var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
         if (index != -1 && WidgetList[index].IsEnabled == false)
@@ -168,8 +179,6 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
             await SaveWidgetListAsync();
         }
-
-        return WidgetList[index];
     }
 
     public async Task DisableWidgetAsync(string widgetId, int indexTag)

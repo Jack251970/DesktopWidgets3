@@ -73,7 +73,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // invoke action
         action(widgetId, indexTag);
 
-        // save widget item
+        // create widget item
         var widget = new JsonWidgetItem()
         {
             Name = _widgetResourceService.GetWidgetName(widgetId),
@@ -85,7 +85,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
             Settings = _widgetResourceService.GetDefaultSetting(widgetId),
         };
-        await _appSettingsService.AddWidgetAsync(widget);
 
         // create widget window
         CreateWidgetWindow(widget);
@@ -101,36 +100,47 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             });
         }
 
+        // save widget item
+        await _appSettingsService.AddWidgetAsync(widget);
+
         return indexTag;
     }
 
     public async Task EnableWidgetAsync(string widgetId, int indexTag)
     {
-        // update widget list
-        var widget = await _appSettingsService.EnableWidgetAsync(widgetId, indexTag);
+        // get widget
+        var widget = _appSettingsService.GetWidget(widgetId, indexTag);
 
-        // create widget window
-        CreateWidgetWindow(widget);
+        if (widget != null)
+        {
+            // create widget window
+            CreateWidgetWindow(widget);
+
+            // update widget list
+            await _appSettingsService.EnableWidgetAsync(widgetId, indexTag);
+        }
+        else
+        {
+            // add widget
+            await AddWidgetAsync(widgetId, (id, tag) => { }, false);
+        }
     }
 
     public async Task DisableWidgetAsync(string widgetId, int indexTag)
     {
-        // update widget list
-        await _appSettingsService.DisableWidgetAsync(widgetId, indexTag);
-
         // close widget window
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
         if (widgetWindow != null)
         {
            await CloseWidgetWindow(widgetWindow);
         }
+
+        // update widget list
+        await _appSettingsService.DisableWidgetAsync(widgetId, indexTag);
     }
 
     public async Task DeleteWidgetAsync(string widgetId, int indexTag, bool refresh)
     {
-        // update widget list
-        await _appSettingsService.DeleteWidgetAsync(widgetId, indexTag);
-
         // close widget window
         var widgetWindow = GetWidgetWindow(widgetId, indexTag);
         if (widgetWindow != null)
@@ -148,6 +158,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 IndexTag = indexTag
             });
         }
+
+        // update widget list
+        await _appSettingsService.DeleteWidgetAsync(widgetId, indexTag);
     }
 
     public async Task DisableAllWidgetsAsync()

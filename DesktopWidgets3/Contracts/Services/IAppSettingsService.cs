@@ -22,11 +22,13 @@ public interface IAppSettingsService
 
     List<JsonWidgetItem> GetWidgetsList();
 
+    JsonWidgetItem? GetWidget(string widgetId, int indexTag);
+
     Task AddWidgetAsync(JsonWidgetItem item);
 
     Task DeleteWidgetAsync(string widgetId, int indexTag);
 
-    Task<JsonWidgetItem> EnableWidgetAsync(string widgetId, int indexTag);
+    Task EnableWidgetAsync(string widgetId, int indexTag);
 
     Task DisableWidgetAsync(string widgetId, int indexTag);
 

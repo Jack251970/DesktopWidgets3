@@ -10,7 +10,7 @@ public class LocalSettingsService : ILocalSettingsService
 {
     private readonly IFileService _fileService;
 
-    private readonly string _localSettingsDataPath;
+    private readonly string _localSettingsPath;
 
     private readonly string _localsettingsFile;
 
@@ -24,11 +24,11 @@ public class LocalSettingsService : ILocalSettingsService
 
         _localsettingsFile = Constant.SettingsFile;
 
-        _localSettingsDataPath = Path.Combine(LocalSettingsHelper.ApplicationDataPath, Constant.LocalSettingsFolder);
+        _localSettingsPath = Path.Combine(LocalSettingsHelper.ApplicationDataPath, Constant.LocalSettingsFolder);
 
-        if (!Directory.Exists(_localSettingsDataPath))
+        if (!Directory.Exists(_localSettingsPath))
         {
-            Directory.CreateDirectory(_localSettingsDataPath);
+            Directory.CreateDirectory(_localSettingsPath);
         }
     }
 
@@ -85,7 +85,7 @@ public class LocalSettingsService : ILocalSettingsService
 
             _settings![key] = stringValue;
 
-            await _fileService.SaveAsync(_localSettingsDataPath, _localsettingsFile, _settings, true);
+            await _fileService.SaveAsync(_localSettingsPath, _localsettingsFile, _settings, true);
         }
     }
 
@@ -93,7 +93,7 @@ public class LocalSettingsService : ILocalSettingsService
     {
         if (!_isInitialized)
         {
-            _settings = await _fileService.ReadAsync<Dictionary<string, object>>(_localSettingsDataPath, _localsettingsFile) ?? [];
+            _settings = await _fileService.ReadAsync<Dictionary<string, object>>(_localSettingsPath, _localsettingsFile) ?? [];
 
             _isInitialized = true;
         }
@@ -105,12 +105,12 @@ public class LocalSettingsService : ILocalSettingsService
 
     public async Task<T?> ReadJsonFileAsync<T>(string fileName, JsonSerializerSettings? jsonSerializerSettings = null)
     {
-        return await _fileService.ReadAsync<T>(_localSettingsDataPath, fileName, jsonSerializerSettings) ?? default;
+        return await _fileService.ReadAsync<T>(_localSettingsPath, fileName, jsonSerializerSettings) ?? default;
     }
 
     public async Task SaveJsonFileAsync<T>(string fileName, T value)
     {
-        await _fileService.SaveAsync(_localSettingsDataPath, fileName, value, true);
+        await _fileService.SaveAsync(_localSettingsPath, fileName, value, true);
     }
 
     #endregion
