@@ -297,4 +297,10 @@
   <data name="EditModeOverlayPage_CancelButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Cancel changes and exit</value>
   </data>
+  <data name="MenuFlyoutItem_RestartWidget.Text" xml:space="preserve">
+    <value>Restart this widget</value>
+  </data>
+  <data name="MenuFlyoutItem_RestartWidgets.Text" xml:space="preserve">
+    <value>Restart all widgets</value>
+  </data>
 </root>

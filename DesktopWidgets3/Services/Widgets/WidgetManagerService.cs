@@ -52,6 +52,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // close all widgets
         await CloseAllWidgetsAsync();
 
+        // clear lists
+        EnabledWidgets.Clear();
+        EnabledWidgetWindows.Clear();
+
         // enable all enabled widgets
         EnableAllEnabledWidgets();
     }
@@ -155,11 +159,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async Task DisableWidgetAsync(string widgetId, int indexTag)
     {
         // close widget window
-        var widgetWindow = GetWidgetWindow(widgetId, indexTag);
-        if (widgetWindow != null)
-        {
-           await CloseWidgetWindow(widgetWindow);
-        }
+        await CloseWidgetWindow(widgetId, indexTag);
 
         // update widget list
         await _appSettingsService.DisableWidgetAsync(widgetId, indexTag);
@@ -168,11 +168,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async Task DeleteWidgetAsync(string widgetId, int indexTag, bool refresh)
     {
         // close widget window
-        var widgetWindow = GetWidgetWindow(widgetId, indexTag);
-        if (widgetWindow != null)
-        {
-            await CloseWidgetWindow(widgetWindow);
-        }
+        await CloseWidgetWindow(widgetId, indexTag);
 
         // refresh dashboard page
         if (refresh)
@@ -318,18 +314,19 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #endregion
 
-    private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
+    private async Task CloseWidgetWindow(string widgetId, int indexTag)
     {
-        // get widget id & index tag
-        var widgetId = widgetWindow.Id;
-        var indexTag = widgetWindow.IndexTag;
+        // close widget window
+        var widgetWindow = GetWidgetWindow(widgetId, indexTag);
+        if (widgetWindow != null)
+        {
+            // close window
+            await WindowsExtensions.CloseWindowAsync(widgetWindow);
 
-        // remove from widget list & widget window list
-        EnabledWidgets.RemoveAll(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
-        EnabledWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
-
-        // close window
-        await WindowsExtensions.CloseWindowAsync(widgetWindow);
+            // remove from widget list & widget window list
+            EnabledWidgets.RemoveAll(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+            EnabledWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
+        }
     }
 
     private WidgetWindow? GetWidgetWindow(string widgetId, int indexTag)
@@ -433,19 +430,26 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private MenuFlyout GetWidgetMenu()
     {
         var menuFlyout = new MenuFlyout();
-        var disableMenuItem = new MenuFlyoutItem
+        var disableWidgetMenuItem = new MenuFlyoutItem
         {
             Text = "MenuFlyoutItem_DisableWidget.Text".GetLocalized()
         };
-        disableMenuItem.Click += (s, e) => DisableWidget();
-        menuFlyout.Items.Add(disableMenuItem);
+        disableWidgetMenuItem.Click += (s, e) => DisableWidget();
+        menuFlyout.Items.Add(disableWidgetMenuItem);
 
-        var deleteMenuItem = new MenuFlyoutItem
+        var deleteWidgetMenuItem = new MenuFlyoutItem
         {
             Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalized()
         };
-        deleteMenuItem.Click += (s, e) => DeleteWidget();
-        menuFlyout.Items.Add(deleteMenuItem);
+        deleteWidgetMenuItem.Click += (s, e) => DeleteWidget();
+        menuFlyout.Items.Add(deleteWidgetMenuItem);
+
+        var restartWidgetMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_RestartWidget.Text".GetLocalized()
+        };
+        restartWidgetMenuItem.Click += (s, e) => RestartWidget();
+        menuFlyout.Items.Add(restartWidgetMenuItem);
 
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
 
@@ -455,6 +459,15 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         };
         enterMenuItem.Click += (s, e) => EnterEditMode();
         menuFlyout.Items.Add(enterMenuItem);
+
+        menuFlyout.Items.Add(new MenuFlyoutSeparator());
+
+        var restartWidgetsMenuItem = new MenuFlyoutItem
+        {
+            Text = "MenuFlyoutItem_RestartWidgets.Text".GetLocalized()
+        };
+        restartWidgetsMenuItem.Click += async (s, e) => await RestartWidgetsAsync();
+        menuFlyout.Items.Add(restartWidgetsMenuItem);
 
         return menuFlyout;
     }
@@ -494,6 +507,20 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         if (await widgetWindow!.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
         {
             await DeleteWidgetAsync(widgetId, indexTag, true);
+        }
+    }
+
+    private async void RestartWidget()
+    {
+        var widgetId = _widgetId;
+        var indexTag = _indexTag;
+        await CloseWidgetWindow(widgetId, indexTag);
+
+        var widgetList = _appSettingsService.GetWidgetsList();
+        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
+        if (widget != null)
+        {
+            CreateWidgetWindow(widget);
         }
     }
 

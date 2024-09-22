@@ -297,4 +297,10 @@
   <data name="EditModeOverlayPage_CancelButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>取消更改并退出</value>
   </data>
+  <data name="MenuFlyoutItem_RestartWidget.Text" xml:space="preserve">
+    <value>重启该组件</value>
+  </data>
+  <data name="MenuFlyoutItem_RestartWidgets.Text" xml:space="preserve">
+    <value>重启所有组件</value>
+  </data>
 </root>
