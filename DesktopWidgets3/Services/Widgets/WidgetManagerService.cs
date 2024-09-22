@@ -653,7 +653,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await _appSettingsService.UpdateWidgetsListIgnoreSettingsAsync(widgetList);
     }
 
-    public async void CancelAndExitEditMode()
+    public async void CancelChangesAndExitEditMode()
     {
         // restore position, size, edit mode for all widgets
         await EnabledWidgetWindows.EnqueueOrInvokeAsync(async (window) =>

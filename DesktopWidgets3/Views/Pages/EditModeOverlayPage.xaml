@@ -16,6 +16,7 @@
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
         <Button
+            x:Uid="EditModeOverlayPage_SaveButton"
             Grid.Column="0"
             Width="40"
             Height="40"
@@ -30,6 +31,7 @@
             <FontIcon FontSize="14" Glyph="&#xE74E;" />
         </Button>
         <Button
+            x:Uid="EditModeOverlayPage_SettingsButton"
             Grid.Column="1"
             Width="40"
             Height="40"
@@ -44,6 +46,7 @@
             <FontIcon FontSize="14" Glyph="&#xE713;" />
         </Button>
         <Button
+            x:Uid="EditModeOverlayPage_CancelButton"
             Grid.Column="2"
             Width="40"
             Height="40"
@@ -54,7 +57,7 @@
             VerticalContentAlignment="Center"
             Background="Transparent"
             BorderThickness="0"
-            Command="{x:Bind ViewModel.CancelAndExitEditModeCommand}">
+            Command="{x:Bind ViewModel.CancelChangesAndExitEditModeCommand}">
             <FontIcon FontSize="14" Glyph="&#xE711;" />
         </Button>
     </Grid>

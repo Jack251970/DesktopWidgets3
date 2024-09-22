@@ -22,8 +22,8 @@ public partial class EditModeOverlayViewModel(INavigationService navigationServi
     }
 
     [RelayCommand]
-    private void CancelAndExitEditMode()
+    private void CancelChangesAndExitEditMode()
     {
-        _widgetManagerService.CancelAndExitEditMode();
+        _widgetManagerService.CancelChangesAndExitEditMode();
     }
 }

@@ -288,4 +288,13 @@
   <data name="Shell_Settings.Content" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="EditModeOverlayPage_SaveButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Save and exit</value>
+  </data>
+  <data name="EditModeOverlayPage_SettingsButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="EditModeOverlayPage_CancelButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Cancel changes and exit</value>
+  </data>
 </root>

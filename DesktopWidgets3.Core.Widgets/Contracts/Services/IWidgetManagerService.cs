@@ -28,5 +28,5 @@ public interface IWidgetManagerService
 
     Task SaveAndExitEditMode();
 
-    void CancelAndExitEditMode();
+    void CancelChangesAndExitEditMode();
 }
