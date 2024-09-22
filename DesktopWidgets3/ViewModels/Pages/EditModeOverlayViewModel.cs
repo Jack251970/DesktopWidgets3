@@ -1,37 +1,27 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class EditModeOverlayViewModel : ObservableRecipient
+public partial class EditModeOverlayViewModel(INavigationService navigationService, IWidgetManagerService widgetManagerService) : ObservableRecipient
 {
-    public ClickCommand SaveCommand { get; }
-    public ClickCommand SettingCommand { get; }
-    public ClickCommand CancelCommand { get; }
+    private readonly INavigationService _navigationService = navigationService;
+    private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
 
-    private readonly INavigationService _navigationService;
-    private readonly IWidgetManagerService _widgetManagerService;
-
-    public EditModeOverlayViewModel(INavigationService navigationService, IWidgetManagerService widgetManagerService)
-    {
-        _navigationService = navigationService;
-        _widgetManagerService = widgetManagerService;
-
-        SaveCommand = new ClickCommand(SaveAndExitEditMode);
-        SettingCommand = new ClickCommand(NavigateSettingsPage);
-        CancelCommand = new ClickCommand(CancelAndExitEditMode);
-    }
-
+    [RelayCommand]
     private void SaveAndExitEditMode()
     {
         _widgetManagerService.SaveAndExitEditMode();
     }
 
+    [RelayCommand]
     private void NavigateSettingsPage()
     {
         _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
         App.ShowMainWindow(true);
     }
 
+    [RelayCommand]
     private void CancelAndExitEditMode()
     {
         _widgetManagerService.CancelAndExitEditMode();

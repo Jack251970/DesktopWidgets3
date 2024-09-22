@@ -33,6 +33,6 @@ public sealed partial class TrayMenuControl : UserControl
             
         }
         App.CanCloseWindow = true;
-        await WindowsExtensions.CloseWindow(App.MainWindow);
+        await WindowsExtensions.CloseWindowAsync(App.MainWindow);
     }
 }

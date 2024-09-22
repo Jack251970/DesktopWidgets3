@@ -152,7 +152,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public async Task DisableAllWidgetsAsync()
     {
-        await EnabledWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindow);
+        await EnabledWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync);
     }
 
     public bool IsWidgetEnabled(string widgetId, int indexTag)
@@ -332,7 +332,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         EnabledWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
 
         // close window
-        await WindowsExtensions.CloseWindow(widgetWindow);
+        await WindowsExtensions.CloseWindowAsync(widgetWindow);
     }
 
     private WidgetWindow? GetWidgetWindow(string widgetId, int indexTag)
@@ -552,7 +552,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // hide main window if visible
         if (App.MainWindow.Visible)
         {
-            await App.MainWindow.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindow);
+            await App.MainWindow.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync);
             _restoreMainWindow = true;
         }
 

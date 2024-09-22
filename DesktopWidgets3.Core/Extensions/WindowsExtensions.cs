@@ -114,7 +114,7 @@ public static class WindowsExtensions
         return window;
     }
 
-    public static async Task CloseWindow(Window window)
+    public static async Task CloseWindowAsync(Window window)
     {
         if (window == null)
         {
@@ -146,11 +146,11 @@ public static class WindowsExtensions
         }
     }
 
-    public static async Task CloseAllWindows()
+    public static async Task CloseAllWindowsAsync()
     {
         foreach (var window in WindowsAndLifecycle.Keys)
         {
-            await CloseWindow(window);
+            await CloseWindowAsync(window);
         }
     }
 

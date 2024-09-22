@@ -123,7 +123,7 @@ public sealed partial class MainWindow : WindowEx
         if (App.CanCloseWindow)
         {
             await DependencyExtensions.GetRequiredService<IWidgetManagerService>().DisableAllWidgetsAsync();
-            await WindowsExtensions.CloseAllWindows();
+            await WindowsExtensions.CloseAllWindowsAsync();
             await DependencyExtensions.GetRequiredService<IWidgetResourceService>().DisposeWidgetsAsync();
             WidgetsLoader.DisposeExtensionAssemblies();
             LogExtensions.LogInformation(ClassName, "Exit current application.");
