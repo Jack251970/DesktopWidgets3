@@ -30,19 +30,14 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region widget window
 
+    #region all widgets management
+
     public async Task InitializeAsync()
     {
         await _widgetResourceService.InitalizeAsync();
 
         // enable all enabled widgets
-        var widgetList = _appSettingsService.GetWidgetsList();
-        foreach (var widget in widgetList)
-        {
-            if (widget.IsEnabled)
-            {
-                CreateWidgetWindow(widget);
-            }
-        }
+        EnableAllEnabledWidgets();
 
         // initialize edit mode overlay window
         if (EditModeOverlayWindow == null)
@@ -52,6 +47,36 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
         }
     }
+
+    public async Task RestartWidgetsAsync()
+    {
+        // close all widgets
+        await CloseAllWidgetsAsync();
+
+        // enable all enabled widgets
+        EnableAllEnabledWidgets();
+    }
+
+    public async Task CloseAllWidgetsAsync()
+    {
+        await EnabledWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync);
+    }
+
+    private void EnableAllEnabledWidgets()
+    {
+        var widgetList = _appSettingsService.GetWidgetsList();
+        foreach (var widget in widgetList)
+        {
+            if (widget.IsEnabled)
+            {
+                CreateWidgetWindow(widget);
+            }
+        }
+    }
+
+    #endregion
+
+    #region single widget management
 
     public async Task<int> AddWidgetAsync(string widgetId, Action<string, int> action, bool updateDashboard)
     {
@@ -163,58 +188,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await _appSettingsService.DeleteWidgetAsync(widgetId, indexTag);
     }
 
-    public async Task DisableAllWidgetsAsync()
-    {
-        await EnabledWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync);
-    }
-
-    public bool IsWidgetEnabled(string widgetId, int indexTag)
-    {
-        return GetWidgetWindow(widgetId, indexTag) != null;
-    }
-
-    public BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow)
-    {
-        return GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
-    }
-
-    public void NavigateToWidgetSettingPage(string widgetId, int indexTag)
-    {
-        // navigate to widget setting page
-        _navigationService.NavigateTo(typeof(WidgetSettingViewModel).FullName!);
-
-        // set widget setting framework element
-        var frameworkElement = _widgetResourceService.GetWidgetSettingFrameworkElement(widgetId);
-        var widgetSettingPage = _navigationService.Frame?.Content as WidgetSettingPage;
-        if (widgetSettingPage != null)
-        {
-            widgetSettingPage.ViewModel.WidgetFrameworkElement = frameworkElement;
-            var widgetName = _widgetResourceService.GetWidgetName(widgetId);
-            NavigationViewHeaderBehavior.SetHeaderLocalize(widgetSettingPage, false);
-            NavigationViewHeaderBehavior.SetHeaderContext(widgetSettingPage, widgetName);
-        }
-
-        // set widget properties
-        WidgetProperties.SetId(frameworkElement, widgetId);
-        WidgetProperties.SetIndexTag(frameworkElement, indexTag);
-
-        // initialize widget settings
-        if (frameworkElement is ISettingViewModel element)
-        {
-            var viewModel = element.ViewModel;
-            var widgetSetting = GetWidgetSettings(widgetId, indexTag);
-            if (widgetSetting != null)
-            {
-                viewModel.InitializeSettings(new WidgetViewModelNavigationParameter()
-                {
-                    Id = widgetId,
-                    IndexTag = indexTag,
-                    DispatcherQueue = App.MainWindow.DispatcherQueue,
-                    Settings = widgetSetting
-                });
-            }
-        }
-    }
+    #region private field
 
     private void CreateWidgetWindow(JsonWidgetItem widget)
     {
@@ -231,6 +205,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         // create widget window
         var widgetWindow = WindowsExtensions.CreateWindow<WidgetWindow>(newThread, lifecycleActions);
     }
+
+    #region widget window lifecycle
 
     private async void WidgetWindow_Creating(JsonWidgetItem widgetItem)
     {
@@ -334,6 +310,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await _widgetResourceService.DisableWidgetAsync(widgetId, lastWidget);
     }
 
+    #endregion
+
     private async Task CloseWidgetWindow(WidgetWindow widgetWindow)
     {
         // get widget id & index tag
@@ -359,6 +337,17 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         return null;
     }
 
+    #endregion
+
+    #endregion
+
+    #region widget view model
+
+    public BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow)
+    {
+        return GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
+    }
+
     private BaseWidgetViewModel? GetWidgetViewModel(string widgetId, int indexTag)
     {
         var index = EnabledWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
@@ -370,16 +359,49 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         return null;
     }
 
-    private MenuFlyout? GetWidgetMenu(string widgetId, int indexTag)
+    #endregion
+
+    #region widget setting page
+
+    public void NavigateToWidgetSettingPage(string widgetId, int indexTag)
     {
-        var index = EnabledWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
-        if (index != -1)
+        // navigate to widget setting page
+        _navigationService.NavigateTo(typeof(WidgetSettingViewModel).FullName!);
+
+        // set widget setting framework element
+        var frameworkElement = _widgetResourceService.GetWidgetSettingFrameworkElement(widgetId);
+        var widgetSettingPage = _navigationService.Frame?.Content as WidgetSettingPage;
+        if (widgetSettingPage != null)
         {
-            return EnabledWidgets[index].Menu;
+            widgetSettingPage.ViewModel.WidgetFrameworkElement = frameworkElement;
+            var widgetName = _widgetResourceService.GetWidgetName(widgetId);
+            NavigationViewHeaderBehavior.SetHeaderLocalize(widgetSettingPage, false);
+            NavigationViewHeaderBehavior.SetHeaderContext(widgetSettingPage, widgetName);
         }
 
-        return null;
+        // set widget properties
+        WidgetProperties.SetId(frameworkElement, widgetId);
+        WidgetProperties.SetIndexTag(frameworkElement, indexTag);
+
+        // initialize widget settings
+        if (frameworkElement is ISettingViewModel element)
+        {
+            var viewModel = element.ViewModel;
+            var widgetSetting = GetWidgetSettings(widgetId, indexTag);
+            if (widgetSetting != null)
+            {
+                viewModel.InitializeSettings(new WidgetViewModelNavigationParameter()
+                {
+                    Id = widgetId,
+                    IndexTag = indexTag,
+                    DispatcherQueue = App.MainWindow.DispatcherQueue,
+                    Settings = widgetSetting
+                });
+            }
+        }
     }
+
+    #endregion
 
     #endregion
 
@@ -484,6 +506,17 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 _navigationService.SetNextParameter(dashboardPageKey, parameter);
             }
         });
+    }
+
+    private MenuFlyout? GetWidgetMenu(string widgetId, int indexTag)
+    {
+        var index = EnabledWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+        if (index != -1)
+        {
+            return EnabledWidgets[index].Menu;
+        }
+
+        return null;
     }
 
     #endregion

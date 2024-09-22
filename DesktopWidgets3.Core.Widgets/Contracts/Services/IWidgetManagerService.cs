@@ -4,6 +4,10 @@ public interface IWidgetManagerService
 {
     Task InitializeAsync();
 
+    Task RestartWidgetsAsync();
+
+    Task CloseAllWidgetsAsync();
+
     Task<int> AddWidgetAsync(string widgetId, Action<string, int> action, bool updateDashboard);
 
     Task EnableWidgetAsync(string widgetId, int indexTag);
@@ -11,10 +15,6 @@ public interface IWidgetManagerService
     Task DisableWidgetAsync(string widgetId, int indexTag);
 
     Task DeleteWidgetAsync(string widgetId, int indexTag, bool refresh);
-
-    Task DisableAllWidgetsAsync();
-
-    bool IsWidgetEnabled(string widgetId, int indexTag);
 
     BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow);
 
