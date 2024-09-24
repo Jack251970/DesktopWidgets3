@@ -24,6 +24,9 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     private bool _multiThread;
 
     [ObservableProperty]
+    private string _appDisplayName = ConstantHelper.AppAppDisplayName;
+
+    [ObservableProperty]
     private string _version = $"v{InfoHelper.GetVersion()}";
 
     [ObservableProperty]

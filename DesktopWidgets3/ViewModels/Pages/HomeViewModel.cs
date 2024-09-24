@@ -5,13 +5,10 @@ namespace DesktopWidgets3.ViewModels.Pages;
 public partial class HomeViewModel : ObservableRecipient
 {
     [ObservableProperty]
-    private string _appDisplayName;
+    private string _appDisplayName = ConstantHelper.AppAppDisplayName;
 
     public HomeViewModel()
     {
-        AppDisplayName = "AppDisplayName".GetLocalized();
-#if DEBUG
-        AppDisplayName += " (Debug)";
-#endif
+
     }
 }

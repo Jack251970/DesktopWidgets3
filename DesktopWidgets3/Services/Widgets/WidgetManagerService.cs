@@ -21,31 +21,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private string _widgetId = string.Empty;
     private int _indexTag = -1;
 
-    private OverlayWindow EditModeOverlayWindow = null!;
-
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
     private bool _restoreMainWindow = false;
 
     #region widget window
 
     #region all widgets management
-
-    public async Task InitializeAsync()
-    {
-        await _widgetResourceService.InitalizeAsync();
-
-        // enable all enabled widgets
-        EnableAllEnabledWidgets();
-
-        // initialize edit mode overlay window
-        if (EditModeOverlayWindow == null)
-        {
-            EditModeOverlayWindow = WindowsExtensions.CreateWindow<OverlayWindow>();
-            EditModeOverlayWindow.Initialize();
-            await _activationService.ActivateWindowAsync(EditModeOverlayWindow);
-            (EditModeOverlayWindow.Content as Frame)?.Navigate(typeof(EditModeOverlayPage));
-        }
-    }
 
     public async Task RestartWidgetsAsync()
     {
@@ -65,7 +46,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await EnabledWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync);
     }
 
-    private void EnableAllEnabledWidgets()
+    public void EnableAllEnabledWidgets()
     {
         var widgetList = _appSettingsService.GetWidgetsList();
         foreach (var widget in widgetList)
@@ -636,13 +617,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         // get primary monitor info & show edit mode overlay window
-        await EditModeOverlayWindow.EnqueueOrInvokeAsync((window) =>
+        await App.EditModeWindow.EnqueueOrInvokeAsync((window) =>
         {
             // move to center top
-            EditModeOverlayWindow.CenterTopOnMonitor();
+            App.EditModeWindow.CenterTopOnMonitor();
 
             // show edit mode overlay window
-            EditModeOverlayWindow.Show(true);
+            App.EditModeWindow.Show(true);
         });
     }
 
@@ -652,7 +633,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await EnabledWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false));
 
         // hide edit mode overlay window
-        EditModeOverlayWindow?.Hide(true);
+        App.EditModeWindow?.Hide(true);
 
         // restore main window if needed
         if (_restoreMainWindow)
@@ -701,7 +682,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         });
 
         // hide edit mode overlay window
-        EditModeOverlayWindow?.Hide(true);
+        App.EditModeWindow?.Hide(true);
 
         // restore main window if needed
         if (_restoreMainWindow)

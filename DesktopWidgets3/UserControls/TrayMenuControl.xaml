@@ -3,18 +3,21 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:DesktopWidgets3.UserControls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tb="using:H.NotifyIcon"
+    d:DataContext="{d:DesignInstance Type=local:TrayMenuControl}"
     mc:Ignorable="d">
 
     <tb:TaskbarIcon
         x:Name="TrayIconControl"
-        x:Uid="TrayMenu_TaskBarIcon"
         ContextMenuMode="SecondWindow"
         DoubleClickCommand="{x:Bind ShowWindowCommand}"
         IconSource="ms-appx:///Assets/Icon.ico"
         MenuActivation="RightClick"
-        NoLeftClickDelay="True">
+        NoLeftClickDelay="True"
+        ToolTipService.ToolTip="{x:Bind AppDisplayName, Mode=OneTime}"
+        ToolTipText="{x:Bind AppDisplayName, Mode=OneTime}">
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout AreOpenCloseAnimationsEnabled="False">
                 <MenuFlyoutItem x:Uid="TrayMenu_MenuFlyoutItem_ShowWindow" Command="{x:Bind ShowWindowCommand}" />

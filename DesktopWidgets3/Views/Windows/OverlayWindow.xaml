@@ -5,10 +5,46 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:windowex="using:WinUIEx"
+    Width="136"
+    Height="48"
     PersistenceId="OverlayWindow"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
-</windowex:WindowEx>
 
+    <Grid
+        x:Name="ContentArea"
+        Margin="8"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+        <Button
+            x:Uid="EditModeOverlayPage_SaveButton"
+            Grid.Column="0"
+            Margin="0,0,8,0"
+            Command="{x:Bind SaveAndExitEditModeCommand}"
+            Style="{StaticResource FontIconButton}">
+            <FontIcon Glyph="&#xE74E;" Style="{StaticResource ButtonFontIcon}" />
+        </Button>
+        <Button
+            x:Uid="EditModeOverlayPage_SettingsButton"
+            Grid.Column="1"
+            Margin="0,0,8,0"
+            Command="{x:Bind NavigateSettingsPageCommand}"
+            Style="{StaticResource FontIconButton}">
+            <FontIcon Glyph="&#xE713;" Style="{StaticResource ButtonFontIcon}" />
+        </Button>
+        <Button
+            x:Uid="EditModeOverlayPage_CancelButton"
+            Grid.Column="2"
+            Command="{x:Bind CancelChangesAndExitEditModeCommand}"
+            Style="{StaticResource FontIconButton}">
+            <FontIcon Glyph="&#xE711;" Style="{StaticResource ButtonFontIcon}" />
+        </Button>
+    </Grid>
+</windowex:WindowEx>

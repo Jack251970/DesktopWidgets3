@@ -51,22 +51,22 @@ public partial class App : Application
 
     #endregion
 
+    #region Edit Mode Window
+
+    public static OverlayWindow EditModeWindow { get; set; } = null!;
+
+    #endregion
+
     public App()
     {
         // Check if app is already running
-#if DEBUG
-        if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), false))
-        {
-            // Do nothing here to let the debug app run
-        }
-#else
-        if (SystemHelper.IsWindowExist(null, "AppDisplayName".GetLocalized(), true))
+        if (SystemHelper.IsWindowExist(null, ConstantHelper.AppAppDisplayName, true))
         {
             IsExistWindow = true;
             Current.Exit();
             return;
         }
-#endif
+
         // Initialize the component
         InitializeComponent();
 
@@ -166,7 +166,7 @@ public partial class App : Application
 
                 #region Views & ViewModels
 
-                // MainwWindow Pages
+                // Main Window Pages
                 services.AddTransient<NavShellPage>();
                 services.AddTransient<NavShellViewModel>();
                 services.AddTransient<HomeViewModel>();
@@ -183,10 +183,6 @@ public partial class App : Application
                 // Widgets Window Pages
                 services.AddTransient<WidgetPage>();
                 services.AddTransient<WidgetViewModel>();
-
-                // Overlay Window Pages
-                services.AddTransient<EditModeOverlayPage>();
-                services.AddTransient<EditModeOverlayViewModel>();
 
                 #endregion
 
@@ -217,14 +213,25 @@ public partial class App : Application
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        base.OnLaunched(args);
-
-        if (!IsExistWindow && MainWindow is null)
+        if (IsExistWindow)
         {
-            MainWindow = new MainWindow();
-            await GetService<IActivationService>().ActivateMainWindowAsync(args);
-            LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
+            return;
         }
+
+        base.OnLaunched(args);
+        LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
+
+        // Create main window
+        MainWindow ??= new MainWindow();
+        await GetService<IActivationService>().ActivateMainWindowAsync(args);
+        
+        // Create edit mode window
+        EditModeWindow ??= WindowsExtensions.CreateWindow<OverlayWindow>();
+        await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
+
+        // Initialize widgets
+        await GetService<IWidgetResourceService>().InitalizeAsync();
+        GetService<IWidgetManagerService>().EnableAllEnabledWidgets();
     }
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)

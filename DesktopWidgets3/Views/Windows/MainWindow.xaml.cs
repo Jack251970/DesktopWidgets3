@@ -58,8 +58,8 @@ public sealed partial class MainWindow : WindowEx
         _handle = this.GetWindowHandle();
 
         AppWindow.SetIcon(Constant.AppIconPath);
+        Title = ConstantHelper.AppAppDisplayName;
         Content = null;
-        Title = "AppDisplayName".GetLocalized();
 
         // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
         dispatcherQueue = DispatcherQueue.GetForCurrentThread();

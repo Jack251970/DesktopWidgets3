@@ -2,7 +2,7 @@
 
 public interface IWidgetManagerService
 {
-    Task InitializeAsync();
+    void EnableAllEnabledWidgets();
 
     Task RestartWidgetsAsync();
 

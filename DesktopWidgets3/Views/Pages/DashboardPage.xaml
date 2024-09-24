@@ -61,14 +61,11 @@
                                         TextTrimming="CharacterEllipsis" />
                                     <Button
                                         Grid.Column="2"
-                                        Width="34"
-                                        Height="34"
                                         HorizontalAlignment="Right"
-                                        HorizontalContentAlignment="Center"
-                                        VerticalContentAlignment="Center"
                                         widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
-                                        Click="AllWidgetsItem_Click">
-                                        <FontIcon FontSize="10" Glyph="&#xE710;" />
+                                        Click="AllWidgetsItem_Click"
+                                        Style="{StaticResource FontIconButton}">
+                                        <FontIcon Glyph="&#xE710;" Style="{StaticResource ButtonFontIcon}" />
                                     </Button>
                                 </Grid>
                             </Grid>

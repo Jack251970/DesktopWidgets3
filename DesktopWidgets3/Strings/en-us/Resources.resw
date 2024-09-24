@@ -129,9 +129,6 @@
   <data name="Settings_AboutApp_Card.Description" xml:space="preserve">
     <value>An app for many useful desktop widgets based on WinUI 3.</value>
   </data>
-  <data name="Settings_AboutApp_Card.Header" xml:space="preserve">
-    <value>Desktop Widgets 3</value>
-  </data>
   <data name="Settings_Appearance.Text" xml:space="preserve">
     <value>Apperance &amp; behavior</value>
   </data>
@@ -221,9 +218,6 @@
   </data>
   <data name="Settings_SilentStart_Card.Header" xml:space="preserve">
     <value>Silent start</value>
-  </data>
-  <data name="TrayMenu_TaskBarIcon.ToolTipText" xml:space="preserve">
-    <value>Desktop Widget 3</value>
   </data>
   <data name="Settings_Feedback_Card.Header" xml:space="preserve">
     <value>File a bug or request new features</value>

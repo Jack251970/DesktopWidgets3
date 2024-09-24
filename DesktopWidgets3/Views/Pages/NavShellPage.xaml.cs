@@ -7,8 +7,6 @@ public sealed partial class NavShellPage : Page
 {
     public NavShellViewModel ViewModel { get; }
 
-    private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
-
     public NavShellPage()
     {
         ViewModel = DependencyExtensions.GetRequiredService<NavShellViewModel>();
@@ -23,19 +21,13 @@ public sealed partial class NavShellPage : Page
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
         App.MainWindow.TitleBar = AppTitleBar;
-#if DEBUG
-        AppTitleBarText.Text = "AppDisplayName".GetLocalized() + " (Debug)";
-#else
-        AppTitleBarText.Text = "AppDisplayName".GetLocalized();
-#endif
+
+        AppTitleBarText.Text = ConstantHelper.AppAppDisplayName;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(App.MainWindow, App.MainWindow.AppWindow.TitleBar, RequestedTheme);
-
-        // Initialize widgets after the navigation frame is loaded.
-        _widgetManagerService.InitializeAsync();
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

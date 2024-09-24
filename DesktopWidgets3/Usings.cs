@@ -7,19 +7,20 @@ global using DesktopWidgets3.Behaviors;
 global using DesktopWidgets3.Contracts.Services;
 global using DesktopWidgets3.Contracts.ViewModels;
 global using DesktopWidgets3.Extensions;
-global using DesktopWidgets3.Services;
-global using DesktopWidgets3.Services.Widgets;
 global using DesktopWidgets3.Helpers;
 global using DesktopWidgets3.Helpers.Dialog;
 global using DesktopWidgets3.Helpers.Navigation;
 global using DesktopWidgets3.Models;
 global using DesktopWidgets3.Models.Parameter;
 global using DesktopWidgets3.Models.Widgets;
+global using DesktopWidgets3.Services;
+global using DesktopWidgets3.Services.Widgets;
+global using DesktopWidgets3.UserControls;
+global using DesktopWidgets3.Utils;
+global using DesktopWidgets3.Utils.Logger;
 global using DesktopWidgets3.ViewModels.Pages;
 global using DesktopWidgets3.Views.Pages;
 global using DesktopWidgets3.Views.Windows;
-global using DesktopWidgets3.Utils;
-global using DesktopWidgets3.Utils.Logger;
 
 // CustomExtensions.WinUI
 global using CustomExtensions.WinUI.Contracts;
