@@ -22,6 +22,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private int _indexTag = -1;
 
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
+    private bool _inEditMode = false;
     private bool _restoreMainWindow = false;
 
     #region widget window
@@ -586,6 +587,11 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region edit mode
 
+    public bool InEditMode()
+    {
+        return _inEditMode;
+    }
+
     public async void EnterEditMode()
     {
         // save original widget list
@@ -624,6 +630,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             // show edit mode overlay window
             App.EditModeWindow.Show(true);
         });
+
+        _inEditMode = true;
     }
 
     public async Task SaveAndExitEditMode()
@@ -658,6 +666,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             });
         }
         await _appSettingsService.UpdateWidgetsListIgnoreSettingsAsync(widgetList);
+
+        _inEditMode = false;
     }
 
     public async void CancelChangesAndExitEditMode()
@@ -689,6 +699,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             App.MainWindow.Show();
             _restoreMainWindow = false;
         }
+
+        _inEditMode = false;
     }
 
     #endregion

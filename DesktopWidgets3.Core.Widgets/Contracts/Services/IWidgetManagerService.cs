@@ -24,6 +24,8 @@ public interface IWidgetManagerService
 
     Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
 
+    bool InEditMode();
+
     void EnterEditMode();
 
     Task SaveAndExitEditMode();

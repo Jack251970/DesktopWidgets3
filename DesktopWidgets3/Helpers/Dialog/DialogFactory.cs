@@ -10,4 +10,11 @@ internal static class DialogFactory
         var content = "Dialog_DeleteWidget.Content".GetLocalized();
         return await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content);
     }
+
+    public static async Task<WidgetDialogResult> ShowQuitEditModeDialogAsync(WindowEx? window = null)
+    {
+        var title = "Dialog_QuitEditMode.Title".GetLocalized();
+        var content = "Dialog_QuitEditMode.Content".GetLocalized();
+        return await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content);
+    }
 }

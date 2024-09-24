@@ -196,10 +196,10 @@
     <value>Cancel</value>
   </data>
   <data name="Dialog_DeleteWidget.Content" xml:space="preserve">
-    <value>Are you sure?</value>
+    <value>Are you sure you want to delete this widget?</value>
   </data>
   <data name="Dialog_DeleteWidget.Title" xml:space="preserve">
-    <value>Delete widget</value>
+    <value>Delete this widget</value>
   </data>
   <data name="Ok" xml:space="preserve">
     <value>Ok</value>
@@ -296,5 +296,11 @@
   </data>
   <data name="MenuFlyoutItem_RestartWidgets.Text" xml:space="preserve">
     <value>Restart all widgets</value>
+  </data>
+  <data name="Dialog_QuitEditMode.Title" xml:space="preserve">
+    <value>Quit edit mode</value>
+  </data>
+  <data name="Dialog_QuitEditMode.Content" xml:space="preserve">
+    <value>Do you want to save the current layout?</value>
   </data>
 </root>

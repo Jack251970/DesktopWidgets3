@@ -78,7 +78,7 @@ internal class DialogService : IDialogService
 
     private static async Task<IUICommand> ShowMessageDialogAsync(WindowEx? window, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0u, uint cancelCommandIndex = 1u, string title = "")
     {
-        if (window is null)
+        if (window is null || window == App.FullScreenWindow)
         {
             App.FullScreenWindow.ShowFullScreen();
             var result = await App.FullScreenWindow.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);

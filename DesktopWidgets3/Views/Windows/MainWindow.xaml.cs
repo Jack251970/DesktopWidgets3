@@ -10,6 +10,9 @@ public sealed partial class MainWindow : WindowEx
 {
     private static string ClassName => typeof(MainWindow).Name;
 
+    private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
+    private readonly IWidgetResourceService _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
+
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
@@ -127,10 +130,14 @@ public sealed partial class MainWindow : WindowEx
     {
         if (App.CanCloseWindow)
         {
+            if (_widgetManagerService.InEditMode() && await DialogFactory.ShowQuitEditModeDialogAsync() == WidgetDialogResult.Left)
+            {
+                await _widgetManagerService.SaveAndExitEditMode();
+            }
             App.FullScreenWindow.Close();
-            await DependencyExtensions.GetRequiredService<IWidgetManagerService>().CloseAllWidgetsAsync();
+            await _widgetManagerService.CloseAllWidgetsAsync();
             await WindowsExtensions.CloseAllWindowsAsync();
-            await DependencyExtensions.GetRequiredService<IWidgetResourceService>().DisposeWidgetsAsync();
+            await _widgetResourceService.DisposeWidgetsAsync();
             WidgetsLoader.DisposeExtensionAssemblies();
             LogExtensions.LogInformation(ClassName, "Exit current application.");
             Application.Current.Exit();
