@@ -219,14 +219,21 @@ public partial class App : Application
         }
 
         base.OnLaunched(args);
+
+        // Ensure the current window is active
+        if (MainWindow != null)
+        {
+            return;
+        }
+
         LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
 
         // Create main window
-        MainWindow ??= new MainWindow();
+        MainWindow = new MainWindow();
         await GetService<IActivationService>().ActivateMainWindowAsync(args);
         
         // Create edit mode window
-        EditModeWindow ??= WindowsExtensions.CreateWindow<OverlayWindow>();
+        EditModeWindow = WindowsExtensions.CreateWindow<OverlayWindow>();
         await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
 
         // Initialize widgets
