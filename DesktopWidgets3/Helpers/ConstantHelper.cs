@@ -3,8 +3,8 @@
 public class ConstantHelper
 {
 #if DEBUG
-    public static string AppAppDisplayName => "AppDisplayName".GetLocalized() + " (Debug)";
+    public static readonly string AppAppDisplayName = "AppDisplayName".GetLocalized() + " (Debug)";
 #else
-    public static string AppAppDisplayName => "AppDisplayName".GetLocalized();
+    public static readonly string AppAppDisplayName = "AppDisplayName".GetLocalized();
 #endif
 }
