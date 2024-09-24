@@ -74,9 +74,12 @@ public sealed partial class MainWindow : WindowEx
         var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
         var rectWorkWidth = monitorInfo.RectWork.Width;
         var rectWorkHeight = monitorInfo.RectWork.Height;
-        var windowWidth = AppWindow.Size.Width;
-        var windowHeight = AppWindow.Size.Height;
-        Position = new PointInt32((int)((rectWorkWidth! - windowWidth) / 2), (int)((rectWorkHeight! - windowHeight) / 2));
+        if (rectWorkWidth != null && rectWorkHeight != null)
+        {
+            var windowWidth = AppWindow.Size.Width;
+            var windowHeight = AppWindow.Size.Height;
+            Position = new PointInt32((int)((rectWorkWidth - windowWidth) / 2), (int)((rectWorkHeight - windowHeight) / 2));
+        }
     }
 
     #region Hide & Show & Activate
