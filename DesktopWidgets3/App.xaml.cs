@@ -57,6 +57,12 @@ public partial class App : Application
 
     #endregion
 
+    #region Full Screen Transparent Window
+
+    public static FullScreenWindow FullScreenWindow { get; set; } = null!;
+
+    #endregion
+
     public App()
     {
         // Check if app is already running
@@ -235,6 +241,9 @@ public partial class App : Application
         // Create edit mode window
         EditModeWindow = WindowsExtensions.CreateWindow<OverlayWindow>();
         await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
+
+        // Create full screen transparent window
+        FullScreenWindow = new FullScreenWindow();
 
         // Initialize widgets
         await GetService<IWidgetResourceService>().InitalizeAsync();

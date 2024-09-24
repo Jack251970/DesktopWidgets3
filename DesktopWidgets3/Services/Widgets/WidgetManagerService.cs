@@ -484,8 +484,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         var widgetId = _widgetId;
         var indexTag = _indexTag;
-        var widgetWindow = GetWidgetWindow(widgetId, indexTag);
-        if (await widgetWindow!.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
+        if (await DialogFactory.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
         {
             await DeleteWidgetAsync(widgetId, indexTag, true);
         }

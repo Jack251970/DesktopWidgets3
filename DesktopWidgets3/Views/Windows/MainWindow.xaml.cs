@@ -124,6 +124,7 @@ public sealed partial class MainWindow : WindowEx
     {
         if (App.CanCloseWindow)
         {
+            App.FullScreenWindow.Close();
             await DependencyExtensions.GetRequiredService<IWidgetManagerService>().CloseAllWidgetsAsync();
             await WindowsExtensions.CloseAllWindowsAsync();
             await DependencyExtensions.GetRequiredService<IWidgetResourceService>().DisposeWidgetsAsync();

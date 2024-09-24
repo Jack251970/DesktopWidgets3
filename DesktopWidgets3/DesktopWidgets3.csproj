@@ -62,6 +62,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\Windows\FullScreenWindow.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="CommunityToolkit.Uwp.Controls.MetadataControl" Version="8.1.240821" />
     <PackageReference Include="CommunityToolkit.Uwp.Controls.RichSuggestBox" Version="8.1.240821" />
@@ -103,6 +107,9 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <Page Update="Views\Windows\FullScreenWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
