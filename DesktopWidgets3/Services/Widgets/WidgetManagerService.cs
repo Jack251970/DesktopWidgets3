@@ -625,10 +625,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         await App.EditModeWindow.EnqueueOrInvokeAsync((window) =>
         {
             // move to center top
-            App.EditModeWindow.CenterTopOnMonitor();
+            window.CenterTopOnMonitor();
 
             // show edit mode overlay window
-            App.EditModeWindow.Show(true);
+            window.Show(true);
         });
 
         _inEditMode = true;
