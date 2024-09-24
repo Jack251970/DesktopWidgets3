@@ -156,9 +156,36 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
+    #region initialize
+
+    public void InitializeWindow(JsonWidgetItem widgetItem)
+    {
+        Id = widgetItem.Id;
+        IndexTag = widgetItem.IndexTag;
+    }
+
+    public void InitializeTitleBar()
+    {
+        IsTitleBarVisible = IsMaximizable = IsMaximizable = false;
+    }
+
+    public void InitializeWindow()
+    {
+        // Hide window icon from taskbar
+        SystemHelper.HideWindowIconFromTaskbar(_handle);
+
+        // Set window to bottom of other windows
+        SystemHelper.SetWindowZPos(_handle, SystemHelper.WINDOWZPOS.ONBOTTOM);
+
+        // Register window sink events
+        _manager.WindowMessageReceived += OnWindowMessageReceived;
+    }
+
+    #endregion
+
     #region edit mode
 
-    private RectSize divSize = new(0,0);
+    private RectSize divSize = new(0, 0);
     private bool enterEditMode;
     private bool exitEditMode;
 
@@ -190,33 +217,6 @@ public sealed partial class WidgetWindow : WindowEx
             Size = new RectSize(size.Width - divSize.Width, size.Height - divSize.Height);
             exitEditMode = false;
         }
-    }
-
-    #endregion
-
-    #region initialize
-
-    public void InitializeWindow(JsonWidgetItem widgetItem)
-    {
-        Id = widgetItem.Id;
-        IndexTag = widgetItem.IndexTag;
-    }
-
-    public void InitializeTitleBar()
-    {
-        IsTitleBarVisible = IsMaximizable = IsMaximizable = false;
-    }
-
-    public void InitializeWindow()
-    {
-        // Hide window icon from taskbar
-        SystemHelper.HideWindowIconFromTaskbar(_handle);
-
-        // Set window to bottom of other windows
-        SystemHelper.SetWindowZPos(_handle, SystemHelper.WINDOWZPOS.ONBOTTOM);
-
-        // Register window sink events
-        _manager.WindowMessageReceived += OnWindowMessageReceived;
     }
 
     #endregion
