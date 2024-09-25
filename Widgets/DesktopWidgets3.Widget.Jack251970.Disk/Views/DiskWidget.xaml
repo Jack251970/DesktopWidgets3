@@ -10,8 +10,10 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:DiskViewModel}"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea" Background="Transparent">
+    <Grid x:Name="ContentArea">
         <ListView
+            Margin="-16,0,-8,0"
+            Padding="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             ItemsSource="{x:Bind ViewModel.ProgressCardItems, Mode=OneWay}"
@@ -19,8 +21,6 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:ProgressCardData">
                     <usercontrols:ProgressCard
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Center"
                         LeftTitle="{Binding LeftTitle, Mode=OneWay}"
                         ProgressValue="{Binding ProgressValue, Mode=OneWay}"
                         RightTitle="{Binding RightTitle, Mode=OneWay}" />

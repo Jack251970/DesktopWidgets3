@@ -15,7 +15,7 @@ public partial class NetworkSettingViewModel : BaseWidgetSettingViewModel
 
     private bool _initialized = false;
 
-    #region abstract methods
+    #region Abstract Methods
 
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {

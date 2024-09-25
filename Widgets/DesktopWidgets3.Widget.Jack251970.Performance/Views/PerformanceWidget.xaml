@@ -9,34 +9,28 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:PerformanceViewModel}"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea" Background="Transparent">
-        <Grid Margin="20,15,20,15">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-            </Grid.RowDefinitions>
-            <usercontrols:ProgressCard
-                Grid.Row="0"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Center"
-                LeftTitle="{x:Bind ViewModel.CpuLeftInfo, Mode=OneWay}"
-                ProgressValue="{x:Bind ViewModel.CpuLoadValue, Mode=OneWay}"
-                RightTitle="{x:Bind ViewModel.CpuRightInfo, Mode=OneWay}" />
-            <usercontrols:ProgressCard
-                Grid.Row="1"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Center"
-                LeftTitle="{x:Bind ViewModel.GpuLeftInfo, Mode=OneWay}"
-                ProgressValue="{x:Bind ViewModel.GpuLoadValue, Mode=OneWay}"
-                RightTitle="{x:Bind ViewModel.GpuRightInfo, Mode=OneWay}" />
-            <usercontrols:ProgressCard
-                Grid.Row="3"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Center"
-                LeftTitle="{x:Bind ViewModel.MemoryLeftInfo, Mode=OneWay}"
-                ProgressValue="{x:Bind ViewModel.MemoryLoadValue, Mode=OneWay}"
-                RightTitle="{x:Bind ViewModel.MemoryRightInfo, Mode=OneWay}" />
-        </Grid>
+    <Grid x:Name="ContentArea">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <usercontrols:ProgressCard
+            Grid.Row="0"
+            LeftTitle="{x:Bind ViewModel.CpuLeftInfo, Mode=OneWay}"
+            ProgressValue="{x:Bind ViewModel.CpuLoadValue, Mode=OneWay}"
+            RightTitle="{x:Bind ViewModel.CpuRightInfo, Mode=OneWay}" />
+        <usercontrols:ProgressCard
+            Grid.Row="2"
+            LeftTitle="{x:Bind ViewModel.GpuLeftInfo, Mode=OneWay}"
+            ProgressValue="{x:Bind ViewModel.GpuLoadValue, Mode=OneWay}"
+            RightTitle="{x:Bind ViewModel.GpuRightInfo, Mode=OneWay}" />
+        <usercontrols:ProgressCard
+            Grid.Row="4"
+            LeftTitle="{x:Bind ViewModel.MemoryLeftInfo, Mode=OneWay}"
+            ProgressValue="{x:Bind ViewModel.MemoryLoadValue, Mode=OneWay}"
+            RightTitle="{x:Bind ViewModel.MemoryRightInfo, Mode=OneWay}" />
     </Grid>
 </UserControl>

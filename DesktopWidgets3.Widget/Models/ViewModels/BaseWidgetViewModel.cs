@@ -13,7 +13,7 @@ public abstract class BaseWidgetViewModel : ObservableRecipient
 
     private bool _isInitialized = false;
 
-    #region abstract methods
+    #region Abstract Methods
 
     protected abstract void LoadSettings(BaseWidgetSettings settings, bool initialized);
 

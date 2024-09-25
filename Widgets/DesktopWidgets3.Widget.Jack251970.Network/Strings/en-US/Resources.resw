@@ -135,4 +135,7 @@
   <data name="Widget_DownloadSpeed_TextBlock_Text" xml:space="preserve">
     <value>Download speed:</value>
   </data>
+  <data name="Widget_NetworkAdapter_TextBlock_Text" xml:space="preserve">
+    <value>Network adapter:</value>
+  </data>
 </root>

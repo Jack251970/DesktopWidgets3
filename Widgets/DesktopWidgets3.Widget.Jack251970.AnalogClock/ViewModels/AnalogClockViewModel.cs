@@ -50,7 +50,7 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, 
         SystemTime = systemTime;
     }
 
-    #region abstract methods
+    #region Abstract Methods
 
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {

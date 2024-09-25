@@ -33,7 +33,7 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
         SystemTime = DateTime.Now.ToString(timingFormat);
     }
 
-    #region abstract methods
+    #region Abstract Methods
 
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {

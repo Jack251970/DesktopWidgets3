@@ -8,25 +8,32 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:NetworkViewModel}"
     mc:Ignorable="d">
 
-    <Grid
-        x:Name="ContentArea"
-        Padding="20,15,20,15"
-        Background="Transparent">
+    <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock
+        <StackPanel
             Grid.Row="0"
             Grid.Column="0"
-            VerticalAlignment="Center"
-            Text="Network" />
+            Orientation="Horizontal">
+            <FontIcon
+                VerticalAlignment="Center"
+                FontSize="16"
+                Glyph="&#xEDA3;" />
+            <TextBlock
+                Margin="8,0,0,0"
+                VerticalAlignment="Center"
+                Text="{StaticResource Widget_NetworkAdapter_TextBlock_Text}" />
+        </StackPanel>
         <ComboBox
             Grid.Row="0"
             Grid.Column="2"
@@ -38,7 +45,7 @@
             SelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
             SelectedValuePath="Item2" />
         <StackPanel
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="0"
             Orientation="Horizontal">
             <FontIcon
@@ -46,19 +53,19 @@
                 FontSize="16"
                 Glyph="&#xE898;" />
             <TextBlock
-                Margin="10,0,0,0"
+                Margin="8,0,0,0"
                 VerticalAlignment="Center"
                 Text="{StaticResource Widget_UploadSpeed_TextBlock_Text}" />
         </StackPanel>
         <TextBlock
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="2"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
             Style="{ThemeResource BodyTextBlockStyle}"
             Text="{x:Bind ViewModel.UploadSpeed, Mode=OneWay}" />
         <StackPanel
-            Grid.Row="2"
+            Grid.Row="4"
             Grid.Column="0"
             Orientation="Horizontal">
             <FontIcon
@@ -66,12 +73,12 @@
                 FontSize="16"
                 Glyph="&#xE896;" />
             <TextBlock
-                Margin="10,0,0,0"
+                Margin="8,0,0,0"
                 VerticalAlignment="Center"
                 Text="{StaticResource Widget_DownloadSpeed_TextBlock_Text}" />
         </StackPanel>
         <TextBlock
-            Grid.Row="2"
+            Grid.Row="4"
             Grid.Column="2"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"

@@ -79,7 +79,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
         }
     }
 
-    #region update methods
+    #region Update Methods
 
     private void UpdateNetwork()
     {
@@ -183,7 +183,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
     #endregion
 
-    #region abstract methods
+    #region Abstract Methods
 
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {

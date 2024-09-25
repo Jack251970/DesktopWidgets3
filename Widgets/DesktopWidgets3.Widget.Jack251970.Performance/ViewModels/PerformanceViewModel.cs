@@ -69,7 +69,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
         timer.Elapsed += (s, e) => action();
     }
 
-    #region update methods
+    #region Update Methods
 
     private void UpdateCPU()
     {
@@ -115,6 +115,9 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
             var gpuUsage = gpuStats.GetGPUUsage(_gpuActiveIndex);
             var gpuTemperature = gpuStats.GetGPUTemperature(_gpuActiveIndex);
 
+            // remove unnecessary strings from GPU name.
+            gpuName = gpuName.Replace("(TM)", string.Empty).Replace("(R)", string.Empty).Replace("GPU", string.Empty).Trim();
+
             DispatcherQueue.TryEnqueue(() =>
             {
                 GpuLeftInfo = string.IsNullOrEmpty(gpuName) ? "GPU" : "GPU" + $" ({gpuName})";
@@ -159,7 +162,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     #endregion
 
-    #region abstract methods
+    #region Abstract Methods
 
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {

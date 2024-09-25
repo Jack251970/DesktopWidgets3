@@ -44,7 +44,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
         timer.Elapsed += (s, e) => action();
     }
 
-    #region update methods
+    #region Update Methods
 
     private void UpdateDisk()
     {
@@ -157,7 +157,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
 
     #endregion
 
-    #region abstract methods
+    #region Abstract Methods
 
     protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
     {
