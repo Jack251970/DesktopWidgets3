@@ -12,8 +12,6 @@
                 <ResourceDictionary Source="/Styles/Controls.xaml" />
                 <!--  Values  -->
                 <ResourceDictionary Source="/Styles/Values.xaml" />
-                <!--  From: devhome  -->
-                <ResourceDictionary Source="/Styles/Dashboard_ThemeResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
