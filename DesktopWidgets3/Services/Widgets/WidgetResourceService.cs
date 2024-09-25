@@ -411,6 +411,35 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
     }
 
+    public string GetWidgetDescription(string widgetId)
+    {
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
+        {
+            if (InstalledWidgets[index].Widget is IWidgetLocalization localization)
+            {
+                return localization.GetLocalizatedDescription();
+            }
+            else
+            {
+                return InstalledWidgets[index].Metadata.Description;
+            }
+        }
+
+        return string.Empty;
+    }
+
+    public string GetWidgetIcoPath(string widgetId)
+    {
+        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
+        {
+            return InstalledWidgets[index].Metadata.IcoPath;
+        }
+
+        return string.Empty;
+    }
+
     public RectSize GetDefaultSize(string widgetId)
     {
         var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);

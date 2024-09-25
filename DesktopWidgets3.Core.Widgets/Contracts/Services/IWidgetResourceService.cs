@@ -20,6 +20,10 @@ public interface IWidgetResourceService
 
     string GetWidgetName(string widgetId);
 
+    string GetWidgetDescription(string widgetId);
+
+    string GetWidgetIcoPath(string widgetId);
+
     RectSize GetDefaultSize(string widgetId);
 
     (RectSize MinSize, RectSize MaxSize, bool NewThread) GetMinMaxSizeNewThread(string widgetId);

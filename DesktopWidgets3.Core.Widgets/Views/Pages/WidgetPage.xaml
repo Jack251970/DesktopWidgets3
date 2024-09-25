@@ -11,10 +11,60 @@
 
     <Grid x:Name="ContentArea">
         <Grid x:Name="WidgetTitleBar" />
-        <ScrollViewer
-            x:Name="WidgetScrollViewer"
-            Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}"
-            HorizontalScrollMode="Disabled"
-            VerticalScrollBarVisibility="Auto" />
+
+        <Grid
+            Background="{ThemeResource WidgetCardBackground}"
+            BorderBrush="{ThemeResource WidgetCardBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="7">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!--  Widget header: icon, title, menu  -->
+            <Grid Grid.Row="0" Padding="15,9,15,0">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Image
+                        Width="16"
+                        Height="16"
+                        VerticalAlignment="Center">
+                        <Image.Source>
+                            <BitmapImage UriSource="{x:Bind ViewModel.WidgetIcoPath, Mode=OneWay}" />
+                        </Image.Source>
+                    </Image>
+                    <TextBlock
+                        MaxWidth="212"
+                        VerticalAlignment="Center"
+                        FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                        Text="{x:Bind ViewModel.WidgetDisplayTitle, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <Button
+                    x:Uid="WidgetPage_MoreOptionsButton"
+                    Padding="5"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="OpenWidgetMenuAsync"
+                    Content="&#xE712;"
+                    FontFamily="{StaticResource SymbolThemeFontFamily}"
+                    FontSize="{ThemeResource CaptionTextBlockFontSize}">
+                    <Button.Flyout>
+                        <MenuFlyout />
+                    </Button.Flyout>
+                </Button>
+            </Grid>
+
+            <!--  Widget content  -->
+            <ScrollViewer
+                x:Name="WidgetScrollViewer"
+                Grid.Row="1"
+                Padding="16"
+                Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}"
+                HorizontalScrollMode="Disabled"
+                VerticalScrollBarVisibility="Auto" />
+        </Grid>
     </Grid>
 </Page>

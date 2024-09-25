@@ -212,6 +212,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
             // set widget framework element
             var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetId);
+            widgetWindow.ShellPage.ViewModel.WidgetIcoPath = _widgetResourceService.GetWidgetIcoPath(widgetId);
+            widgetWindow.ShellPage.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId);
             widgetWindow.ShellPage.ViewModel.WidgetFrameworkElement = frameworkElement;
 
             // set widget properties

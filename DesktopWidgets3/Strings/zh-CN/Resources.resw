@@ -303,4 +303,7 @@
   <data name="Dialog_QuitEditMode.Content" xml:space="preserve">
     <value>你想要保存目前的布局吗？</value>
   </data>
+  <data name="WidgetPage_MoreOptionsButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>更多选项</value>
+  </data>
 </root>
