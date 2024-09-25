@@ -38,14 +38,14 @@ public sealed partial class WidgetPage : Page
 
     #region Widget Menu
 
-    private void OpenWidgetMenu(object sender, RoutedEventArgs e)
+    private void OpenWidgetMenu(object sender, RoutedEventArgs _)
     {
         if (sender as Button is Button widgetMenuButton && widgetMenuButton.Flyout is MenuFlyout widgetMenuFlyout)
         {
             widgetMenuFlyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft;
             if (widgetMenuFlyout?.Items.Count == 0)
             {
-                _widgetManagerService.AddWidgetItemsToWidgetMenu(WidgetWindow, widgetMenuFlyout);
+                _widgetManagerService.AddWidgetItemsToWidgetMenu(widgetMenuFlyout, WidgetWindow);
             }
         }
     }

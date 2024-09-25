@@ -42,7 +42,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
         }
         else
         {
-            await _widgetManagerService.DisableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag);
+            await _widgetManagerService.DisableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag, false);
             yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = false;
         }
 

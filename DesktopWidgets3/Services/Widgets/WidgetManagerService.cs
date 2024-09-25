@@ -132,10 +132,21 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    public async Task DisableWidgetAsync(string widgetId, int indexTag)
+    public async Task DisableWidgetAsync(string widgetId, int indexTag, bool refresh)
     {
         // close widget window
         await CloseWidgetWindow(widgetId, indexTag);
+
+        // refresh dashboard page
+        if (refresh)
+        {
+            RefreshDashboardPage(new DashboardViewModelNavigationParameter()
+            {
+                Event = DashboardViewModelNavigationParameter.UpdateEvent.Disable,
+                Id = widgetId,
+                IndexTag = indexTag
+            });
+        }
 
         // update widget list
         await _appSettingsService.DisableWidgetAsync(widgetId, indexTag);
@@ -384,101 +395,155 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region widget menu
 
-    public void AddWidgetItemsToWidgetMenu(WidgetWindow widgetWindow, MenuFlyout menuFlyout)
+    public void AddWidgetItemsToWidgetMenu(MenuFlyout menuFlyout, WidgetWindow widgetWindow)
     {
-        AddBaseWidgetItemsToWidgetMenu(menuFlyout, widgetWindow.Id, widgetWindow.IndexTag);
+        AddDisableDeleteItemsToWidgetMenu(menuFlyout, widgetWindow);
+        menuFlyout.Items.Add(new MenuFlyoutSeparator());
+        AddLayoutItemsToWidgetMenu(menuFlyout, widgetWindow);
+        menuFlyout.Items.Add(new MenuFlyoutSeparator());
+        AddRestartItemsToWidgetMenu(menuFlyout, widgetWindow);
     }
 
-    private void AddBaseWidgetItemsToWidgetMenu(MenuFlyout menuFlyout, string widgetId, int indexTag)
+    #region Disable & Delete
+
+    private void AddDisableDeleteItemsToWidgetMenu(MenuFlyout menuFlyout, WidgetWindow widgetWindow)
     {
+        var disableIcon = new FontIcon()
+        {
+            Glyph = "\uE71A"
+        };
         var disableWidgetMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_DisableWidget.Text".GetLocalized()
+            Tag = widgetWindow,
+            Text = "MenuFlyoutItem_DisableWidget.Text".GetLocalized(),
+            Icon = disableIcon
         };
-        disableWidgetMenuItem.Click += (s, e) => DisableWidget(widgetId, indexTag);
+        disableWidgetMenuItem.Click += DisableWidget;
         menuFlyout.Items.Add(disableWidgetMenuItem);
 
-        var deleteIcon = new SymbolIcon(Symbol.Delete);
+        var deleteIcon = new FontIcon()
+        {
+            Glyph = "\uE74D"
+        };
         var deleteWidgetMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalized()
+            Tag = widgetWindow,
+            Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalized(),
+            Icon = deleteIcon
         };
-        deleteWidgetMenuItem.Click += (s, e) => DeleteWidget(widgetId, indexTag);
+        deleteWidgetMenuItem.Click += DeleteWidget;
         menuFlyout.Items.Add(deleteWidgetMenuItem);
+    }
 
+    private async void DisableWidget(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
+        {
+            var widgetId = widgetWindow.Id;
+            var indexTag = widgetWindow.IndexTag;
+            await DisableWidgetAsync(widgetId, indexTag, true);
+        }
+    }
+
+    private async void DeleteWidget(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
+        {
+            var widgetId = widgetWindow.Id;
+            var indexTag = widgetWindow.IndexTag;
+            if (await DialogFactory.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
+            {
+                await DeleteWidgetAsync(widgetId, indexTag, true);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Layout
+
+    private void AddLayoutItemsToWidgetMenu(MenuFlyout menuFlyout, WidgetWindow widgetWindow)
+    {
+        var layoutIcon = new FontIcon()
+        {
+            Glyph = "\uF0E2"
+        };
+        var editLayoutMenuItem = new MenuFlyoutItem
+        {
+            Tag = widgetWindow,
+            Icon = layoutIcon,
+            Text = "MenuFlyoutItem_EditWidgetsLayout.Text".GetLocalized()
+        };
+        editLayoutMenuItem.Click += EditWidgetsLayout;
+        menuFlyout.Items.Add(editLayoutMenuItem);
+    }
+
+    private void EditWidgetsLayout(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow)
+        {
+            EnterEditMode();
+        }  
+    }
+
+    #endregion
+
+    #region Restart
+
+    private void AddRestartItemsToWidgetMenu(MenuFlyout menuFlyout, WidgetWindow widgetWindow)
+    {
+        var restartIcon = new FontIcon()
+        {
+            Glyph = "\uE72C"
+        };
         var restartWidgetMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_RestartWidget.Text".GetLocalized()
+            Tag = widgetWindow,
+            Text = "MenuFlyoutItem_RestartWidget.Text".GetLocalized(),
+            Icon = restartIcon,
         };
-        restartWidgetMenuItem.Click += (s, e) => RestartWidget(widgetId, indexTag);
+        restartWidgetMenuItem.Click += RestartWidget;
         menuFlyout.Items.Add(restartWidgetMenuItem);
 
-        menuFlyout.Items.Add(new MenuFlyoutSeparator());
-
-        var enterMenuItem = new MenuFlyoutItem
+        restartIcon = new FontIcon()
         {
-            Text = "MenuFlyoutItem_EnterEditMode.Text".GetLocalized()
+            Glyph = "\uE72C"
         };
-        enterMenuItem.Click += (s, e) => EnterEditMode();
-        menuFlyout.Items.Add(enterMenuItem);
-
-        menuFlyout.Items.Add(new MenuFlyoutSeparator());
-
         var restartWidgetsMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_RestartWidgets.Text".GetLocalized()
+            Tag = widgetWindow,
+            Text = "MenuFlyoutItem_RestartWidgets.Text".GetLocalized(),
+            Icon = restartIcon
         };
-        restartWidgetsMenuItem.Click += async (s, e) => await RestartWidgetsAsync();
+        restartWidgetsMenuItem.Click += RestartWidgets;
         menuFlyout.Items.Add(restartWidgetsMenuItem);
     }
 
-    private async void DisableWidget(string widgetId, int indexTag)
+    private async void RestartWidget(object sender, RoutedEventArgs e)
     {
-        await DisableWidgetAsync(widgetId, indexTag);
-        RefreshDashboardPage(new DashboardViewModelNavigationParameter()
+        if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
         {
-            Event = DashboardViewModelNavigationParameter.UpdateEvent.Disable,
-            Id = widgetId,
-            IndexTag = indexTag
-        });
-    }
-
-    private async void DeleteWidget(string widgetId, int indexTag)
-    {
-        if (await DialogFactory.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
-        {
-            await DeleteWidgetAsync(widgetId, indexTag, true);
+            var widgetId = widgetWindow.Id;
+            var indexTag = widgetWindow.IndexTag;
+            await CloseWidgetWindow(widgetId, indexTag);
+            var widgetList = _appSettingsService.GetWidgetsList();
+            var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
+            if (widget != null)
+            {
+                CreateWidgetWindow(widget);
+            }
         }
     }
 
-    private async void RestartWidget(string widgetId, int indexTag)
+    private async void RestartWidgets(object sender, RoutedEventArgs e)
     {
-        await CloseWidgetWindow(widgetId, indexTag);
-
-        var widgetList = _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId && x.IndexTag == indexTag);
-        if (widget != null)
+        if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow)
         {
-            CreateWidgetWindow(widget);
+            await RestartWidgetsAsync();
         }
     }
 
-    private void RefreshDashboardPage(object parameter)
-    {
-        var dashboardPageKey = typeof(DashboardViewModel).FullName!;
-        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-        {
-            var currentKey = _navigationService.GetCurrentPageKey();
-            if (currentKey == dashboardPageKey)
-            {
-                _navigationService.NavigateTo(dashboardPageKey, parameter);
-            }
-            else
-            {
-                _navigationService.SetNextParameter(dashboardPageKey, parameter);
-            }
-        });
-    }
+    #endregion
 
     #endregion
 
@@ -648,6 +713,27 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         _inEditMode = false;
+    }
+
+    #endregion
+
+    #region widget message
+
+    private void RefreshDashboardPage(object parameter)
+    {
+        var dashboardPageKey = typeof(DashboardViewModel).FullName!;
+        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+        {
+            var currentKey = _navigationService.GetCurrentPageKey();
+            if (currentKey == dashboardPageKey)
+            {
+                _navigationService.NavigateTo(dashboardPageKey, parameter);
+            }
+            else
+            {
+                _navigationService.SetNextParameter(dashboardPageKey, parameter);
+            }
+        });
     }
 
     #endregion

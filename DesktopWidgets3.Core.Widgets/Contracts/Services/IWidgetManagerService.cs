@@ -14,13 +14,13 @@ public interface IWidgetManagerService
 
     Task EnableWidgetAsync(string widgetId, int indexTag);
 
-    Task DisableWidgetAsync(string widgetId, int indexTag);
+    Task DisableWidgetAsync(string widgetId, int indexTag, bool refresh);
 
     Task DeleteWidgetAsync(string widgetId, int indexTag, bool refresh);
 
     BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow);
 
-    void AddWidgetItemsToWidgetMenu(WidgetWindow widgetWindow, MenuFlyout menuFlyout);
+    void AddWidgetItemsToWidgetMenu(MenuFlyout menuFlyout, WidgetWindow widgetWindow);
 
     void NavigateToWidgetSettingPage(string widgetId, int indexTag);
 

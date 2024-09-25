@@ -198,8 +198,8 @@
   <data name="MenuFlyoutItem_DisableWidget.Text" xml:space="preserve">
     <value>禁用该组件</value>
   </data>
-  <data name="MenuFlyoutItem_EnterEditMode.Text" xml:space="preserve">
-    <value>进入编辑模式</value>
+  <data name="MenuFlyoutItem_EditWidgetsLayout.Text" xml:space="preserve">
+    <value>编辑组件布局</value>
   </data>
   <data name="MenuFlyoutItem_DeleteWidget.Text" xml:space="preserve">
     <value>删除该组件</value>
