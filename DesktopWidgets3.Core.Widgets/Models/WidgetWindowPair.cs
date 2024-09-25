@@ -6,8 +6,6 @@ public class WidgetWindowPair
 {
     public WidgetWindow Window { get; set; } = null!;
 
-    public MenuFlyout? Menu { get; set; }
-
     public BaseWidgetViewModel? ViewModel { get; set; }
 
     public override bool Equals(object? obj)

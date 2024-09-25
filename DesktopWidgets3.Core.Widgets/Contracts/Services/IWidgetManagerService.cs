@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Core.Widgets.Contracts.Services;
+﻿using Microsoft.UI.Xaml.Controls;
+
+namespace DesktopWidgets3.Core.Widgets.Contracts.Services;
 
 public interface IWidgetManagerService
 {
@@ -17,6 +19,8 @@ public interface IWidgetManagerService
     Task DeleteWidgetAsync(string widgetId, int indexTag, bool refresh);
 
     BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow);
+
+    void AddWidgetItemsToWidgetMenu(WidgetWindow widgetWindow, MenuFlyout menuFlyout);
 
     void NavigateToWidgetSettingPage(string widgetId, int indexTag);
 

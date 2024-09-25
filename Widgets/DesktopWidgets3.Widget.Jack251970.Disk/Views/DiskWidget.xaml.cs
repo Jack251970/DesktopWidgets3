@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.Disk.Views;
 
-public sealed partial class DiskWidget : UserControl, IViewModel, IWidgetMenu
+public sealed partial class DiskWidget : UserControl, IViewModel
 {
     public DiskViewModel ViewModel;
 
@@ -17,10 +17,5 @@ public sealed partial class DiskWidget : UserControl, IViewModel, IWidgetMenu
             Resources.MergedDictionaries.Add(resourceDictionary);
         }
         InitializeComponent();
-    }
-
-    public FrameworkElement GetWidgetMenuFrameworkElement()
-    {
-        return ContentArea;
     }
 }

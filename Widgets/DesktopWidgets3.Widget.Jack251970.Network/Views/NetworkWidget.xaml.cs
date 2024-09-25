@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.Network.Views;
 
-public sealed partial class NetworkWidget : UserControl, IViewModel, IWidgetMenu
+public sealed partial class NetworkWidget : UserControl, IViewModel
 {
     public NetworkViewModel ViewModel;
 
@@ -17,10 +17,5 @@ public sealed partial class NetworkWidget : UserControl, IViewModel, IWidgetMenu
             Resources.MergedDictionaries.Add(resourceDictionary);
         }
         InitializeComponent();
-    }
-
-    public FrameworkElement GetWidgetMenuFrameworkElement()
-    {
-        return ContentArea;
     }
 }

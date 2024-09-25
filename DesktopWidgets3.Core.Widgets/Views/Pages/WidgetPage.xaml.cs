@@ -10,6 +10,7 @@ public sealed partial class WidgetPage : Page
 
     private WidgetWindow WidgetWindow { get; set; } = null!;
 
+    private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
     private readonly IWidgetResourceService _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
     public WidgetPage()
@@ -37,17 +38,14 @@ public sealed partial class WidgetPage : Page
 
     #region Widget Menu
 
-    private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs e)
+    private void OpenWidgetMenu(object sender, RoutedEventArgs e)
     {
         if (sender as Button is Button widgetMenuButton && widgetMenuButton.Flyout is MenuFlyout widgetMenuFlyout)
         {
             widgetMenuFlyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft;
             if (widgetMenuFlyout?.Items.Count == 0)
             {
-                /*await AddSizesToWidgetMenuAsync(widgetMenuFlyout, widgetViewModel);
-                widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
-                AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel);
-                AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel);*/
+                _widgetManagerService.AddWidgetItemsToWidgetMenu(WidgetWindow, widgetMenuFlyout);
             }
         }
     }

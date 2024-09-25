@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.DigitalClock.Views;
 
-public sealed partial class DigitalClockWidget : UserControl, IViewModel, IWidgetMenu
+public sealed partial class DigitalClockWidget : UserControl, IViewModel
 {
     public DigitalClockViewModel ViewModel;
 
@@ -17,10 +17,5 @@ public sealed partial class DigitalClockWidget : UserControl, IViewModel, IWidge
             Resources.MergedDictionaries.Add(resourceDictionary);
         }
         InitializeComponent();
-    }
-
-    public FrameworkElement GetWidgetMenuFrameworkElement()
-    {
-        return ContentArea;
     }
 }

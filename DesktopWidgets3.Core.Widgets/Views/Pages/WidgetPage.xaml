@@ -47,7 +47,7 @@
                     VerticalAlignment="Top"
                     Background="Transparent"
                     BorderThickness="0"
-                    Click="OpenWidgetMenuAsync"
+                    Click="OpenWidgetMenu"
                     Content="&#xE712;"
                     FontFamily="{StaticResource SymbolThemeFontFamily}"
                     FontSize="{ThemeResource CaptionTextBlockFontSize}">

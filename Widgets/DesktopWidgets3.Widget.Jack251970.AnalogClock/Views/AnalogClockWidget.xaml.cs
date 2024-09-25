@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.Views;
 
-public sealed partial class AnalogClockWidget : UserControl, IViewModel, IWidgetMenu
+public sealed partial class AnalogClockWidget : UserControl, IViewModel
 {
     public AnalogClockViewModel ViewModel;
 
@@ -17,10 +17,5 @@ public sealed partial class AnalogClockWidget : UserControl, IViewModel, IWidget
             Resources.MergedDictionaries.Add(resourceDictionary);
         }
         InitializeComponent();
-    }
-
-    public FrameworkElement GetWidgetMenuFrameworkElement()
-    {
-        return ContentArea;
     }
 }

@@ -1,8 +1,6 @@
 ﻿using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Input;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -16,10 +14,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private readonly List<WidgetWindowPair> EnabledWidgets = [];
     private readonly List<WidgetWindow> EnabledWidgetWindows = [];
-
-    // cached widget id and index tag for widget menu
-    private string _widgetId = string.Empty;
-    private int _indexTag = -1;
 
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
     private bool _inEditMode = false;
@@ -250,9 +244,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             // initialize window
             widgetWindow.InitializeWindow();
 
-            // register right tapped menu
-            var widgetMenu = RegisterWidgetMenu(widgetWindow);
-
             // show window
             widgetWindow.Show(true);
 
@@ -263,8 +254,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             EnabledWidgets.Add(new WidgetWindowPair()
             {
                 Window = widgetWindow,
-                ViewModel = viewModel,
-                Menu = widgetMenu
+                ViewModel = viewModel
             });
             EnabledWidgetWindows.Add(widgetWindow);
         }
@@ -394,45 +384,33 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region widget menu
 
-    private MenuFlyout? RegisterWidgetMenu(WidgetWindow widgetWindow)
+    public void AddWidgetItemsToWidgetMenu(WidgetWindow widgetWindow, MenuFlyout menuFlyout)
     {
-        var element = widgetWindow.FrameworkElement;
-        if (element is IWidgetMenu menu)
-        {
-            element = menu.GetWidgetMenuFrameworkElement();
-        }
-        if (element is not null)
-        {
-            WidgetProperties.SetId(element, widgetWindow.Id);
-            WidgetProperties.SetIndexTag(element, widgetWindow.IndexTag);
-            element.RightTapped += ShowWidgetMenu;
-            return GetWidgetMenu();
-        }
-        return null;
+        AddBaseWidgetItemsToWidgetMenu(menuFlyout, widgetWindow.Id, widgetWindow.IndexTag);
     }
 
-    private MenuFlyout GetWidgetMenu()
+    private void AddBaseWidgetItemsToWidgetMenu(MenuFlyout menuFlyout, string widgetId, int indexTag)
     {
-        var menuFlyout = new MenuFlyout();
         var disableWidgetMenuItem = new MenuFlyoutItem
         {
             Text = "MenuFlyoutItem_DisableWidget.Text".GetLocalized()
         };
-        disableWidgetMenuItem.Click += (s, e) => DisableWidget();
+        disableWidgetMenuItem.Click += (s, e) => DisableWidget(widgetId, indexTag);
         menuFlyout.Items.Add(disableWidgetMenuItem);
 
+        var deleteIcon = new SymbolIcon(Symbol.Delete);
         var deleteWidgetMenuItem = new MenuFlyoutItem
         {
             Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalized()
         };
-        deleteWidgetMenuItem.Click += (s, e) => DeleteWidget();
+        deleteWidgetMenuItem.Click += (s, e) => DeleteWidget(widgetId, indexTag);
         menuFlyout.Items.Add(deleteWidgetMenuItem);
 
         var restartWidgetMenuItem = new MenuFlyoutItem
         {
             Text = "MenuFlyoutItem_RestartWidget.Text".GetLocalized()
         };
-        restartWidgetMenuItem.Click += (s, e) => RestartWidget();
+        restartWidgetMenuItem.Click += (s, e) => RestartWidget(widgetId, indexTag);
         menuFlyout.Items.Add(restartWidgetMenuItem);
 
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
@@ -452,28 +430,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         };
         restartWidgetsMenuItem.Click += async (s, e) => await RestartWidgetsAsync();
         menuFlyout.Items.Add(restartWidgetsMenuItem);
-
-        return menuFlyout;
     }
 
-    private void ShowWidgetMenu(object sender, RightTappedRoutedEventArgs e)
+    private async void DisableWidget(string widgetId, int indexTag)
     {
-        if (sender is FrameworkElement element)
-        {
-            var widgetId = WidgetProperties.GetId(element);
-            var indexTag = WidgetProperties.GetIndexTag(element);
-            _widgetId = widgetId;
-            _indexTag = indexTag;
-            var menu = GetWidgetMenu(widgetId, indexTag);
-            menu!.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
-            e.Handled = true;
-        }
-    }
-
-    private async void DisableWidget()
-    {
-        var widgetId = _widgetId;
-        var indexTag = _indexTag;
         await DisableWidgetAsync(widgetId, indexTag);
         RefreshDashboardPage(new DashboardViewModelNavigationParameter()
         {
@@ -483,20 +443,16 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         });
     }
 
-    private async void DeleteWidget()
+    private async void DeleteWidget(string widgetId, int indexTag)
     {
-        var widgetId = _widgetId;
-        var indexTag = _indexTag;
         if (await DialogFactory.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
         {
             await DeleteWidgetAsync(widgetId, indexTag, true);
         }
     }
 
-    private async void RestartWidget()
+    private async void RestartWidget(string widgetId, int indexTag)
     {
-        var widgetId = _widgetId;
-        var indexTag = _indexTag;
         await CloseWidgetWindow(widgetId, indexTag);
 
         var widgetList = _appSettingsService.GetWidgetsList();
@@ -522,17 +478,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 _navigationService.SetNextParameter(dashboardPageKey, parameter);
             }
         });
-    }
-
-    private MenuFlyout? GetWidgetMenu(string widgetId, int indexTag)
-    {
-        var index = EnabledWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
-        if (index != -1)
-        {
-            return EnabledWidgets[index].Menu;
-        }
-
-        return null;
     }
 
     #endregion
