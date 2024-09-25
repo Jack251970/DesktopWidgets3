@@ -12,8 +12,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     private readonly IActivationService _activationService = activationService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
-    private readonly List<WidgetWindowPair> EnabledWidgets = [];
-    private readonly List<WidgetWindow> EnabledWidgetWindows = [];
+    private readonly List<WidgetWindowPair> PinnedWidgets = [];
+    private readonly List<WidgetWindow> PinnedWidgetWindows = [];
 
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
     private bool _inEditMode = false;
@@ -23,34 +23,34 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region all widgets management
 
+    public void InitializePinnedWidgets()
+    {
+        var widgetList = _appSettingsService.GetWidgetsList();
+        foreach (var widget in widgetList)
+        {
+            if (widget.Pinned)
+            {
+                CreateWidgetWindow(widget);
+            }
+        }
+    }
+
     public async Task RestartWidgetsAsync()
     {
         // close all widgets
         await CloseAllWidgetsAsync();
 
         // clear lists
-        EnabledWidgets.Clear();
-        EnabledWidgetWindows.Clear();
+        PinnedWidgets.Clear();
+        PinnedWidgetWindows.Clear();
 
         // enable all enabled widgets
-        EnableAllEnabledWidgets();
+        InitializePinnedWidgets();
     }
 
     public async Task CloseAllWidgetsAsync()
     {
-        await EnabledWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync);
-    }
-
-    public void EnableAllEnabledWidgets()
-    {
-        var widgetList = _appSettingsService.GetWidgetsList();
-        foreach (var widget in widgetList)
-        {
-            if (widget.IsEnabled)
-            {
-                CreateWidgetWindow(widget);
-            }
-        }
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync);
     }
 
     #endregion
@@ -85,7 +85,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             Name = _widgetResourceService.GetWidgetName(widgetId),
             Id = widgetId,
             IndexTag = indexTag,
-            IsEnabled = true,
+            Pinned = true,
             Position = new PointInt32(-1, -1),
             Size = _widgetResourceService.GetDefaultSize(widgetId),
             DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
@@ -112,7 +112,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         return indexTag;
     }
 
-    public async Task EnableWidgetAsync(string widgetId, int indexTag)
+    public async Task PinWidgetAsync(string widgetId, int indexTag)
     {
         // get widget
         var widget = _appSettingsService.GetWidget(widgetId, indexTag);
@@ -123,7 +123,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             CreateWidgetWindow(widget);
 
             // update widget list
-            await _appSettingsService.EnableWidgetAsync(widgetId, indexTag);
+            await _appSettingsService.PinWidgetAsync(widgetId, indexTag);
         }
         else
         {
@@ -132,7 +132,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
     }
 
-    public async Task DisableWidgetAsync(string widgetId, int indexTag, bool refresh)
+    public async Task UnpinWidgetAsync(string widgetId, int indexTag, bool refresh)
     {
         // close widget window
         await CloseWidgetWindow(widgetId, indexTag);
@@ -142,14 +142,14 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
-                Event = DashboardViewModelNavigationParameter.UpdateEvent.Disable,
+                Event = DashboardViewModelNavigationParameter.UpdateEvent.Unpin,
                 Id = widgetId,
                 IndexTag = indexTag
             });
         }
 
         // update widget list
-        await _appSettingsService.DisableWidgetAsync(widgetId, indexTag);
+        await _appSettingsService.UnpinWidgetAsync(widgetId, indexTag);
     }
 
     public async Task DeleteWidgetAsync(string widgetId, int indexTag, bool refresh)
@@ -200,8 +200,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetId = widgetItem.Id;
 
         // envoke disable widget interface
-        var firstWidget = !EnabledWidgetWindows.Any(x => x.Id == widgetId);
-        await _widgetResourceService.EnableWidgetAsync(widgetId, firstWidget);
+        var firstWidget = !PinnedWidgetWindows.Any(x => x.Id == widgetId);
+        await _widgetResourceService.PinWidgetAsync(widgetId, firstWidget);
     }
 
     private async void WidgetWindow_Created(Window window, JsonWidgetItem widgetItem, RectSize minSize, RectSize maxSize)
@@ -262,12 +262,12 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             await widgetWindow.SetEditMode(false);
 
             // add to widget list & widget window list
-            EnabledWidgets.Add(new WidgetWindowPair()
+            PinnedWidgets.Add(new WidgetWindowPair()
             {
                 Window = widgetWindow,
                 ViewModel = viewModel
             });
-            EnabledWidgetWindows.Add(widgetWindow);
+            PinnedWidgetWindows.Add(widgetWindow);
         }
     }
 
@@ -280,9 +280,9 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
             // widget close event
             var viewModel = GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
-            if (viewModel is IWidgetClose close)
+            if (viewModel is IWidgetWindowClose close)
             {
-                close.OnWidgetClose();
+                close.WidgetWindowClosing();
             }
         }
     }
@@ -293,8 +293,8 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         var widgetId = widgetItem.Id;
 
         // envoke disable widget interface
-        var lastWidget = !EnabledWidgetWindows.Any(x => x.Id == widgetId);
-        await _widgetResourceService.DisableWidgetAsync(widgetId, lastWidget);
+        var lastWidget = !PinnedWidgetWindows.Any(x => x.Id == widgetId);
+        await _widgetResourceService.UnpinWidgetAsync(widgetId, lastWidget);
     }
 
     #endregion
@@ -309,17 +309,17 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             await WindowsExtensions.CloseWindowAsync(widgetWindow);
 
             // remove from widget list & widget window list
-            EnabledWidgets.RemoveAll(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
-            EnabledWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
+            PinnedWidgets.RemoveAll(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+            PinnedWidgetWindows.RemoveAll(x => x.Id == widgetId && x.IndexTag == indexTag);
         }
     }
 
     private WidgetWindow? GetWidgetWindow(string widgetId, int indexTag)
     {
-        var index = EnabledWidgetWindows.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+        var index = PinnedWidgetWindows.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
         if (index != -1)
         {
-            return EnabledWidgetWindows[index];
+            return PinnedWidgetWindows[index];
         }
 
         return null;
@@ -340,10 +340,10 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     private BaseWidgetViewModel? GetWidgetViewModel(string widgetId, int indexTag)
     {
-        var index = EnabledWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+        var index = PinnedWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
         if (index != -1)
         {
-            return EnabledWidgets[index].ViewModel;
+            return PinnedWidgets[index].ViewModel;
         }
 
         return null;
@@ -397,29 +397,29 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public void AddWidgetItemsToWidgetMenu(MenuFlyout menuFlyout, WidgetWindow widgetWindow)
     {
-        AddDisableDeleteItemsToWidgetMenu(menuFlyout, widgetWindow);
+        AddUnpinDeleteItemsToWidgetMenu(menuFlyout, widgetWindow);
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
         AddLayoutItemsToWidgetMenu(menuFlyout, widgetWindow);
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
         AddRestartItemsToWidgetMenu(menuFlyout, widgetWindow);
     }
 
-    #region Disable & Delete
+    #region Unpin & Delete
 
-    private void AddDisableDeleteItemsToWidgetMenu(MenuFlyout menuFlyout, WidgetWindow widgetWindow)
+    private void AddUnpinDeleteItemsToWidgetMenu(MenuFlyout menuFlyout, WidgetWindow widgetWindow)
     {
-        var disableIcon = new FontIcon()
+        var unpinIcon = new FontIcon()
         {
-            Glyph = "\uE71A"
+            Glyph = "\uE77A"
         };
-        var disableWidgetMenuItem = new MenuFlyoutItem
+        var unpinWidgetMenuItem = new MenuFlyoutItem
         {
             Tag = widgetWindow,
-            Text = "MenuFlyoutItem_DisableWidget.Text".GetLocalized(),
-            Icon = disableIcon
+            Text = "MenuFlyoutItem_UnpinWidget.Text".GetLocalized(),
+            Icon = unpinIcon
         };
-        disableWidgetMenuItem.Click += DisableWidget;
-        menuFlyout.Items.Add(disableWidgetMenuItem);
+        unpinWidgetMenuItem.Click += UnpinWidget;
+        menuFlyout.Items.Add(unpinWidgetMenuItem);
 
         var deleteIcon = new FontIcon()
         {
@@ -435,13 +435,13 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         menuFlyout.Items.Add(deleteWidgetMenuItem);
     }
 
-    private async void DisableWidget(object sender, RoutedEventArgs e)
+    private async void UnpinWidget(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
         {
             var widgetId = widgetWindow.Id;
             var indexTag = widgetWindow.IndexTag;
-            await DisableWidgetAsync(widgetId, indexTag, true);
+            await UnpinWidgetAsync(widgetId, indexTag, true);
         }
     }
 
@@ -608,14 +608,14 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     {
         // save original widget list
         _originalWidgetList.Clear();
-        foreach (var widgetWindow in EnabledWidgetWindows)
+        foreach (var widgetWindow in PinnedWidgetWindows)
         {
             _originalWidgetList.Add(new JsonWidgetItem()
             {
                 Name = _widgetResourceService.GetWidgetName(widgetWindow.Id),
                 Id = widgetWindow.Id,
                 IndexTag = widgetWindow.IndexTag,
-                IsEnabled = true,
+                Pinned = true,
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
@@ -624,7 +624,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         // set edit mode for all widgets
-        await EnabledWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true));
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true));
 
         // hide main window if visible
         if (App.MainWindow.Visible)
@@ -649,7 +649,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async Task SaveAndExitEditMode()
     {
         // restore edit mode for all widgets
-        await EnabledWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false));
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false));
 
         // hide edit mode overlay window
         App.EditModeWindow?.Hide(true);
@@ -663,14 +663,14 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
         // save widget list
         List<JsonWidgetItem> widgetList = [];
-        foreach (var widgetWindow in EnabledWidgetWindows)
+        foreach (var widgetWindow in PinnedWidgetWindows)
         {
             widgetList.Add(new JsonWidgetItem()
             {
                 Name = _widgetResourceService.GetWidgetName(widgetWindow.Id),
                 Id = widgetWindow.Id,
                 IndexTag = widgetWindow.IndexTag,
-                IsEnabled = true,
+                Pinned = true,
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
@@ -685,7 +685,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
     public async void CancelChangesAndExitEditMode()
     {
         // restore position, size, edit mode for all widgets
-        await EnabledWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
         {
             // set edit mode for all widgets
             await window.SetEditMode(false);

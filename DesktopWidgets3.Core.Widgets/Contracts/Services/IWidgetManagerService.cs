@@ -4,7 +4,7 @@ namespace DesktopWidgets3.Core.Widgets.Contracts.Services;
 
 public interface IWidgetManagerService
 {
-    void EnableAllEnabledWidgets();
+    void InitializePinnedWidgets();
 
     Task RestartWidgetsAsync();
 
@@ -12,9 +12,9 @@ public interface IWidgetManagerService
 
     Task<int> AddWidgetAsync(string widgetId, Action<string, int> action, bool updateDashboard);
 
-    Task EnableWidgetAsync(string widgetId, int indexTag);
+    Task PinWidgetAsync(string widgetId, int indexTag);
 
-    Task DisableWidgetAsync(string widgetId, int indexTag, bool refresh);
+    Task UnpinWidgetAsync(string widgetId, int indexTag, bool refresh);
 
     Task DeleteWidgetAsync(string widgetId, int indexTag, bool refresh);
 

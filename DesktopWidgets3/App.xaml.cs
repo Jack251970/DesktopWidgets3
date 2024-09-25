@@ -247,7 +247,7 @@ public partial class App : Application
 
         // Initialize widgets
         await GetService<IWidgetResourceService>().InitalizeAsync();
-        GetService<IWidgetManagerService>().EnableAllEnabledWidgets();
+        GetService<IWidgetManagerService>().InitializePinnedWidgets();
     }
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)

@@ -170,23 +170,23 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task EnableWidgetAsync(string widgetId, int indexTag)
+    public async Task PinWidgetAsync(string widgetId, int indexTag)
     {
         var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
-        if (index != -1 && WidgetList[index].IsEnabled == false)
+        if (index != -1 && WidgetList[index].Pinned == false)
         {
-            WidgetList[index].IsEnabled = true;
+            WidgetList[index].Pinned = true;
 
             await SaveWidgetListAsync();
         }
     }
 
-    public async Task DisableWidgetAsync(string widgetId, int indexTag)
+    public async Task UnpinWidgetAsync(string widgetId, int indexTag)
     {
         var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
-        if (index != -1 && WidgetList[index].IsEnabled == true)
+        if (index != -1 && WidgetList[index].Pinned == true)
         {
-            WidgetList[index].IsEnabled = false;
+            WidgetList[index].Pinned = false;
 
             await SaveWidgetListAsync();
         }

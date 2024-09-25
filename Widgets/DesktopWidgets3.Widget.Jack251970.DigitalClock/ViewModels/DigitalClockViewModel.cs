@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.DigitalClock.ViewModels;
 
-public partial class DigitalClockViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
+public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
 {
     #region view properties
 
@@ -57,9 +56,9 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IAsyncWidgetUp
 
     #endregion
 
-    #region widget update
+    #region IWidgetUpdate
 
-    public async Task EnableUpdateAsync(bool enable)
+    public void EnableUpdate(bool enable)
     {
         if (enable)
         {
@@ -69,15 +68,13 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IAsyncWidgetUp
         {
             dispatcherQueueTimer.Stop();
         }
-
-        await Task.CompletedTask;
     }
 
     #endregion
 
-    #region widget closing
+    #region IWidgetWindowClose
 
-    public void OnWidgetClose()
+    public void WidgetWindowClosing()
     {
         dispatcherQueueTimer.Stop();
         dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();

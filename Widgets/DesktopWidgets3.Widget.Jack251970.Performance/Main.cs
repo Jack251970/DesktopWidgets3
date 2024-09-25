@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance;
 
-public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocalization, IDisposable
+public class Main : IWidget, IWidgetPin, IWidgetSetting, IWidgetLocalization, IDisposable
 {
     #region IWidget
 
@@ -27,12 +27,16 @@ public class Main : IWidget, IWidgetEnableDisable, IWidgetSetting, IWidgetLocali
         return new PerformanceWidget(resourceDictionary, HardwareInfoService);
     }
 
-    public void EnableWidget(bool firstWidget)
+    #endregion
+
+    #region IWidgetPin
+
+    public void WidgetPinning(bool firstWidget)
     {
 
     }
 
-    public void DisableWidget(bool lastWidget)
+    public void WidgetUnpinned(bool lastWidget)
     {
 
     }

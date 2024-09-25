@@ -171,11 +171,11 @@
   <data name="Shell_Dashboard.Content" xml:space="preserve">
     <value>仪表盘</value>
   </data>
-  <data name="Dashboard_DisabledWidgets.Text" xml:space="preserve">
-    <value>已禁用组件</value>
+  <data name="Dashboard_UnpinnedWidgets.Text" xml:space="preserve">
+    <value>未固定组件</value>
   </data>
-  <data name="Dashboard_EnabledWidgets.Text" xml:space="preserve">
-    <value>已启用组件</value>
+  <data name="Dashboard_PinnedWidgets.Text" xml:space="preserve">
+    <value>已固定组件</value>
   </data>
   <data name="Dashboard_AllWidgets.Text" xml:space="preserve">
     <value>所有组件</value>
@@ -195,14 +195,14 @@
   <data name="Ok" xml:space="preserve">
     <value>确认</value>
   </data>
-  <data name="MenuFlyoutItem_DisableWidget.Text" xml:space="preserve">
-    <value>禁用该组件</value>
+  <data name="MenuFlyoutItem_UnpinWidget.Text" xml:space="preserve">
+    <value>取消固定</value>
   </data>
   <data name="MenuFlyoutItem_EditWidgetsLayout.Text" xml:space="preserve">
-    <value>编辑组件布局</value>
+    <value>编辑布局</value>
   </data>
   <data name="MenuFlyoutItem_DeleteWidget.Text" xml:space="preserve">
-    <value>删除该组件</value>
+    <value>删除组件</value>
   </data>
   <data name="Settings_SilentStart_Card.Description" xml:space="preserve">
     <value>在应用启动时隐藏主窗口</value>

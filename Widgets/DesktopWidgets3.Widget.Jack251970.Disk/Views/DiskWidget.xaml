@@ -11,30 +11,21 @@
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea" Background="Transparent">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <TextBlock Margin="20,20,20,10" Text="{StaticResource Widget_Disk_TextBlock_Text}" />
-            <ListView
-                Grid.Row="1"
-                Margin="5,0,10,0"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                ItemsSource="{x:Bind ViewModel.ProgressCardItems, Mode=OneWay}"
-                SelectionMode="None">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:ProgressCardData">
-                        <usercontrols:ProgressCard
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            LeftTitle="{Binding LeftTitle, Mode=OneWay}"
-                            ProgressValue="{Binding ProgressValue, Mode=OneWay}"
-                            RightTitle="{Binding RightTitle, Mode=OneWay}" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Grid>
+        <ListView
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            ItemsSource="{x:Bind ViewModel.ProgressCardItems, Mode=OneWay}"
+            SelectionMode="None">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:ProgressCardData">
+                    <usercontrols:ProgressCard
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        LeftTitle="{Binding LeftTitle, Mode=OneWay}"
+                        ProgressValue="{Binding ProgressValue, Mode=OneWay}"
+                        RightTitle="{Binding RightTitle, Mode=OneWay}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </UserControl>

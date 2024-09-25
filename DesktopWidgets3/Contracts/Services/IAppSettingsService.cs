@@ -28,9 +28,9 @@ public interface IAppSettingsService
 
     Task DeleteWidgetAsync(string widgetId, int indexTag);
 
-    Task EnableWidgetAsync(string widgetId, int indexTag);
+    Task PinWidgetAsync(string widgetId, int indexTag);
 
-    Task DisableWidgetAsync(string widgetId, int indexTag);
+    Task UnpinWidgetAsync(string widgetId, int indexTag);
 
     Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings);
 

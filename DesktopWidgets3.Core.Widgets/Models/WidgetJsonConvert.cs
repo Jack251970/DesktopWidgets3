@@ -20,7 +20,7 @@ public class JsonWidgetItemConverter : JsonConverter
         var widgetName = jsonObject["Name"]?.Value<string>() ?? string.Empty;
         var widgetId = jsonObject["Id"]?.Value<string>() ?? StringUtils.GetRandomWidgetId();
         var indexTag = jsonObject["IndexTag"]?.Value<int>() ?? new Random().Next(100, 999);
-        var isEnabled = jsonObject["IsEnabled"]?.Value<bool>() ?? false;
+        var pinned = jsonObject["Pinned"]?.Value<bool>() ?? false;
         var position = jsonObject["Position"]?.ToObject<PointInt32>(serializer) ?? new PointInt32(-1, -1);
         var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? new RectSize(318, 200);
         var displayMonitor = jsonObject["DisplayMonitor"]?.ToObject<DisplayMonitor>(serializer) ?? DisplayMonitor.GetPrimaryMonitorInfo();
@@ -33,7 +33,7 @@ public class JsonWidgetItemConverter : JsonConverter
             Name = widgetName,
             Id = widgetId,
             IndexTag = indexTag,
-            IsEnabled = isEnabled,
+            Pinned = pinned,
             Position = position,
             Size = size,
             DisplayMonitor = displayMonitor,
@@ -51,7 +51,7 @@ public class JsonWidgetItemConverter : JsonConverter
             new JProperty("Name", widgetItem.Name),
             new JProperty("Id", widgetId),
             new JProperty("IndexTag", widgetItem.IndexTag),
-            new JProperty("IsEnabled", widgetItem.IsEnabled),
+            new JProperty("Pinned", widgetItem.Pinned),
             new JProperty("Position", JToken.FromObject(widgetItem.Position, serializer)),
             new JProperty("Size", JToken.FromObject(widgetItem.Size, serializer)),
             new JProperty("DisplayMonitor", JToken.FromObject(widgetItem.DisplayMonitor, serializer))

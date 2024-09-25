@@ -266,7 +266,11 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         return new UserControl();
     }
 
-    public async Task EnableWidgetAsync(string widgetId, bool firstWidget)
+    #endregion
+
+    #region IWidgetPin
+
+    public async Task PinWidgetAsync(string widgetId, bool firstWidget)
     {
         var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
@@ -274,11 +278,11 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             var widget = InstalledWidgets[index];
             switch (widget.Widget)
             {
-                case IWidgetEnableDisable enableDisable:
-                    enableDisable.EnableWidget(firstWidget);
+                case IWidgetPin pinUnpin:
+                    pinUnpin.WidgetPinning(firstWidget);
                     break;
-                case IAsyncWidgetEnableDisable asyncEnableDisable:
-                    await asyncEnableDisable.EnableWidgetAsync(firstWidget);
+                case IAsyncWidgetPin asyncPinUnpin:
+                    await asyncPinUnpin.WidgetPinningAsync(firstWidget);
                     break;
             }
         }
@@ -286,7 +290,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         await Task.CompletedTask;
     }
 
-    public async Task DisableWidgetAsync(string widgetId, bool lastWidget)
+    public async Task UnpinWidgetAsync(string widgetId, bool lastWidget)
     {
         var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
@@ -294,11 +298,11 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
             var widget = InstalledWidgets[index];
             switch (widget.Widget)
             {
-                case IWidgetEnableDisable enableDisable:
-                    enableDisable.DisableWidget(lastWidget);
+                case IWidgetPin pinUnpin:
+                    pinUnpin.WidgetUnpinned(lastWidget);
                     break;
-                case IAsyncWidgetEnableDisable asyncEnableDisable:
-                    await asyncEnableDisable.DisableWidgetAsync(lastWidget);
+                case IAsyncWidgetPin asyncPinUnpin:
+                    await asyncPinUnpin.WidgetUnpinnedAsync(lastWidget);
                     break;
             }
         }
@@ -608,7 +612,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                     IndexTag = indexTag,
                     Name = string.Format("Unknown_Widget_Name".GetLocalized(), unknownWidgetIdList.Count),
                     IcoPath = Constant.UnknownWidgetIcoPath,
-                    IsEnabled = widget.IsEnabled,
+                    Pinned = widget.Pinned,
                     IsUnknown = true,
                     IsInstalled = false,
                 });
@@ -622,7 +626,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                     IndexTag = indexTag,
                     Name = GetWidgetName(allIndex, installedIndex),
                     IcoPath = GetWidgetIcoPath(allIndex, installedIndex),
-                    IsEnabled = widget.IsEnabled,
+                    Pinned = widget.Pinned,
                     IsUnknown = false,
                     IsInstalled = installed
                 });
@@ -643,7 +647,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 IndexTag = indexTag,
                 Name = GetWidgetName(allIndex, installedIndex),
                 IcoPath = GetWidgetIcoPath(allIndex, installedIndex),
-                IsEnabled = true,
+                Pinned = true,
                 IsUnknown = false,
                 IsInstalled = installed
             };

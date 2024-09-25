@@ -6,8 +6,8 @@ namespace DesktopWidgets3.ViewModels.Pages;
 public partial class DashboardViewModel(IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
 {
     public ObservableCollection<DashboardWidgetItem> AllWidgets { get; set; } = [];
-    public ObservableCollection<DashboardWidgetItem> EnabledWidgets { get; set; } = [];
-    public ObservableCollection<DashboardWidgetItem> DisabledWidgets { get; set; } = [];
+    public ObservableCollection<DashboardWidgetItem> PinnedWidgets { get; set; } = [];
+    public ObservableCollection<DashboardWidgetItem> UnpinnedWidgets { get; set; } = [];
 
     private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
@@ -29,21 +29,21 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
         yourWidgets = _widgetResourceService.GetYourDashboardItems();
         foreach (var item in yourWidgets)
         {
-            item.EnabledChangedCallback = WidgetEnabledChanged;
+            item.PinnedChangedCallback = OnPinnedChanged;
         }
     }
 
-    private async void WidgetEnabledChanged(DashboardWidgetItem dashboardListItem)
+    private async void OnPinnedChanged(DashboardWidgetItem dashboardListItem)
     {
-        if (dashboardListItem.IsEnabled)
+        if (dashboardListItem.Pinned)
         {
-            await _widgetManagerService.EnableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag);
-            yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = true;
+            await _widgetManagerService.PinWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag);
+            yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).Pinned = true;
         }
         else
         {
-            await _widgetManagerService.DisableWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag, false);
-            yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).IsEnabled = false;
+            await _widgetManagerService.UnpinWidgetAsync(dashboardListItem.Id, dashboardListItem.IndexTag, false);
+            yourWidgets.First(x => x.Id == dashboardListItem.Id && x.IndexTag == dashboardListItem.IndexTag).Pinned = false;
         }
 
         RefreshYourWidgets();
@@ -58,14 +58,14 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
         var widgetItem = _widgetResourceService.GetDashboardItem(widgetId, indexTag);
         if (widgetItem != null)
         {
-            widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+            widgetItem.PinnedChangedCallback = OnPinnedChanged;
             yourWidgets.Add(widgetItem);
 
             RefreshYourWidgets();
         }
     }
 
-    internal void RefreshDisabledWidget(string widgetId, int indexTag)
+    internal void RefreshUnpinnedWidget(string widgetId, int indexTag)
     {
         yourWidgets.Remove(yourWidgets.First(x => x.Id == widgetId && x.IndexTag == indexTag));
 
@@ -84,18 +84,18 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
 
     private void RefreshYourWidgets()
     {
-        EnabledWidgets.Clear();
-        DisabledWidgets.Clear();
+        PinnedWidgets.Clear();
+        UnpinnedWidgets.Clear();
 
         foreach (var item in yourWidgets)
         {
-            if (item.IsEnabled)
+            if (item.Pinned)
             {
-                EnabledWidgets.Add(item);
+                PinnedWidgets.Add(item);
             }
             else
             {
-                DisabledWidgets.Add(item);
+                UnpinnedWidgets.Add(item);
             }
         }
     }
@@ -128,18 +128,18 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
                     var widgetItem = _widgetResourceService.GetDashboardItem(widgetId, indexTag);
                     if (widgetItem != null)
                     {
-                        widgetItem.EnabledChangedCallback = WidgetEnabledChanged;
+                        widgetItem.PinnedChangedCallback = OnPinnedChanged;
                         yourWidgets.Add(widgetItem);
 
                         RefreshYourWidgets();
                     }
                     break;
-                case DashboardViewModelNavigationParameter.UpdateEvent.Disable:
+                case DashboardViewModelNavigationParameter.UpdateEvent.Unpin:
                     var widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
                     if (widgetIndex != -1)
                     {
-                        yourWidgets[widgetIndex].IsEnabled = false;
-                        yourWidgets[widgetIndex].EnabledChangedCallback = WidgetEnabledChanged;
+                        yourWidgets[widgetIndex].Pinned = false;
+                        yourWidgets[widgetIndex].PinnedChangedCallback = OnPinnedChanged;
 
                         RefreshYourWidgets();
                     }

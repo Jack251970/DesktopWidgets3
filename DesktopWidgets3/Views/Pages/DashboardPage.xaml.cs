@@ -71,7 +71,7 @@ public sealed partial class DashboardPage : Page
         {
             if (await DialogFactory.ShowDeleteWidgetDialogAsync(App.MainWindow) == WidgetDialogResult.Left)
             {
-                ViewModel.RefreshDisabledWidget(_widgetId, _indexTag);
+                ViewModel.RefreshUnpinnedWidget(_widgetId, _indexTag);
                 await _widgetManagerService.DeleteWidgetAsync(_widgetId, _indexTag, false);
             }
             _indexTag = -1;

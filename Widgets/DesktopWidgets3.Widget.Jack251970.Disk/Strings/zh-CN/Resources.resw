@@ -123,7 +123,4 @@
   <data name="Title" xml:space="preserve">
     <value>磁盘</value>
   </data>
-  <data name="Widget_Disk_TextBlock_Text" xml:space="preserve">
-    <value>磁盘</value>
-  </data>
 </root>

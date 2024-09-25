@@ -180,11 +180,11 @@
   <data name="Shell_Dashboard.Content" xml:space="preserve">
     <value>Dashboard</value>
   </data>
-  <data name="Dashboard_DisabledWidgets.Text" xml:space="preserve">
-    <value>Disabled widgets</value>
+  <data name="Dashboard_UnpinnedWidgets.Text" xml:space="preserve">
+    <value>Unpinned widgets</value>
   </data>
-  <data name="Dashboard_EnabledWidgets.Text" xml:space="preserve">
-    <value>Enabled widgets</value>
+  <data name="Dashboard_PinnedWidgets.Text" xml:space="preserve">
+    <value>Pinned widgets</value>
   </data>
   <data name="Dashboard_AllWidgets.Text" xml:space="preserve">
     <value>All widgets</value>
@@ -204,8 +204,8 @@
   <data name="Ok" xml:space="preserve">
     <value>Ok</value>
   </data>
-  <data name="MenuFlyoutItem_DisableWidget.Text" xml:space="preserve">
-    <value>Disable this widget</value>
+  <data name="MenuFlyoutItem_UnpinWidget.Text" xml:space="preserve">
+    <value>Unpin this widget</value>
   </data>
   <data name="MenuFlyoutItem_EditWidgetsLayout.Text" xml:space="preserve">
     <value>Edit widgets layout</value>

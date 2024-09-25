@@ -4,12 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace DesktopWidgets3.Widget.Jack251970.Network.ViewModels;
 
-public partial class NetworkViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
+public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
 {
     private static string ClassName => typeof(NetworkViewModel).Name;
 
@@ -223,20 +222,18 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate,
 
     #endregion
 
-    #region widget update
+    #region IWidgetUpdate
 
-    public async Task EnableUpdateAsync(bool enable)
+    public void EnableUpdate(bool enable)
     {
         updateTimer.Enabled = enable;
-
-        await Task.CompletedTask;
     }
 
     #endregion
 
-    #region widget closing
+    #region IWidgetWindowClose
 
-    public void OnWidgetClose()
+    public void WidgetWindowClosing()
     {
         updateTimer.Dispose();
     }

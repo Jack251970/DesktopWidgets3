@@ -19,7 +19,7 @@
         ToolTipService.ToolTip="{x:Bind AppDisplayName, Mode=OneTime}"
         ToolTipText="{x:Bind AppDisplayName, Mode=OneTime}">
         <tb:TaskbarIcon.ContextFlyout>
-            <MenuFlyout AreOpenCloseAnimationsEnabled="False">
+            <MenuFlyout>
                 <MenuFlyoutItem x:Uid="TrayMenu_MenuFlyoutItem_ShowWindow" Command="{x:Bind ShowWindowCommand}" />
                 <MenuFlyoutSeparator />
                 <MenuFlyoutItem x:Uid="TrayMenu_MenuFlyoutItem_ExitApp" Command="{x:Bind ExitAppCommand}" />

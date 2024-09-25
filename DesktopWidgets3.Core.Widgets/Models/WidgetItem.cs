@@ -10,15 +10,15 @@ public class BaseWidgetItem
 
     public required int IndexTag { get; set; }
 
-    protected bool _isEnabled;
-    public bool IsEnabled
+    protected bool _pinned;
+    public bool Pinned
     {
-        get => _isEnabled;
+        get => _pinned;
         set
         {
-            if (_isEnabled != value)
+            if (_pinned != value)
             {
-                _isEnabled = value;
+                _pinned = value;
             }
         }
     }
@@ -52,17 +52,17 @@ public class DashboardWidgetItem : BaseWidgetItem
 
     public required string IcoPath { get; set; }
 
-    public new bool IsEnabled
+    public new bool Pinned
     {
-        get => _isEnabled;
+        get => _pinned;
         set
         {
-            if (_isEnabled != value)
+            if (_pinned != value)
             {
-                _isEnabled = value;
+                _pinned = value;
                 if (Editable)
                 {
-                    EnabledChangedCallback?.Invoke(this);
+                    PinnedChangedCallback?.Invoke(this);
                 }
             }
         }
@@ -74,7 +74,7 @@ public class DashboardWidgetItem : BaseWidgetItem
 
     public bool Editable => (!IsUnknown) && IsInstalled;
 
-    public Action<DashboardWidgetItem>? EnabledChangedCallback { get; set; }
+    public Action<DashboardWidgetItem>? PinnedChangedCallback { get; set; }
 }
 
 public class BaseWidgetStoreItem()

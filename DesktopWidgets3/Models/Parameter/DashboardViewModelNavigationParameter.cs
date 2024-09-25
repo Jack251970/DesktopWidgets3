@@ -11,7 +11,7 @@ public class DashboardViewModelNavigationParameter
     public enum UpdateEvent
     {
         Add,
-        Disable,
+        Unpin,
         Delete
     }
 }

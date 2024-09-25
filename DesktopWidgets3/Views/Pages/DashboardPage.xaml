@@ -80,11 +80,11 @@
                 Style="{StaticResource PageTitleStyle}" />
 
             <TextBlock
-                x:Uid="Dashboard_EnabledWidgets"
+                x:Uid="Dashboard_PinnedWidgets"
                 Margin="0,6,0,6"
                 Style="{StaticResource BodyTextStyle}" />
 
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.EnabledWidgets, Mode=OneWay}">
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.PinnedWidgets, Mode=OneWay}">
                 <ItemsRepeater.Layout>
                     <controls:StaggeredLayout
                         ColumnSpacing="8"
@@ -133,7 +133,7 @@
                                         Margin="0,-2,0,0"
                                         HorizontalAlignment="Right"
                                         IsEnabled="{x:Bind Editable, Mode=OneTime}"
-                                        IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                                        IsOn="{x:Bind Pinned, Mode=TwoWay}"
                                         OffContent=""
                                         OnContent=""
                                         Style="{StaticResource RightAlignedCompactToggleSwitchStyle}" />
@@ -145,11 +145,11 @@
             </ItemsRepeater>
 
             <TextBlock
-                x:Uid="Dashboard_DisabledWidgets"
+                x:Uid="Dashboard_UnpinnedWidgets"
                 Margin="0,12,0,6"
                 Style="{StaticResource BodyTextStyle}" />
 
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.DisabledWidgets, Mode=OneWay}">
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.UnpinnedWidgets, Mode=OneWay}">
                 <ItemsRepeater.Layout>
                     <controls:StaggeredLayout
                         ColumnSpacing="8"
@@ -198,7 +198,7 @@
                                         Margin="0,-2,0,0"
                                         HorizontalAlignment="Right"
                                         IsEnabled="{x:Bind Editable, Mode=OneTime}"
-                                        IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                                        IsOn="{x:Bind Pinned, Mode=TwoWay}"
                                         OffContent=""
                                         OnContent=""
                                         Style="{StaticResource RightAlignedCompactToggleSwitchStyle}" />

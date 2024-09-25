@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.AnalogClock.ViewModels;
 
-public partial class AnalogClockViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
+public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
 {
     #region view properties
 
@@ -74,9 +73,9 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
 
     #endregion
 
-    #region widget update
+    #region IWidgetUpdate
 
-    public async Task EnableUpdateAsync(bool enable)
+    public void EnableUpdate(bool enable)
     {
         if (enable)
         {
@@ -86,15 +85,13 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
         {
             dispatcherQueueTimer.Stop();
         }
-
-        await Task.CompletedTask;
     }
 
     #endregion
 
-    #region widget closing
+    #region IWidgetWindowClose
 
-    public void OnWidgetClose()
+    public void WidgetWindowClosing()
     {
         Main.Context.SettingsService.OnBatterySaverChanged -= OnBatterySaverChanged;
         dispatcherQueueTimer.Stop();

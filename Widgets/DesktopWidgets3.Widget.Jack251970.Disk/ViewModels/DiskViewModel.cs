@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.Disk.ViewModels;
 
-public partial class DiskViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
+public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
 {
     private static string ClassName => typeof(DiskViewModel).Name;
 
@@ -184,20 +183,18 @@ public partial class DiskViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IW
 
     #endregion
 
-    #region widget update
+    #region IWidgetUpdate
 
-    public async Task EnableUpdateAsync(bool enable)
+    public void EnableUpdate(bool enable)
     {
         updateTimer.Enabled = enable;
-
-        await Task.CompletedTask;
     }
 
     #endregion
 
-    #region widget closing
+    #region IWidgetWindowClose
 
-    public void OnWidgetClose()
+    public void WidgetWindowClosing()
     {
         updateTimer.Dispose();
     }

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Timers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.ViewModels;
 
-public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpdate, IWidgetClose
+public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
 {
     private static string ClassName => typeof(PerformanceViewModel).Name;
 
@@ -191,22 +190,20 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IAsyncWidgetUpd
 
     #endregion
 
-    #region widget update
+    #region IWidgetUpdate
 
-    public async Task EnableUpdateAsync(bool enable)
+    public void EnableUpdate(bool enable)
     {
         cpuUpdateTimer.Enabled = enable;
         gpuUpdateTimer.Enabled = enable;
         memoryUpdateTimer.Enabled = enable;
-
-        await Task.CompletedTask;
     }
 
     #endregion
 
-    #region widget closing
+    #region IWidgetWindowClose
 
-    public void OnWidgetClose()
+    public void WidgetWindowClosing()
     {
         cpuUpdateTimer.Dispose();
         gpuUpdateTimer.Dispose();
