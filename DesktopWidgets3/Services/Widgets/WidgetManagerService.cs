@@ -5,11 +5,10 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IDialogService dialogService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
     private readonly IActivationService _activationService = activationService;
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
-    private readonly IDialogService _dialogService = dialogService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
@@ -460,7 +459,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                     await DeleteWidgetAsync(widgetId, indexTag, true);
                 }
                 window.Hide();
-            });
+            }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
         }
     }
 
