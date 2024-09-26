@@ -20,8 +20,21 @@ public sealed partial class OverlayWindow : WindowEx
         SystemHelper.HideWindowIconFromTaskbar(this.GetWindowHandle());
     }
 
+    public void CenterTopOnMonitor()
+    {
+        var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
+        var monitorWidth = monitorInfo.RectMonitor.Width;
+        if (monitorWidth != null)
+        {
+            var windowWidth = AppWindow.Size.Width;
+            this.Move((int)(monitorWidth - windowWidth) / 2, 8);
+        }
+    }
+
+    #region Commands
+
     [RelayCommand]
-    private async Task SaveAndExitEditMode()
+    private async Task SaveAndExitEditModeAsync()
     {
         await _widgetManagerService.SaveAndExitEditMode();
     }
@@ -39,14 +52,5 @@ public sealed partial class OverlayWindow : WindowEx
         _widgetManagerService.CancelChangesAndExitEditMode();
     }
 
-    public void CenterTopOnMonitor()
-    {
-        var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
-        var monitorWidth = monitorInfo.RectMonitor.Width;
-        if (monitorWidth != null)
-        {
-            var windowWidth = AppWindow.Size.Width;
-            this.Move((int)(monitorWidth - windowWidth) / 2, 8);
-        }
-    }
+    #endregion
 }

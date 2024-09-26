@@ -8,7 +8,7 @@ namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
 public sealed partial class WidgetWindow : WindowEx
 {
-    #region position & size
+    #region Position & Size
 
     private PointInt32 position;
     public PointInt32 Position
@@ -125,7 +125,7 @@ public sealed partial class WidgetWindow : WindowEx
         SizeChanged += WidgetWindow_SizeChanged;
     }
 
-    #region position & size
+    #region Position & Size
 
     private Size GetAppWindowSize()
     {

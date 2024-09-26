@@ -22,12 +22,17 @@ public sealed partial class FullScreenWindow : WindowEx
 
     #region Hide & Show
 
+    public void Show()
+    {
+        ShowFullScreen();
+    }
+
     public void Hide()
     {
         this.Hide(false);
     }
 
-    public void ShowFullScreen()
+    private void ShowFullScreen()
     {
         var primaryMonitorInfo = DisplayMonitor.GetPrimaryMonitorInfo();
         var primaryMonitorWidth = primaryMonitorInfo.RectMonitor.Width;

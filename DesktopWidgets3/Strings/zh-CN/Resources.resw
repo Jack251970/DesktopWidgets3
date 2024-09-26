@@ -297,11 +297,11 @@
   <data name="MenuFlyoutItem_RestartWidgets.Text" xml:space="preserve">
     <value>重启所有组件</value>
   </data>
-  <data name="Dialog_QuitEditMode.Title" xml:space="preserve">
-    <value>退出编辑模式</value>
+  <data name="Dialog_SaveCurrentLayout.Title" xml:space="preserve">
+    <value>保存现有布局</value>
   </data>
-  <data name="Dialog_QuitEditMode.Content" xml:space="preserve">
-    <value>你想要保存目前的布局吗？</value>
+  <data name="Dialog_SaveCurrentLayout.Content" xml:space="preserve">
+    <value>你想要保存现有的布局吗？</value>
   </data>
   <data name="WidgetPage_MoreOptionsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>更多选项</value>

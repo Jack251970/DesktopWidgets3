@@ -5,11 +5,12 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IAppSettingsService appSettingsService, INavigationService navigationService, IActivationService activationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, IDialogService dialogService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
-    private readonly IAppSettingsService _appSettingsService = appSettingsService;
-    private readonly INavigationService _navigationService = navigationService;
     private readonly IActivationService _activationService = activationService;
+    private readonly IAppSettingsService _appSettingsService = appSettingsService;
+    private readonly IDialogService _dialogService = dialogService;
+    private readonly INavigationService _navigationService = navigationService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     private readonly List<WidgetWindowPair> PinnedWidgets = [];
@@ -50,7 +51,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     public async Task CloseAllWidgetsAsync()
     {
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync);
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
     }
 
     #endregion
@@ -451,10 +452,15 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         {
             var widgetId = widgetWindow.Id;
             var indexTag = widgetWindow.IndexTag;
-            if (await DialogFactory.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
+            await App.FullScreenWindow.EnqueueOrInvokeAsync(async (window) =>
             {
-                await DeleteWidgetAsync(widgetId, indexTag, true);
-            }
+                window.Show();
+                if (await DialogFactory.ShowDeleteWidgetDialogAsync(window) == WidgetDialogResult.Left)
+                {
+                    await DeleteWidgetAsync(widgetId, indexTag, true);
+                }
+                window.Hide();
+            });
         }
     }
 
@@ -599,11 +605,6 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
 
     #region edit mode
 
-    public bool InEditMode()
-    {
-        return _inEditMode;
-    }
-
     public async void EnterEditMode()
     {
         // save original widget list
@@ -623,33 +624,33 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
             });
         }
 
+        // set flag
+        _inEditMode = true;
+
         // set edit mode for all widgets
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true));
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
-        // hide main window if visible
-        if (App.MainWindow.Visible)
+        // hide main window & get primary monitor info & show edit mode overlay window
+        await App.MainWindow.EnqueueOrInvokeAsync(async (window) =>
         {
-            await App.MainWindow.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync);
-            _restoreMainWindow = true;
-        }
+            if (App.MainWindow.Visible)
+            {
+                await WindowsExtensions.CloseWindowAsync(App.MainWindow);
+                _restoreMainWindow = true;
+            }
 
-        // get primary monitor info & show edit mode overlay window
-        await App.EditModeWindow.EnqueueOrInvokeAsync((window) =>
-        {
             // move to center top
-            window.CenterTopOnMonitor();
+            App.EditModeWindow.CenterTopOnMonitor();
 
             // show edit mode overlay window
-            window.Show(true);
-        });
-
-        _inEditMode = true;
+            App.EditModeWindow.Show(true);
+        }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
     }
 
     public async Task SaveAndExitEditMode()
     {
         // restore edit mode for all widgets
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false));
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide edit mode overlay window
         App.EditModeWindow?.Hide(true);
@@ -700,7 +701,7 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
                 window.Size = originalWidget.Size;
                 window.Show(true);
             };
-        });
+        }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide edit mode overlay window
         App.EditModeWindow?.Hide(true);
@@ -713,6 +714,18 @@ internal class WidgetManagerService(IAppSettingsService appSettingsService, INav
         }
 
         _inEditMode = false;
+    }
+
+    public async Task CheckEditModeAsync()
+    {
+        if (_inEditMode)
+        {
+            App.ShowMainWindow(false);
+            if (await DialogFactory.ShowQuitEditModeDialogAsync(App.MainWindow) == WidgetDialogResult.Left)
+            {
+                await SaveAndExitEditMode();
+            }
+        }
     }
 
     #endregion

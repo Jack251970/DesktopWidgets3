@@ -17,7 +17,7 @@ public sealed partial class MainWindow : WindowEx
 
     private readonly UISettings settings;
 
-    #region position & size
+    #region Position & Size
 
     public PointInt32 Position
     {
@@ -33,7 +33,7 @@ public sealed partial class MainWindow : WindowEx
 
     #endregion
 
-    #region ui elements
+    #region UI Elements
 
     public UIElement? TitleBar { get; set; }
 
@@ -43,7 +43,7 @@ public sealed partial class MainWindow : WindowEx
 
     #endregion
 
-    #region manager & handle
+    #region Manager & Handle
 
     public WindowManager WindowManager => _manager;
     public IntPtr WindowHandle => _handle;
@@ -71,7 +71,7 @@ public sealed partial class MainWindow : WindowEx
 
         Closed += WindowEx_Closed;
     }
-    
+
     public void CenterOnRectWork()
     {
         var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
@@ -130,10 +130,6 @@ public sealed partial class MainWindow : WindowEx
     {
         if (App.CanCloseWindow)
         {
-            if (_widgetManagerService.InEditMode() && await DialogFactory.ShowQuitEditModeDialogAsync() == WidgetDialogResult.Left)
-            {
-                await _widgetManagerService.SaveAndExitEditMode();
-            }
             App.FullScreenWindow.Close();
             await _widgetManagerService.CloseAllWidgetsAsync();
             await WindowsExtensions.CloseAllWindowsAsync();

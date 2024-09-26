@@ -54,7 +54,7 @@ internal class ThemeSelectorService(ILocalSettingsService localSettingsService, 
 
         await SetRequestedThemeAsync(App.MainWindow);
 
-        await WindowsExtensions.GetAllWindows().EnqueueOrInvokeAsync(SetRequestedThemeAsync);
+        await WindowsExtensions.GetAllWindows().EnqueueOrInvokeAsync(SetRequestedThemeAsync, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         await SaveThemeInSettingsAsync(Theme);
     }

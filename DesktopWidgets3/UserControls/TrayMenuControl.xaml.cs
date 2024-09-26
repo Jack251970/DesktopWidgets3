@@ -12,10 +12,14 @@ public sealed partial class TrayMenuControl : UserControl
     [ObservableProperty]
     private string _appDisplayName = ConstantHelper.AppAppDisplayName;
 
+    private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
+
     public TrayMenuControl()
     {
         InitializeComponent();
     }
+
+    #region Commands
 
     [RelayCommand]
     private void ShowWindow()
@@ -24,14 +28,22 @@ public sealed partial class TrayMenuControl : UserControl
     }
 
     [RelayCommand]
-    private async Task ExitApp()
+    private async Task ExitAppAsync()
+    {
+        await _widgetManagerService.CheckEditModeAsync();
+        DisposeTrayIconControl();
+        App.CanCloseWindow = true;
+        App.MainWindow.Close();
+    }
+
+    private void DisposeTrayIconControl()
     {
         try
         {
             TrayIconControl.Dispose();
         }
-        catch {}
-        App.CanCloseWindow = true;
-        await WindowsExtensions.CloseWindowAsync(App.MainWindow);
+        catch { }
     }
+
+    #endregion
 }

@@ -297,10 +297,10 @@
   <data name="MenuFlyoutItem_RestartWidgets.Text" xml:space="preserve">
     <value>Restart all widgets</value>
   </data>
-  <data name="Dialog_QuitEditMode.Title" xml:space="preserve">
-    <value>Quit edit mode</value>
+  <data name="Dialog_SaveCurrentLayout.Title" xml:space="preserve">
+    <value>Save the current layout</value>
   </data>
-  <data name="Dialog_QuitEditMode.Content" xml:space="preserve">
+  <data name="Dialog_SaveCurrentLayout.Content" xml:space="preserve">
     <value>Do you want to save the current layout?</value>
   </data>
   <data name="WidgetPage_MoreOptionsButton.ToolTipService.ToolTip" xml:space="preserve">

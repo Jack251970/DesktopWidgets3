@@ -63,6 +63,8 @@ public partial class App : Application
 
     #endregion
 
+    #region Constructor
+
     public App()
     {
         // Check if app is already running
@@ -214,6 +216,8 @@ public partial class App : Application
         // Initialize custom extension host
         ApplicationExtensionHost.Initialize(this);
     }
+
+    #endregion
 
     #region App Lifecycle
 

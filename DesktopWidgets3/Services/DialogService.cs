@@ -7,12 +7,12 @@ internal class DialogService : IDialogService
     private readonly string Ok = "Ok".GetLocalized();
     private readonly string Cancel = "Cancel".GetLocalized();
 
-    public async Task ShowOneButtonDialogAsync(WindowEx? window, string title, string context, string button = null!)
+    public async Task ShowOneButtonDialogAsync(WindowEx window, string title, string context, string button = null!)
     {
         await ShowMessageDialogAsync(window, context, null, title: title);
     }
 
-    public async Task<WidgetDialogResult> ShowTwoButtonDialogAsync(WindowEx? window, string title, string context, string leftButton = null!, string rightButton = null!)
+    public async Task<WidgetDialogResult> ShowTwoButtonDialogAsync(WindowEx window, string title, string context, string leftButton = null!, string rightButton = null!)
     {
         leftButton = leftButton is null ? Ok : leftButton;
         rightButton = rightButton is null ? Cancel : rightButton;
@@ -39,7 +39,7 @@ internal class DialogService : IDialogService
         }
     }
 
-    public async Task<WidgetDialogResult> ShowThreeButtonDialogAsync(WindowEx? window, string title, string context, string leftButton = null!, string centerButton = null!, string rightButton = null!)
+    public async Task<WidgetDialogResult> ShowThreeButtonDialogAsync(WindowEx window, string title, string context, string leftButton = null!, string centerButton = null!, string rightButton = null!)
     {
         if (centerButton is null)
         {
@@ -76,20 +76,14 @@ internal class DialogService : IDialogService
         }
     }
 
-    private static async Task<IUICommand?> ShowMessageDialogAsync(WindowEx? window, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0u, uint cancelCommandIndex = 1u, string title = "")
+    public async Task HideFullScreenDialogAsync()
     {
-        if (window is null || window == App.FullScreenWindow)
-        {
-            await App.FullScreenWindow.EnqueueOrInvokeAsync((window) => window.ShowFullScreen());
-            var result = await App.FullScreenWindow.EnqueueOrInvokeAsync((window) => window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title));
-            await App.FullScreenWindow.EnqueueOrInvokeAsync((window) => window.Hide());
-            return result;
-        }
-        else
-        {
-            var result = await window.EnqueueOrInvokeAsync((window) => window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title));
-            return result;
-        }
+        await App.FullScreenWindow.EnqueueOrInvokeAsync((window) => window.Hide(), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+    }
+
+    private static async Task<IUICommand> ShowMessageDialogAsync(WindowEx window, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0u, uint cancelCommandIndex = 1u, string title = "")
+    {
+        return await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
     }
 }
 
