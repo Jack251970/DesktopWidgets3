@@ -30,10 +30,14 @@ public sealed partial class FullScreenWindow : WindowEx
     public void ShowFullScreen()
     {
         var primaryMonitorInfo = DisplayMonitor.GetPrimaryMonitorInfo();
-        var primaryMonitorWidth = primaryMonitorInfo.RectMonitor.Width!.Value;
-        var primaryMonitorHeight = primaryMonitorInfo.RectMonitor.Height!.Value;
-        this.MoveAndResize(0, 0, primaryMonitorWidth, primaryMonitorHeight);
-        this.Show(false);
+        var primaryMonitorWidth = primaryMonitorInfo.RectMonitor.Width;
+        var primaryMonitorHeight = primaryMonitorInfo.RectMonitor.Height;
+        var scale = 96f / this.GetDpiForWindow();
+        if (primaryMonitorWidth != null && primaryMonitorHeight != null)
+        {
+            this.MoveAndResize(0, 0, (double)primaryMonitorWidth * scale + 1, (double)primaryMonitorHeight * scale + 1);
+            this.Show(false);
+        }
     }
 
     #endregion

@@ -22,16 +22,11 @@ internal class DialogService : IDialogService
             new UICommand(rightButton)
         };
 
-        if (window is null)
-        {
-            App.FullScreenWindow.ShowFullScreen();
-        }
-
         var result = await ShowMessageDialogAsync(window, context, commands, title: title);
 
-        if (window is null)
+        if (result == null)
         {
-            App.FullScreenWindow.Hide();
+            return WidgetDialogResult.Unknown;
         }
 
         if (result.Label == leftButton)
@@ -62,6 +57,11 @@ internal class DialogService : IDialogService
 
         var result = await ShowMessageDialogAsync(window, context, commands, title: title);
 
+        if (result == null)
+        {
+            return WidgetDialogResult.Unknown;
+        }
+
         if (result.Label == leftButton)
         {
             return WidgetDialogResult.Left;
@@ -76,18 +76,18 @@ internal class DialogService : IDialogService
         }
     }
 
-    private static async Task<IUICommand> ShowMessageDialogAsync(WindowEx? window, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0u, uint cancelCommandIndex = 1u, string title = "")
+    private static async Task<IUICommand?> ShowMessageDialogAsync(WindowEx? window, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0u, uint cancelCommandIndex = 1u, string title = "")
     {
         if (window is null || window == App.FullScreenWindow)
         {
-            App.FullScreenWindow.ShowFullScreen();
-            var result = await App.FullScreenWindow.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
-            App.FullScreenWindow.Hide();
+            await App.FullScreenWindow.EnqueueOrInvokeAsync((window) => window.ShowFullScreen());
+            var result = await App.FullScreenWindow.EnqueueOrInvokeAsync((window) => window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title));
+            await App.FullScreenWindow.EnqueueOrInvokeAsync((window) => window.Hide());
             return result;
         }
         else
         {
-            var result = await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
+            var result = await window.EnqueueOrInvokeAsync((window) => window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title));
             return result;
         }
     }
@@ -97,5 +97,6 @@ public enum WidgetDialogResult
 {
     Left,
     Center,
-    Right
+    Right,
+    Unknown
 }
