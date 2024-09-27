@@ -1,10 +1,9 @@
-﻿/*// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Contracts.Services;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml.Media;
@@ -67,4 +66,4 @@ public partial class AddWidgetViewModel : ObservableObject
             WidgetScreenshot = await _widgetScreenshotService.GetBrushForWidgetScreenshotAsync(_selectedWidgetDefinition, theme);
         }
     }
-}*/
+}

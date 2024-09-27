@@ -146,8 +146,8 @@ public partial class WidgetViewModel : ObservableObject
             }
 
             // Uncomment for extra debugging output
-            // _log.Debug($"cardTemplate = {cardTemplate}");
-            // _log.Debug($"cardData = {cardData}");
+            // LogExtensions.LogDebug(ClassName, ($"cardTemplate = {cardTemplate}");
+            // LogExtensions.LogDebug(ClassName, ($"cardData = {cardData}");
 
             // Use the data to fill in the template.
             AdaptiveCardParseResult card;
@@ -223,11 +223,11 @@ public partial class WidgetViewModel : ObservableObject
 
             if (string.IsNullOrEmpty(cardTemplate) || string.IsNullOrEmpty(cardData))
             {
-                _log.Debug("Widget content not available yet.");
+                LogExtensions.LogDebug(ClassName, ("Widget content not available yet.");
                 return false;
             }
 
-            _log.Debug("Widget content available.");
+            LogExtensions.LogDebug(ClassName, ("Widget content available.");
             return true;
         });
     }
@@ -249,7 +249,7 @@ public partial class WidgetViewModel : ObservableObject
     // Used to show a loading ring when we don't have widget content.
     public void ShowLoadingCard()
     {
-        _log.Debug("Show loading card.");
+        LogExtensions.LogDebug(ClassName, ("Show loading card.");
         _dispatcherQueue.TryEnqueue(() =>
         {
             WidgetFrameworkElement = new ProgressRing();
@@ -399,7 +399,7 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void HandleWidgetUpdated(ComSafeWidget sender, WidgetUpdatedEventArgs args)
     {
-        _log.Debug($"HandleWidgetUpdated for widget {sender.Id}");
+        LogExtensions.LogDebug(ClassName, ($"HandleWidgetUpdated for widget {sender.Id}");
         await RenderWidgetFrameworkElementAsync();
     }
 

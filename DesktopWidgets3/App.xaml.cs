@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DevHome.Dashboard.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
@@ -118,6 +119,14 @@ public partial class App : Application
 
                 // Dialog Managment
                 services.AddSingleton<IDialogService, DialogService>();
+
+                // Main window: Allow access to the main window
+                // from anywhere in the application.
+                services.AddSingleton(_ => MainWindow);
+
+                // DispatcherQueue: Allow access to the DispatcherQueue for
+                // the main window for general purpose UI thread access.
+                services.AddSingleton(_ => MainWindow.DispatcherQueue);
 
                 #endregion
 
@@ -259,6 +268,14 @@ public partial class App : Application
         // Initialize widgets
         await GetService<IWidgetResourceService>().InitalizeAsync();
         GetService<IWidgetManagerService>().InitializePinnedWidgets();
+
+        // TEST: Add widget dialog.
+        var dialog = new AddWidgetDialog()
+        {
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
+            XamlRoot = MainWindow.Content.XamlRoot,
+        };
+        await dialog.ShowAsync();
     }
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
