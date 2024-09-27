@@ -31,7 +31,7 @@
       <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000">
         <ExcludeAssets>runtime</ExcludeAssets>
       </PackageReference>
-      <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
+      <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
   </ItemGroup>
 
   <ItemGroup>

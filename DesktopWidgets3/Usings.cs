@@ -1,6 +1,13 @@
 ﻿// WinUIEx
 global using WinUIEx;
 
+// Tools/DevHome.Dashboard
+global using DevHome.Dashboard.ComSafeWidgetObjects;
+global using DevHome.Dashboard.Controls;
+global using DevHome.Dashboard.Extensions;
+global using DevHome.Dashboard.Helpers;
+global using DevHome.Dashboard.Services;
+
 // DesktopWidgets3
 global using DesktopWidgets3.Activation;
 global using DesktopWidgets3.Behaviors;

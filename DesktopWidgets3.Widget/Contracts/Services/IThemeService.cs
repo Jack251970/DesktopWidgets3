@@ -6,5 +6,5 @@ public interface IThemeService
 {
     ElementTheme RootTheme { get; }
 
-    event Action<ElementTheme>? OnThemeChanged;
+    event EventHandler<ElementTheme>? ThemeChanged;
 }

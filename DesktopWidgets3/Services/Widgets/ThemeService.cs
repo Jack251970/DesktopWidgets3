@@ -8,9 +8,11 @@ internal class ThemeService : IThemeService
 
     ElementTheme IThemeService.RootTheme => ThemeSelectorService.Theme;
 
-    event Action<ElementTheme>? IThemeService.OnThemeChanged
+    public event EventHandler<ElementTheme> ThemeChanged = (_, _) => { };
+
+    event EventHandler<ElementTheme>? IThemeService.ThemeChanged
     {
-        add => ThemeSelectorService.OnThemeChanged += value;
-        remove => ThemeSelectorService.OnThemeChanged -= value;
+        add => ThemeSelectorService.ThemeChanged += value;
+        remove => ThemeSelectorService.ThemeChanged -= value;
     }
 }

@@ -41,6 +41,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.Jack
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomExtensions.WinUI", "CustomExtensions.WinUI\CustomExtensions.WinUI.csproj", "{22BD5532-CBE9-42EB-9784-3D98D23EF32A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{DF7025FB-3458-4207-9EFC-6A9721ED6E2E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Dashboard", "Tools\DevHome.Dashboard\DevHome.Dashboard.csproj", "{3335E1A1-6392-408A-85BB-2E6FCBC186DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -197,6 +201,18 @@ Global
 		{22BD5532-CBE9-42EB-9784-3D98D23EF32A}.Release|x64.Build.0 = Release|x64
 		{22BD5532-CBE9-42EB-9784-3D98D23EF32A}.Release|x86.ActiveCfg = Release|x86
 		{22BD5532-CBE9-42EB-9784-3D98D23EF32A}.Release|x86.Build.0 = Release|x86
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Debug|arm64.ActiveCfg = Debug|arm64
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Debug|arm64.Build.0 = Debug|arm64
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Debug|x64.ActiveCfg = Debug|x64
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Debug|x64.Build.0 = Debug|x64
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Debug|x86.ActiveCfg = Debug|x86
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Debug|x86.Build.0 = Debug|x86
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Release|arm64.ActiveCfg = Release|arm64
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Release|arm64.Build.0 = Release|arm64
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Release|x64.ActiveCfg = Release|x64
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Release|x64.Build.0 = Release|x64
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Release|x86.ActiveCfg = Release|x86
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -208,6 +224,7 @@ Global
 		{138E2158-D009-4217-8878-0560F63C1769} = {EF8A937D-DD77-46B9-A1B0-19C08E50762E}
 		{546BC3E4-E765-4E11-B7A6-05DDC9EFB841} = {EF8A937D-DD77-46B9-A1B0-19C08E50762E}
 		{B664612A-5DE2-4353-AA9E-B9606B2E7FEF} = {EF8A937D-DD77-46B9-A1B0-19C08E50762E}
+		{3335E1A1-6392-408A-85BB-2E6FCBC186DE} = {DF7025FB-3458-4207-9EFC-6A9721ED6E2E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2D804E2A-2048-4D07-B76B-AD8AFFA9516A}

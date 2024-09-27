@@ -200,6 +200,13 @@ public partial class App : Application
                 services.Configure<LocalSettingsKeys>(context.Configuration.GetSection(nameof(LocalSettingsKeys)));
 
                 #endregion
+
+                #region DevHome.Dashboard
+
+                // DevHome.Dashboard Services
+                services.AddDashboard(context);
+
+                #endregion
             })
             .Build();
 

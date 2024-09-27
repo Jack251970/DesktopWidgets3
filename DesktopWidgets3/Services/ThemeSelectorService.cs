@@ -5,23 +5,9 @@ namespace DesktopWidgets3.Services;
 
 internal class ThemeSelectorService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys) : IThemeSelectorService
 {
-    private ElementTheme theme = ElementTheme.Default;
-    public ElementTheme Theme {
-        get => theme;
-        set
-        {
-            if (theme != value)
-            {
-                theme = value;
-                if (_isInitialized)
-                {
-                    OnThemeChanged?.Invoke(value);
-                }
-            }
-        } 
-    }
+    public ElementTheme Theme { get; set; } = ElementTheme.Default;
 
-    public event Action<ElementTheme>? OnThemeChanged;
+    public event EventHandler<ElementTheme>? ThemeChanged;
 
     private readonly ILocalSettingsService _localSettingsService = localSettingsService;
     private readonly LocalSettingsKeys _localSettingsKeys = localSettingsKeys.Value;
@@ -35,7 +21,6 @@ internal class ThemeSelectorService(ILocalSettingsService localSettingsService, 
         if (!_isInitialized)
         {
             Theme = await LoadThemeFromSettingsAsync();
-            await Task.CompletedTask;
 
             _isInitialized = true;
         }
@@ -57,6 +42,21 @@ internal class ThemeSelectorService(ILocalSettingsService localSettingsService, 
         await WindowsExtensions.GetAllWindows().EnqueueOrInvokeAsync(SetRequestedThemeAsync, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         await SaveThemeInSettingsAsync(Theme);
+
+        ThemeChanged?.Invoke(this, Theme);
+    }
+
+    public bool IsDarkTheme()
+    {
+        // If theme is Default, use the Application.RequestedTheme value
+        // https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.elementtheme?view=windows-app-sdk-1.2#fields
+        return Theme == ElementTheme.Dark ||
+            (Theme == ElementTheme.Default && Application.Current.RequestedTheme == ApplicationTheme.Dark);
+    }
+
+    public ElementTheme GetActualTheme()
+    {
+        return IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
     }
 
     private async Task<ElementTheme> LoadThemeFromSettingsAsync()
