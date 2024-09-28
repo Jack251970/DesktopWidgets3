@@ -61,9 +61,9 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="CommunityToolkit.Uwp.Controls.MetadataControl" Version="8.1.240821" />
-    <PackageReference Include="CommunityToolkit.Uwp.Controls.RichSuggestBox" Version="8.1.240821" />
-    <PackageReference Include="CommunityToolkit.Uwp.Controls.TokenizingTextBox" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.MetadataControl" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.RichSuggestBox" Version="8.1.240821" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.TokenizingTextBox" Version="8.1.240821" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.CameraPreview" Version="8.1.240821" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.ColorPicker" Version="8.1.240821" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.HeaderedControls" Version="8.1.240821" />
