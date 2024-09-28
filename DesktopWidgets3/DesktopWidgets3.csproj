@@ -4,6 +4,8 @@
     <!-- General Properties -->
     <OutputType>WinExe</OutputType>
     <Title>Desktop Widgets 3</Title>
+    <ApplicationIcon Condition="'$(Configuration)'=='Debug'">Assets\Icon(Debug).ico</ApplicationIcon>
+    <ApplicationIcon Condition="'$(Configuration)'=='Release'">Assets\Icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>DesktopWidgets3</RootNamespace>
@@ -37,14 +39,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnableMsixTooling>true</EnableMsixTooling>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <ApplicationIcon>Assets\Icon(Debug).ico</ApplicationIcon>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

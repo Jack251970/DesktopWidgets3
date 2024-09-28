@@ -113,7 +113,7 @@ public class WidgetHostingService : IWidgetHostingService
         {
             try
             {
-                _widgetCatalog ??= await Task.Run(() => WidgetCatalog.GetDefault());
+                _widgetCatalog ??= await Task.Run(WidgetCatalog.GetDefault);
 
                 // Need to use an arbitrary method to check if the COM object is still alive.
                 await Task.Run(() => _widgetCatalog.GetWidgetDefinition("fakeWidgetDefinitionId"));
@@ -146,7 +146,7 @@ public class WidgetHostingService : IWidgetHostingService
         {
             try
             {
-                _widgetCatalog ??= await Task.Run(() => WidgetCatalog.GetDefault());
+                _widgetCatalog ??= await Task.Run(WidgetCatalog.GetDefault);
                 return await Task.Run(() => _widgetCatalog.GetProviderDefinitions());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
@@ -175,7 +175,7 @@ public class WidgetHostingService : IWidgetHostingService
         {
             try
             {
-                _widgetCatalog ??= await Task.Run(() => WidgetCatalog.GetDefault());
+                _widgetCatalog ??= await Task.Run(WidgetCatalog.GetDefault);
                 return await Task.Run(() => _widgetCatalog.GetWidgetDefinitions());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
@@ -204,7 +204,7 @@ public class WidgetHostingService : IWidgetHostingService
         {
             try
             {
-                _widgetCatalog ??= await Task.Run(() => WidgetCatalog.GetDefault());
+                _widgetCatalog ??= await Task.Run(WidgetCatalog.GetDefault);
                 return await Task.Run(() => _widgetCatalog.GetWidgetDefinition(widgetDefinitionId));
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)

@@ -1,5 +1,4 @@
-﻿using DevHome.Dashboard.Views;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
@@ -223,7 +222,8 @@ public partial class App : Application
         UnhandledException += App_UnhandledException;
 
         // Initialize core services
-        GetService<IAppNotificationService>().Initialize();
+        // TODO: Fix unsupport on packaged mode.
+        // GetService<IAppNotificationService>().Initialize();
 
         // Initialize core extensions after services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
@@ -270,12 +270,16 @@ public partial class App : Application
         GetService<IWidgetManagerService>().InitializePinnedWidgets();
 
         // TEST: Add widget dialog.
-        var dialog = new AddWidgetDialog()
+        // TODO: Fix unsupport on packaged mode.
+        /*var dialog = new AddWidgetDialog()
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = MainWindow.Content.XamlRoot,
         };
-        await dialog.ShowAsync();
+        await dialog.ShowAsync();*/
+
+        // TEST: Widget catalog.
+        var widgetCatalog = await DependencyExtensions.GetRequiredService<IWidgetHostingService>().GetWidgetCatalogAsync();
     }
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
