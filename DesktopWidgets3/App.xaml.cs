@@ -81,10 +81,6 @@ public partial class App : Application
         // Initialize core helpers before services
         LocalSettingsHelper.Initialize();
 
-        // The DispatcherQueue event loop exits when all XAML windows on a thread are closed
-        // https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.dispatchershutdownmode
-        DispatcherShutdownMode = DispatcherShutdownMode.OnLastWindowClose;
-
         // Build the host
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
@@ -277,9 +273,6 @@ public partial class App : Application
             XamlRoot = MainWindow.Content.XamlRoot,
         };
         await dialog.ShowAsync();*/
-
-        // TEST: Widget catalog.
-        var widgetCatalog = await DependencyExtensions.GetRequiredService<IWidgetHostingService>().GetWidgetCatalogAsync();
     }
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)

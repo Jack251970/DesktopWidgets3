@@ -34,7 +34,7 @@
 
   <ItemGroup>
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Internal.winmd" Link="Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.winmd" Link="Microsoft.Windows.Widgets.winmd" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.winmd" Link="Microsoft.Windows.Widgets.winmd" CopyToOutputDirectory="Never" />
   </ItemGroup>
 
   <ItemGroup>
