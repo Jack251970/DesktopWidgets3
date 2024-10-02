@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Models.Parameter;
+﻿namespace DesktopWidgets3.Models.Parameters;
 
 public class DashboardViewModelNavigationParameter
 {

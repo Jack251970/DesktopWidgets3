@@ -74,7 +74,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region id & index
+    #region Id & Index
 
     public string Id { get; private set; } = null!;
 
@@ -82,7 +82,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region ui elements
+    #region UI Elements
 
     public WidgetPage ShellPage => (WidgetPage)Content;
 
@@ -90,7 +90,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region manager & handle
+    #region Manager & Handle
 
     public WindowManager WindowManager => _manager;
     public IntPtr WindowHandle => _handle;
@@ -100,7 +100,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region services
+    #region Services
 
     private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
@@ -156,7 +156,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region initialize
+    #region Initialization
 
     public void InitializeWindow(JsonWidgetItem widgetItem)
     {
@@ -183,7 +183,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region edit mode
+    #region Edit Mode
 
     private RectSize divSize = new(0, 0);
     private bool enterEditMode;
@@ -226,7 +226,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region window message
+    #region Window Message
 
     private void OnWindowMessageReceived(object? sender, WindowMessageEventArgs e)
     {
@@ -251,7 +251,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region window api
+    #region Window API
 
     private const int WM_WINDOWPOSCHANGING = 0x0046;
     private const int WM_DISPLAYCHANGE = 0x007e;

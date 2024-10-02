@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Models;
+﻿namespace DesktopWidgets3.Models.Settings;
 
 internal class LocalSettingsKeys
 {
