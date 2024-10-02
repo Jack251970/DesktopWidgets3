@@ -1,7 +1,4 @@
-﻿// WinUIEx
-global using WinUIEx;
-
-// DesktopWidgets3.Core
+﻿// DesktopWidgets3.Core
 global using DesktopWidgets3.Core.Contracts.Services;
 global using DesktopWidgets3.Core.Extensions;
 global using DesktopWidgets3.Core.Helpers;

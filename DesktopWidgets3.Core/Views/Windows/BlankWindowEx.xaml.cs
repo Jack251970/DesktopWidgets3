@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Core.Views.Windows;
+﻿using WinUIEx;
+
+namespace DesktopWidgets3.Core.Views.Windows;
 
 public sealed partial class BlankWindowEx : WindowEx
 {
