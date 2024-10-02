@@ -1,7 +1,4 @@
-﻿// WinUIEx
-global using WinUIEx;
-
-// DesktopWidgets3.Core.Widgets
+﻿// DesktopWidgets3.Core.Widgets
 global using DesktopWidgets3.Core.Widgets.Contracts.Services;
 global using DesktopWidgets3.Core.Widgets.Helpers;
 global using DesktopWidgets3.Core.Widgets.Models;
@@ -20,7 +17,6 @@ global using DesktopWidgets3.Core.Contracts.Services;
 global using DesktopWidgets3.Core.Extensions;
 global using DesktopWidgets3.Core.Helpers;
 global using DesktopWidgets3.Core.Services;
-global using DesktopWidgets3.Core.Views.Windows;
 
 // DesktopWidgets3.Infrastructure
 global using DesktopWidgets3.Infrastructure;

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using H.NotifyIcon;
 
 namespace DesktopWidgets3.Views.Windows;
 
@@ -20,7 +21,36 @@ public sealed partial class OverlayWindow : WindowEx
         SystemHelper.HideWindowIconFromTaskbar(this.GetWindowHandle());
     }
 
-    public void CenterTopOnMonitor()
+    #region Hide & Show & Activate
+
+    private bool activated = false;
+
+    public void Hide()
+    {
+        this.Hide(true);
+    }
+
+    public void Show()
+    {
+        if (!activated)
+        {
+            Activate();
+        }
+        else
+        {
+            CenterTopOnMonitor();
+            this.Show(true);
+        }
+    }
+
+    public new void Activate()
+    {
+        CenterTopOnMonitor();
+        base.Activate();
+        activated = true;
+    }
+
+    private void CenterTopOnMonitor()
     {
         var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
         var monitorWidth = monitorInfo.RectMonitor.Width;
@@ -30,6 +60,8 @@ public sealed partial class OverlayWindow : WindowEx
             this.Move((int)(monitorWidth - windowWidth) / 2, 8);
         }
     }
+
+    #endregion
 
     #region Commands
 

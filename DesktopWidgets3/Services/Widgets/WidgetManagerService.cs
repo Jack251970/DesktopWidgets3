@@ -1,5 +1,4 @@
-﻿using H.NotifyIcon;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 
@@ -255,8 +254,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // initialize window
             widgetWindow.InitializeWindow();
 
-            // show window
-            widgetWindow.Show(true);
+            // activate window
+            widgetWindow.Activate();
 
             // set edit mode
             await widgetWindow.SetEditMode(false);
@@ -638,11 +637,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 _restoreMainWindow = true;
             }
 
-            // move to center top
-            App.EditModeWindow.CenterTopOnMonitor();
-
             // show edit mode overlay window
-            App.EditModeWindow.Show(true);
+            App.EditModeWindow.Show();
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
     }
 
@@ -652,7 +648,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide edit mode overlay window
-        App.EditModeWindow?.Hide(true);
+        App.EditModeWindow?.Hide();
 
         // restore main window if needed
         if (_restoreMainWindow)
@@ -698,12 +694,12 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             {
                 window.Position = originalWidget.Position;
                 window.Size = originalWidget.Size;
-                window.Show(true);
+                window.Show();
             };
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide edit mode overlay window
-        App.EditModeWindow?.Hide(true);
+        App.EditModeWindow?.Hide();
 
         // restore main window if needed
         if (_restoreMainWindow)

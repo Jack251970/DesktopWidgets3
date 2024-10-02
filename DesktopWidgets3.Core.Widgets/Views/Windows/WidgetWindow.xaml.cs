@@ -3,6 +3,8 @@ using Windows.Graphics;
 using WinUIEx.Messaging;
 using Windows.Foundation;
 using Microsoft.UI.Xaml;
+using H.NotifyIcon;
+using WinUIEx;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
@@ -124,6 +126,35 @@ public sealed partial class WidgetWindow : WindowEx
         size = GetAppWindowSize();
         SizeChanged += WidgetWindow_SizeChanged;
     }
+
+    #region Hide & Show & Activate
+
+    private bool activated = false;
+
+    public void Hide()
+    {
+        this.Hide(true);
+    }
+
+    public void Show()
+    {
+        if (!activated)
+        {
+            Activate();
+        }
+        else
+        {
+            this.Show(true);
+        }
+    }
+
+    public new void Activate()
+    {
+        base.Activate();
+        activated = true;
+    }
+
+    #endregion
 
     #region Position & Size
 

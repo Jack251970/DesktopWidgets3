@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Core.Widgets.Models;
+﻿using WinUIEx;
+
+namespace DesktopWidgets3.Core.Widgets.Models;
 
 public class DisplayMonitor
 {

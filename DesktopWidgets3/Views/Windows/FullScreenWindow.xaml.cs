@@ -20,19 +20,36 @@ public sealed partial class FullScreenWindow : WindowEx
         SystemHelper.HideWindowIconFromTaskbar(this.GetWindowHandle());
     }
 
-    #region Hide & Show
+    #region Hide & Show & Activate
 
-    public void Show()
-    {
-        ShowFullScreen();
-    }
+    private bool activated = false;
 
     public void Hide()
     {
-        this.Hide(false);
+        this.Hide(true);
     }
 
-    private void ShowFullScreen()
+    public void Show()
+    {
+        if (!activated)
+        {
+            Activate();
+        }
+        else
+        {
+            FullScreen();
+            this.Show(true);
+        }
+    }
+
+    public new void Activate()
+    {
+        FullScreen();
+        base.Activate();
+        activated = true;
+    }
+
+    private void FullScreen()
     {
         var primaryMonitorInfo = DisplayMonitor.GetPrimaryMonitorInfo();
         var primaryMonitorWidth = primaryMonitorInfo.RectMonitor.Width;
@@ -41,15 +58,18 @@ public sealed partial class FullScreenWindow : WindowEx
         if (primaryMonitorWidth != null && primaryMonitorHeight != null)
         {
             this.MoveAndResize(0, 0, (double)primaryMonitorWidth * scale + 1, (double)primaryMonitorHeight * scale + 1);
-            this.Show(false);
         }
     }
 
     #endregion
+
+    #region Backdrop
 
     private partial class BlurredBackdrop : CompositionBrushBackdrop
     {
         protected override CompositionBrush CreateBrush(Compositor compositor)
             => compositor.CreateHostBackdropBrush();
     }
+
+    #endregion
 }
