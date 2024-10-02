@@ -162,6 +162,7 @@ public sealed partial class WidgetWindow : WindowEx
     {
         Id = widgetItem.Id;
         IndexTag = widgetItem.IndexTag;
+        PersistenceId = $"WidgetWindow_{Id}_{IndexTag}";
     }
 
     public void InitializeTitleBar()
