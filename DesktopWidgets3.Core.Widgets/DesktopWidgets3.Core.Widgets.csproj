@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CustomExtensions.WinUI\CustomExtensions.WinUI.csproj" />
+    <ProjectReference Include="..\Tools\CustomExtensions.WinUI\CustomExtensions.WinUI.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj" />
