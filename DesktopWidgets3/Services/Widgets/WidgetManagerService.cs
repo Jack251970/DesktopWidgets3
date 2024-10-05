@@ -450,15 +450,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         {
             var widgetId = widgetWindow.Id;
             var indexTag = widgetWindow.IndexTag;
-            await App.FullScreenWindow.EnqueueOrInvokeAsync(async (window) =>
-            {
-                window.Show();
-                if (await DialogFactory.ShowDeleteWidgetDialogAsync(window) == WidgetDialogResult.Left)
-                {
-                    await DeleteWidgetAsync(widgetId, indexTag, true);
-                }
-                window.Hide();
-            }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+            await DialogFactory.ShowDeleteWidgetFullScreenDialogAsync(async () => await DeleteWidgetAsync(widgetId, indexTag, true));
         }
     }
 
