@@ -76,11 +76,6 @@ internal class DialogService : IDialogService
         }
     }
 
-    public async Task HideFullScreenDialogAsync()
-    {
-        await App.FullScreenWindow.EnqueueOrInvokeAsync((window) => window.Hide(), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
-    }
-
     private static async Task<IUICommand> ShowMessageDialogAsync(WindowEx window, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0u, uint cancelCommandIndex = 1u, string title = "")
     {
         return await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
