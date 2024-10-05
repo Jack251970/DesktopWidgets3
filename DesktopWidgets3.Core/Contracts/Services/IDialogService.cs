@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Contracts.Services;
+﻿using WinUIEx;
+
+namespace DesktopWidgets3.Core.Contracts.Services;
 
 public interface IDialogService
 {

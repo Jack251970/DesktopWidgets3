@@ -1,8 +1,9 @@
 ﻿using Windows.UI.Popups;
+using WinUIEx;
 
-namespace DesktopWidgets3.Services;
+namespace DesktopWidgets3.Core.Services;
 
-internal class DialogService : IDialogService
+public class DialogService : IDialogService
 {
     private readonly string Ok = "Ok".GetLocalized();
     private readonly string Cancel = "Cancel".GetLocalized();
