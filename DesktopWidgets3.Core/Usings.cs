@@ -2,6 +2,7 @@
 global using DesktopWidgets3.Core.Contracts.Services;
 global using DesktopWidgets3.Core.Extensions;
 global using DesktopWidgets3.Core.Helpers;
+global using DesktopWidgets3.Core.Models;
 global using DesktopWidgets3.Core.Services;
 
 // CustomExtensions.WinUI

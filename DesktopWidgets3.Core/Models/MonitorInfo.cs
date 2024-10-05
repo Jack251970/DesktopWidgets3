@@ -4,7 +4,7 @@ using Windows.Win32.Graphics.Gdi;
 using Windows.Foundation;
 using Windows.Win32;
 
-namespace DesktopWidgets3.Core.Widgets.Models;
+namespace DesktopWidgets3.Core.Models;
 
 /// <summary>
 /// Contains full information about a display monitor.

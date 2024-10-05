@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Core.Widgets.Models;
+﻿namespace DesktopWidgets3.Core.Models;
 
 /// <summary>
 /// Represents the size of a rectangle.
