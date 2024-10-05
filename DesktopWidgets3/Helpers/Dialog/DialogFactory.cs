@@ -15,15 +15,12 @@ internal static class DialogFactory
     {
         var title = "Dialog_DeleteWidget.Title".GetLocalized();
         var content = "Dialog_DeleteWidget.Content".GetLocalized();
-        var fullScreen = WidgetDialogService.GetDialogFullScreenWindow();
-        await fullScreen.EnqueueOrInvokeAsync(async (window) =>
+        await WidgetDialogService.ShowFullScreenTwoButtonDialogAsync(title, content, func: async (result) =>
         {
-            window.Show();
-            if (await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content) == WidgetDialogResult.Left)
+            if (result == WidgetDialogResult.Left)
             {
                 await deleteFunc();
             }
-            window.Hide();
         });
     }
 
