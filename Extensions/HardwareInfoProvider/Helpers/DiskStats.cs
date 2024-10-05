@@ -1,10 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Jack251970.
 // Licensed under the MIT License.
 
 using System.Management;
 using Microsoft.Management.Infrastructure;
 
-namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
+namespace HardwareInfoProvider.Helpers;
 
 public sealed class DiskStats : IDisposable
 {

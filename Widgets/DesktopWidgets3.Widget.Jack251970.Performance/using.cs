@@ -5,8 +5,8 @@ global using DesktopWidgets3.Widget.Jack251970.Performance.Utils;
 global using DesktopWidgets3.Widget.Jack251970.Performance.ViewModels;
 global using DesktopWidgets3.Widget.Jack251970.Performance.Views;
 
-// DesktopWidgets3.HardwareInfoProvider
-global using DesktopWidgets3.HardwareInfoProvider.Helpers;
+// HardwareInfoProvider
+global using HardwareInfoProvider.Helpers;
 
 // DesktopWidgets3.Widget
 global using DesktopWidgets3.Widget.Contracts.Views;

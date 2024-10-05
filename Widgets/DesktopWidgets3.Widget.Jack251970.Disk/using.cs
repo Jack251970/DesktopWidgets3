@@ -5,8 +5,8 @@ global using DesktopWidgets3.Widget.Jack251970.Disk.Utils;
 global using DesktopWidgets3.Widget.Jack251970.Disk.ViewModels;
 global using DesktopWidgets3.Widget.Jack251970.Disk.Views;
 
-// DesktopWidgets3.HardwareInfoProvider
-global using DesktopWidgets3.HardwareInfoProvider.Helpers;
+// HardwareInfoProvider
+global using HardwareInfoProvider.Helpers;
 
 // DesktopWidgets3.Widget
 global using DesktopWidgets3.Widget.Contracts.Views;

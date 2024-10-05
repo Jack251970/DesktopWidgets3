@@ -1,7 +1,6 @@
-﻿using System;
-using System.Timers;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
+using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.ViewModels;
 

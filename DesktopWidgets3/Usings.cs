@@ -51,8 +51,8 @@ global using DesktopWidgets3.Core.Widgets.ViewModels;
 global using DesktopWidgets3.Core.Widgets.Views.Pages;
 global using DesktopWidgets3.Core.Widgets.Views.Windows;
 
-// DesktopWidgets3.HardwareInfoProvider
-global using DesktopWidgets3.HardwareInfoProvider.Helpers;
+// HardwareInfoProvider
+global using HardwareInfoProvider.Helpers;
 
 // DesktopWidgets3.Infrastructure
 global using DesktopWidgets3.Infrastructure;

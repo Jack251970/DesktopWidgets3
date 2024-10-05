@@ -1,10 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Widget.Jack251970.Network.ViewModels;
 

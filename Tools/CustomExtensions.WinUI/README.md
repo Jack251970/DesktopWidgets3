@@ -4,7 +4,7 @@ This package provides the ability to load loose "extension" (or addin) assemblie
 
 This package has been tested under Microsoft.WindowsAppSdk package 1.5.240802000.
 
-Thanks for dnchattan and this project is based on his project [winui-extensions](https://github.com/dnchattan/winui-extensions)!
+Thanks for [dnchattan](https://github.com/dnchattan) and this project is based on his project [winui-extensions](https://github.com/dnchattan/winui-extensions)!
 
 ## How to use
 

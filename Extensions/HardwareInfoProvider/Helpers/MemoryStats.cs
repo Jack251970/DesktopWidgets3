@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 
-namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
+namespace HardwareInfoProvider.Helpers;
 
 public sealed class MemoryStats : IDisposable
 {

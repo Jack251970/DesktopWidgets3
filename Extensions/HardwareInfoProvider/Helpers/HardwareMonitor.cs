@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
+﻿namespace HardwareInfoProvider.Helpers;
 
 public class HardwareMonitor: IDisposable
 {

@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
+
   <PropertyGroup>
     <!-- General Properties -->
     <OutputType>Library</OutputType>
@@ -13,6 +13,7 @@
     <!-- WinUI Properties -->
     <UseWinUI>true</UseWinUI>
     <!-- Other Settings -->
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <WindowsPackageType>None</WindowsPackageType>
@@ -22,10 +23,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\DiskSetting.xaml" />
+    <None Remove="Views\DiskWidget.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821">
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240916">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000">
@@ -39,7 +45,7 @@
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>
-    <ProjectReference Include="..\..\Extensions\DesktopWidgets3.HardwareInfoProvider\DesktopWidgets3.HardwareInfoProvider.csproj" />
+    <ProjectReference Include="..\..\Extensions\HardwareInfoProvider\HardwareInfoProvider.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,5 +56,14 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <Page Update="Views\DiskSetting.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\DiskWidget.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
 </Project>

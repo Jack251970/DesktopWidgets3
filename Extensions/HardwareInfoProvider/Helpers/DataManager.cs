@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
+namespace HardwareInfoProvider.Helpers;
 
 #pragma warning disable CA1822 // Mark members as static
 

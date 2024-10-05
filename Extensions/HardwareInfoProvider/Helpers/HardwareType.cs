@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
+namespace HardwareInfoProvider.Helpers;
 
 public enum HardwareType
 {

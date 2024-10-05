@@ -3,7 +3,7 @@
 
 using System.Diagnostics;
 
-namespace DesktopWidgets3.HardwareInfoProvider.Helpers;
+namespace HardwareInfoProvider.Helpers;
 
 public sealed class NetworkStats : IDisposable
 {

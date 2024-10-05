@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Timers;
+﻿using System.Collections.ObjectModel;
 using Microsoft.UI.Dispatching;
+using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Widget.Jack251970.Disk.ViewModels;
 

@@ -1,5 +1,4 @@
-﻿using System.Timers;
-using System;
+﻿using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance.Models;
 
