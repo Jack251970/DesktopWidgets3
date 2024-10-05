@@ -19,31 +19,20 @@ public static class EfficiencyModeUtilities
     /// <param name="value"></param>
     /// <returns></returns>
     [SupportedOSPlatform("windows10.0.16299.0")]
-    public static bool SetEfficiencyMode(bool value)
+    public static void SetEfficiencyMode(bool value)
     {
-        // Important note: in .Net Framework if your executable assembly manifest doesn't explicitly state
-        // that your exe assembly is compatible with Windows 8.1 and Windows 10.0, System.Environment.OSVersion
-        // will return Windows 8 version, which is 6.2, instead of 6.3 and 10.0!
-        if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
-            Environment.OSVersion.Version >= new Version(10, 0, 16299))
-        {
-            var ecoLevel = Environment.OSVersion.Version >= new Version(11, 0)
+        var ecoLevel = Environment.OSVersion.Version >= new Version(11, 0)
 #pragma warning disable CA1416 // Validate platform compatibility
             ? QualityOfServiceLevel.Eco
 #pragma warning restore CA1416 // Validate platform compatibility
             : QualityOfServiceLevel.Low;
 
-            SetProcessQualityOfServiceLevel(value
-                ? ecoLevel
-                : QualityOfServiceLevel.Default);
-            SetProcessPriorityClass(value
-                ? ProcessPriorityClass.Idle
-                : ProcessPriorityClass.Default);
-
-            return true;
-        }
-
-        return false;
+        SetProcessQualityOfServiceLevel(value
+            ? ecoLevel
+            : QualityOfServiceLevel.Default);
+        SetProcessPriorityClass(value
+            ? ProcessPriorityClass.Idle
+            : ProcessPriorityClass.Default);
     }
 
     /// <summary>
