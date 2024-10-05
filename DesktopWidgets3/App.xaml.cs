@@ -257,7 +257,7 @@ public partial class App : Application
         await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
 
         // Create full screen transparent window
-        FullScreenWindow = new FullScreenWindow();
+        FullScreenWindow = WindowsExtensions.CreateWindow<FullScreenWindow>();
 
         // Initialize widgets
         await GetService<IWidgetResourceService>().InitalizeAsync();
@@ -291,8 +291,6 @@ public partial class App : Application
     public static async new void Exit()
     {
         LogExtensions.LogInformation(ClassName, "Exit current application.");
-
-        FullScreenWindow.Close();
 
         // Close all widgets
         await GetService<IWidgetManagerService>().CloseAllWidgetsAsync();
