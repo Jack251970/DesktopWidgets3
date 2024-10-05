@@ -11,8 +11,6 @@ public sealed partial class FullScreenWindow : WindowEx
 
         Title = string.Empty;
 
-        Content = null;
-
         IsTitleBarVisible = IsMaximizable = IsMaximizable = IsResizable = false;
 
         IsAlwaysOnTop = true;
