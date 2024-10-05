@@ -1,4 +1,4 @@
-﻿<windowex:WindowEx
+<windowex:WindowEx
     x:Class="DesktopWidgets3.Core.Widgets.Views.Windows.WidgetWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

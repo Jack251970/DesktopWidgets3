@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Infrastructure.Contracts.Services;
+﻿using Newtonsoft.Json;
+
+namespace DesktopWidgets3.Infrastructure.Contracts.Services;
 
 public interface IFileService
 {

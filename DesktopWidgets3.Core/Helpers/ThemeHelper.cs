@@ -13,7 +13,7 @@ public class ThemeHelper
         {
             rootElement.RequestedTheme = theme;
 
-            TitleBarHelper.UpdateTitleBar(window, window.AppWindow.TitleBar, theme);
+            TitleBarHelper.UpdateTitleBar(window, theme);
         }
     }
 }

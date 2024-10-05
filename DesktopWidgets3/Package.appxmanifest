@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
@@ -20,12 +19,12 @@
     Publisher="CN=11602"
     Version="3.0.0.0" />
     
-  <mp:PhoneIdentity PhoneProductId="46683a90-386e-4b53-8475-1c82074bdb74" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="8f256a41-5ee3-4218-97c6-12e1f8d5c234" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     
   <Properties>
     <DisplayName>Desktop Widgets 3</DisplayName>
     <PublisherDisplayName>Jack251970</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\Logos\StoreLogo.png</Logo>
     <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
   </Properties>
 
@@ -35,8 +34,7 @@
   </Dependencies>
 
   <Resources>
-    <Resource Language="en-US" />
-    <Resource Language="zh-CN" />
+    <Resource Language="x-generate"/>
   </Resources>
 
   <Applications>
@@ -47,20 +45,20 @@
         DisplayName="ms-resource:AppDisplayName"
         Description="ms-resource:AppDescription"
         BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        Square150x150Logo="Assets\Logos\Square150x150Logo.png"
+        Square44x44Logo="Assets\Logos\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Logos\Wide310x150Logo.png"  Square71x71Logo="Assets\Logos\SmallTile.png" Square310x310Logo="Assets\Logos\LargeTile.png"/>
+        <uap:SplashScreen Image="Assets\Logos\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
           <desktop:Extension Category="windows.toastNotificationActivation">
-              <desktop:ToastNotificationActivation ToastActivatorCLSID="3b8b8216-c773-4d56-9289-023b009c558d" />
+              <desktop:ToastNotificationActivation ToastActivatorCLSID="445ab065-101e-45ff-80ab-45efcdf5dae5" />
           </desktop:Extension>
 
           <com:Extension Category="windows.comServer">
               <com:ComServer>
                   <com:ExeServer Executable="DesktopWidgets3.exe" Arguments="----AppNotificationActivated:" DisplayName="Toast activator">
-                      <com:Class Id="3b8b8216-c773-4d56-9289-023b009c558d" DisplayName="Toast activator"/>
+                      <com:Class Id="445ab065-101e-45ff-80ab-45efcdf5dae5" DisplayName="Toast activator"/>
                   </com:ExeServer>
               </com:ComServer>
           </com:Extension>
@@ -71,34 +69,25 @@
               Enabled="false"
               DisplayName="ms-resource:AppDisplayName" />
           </uap5:Extension>
-        </Extensions>
+      </Extensions>
     </Application>
   </Applications>
 
   <Capabilities>
-    <!--
-        <rescap:Capability Name="packageQuery" />
-    -->
     <rescap:Capability Name="runFullTrust" />
     <rescap:Capability Name="broadFileSystemAccess" />
     <rescap:Capability Name="allowElevation" />
-    <!--
-        The unvirtualizedResources capability is used to support file operations in the AppData directory.
-    -->
+    <!-- The unvirtualizedResources capability is used to support file operations in the AppData directory. -->
     <rescap:Capability Name="unvirtualizedResources" />
-    <!--
-        The packageManagement capability is used to download updates in the sideload version of Files.
-        We only use this capability in the sideload version and remove it when compiling the store vesion in Azure DevOps.
-    -->
+    <!-- The packageManagement capability is used to download updates in the sideload version of Files. -->
+    <!-- We only use this capability in the sideload version and remove it when compiling the store vesion in Azure DevOps. -->
     <rescap:Capability Name="packageManagement" />
-    <uap:Capability Name="removableStorage" />
-    <Capability Name="internetClient" />
-    <Capability Name="privateNetworkClientServer" />
+    <rescap:Capability Name="packageQuery" />
   </Capabilities>
 
   <genTemplate:Metadata>
     <genTemplate:Item Name="generator" Value="Template Studio"/>
-    <genTemplate:Item Name="wizardVersion" Version="v5.4" />
+    <genTemplate:Item Name="wizardVersion" Version="v5.5" />
     <genTemplate:Item Name="projectType" Value="NavView" />
     <genTemplate:Item Name="framework" Value="MVVMToolkit" />
     <genTemplate:Item Name="platform" Value="WinUI" />

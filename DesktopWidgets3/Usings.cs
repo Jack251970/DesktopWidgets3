@@ -1,7 +1,12 @@
 ﻿// WinUIEx
 global using WinUIEx;
 
-// Tools/DevHome.Dashboard
+// CustomExtensions.WinUI
+global using CustomExtensions.WinUI.Contracts;
+global using CustomExtensions.WinUI.Extensions;
+global using CustomExtensions.WinUI.Models;
+
+// DevHome.Dashboard
 global using DevHome.Dashboard.ComSafeWidgetObjects;
 global using DevHome.Dashboard.Controls;
 global using DevHome.Dashboard.Extensions;
@@ -31,11 +36,6 @@ global using DesktopWidgets3.ViewModels.Pages;
 global using DesktopWidgets3.Views.Pages;
 global using DesktopWidgets3.Views.Windows;
 
-// CustomExtensions.WinUI
-global using CustomExtensions.WinUI.Contracts;
-global using CustomExtensions.WinUI.Extensions;
-global using CustomExtensions.WinUI.Models;
-
 // DesktopWidgets3.Core
 global using DesktopWidgets3.Core.Contracts.Services;
 global using DesktopWidgets3.Core.Extensions;
@@ -47,12 +47,9 @@ global using DesktopWidgets3.Core.Widgets.Contracts.Services;
 global using DesktopWidgets3.Core.Widgets.Helpers;
 global using DesktopWidgets3.Core.Widgets.Models;
 global using DesktopWidgets3.Core.Widgets.Utils;
-global using DesktopWidgets3.Core.Widgets.ViewModels;
+global using DesktopWidgets3.Core.Widgets.ViewModels.Pages;
 global using DesktopWidgets3.Core.Widgets.Views.Pages;
 global using DesktopWidgets3.Core.Widgets.Views.Windows;
-
-// HardwareInfoProvider
-global using HardwareInfoProvider.Helpers;
 
 // DesktopWidgets3.Infrastructure
 global using DesktopWidgets3.Infrastructure;

@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Infrastructure.Helpers;
+﻿using Newtonsoft.Json;
+
+namespace DesktopWidgets3.Infrastructure.Helpers;
 
 public static class JsonHelper
 {

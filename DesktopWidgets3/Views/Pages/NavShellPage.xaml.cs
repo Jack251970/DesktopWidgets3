@@ -27,7 +27,7 @@ public sealed partial class NavShellPage : Page
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        TitleBarHelper.UpdateTitleBar(App.MainWindow, App.MainWindow.AppWindow.TitleBar, RequestedTheme);
+        TitleBarHelper.UpdateTitleBar(App.MainWindow, RequestedTheme);
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

@@ -10,7 +10,7 @@ namespace DesktopWidgets3.Helpers;
 /// <summary>
 /// Helper for getting assembly/package information, supports packaged mode(MSIX)/unpackaged mode.
 /// </summary>
-public static class InfoHelper
+internal static class InfoHelper
 {
     #region name
 
@@ -26,6 +26,18 @@ public static class InfoHelper
         }
     }
 
+    public static string GetFullName()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return Package.Current.Id.FullName;
+        }
+        else
+        {
+            return GetAssemblyFullName();
+        }
+    }
+
     public static string GetDisplayName()
     {
         if (RuntimeHelper.IsMSIX)
@@ -34,7 +46,7 @@ public static class InfoHelper
         }
         else
         {
-            return GetAssemblyName();
+            return GetAssemblyTitle();
         }
     }
 
@@ -46,29 +58,27 @@ public static class InfoHelper
         }
         else
         {
-            return GetAssemblyName();
+            return GetAssemblyTitle();
         }
     }
 
-    public static string GetFullName()
+    public static string GetAssemblyName()
     {
-        if (RuntimeHelper.IsMSIX)
-        {
-            return Package.Current.Id.FullName;
-        }
-        else
-        {
-            return GetAssemblyName();
-        }
+        return Assembly.GetExecutingAssembly().GetName().Name ?? string.Empty;
     }
 
-    private static string GetAssemblyName()
+    private static string GetAssemblyFullName()
+    {
+        return Assembly.GetExecutingAssembly().FullName ?? string.Empty;
+    }
+
+    private static string GetAssemblyTitle()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
         if (attributes.Length > 0)
         {
             var titleAttribute = (AssemblyTitleAttribute)attributes[0];
-            if (titleAttribute.Title != "")
+            if (titleAttribute.Title != string.Empty)
             {
                 return titleAttribute.Title;
             }
@@ -95,7 +105,7 @@ public static class InfoHelper
 
     private static Version GetAssemblyVersion()
     {
-        return Assembly.GetExecutingAssembly().GetName().Version!;
+        return Assembly.GetExecutingAssembly().GetName().Version ?? new Version();
     }
 
     #endregion
@@ -117,7 +127,7 @@ public static class InfoHelper
     private static string GetAssemblyDescription()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-        return (attributes.Length == 0) ? "" : ((AssemblyDescriptionAttribute)attributes[0]).Description;
+        return (attributes.Length == 0) ? string.Empty : ((AssemblyDescriptionAttribute)attributes[0]).Description;
     }
 
     #endregion
@@ -139,7 +149,7 @@ public static class InfoHelper
     private static string GetAssemblyProduct()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-        return (attributes.Length == 0) ? "" : ((AssemblyProductAttribute)attributes[0]).Product;
+        return (attributes.Length == 0) ? string.Empty : ((AssemblyProductAttribute)attributes[0]).Product;
     }
 
     #endregion
@@ -161,7 +171,7 @@ public static class InfoHelper
     private static string GetAssemblyCopyright()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-        return (attributes.Length == 0) ? "" : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+        return (attributes.Length == 0) ? string.Empty : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
     }
 
     #endregion
@@ -183,7 +193,7 @@ public static class InfoHelper
     private static string GetAssemblyCompany()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-        return (attributes.Length == 0) ? "" : ((AssemblyCompanyAttribute)attributes[0]).Company;
+        return (attributes.Length == 0) ? string.Empty : ((AssemblyCompanyAttribute)attributes[0]).Company;
     }
 
     #endregion
@@ -205,7 +215,7 @@ public static class InfoHelper
     private static string GetAssemblyConfiguration()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyConfigurationAttribute), false);
-        return (attributes.Length == 0) ? "" : ((AssemblyConfigurationAttribute)attributes[0]).Configuration;
+        return (attributes.Length == 0) ? string.Empty : ((AssemblyConfigurationAttribute)attributes[0]).Configuration;
     }
 
     #endregion
@@ -227,7 +237,7 @@ public static class InfoHelper
     private static string GetAssemblyTrademark()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTrademarkAttribute), false);
-        return (attributes.Length == 0) ? "" : ((AssemblyTrademarkAttribute)attributes[0]).Trademark;
+        return (attributes.Length == 0) ? string.Empty : ((AssemblyTrademarkAttribute)attributes[0]).Trademark;
     }
 
     #endregion
@@ -249,7 +259,7 @@ public static class InfoHelper
     private static string GetAssemblyCulture()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCultureAttribute), false);
-        return (attributes.Length == 0) ? "" : ((AssemblyCultureAttribute)attributes[0]).Culture;
+        return (attributes.Length == 0) ? string.Empty : ((AssemblyCultureAttribute)attributes[0]).Culture;
     }
 
     #endregion
@@ -264,7 +274,7 @@ public static class InfoHelper
         }
         else
         {
-            return GetAssemblyPath();
+            return GetAssemblyLocation();
         }
     }
 
@@ -276,11 +286,11 @@ public static class InfoHelper
         }
         else
         {
-            return GetAssemblyPath();
+            return GetAssemblyLocation();
         }
     }
 
-    private static string GetAssemblyPath()
+    private static string GetAssemblyLocation()
     {
         return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppContext.BaseDirectory;
     }

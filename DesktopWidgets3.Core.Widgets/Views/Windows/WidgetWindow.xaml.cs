@@ -1,10 +1,10 @@
-﻿using System.Runtime.InteropServices;
-using Windows.Graphics;
-using WinUIEx.Messaging;
-using Windows.Foundation;
-using Microsoft.UI.Xaml;
 using H.NotifyIcon;
+using System.Runtime.InteropServices;
+using Windows.Foundation;
+using Windows.Graphics;
 using WinUIEx;
+using WinUIEx.Messaging;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
@@ -119,7 +119,7 @@ public sealed partial class WidgetWindow : WindowEx
         content.InitializeWindow(this);
         Content = content;
         Title = string.Empty;
-        
+
         position = AppWindow.Position;
         PositionChanged += WidgetWindow_PositionChanged;
 

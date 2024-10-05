@@ -7,7 +7,6 @@ using UnhandledExceptionEventArgs = Microsoft.UI.Xaml.UnhandledExceptionEventArg
 
 namespace DesktopWidgets3;
 
-// To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application
 {
     private static string ClassName => typeof(App).Name;
@@ -57,7 +56,7 @@ public partial class App : Application
 
     #endregion
 
-    #region Full Screen Transparent Window
+    #region Full Screen Window
 
     public static FullScreenWindow FullScreenWindow { get; set; } = null!;
 
@@ -218,8 +217,7 @@ public partial class App : Application
         UnhandledException += App_UnhandledException;
 
         // Initialize core services
-        // TODO: Fix unsupport on packaged mode.
-        // GetService<IAppNotificationService>().Initialize();
+        GetService<IAppNotificationService>().Initialize();
 
         // Initialize core extensions after services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
@@ -266,7 +264,6 @@ public partial class App : Application
         GetService<IWidgetManagerService>().InitializePinnedWidgets();
 
         // TEST: Add widget dialog.
-        // TODO: Fix unsupport on packaged mode.
         /*var dialog = new AddWidgetDialog()
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.

@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
 using Microsoft.UI;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 
 using Windows.UI;
@@ -24,7 +23,7 @@ public partial class TitleBarHelper
     [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
     private static partial IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
 
-    public static void UpdateTitleBar(Window window, AppWindowTitleBar titleBar, ElementTheme theme)
+    public static void UpdateTitleBar(Window window, ElementTheme theme)
     {
         if (window.ExtendsContentIntoTitleBar)
         {
@@ -39,6 +38,13 @@ public partial class TitleBarHelper
             if (theme == ElementTheme.Default)
             {
                 theme = Application.Current.RequestedTheme == ApplicationTheme.Light ? ElementTheme.Light : ElementTheme.Dark;
+            }
+
+            var titleBar = window.AppWindow.TitleBar;
+
+            if (titleBar == null)
+            {
+                return;
             }
 
             titleBar.ButtonForegroundColor = theme switch
@@ -86,12 +92,12 @@ public partial class TitleBarHelper
         }
     }
 
-    public static void ApplySystemThemeToCaptionButtons(Window window, AppWindowTitleBar titleBar, UIElement? customTitleBar)
+    public static void ApplySystemThemeToCaptionButtons(Window window, UIElement? titleBarArea)
     {
-        var frame = customTitleBar as FrameworkElement;
+        var frame = titleBarArea as FrameworkElement;
         if (frame != null)
         {
-            UpdateTitleBar(window, titleBar, frame.ActualTheme);
+            UpdateTitleBar(window, frame.ActualTheme);
         }
     }
 }

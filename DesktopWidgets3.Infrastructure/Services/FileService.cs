@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Newtonsoft.Json;
 
 namespace DesktopWidgets3.Infrastructure.Services;
 

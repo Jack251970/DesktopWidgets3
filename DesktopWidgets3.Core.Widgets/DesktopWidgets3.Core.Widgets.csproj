@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
+
   <PropertyGroup>
     <!-- General Properties -->
     <RootNamespace>DesktopWidgets3.Core.Widgets</RootNamespace>
@@ -7,12 +7,19 @@
     <Platforms>x86;x64;arm64</Platforms>
     <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <!-- WinUI Properties -->
+    <UseWinUI>true</UseWinUI>
     <!-- Other Settings -->
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <None Remove="Views\Pages\WidgetPage.xaml" />
+    <None Remove="Views\Pages\WidgetSettingPage.xaml" />
+    <None Remove="Views\Windows\WidgetWindow.xaml" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="H.NotifyIcon.WinUI" Version="2.1.3" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
@@ -24,10 +31,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tools\CustomExtensions.WinUI\CustomExtensions.WinUI.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj" />
+    <ProjectReference Include="..\Tools\CustomExtensions.WinUI\CustomExtensions.WinUI.csproj" />
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <Page Update="Views\Pages\WidgetSettingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Pages\WidgetPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Windows\WidgetWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
 </Project>
