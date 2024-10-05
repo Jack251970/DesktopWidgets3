@@ -71,6 +71,9 @@
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <Content Include="Assets\Debug\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
     <Content Include="Assets\Debug\Icon.ico" Link="Assets\Icon.ico" CopyToOutputDirectory="Always" />
+    <AppxManifest Include="Package_Debug.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
@@ -82,7 +85,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Assets\FluentIcons\**" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="UserControls\TrayMenuControl.xaml" />
+    <None Remove="Pages\DashboardPage.xaml" />
+    <None Remove="Pages\HomePage.xaml" />
+    <None Remove="Pages\NavShellPage.xaml" />
+    <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Pages\WidgetStorePage.xaml" />
     <None Remove="Views\Windows\FullScreenWindow.xaml" />
+    <None Remove="Views\Windows\MainWindow.xaml" />
+    <None Remove="Views\Windows\OverlayWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -119,22 +134,6 @@
     <ProjectReference Include="..\Tools\CustomExtensions.WinUI\CustomExtensions.WinUI.csproj" />
     <ProjectReference Include="..\Tools\DevHome.Dashboard\DevHome.Dashboard.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <None Update="Assets\FluentIcons\*.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Logos\PackageIcon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Views\Windows\FullScreenWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
 
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
@@ -145,6 +144,36 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="UserControls\TrayMenuControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\DashboardPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\HomePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\NavShellPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\WidgetStorePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Windows\FullScreenWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Windows\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Windows\OverlayWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
