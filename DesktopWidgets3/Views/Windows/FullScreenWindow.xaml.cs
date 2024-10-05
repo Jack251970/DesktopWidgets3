@@ -11,24 +11,10 @@ public sealed partial class FullScreenWindow : WindowEx
 
         Title = string.Empty;
 
-        IsTitleBarVisible = IsMaximizable = IsMaximizable = IsResizable = false;
-
-        IsAlwaysOnTop = true;
-
         SystemBackdrop = new BlurredBackdrop();
 
         SystemHelper.HideWindowIconFromTaskbar(this.GetWindowHandle());
     }
-
-    #region Backdrop
-
-    private partial class BlurredBackdrop : CompositionBrushBackdrop
-    {
-        protected override CompositionBrush CreateBrush(Compositor compositor)
-            => compositor.CreateHostBackdropBrush();
-    }
-
-    #endregion
 
     #region Hide & Show & Activate
 
@@ -69,6 +55,16 @@ public sealed partial class FullScreenWindow : WindowEx
         {
             this.MoveAndResize(0, 0, (double)primaryMonitorWidth * scale + 1, (double)primaryMonitorHeight * scale + 1);
         }
+    }
+
+    #endregion
+
+    #region Backdrop
+
+    private partial class BlurredBackdrop : CompositionBrushBackdrop
+    {
+        protected override CompositionBrush CreateBrush(Compositor compositor)
+            => compositor.CreateHostBackdropBrush();
     }
 
     #endregion

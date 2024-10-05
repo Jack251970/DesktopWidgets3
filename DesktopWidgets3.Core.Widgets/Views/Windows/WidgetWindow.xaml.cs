@@ -115,10 +115,10 @@ public sealed partial class WidgetWindow : WindowEx
         _manager = WindowManager.Get(this);
         _handle = this.GetWindowHandle();
 
+        Title = string.Empty;
         var content = DependencyExtensions.GetRequiredService<WidgetPage>();
         content.InitializeWindow(this);
         Content = content;
-        Title = string.Empty;
 
         position = AppWindow.Position;
         PositionChanged += WidgetWindow_PositionChanged;

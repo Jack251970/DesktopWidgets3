@@ -7,6 +7,11 @@
     xmlns:windowex="using:WinUIEx"
     Width="136"
     Height="48"
+    IsAlwaysOnTop="True"
+    IsMaximizable="False"
+    IsMinimizable="False"
+    IsResizable="False"
+    IsTitleBarVisible="False"
     PersistenceId="OverlayWindow"
     mc:Ignorable="d">
     <Window.SystemBackdrop>

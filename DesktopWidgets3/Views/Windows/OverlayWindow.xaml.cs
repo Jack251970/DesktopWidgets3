@@ -14,10 +14,6 @@ public sealed partial class OverlayWindow : WindowEx
 
         Title = string.Empty;
 
-        IsTitleBarVisible = IsMaximizable = IsMaximizable = IsResizable = false;
-
-        IsAlwaysOnTop = true;
-
         SystemHelper.HideWindowIconFromTaskbar(this.GetWindowHandle());
     }
 
