@@ -56,12 +56,6 @@ public partial class App : Application
 
     #endregion
 
-    #region Full Screen Window
-
-    public static FullScreenWindow FullScreenWindow { get; set; } = null!;
-
-    #endregion
-
     #region Constructor
 
     public App()
@@ -256,8 +250,8 @@ public partial class App : Application
         EditModeWindow = WindowsExtensions.CreateWindow<OverlayWindow>();
         await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
 
-        // Create full screen transparent window
-        FullScreenWindow = WindowsExtensions.CreateWindow<FullScreenWindow>();
+        // Initialize dialog service
+        GetService<IDialogService>().Initialize();
 
         // Initialize widgets
         await GetService<IWidgetResourceService>().InitalizeAsync();

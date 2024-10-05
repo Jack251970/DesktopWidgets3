@@ -95,7 +95,6 @@
     <None Remove="Pages\NavShellPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="Pages\WidgetStorePage.xaml" />
-    <None Remove="Views\Windows\FullScreenWindow.xaml" />
     <None Remove="Views\Windows\MainWindow.xaml" />
     <None Remove="Views\Windows\OverlayWindow.xaml" />
   </ItemGroup>
@@ -163,9 +162,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Pages\WidgetStorePage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\Windows\FullScreenWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\Windows\MainWindow.xaml">

@@ -11,20 +11,20 @@ internal static class DialogFactory
         return await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content);
     }
 
-    public static async Task ShowDeleteWidgetFullScreenDialogAsync(Func<Task> func)
+    public static async Task ShowDeleteWidgetFullScreenDialogAsync(Func<Task> deleteFunc)
     {
         var title = "Dialog_DeleteWidget.Title".GetLocalized();
         var content = "Dialog_DeleteWidget.Content".GetLocalized();
-        var window = App.FullScreenWindow;
-        await App.FullScreenWindow.EnqueueOrInvokeAsync(async (window) =>
+        var fullScreen = WidgetDialogService.GetDialogFullScreenWindow();
+        await fullScreen.EnqueueOrInvokeAsync(async (window) =>
         {
             window.Show();
-            if (await ShowDeleteWidgetDialogAsync(window) == WidgetDialogResult.Left)
+            if (await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content) == WidgetDialogResult.Left)
             {
-                await func();
+                await deleteFunc();
             }
             window.Hide();
-        }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+        });
     }
 
     public static async Task<WidgetDialogResult> ShowQuitEditModeDialogAsync(WindowEx window)
