@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace DesktopWidgets3.Infrastructure.Services;
 
@@ -7,7 +6,7 @@ public class FileService : IFileService
 {
     private static string ClassName => typeof(FileService).Name;
 
-    private readonly ConcurrentDictionary<string, SemaphoreSlim> semaphoreSlims = [];
+    private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
 
     public T Read<T>(string folderPath, string fileName, JsonSerializerSettings? jsonSerializerSettings = null)
     {
@@ -36,13 +35,6 @@ public class FileService : IFileService
     public async Task<string?> SaveAsync<T>(string folderPath, string fileName, T content, bool indent)
     {
         var path = GetPath(folderPath, fileName, true);
-
-        semaphoreSlims.TryGetValue(path, out var semaphoreSlim);
-        if (semaphoreSlim == null)
-        {
-            semaphoreSlim = new SemaphoreSlim(1);
-            semaphoreSlims.TryAdd(path, semaphoreSlim);
-        }
 
         await semaphoreSlim.WaitAsync();
 
