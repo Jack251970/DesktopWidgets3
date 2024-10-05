@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>桌面小组件3</value>
+  </data>
+  <data name="AppDisplayNameDebug" xml:space="preserve">
+    <value>桌面小组件3 (Debug)</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>一个包含多个实用桌面组件的WinUI3应用。</value>
+  </data>
+  <data name="Settings_LicenseLink.Content" xml:space="preserve">
+    <value>开源协议</value>
+  </data>
   <data name="Settings_About.Text" xml:space="preserve">
     <value>关于</value>
   </data>
@@ -125,6 +137,9 @@
   </data>
   <data name="Settings_Appearance.Text" xml:space="preserve">
     <value>外观和行为</value>
+  </data>
+  <data name="Settings_CopyRight_Card.Description" xml:space="preserve">
+    <value>CopyRight © 2024 Jack251970. All rights reserved.</value>
   </data>
   <data name="Settings_Dependencies_Card.Description" xml:space="preserve">
     <value>依赖和引用</value>
@@ -152,9 +167,6 @@
   </data>
   <data name="TrayMenu_MenuFlyoutItem_ShowWindow.Text" xml:space="preserve">
     <value>显示</value>
-  </data>
-  <data name="AppDescription" xml:space="preserve">
-    <value>一个包含多个实用桌面组件的WinUI3应用。</value>
   </data>
   <data name="Settings_BatterySaver_Card.Description" xml:space="preserve">
     <value>限制与显示相关的后台活动</value>
@@ -216,20 +228,11 @@
   <data name="Settings_Repository_Card.Header" xml:space="preserve">
     <value>查看存储库</value>
   </data>
-  <data name="Settings_LicenseLink.Content" xml:space="preserve">
-    <value>开源协议</value>
-  </data>
   <data name="Settings_MultiThread_Card.Description" xml:space="preserve">
     <value>使用多个线程加载组件</value>
   </data>
   <data name="Settings_MultiThread_Card.Header" xml:space="preserve">
     <value>多线程加速</value>
-  </data>
-  <data name="Settings_CopyRight_Card.Description" xml:space="preserve">
-    <value>CopyRight © 2024 Jack251970. All rights reserved.</value>
-  </data>
-  <data name="AppDisplayName" xml:space="preserve">
-    <value>桌面小组件3</value>
   </data>
   <data name="AppNotificationUnhandledExceptionPayload" xml:space="preserve">
     <value>&lt;toast launch="action=ToastClick"&gt;
