@@ -45,7 +45,10 @@
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>
-    <ProjectReference Include="..\..\Extensions\HardwareInfoProvider\HardwareInfoProvider.csproj" />
+    <ProjectReference Include="..\..\Extensions\HardwareInfoProvider\HardwareInfoProvider.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
