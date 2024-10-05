@@ -288,6 +288,30 @@ public partial class App : Application
             $"{ex?.ToString()}{Environment.NewLine}"));
     }
 
+    public static async new void Exit()
+    {
+        LogExtensions.LogInformation(ClassName, "Exit current application.");
+
+        FullScreenWindow.Close();
+
+        // Close all widgets
+        await GetService<IWidgetManagerService>().CloseAllWidgetsAsync();
+
+        // Close all windows
+        await WindowsExtensions.CloseAllWindowsAsync();
+
+        // Dispose all widgets
+        await GetService<IWidgetResourceService>().DisposeWidgetsAsync();
+
+        // Dispose all extension assemblies
+        WidgetsLoader.DisposeExtensionAssemblies();
+
+        // Unregister app notification service
+        GetService<IAppNotificationService>().Unregister();
+
+        Current.Exit();
+    }
+
     public static void RestartApplication()
     {
         // Get the path to the executable

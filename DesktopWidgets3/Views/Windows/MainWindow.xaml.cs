@@ -10,9 +10,6 @@ public sealed partial class MainWindow : WindowEx
 {
     private static string ClassName => typeof(MainWindow).Name;
 
-    private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
-    private readonly IWidgetResourceService _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
-
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
@@ -126,17 +123,11 @@ public sealed partial class MainWindow : WindowEx
     }
 
     // this enables the app to continue running in background after clicking close button
-    private async void WindowEx_Closed(object sender, WindowEventArgs args)
+    private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         if (App.CanCloseWindow)
         {
-            App.FullScreenWindow.Close();
-            await _widgetManagerService.CloseAllWidgetsAsync();
-            await WindowsExtensions.CloseAllWindowsAsync();
-            await _widgetResourceService.DisposeWidgetsAsync();
-            WidgetsLoader.DisposeExtensionAssemblies();
-            LogExtensions.LogInformation(ClassName, "Exit current application.");
-            Application.Current.Exit();
+            App.Exit();
         }
         else
         {
