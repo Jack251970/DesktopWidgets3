@@ -4,9 +4,9 @@ global using DesktopWidgets3.Core.Extensions;
 global using DesktopWidgets3.Core.Helpers;
 global using DesktopWidgets3.Core.Models;
 global using DesktopWidgets3.Core.Services;
-global using DesktopWidgets3.Core.Views.Windows;
 global using DesktopWidgets3.Core.Utils.EfficiencyMode;
 global using DesktopWidgets3.Core.Utils.Interop;
+global using DesktopWidgets3.Core.Views.Windows;
 
 // CustomExtensions.WinUI
 global using CustomExtensions.WinUI.Contracts;

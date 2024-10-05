@@ -18,6 +18,10 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
             BatterySaver = await GetBatterySaverAsync();
             MultiThread = await GetMultiThreadAsync();
 
+            // initialize efficiency mode
+            EfficiencyModeUtilities.SetEfficiencyMode(BatterySaver);
+            OnBatterySaverChanged += (value) => EfficiencyModeUtilities.SetEfficiencyMode(value);
+
             _isInitialized = true;
         }
     }

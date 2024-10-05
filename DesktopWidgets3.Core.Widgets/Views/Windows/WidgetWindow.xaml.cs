@@ -1,4 +1,3 @@
-using H.NotifyIcon;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -127,14 +126,9 @@ public sealed partial class WidgetWindow : WindowEx
         SizeChanged += WidgetWindow_SizeChanged;
     }
 
-    #region Hide & Show & Activate
+    #region Show & Activate
 
     private bool activated = false;
-
-    public void Hide()
-    {
-        this.Hide(true);
-    }
 
     public void Show()
     {
@@ -144,7 +138,7 @@ public sealed partial class WidgetWindow : WindowEx
         }
         else
         {
-            this.Show(true);
+            WindowExtensions.Show(this);
         }
     }
 

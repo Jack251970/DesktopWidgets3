@@ -1,5 +1,4 @@
-﻿using H.NotifyIcon;
-using Microsoft.UI.Dispatching;
+﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
 using Windows.UI.ViewManagement;
@@ -8,8 +7,6 @@ namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class MainWindow : WindowEx
 {
-    private static string ClassName => typeof(MainWindow).Name;
-
     private readonly DispatcherQueue dispatcherQueue;
 
     private readonly UISettings settings;
@@ -88,7 +85,7 @@ public sealed partial class MainWindow : WindowEx
 
     public void Hide()
     {
-        this.Hide(true);
+        WindowExtensions.Hide(this);
         Visible = false;
     }
 
@@ -100,7 +97,7 @@ public sealed partial class MainWindow : WindowEx
         }
         else
         {
-            this.Show(true);
+            WindowExtensions.Show(this);
         }
         Visible = true;
     }

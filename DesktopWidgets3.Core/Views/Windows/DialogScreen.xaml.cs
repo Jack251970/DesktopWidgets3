@@ -1,4 +1,3 @@
-using H.NotifyIcon;
 using Windows.UI.Composition;
 using WinUIEx;
 
