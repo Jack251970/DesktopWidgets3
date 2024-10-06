@@ -11,34 +11,33 @@ namespace DesktopWidgets3.Core.Views.Windows;
 /// A full screen window that shows with no chrome, with dialog theme support.
 /// Codes are edited from: https://github.com/dotMorten/WinUIEx.
 /// </summary>
-public class FullScreen : Window
+public class NoChromeWindow : Window
 {
     private readonly WindowManager _manager;
 
     private readonly IThemeSelectorService _themeSelectorService = DependencyExtensions.GetRequiredService<IThemeSelectorService>();
 
-    public FullScreen()
+    public NoChromeWindow()
     {
         Activated += SplashScreen_Activated;
         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, Activate);
         _manager = WindowManager.Get(this);
     }
 
-    public void MoveFullScreen()
-    {
-        var primaryMonitorInfo = DisplayMonitor.GetPrimaryMonitorInfo();
-        var primaryMonitorWidth = primaryMonitorInfo.RectMonitor.Width;
-        var primaryMonitorHeight = primaryMonitorInfo.RectMonitor.Height;
-        var scale = 96f / this.GetDpiForWindow();
-        if (primaryMonitorWidth != null && primaryMonitorHeight != null)
-        {
-            this.MoveAndResize(0, 0, (double)primaryMonitorWidth * scale + 1, (double)primaryMonitorHeight * scale + 1);
-        }
-    }
-
     private void Content_Loaded(object sender, RoutedEventArgs e)
     {
-        MoveFullScreen();
+        if (Content is FrameworkElement f)
+        {
+            if (double.IsNaN(Width) && f.DesiredSize.Width > 0)
+            {
+                DesiredWidth = f.DesiredSize.Width;
+            }
+
+            if (double.IsNaN(Height) && f.DesiredSize.Height > 0)
+            {
+                DesiredHeight = f.DesiredSize.Height;
+            }
+        }
     }
 
     private void SplashScreen_Activated(object sender, WindowActivatedEventArgs args)
@@ -107,7 +106,7 @@ public class FullScreen : Window
             dialog.CloseButtonText = cancelCommand.Label;
         }
         var dialogTask = dialog.ShowAsync(ContentDialogPlacement.InPlace);
-        MoveFullScreen();
+        BringToFront();
         var result = await dialogTask;
         return result switch
         {
@@ -185,4 +184,32 @@ public class FullScreen : Window
         get => _manager.IsAlwaysOnTop;
         set => _manager.IsAlwaysOnTop = value;
     }
+
+    /// <summary>
+    /// Gets or sets the width of the window
+    /// </summary>
+    public double Width
+    {
+        get => _manager.Width;
+        set => _manager.Width = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the height of the window
+    /// </summary>
+    public double Height
+    {
+        get => _manager.Height;
+        set => _manager.Height = value;
+    }
+
+    /// <summary>
+    /// Gets the desired width of the window. NaN if not set.
+    /// </summary>
+    public double DesiredWidth { get; private set; } = double.NaN;
+
+    /// <summary>
+    /// Gets the desired height of the window. NaN if not set.
+    /// </summary>
+    public double DesiredHeight { get; private set; } = double.NaN;
 }

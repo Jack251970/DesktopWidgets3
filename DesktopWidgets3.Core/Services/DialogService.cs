@@ -168,6 +168,7 @@ public class DialogService : IDialogService
     {
         await DialogScreen.EnqueueOrInvokeAsync(async (window) =>
         {
+            window.MoveFullScreen();
             window.Show();
             await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
             window.Hide();
@@ -179,6 +180,7 @@ public class DialogService : IDialogService
         await DialogScreen.EnqueueOrInvokeAsync(async (window) =>
         {
             // get result
+            window.MoveFullScreen();
             window.Show();
             var result = await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
             window.Hide();
@@ -215,6 +217,7 @@ public class DialogService : IDialogService
         await DialogScreen.EnqueueOrInvokeAsync(async (window) =>
         {
             // get result
+            window.MoveFullScreen();
             window.Show();
             var result = await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
             window.Hide();
