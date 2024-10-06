@@ -5,17 +5,19 @@ namespace DesktopWidgets3.Core.Services;
 
 public class DialogService : IDialogService
 {
-    private DialogScreen DialogScreen = null!;
+    private DialogScreenWindow DialogScreen = null!;
 
     private readonly string Ok = "Ok".GetLocalized();
     private readonly string Cancel = "Cancel".GetLocalized();
 
     public void Initialize()
     {
-        DialogScreen = WindowsExtensions.CreateWindow<DialogScreen>();
+        DialogScreen = WindowsExtensions.CreateWindow<DialogScreenWindow>();
     }
 
     #region WindowEx Dialog
+
+    #region Public
 
     public async Task ShowOneButtonDialogAsync(WindowEx window, string title, string context)
     {
@@ -86,6 +88,10 @@ public class DialogService : IDialogService
         }
     }
 
+    #endregion
+
+    #region Private
+
     private static async Task<IUICommand?> ShowMessageDialogAsync(WindowEx window, string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0u, uint cancelCommandIndex = 1u, string title = "")
     {
         return await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
@@ -93,7 +99,11 @@ public class DialogService : IDialogService
 
     #endregion
 
+    #endregion
+
     #region Full Screen Dialog
+
+    #region Public
 
     public async Task ShowFullScreenOneButtonDialogAsync(string title, string context)
     {
@@ -164,14 +174,19 @@ public class DialogService : IDialogService
         await ShowFullScreenMessageDialogAsync(context, leftButton, centerButton, rightButton, commands, title: title, func: func);
     }
 
+    #endregion
+
+    #region Private
+
     private async Task ShowFullScreenMessageDialogAsync(string content, IList<IUICommand>? commands, uint defaultCommandIndex = 0u, uint cancelCommandIndex = 1u, string title = "")
     {
         await DialogScreen.EnqueueOrInvokeAsync(async (window) =>
         {
-            window.MoveFullScreen();
-            window.Show();
-            await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
-            window.Hide();
+            if (window.Show())
+            {
+                await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
+                window.Hide();
+            }
         });
     }
 
@@ -179,34 +194,35 @@ public class DialogService : IDialogService
     {
         await DialogScreen.EnqueueOrInvokeAsync(async (window) =>
         {
-            // get result
-            window.MoveFullScreen();
-            window.Show();
-            var result = await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
-            window.Hide();
-
-            // invoke function
-            if (func != null)
+            if (window.Show())
             {
-                if (result == null)
+                // get result
+                var result = await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
+                window.Hide();
+
+                // invoke function
+                if (func != null)
                 {
-                    func.Invoke(WidgetDialogResult.Unknown);
-                }
-                else if (result.Label == leftButton)
-                {
-                    func.Invoke(WidgetDialogResult.Left);
-                }
-                else if (result.Label == rightButton)
-                {
-                    func.Invoke(WidgetDialogResult.Right);
-                }
-                else if (centerButton != null)
-                {
-                    func.Invoke(WidgetDialogResult.Center);
-                }
-                else
-                {
-                    func.Invoke(WidgetDialogResult.Unknown);
+                    if (result == null)
+                    {
+                        func.Invoke(WidgetDialogResult.Unknown);
+                    }
+                    else if (result.Label == leftButton)
+                    {
+                        func.Invoke(WidgetDialogResult.Left);
+                    }
+                    else if (result.Label == rightButton)
+                    {
+                        func.Invoke(WidgetDialogResult.Right);
+                    }
+                    else if (centerButton != null)
+                    {
+                        func.Invoke(WidgetDialogResult.Center);
+                    }
+                    else
+                    {
+                        func.Invoke(WidgetDialogResult.Unknown);
+                    }
                 }
             }
         });
@@ -216,38 +232,41 @@ public class DialogService : IDialogService
     {
         await DialogScreen.EnqueueOrInvokeAsync(async (window) =>
         {
-            // get result
-            window.MoveFullScreen();
-            window.Show();
-            var result = await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
-            window.Hide();
-
-            // invoke function
-            if (func != null)
+            if (window.Show())
             {
-                if (result == null)
+                // get result
+                var result = await window.ShowMessageDialogAsync(content, commands, defaultCommandIndex, cancelCommandIndex, title);
+                window.Hide();
+
+                // invoke function
+                if (func != null)
                 {
-                    await func.Invoke(WidgetDialogResult.Unknown);
-                }
-                else if (result.Label == leftButton)
-                {
-                    await func.Invoke(WidgetDialogResult.Left);
-                }
-                else if (result.Label == rightButton)
-                {
-                    await func.Invoke(WidgetDialogResult.Right);
-                }
-                else if (centerButton != null)
-                {
-                    await func.Invoke(WidgetDialogResult.Center);
-                }
-                else
-                {
-                    await func.Invoke(WidgetDialogResult.Unknown);
+                    if (result == null)
+                    {
+                        await func.Invoke(WidgetDialogResult.Unknown);
+                    }
+                    else if (result.Label == leftButton)
+                    {
+                        await func.Invoke(WidgetDialogResult.Left);
+                    }
+                    else if (result.Label == rightButton)
+                    {
+                        await func.Invoke(WidgetDialogResult.Right);
+                    }
+                    else if (centerButton != null)
+                    {
+                        await func.Invoke(WidgetDialogResult.Center);
+                    }
+                    else
+                    {
+                        await func.Invoke(WidgetDialogResult.Unknown);
+                    }
                 }
             }
         });
     }
+
+    #endregion
 
     #endregion
 }

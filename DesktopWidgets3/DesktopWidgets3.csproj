@@ -95,8 +95,8 @@
     <None Remove="Pages\NavShellPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="Pages\WidgetStorePage.xaml" />
+    <None Remove="Views\Windows\EditModeWindow.xaml" />
     <None Remove="Views\Windows\MainWindow.xaml" />
-    <None Remove="Views\Windows\OverlayWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -164,10 +164,10 @@
     <Page Update="Pages\WidgetStorePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\Windows\MainWindow.xaml">
+    <Page Update="Views\Windows\EditModeWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\Windows\OverlayWindow.xaml">
+    <Page Update="Views\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

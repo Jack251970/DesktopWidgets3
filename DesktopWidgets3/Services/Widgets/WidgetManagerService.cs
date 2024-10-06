@@ -225,7 +225,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             WidgetProperties.SetIndexTag(frameworkElement, indexTag);
 
             // initialize widget window & settings
-            widgetWindow.InitializeWindow(widgetItem);
+            widgetWindow.InitializeWidgetItem(widgetItem);
 
             // initialize widget settings
             BaseWidgetViewModel viewModel = null!;
@@ -597,6 +597,16 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     public async void EnterEditMode()
     {
+        // show edit mode overlay window
+        // TODO: Add support for EnqueueOrInvoke.
+        if (!await App.EditModeWindow.EnqueueOrInvokeAsync((window) =>
+        {
+            return window.Show();
+        }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High))
+        {
+            return;
+        }
+
         // save original widget list
         _originalWidgetList.Clear();
         foreach (var widgetWindow in PinnedWidgetWindows)
@@ -620,17 +630,14 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // set edit mode for all widgets
         await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
-        // hide main window & get primary monitor info & show edit mode overlay window
+        // hide main window & get primary monitor info
         await App.MainWindow.EnqueueOrInvokeAsync(async (window) =>
         {
-            if (App.MainWindow.Visible)
+            if (window.Visible)
             {
-                await WindowsExtensions.CloseWindowAsync(App.MainWindow);
+                await WindowsExtensions.CloseWindowAsync(window);
                 _restoreMainWindow = true;
             }
-
-            // show edit mode overlay window
-            App.EditModeWindow.Show();
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
     }
 

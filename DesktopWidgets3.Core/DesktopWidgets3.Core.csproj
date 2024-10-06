@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <None Remove="NativeMethods.txt" />
-    <None Remove="Views\Windows\DialogScreen.xaml" />
+    <None Remove="Views\Windows\DialogScreenWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,7 +42,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Page Update="Views\Windows\DialogScreen.xaml">
+    <Page Update="Views\Windows\DialogScreenWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

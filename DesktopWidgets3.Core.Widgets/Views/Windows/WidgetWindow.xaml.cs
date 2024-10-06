@@ -14,6 +14,13 @@ public sealed partial class WidgetWindow : WindowEx
     #region Position & Size
 
     private PointInt32 position;
+
+    /// <summary>
+    /// Get or set the position of the window.
+    /// </summary>
+    /// <remarks>
+    /// This property can be used in non-UI thread.
+    /// </remarks>
     public PointInt32 Position
     {
         get => position;
@@ -28,6 +35,13 @@ public sealed partial class WidgetWindow : WindowEx
     }
 
     private Size size;
+
+    /// <summary>
+    /// Get or set the size of the window.
+    /// </summary>
+    /// <remarks>
+    /// This property can be used in non-UI thread.
+    /// </remarks>
     public RectSize Size
     {
         get => new(size.Width, size.Height);
@@ -43,6 +57,9 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
+    /// <summary>
+    /// Get or set the minimum size of the window.
+    /// </summary>
     public RectSize MinSize
     {
         get => new(MinWidth, MinHeight);
@@ -59,6 +76,9 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
+    /// <summary>
+    /// Get or set the maximum size of the window.
+    /// </summary>
     public RectSize MaxSize
     {
         get => new(MaxWidth, MaxHeight);
@@ -81,7 +101,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     public string Id { get; private set; } = null!;
 
-    public int IndexTag { get; private set; }
+    public int IndexTag { get; private set; } = -1;
 
     #endregion
 

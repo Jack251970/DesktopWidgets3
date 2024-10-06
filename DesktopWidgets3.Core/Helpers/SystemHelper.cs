@@ -167,7 +167,7 @@ public partial class SystemHelper
     /// <summary>
     /// Hide window icon from taskbar.
     /// </summary>
-    public static void HideWindowIconFromTaskbar(IntPtr hWnd)
+    public static void HideWindowFromTaskbar(IntPtr hWnd)
     {
         SetWindowLongPtr(hWnd, GWL_EXSTYLE, GetWindowLongPtr(hWnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
         ShowWindow(hWnd, SW_HIDE);

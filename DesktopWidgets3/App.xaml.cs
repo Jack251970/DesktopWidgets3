@@ -52,7 +52,7 @@ public partial class App : Application
 
     #region Edit Mode Window
 
-    public static OverlayWindow EditModeWindow { get; set; } = null!;
+    public static EditModeWindow EditModeWindow { get; set; } = null!;
 
     #endregion
 
@@ -246,7 +246,7 @@ public partial class App : Application
         await GetService<IActivationService>().ActivateMainWindowAsync(args);
         
         // Create edit mode window
-        EditModeWindow = WindowsExtensions.CreateWindow<OverlayWindow>();
+        EditModeWindow = WindowsExtensions.CreateWindow<EditModeWindow>();
         await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
 
         // Initialize dialog service
