@@ -192,7 +192,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     public void InitializeTitleBar()
     {
-        IsTitleBarVisible = IsMaximizable = IsMaximizable = false;
+        IsTitleBarVisible = IsMaximizable = IsMinimizable = false;
     }
 
     public void InitializeWindow()
