@@ -216,9 +216,9 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
             // set widget framework element
             var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetId);
-            widgetWindow.ShellPage.ViewModel.WidgetIcoPath = _widgetResourceService.GetWidgetIcoPath(widgetId);
-            widgetWindow.ShellPage.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId);
-            widgetWindow.ShellPage.ViewModel.WidgetFrameworkElement = frameworkElement;
+            widgetWindow.ViewModel.WidgetIcoPath = _widgetResourceService.GetWidgetIcoPath(widgetId);
+            widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId);
+            widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
 
             // set widget properties
             WidgetProperties.SetId(frameworkElement, widgetId);

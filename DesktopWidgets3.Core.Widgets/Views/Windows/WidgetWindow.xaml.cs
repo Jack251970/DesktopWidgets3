@@ -4,6 +4,8 @@ using Windows.Graphics;
 using WinUIEx;
 using WinUIEx.Messaging;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
@@ -83,11 +85,9 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region UI Elements
+    #region View Model
 
-    public WidgetPage ShellPage => (WidgetPage)Content;
-
-    public FrameworkElement? FrameworkElement => ShellPage.ViewModel.WidgetFrameworkElement;
+    public WidgetViewModel ViewModel { get; }
 
     #endregion
 
@@ -104,20 +104,20 @@ public sealed partial class WidgetWindow : WindowEx
     #region Services
 
     private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
+    private readonly IWidgetResourceService _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
     #endregion
 
     public WidgetWindow()
     {
+        ViewModel = DependencyExtensions.GetRequiredService<WidgetViewModel>();
+
         InitializeComponent();
 
         _manager = WindowManager.Get(this);
         _handle = this.GetWindowHandle();
 
         Title = string.Empty;
-        var content = DependencyExtensions.GetRequiredService<WidgetPage>();
-        content.InitializeWindow(this);
-        Content = content;
 
         position = AppWindow.Position;
         PositionChanged += WidgetWindow_PositionChanged;
@@ -205,6 +205,16 @@ public sealed partial class WidgetWindow : WindowEx
 
         // Register window sink events
         _manager.WindowMessageReceived += OnWindowMessageReceived;
+
+        // Initialize title bar
+        SetCustomTitleBar(false);
+    }
+
+    private void SetCustomTitleBar(bool customTitleBar)
+    {
+        ExtendsContentIntoTitleBar = customTitleBar;
+        SetTitleBar(customTitleBar ? WidgetTitleBar : null);
+        InitializeTitleBar();
     }
 
     #endregion
@@ -224,7 +234,7 @@ public sealed partial class WidgetWindow : WindowEx
         IsResizable = isEditMode;
 
         // set title bar
-        ShellPage.SetCustomTitleBar(isEditMode);
+        SetCustomTitleBar(isEditMode);
 
         // set page update status
         var viewModel = _widgetManagerService.GetWidgetViewModel(this);
@@ -247,6 +257,22 @@ public sealed partial class WidgetWindow : WindowEx
         {
             Size = new RectSize(size.Width - divSize.Width, size.Height - divSize.Height);
             exitEditMode = false;
+        }
+    }
+
+    #endregion
+
+    #region Widget Menu
+
+    private void OpenWidgetMenu(object sender, RoutedEventArgs _)
+    {
+        if (sender as Button is Button widgetMenuButton && widgetMenuButton.Flyout is MenuFlyout widgetMenuFlyout)
+        {
+            widgetMenuFlyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft;
+            if (widgetMenuFlyout?.Items.Count == 0)
+            {
+                _widgetManagerService.AddWidgetItemsToWidgetMenu(widgetMenuFlyout, this);
+            }
         }
     }
 

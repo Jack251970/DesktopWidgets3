@@ -15,7 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\Pages\WidgetPage.xaml" />
     <None Remove="Views\Pages\WidgetSettingPage.xaml" />
     <None Remove="Views\Windows\WidgetWindow.xaml" />
   </ItemGroup>
@@ -34,9 +33,6 @@
 
   <ItemGroup>
     <Page Update="Views\Pages\WidgetSettingPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\Pages\WidgetPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\Windows\WidgetWindow.xaml">

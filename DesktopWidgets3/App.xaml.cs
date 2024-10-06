@@ -180,13 +180,12 @@ public partial class App : Application
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<DashboardViewModel>();
                 services.AddTransient<DashboardPage>();
-                services.AddTransient<WidgetSettingPage>();
-                services.AddTransient<WidgetSettingViewModel>();
                 services.AddTransient<WidgetStorePage>();
                 services.AddTransient<WidgetStoreViewModel>();
 
                 // Widgets Window Pages
-                services.AddTransient<WidgetPage>();
+                services.AddTransient<WidgetSettingPage>();
+                services.AddTransient<WidgetSettingViewModel>();
                 services.AddTransient<WidgetViewModel>();
 
                 #endregion
