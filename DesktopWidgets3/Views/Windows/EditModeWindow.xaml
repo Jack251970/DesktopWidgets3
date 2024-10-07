@@ -11,7 +11,7 @@
     IsResizable="False"
     IsShownInSwitchers="False"
     IsTitleBarVisible="False"
-    PersistenceId="OverlayWindow"
+    PersistenceId="EditModeWindow"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />
@@ -28,7 +28,7 @@
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
         <Button
-            x:Uid="EditModeOverlayPage_SaveButton"
+            x:Uid="EditModeWindow_SaveButton"
             Grid.Column="0"
             Margin="0,0,8,0"
             Command="{x:Bind SaveAndExitEditModeCommand}"
@@ -36,7 +36,7 @@
             <FontIcon Glyph="&#xE74E;" Style="{StaticResource ButtonFontIcon}" />
         </Button>
         <Button
-            x:Uid="EditModeOverlayPage_SettingsButton"
+            x:Uid="EditModeWindow_SettingsButton"
             Grid.Column="1"
             Margin="0,0,8,0"
             Command="{x:Bind NavigateSettingsPageCommand}"
@@ -44,7 +44,7 @@
             <FontIcon Glyph="&#xE713;" Style="{StaticResource ButtonFontIcon}" />
         </Button>
         <Button
-            x:Uid="EditModeOverlayPage_CancelButton"
+            x:Uid="EditModeWindow_CancelButton"
             Grid.Column="2"
             Command="{x:Bind CancelChangesAndExitEditModeCommand}"
             Style="{StaticResource FontIconButton}">

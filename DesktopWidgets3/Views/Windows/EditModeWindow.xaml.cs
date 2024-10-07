@@ -15,7 +15,7 @@ public sealed partial class EditModeWindow : WindowEx
 
         Title = string.Empty;
 
-        Activated += OverlayWindow_Activated;
+        Activated += EditModeWindow_Activated;
         DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
         {
             WindowExtensions.Move(this, -10000, -10000);
@@ -40,9 +40,9 @@ public sealed partial class EditModeWindow : WindowEx
         }
     }
 
-    private void OverlayWindow_Activated(object sender, WindowActivatedEventArgs args)
+    private void EditModeWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        Activated -= OverlayWindow_Activated;
+        Activated -= EditModeWindow_Activated;
         this.Hide(); // Hides at the first time
         var hwnd = this.GetWindowHandle();
         SystemHelper.HideWindowFromTaskbar(hwnd); // Hide the window from the taskbar

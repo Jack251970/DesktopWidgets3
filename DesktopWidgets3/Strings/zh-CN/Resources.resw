@@ -285,13 +285,13 @@
   <data name="Shell_Settings.Content" xml:space="preserve">
     <value>设置</value>
   </data>
-  <data name="EditModeOverlayPage_SaveButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="EditModeWindow_SaveButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>保存并退出</value>
   </data>
-  <data name="EditModeOverlayPage_SettingsButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="EditModeWindow_SettingsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>设置</value>
   </data>
-  <data name="EditModeOverlayPage_CancelButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="EditModeWindow_CancelButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>取消更改并退出</value>
   </data>
   <data name="MenuFlyoutItem_RestartWidget.Text" xml:space="preserve">
