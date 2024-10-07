@@ -224,8 +224,27 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             WidgetProperties.SetId(frameworkElement, widgetId);
             WidgetProperties.SetIndexTag(frameworkElement, indexTag);
 
-            // initialize widget window & settings
+            // initialize widget item
             widgetWindow.InitializeWidgetItem(widgetItem);
+
+            // initialize window
+            widgetWindow.InitializeWindow();
+
+            // set window style, size and position
+            widgetWindow.IsResizable = false;
+            widgetWindow.MinSize = minSize;
+            widgetWindow.MaxSize = maxSize;
+            widgetWindow.Size = widgetItem.Size;
+            if (widgetItem.Position.X != -1 && widgetItem.Position.Y != -1)
+            {
+                widgetWindow.Position = widgetItem.Position;
+            }
+
+            // activate window
+            widgetWindow.Activate();
+
+            // set edit mode
+            await widgetWindow.SetEditMode(false);
 
             // initialize widget settings
             BaseWidgetViewModel viewModel = null!;
@@ -241,24 +260,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 });
             }
 
-            // set window style, size and position
-            widgetWindow.IsResizable = false;
-            widgetWindow.MinSize = minSize;
-            widgetWindow.MaxSize = maxSize;
+            // reset the size because the size will change when changed the window style
             widgetWindow.Size = widgetItem.Size;
-            if (widgetItem.Position.X != -1 && widgetItem.Position.Y != -1)
-            {
-                widgetWindow.Position = widgetItem.Position;
-            }
-
-            // initialize window
-            widgetWindow.InitializeWindow();
-
-            // activate window
-            widgetWindow.Activate();
-
-            // set edit mode
-            await widgetWindow.SetEditMode(false);
 
             // add to widget list & widget window list
             PinnedWidgets.Add(new WidgetWindowPair()
@@ -593,20 +596,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #endregion
 
-    #region edit mode
+    #region widget edit mode
 
     public async void EnterEditMode()
     {
-        // show edit mode overlay window
-        // TODO: Add support for EnqueueOrInvoke.
-        if (!await App.EditModeWindow.EnqueueOrInvokeAsync((window) =>
-        {
-            return window.Show();
-        }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High))
-        {
-            return;
-        }
-
         // save original widget list
         _originalWidgetList.Clear();
         foreach (var widgetWindow in PinnedWidgetWindows)
@@ -630,14 +623,18 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // set edit mode for all widgets
         await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
-        // hide main window & get primary monitor info
+        // hide main window & show edit mode overlay window
         await App.MainWindow.EnqueueOrInvokeAsync(async (window) =>
         {
+            // hide main window
             if (window.Visible)
             {
                 await WindowsExtensions.CloseWindowAsync(window);
                 _restoreMainWindow = true;
             }
+
+            // show edit mode overlay window
+            App.EditModeWindow.Show();
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
     }
 

@@ -113,18 +113,13 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Manager & Handle
 
-    public WindowManager WindowManager => _manager;
-    public IntPtr WindowHandle => _handle;
-
     private readonly WindowManager _manager;
-    private readonly IntPtr _handle;
 
     #endregion
 
     #region Services
 
     private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
-    private readonly IWidgetResourceService _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
     #endregion
 
@@ -135,126 +130,108 @@ public sealed partial class WidgetWindow : WindowEx
         InitializeComponent();
 
         _manager = WindowManager.Get(this);
-        _handle = this.GetWindowHandle();
 
         Title = string.Empty;
 
+        // initialize position & size
         position = AppWindow.Position;
+        size = new Size(Width, Height);
+
+        // register events
+        Activated += WidgetWindow_Activated;
         PositionChanged += WidgetWindow_PositionChanged;
-
-        size = GetAppWindowSize();
         SizeChanged += WidgetWindow_SizeChanged;
+        Closed += WidgetWindow_Closed;
     }
-
-    #region Show & Activate
-
-    private bool activated = false;
-
-    public void Show()
-    {
-        if (!activated)
-        {
-            Activate();
-        }
-        else
-        {
-            WindowExtensions.Show(this);
-        }
-    }
-
-    public new void Activate()
-    {
-        base.Activate();
-        activated = true;
-    }
-
-    #endregion
-
-    #region Position & Size
-
-    private Size GetAppWindowSize()
-    {
-        var windowDpi = this.GetDpiForWindow();
-        return new(AppWindow.Size.Width * 96f / windowDpi, AppWindow.Size.Height * 96f / windowDpi);
-    }
-
-    private void WidgetWindow_PositionChanged(object? sender, PointInt32 e)
-    {
-        Position = e;
-    }
-
-    private void WidgetWindow_SizeChanged(object sender, WindowSizeChangedEventArgs args)
-    {
-        if (!IsResizable)
-        {
-            size = args.Size;
-        }
-        else if (enterEditMode)
-        {
-            var size = GetAppWindowSize();
-            divSize.Width = Math.Ceiling(size.Width - args.Size.Width);
-            divSize.Height = Math.Ceiling(size.Height - args.Size.Height);
-            enterEditMode = false;
-            exitEditMode = true;
-        }
-    }
-
-    #endregion
 
     #region Initialization
 
-    public void InitializeWindow(JsonWidgetItem widgetItem)
+    public void InitializeWidgetItem(JsonWidgetItem widgetItem)
     {
         Id = widgetItem.Id;
         IndexTag = widgetItem.IndexTag;
         PersistenceId = $"WidgetWindow_{Id}_{IndexTag}";
     }
 
-    public void InitializeTitleBar()
-    {
-        IsTitleBarVisible = IsMaximizable = IsMinimizable = false;
-    }
-
     public void InitializeWindow()
     {
-        // Hide window icon from taskbar
-        SystemHelper.HideWindowIconFromTaskbar(_handle);
-
-        // Set window to bottom of other windows
-        SystemHelper.SetWindowZPos(_handle, SystemHelper.WINDOWZPOS.ONBOTTOM);
-
-        // Register window sink events
-        _manager.WindowMessageReceived += OnWindowMessageReceived;
-
-        // Initialize title bar
-        SetCustomTitleBar(false);
+        var hwnd = this.GetWindowHandle();
+        SystemHelper.HideWindowFromTaskbar(hwnd); // Hide window icon from taskbar
+        SystemHelper.SetWindowZPos(hwnd, SystemHelper.WINDOWZPOS.ONBOTTOM); // Force window to stay at bottom
+        _manager.WindowMessageReceived += WindowManager_WindowMessageReceived; // Register window sink events
     }
 
-    private void SetCustomTitleBar(bool customTitleBar)
+    #endregion
+
+    #region Events
+
+    private void WidgetWindow_Activated(object? sender, WindowActivatedEventArgs args)
     {
+        Activated -= WidgetWindow_Activated;
+        var hwnd = this.GetWindowHandle();
+        normalStyle = HwndExtensions.GetWindowStyle(hwnd);  // Initialize normal window style
+        HwndExtensions.ToggleWindowStyle(hwnd, false, WindowStyle.TiledWindow);  // Set window style without title bar
+        nonTitleStyle = HwndExtensions.GetWindowStyle(hwnd);  // Initialize edit mode window style
+    }
+
+    private void WidgetWindow_PositionChanged(object? sender, PointInt32 e)
+    {
+        position = e;
+    }
+
+    private void WidgetWindow_SizeChanged(object? sender, WindowSizeChangedEventArgs args)
+    {
+        size.Height = Height;
+        size.Width = Width;
+    }
+
+    private void WidgetWindow_Closed(object? sender, WindowEventArgs args)
+    {
+        PositionChanged -= WidgetWindow_PositionChanged;
+        _manager.WindowMessageReceived -= WindowManager_WindowMessageReceived;
+    }
+
+    private void WindowManager_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
+    {
+        switch (e.Message.MessageId)
+        {
+            case WM_WINDOWPOSCHANGING:
+                // force window to stay at bottom
+                var lParam = e.Message.LParam;
+                var windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
+                windowPos.flags |= SWP_NOZORDER;
+                Marshal.StructureToPtr(windowPos, lParam, false);
+                e.Handled = true;
+                break;
+        }
+    }
+
+    #endregion
+
+    #region Title Bar
+
+    private WindowStyle nonTitleStyle;
+    private WindowStyle normalStyle;
+
+    private void SetTitleBarStyle(bool customTitleBar)
+    {
+        WindowExtensions.SetWindowStyle(this, customTitleBar ? normalStyle : nonTitleStyle);
         ExtendsContentIntoTitleBar = customTitleBar;
         SetTitleBar(customTitleBar ? WidgetTitleBar : null);
-        InitializeTitleBar();
+        IsTitleBarVisible = IsMaximizable = IsMinimizable = false;
     }
 
     #endregion
 
     #region Edit Mode
 
-    private RectSize divSize = new(0, 0);
-    private bool enterEditMode;
-    private bool exitEditMode;
-
     public async Task SetEditMode(bool isEditMode)
     {
-        // set flag
-        enterEditMode = isEditMode;
-
         // set window style
         IsResizable = isEditMode;
 
         // set title bar
-        SetCustomTitleBar(isEditMode);
+        SetTitleBarStyle(isEditMode);
 
         // set page update status
         var viewModel = _widgetManagerService.GetWidgetViewModel(this);
@@ -266,17 +243,6 @@ public sealed partial class WidgetWindow : WindowEx
             case IWidgetUpdate update:
                 update.EnableUpdate(!isEditMode);
                 break;
-        }
-
-        // set window size
-        if (isEditMode)
-        {
-            Size = new RectSize(size.Width + divSize.Width, size.Height + divSize.Height);
-        }
-        else if (exitEditMode)
-        {
-            Size = new RectSize(size.Width - divSize.Width, size.Height - divSize.Height);
-            exitEditMode = false;
         }
     }
 
@@ -293,31 +259,6 @@ public sealed partial class WidgetWindow : WindowEx
             {
                 _widgetManagerService.AddWidgetItemsToWidgetMenu(widgetMenuFlyout, this);
             }
-        }
-    }
-
-    #endregion
-
-    #region Window Message
-
-    private void OnWindowMessageReceived(object? sender, WindowMessageEventArgs e)
-    {
-        switch (e.Message.MessageId)
-        {
-            case WM_WINDOWPOSCHANGING:
-                // force window to stay at bottom
-                var lParam = e.Message.LParam;
-                var windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
-                windowPos.flags |= SWP_NOZORDER;
-                Marshal.StructureToPtr(windowPos, lParam, false);
-
-                e.Handled = true;
-                break;
-            case WM_DISPLAYCHANGE:
-                break;
-            case WM_DPICHANGED:
-                // No need to handle dpi changed event - WinUIEx got this.
-                break;
         }
     }
 

@@ -60,8 +60,7 @@ public sealed partial class EditModeWindow : WindowEx
     /// <summary>
     /// Show the window on the center top of the screen.
     /// </summary>
-    /// <returns>True if the window is shown successfully.</returns>
-    public bool Show()
+    public void Show()
     {
         var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
         var monitorWidth = monitorInfo.RectMonitor.Width;
@@ -70,9 +69,7 @@ public sealed partial class EditModeWindow : WindowEx
             var windowWidth = AppWindow.Size.Width;
             this.Move((int)(monitorWidth - windowWidth) / 2, 8);
             WindowExtensions.Show(this);
-            return true;
         }
-        return false;
     }
 
     #region Commands

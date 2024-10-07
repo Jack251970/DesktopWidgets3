@@ -38,8 +38,7 @@ public sealed partial class DialogScreenWindow : WindowEx
     /// <summary>
     /// Show the window full in the primary monitor.
     /// </summary>
-    /// <returns>True if the window is shown successfully.</returns>
-    public bool Show()
+    public void Show()
     {
         var primaryMonitorInfo = DisplayMonitor.GetPrimaryMonitorInfo();
         var primaryMonitorWidth = primaryMonitorInfo.RectMonitor.Width;
@@ -49,9 +48,7 @@ public sealed partial class DialogScreenWindow : WindowEx
         {
             this.MoveAndResize(0, 0, (double)primaryMonitorWidth * scale + 1, (double)primaryMonitorHeight * scale + 1);
             WindowExtensions.Show(this);
-            return true;
         }
-        return false;
     }
 
     #region Backdrop
