@@ -34,6 +34,33 @@ public class LocalSettingsService : ILocalSettingsService
 
     #region App Settings
 
+    public T? ReadSetting<T>(string key)
+    {
+        return ReadSetting(key, default(T));
+    }
+
+    public T? ReadSetting<T>(string key, T defaultValue)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue(key, out var obj))
+            {
+                return JsonHelper.ToObject<T>((string)obj);
+            }
+        }
+        else
+        {
+            InitializeSettings();
+
+            if (_settings != null && _settings.TryGetValue(key, out var obj))
+            {
+                return JsonHelper.ToObject<T>((string)obj);
+            }
+        }
+
+        return defaultValue;
+    }
+
     public async Task<T?> ReadSettingAsync<T>(string key)
     {
         return await ReadSettingAsync(key, default(T));
@@ -89,6 +116,16 @@ public class LocalSettingsService : ILocalSettingsService
         }
     }
 
+    private void InitializeSettings()
+    {
+        if (!_isInitialized)
+        {
+            _settings = _fileService.Read<Dictionary<string, object>>(_localSettingsPath, _localsettingsFile) ?? [];
+
+            _isInitialized = true;
+        }
+    }
+
     private async Task InitializeSettingsAsync()
     {
         if (!_isInitialized)
@@ -102,6 +139,11 @@ public class LocalSettingsService : ILocalSettingsService
     #endregion
 
     #region Json Files
+
+    public T? ReadJsonFile<T>(string fileName, JsonSerializerSettings? jsonSerializerSettings = null)
+    {
+        return _fileService.Read<T>(_localSettingsPath, fileName, jsonSerializerSettings) ?? default;
+    }
 
     public async Task<T?> ReadJsonFileAsync<T>(string fileName, JsonSerializerSettings? jsonSerializerSettings = null)
     {

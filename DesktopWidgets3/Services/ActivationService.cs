@@ -63,9 +63,7 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
 
     private async Task InitializeAsync()
     {
-        await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
-
-        await _appSettingsService.InitializeAsync().ConfigureAwait(false);
+        _appSettingsService.Initialize();
 
         await Task.CompletedTask;
     }

@@ -210,6 +210,7 @@ public partial class App : Application
         UnhandledException += App_UnhandledException;
 
         // Initialize core services
+        GetService<IAppSettingsService>().Initialize();
         GetService<IAppNotificationService>().Initialize();
 
         // Initialize core extensions after services

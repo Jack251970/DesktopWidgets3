@@ -1,8 +1,14 @@
-﻿namespace DesktopWidgets3.Contracts.Services;
+﻿using Microsoft.UI.Xaml;
+
+namespace DesktopWidgets3.Contracts.Services;
 
 public interface IAppSettingsService
 {
-    Task InitializeAsync();
+    void Initialize();
+
+    ElementTheme Theme { get; }
+
+    Task SaveThemeInSettingsAsync(ElementTheme theme);
 
     bool SilentStart { get; }
 

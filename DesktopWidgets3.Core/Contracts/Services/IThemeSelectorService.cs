@@ -4,14 +4,12 @@ namespace DesktopWidgets3.Core.Contracts.Services;
 
 public interface IThemeSelectorService
 {
+    ElementTheme Theme { get; }
+
     /// <summary>
     /// Occurs when the theme has changed, either due to user selection or the system theme changing.
     /// </summary>
     public event EventHandler<ElementTheme>? ThemeChanged;
-
-    ElementTheme Theme { get; }
-
-    Task InitializeAsync();
 
     Task SetRequestedThemeAsync(Window window);
 

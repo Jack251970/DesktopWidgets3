@@ -1,49 +1,38 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Services;
 
-internal class ThemeSelectorService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys) : IThemeSelectorService
+internal class ThemeSelectorService(IAppSettingsService appSettingsService) : IThemeSelectorService
 {
-    public ElementTheme Theme { get; set; } = ElementTheme.Default;
+    public ElementTheme Theme => _appSettingsService.Theme;
 
     public event EventHandler<ElementTheme>? ThemeChanged;
 
-    private readonly ILocalSettingsService _localSettingsService = localSettingsService;
-    private readonly LocalSettingsKeys _localSettingsKeys = localSettingsKeys.Value;
+    private readonly IAppSettingsService _appSettingsService = appSettingsService;
 
-    private string SettingsKey => _localSettingsKeys.ThemeKey;
-
-    private bool _isInitialized;
-
-    public async Task InitializeAsync()
+    public async Task SetThemeAsync(ElementTheme theme)
     {
-        if (!_isInitialized)
-        {
-            Theme = await LoadThemeFromSettingsAsync();
+        await SetRequestedThemeAsync(App.MainWindow, theme);
 
-            _isInitialized = true;
-        }
+        await WindowsExtensions.GetAllWindows().EnqueueOrInvokeAsync(
+            async (window) => await SetRequestedThemeAsync(window, theme), 
+            Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+
+        ThemeChanged?.Invoke(this, Theme);
+
+        await _appSettingsService.SaveThemeInSettingsAsync(theme);
     }
 
     public async Task SetRequestedThemeAsync(Window window)
     {
-        ThemeHelper.SetRequestedThemeAsync(window, Theme);
-
-        await Task.CompletedTask;
+        await SetRequestedThemeAsync(window, Theme);
     }
 
-    public async Task SetThemeAsync(ElementTheme theme)
+    private static async Task SetRequestedThemeAsync(Window window, ElementTheme theme)
     {
-        Theme = theme;
+        ThemeHelper.SetRequestedThemeAsync(window, theme);
 
-        await SetRequestedThemeAsync(App.MainWindow);
-
-        await WindowsExtensions.GetAllWindows().EnqueueOrInvokeAsync(SetRequestedThemeAsync, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
-
-        await SaveThemeInSettingsAsync(Theme);
-
-        ThemeChanged?.Invoke(this, Theme);
+        await Task.CompletedTask;
     }
 
     public bool IsDarkTheme()
@@ -57,22 +46,5 @@ internal class ThemeSelectorService(ILocalSettingsService localSettingsService, 
     public ElementTheme GetActualTheme()
     {
         return IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
-    }
-
-    private async Task<ElementTheme> LoadThemeFromSettingsAsync()
-    {
-        var themeName = await _localSettingsService.ReadSettingAsync<string>(SettingsKey);
-
-        if (Enum.TryParse(themeName, out ElementTheme cacheTheme))
-        {
-            return cacheTheme;
-        }
-
-        return ElementTheme.Default;
-    }
-
-    private async Task SaveThemeInSettingsAsync(ElementTheme theme)
-    {
-        await _localSettingsService.SaveSettingAsync(SettingsKey, theme.ToString());
     }
 }

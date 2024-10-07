@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
 
 namespace DesktopWidgets3.Services;
@@ -10,23 +11,56 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     private bool _isInitialized;
 
-    public async Task InitializeAsync()
+    public void Initialize()
     {
         if (!_isInitialized)
         {
-            SilentStart = await GetSilentStartAsync();
-            BatterySaver = await GetBatterySaverAsync();
-            MultiThread = await GetMultiThreadAsync();
+            // initialize local settings
+            Theme = GetTheme();
+            SilentStart = GetSilentStart();
+            BatterySaver = GetBatterySaver();
+            MultiThread = GetMultiThread();
 
             // initialize efficiency mode
             EfficiencyModeUtilities.SetEfficiencyMode(BatterySaver);
-            OnBatterySaverChanged += (value) => EfficiencyModeUtilities.SetEfficiencyMode(value);
+            OnBatterySaverChanged += EfficiencyModeUtilities.SetEfficiencyMode;
 
             _isInitialized = true;
         }
     }
 
-    #region Runtime Application Data
+    #region Theme
+
+    private ElementTheme theme;
+    public ElementTheme Theme
+    {
+        get => theme;
+        private set
+        {
+            if (theme != value)
+            {
+                theme = value;
+            }
+        }
+    }
+
+    private const ElementTheme DefaultTheme = ElementTheme.Default;
+
+    private ElementTheme GetTheme()
+    {
+        var data = GetDataFromSettings(_localSettingsKeys.ThemeKey, DefaultTheme);
+        return data;
+    }
+
+    public async Task SaveThemeInSettingsAsync(ElementTheme theme)
+    {
+        await SaveDataInSettingsAsync(_localSettingsKeys.ThemeKey, theme);
+        Theme = theme;
+    }
+
+    #endregion
+
+    #region Silent Start
 
     private bool silentStart;
     public bool SilentStart
@@ -41,7 +75,23 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public event Action<bool>? OnBatterySaverChanged;
+    private const bool DefaultSilentStart = false;
+
+    private bool GetSilentStart()
+    {
+        var data = GetDataFromSettings(_localSettingsKeys.SilentStartKey, DefaultSilentStart);
+        return data;
+    }
+
+    public async Task SetSilentStartAsync(bool value)
+    {
+        await SaveDataInSettingsAsync(_localSettingsKeys.SilentStartKey, value);
+        SilentStart = value;
+    }
+
+    #endregion
+
+    #region Battery Saver
 
     private bool batterySaver;
     public bool BatterySaver
@@ -60,6 +110,26 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
+    private const bool DefaultBatterySaver = false;
+
+    private bool GetBatterySaver()
+    {
+        var data = GetDataFromSettings(_localSettingsKeys.BatterySaverKey, DefaultBatterySaver);
+        return data;
+    }
+
+    public async Task SetBatterySaverAsync(bool value)
+    {
+        await SaveDataInSettingsAsync(_localSettingsKeys.BatterySaverKey, value);
+        BatterySaver = value;
+    }
+
+    public event Action<bool>? OnBatterySaverChanged;
+
+    #endregion
+
+    #region Multi Thread
+
     private bool multiThread;
     public bool MultiThread
     {
@@ -73,43 +143,11 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    #endregion
-
-    #region Local Application Data
-
-    private const bool DefaultSilentStart = false;
-
-    private async Task<bool> GetSilentStartAsync()
-    {
-        var data = await GetDataFromSettingsAsync(_localSettingsKeys.SilentStartKey, DefaultSilentStart);
-        return data;
-    }
-
-    public async Task SetSilentStartAsync(bool value)
-    {
-        await SaveDataInSettingsAsync(_localSettingsKeys.SilentStartKey, value);
-        SilentStart = value;
-    }
-
-    private const bool DefaultBatterySaver = false;
-
-    private async Task<bool> GetBatterySaverAsync()
-    {
-        var data = await GetDataFromSettingsAsync(_localSettingsKeys.BatterySaverKey, DefaultBatterySaver);
-        return data;
-    }
-
-    public async Task SetBatterySaverAsync(bool value)
-    {
-        await SaveDataInSettingsAsync(_localSettingsKeys.BatterySaverKey, value);
-        BatterySaver = value;
-    }
-
     private const bool DefaultMultiThread = false;
 
-    private async Task<bool> GetMultiThreadAsync()
+    private bool GetMultiThread()
     {
-        var data = await GetDataFromSettingsAsync(_localSettingsKeys.MultiThreadKey, DefaultMultiThread);
+        var data = GetDataFromSettings(_localSettingsKeys.MultiThreadKey, DefaultMultiThread);
         return data;
     }
 
@@ -121,7 +159,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     #endregion
 
-    #region Widget List Data
+    #region Widget List
 
     private List<JsonWidgetItem> WidgetList = null!;
 
@@ -232,7 +270,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     #endregion
 
-    #region Widget Store Data
+    #region Widget Store
 
     private List<JsonWidgetStoreItem> WidgetStoreList = null!;
 
@@ -266,9 +304,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     #region Storage Ultility Method
 
-    private async Task<T> GetDataFromSettingsAsync<T>(string settingsKey, T defaultData)
+    private T GetDataFromSettings<T>(string settingsKey, T defaultData)
     {
-        var data = await _localSettingsService.ReadSettingAsync<string>(settingsKey);
+        var data = _localSettingsService.ReadSetting<string>(settingsKey);
 
         if (typeof(T) == typeof(bool) && bool.TryParse(data, out var cacheBoolData))
         {
@@ -282,6 +320,14 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         {
             return (T)(object)cacheDateTimeData;
         }
+        else if (typeof(T) == typeof(string) && data?.ToString() is string cacheStringData)
+        {
+            return (T)(object)cacheStringData;
+        }
+        else if (typeof(T).IsEnum && Enum.TryParse(typeof(T), data, out var cacheEnumData))
+        {
+            return (T)cacheEnumData;
+        }
 
         return defaultData;
     }
@@ -291,5 +337,5 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         await _localSettingsService.SaveSettingAsync(settingsKey, data!.ToString());
     }
 
-#endregion
+    #endregion
 }
