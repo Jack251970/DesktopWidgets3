@@ -309,4 +309,16 @@
   <data name="WidgetPage_MoreOptionsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>More options</value>
   </data>
+  <data name="Settings_General.Text" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Settings_Language_Card.Header" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings_Language_Card.Description" xml:space="preserve">
+    <value>Select which app language to display</value>
+  </data>
+  <data name="AppLanguageItem_Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
 </root>

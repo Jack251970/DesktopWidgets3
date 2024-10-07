@@ -309,4 +309,16 @@
   <data name="WidgetPage_MoreOptionsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>更多选项</value>
   </data>
+  <data name="Settings_General.Text" xml:space="preserve">
+    <value>通用</value>
+  </data>
+  <data name="Settings_Language_Card.Header" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Settings_Language_Card.Description" xml:space="preserve">
+    <value>选择应用显示的语言</value>
+  </data>
+  <data name="AppLanguageItem_Default" xml:space="preserve">
+    <value>默认</value>
+  </data>
 </root>

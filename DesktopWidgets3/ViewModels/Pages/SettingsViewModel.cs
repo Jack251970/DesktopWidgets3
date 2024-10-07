@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.ViewModels.Pages;
@@ -6,6 +7,11 @@ namespace DesktopWidgets3.ViewModels.Pages;
 public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 {
     #region view properties
+
+    public ObservableCollection<AppLanguageItem> AppLanguages => AppLanguageHelper.SupportedLanguages;
+
+    [ObservableProperty]
+    private int _languageIndex;
 
     [ObservableProperty]
     private int _themeIndex;
@@ -65,6 +71,14 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     public void OnNavigatedFrom()
     {
         
+    }
+
+    partial void OnLanguageIndexChanging(int value)
+    {
+        if (_isInitialized)
+        {
+            AppLanguageHelper.TryChange(value);
+        }
     }
 
     partial void OnThemeIndexChanged(int value)
