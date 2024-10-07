@@ -8,7 +8,6 @@
     Width="318"
     Height="200"
     IsShownInSwitchers="False"
-    PersistenceId="WidgetWindow"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />

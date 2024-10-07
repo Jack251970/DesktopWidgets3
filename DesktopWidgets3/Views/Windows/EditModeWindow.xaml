@@ -11,7 +11,6 @@
     IsResizable="False"
     IsShownInSwitchers="False"
     IsTitleBarVisible="False"
-    PersistenceId="EditModeWindow"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />

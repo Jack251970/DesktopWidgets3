@@ -11,5 +11,4 @@
     IsResizable="False"
     IsShownInSwitchers="False"
     IsTitleBarVisible="False"
-    PersistenceId="DialogScreenWindow"
     mc:Ignorable="d" />
