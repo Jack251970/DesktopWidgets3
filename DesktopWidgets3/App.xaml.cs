@@ -209,15 +209,16 @@ public partial class App : Application
         // Configure exception handlers
         UnhandledException += App_UnhandledException;
 
-        // Initialize core services
-        GetService<IAppSettingsService>().Initialize();
-        GetService<IAppNotificationService>().Initialize();
-
         // Initialize core extensions after services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
         LogExtensions.Initialize(GetService<ILogger<App>>());
 
-        // Initialize custom extension host
+        // Initialize core services
+        GetService<IAppSettingsService>().Initialize();
+        GetService<IAppNotificationService>().Initialize();
+
+        // Initialize core helpers after services
+        AppLanguageHelper.Initialize();
         ApplicationExtensionHost.Initialize(this);
     }
 

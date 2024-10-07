@@ -319,6 +319,6 @@
     <value>Select which app language to display</value>
   </data>
   <data name="AppLanguageItem_Default" xml:space="preserve">
-    <value>Default</value>
+    <value>Use system setting</value>
   </data>
 </root>

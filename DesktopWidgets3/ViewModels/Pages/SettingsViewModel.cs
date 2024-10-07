@@ -8,7 +8,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 {
     #region view properties
 
-    public ObservableCollection<AppLanguageItem> AppLanguages => AppLanguageHelper.SupportedLanguages;
+    public ObservableCollection<AppLanguageItem> AppLanguages = AppLanguageHelper.SupportedLanguages;
 
     [ObservableProperty]
     private int _languageIndex;
@@ -54,6 +54,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     private async void InitializeSettings()
     {
+        LanguageIndex = AppLanguageHelper.SupportedLanguages.IndexOf(AppLanguageHelper.PreferredLanguage);
         ThemeIndex = (int)_themeSelectorService.Theme;
         RunStartup = await StartupHelper.GetStartup(Constant.StartupTaskId, Constant.StartupRegistryKey);
         SilentStart = _appSettingsService.SilentStart;
@@ -78,6 +79,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         if (_isInitialized)
         {
             AppLanguageHelper.TryChange(value);
+            _appSettingsService.SaveLanguageInSettingsAsync(AppLanguageHelper.GetLanguageCode(value));
         }
     }
 

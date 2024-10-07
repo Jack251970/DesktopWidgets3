@@ -3,7 +3,7 @@
 
 using System.Collections.ObjectModel;
 using System.Globalization;
-using Windows.Globalization;
+using Microsoft.Windows.Globalization;
 
 namespace DesktopWidgets3.Helpers.Application;
 
@@ -16,25 +16,44 @@ public static class AppLanguageHelper
     /// A constant string representing the default language code.
     /// It is initialized as an empty string.
     /// </summary>
-    private static readonly string _defaultCode = string.Empty;
+    public static readonly string DefaultCode = string.Empty;
 
     /// <summary>
     /// A collection of available languages.
     /// </summary>
-    public static ObservableCollection<AppLanguageItem> SupportedLanguages { get; }
+    public static ObservableCollection<AppLanguageItem> SupportedLanguages { get; private set; } = null!;
 
     /// <summary>
     /// Gets the preferred language.
     /// </summary>
-    public static AppLanguageItem PreferredLanguage { get; private set; }
+    public static AppLanguageItem PreferredLanguage { get; private set; } = null!;
+
+    /// <summary>
+    /// A collection of manifest languages.
+    /// </summary>
+    private static IReadOnlyList<string> _manifestLanguages = null!;
 
     /// <summary>
     /// Initializes the <see cref="AppLanguageHelper"/> class.
     /// </summary>
-    static AppLanguageHelper()
+    public static void Initialize()
     {
+        // Get the manifest languages
+        if (RuntimeHelper.IsMSIX)
+        {
+            _manifestLanguages = ApplicationLanguages.ManifestLanguages;
+        }
+        else
+        {
+            _manifestLanguages =
+            [
+                "en-US",
+                "zh-Hans"
+            ];
+        }
+
         // Populate the Languages collection with available languages
-        var appLanguages = ApplicationLanguages.ManifestLanguages
+        var appLanguages = _manifestLanguages
            .Append(string.Empty) // Add default language code
            .Select(language => new AppLanguageItem(language))
            .OrderBy(language => language.Code is not "") // Default language on top
@@ -42,7 +61,8 @@ public static class AppLanguageHelper
            .ToList();
 
         // Get the current primary language override.
-        var current = new AppLanguageItem(ApplicationLanguages.PrimaryLanguageOverride);
+        var primaryLanguageOverride = DependencyExtensions.GetRequiredService<IAppSettingsService>().Language;
+        var current = new AppLanguageItem(primaryLanguageOverride);
 
         // Find the index of the saved language
         var index = appLanguages.IndexOf(appLanguages.FirstOrDefault(dl => dl.Name == current.Name) ?? appLanguages.First());
@@ -61,6 +81,35 @@ public static class AppLanguageHelper
         // Initialize the list
         SupportedLanguages = new(appLanguages);
         PreferredLanguage = SupportedLanguages[index];
+
+        // Set the primary language override
+        if (RuntimeHelper.IsMSIX)
+        {
+            // No need to set in packaged app - it is already set by the system
+        }
+        else if (primaryLanguageOverride != DefaultCode)
+        {
+            TryChange(primaryLanguageOverride);
+        }
+        else
+        {
+            // No need to set default language in unpackaged app - it is already set by the system
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="languageName"></param>
+    /// <returns></returns>
+    public static string GetLanguageCode(int index)
+    {
+        if (index >= SupportedLanguages.Count)
+        {
+            return DefaultCode;
+        }
+
+        return index == 0 ? DefaultCode : SupportedLanguages[index].Code;
     }
 
     /// <summary>
@@ -78,7 +127,7 @@ public static class AppLanguageHelper
         PreferredLanguage = SupportedLanguages[index];
 
         // Update the primary language override
-        ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? _defaultCode : PreferredLanguage.Code;
+        ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? DefaultCode : PreferredLanguage.Code;
         return true;
     }
 
@@ -112,7 +161,7 @@ public static class AppLanguageHelper
         PreferredLanguage = SupportedLanguages[index];
 
         // Update the primary language override
-        ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? _defaultCode : PreferredLanguage.Code;
+        ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? DefaultCode : PreferredLanguage.Code;
         return true;
     }
 }

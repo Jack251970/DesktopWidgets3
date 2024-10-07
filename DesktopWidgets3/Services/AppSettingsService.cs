@@ -16,6 +16,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         if (!_isInitialized)
         {
             // initialize local settings
+            Language = GetLanguage();
             Theme = GetTheme();
             SilentStart = GetSilentStart();
             BatterySaver = GetBatterySaver();
@@ -28,6 +29,35 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
             _isInitialized = true;
         }
     }
+
+    #region Language
+
+    private string language = null!;
+    public string Language
+    {
+        get => language;
+        private set
+        {
+            if (language != value)
+            {
+                language = value;
+            }
+        }
+    }
+
+    private string GetLanguage()
+    {
+        var data = GetDataFromSettings(_localSettingsKeys.LanguageKey, AppLanguageHelper.DefaultCode);
+        return data;
+    }
+
+    public async Task SaveLanguageInSettingsAsync(string language)
+    {
+        await SaveDataInSettingsAsync(_localSettingsKeys.LanguageKey, language);
+        Language = language;
+    }
+
+    #endregion
 
     #region Theme
 
@@ -302,7 +332,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     #endregion
 
-    #region Storage Ultility Method
+    #region Helper Methods
 
     private T GetDataFromSettings<T>(string settingsKey, T defaultData)
     {

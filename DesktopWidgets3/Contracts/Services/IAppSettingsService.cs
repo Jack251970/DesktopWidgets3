@@ -6,6 +6,10 @@ public interface IAppSettingsService
 {
     void Initialize();
 
+    string Language { get; }
+
+    Task SaveLanguageInSettingsAsync(string language);
+
     ElementTheme Theme { get; }
 
     Task SaveThemeInSettingsAsync(ElementTheme theme);

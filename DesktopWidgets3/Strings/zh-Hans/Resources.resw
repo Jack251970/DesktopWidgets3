@@ -319,6 +319,6 @@
     <value>选择应用显示的语言</value>
   </data>
   <data name="AppLanguageItem_Default" xml:space="preserve">
-    <value>默认</value>
+    <value>系统默认</value>
   </data>
 </root>
