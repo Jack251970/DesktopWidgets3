@@ -1,4 +1,5 @@
-﻿using WinUIEx;
+﻿using Microsoft.UI.Xaml;
+using WinUIEx;
 
 namespace DesktopWidgets3.Core.Models;
 
@@ -24,7 +25,7 @@ public class DisplayMonitor
         }).ToList();
     }
 
-    public static DisplayMonitor GetMonitorInfo(WindowEx? window)
+    public static DisplayMonitor GetMonitorInfo(Window? window)
     {
         if (window is not null)
         {
