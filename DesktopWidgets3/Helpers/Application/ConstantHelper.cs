@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Helpers;
+﻿namespace DesktopWidgets3.Helpers.Application;
 
 public class ConstantHelper
 {

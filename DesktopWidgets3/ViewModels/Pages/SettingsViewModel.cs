@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
-using InfoHelper = DesktopWidgets3.Helpers.InfoHelper;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 

@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Reflection;
 using Windows.ApplicationModel;
 
-namespace DesktopWidgets3.Helpers;
+namespace DesktopWidgets3.Helpers.Application;
 
 /// <summary>
 /// Helper for getting assembly/package information, supports packaged mode(MSIX)/unpackaged mode.
@@ -127,7 +127,7 @@ internal static class InfoHelper
     private static string GetAssemblyDescription()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-        return (attributes.Length == 0) ? string.Empty : ((AssemblyDescriptionAttribute)attributes[0]).Description;
+        return attributes.Length == 0 ? string.Empty : ((AssemblyDescriptionAttribute)attributes[0]).Description;
     }
 
     #endregion
@@ -149,7 +149,7 @@ internal static class InfoHelper
     private static string GetAssemblyProduct()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-        return (attributes.Length == 0) ? string.Empty : ((AssemblyProductAttribute)attributes[0]).Product;
+        return attributes.Length == 0 ? string.Empty : ((AssemblyProductAttribute)attributes[0]).Product;
     }
 
     #endregion
@@ -171,7 +171,7 @@ internal static class InfoHelper
     private static string GetAssemblyCopyright()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-        return (attributes.Length == 0) ? string.Empty : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+        return attributes.Length == 0 ? string.Empty : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
     }
 
     #endregion
@@ -193,7 +193,7 @@ internal static class InfoHelper
     private static string GetAssemblyCompany()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-        return (attributes.Length == 0) ? string.Empty : ((AssemblyCompanyAttribute)attributes[0]).Company;
+        return attributes.Length == 0 ? string.Empty : ((AssemblyCompanyAttribute)attributes[0]).Company;
     }
 
     #endregion
@@ -215,7 +215,7 @@ internal static class InfoHelper
     private static string GetAssemblyConfiguration()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyConfigurationAttribute), false);
-        return (attributes.Length == 0) ? string.Empty : ((AssemblyConfigurationAttribute)attributes[0]).Configuration;
+        return attributes.Length == 0 ? string.Empty : ((AssemblyConfigurationAttribute)attributes[0]).Configuration;
     }
 
     #endregion
@@ -237,7 +237,7 @@ internal static class InfoHelper
     private static string GetAssemblyTrademark()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTrademarkAttribute), false);
-        return (attributes.Length == 0) ? string.Empty : ((AssemblyTrademarkAttribute)attributes[0]).Trademark;
+        return attributes.Length == 0 ? string.Empty : ((AssemblyTrademarkAttribute)attributes[0]).Trademark;
     }
 
     #endregion
@@ -259,7 +259,7 @@ internal static class InfoHelper
     private static string GetAssemblyCulture()
     {
         var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCultureAttribute), false);
-        return (attributes.Length == 0) ? string.Empty : ((AssemblyCultureAttribute)attributes[0]).Culture;
+        return attributes.Length == 0 ? string.Empty : ((AssemblyCultureAttribute)attributes[0]).Culture;
     }
 
     #endregion

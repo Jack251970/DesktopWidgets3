@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using InfoHelper = DesktopWidgets3.Helpers.InfoHelper;
 
 namespace DesktopWidgets3.Utils.Logger;
 
