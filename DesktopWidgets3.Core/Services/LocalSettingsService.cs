@@ -90,7 +90,7 @@ public class LocalSettingsService : ILocalSettingsService
 
     public async Task SaveSettingAsync<T>(string key, T value)
     {
-        var stringValue = await JsonHelper.StringifyAsync(value!);
+        var stringValue = JsonHelper.Stringify(value!);
 
         if (RuntimeHelper.IsMSIX)
         {
