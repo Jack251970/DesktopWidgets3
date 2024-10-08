@@ -3,7 +3,8 @@
 
 using System.Collections.ObjectModel;
 using System.Globalization;
-using Microsoft.Windows.Globalization;
+using WinGlobalization = Windows.Globalization;  // For packaged apps
+using MicGlobalization = Microsoft.Windows.Globalization;  // For unpackaged apps
 
 namespace DesktopWidgets3.Helpers.Application;
 
@@ -41,7 +42,7 @@ public static class AppLanguageHelper
         // Get the manifest languages
         if (RuntimeHelper.IsMSIX)
         {
-            _manifestLanguages = ApplicationLanguages.ManifestLanguages;
+            _manifestLanguages = WinGlobalization.ApplicationLanguages.ManifestLanguages;
         }
         else
         {
@@ -61,8 +62,15 @@ public static class AppLanguageHelper
            .ToList();
 
         // Get the current primary language override.
-        var primaryLanguageOverride = DependencyExtensions.GetRequiredService<IAppSettingsService>().Language;
-        var current = new AppLanguageItem(primaryLanguageOverride);
+        AppLanguageItem? current;
+        if (RuntimeHelper.IsMSIX)
+        {
+            current = new AppLanguageItem(WinGlobalization.ApplicationLanguages.PrimaryLanguageOverride);
+        }
+        else
+        {
+            current = new AppLanguageItem(MicGlobalization.ApplicationLanguages.PrimaryLanguageOverride);
+        }
 
         // Find the index of the saved language
         var index = appLanguages.IndexOf(appLanguages.FirstOrDefault(dl => dl.Name == current.Name) ?? appLanguages.First());
@@ -85,15 +93,12 @@ public static class AppLanguageHelper
         // Set the primary language override
         if (RuntimeHelper.IsMSIX)
         {
-            // No need to set in packaged app - it is already set by the system
-        }
-        else if (primaryLanguageOverride != DefaultCode)
-        {
-            TryChange(primaryLanguageOverride);
+            // No need to set in packaged app - it is already set by the app
         }
         else
         {
-            // No need to set default language in unpackaged app - it is already set by the system
+            var primaryLanguageOverride = DependencyExtensions.GetRequiredService<IAppSettingsService>().Language;
+            TryChange(primaryLanguageOverride);
         }
     }
 
@@ -127,7 +132,15 @@ public static class AppLanguageHelper
         PreferredLanguage = SupportedLanguages[index];
 
         // Update the primary language override
-        ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? DefaultCode : PreferredLanguage.Code;
+        if (RuntimeHelper.IsMSIX)
+        {
+            WinGlobalization.ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? DefaultCode : PreferredLanguage.Code;
+        }
+        else
+        {
+            MicGlobalization.ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? DefaultCode : PreferredLanguage.Code;
+        }
+
         return true;
     }
 
@@ -145,13 +158,8 @@ public static class AppLanguageHelper
             return false;
         }
 
-        var index = SupportedLanguages
-            .Skip(1) // Skip first (default) language
-            .ToList()
-            .IndexOf(find ?? SupportedLanguages.First());
-
-        // Adjusts the index to match the correct index
-        index = index == 0 ? index : index + 1;
+        // Find the index of the language
+        var index = SupportedLanguages.IndexOf(find);
 
         if (PreferredLanguage == SupportedLanguages[index])
         {
@@ -161,7 +169,15 @@ public static class AppLanguageHelper
         PreferredLanguage = SupportedLanguages[index];
 
         // Update the primary language override
-        ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? DefaultCode : PreferredLanguage.Code;
+        if (RuntimeHelper.IsMSIX)
+        {
+            WinGlobalization.ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? DefaultCode : PreferredLanguage.Code;
+        }
+        else
+        {
+            MicGlobalization.ApplicationLanguages.PrimaryLanguageOverride = index == 0 ? DefaultCode : PreferredLanguage.Code;
+        }
+
         return true;
     }
 }

@@ -78,8 +78,16 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     {
         if (_isInitialized)
         {
-            AppLanguageHelper.TryChange(value);
-            _appSettingsService.SaveLanguageInSettingsAsync(AppLanguageHelper.GetLanguageCode(value));
+            if (RuntimeHelper.IsMSIX)
+            {
+                // No need to store the preference in packaged app - it is already stored by the app
+                AppLanguageHelper.TryChange(value);
+            }
+            else
+            {
+                // No need to set PrimaryLanguageOverride in unpackaged app - it will be set by the app in the next launch
+                _appSettingsService.SaveLanguageInSettingsAsync(AppLanguageHelper.GetLanguageCode(value));
+            }
         }
     }
 
