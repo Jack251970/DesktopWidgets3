@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.ViewModels.Pages;
@@ -12,6 +13,9 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     [ObservableProperty]
     private int _languageIndex;
+
+    [ObservableProperty]
+    private bool _showRestartTip;
 
     [ObservableProperty]
     private int _themeIndex;
@@ -52,11 +56,9 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         InitializeSettings();
     }
 
-    private async void InitializeSettings()
+    private void InitializeSettings()
     {
-        LanguageIndex = AppLanguageHelper.SupportedLanguages.IndexOf(AppLanguageHelper.PreferredLanguage);
         ThemeIndex = (int)_themeSelectorService.Theme;
-        RunStartup = await StartupHelper.GetStartup(Constant.StartupTaskId, Constant.StartupRegistryKey);
         SilentStart = _appSettingsService.SilentStart;
         BatterySaver = _appSettingsService.BatterySaver;
         MultiThread = _appSettingsService.MultiThread;
@@ -64,15 +66,40 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         _isInitialized = true;
     }
 
-    public void OnNavigatedTo(object parameter)
-    {
+    #region INavigationAware
 
+    public async void OnNavigatedTo(object parameter)
+    {
+        LanguageIndex = AppLanguageHelper.SupportedLanguages.IndexOf(AppLanguageHelper.PreferredLanguage);
+        RunStartup = await StartupHelper.GetStartup(Constant.StartupTaskId, Constant.StartupRegistryKey);
+
+        ShowRestartTip = false;
     }
 
     public void OnNavigatedFrom()
     {
-        
+
     }
+
+    #endregion
+
+    #region Commands
+
+    [RelayCommand]
+    private void RestartApplication()
+    {
+        App.RestartApplication();
+    }
+
+    [RelayCommand]
+    private void CancelRestart()
+    {
+        ShowRestartTip = false;
+    }
+
+    #endregion
+
+    #region Property Events
 
     partial void OnLanguageIndexChanging(int value)
     {
@@ -88,6 +115,8 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
                 // No need to set PrimaryLanguageOverride in unpackaged app - it will be set by the app in the next launch
                 _appSettingsService.SaveLanguageInSettingsAsync(AppLanguageHelper.GetLanguageCode(value));
             }
+
+            ShowRestartTip = true;
         }
     }
 
@@ -130,4 +159,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
             _appSettingsService.SetMultiThreadAsync(value);
         }
     }
+
+    #endregion
 }

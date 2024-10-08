@@ -195,7 +195,7 @@
   <data name="Dashboard_YourWidgets.Text" xml:space="preserve">
     <value>你的组件</value>
   </data>
-  <data name="Cancel" xml:space="preserve">
+  <data name="ButtonCancel.Content" xml:space="preserve">
     <value>取消</value>
   </data>
   <data name="Dialog_DeleteWidget.Content" xml:space="preserve">
@@ -204,7 +204,7 @@
   <data name="Dialog_DeleteWidget.Title" xml:space="preserve">
     <value>删除组件</value>
   </data>
-  <data name="Ok" xml:space="preserve">
+  <data name="ButtonOk.Content" xml:space="preserve">
     <value>确认</value>
   </data>
   <data name="MenuFlyoutItem_UnpinWidget.Text" xml:space="preserve">
@@ -320,5 +320,8 @@
   </data>
   <data name="AppLanguageItem_Default" xml:space="preserve">
     <value>系统默认</value>
+  </data>
+  <data name="TeachingTipRestart.Subtitle" xml:space="preserve">
+    <value>一些设置需要重新启动才会应用，是否立即重启？</value>
   </data>
 </root>

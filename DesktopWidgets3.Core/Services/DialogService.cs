@@ -7,8 +7,8 @@ public class DialogService : IDialogService
 {
     private DialogScreenWindow DialogScreen = null!;
 
-    private readonly string Ok = "Ok".GetLocalized();
-    private readonly string Cancel = "Cancel".GetLocalized();
+    private readonly string Ok = "ButtonOk.Content".GetLocalized();
+    private readonly string Cancel = "ButtonCancel.Content".GetLocalized();
 
     public void Initialize()
     {

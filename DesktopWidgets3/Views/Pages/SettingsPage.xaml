@@ -22,11 +22,15 @@
             <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Spacing="{StaticResource SettingsCardSpacing}">
                 <!--  General  -->
                 <TextBlock x:Uid="Settings_General" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
+
                 <controls:SettingsCard x:Uid="Settings_Language_Card">
                     <controls:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xF2B7;" />
                     </controls:SettingsCard.HeaderIcon>
-                    <ComboBox ItemsSource="{x:Bind ViewModel.AppLanguages}" SelectedIndex="{x:Bind ViewModel.LanguageIndex, Mode=TwoWay}">
+                    <ComboBox
+                        x:Name="AppLanguagesComboBox"
+                        ItemsSource="{x:Bind ViewModel.AppLanguages}"
+                        SelectedIndex="{x:Bind ViewModel.LanguageIndex, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="applicationmodels:AppLanguageItem">
                                 <TextBlock Text="{x:Bind Name, Mode=OneTime}" />
@@ -34,9 +38,31 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </controls:SettingsCard>
+                <TeachingTip
+                    x:Uid="TeachingTipRestart"
+                    IsLightDismissEnabled="True"
+                    IsOpen="{x:Bind ViewModel.ShowRestartTip, Mode=TwoWay}"
+                    Target="{x:Bind AppLanguagesComboBox}">
+                    <StackPanel
+                        Padding="0,8,0,0"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Uid="ButtonOk"
+                            MinWidth="140"
+                            Command="{x:Bind ViewModel.RestartApplicationCommand, Mode=OneWay}"
+                            Style="{ThemeResource AccentButtonStyle}" />
+                        <Button
+                            x:Uid="ButtonCancel"
+                            MinWidth="140"
+                            Command="{x:Bind ViewModel.CancelRestartCommand, Mode=OneWay}" />
+                    </StackPanel>
+                </TeachingTip>
 
                 <!--  Apperance & behaviour  -->
                 <TextBlock x:Uid="Settings_Appearance" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
+
                 <controls:SettingsCard x:Uid="Settings_Theme_Card">
                     <controls:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE790;" />
@@ -78,6 +104,7 @@
 
                 <!--  About  -->
                 <TextBlock x:Uid="Settings_About" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
+
                 <controls:SettingsExpander x:Uid="Settings_AboutApp_Card" Header="{x:Bind ViewModel.AppDisplayName, Mode=OneTime}">
                     <controls:SettingsExpander.HeaderIcon>
                         <BitmapIcon ShowAsMonochrome="False" UriSource="ms-appx:///Assets/Icon.ico" />
