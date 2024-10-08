@@ -60,20 +60,6 @@
                     </StackPanel>
                 </TeachingTip>
 
-                <!--  Apperance & behaviour  -->
-                <TextBlock x:Uid="Settings_Appearance" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
-
-                <controls:SettingsCard x:Uid="Settings_Theme_Card">
-                    <controls:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE790;" />
-                    </controls:SettingsCard.HeaderIcon>
-                    <ComboBox SelectedIndex="{x:Bind ViewModel.ThemeIndex, Mode=TwoWay}">
-                        <ComboBoxItem x:Uid="Settings_Theme_Default" />
-                        <ComboBoxItem x:Uid="Settings_Theme_Light" />
-                        <ComboBoxItem x:Uid="Settings_Theme_Dark" />
-                    </ComboBox>
-                </controls:SettingsCard>
-
                 <controls:SettingsCard x:Uid="Settings_RunStartup_Card">
                     <controls:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE7B5;" />
@@ -100,6 +86,20 @@
                         <FontIcon Glyph="&#xE81E;" />
                     </controls:SettingsCard.HeaderIcon>
                     <ToggleSwitch IsOn="{x:Bind ViewModel.MultiThread, Mode=TwoWay}" />
+                </controls:SettingsCard>
+
+                <!--  Apperance  -->
+                <TextBlock x:Uid="Settings_Appearance" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
+
+                <controls:SettingsCard x:Uid="Settings_Theme_Card">
+                    <controls:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE790;" />
+                    </controls:SettingsCard.HeaderIcon>
+                    <ComboBox SelectedIndex="{x:Bind ViewModel.ThemeIndex, Mode=TwoWay}">
+                        <ComboBoxItem x:Uid="Settings_Theme_Default" />
+                        <ComboBoxItem x:Uid="Settings_Theme_Light" />
+                        <ComboBoxItem x:Uid="Settings_Theme_Dark" />
+                    </ComboBox>
                 </controls:SettingsCard>
 
                 <!--  About  -->

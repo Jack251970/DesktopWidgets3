@@ -136,7 +136,7 @@
     <value>一个包含许多实用桌面组件的WinUI3应用。</value>
   </data>
   <data name="Settings_Appearance.Text" xml:space="preserve">
-    <value>外观和行为</value>
+    <value>外观</value>
   </data>
   <data name="Settings_CopyRight_Card.Description" xml:space="preserve">
     <value>CopyRight © 2024 Jack251970. All rights reserved.</value>
@@ -148,7 +148,7 @@
     <value>选择应用显示的主题</value>
   </data>
   <data name="Settings_Theme_Card.Header" xml:space="preserve">
-    <value>应用主题</value>
+    <value>主题</value>
   </data>
   <data name="Settings_Theme_Dark.Content" xml:space="preserve">
     <value>深色</value>
