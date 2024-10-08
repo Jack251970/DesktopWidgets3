@@ -102,6 +102,19 @@
                     </ComboBox>
                 </controls:SettingsCard>
 
+                <controls:SettingsCard x:Uid="Settings_Backdrop_Card">
+                    <controls:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xEF1F;" />
+                    </controls:SettingsCard.HeaderIcon>
+                    <ComboBox SelectedIndex="{x:Bind ViewModel.BackdropTypeIndex, Mode=TwoWay}">
+                        <ComboBoxItem x:Uid="Settings_Backdrop_None" />
+                        <ComboBoxItem x:Uid="Settings_Backdrop_Mica" />
+                        <ComboBoxItem x:Uid="Settings_Backdrop_Acrylic" />
+                        <ComboBoxItem x:Uid="Settings_Backdrop_Blur" />
+                        <ComboBoxItem x:Uid="Settings_Backdrop_Transparent" />
+                    </ComboBox>
+                </controls:SettingsCard>
+
                 <!--  About  -->
                 <TextBlock x:Uid="Settings_About" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 

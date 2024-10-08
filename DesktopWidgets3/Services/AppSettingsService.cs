@@ -17,10 +17,11 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         {
             // initialize local settings
             Language = GetLanguage();
-            Theme = GetTheme();
             SilentStart = GetSilentStart();
             BatterySaver = GetBatterySaver();
             MultiThread = GetMultiThread();
+            Theme = GetTheme();
+            BackdropType = GetBackdropType();
 
             // initialize efficiency mode
             EfficiencyModeUtilities.SetEfficiencyMode(BatterySaver);
@@ -55,37 +56,6 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     {
         await SaveDataInSettingsAsync(_localSettingsKeys.LanguageKey, language);
         Language = language;
-    }
-
-    #endregion
-
-    #region Theme
-
-    private ElementTheme theme;
-    public ElementTheme Theme
-    {
-        get => theme;
-        private set
-        {
-            if (theme != value)
-            {
-                theme = value;
-            }
-        }
-    }
-
-    private const ElementTheme DefaultTheme = ElementTheme.Default;
-
-    private ElementTheme GetTheme()
-    {
-        var data = GetDataFromSettings(_localSettingsKeys.ThemeKey, DefaultTheme);
-        return data;
-    }
-
-    public async Task SaveThemeInSettingsAsync(ElementTheme theme)
-    {
-        await SaveDataInSettingsAsync(_localSettingsKeys.ThemeKey, theme);
-        Theme = theme;
     }
 
     #endregion
@@ -185,6 +155,68 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     {
         await SaveDataInSettingsAsync(_localSettingsKeys.MultiThreadKey, value);
         MultiThread = value;
+    }
+
+    #endregion
+
+    #region Theme
+
+    private ElementTheme theme;
+    public ElementTheme Theme
+    {
+        get => theme;
+        private set
+        {
+            if (theme != value)
+            {
+                theme = value;
+            }
+        }
+    }
+
+    private const ElementTheme DefaultTheme = ElementTheme.Default;
+
+    private ElementTheme GetTheme()
+    {
+        var data = GetDataFromSettings(_localSettingsKeys.ThemeKey, DefaultTheme);
+        return data;
+    }
+
+    public async Task SaveThemeInSettingsAsync(ElementTheme theme)
+    {
+        await SaveDataInSettingsAsync(_localSettingsKeys.ThemeKey, theme);
+        Theme = theme;
+    }
+
+    #endregion
+
+    #region Backdrop
+
+    private BackdropType backdropType;
+    public BackdropType BackdropType
+    {
+        get => backdropType;
+        private set
+        {
+            if (backdropType != value)
+            {
+                backdropType = value;
+            }
+        }
+    }
+
+    private const BackdropType DefaultBackdropType = BackdropType.Mica;
+
+    private BackdropType GetBackdropType()
+    {
+        var data = GetDataFromSettings(_localSettingsKeys.BackdropTypeKey, DefaultBackdropType);
+        return data;
+    }
+
+    public async Task SaveBackdropTypeInSettingsAsync(BackdropType type)
+    {
+        await SaveDataInSettingsAsync(_localSettingsKeys.BackdropTypeKey, type);
+        BackdropType = type;
     }
 
     #endregion

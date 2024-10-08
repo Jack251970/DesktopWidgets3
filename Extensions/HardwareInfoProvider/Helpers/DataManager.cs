@@ -3,8 +3,6 @@
 
 namespace HardwareInfoProvider.Helpers;
 
-#pragma warning disable CA1822 // Mark members as static
-
 internal sealed class DataManager(HardwareType type) : IDisposable
 {
     private readonly SystemData _systemData = new();
@@ -91,6 +89,7 @@ internal sealed class DataManager(HardwareType type) : IDisposable
         }
     }
 
+#pragma warning disable CA1822 // Mark members as static
     internal MemoryStats GetMemoryStats()
     {
         lock (SystemData.MemStats)
@@ -130,6 +129,7 @@ internal sealed class DataManager(HardwareType type) : IDisposable
             return SystemData.DiskStats;
         }
     }
+#pragma warning restore CA1822 // Mark members as static
 
     public void Dispose()
     {

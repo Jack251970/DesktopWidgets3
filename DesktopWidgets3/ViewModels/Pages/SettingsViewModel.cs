@@ -18,9 +18,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     private bool _showRestartTip;
 
     [ObservableProperty]
-    private int _themeIndex;
-
-    [ObservableProperty]
     private bool _runStartup;
 
     [ObservableProperty]
@@ -31,6 +28,12 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     [ObservableProperty]
     private bool _multiThread;
+
+    [ObservableProperty]
+    private int _themeIndex;
+
+    [ObservableProperty]
+    private int _backdropTypeIndex;
 
     [ObservableProperty]
     private string _appDisplayName = ConstantHelper.AppAppDisplayName;
@@ -44,13 +47,15 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     #endregion
 
     private readonly IAppSettingsService _appSettingsService;
+    private readonly IBackdropSelectorService _backdropSelectorService;
     private readonly IThemeSelectorService _themeSelectorService;
 
     private bool _isInitialized;
 
-    public SettingsViewModel(IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService)
+    public SettingsViewModel(IAppSettingsService appSettingsService, IBackdropSelectorService backdropSelectorService, IThemeSelectorService themeSelectorService)
     {
         _appSettingsService = appSettingsService;
+        _backdropSelectorService = backdropSelectorService;
         _themeSelectorService = themeSelectorService;
 
         InitializeSettings();
@@ -58,10 +63,11 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     private void InitializeSettings()
     {
-        ThemeIndex = (int)_themeSelectorService.Theme;
         SilentStart = _appSettingsService.SilentStart;
         BatterySaver = _appSettingsService.BatterySaver;
         MultiThread = _appSettingsService.MultiThread;
+        ThemeIndex = (int)_themeSelectorService.Theme;
+        BackdropTypeIndex = (int)_appSettingsService.BackdropType;
 
         _isInitialized = true;
     }
@@ -85,11 +91,13 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     #region Commands
 
+#pragma warning disable CA1822 // Mark members as static
     [RelayCommand]
     private void RestartApplication()
     {
         App.RestartApplication();
     }
+#pragma warning restore CA1822 // Mark members as static
 
     [RelayCommand]
     private void CancelRestart()
@@ -117,14 +125,6 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
             }
 
             ShowRestartTip = true;
-        }
-    }
-
-    partial void OnThemeIndexChanged(int value)
-    {
-        if (_isInitialized)
-        {
-            _themeSelectorService.SetThemeAsync((ElementTheme)value);
         }
     }
 
@@ -157,6 +157,22 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         if (_isInitialized)
         {
             _appSettingsService.SetMultiThreadAsync(value);
+        }
+    }
+
+    partial void OnThemeIndexChanged(int value)
+    {
+        if (_isInitialized)
+        {
+            _themeSelectorService.SetThemeAsync((ElementTheme)value);
+        }
+    }
+
+    partial void OnBackdropTypeIndexChanged(int value)
+    {
+        if (_isInitialized)
+        {
+            _backdropSelectorService.SetBackdropTypeAsync((BackdropType)value);
         }
     }
 

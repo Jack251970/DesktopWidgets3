@@ -9,9 +9,6 @@
     Height="200"
     IsShownInSwitchers="False"
     mc:Ignorable="d">
-    <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
 
     <Grid x:Name="ContentArea">
         <Grid x:Name="WidgetTitleBar" />

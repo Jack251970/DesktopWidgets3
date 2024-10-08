@@ -10,10 +10,6 @@ public interface IAppSettingsService
 
     Task SaveLanguageInSettingsAsync(string language);
 
-    ElementTheme Theme { get; }
-
-    Task SaveThemeInSettingsAsync(ElementTheme theme);
-
     bool SilentStart { get; }
 
     Task SetSilentStartAsync(bool value);
@@ -27,6 +23,14 @@ public interface IAppSettingsService
     bool MultiThread { get; }
 
     Task SetMultiThreadAsync(bool value);
+
+    ElementTheme Theme { get; }
+
+    Task SaveThemeInSettingsAsync(ElementTheme theme);
+
+    BackdropType BackdropType { get; }
+
+    Task SaveBackdropTypeInSettingsAsync(BackdropType type);
 
     Task<List<JsonWidgetItem>> InitializeWidgetListAsync();
 

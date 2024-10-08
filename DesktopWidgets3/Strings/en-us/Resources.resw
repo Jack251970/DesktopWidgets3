@@ -324,4 +324,25 @@
   <data name="TeachingTipRestart.Subtitle" xml:space="preserve">
     <value>The application needs to be restarted in order to apply these settings, would you like to restart the app?</value>
   </data>
+  <data name="Settings_Backdrop_Card.Header" xml:space="preserve">
+    <value>Backdrop</value>
+  </data>
+  <data name="Settings_Backdrop_Card.Description" xml:space="preserve">
+    <value>Select which app backdrop to display</value>
+  </data>
+  <data name="Settings_Backdrop_None.Content" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Settings_Backdrop_Mica.Content" xml:space="preserve">
+    <value>Mica</value>
+  </data>
+  <data name="Settings_Backdrop_Acrylic.Content" xml:space="preserve">
+    <value>Acrylic</value>
+  </data>
+  <data name="Settings_Backdrop_Blur.Content" xml:space="preserve">
+    <value>Blur</value>
+  </data>
+  <data name="Settings_Backdrop_Transparent.Content" xml:space="preserve">
+    <value>Transparent</value>
+  </data>
 </root>

@@ -3,11 +3,12 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services;
 
-internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService) : IActivationService
+internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IAppSettingsService appSettingsService, IBackdropSelectorService backdropSelectorService, IThemeSelectorService themeSelectorService) : IActivationService
 {
     private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler = defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers = activationHandlers;
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
+    private readonly IBackdropSelectorService _backdropSelectorService = backdropSelectorService;
     private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
     private UIElement? _shell = null;
 
@@ -71,6 +72,8 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
     private async Task StartupAsync(Window window)
     {
         await _themeSelectorService.SetRequestedThemeAsync(window);
+
+        await _backdropSelectorService.SetRequestedBackdropTypeAsync(window);
 
         await Task.CompletedTask;
     }

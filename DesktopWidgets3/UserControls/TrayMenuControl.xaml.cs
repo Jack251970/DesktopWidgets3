@@ -4,8 +4,6 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.UserControls;
 
-#pragma warning disable CA1822 // Mark members as static
-
 [ObservableObject]
 public sealed partial class TrayMenuControl : UserControl
 {
@@ -21,11 +19,13 @@ public sealed partial class TrayMenuControl : UserControl
 
     #region Commands
 
+#pragma warning disable CA1822 // Mark members as static
     [RelayCommand]
     private void ShowWindow()
     {
         App.ShowMainWindow(false);
     }
+#pragma warning restore CA1822 // Mark members as static
 
     [RelayCommand]
     private async Task ExitAppAsync()

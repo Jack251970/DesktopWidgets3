@@ -102,6 +102,9 @@ public partial class App : Application
                 // Theme Management
                 services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
 
+                // Backdrop Management
+                services.AddSingleton<IBackdropSelectorService, BackdropSelectorService>();
+
                 // Dependency Injection
                 services.AddSingleton<IDependencyService, DependencyService>();
 

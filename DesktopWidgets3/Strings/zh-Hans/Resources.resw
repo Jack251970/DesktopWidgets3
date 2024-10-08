@@ -324,4 +324,25 @@
   <data name="TeachingTipRestart.Subtitle" xml:space="preserve">
     <value>一些设置需要重新启动才会应用，是否立即重启？</value>
   </data>
+  <data name="Settings_Backdrop_Card.Header" xml:space="preserve">
+    <value>背景</value>
+  </data>
+  <data name="Settings_Backdrop_Card.Description" xml:space="preserve">
+    <value>选择应用显示的背景</value>
+  </data>
+  <data name="Settings_Backdrop_Mica.Content" xml:space="preserve">
+    <value>云母</value>
+  </data>
+  <data name="Settings_Backdrop_None.Content" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Settings_Backdrop_Acrylic.Content" xml:space="preserve">
+    <value>亚克力</value>
+  </data>
+  <data name="Settings_Backdrop_Blur.Content" xml:space="preserve">
+    <value>模糊</value>
+  </data>
+  <data name="Settings_Backdrop_Transparent.Content" xml:space="preserve">
+    <value>透明</value>
+  </data>
 </root>
