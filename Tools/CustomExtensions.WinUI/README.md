@@ -1,33 +1,29 @@
 # CustomExtensions.WinUI
 
-This package provides the ability to load loose "extension" (or addin) assemblies which may contain WinUI components and allow them to correctly render in the hosting process. Additionally, it provides some limited support for Hot Reload, depending on how your extensions are packaged.
+This package provides the ability to load assemblies which may contain WinUI components and allow them to correctly render in the hosting process. Additionally, it provides some limited support for Hot Reload, depending on how your extensions are packaged.
 
-This package has been tested under Microsoft.WindowsAppSdk package 1.5.240802000.
-
-Thanks for [dnchattan](https://github.com/dnchattan) and this project is based on his project [winui-extensions](https://github.com/dnchattan/winui-extensions)!
+This project is based on the project [winui-extensions](https://github.com/dnchattan/winui-extensions) and thanks [dnchattan](https://github.com/dnchattan)!
 
 ## How to use
 
-### 1. Initializing the application extension host
+### 1. Initialize the application extension host
 
 Before any other APIs are called, you must first initialize the host application by calling `ApplicationExtensionHost.Initialize()` with your host application instance.
 
-### 2. Loading an extension
+### 2. Load an extension
 
 Where you would normally loaded the extension assembly (`Assembly.LoadFrom` recommanded), you should instead call the `ApplicationExtensionHost.Current.LoadExtension` method, which will return an `IExtensionAssembly` handle that can be used to unload the extension later.
 
 If you want to load the pri resources in the extension, you should call `ApplicationExtensionHost.Current.LoadExtensionAndResourcesAsync` method instead of `LoadExtension` method.
 
-> Note: For some reason, AssemblyLoadContext will cause issues, such as unable to find secondary reference.
+> Note: For some reason, **AssemblyLoadContext will cause issues** in WinUI application, such as unable to find secondarily-referred WinUI components.
 Even if using AssemblyLoadContext.Default which should have no difference thanAssembly.LoadFrom(), but it does.
-So, use Assembly.LoadFrom() instead.
+So, our packaged uses Assembly.LoadFrom() instead.
 
 Then you can get the actual assembly object and create an instance of your extension if it implements a known interface IExtension:
 
 ```cs
 using CustomExtensions.WinUI.Contracts;
-
-/* ... */
 
 IExtension? LoadMyExtensionAndCreateInstance(string assemblyLoadPath, bool loadXamlResources)
 {
@@ -60,13 +56,17 @@ The `IExtensionAssembly` interface also implements `IDisposable` to remove your 
 
 When your application are closing, it is recommanded to dispose the extensionAssembly to remove your extension's resources and Xaml type metadata registration from the hosting assembly.
 
-### 3. Extension UI Requirements
+### 3. Load UI components
 
 * Method 1: Load the Xaml files when the extension is loading. (Recommended)
 
 When loading the extension, the extension assembly can attempt to enable hot reload and create symbolic link to the according path in the host project directory by calling the `TryEnableHotReload` method.
 
 The codes is in the `LoadMyExtensionAndCreateInstance()` function as above.
+
+```cs
+string? resourceFolder = extensionAssembly.TryLoadXamlResources();
+```
 
 * Method 2: Load the Xaml files every time when they are needed.
 
@@ -81,12 +81,12 @@ public sealed partial class SamplePage : Page
     public SamplePage()
     {
         // Will attempt infer the correct path to the Xaml file based on the `CallerFilePath` attribute.
-        this.LoadComponent(ref _contentLoaded);  // Don't use this.InitializeComponent(); here!
+        this.LoadComponent(ref _contentLoaded);  // Don't use default this.InitializeComponent(); here!
     }
 }
 ```
 
-### 4. Using pri resources in an extension
+### 4. Load pri resources
 
 * Method 1: Use `Microsoft.Windows.ApplicationModel.ResourceMap` (Recommended)
 
@@ -115,18 +115,7 @@ private void Loaded(object sender, RoutedEventArgs e)
 Rememeber you have called `LoadExtensionAndResourcesAsync` function instead of `LoadExtension`.
 
 > Note: The `x:Uid="Greeting"` pattern will **not** work for extensions to bind their resources to `FrameworkElements` in their own UI.
-So, do **not** use x:Uid in the Xaml files, like this:
-
-```xml
-<UserControl
-	x:Class="SampleExtension.UI.Greeter"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	Loaded="Loaded">
-        <!-- Here x:Uid is unable to load resources.  -->
-		<TextBlock x:Uid="Greeting" x:Name="Greeting" />
-</UserControl>
-```
+So, do **not** use x:Uid in the Xaml files, like `<TextBlock x:Uid="Greeting" />`.
 
 ### 5. Hot-reload
 
