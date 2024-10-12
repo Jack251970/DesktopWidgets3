@@ -4,7 +4,7 @@ using WinUIEx;
 
 namespace DesktopWidgets3.Core.Helpers;
 
-public class BackdropHelper
+public partial class BackdropHelper
 {
     public static void SetRequestedBackdropAsync(Window window, BackdropType type)
     {

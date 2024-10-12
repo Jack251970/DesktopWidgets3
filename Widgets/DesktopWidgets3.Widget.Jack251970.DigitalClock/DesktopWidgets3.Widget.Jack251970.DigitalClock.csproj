@@ -17,6 +17,7 @@
     <!-- Other Settings -->
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <IsPackable>false</IsPackable>
     <WindowsPackageType>None</WindowsPackageType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
