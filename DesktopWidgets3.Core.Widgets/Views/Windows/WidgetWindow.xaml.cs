@@ -4,7 +4,6 @@ using Windows.Graphics;
 using WinUIEx;
 using WinUIEx.Messaging;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
@@ -224,7 +223,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Edit Mode
 
-    public async Task SetEditMode(bool isEditMode)
+    public async Task SetEditMode(bool isEditMode, MenuFlyout? menuFlyout)
     {
         // set window style
         IsResizable = isEditMode;
@@ -243,22 +242,9 @@ public sealed partial class WidgetWindow : WindowEx
                 update.EnableUpdate(!isEditMode);
                 break;
         }
-    }
 
-    #endregion
-
-    #region Widget Menu
-
-    private void OpenWidgetMenu(object sender, RoutedEventArgs _)
-    {
-        if (sender as Button is Button widgetMenuButton && widgetMenuButton.Flyout is MenuFlyout widgetMenuFlyout)
-        {
-            widgetMenuFlyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft;
-            if (widgetMenuFlyout?.Items.Count == 0)
-            {
-                _widgetManagerService.AddWidgetItemsToWidgetMenu(widgetMenuFlyout, this);
-            }
-        }
+        // set menu flyout
+        ViewModel.WidgetMenuFlyout = isEditMode ? null : menuFlyout;
     }
 
     #endregion

@@ -8,6 +8,8 @@ public class WidgetWindowPair
 
     public BaseWidgetViewModel? ViewModel { get; set; }
 
+    public MenuFlyout MenuFlyout { get; set; } = null!;
+
     public override bool Equals(object? obj)
     {
         if (obj is WidgetWindowPair widgetWindowPair)

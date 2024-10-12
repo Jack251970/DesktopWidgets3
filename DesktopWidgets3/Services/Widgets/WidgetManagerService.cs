@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -244,7 +245,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.Activate();
 
             // set edit mode
-            await widgetWindow.SetEditMode(false);
+            var menuFlyout = GetWidgetMenuFlyout(widgetWindow, true);
+            await widgetWindow.SetEditMode(false, menuFlyout);
 
             // initialize widget settings
             BaseWidgetViewModel viewModel = null!;
@@ -267,19 +269,17 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             PinnedWidgets.Add(new WidgetWindowPair()
             {
                 Window = widgetWindow,
-                ViewModel = viewModel
+                ViewModel = viewModel,
+                MenuFlyout = menuFlyout
             });
             PinnedWidgetWindows.Add(widgetWindow);
         }
     }
 
-    private async void WidgetWindow_Closing(Window window)
+    private void WidgetWindow_Closing(Window window)
     {
         if (window is WidgetWindow widgetWindow)
         {
-            // set edit mode
-            await widgetWindow.SetEditMode(false);
-
             // widget close event
             var viewModel = GetWidgetViewModel(widgetWindow.Id, widgetWindow.IndexTag);
             if (viewModel is IWidgetWindowClose close)
@@ -397,13 +397,31 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region widget menu
 
-    public void AddWidgetItemsToWidgetMenu(MenuFlyout menuFlyout, WidgetWindow widgetWindow)
+    private MenuFlyout GetWidgetMenuFlyout(WidgetWindow widgetWindow, bool create)
     {
+        if (!create)
+        {
+            foreach (var widget in PinnedWidgets)
+            {
+                if (widget.Window.Id == widgetWindow.Id && widget.Window.IndexTag == widgetWindow.IndexTag)
+                {
+                    return widget.MenuFlyout;
+                }
+            }
+        }
+
+        var menuFlyout = new MenuFlyout
+        {
+            Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft
+        };
+
         AddUnpinDeleteItemsToWidgetMenu(menuFlyout, widgetWindow);
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
         AddLayoutItemsToWidgetMenu(menuFlyout, widgetWindow);
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
         AddRestartItemsToWidgetMenu(menuFlyout, widgetWindow);
+
+        return menuFlyout;
     }
 
     #region Unpin & Delete
@@ -621,7 +639,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         _inEditMode = true;
 
         // set edit mode for all widgets
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true, null), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide main window & show edit mode overlay window
         await App.MainWindow.EnqueueOrInvokeAsync(async (window) =>
@@ -641,7 +659,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     public async Task SaveAndExitEditMode()
     {
         // restore edit mode for all widgets
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false, GetWidgetMenuFlyout(window, false)), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide edit mode overlay window
         App.EditModeWindow?.Hide();
@@ -680,7 +698,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
         {
             // set edit mode for all widgets
-            await window.SetEditMode(false);
+            await window.SetEditMode(false, GetWidgetMenuFlyout(window, false));
 
             // read original position and size
             var originalWidget = _originalWidgetList.First(x => x.Id == window.Id && x.IndexTag == window.IndexTag);

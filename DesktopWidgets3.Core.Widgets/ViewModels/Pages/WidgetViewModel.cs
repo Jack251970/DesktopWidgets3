@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Core.Widgets.ViewModels.Pages;
 
@@ -13,6 +14,9 @@ public partial class WidgetViewModel : ObservableRecipient
 
     [ObservableProperty]
     public FrameworkElement _widgetFrameworkElement = null!;
+
+    [ObservableProperty]
+    public MenuFlyout? _widgetMenuFlyout = null;
 
     public WidgetViewModel()
     {
