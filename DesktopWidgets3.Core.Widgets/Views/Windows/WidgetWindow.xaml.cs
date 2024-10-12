@@ -167,9 +167,9 @@ public sealed partial class WidgetWindow : WindowEx
     {
         Activated -= WidgetWindow_Activated;
         var hwnd = this.GetWindowHandle();
-        normalStyle = HwndExtensions.GetWindowStyle(hwnd);  // Initialize normal window style
+        _normalStyle = HwndExtensions.GetWindowStyle(hwnd);  // Initialize normal window style
         HwndExtensions.ToggleWindowStyle(hwnd, false, WindowStyle.TiledWindow);  // Set window style without title bar
-        nonTitleStyle = HwndExtensions.GetWindowStyle(hwnd);  // Initialize edit mode window style
+        _nonTitleStyle = HwndExtensions.GetWindowStyle(hwnd);  // Initialize edit mode window style
     }
 
     private void WidgetWindow_PositionChanged(object? sender, PointInt32 e)
@@ -179,6 +179,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     private void WidgetWindow_SizeChanged(object? sender, WindowSizeChangedEventArgs args)
     {
+        // update size
         size.Height = Height;
         size.Width = Width;
     }
@@ -208,12 +209,12 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Title Bar
 
-    private WindowStyle nonTitleStyle;
-    private WindowStyle normalStyle;
+    private WindowStyle _nonTitleStyle;
+    private WindowStyle _normalStyle;
 
     private void SetTitleBarStyle(bool customTitleBar)
     {
-        WindowExtensions.SetWindowStyle(this, customTitleBar ? normalStyle : nonTitleStyle);
+        WindowExtensions.SetWindowStyle(this, customTitleBar ? _normalStyle : _nonTitleStyle);
         ExtendsContentIntoTitleBar = customTitleBar;
         SetTitleBar(customTitleBar ? WidgetTitleBar : null);
         IsTitleBarVisible = IsMaximizable = IsMinimizable = false;
@@ -223,12 +224,21 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Edit Mode
 
+    private bool _isEditMode = true;
+    private bool _isEditModeInitialized;
+
     public async Task SetEditMode(bool isEditMode, MenuFlyout? menuFlyout)
     {
-        // set window style
+        // check if edit mode is already set
+        if (_isEditModeInitialized && _isEditMode == isEditMode)
+        {
+            return;
+        }
+
+        // set window style (it can cause size change)
         IsResizable = isEditMode;
 
-        // set title bar
+        // set title bar (it can cause size change)
         SetTitleBarStyle(isEditMode);
 
         // set page update status
@@ -245,6 +255,10 @@ public sealed partial class WidgetWindow : WindowEx
 
         // set menu flyout
         ViewModel.WidgetMenuFlyout = isEditMode ? null : menuFlyout;
+
+        // set edit mode flag
+        _isEditModeInitialized = true;
+        _isEditMode = isEditMode;
     }
 
     #endregion
