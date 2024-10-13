@@ -7,6 +7,7 @@
 Build the solution in Visual Studio or run `dotnet build` from the command line.
 
 ## Reference
+* CustomExtensions.WinUI: https://github.com/Jack251970/CustomExtensions.WinUI
 * devhome: https://github.com/microsoft/devhome
 * Files: https://github.com/files-community/Files
 * Flow.Launcher: https://github.com/Flow-Launcher/Flow.Launcher
@@ -20,4 +21,3 @@ Build the solution in Visual Studio or run `dotnet build` from the command line.
 * WinUI3Windows: https://github.com/smourier/WinUI3Windows
 * Windows Community Toolkit: https://github.com/CommunityToolkit/WindowsCommunityToolkit
 * WinUIEx: https://github.com/dotMorten/WinUIEx
-* winui-extensions: https://github.com/dnchattan/winui-extensions

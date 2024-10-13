@@ -138,6 +138,7 @@
                             HorizontalContentAlignment="Left"
                             ContentAlignment="Vertical">
                             <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                                <HyperlinkButton Content="CustomExtensions.WinUI" NavigateUri="https://github.com/Jack251970/CustomExtensions.WinUI" />
                                 <HyperlinkButton Content="devhome" NavigateUri="https://github.com/microsoft/devhome" />
                                 <HyperlinkButton Content="Files" NavigateUri="https://github.com/files-community/Files" />
                                 <HyperlinkButton Content="Flow.Launcher" NavigateUri="https://github.com/Flow-Launcher/Flow.Launcher" />
@@ -151,7 +152,6 @@
                                 <HyperlinkButton Content="WinUI3Windows" NavigateUri="https://github.com/smourier/WinUI3Windows" />
                                 <HyperlinkButton Content="Windows Community Toolkit" NavigateUri="https://github.com/CommunityToolkit/WindowsCommunityToolkit" />
                                 <HyperlinkButton Content="WinUIEx" NavigateUri="https://github.com/dotMorten/WinUIEx" />
-                                <HyperlinkButton Content="winui-extensions" NavigateUri="https://github.com/dnchattan/winui-extensions" />
                             </StackPanel>
                         </controls:SettingsCard>
                         <controls:SettingsCard
