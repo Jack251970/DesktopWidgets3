@@ -5,6 +5,8 @@ using WinUIEx;
 using WinUIEx.Messaging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Input;
+using Microsoft.UI.Windowing;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
@@ -138,9 +140,9 @@ public sealed partial class WidgetWindow : WindowEx
 
         // register events
         Activated += WidgetWindow_Activated;
+        Closed += WidgetWindow_Closed;
         PositionChanged += WidgetWindow_PositionChanged;
         SizeChanged += WidgetWindow_SizeChanged;
-        Closed += WidgetWindow_Closed;
     }
 
     #region Initialization
@@ -166,10 +168,27 @@ public sealed partial class WidgetWindow : WindowEx
     private void WidgetWindow_Activated(object? sender, WindowActivatedEventArgs args)
     {
         Activated -= WidgetWindow_Activated;
-        var hwnd = this.GetWindowHandle();
-        _normalStyle = HwndExtensions.GetWindowStyle(hwnd);  // Initialize normal window style
-        HwndExtensions.ToggleWindowStyle(hwnd, false, WindowStyle.TiledWindow);  // Set window style without title bar
-        _nonTitleStyle = HwndExtensions.GetWindowStyle(hwnd);  // Initialize edit mode window style
+        if (Content is not FrameworkElement content || content.IsLoaded)
+        {
+            Content_Loaded(this, new RoutedEventArgs());
+        }
+        else
+        {
+            content.Loaded += Content_Loaded;
+        }
+    }
+
+    private void Content_Loaded(object sender, RoutedEventArgs e)
+    {
+        ExtendsContentIntoTitleBar = true;
+        SetTitleBar(ContentArea);
+        SetTitleBarDragRegion(false);
+        AppWindow.Changed += AppWindow_Changed;
+    }
+
+    private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs e)
+    {
+        SetTitleBarDragRegion(_isEditMode);
     }
 
     private void WidgetWindow_PositionChanged(object? sender, PointInt32 e)
@@ -186,7 +205,10 @@ public sealed partial class WidgetWindow : WindowEx
 
     private void WidgetWindow_Closed(object? sender, WindowEventArgs args)
     {
+        Closed -= WidgetWindow_Closed;
+        AppWindow.Changed -= AppWindow_Changed;
         PositionChanged -= WidgetWindow_PositionChanged;
+        SizeChanged -= WidgetWindow_SizeChanged;
         _manager.WindowMessageReceived -= WindowManager_WindowMessageReceived;
     }
 
@@ -209,15 +231,20 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Title Bar
 
-    private WindowStyle _nonTitleStyle;
-    private WindowStyle _normalStyle;
-
-    private void SetTitleBarStyle(bool customTitleBar)
+    private void SetTitleBarDragRegion(bool isEditMode)
     {
-        WindowExtensions.SetWindowStyle(this, customTitleBar ? _normalStyle : _nonTitleStyle);
-        ExtendsContentIntoTitleBar = customTitleBar;
-        SetTitleBar(customTitleBar ? WidgetTitleBar : null);
-        IsTitleBarVisible = IsMaximizable = IsMinimizable = false;
+        this.RaiseSetTitleBarDragRegion(isEditMode ? SetTitleBarDragRegionAllDrag : SetTitleBarDragRegionNoDrag);
+    }
+
+    private int SetTitleBarDragRegionAllDrag(InputNonClientPointerSource source, SizeInt32 size, double scaleFactor, Func<UIElement, RectInt32?, RectInt32> getScaledRect)
+    {
+        return -1;
+    }
+
+    private int SetTitleBarDragRegionNoDrag(InputNonClientPointerSource source, SizeInt32 size, double scaleFactor, Func<UIElement, RectInt32?, RectInt32> getScaledRect)
+    {
+        source.SetRegionRects(NonClientRegionKind.Passthrough, [getScaledRect(ContentArea, null)]);
+        return -1;
     }
 
     #endregion
@@ -239,7 +266,7 @@ public sealed partial class WidgetWindow : WindowEx
         IsResizable = isEditMode;
 
         // set title bar (it can cause size change)
-        SetTitleBarStyle(isEditMode);
+        SetTitleBarDragRegion(isEditMode);
 
         // set page update status
         var viewModel = _widgetManagerService.GetWidgetViewModel(this);
