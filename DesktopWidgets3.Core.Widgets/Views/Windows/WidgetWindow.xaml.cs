@@ -124,6 +124,8 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
+    #region Constructor
+
     public WidgetWindow()
     {
         ViewModel = DependencyExtensions.GetRequiredService<WidgetViewModel>();
@@ -145,20 +147,30 @@ public sealed partial class WidgetWindow : WindowEx
         SizeChanged += WidgetWindow_SizeChanged;
     }
 
+    #endregion
+
     #region Initialization
 
-    public void InitializeWidgetItem(JsonWidgetItem widgetItem)
+    private RectSize WidgetSize { get; set; }
+
+    private MenuFlyout WidgetMenuFlyout { get; set; } = null!;
+
+    public void Initialize(JsonWidgetItem widgetItem, MenuFlyout menuFlyout)
     {
+        // set widget item properties
         Id = widgetItem.Id;
         IndexTag = widgetItem.IndexTag;
-    }
+        WidgetSize = widgetItem.Size;
 
-    public void InitializeWindow()
-    {
+        // set window properties
         var hwnd = this.GetWindowHandle();
         SystemHelper.HideWindowFromTaskbar(hwnd); // Hide window icon from taskbar
         SystemHelper.SetWindowZPos(hwnd, SystemHelper.WINDOWZPOS.ONBOTTOM); // Force window to stay at bottom
         _manager.WindowMessageReceived += WindowManager_WindowMessageReceived; // Register window sink events
+
+        // set widget menu flyout
+        WidgetMenuFlyout = menuFlyout;
+        ViewModel.WidgetMenuFlyout = menuFlyout;
     }
 
     #endregion
@@ -178,11 +190,19 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
-    private void Content_Loaded(object sender, RoutedEventArgs e)
+    private async void Content_Loaded(object sender, RoutedEventArgs e)
     {
+        // set title bar
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(ContentArea);
-        SetTitleBarDragRegion(false);
+
+        // set edit mode
+        await SetEditMode(false);
+
+        // reset the size because the size will change in SetEditMode
+        Size = WidgetSize;
+
+        // register events
         AppWindow.Changed += AppWindow_Changed;
     }
 
@@ -198,13 +218,14 @@ public sealed partial class WidgetWindow : WindowEx
 
     private void WidgetWindow_SizeChanged(object? sender, WindowSizeChangedEventArgs args)
     {
-        // update size
         size.Height = Height;
         size.Width = Width;
     }
 
     private void WidgetWindow_Closed(object? sender, WindowEventArgs args)
     {
+        WidgetMenuFlyout = null!;
+
         Closed -= WidgetWindow_Closed;
         AppWindow.Changed -= AppWindow_Changed;
         PositionChanged -= WidgetWindow_PositionChanged;
@@ -254,7 +275,7 @@ public sealed partial class WidgetWindow : WindowEx
     private bool _isEditMode = true;
     private bool _isEditModeInitialized;
 
-    public async Task SetEditMode(bool isEditMode, MenuFlyout? menuFlyout)
+    public async Task SetEditMode(bool isEditMode)
     {
         // check if edit mode is already set
         if (_isEditModeInitialized && _isEditMode == isEditMode)
@@ -281,7 +302,7 @@ public sealed partial class WidgetWindow : WindowEx
         }
 
         // set menu flyout
-        ViewModel.WidgetMenuFlyout = isEditMode ? null : menuFlyout;
+        ViewModel.WidgetMenuFlyout = isEditMode ? null : WidgetMenuFlyout;
 
         // set edit mode flag
         _isEditModeInitialized = true;

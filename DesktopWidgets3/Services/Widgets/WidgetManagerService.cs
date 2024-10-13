@@ -225,11 +225,9 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             WidgetProperties.SetId(frameworkElement, widgetId);
             WidgetProperties.SetIndexTag(frameworkElement, indexTag);
 
-            // initialize widget item
-            widgetWindow.InitializeWidgetItem(widgetItem);
-
             // initialize window
-            widgetWindow.InitializeWindow();
+            var menuFlyout = GetWidgetMenuFlyout(widgetWindow);
+            widgetWindow.Initialize(widgetItem, menuFlyout);
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
@@ -244,10 +242,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // activate window
             widgetWindow.Activate();
 
-            // set edit mode
-            var menuFlyout = GetWidgetMenuFlyout(widgetWindow, true);
-            await widgetWindow.SetEditMode(false, menuFlyout);
-
             // initialize widget settings
             BaseWidgetViewModel viewModel = null!;
             if (frameworkElement is IViewModel element)
@@ -261,9 +255,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                     Settings = widgetItem.Settings
                 });
             }
-
-            // reset the size because the size will change when changed the window style
-            widgetWindow.Size = widgetItem.Size;
 
             // add to widget list & widget window list
             PinnedWidgets.Add(new WidgetWindowPair()
@@ -397,19 +388,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region widget menu
 
-    private MenuFlyout GetWidgetMenuFlyout(WidgetWindow widgetWindow, bool create)
+    private MenuFlyout GetWidgetMenuFlyout(WidgetWindow widgetWindow)
     {
-        if (!create)
-        {
-            foreach (var widget in PinnedWidgets)
-            {
-                if (widget.Window.Id == widgetWindow.Id && widget.Window.IndexTag == widgetWindow.IndexTag)
-                {
-                    return widget.MenuFlyout;
-                }
-            }
-        }
-
         var menuFlyout = new MenuFlyout
         {
             Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft
@@ -639,7 +619,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         _inEditMode = true;
 
         // set edit mode for all widgets
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true, null), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(true), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide main window & show edit mode overlay window
         await App.MainWindow.EnqueueOrInvokeAsync(async (window) =>
@@ -659,7 +639,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     public async Task SaveAndExitEditMode()
     {
         // restore edit mode for all widgets
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false, GetWidgetMenuFlyout(window, false)), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) => await window.SetEditMode(false), Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide edit mode overlay window
         App.EditModeWindow?.Hide();
@@ -698,7 +678,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
         {
             // set edit mode for all widgets
-            await window.SetEditMode(false, GetWidgetMenuFlyout(window, false));
+            await window.SetEditMode(false);
 
             // read original position and size
             var originalWidget = _originalWidgetList.First(x => x.Id == window.Id && x.IndexTag == window.IndexTag);
