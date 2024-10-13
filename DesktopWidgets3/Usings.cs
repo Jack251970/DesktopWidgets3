@@ -1,11 +1,6 @@
 ﻿// WinUIEx
 global using WinUIEx;
 
-// CustomExtensions.WinUI
-global using CustomExtensions.WinUI.Contracts;
-global using CustomExtensions.WinUI.Extensions;
-global using CustomExtensions.WinUI.Models;
-
 // DevHome.Dashboard
 global using DevHome.Dashboard.ComSafeWidgetObjects;
 global using DevHome.Dashboard.Controls;
@@ -72,3 +67,8 @@ global using DesktopWidgets3.Widget.Models;
 global using DesktopWidgets3.Widget.Models.Parameter;
 global using DesktopWidgets3.Widget.Models.Setting;
 global using DesktopWidgets3.Widget.Models.ViewModels;
+
+// Jack251970.CustomExtensions.WinUI
+global using CustomExtensions.WinUI.Contracts;
+global using CustomExtensions.WinUI.Extensions;
+global using CustomExtensions.WinUI.Models;

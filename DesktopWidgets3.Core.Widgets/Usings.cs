@@ -7,11 +7,6 @@ global using DesktopWidgets3.Core.Widgets.ViewModels.Pages;
 global using DesktopWidgets3.Core.Widgets.Views.Pages;
 global using DesktopWidgets3.Core.Widgets.Views.Windows;
 
-// CustomExtensions.WinUI
-global using CustomExtensions.WinUI.Contracts;
-global using CustomExtensions.WinUI.Extensions;
-global using CustomExtensions.WinUI.Models;
-
 // DesktopWidgets3.Core
 global using DesktopWidgets3.Core.Contracts.Services;
 global using DesktopWidgets3.Core.Extensions;
@@ -38,3 +33,8 @@ global using DesktopWidgets3.Widget.Models;
 global using DesktopWidgets3.Widget.Models.Parameter;
 global using DesktopWidgets3.Widget.Models.Setting;
 global using DesktopWidgets3.Widget.Models.ViewModels;
+
+// Jack251970.CustomExtensions.WinUI
+global using CustomExtensions.WinUI.Contracts;
+global using CustomExtensions.WinUI.Extensions;
+global using CustomExtensions.WinUI.Models;
