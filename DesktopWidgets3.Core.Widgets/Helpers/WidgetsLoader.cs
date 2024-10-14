@@ -36,7 +36,7 @@ public static class WidgetsLoader
 
             try
             {
-                extensionAssembly = ApplicationExtensionHost.Current.LoadExtension(metadata.ExecuteFilePath, true, false);
+                extensionAssembly = ApplicationExtensionHost.Current.LoadExtension(metadata.ExecuteFilePath, false, false);
 
                 assembly = extensionAssembly.ForeignAssembly;
 
