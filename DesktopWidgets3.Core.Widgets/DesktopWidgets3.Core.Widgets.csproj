@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jack251970.CustomExtensions.WinUI" Version="0.1.19" />
+    <PackageReference Include="Jack251970.CustomExtensions.WinUI" Version="0.1.24" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.240923002" />
     <PackageReference Include="WinUIEx" Version="2.4.2" />
   </ItemGroup>
