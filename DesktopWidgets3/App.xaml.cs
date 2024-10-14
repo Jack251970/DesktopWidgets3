@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
-using System.Diagnostics;
-using UnhandledExceptionEventArgs = Microsoft.UI.Xaml.UnhandledExceptionEventArgs;
 
 namespace DesktopWidgets3;
 
@@ -44,7 +43,7 @@ public partial class App : Application
         MainWindow.Show();
         if (front)
         {
-            MainWindow.Activate();
+            MainWindow.BringToFront();
         }
     }
 
@@ -270,7 +269,7 @@ public partial class App : Application
         await dialog.ShowAsync();*/
     }
 
-    private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
         var ex = e.Exception;
         var exceptionString = ExceptionFormatter.FormatExcpetion(ex);
