@@ -19,10 +19,11 @@ public sealed partial class NavShellPage : Page
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
-        App.MainWindow.Activated += MainWindow_Activated;
         App.MainWindow.TitleBar = AppTitleBar;
 
         AppTitleBarText.Text = ConstantHelper.AppAppDisplayName;
+
+        App.MainWindow.Activated += MainWindow_Activated;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -32,6 +33,7 @@ public sealed partial class NavShellPage : Page
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
+        App.MainWindow.Activated -= MainWindow_Activated;
         App.MainWindow.TitleBarText = AppTitleBarText;
     }
 
