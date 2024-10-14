@@ -13,7 +13,7 @@ public partial class WidgetViewModel : ObservableRecipient
     public string _widgetDisplayTitle = string.Empty;
 
     [ObservableProperty]
-    public FrameworkElement _widgetFrameworkElement = null!;
+    public FrameworkElement _widgetFrameworkElement = new ProgressRing();
 
     [ObservableProperty]
     public MenuFlyout? _widgetMenuFlyout = null;

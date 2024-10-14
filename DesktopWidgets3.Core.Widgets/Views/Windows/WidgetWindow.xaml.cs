@@ -151,6 +151,8 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Initialization
 
+    private BaseWidgetSettings Settings { get; set; } = null!;
+
     private RectSize WidgetSize { get; set; }
 
     private MenuFlyout WidgetMenuFlyout { get; set; } = null!;
@@ -160,6 +162,7 @@ public sealed partial class WidgetWindow : WindowEx
         // set widget item properties
         Id = widgetItem.Id;
         IndexTag = widgetItem.IndexTag;
+        Settings = widgetItem.Settings;
         WidgetSize = widgetItem.Size;
 
         // set window properties
@@ -204,6 +207,9 @@ public sealed partial class WidgetWindow : WindowEx
 
         // register events
         AppWindow.Changed += AppWindow_Changed;
+
+        // envoke completed event handler
+        LoadCompleted?.Invoke(this, new LoadCompletedEventArgs() { WidgetId = Id, IndexTag = IndexTag, WidgetSettings = Settings });
     }
 
     private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs e)
@@ -307,6 +313,21 @@ public sealed partial class WidgetWindow : WindowEx
         // set edit mode flag
         _isEditModeInitialized = true;
         _isEditMode = isEditMode;
+    }
+
+    #endregion
+
+    #region Event Handler
+
+    public event EventHandler<LoadCompletedEventArgs>? LoadCompleted;
+
+    public class LoadCompletedEventArgs : EventArgs
+    {
+        public required string WidgetId { get; set; }
+
+        public required int IndexTag { get; set; }
+
+        public required BaseWidgetSettings WidgetSettings { get; set; }
     }
 
     #endregion

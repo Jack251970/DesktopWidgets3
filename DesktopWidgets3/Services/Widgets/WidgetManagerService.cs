@@ -1,6 +1,9 @@
-﻿using Microsoft.UI.Xaml;
+﻿using DesktopWidgets3.Core.Widgets.Views.Windows;
+using DesktopWidgets3.Widget.Contracts.Views;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.Windows.Widgets.Providers;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -215,15 +218,9 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetId = widgetItem.Id;
             var indexTag = widgetItem.IndexTag;
 
-            // set widget framework element
-            var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetId);
+            // set widget ico & title & framework element
             widgetWindow.ViewModel.WidgetIcoPath = _widgetResourceService.GetWidgetIcoPath(widgetId);
             widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId);
-            widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
-
-            // set widget properties
-            WidgetProperties.SetId(frameworkElement, widgetId);
-            WidgetProperties.SetIndexTag(frameworkElement, indexTag);
 
             // initialize window
             var menuFlyout = GetWidgetMenuFlyout(widgetWindow);
@@ -239,8 +236,41 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 widgetWindow.Position = widgetItem.Position;
             }
 
+            // register load event handler
+            widgetWindow.LoadCompleted += WidgetWindow_LoadCompleted;
+
             // activate window
             widgetWindow.Activate();
+
+            // add to widget list & widget window list
+            PinnedWidgets.Add(new WidgetWindowPair()
+            {
+                Window = widgetWindow,
+                ViewModel = null,
+                MenuFlyout = menuFlyout
+            });
+            PinnedWidgetWindows.Add(widgetWindow);
+        }
+    }
+
+    private void WidgetWindow_LoadCompleted(object? sender, WidgetWindow.LoadCompletedEventArgs args)
+    {
+        if (sender is WidgetWindow widgetWindow)
+        {
+            // unregister load event handler
+            widgetWindow.LoadCompleted -= WidgetWindow_LoadCompleted;
+
+            // parse event agrs
+            var widgetId = args.WidgetId;
+            var indexTag = args.IndexTag;
+            var widgetSettings = args.WidgetSettings;
+
+            // get widget framework element
+            var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetId);
+
+            // set widget properties
+            WidgetProperties.SetId(frameworkElement, widgetId);
+            WidgetProperties.SetIndexTag(frameworkElement, indexTag);
 
             // initialize widget settings
             BaseWidgetViewModel viewModel = null!;
@@ -252,18 +282,19 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                     Id = widgetId,
                     IndexTag = indexTag,
                     DispatcherQueue = widgetWindow.DispatcherQueue,
-                    Settings = widgetItem.Settings
+                    Settings = widgetSettings
                 });
             }
 
-            // add to widget list & widget window list
-            PinnedWidgets.Add(new WidgetWindowPair()
+            // set widget framework element
+            widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
+
+            // add to widget list
+            var index = PinnedWidgets.FindIndex(x => x.Window.Id == widgetId && x.Window.IndexTag == indexTag);
+            if (index != -1)
             {
-                Window = widgetWindow,
-                ViewModel = viewModel,
-                MenuFlyout = menuFlyout
-            });
-            PinnedWidgetWindows.Add(widgetWindow);
+                PinnedWidgets[index].ViewModel = viewModel;
+            }
         }
     }
 
