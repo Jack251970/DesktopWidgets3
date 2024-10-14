@@ -1,9 +1,8 @@
-using System;
 using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.Widget.Jack251970.Performance;
 
-public class Main : IWidget, IWidgetPin, IWidgetSetting, IWidgetLocalization, IDisposable
+public partial class Main : IWidget, IWidgetPin, IWidgetSetting, IWidgetLocalization, IDisposable
 {
     #region IWidget
 
