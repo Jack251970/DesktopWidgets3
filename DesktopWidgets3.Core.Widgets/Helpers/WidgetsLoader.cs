@@ -6,8 +6,6 @@ public static class WidgetsLoader
 {
     private static string ClassName => typeof(WidgetsLoader).Name;
 
-    private static readonly List<IExtensionAssembly> ExtensionAssemblies = [];
-
     public static (List<WidgetPair> allWidgets, List<string> errorWidgets, Dictionary<string, string> installedWidgets) Widgets(List<WidgetMetadata> metadatas, List<string> installingIds)
     {
         (var dotnetWidgets, var dotnetErrorWidgets, var dotnetInstalledWidgets) = DotNetWidgets(metadatas, installingIds);
@@ -19,14 +17,6 @@ public static class WidgetsLoader
         var installedWidgets = dotnetInstalledWidgets;
 
         return (widgets, errorWidgets, installedWidgets);
-    }
-
-    public static void DisposeExtensionAssemblies()
-    {
-        foreach (var extensionAssembly in ExtensionAssemblies)
-        {
-            extensionAssembly?.Dispose();
-        }
     }
 
     private static (List<WidgetPair> dotnetWidgets, List<string> dotnetErrorWidgets, Dictionary<string, string> dotnetInstalledWidgets) DotNetWidgets(List<WidgetMetadata> metadatas, List<string> installingIds)
@@ -46,7 +36,7 @@ public static class WidgetsLoader
 
             try
             {
-                extensionAssembly = ApplicationExtensionHost.Current.LoadExtension(metadata.ExecuteFilePath);
+                extensionAssembly = ApplicationExtensionHost.Current.LoadExtension(metadata.ExecuteFilePath, true, false);
 
                 assembly = extensionAssembly.ForeignAssembly;
 
@@ -95,9 +85,7 @@ public static class WidgetsLoader
 
             ResourceExtensions.AddExternalResource(assembly!);
 
-            ExtensionAssemblies.Add(extensionAssembly!);
-
-            dotnetWidgets.Add(new WidgetPair { Widget = widget, Metadata = metadata });
+            dotnetWidgets.Add(new WidgetPair { Metadata = metadata, ExtensionAssembly = extensionAssembly!, Widget = widget });
         };
 
         return (dotnetWidgets, dotnetErrorWidgets, dotnetInstalledWidgets);

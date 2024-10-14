@@ -191,6 +191,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                     await asyncDisposable.DisposeAsync();
                     break;
             }
+            widgetPair.ExtensionAssembly.Dispose();
         }
 
         await Task.CompletedTask;

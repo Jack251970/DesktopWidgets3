@@ -189,7 +189,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         };
 
         // create widget window
-        var widgetWindow = WindowsExtensions.CreateWindow<WidgetWindow>(newThread, lifecycleActions);
+        var widgetWindow = WindowsExtensions.CreateWindow<WidgetWindow>(newThread, lifecycleActions, widget);
     }
 
     #region widget window lifecycle

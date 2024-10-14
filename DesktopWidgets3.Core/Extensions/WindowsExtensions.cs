@@ -14,6 +14,8 @@ public static class WindowsExtensions
 {
     private static readonly Dictionary<Window, WindowLifecycleHandler> WindowsAndLifecycle = [];
 
+    public static object? CurrentParameter { get; private set; }
+
     public static List<Window> GetAllWindows()
     {
         return new List<Window>(WindowsAndLifecycle.Keys);
@@ -21,11 +23,12 @@ public static class WindowsExtensions
 
     #region create & close
 
-    public static T CreateWindow<T>(bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null) where T : Window, new()
+    public static T CreateWindow<T>(bool isNewThread = false, WindowLifecycleActions? lifecycleActions = null, object? parameter = null) where T : Window, new()
     {
         T window = null!;
         DispatcherExitDeferral? deferral = null;
 
+        CurrentParameter = parameter;
         if (isNewThread)
         {
             deferral = new DispatcherExitDeferral();
@@ -37,7 +40,7 @@ public static class WindowsExtensions
                 // create a DispatcherQueue on this new thread
                 var dq = DispatcherQueueController.CreateOnCurrentThread();
 
-                // initialize xaml in it
+                // initialize xaml in it and ResourceManagerRequested event will be called
                 WindowsXamlManager.InitializeForCurrentThread();
 
                 // invoke action before window creation

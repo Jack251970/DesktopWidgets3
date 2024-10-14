@@ -298,9 +298,6 @@ public partial class App : Application
         // Dispose all widgets
         await GetService<IWidgetResourceService>().DisposeWidgetsAsync();
 
-        // Dispose all extension assemblies
-        WidgetsLoader.DisposeExtensionAssemblies();
-
         // Unregister app notification service
         GetService<IAppNotificationService>().Unregister();
 

@@ -4,6 +4,8 @@ public class WidgetPair
 {
     public WidgetMetadata Metadata { get; internal set; } = null!;
 
+    public IExtensionAssembly ExtensionAssembly { get; internal set; } = null!;
+
     public IAsyncWidget Widget { get; internal set; } = null!;
 
     public override bool Equals(object? obj)
