@@ -27,7 +27,9 @@ public sealed partial class WidgetWindow : WindowEx
         get => position;
         set
         {
-            if (position != value)
+            var x = value.X;
+            var y = value.Y;
+            if (position.X != x || position.Y != y)
             {
                 position = value;
                 this.Move(value.X, value.Y);
@@ -151,7 +153,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Initialization
 
-    private BaseWidgetSettings Settings { get; set; } = null!;
+    private BaseWidgetSettings WidgetSettings { get; set; } = null!;
 
     private RectSize WidgetSize { get; set; }
 
@@ -162,7 +164,7 @@ public sealed partial class WidgetWindow : WindowEx
         // set widget item properties
         Id = widgetItem.Id;
         IndexTag = widgetItem.IndexTag;
-        Settings = widgetItem.Settings;
+        WidgetSettings = widgetItem.Settings;
         WidgetSize = widgetItem.Size;
 
         // set window properties
@@ -209,7 +211,7 @@ public sealed partial class WidgetWindow : WindowEx
         AppWindow.Changed += AppWindow_Changed;
 
         // envoke completed event handler
-        LoadCompleted?.Invoke(this, new LoadCompletedEventArgs() { WidgetId = Id, IndexTag = IndexTag, WidgetSettings = Settings });
+        LoadCompleted?.Invoke(this, new LoadCompletedEventArgs() { WidgetId = Id, IndexTag = IndexTag, WidgetSettings = WidgetSettings });
     }
 
     private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs e)
