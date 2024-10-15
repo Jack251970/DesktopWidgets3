@@ -99,6 +99,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         foreach (var providerDef in providerDefinitions)
         {
+            if (providerDef.DisplayName == "PeregrineWidgets")
+            {
+                continue;  // CHANGE: PeregrineWidgets can cause issues in IsSingleInstanceAndAlreadyPinned function
+            }
+
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
                 var navItem = new NavigationViewItem

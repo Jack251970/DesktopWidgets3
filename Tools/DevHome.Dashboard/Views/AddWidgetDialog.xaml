@@ -41,8 +41,21 @@
                 x:Uid="AddWidgetsTitle"
                 Margin="16,10,0,0"
                 HorizontalAlignment="Left" />
-            <!--  xmlns:commonviews="using:DevHome.Common.Views"  -->
-            <!--<commonviews:CloseButton Command="{x:Bind CancelButtonClickCommand}" />-->
+            <Button
+                Padding="10"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                AutomationProperties.Name="Close"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{x:Bind CancelButtonClickCommand}"
+                Style="{StaticResource DefaultButtonStyle}">
+                <TextBlock
+                    AutomationProperties.AccessibilityView="Raw"
+                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                    FontSize="{ThemeResource BodyTextBlockFontSize}"
+                    Text="&#xE711;" />
+            </Button>
         </Grid>
 
         <!--  Widgets available to pin  -->

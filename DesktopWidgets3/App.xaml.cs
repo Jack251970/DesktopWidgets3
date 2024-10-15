@@ -261,12 +261,13 @@ public partial class App : Application
         GetService<IWidgetManagerService>().InitializePinnedWidgets();
 
         // TEST: Add widget dialog.
-        /*var dialog = new AddWidgetDialog()
+        await Task.Delay(2000);
+        var dialog = new AddWidgetDialog()
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = MainWindow.Content.XamlRoot,
         };
-        await dialog.ShowAsync();*/
+        await dialog.ShowAsync();
     }
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
