@@ -8,7 +8,7 @@ namespace DesktopWidgets3.Core.Utils.EfficiencyMode;
 /// The precise tuning of each QoS level for processor power management and heterogeneous scheduling can be modified through Windows Provisioning. <br/>
 /// For more information on performance tuning and provisioning, see: <br/>
 /// <see href="https://docs.microsoft.com/en-us/windows/win32/procthread/quality-of-service#quality-of-service-levels"/>
-/// Codes are edited from: https://github.com/HavenDV/H.NotifyIcon.
+/// Codes are edited from: <see href="https://github.com/HavenDV/H.NotifyIcon">.
 /// </summary>
 [SupportedOSPlatform("windows8.0")]
 public enum QualityOfServiceLevel

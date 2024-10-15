@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Represents the size of a rectangle.
-/// Codes are edited from: Windows.Foundation.Size.
+/// Codes are edited from: <see cref="Windows.Foundation.Size">.
 /// </summary>
 public struct RectSize
 {

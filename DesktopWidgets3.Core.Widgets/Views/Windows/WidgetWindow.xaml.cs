@@ -165,11 +165,11 @@ public sealed partial class WidgetWindow : WindowEx
     {
         // set widget position
         WidgetPosition = AppWindow.Position;
-        if (widgetItem.Position.X != -1)
+        if (widgetItem.Position.X != -10000)
         {
             WidgetPosition.X = widgetItem.Position.X;
         }
-        if (widgetItem.Position.Y != -1)
+        if (widgetItem.Position.Y != -10000)
         {
             WidgetPosition.Y = widgetItem.Position.Y;
         }

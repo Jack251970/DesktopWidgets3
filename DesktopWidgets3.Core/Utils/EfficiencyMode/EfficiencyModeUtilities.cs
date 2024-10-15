@@ -8,7 +8,7 @@ namespace DesktopWidgets3.Core.Utils.EfficiencyMode;
 /// Based on: <br/>
 /// <see href="https://devblogs.microsoft.com/performance-diagnostics/reduce-process-interference-with-task-manager-efficiency-mode"/> <br/>
 /// <see href="https://devblogs.microsoft.com/performance-diagnostics/introducing-ecoqos/"/> <br/>
-/// Codes are edited from: https://github.com/HavenDV/H.NotifyIcon.
+/// Codes are edited from: <see href="https://github.com/HavenDV/H.NotifyIcon">.
 /// </summary>
 public static class EfficiencyModeUtilities
 {

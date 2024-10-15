@@ -4,7 +4,7 @@ using Windows.Win32.Foundation;
 namespace DesktopWidgets3.Core.Utils.Interop;
 
 /// <summary>
-/// Codes are edited from: https://github.com/HavenDV/H.NotifyIcon.
+/// Codes are edited from: <see href="https://github.com/HavenDV/H.NotifyIcon">.
 /// </summary>
 internal static class InteropUtils
 {

@@ -3,7 +3,7 @@
 /// <summary>
 /// Based on: <br/>
 /// <see href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setpriorityclass#parameters"/>
-/// Codes are edited from: https://github.com/HavenDV/H.NotifyIcon.
+/// Codes are edited from: <see href="https://github.com/HavenDV/H.NotifyIcon">.
 /// </summary>
 public enum ProcessPriorityClass
 {

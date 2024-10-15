@@ -1,9 +1,6 @@
-﻿using DesktopWidgets3.Core.Widgets.Views.Windows;
-using DesktopWidgets3.Widget.Contracts.Views;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.Windows.Widgets.Providers;
 using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -89,7 +86,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             Id = widgetId,
             IndexTag = indexTag,
             Pinned = true,
-            Position = new PointInt32(-1, -1),
+            Position = new PointInt32(-10000, -10000),
             Size = _widgetResourceService.GetDefaultSize(widgetId),
             DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
             Settings = _widgetResourceService.GetDefaultSetting(widgetId),
