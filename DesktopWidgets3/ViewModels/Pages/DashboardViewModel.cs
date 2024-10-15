@@ -12,8 +12,8 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
     private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
-    private List<DashboardWidgetItem> allWidgets = [];
-    private List<DashboardWidgetItem> yourWidgets = [];
+    private List<DashboardWidgetItem> allWidgets = null!;
+    private List<DashboardWidgetItem> yourWidgets = null!;
 
     private bool _isInitialized;
 
@@ -75,7 +75,6 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
     private void RefreshAllWidgets()
     {
         AllWidgets.Clear();
-
         foreach (var item in allWidgets)
         {
             AllWidgets.Add(item);
@@ -86,7 +85,6 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
     {
         PinnedWidgets.Clear();
         UnpinnedWidgets.Clear();
-
         foreach (var item in yourWidgets)
         {
             if (item.Pinned)

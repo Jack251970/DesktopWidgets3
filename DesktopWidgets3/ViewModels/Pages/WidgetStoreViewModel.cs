@@ -10,8 +10,8 @@ public partial class WidgetStoreViewModel(IWidgetResourceService widgetResourceS
 
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
-    private List<WidgetStoreItem> availableWidgets = [];
-    private List<WidgetStoreItem> installedWidgets = [];
+    private List<WidgetStoreItem> availableWidgets = null!;
+    private List<WidgetStoreItem> installedWidgets = null!;
 
     private bool _isInitialized;
 
@@ -21,9 +21,7 @@ public partial class WidgetStoreViewModel(IWidgetResourceService widgetResourceS
     {
         // TODO: Load available widgets from Github, not supported yet.
         var githubAvailableWidgets = new List<WidgetStoreItem>();
-
         var preinstalledAvailableWidgets = _widgetResourceService.GetPreinstalledAvailableWidgetStoreItems();
-
         availableWidgets = [.. githubAvailableWidgets, .. preinstalledAvailableWidgets];
 
         await Task.CompletedTask;
@@ -41,7 +39,6 @@ public partial class WidgetStoreViewModel(IWidgetResourceService widgetResourceS
     private void RefreshAvailableWidgets()
     {
         AvailableWidgets.Clear();
-
         foreach (var widget in availableWidgets)
         {
             AvailableWidgets.Add(widget);
@@ -51,7 +48,6 @@ public partial class WidgetStoreViewModel(IWidgetResourceService widgetResourceS
     private void RefreshInstalledWidgets()
     {
         InstalledWidgets.Clear();
-
         foreach (var widget in installedWidgets)
         {
             InstalledWidgets.Add(widget);
@@ -67,11 +63,8 @@ public partial class WidgetStoreViewModel(IWidgetResourceService widgetResourceS
         if (!_isInitialized)
         {
             await LoadAvailableWidgets();
-
             RefreshAvailableWidgets();
-
             LoadInstalledWidgets();
-
             RefreshInstalledWidgets();
 
             _isInitialized = true;
