@@ -231,10 +231,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.MinSize = minSize;
             widgetWindow.MaxSize = maxSize;
             widgetWindow.Size = widgetItem.Size;
-            if (widgetItem.Position.X != -1 && widgetItem.Position.Y != -1)
-            {
-                widgetWindow.Position = widgetItem.Position;
-            }
+            WindowExtensions.Move(widgetWindow, -10000, -10000);
 
             // register load event handler
             widgetWindow.LoadCompleted += WidgetWindow_LoadCompleted;
@@ -263,7 +260,11 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // parse event agrs
             var widgetId = args.WidgetId;
             var indexTag = args.IndexTag;
+            var widgetPosition = args.WidgetPosition;
             var widgetSettings = args.WidgetSettings;
+
+            // set widget position
+            widgetWindow.Position = widgetPosition;
 
             // get widget framework element
             var frameworkElement = _widgetResourceService.GetWidgetFrameworkElement(widgetId);

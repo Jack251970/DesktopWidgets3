@@ -153,14 +153,27 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Initialization
 
+    private PointInt32 WidgetPosition = new();
+
     private BaseWidgetSettings WidgetSettings { get; set; } = null!;
 
-    private RectSize WidgetSize { get; set; }
+    private RectSize WidgetSize { get; set; } = new();
 
     private MenuFlyout WidgetMenuFlyout { get; set; } = null!;
 
     public void Initialize(JsonWidgetItem widgetItem, MenuFlyout menuFlyout)
     {
+        // set widget position
+        WidgetPosition = AppWindow.Position;
+        if (widgetItem.Position.X != -1)
+        {
+            WidgetPosition.X = widgetItem.Position.X;
+        }
+        if (widgetItem.Position.Y != -1)
+        {
+            WidgetPosition.Y = widgetItem.Position.Y;
+        }
+
         // set widget item properties
         Id = widgetItem.Id;
         IndexTag = widgetItem.IndexTag;
@@ -211,7 +224,13 @@ public sealed partial class WidgetWindow : WindowEx
         AppWindow.Changed += AppWindow_Changed;
 
         // envoke completed event handler
-        LoadCompleted?.Invoke(this, new LoadCompletedEventArgs() { WidgetId = Id, IndexTag = IndexTag, WidgetSettings = WidgetSettings });
+        LoadCompleted?.Invoke(this, new LoadCompletedEventArgs() 
+        { 
+            WidgetId = Id,
+            IndexTag = IndexTag,
+            WidgetPosition = WidgetPosition,
+            WidgetSettings = WidgetSettings
+        });
     }
 
     private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs e)
@@ -328,6 +347,8 @@ public sealed partial class WidgetWindow : WindowEx
         public required string WidgetId { get; set; }
 
         public required int IndexTag { get; set; }
+
+        public required PointInt32 WidgetPosition { get; set; }
 
         public required BaseWidgetSettings WidgetSettings { get; set; }
     }
