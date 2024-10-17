@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Widget.Contracts.Services;
+﻿namespace DesktopWidgets3.Widget;
 
 public interface ILocalizationService
 {

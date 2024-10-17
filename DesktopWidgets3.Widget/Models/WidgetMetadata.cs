@@ -1,5 +1,8 @@
-﻿namespace DesktopWidgets3.Widget.Models;
+﻿namespace DesktopWidgets3.Widget;
 
+/// <summary>
+/// The widget metadata model.
+/// </summary>
 public class WidgetMetadata
 {
     public string ID { get; set; } = string.Empty;

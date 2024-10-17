@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 
-namespace DesktopWidgets3.Widget.Models.ViewModels;
+namespace DesktopWidgets3.Widget;
 
 public abstract class BaseWidgetViewModel : ObservableRecipient
 {

@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Widget.Contracts.ViewModel;
+﻿namespace DesktopWidgets3.Widget;
 
 public interface IWidgetUpdate
 {

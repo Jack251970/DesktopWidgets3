@@ -1,5 +1,14 @@
-﻿namespace DesktopWidgets3.Widget.Models;
+﻿namespace DesktopWidgets3.Widget;
 
+/// <summary>
+/// The widget initialization context.
+/// </summary>
+/// <param name="metadata"></param>
+/// <param name="localizationService"></param>
+/// <param name="logService"></param>
+/// <param name="settingsService"></param>
+/// <param name="themeService"></param>
+/// <param name="widgetService"></param>
 public class WidgetInitContext(
     WidgetMetadata metadata,
     ILocalizationService localizationService,

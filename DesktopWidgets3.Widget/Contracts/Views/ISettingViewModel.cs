@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Widget.Contracts.Views;
+﻿namespace DesktopWidgets3.Widget;
 
 public interface ISettingViewModel
 {

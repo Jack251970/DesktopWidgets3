@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Widget.Models.ViewModels;
+﻿namespace DesktopWidgets3.Widget;
 
 public abstract partial class BaseWidgetSettingViewModel : BaseWidgetViewModel
 {
