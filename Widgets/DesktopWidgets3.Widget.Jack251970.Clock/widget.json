@@ -1,0 +1,37 @@
+﻿{
+  "ID": "7A0C8F221280461E9B02D3CFF2D2BD35",
+  "Name": "Clock",
+  "Description": "Show current system time",
+  "IcoPath": "Images\\Clock.png",
+  "Author": "Jack251970",
+  "Version": "1.0.0",
+  "Language": "csharp",
+  "Website": "https://github.com/Jack251970/DesktopWidgets3",
+  "ExecuteFileName": "DesktopWidgets3.Widget.Jack251970.Clock.dll",
+  "Widgets": [
+    {
+      "Type": "SystemInfo_DigitalClock",
+      "Name": "Digital Clock",
+      "Description": "Show system time with a digital clock",
+      "IcoPath": "Images\\Clock.png",
+      "ScreenshotsPath": "Images\\DigitalClockScreenshotLight.png",
+      "ScreenshotsPathDark": "Images\\DigitalClockScreenshotDark.png",
+      "DefaultWidth": 342.0,
+      "DefaultHeight": 174.0,
+      "AllowMultiple": false,
+      "IsCustomizable": false
+    },
+    {
+      "Type": "SystemInfo_AnalogClock",
+      "Name": "Analog Clock",
+      "Description": "Show system time with an analog clock",
+      "IcoPath": "Images\\Clock.png",
+      "ScreenshotsPath": "Images\\AnalogClockScreenshotLight.png",
+      "ScreenshotsPathDark": "Images\\AnalogClockScreenshotDark.png",
+      "DefaultWidth": 342.0,
+      "DefaultHeight": 342.0,
+      "AllowMultiple": false,
+      "IsCustomizable": false
+    }
+  ]
+}

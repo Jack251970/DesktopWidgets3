@@ -6,10 +6,10 @@
 public interface IWidgetLocalization
 {
     /// <summary>
-    /// Get the localized widget group title.
+    /// Get the localized widget group name.
     /// </summary>
-    /// <returns>The localized widget group title.</returns>
-    string GetLocalizedWidgetGroupTitle();
+    /// <returns>The localized widget group name.</returns>
+    string GetLocalizedWidgetGroupName();
 
     /// <summary>
     /// Get the localized widget group description.
@@ -18,11 +18,11 @@ public interface IWidgetLocalization
     string GetLocalizedWidgetGroupDescription();
 
     /// <summary>
-    /// Get the localized widget title for one widget type.
+    /// Get the localized widget name for one widget type.
     /// </summary>
-    /// <param name="widgetType">The widget type that the title is for.</param>
-    /// <returns>The localized widget title.</returns>
-    string GetLocalizedWidgetTitle(string widgetType);
+    /// <param name="widgetType">The widget type that the name is for.</param>
+    /// <returns>The localized widget name.</returns>
+    string GetLocalizedWidgetName(string widgetType);
 
     /// <summary>
     /// Get the localized widget description for one widget type.

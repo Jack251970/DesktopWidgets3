@@ -1,0 +1,36 @@
+<UserControl
+    x:Class="DesktopWidgets3.Widget.Jack251970.SystemInfo.Views.PerformanceWidget"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:usercontrols="using:DesktopWidgets3.Widget.Jack251970.SystemInfo.UserControls"
+    xmlns:viewmodels="using:DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:PerformanceViewModel}"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentArea">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <usercontrols:ProgressCard
+            Grid.Row="0"
+            LeftTitle="{x:Bind ViewModel.CpuLeftInfo, Mode=OneWay}"
+            ProgressValue="{x:Bind ViewModel.CpuLoadValue, Mode=OneWay}"
+            RightTitle="{x:Bind ViewModel.CpuRightInfo, Mode=OneWay}" />
+        <usercontrols:ProgressCard
+            Grid.Row="2"
+            LeftTitle="{x:Bind ViewModel.GpuLeftInfo, Mode=OneWay}"
+            ProgressValue="{x:Bind ViewModel.GpuLoadValue, Mode=OneWay}"
+            RightTitle="{x:Bind ViewModel.GpuRightInfo, Mode=OneWay}" />
+        <usercontrols:ProgressCard
+            Grid.Row="4"
+            LeftTitle="{x:Bind ViewModel.MemoryLeftInfo, Mode=OneWay}"
+            ProgressValue="{x:Bind ViewModel.MemoryLoadValue, Mode=OneWay}"
+            RightTitle="{x:Bind ViewModel.MemoryRightInfo, Mode=OneWay}" />
+    </Grid>
+</UserControl>

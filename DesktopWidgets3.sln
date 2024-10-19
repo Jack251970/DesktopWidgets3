@@ -33,15 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HardwareInfoProvider", "Ext
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Widgets", "Widgets", "{3903A5F5-44B5-475F-A10B-90669B1B4F15}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.Jack251970.AnalogClock", "Widgets\DesktopWidgets3.Widget.Jack251970.AnalogClock\DesktopWidgets3.Widget.Jack251970.AnalogClock.csproj", "{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.Jack251970.Clock", "Widgets\DesktopWidgets3.Widget.Jack251970.Clock\DesktopWidgets3.Widget.Jack251970.Clock.csproj", "{E50B231C-768F-4857-BF8F-338008C1E179}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.Jack251970.DigitalClock", "Widgets\DesktopWidgets3.Widget.Jack251970.DigitalClock\DesktopWidgets3.Widget.Jack251970.DigitalClock.csproj", "{E50B231C-768F-4857-BF8F-338008C1E179}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.Jack251970.Disk", "Widgets\DesktopWidgets3.Widget.Jack251970.Disk\DesktopWidgets3.Widget.Jack251970.Disk.csproj", "{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.Jack251970.Network", "Widgets\DesktopWidgets3.Widget.Jack251970.Network\DesktopWidgets3.Widget.Jack251970.Network.csproj", "{2569AD16-5FE3-4437-A097-26290B9140E2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.Jack251970.Performance", "Widgets\DesktopWidgets3.Widget.Jack251970.Performance\DesktopWidgets3.Widget.Jack251970.Performance.csproj", "{58E00F8C-5410-4A4E-A678-7D323E42D3DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets3.Widget.Jack251970.SystemInfo", "Widgets\DesktopWidgets3.Widget.Jack251970.SystemInfo\DesktopWidgets3.Widget.Jack251970.SystemInfo.csproj", "{58E00F8C-5410-4A4E-A678-7D323E42D3DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,18 +137,6 @@ Global
 		{80E7A722-7AE1-426A-9880-82D9D6617715}.Release|x64.Build.0 = Release|x64
 		{80E7A722-7AE1-426A-9880-82D9D6617715}.Release|x86.ActiveCfg = Release|x86
 		{80E7A722-7AE1-426A-9880-82D9D6617715}.Release|x86.Build.0 = Release|x86
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Debug|arm64.ActiveCfg = Debug|arm64
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Debug|arm64.Build.0 = Debug|arm64
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Debug|x64.ActiveCfg = Debug|x64
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Debug|x64.Build.0 = Debug|x64
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Debug|x86.ActiveCfg = Debug|x86
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Debug|x86.Build.0 = Debug|x86
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Release|arm64.ActiveCfg = Release|arm64
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Release|arm64.Build.0 = Release|arm64
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Release|x64.ActiveCfg = Release|x64
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Release|x64.Build.0 = Release|x64
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Release|x86.ActiveCfg = Release|x86
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6}.Release|x86.Build.0 = Release|x86
 		{E50B231C-768F-4857-BF8F-338008C1E179}.Debug|arm64.ActiveCfg = Debug|arm64
 		{E50B231C-768F-4857-BF8F-338008C1E179}.Debug|arm64.Build.0 = Debug|arm64
 		{E50B231C-768F-4857-BF8F-338008C1E179}.Debug|x64.ActiveCfg = Debug|x64
@@ -167,30 +149,6 @@ Global
 		{E50B231C-768F-4857-BF8F-338008C1E179}.Release|x64.Build.0 = Release|x64
 		{E50B231C-768F-4857-BF8F-338008C1E179}.Release|x86.ActiveCfg = Release|x86
 		{E50B231C-768F-4857-BF8F-338008C1E179}.Release|x86.Build.0 = Release|x86
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Debug|arm64.ActiveCfg = Debug|arm64
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Debug|arm64.Build.0 = Debug|arm64
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Debug|x64.ActiveCfg = Debug|x64
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Debug|x64.Build.0 = Debug|x64
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Debug|x86.ActiveCfg = Debug|x86
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Debug|x86.Build.0 = Debug|x86
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Release|arm64.ActiveCfg = Release|arm64
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Release|arm64.Build.0 = Release|arm64
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Release|x64.ActiveCfg = Release|x64
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Release|x64.Build.0 = Release|x64
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Release|x86.ActiveCfg = Release|x86
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA}.Release|x86.Build.0 = Release|x86
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Debug|arm64.ActiveCfg = Debug|arm64
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Debug|arm64.Build.0 = Debug|arm64
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Debug|x64.ActiveCfg = Debug|x64
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Debug|x64.Build.0 = Debug|x64
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Debug|x86.ActiveCfg = Debug|x86
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Debug|x86.Build.0 = Debug|x86
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Release|arm64.ActiveCfg = Release|arm64
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Release|arm64.Build.0 = Release|arm64
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Release|x64.ActiveCfg = Release|x64
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Release|x64.Build.0 = Release|x64
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Release|x86.ActiveCfg = Release|x86
-		{2569AD16-5FE3-4437-A097-26290B9140E2}.Release|x86.Build.0 = Release|x86
 		{58E00F8C-5410-4A4E-A678-7D323E42D3DB}.Debug|arm64.ActiveCfg = Debug|arm64
 		{58E00F8C-5410-4A4E-A678-7D323E42D3DB}.Debug|arm64.Build.0 = Debug|arm64
 		{58E00F8C-5410-4A4E-A678-7D323E42D3DB}.Debug|x64.ActiveCfg = Debug|x64
@@ -210,10 +168,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{19A86CC0-FAAD-4B7A-B37D-6E22DEB4593D} = {5891697D-F596-4958-8570-C1875FE123E5}
 		{80E7A722-7AE1-426A-9880-82D9D6617715} = {1D4245D3-B511-4889-8740-7C904817E6EE}
-		{1BCE9AC4-7A9A-4A47-BE5A-7EF96ECDD7E6} = {3903A5F5-44B5-475F-A10B-90669B1B4F15}
 		{E50B231C-768F-4857-BF8F-338008C1E179} = {3903A5F5-44B5-475F-A10B-90669B1B4F15}
-		{682D59F3-DCBC-4EB1-9E0A-9C949820EACA} = {3903A5F5-44B5-475F-A10B-90669B1B4F15}
-		{2569AD16-5FE3-4437-A097-26290B9140E2} = {3903A5F5-44B5-475F-A10B-90669B1B4F15}
 		{58E00F8C-5410-4A4E-A678-7D323E42D3DB} = {3903A5F5-44B5-475F-A10B-90669B1B4F15}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

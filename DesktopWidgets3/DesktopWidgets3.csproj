@@ -53,11 +53,8 @@
 
   <PropertyGroup>
     <WidgetProjects>
-      ..\Widgets\DesktopWidgets3.Widget.Jack251970.AnalogClock\DesktopWidgets3.Widget.Jack251970.AnalogClock.csproj;
-      ..\Widgets\DesktopWidgets3.Widget.Jack251970.DigitalClock\DesktopWidgets3.Widget.Jack251970.DigitalClock.csproj;
-      ..\Widgets\DesktopWidgets3.Widget.Jack251970.Disk\DesktopWidgets3.Widget.Jack251970.Disk.csproj;
-      ..\Widgets\DesktopWidgets3.Widget.Jack251970.Network\DesktopWidgets3.Widget.Jack251970.Network.csproj;
-      ..\Widgets\DesktopWidgets3.Widget.Jack251970.Performance\DesktopWidgets3.Widget.Jack251970.Performance.csproj
+      ..\Widgets\DesktopWidgets3.Widget.Jack251970.Clock\DesktopWidgets3.Widget.Jack251970.Clock.csproj;
+      ..\Widgets\DesktopWidgets3.Widget.Jack251970.SystemInfo\DesktopWidgets3.Widget.Jack251970.SystemInfo.csproj
     </WidgetProjects>
   </PropertyGroup>
 
@@ -183,31 +180,16 @@
     </ItemGroup>
     <MSBuild Projects="@(WidgetProjects)" Targets="Build" Properties="Platform=$(Platform);Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
     <!-- Copy widget project files -->
-    <!-- Analog Clock -->
+    <!-- Clock -->
     <ItemGroup>
-      <AnalogClockFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.AnalogClock\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
+      <ClockFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.Clock\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(AnalogClockFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.AnalogClock\%(RecursiveDir)" />
-    <!-- Digital Clock -->
+    <Copy SourceFiles="@(ClockFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Clock\%(RecursiveDir)" />
+    <!-- System Info -->
     <ItemGroup>
-      <DigitalClockFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.DigitalClock\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
+      <SystemInfoFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.SystemInfo\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(DigitalClockFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.DigitalClock\%(RecursiveDir)" />
-    <!-- Disk -->
-    <ItemGroup>
-      <DiskFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.Disk\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(DiskFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Disk\%(RecursiveDir)" />
-    <!-- Network -->
-    <ItemGroup>
-      <NetworkFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.Network\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(NetworkFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Network\%(RecursiveDir)" />
-    <!-- Performance -->
-    <ItemGroup>
-      <PerformanceFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.Performance\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(PerformanceFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Performance\%(RecursiveDir)" />
+    <Copy SourceFiles="@(SystemInfoFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.SystemInfo\%(RecursiveDir)" />
   </Target>
   
 </Project>

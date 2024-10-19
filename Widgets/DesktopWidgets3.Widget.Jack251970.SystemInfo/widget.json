@@ -1,0 +1,49 @@
+﻿{
+  "ID": "34EAD000AD4840E985009002128F654C",
+  "Name": "System Info",
+  "Description": "Show system info, e.g. CPU, GPU, memory, network and disk",
+  "IcoPath": "Images\\Performance.png",
+  "Author": "Jack251970",
+  "Version": "1.0.0",
+  "Language": "csharp",
+  "Website": "https://github.com/Jack251970/DesktopWidgets3",
+  "ExecuteFileName": "DesktopWidgets3.Widget.Jack251970.SystemInfo.dll",
+  "Widgets": [
+    {
+      "Type": "SystemInfo_Performance",
+      "Name": "Performance",
+      "Description": "Show system CPU, GPU and memory status",
+      "IcoPath": "Images\\Performance.png",
+      "ScreenshotsPath": "Images\\PerformanceScreenshotLight.png",
+      "ScreenshotsPathDark": "Images\\PerformanceScreenshotDark.png",
+      "DefaultWidth": 342.0,
+      "DefaultHeight": 201.0,
+      "AllowMultiple": false,
+      "IsCustomizable": false
+    },
+    {
+      "Type": "SystemInfo_Network",
+      "Name": "Network",
+      "Description": "Show system network status",
+      "IcoPath": "Images\\Network.png",
+      "ScreenshotsPath": "Images\\NetworkScreenshotLight.png",
+      "ScreenshotsPathDark": "Images\\NetworkScreenshotDark.png",
+      "DefaultWidth": 342.0,
+      "DefaultHeight": 174.0,
+      "AllowMultiple": false,
+      "IsCustomizable": false
+    },
+    {
+      "Type": "SystemInfo_Disk",
+      "Name": "Disk",
+      "Description": "Show system disk status",
+      "IcoPath": "Images\\Disk.png",
+      "ScreenshotsPath": "Images\\DiskScreenshotLight.png",
+      "ScreenshotsPathDark": "Images\\DiskScreenshotDark.png",
+      "DefaultWidth": 342.0,
+      "DefaultHeight": 198.0,
+      "AllowMultiple": false,
+      "IsCustomizable": false
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+<UserControl
+    x:Class="DesktopWidgets3.Widget.Jack251970.Clock.Views.AnalogClockWidget"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:usercontrols="using:DesktopWidgets3.Widget.Jack251970.Clock.UserControls"
+    xmlns:viewmodels="using:DesktopWidgets3.Widget.Jack251970.Clock.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:AnalogClockViewModel}"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentArea" Background="Transparent">
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Vertical">
+            <usercontrols:AnalogClock
+                HorizontalAlignment="Center"
+                DateTime="{x:Bind ViewModel.DateTime, Mode=OneWay}"
+                HandsMode="{x:Bind ViewModel.HandsMode, Mode=OneWay}"
+                Size="200" />
+            <TextBlock
+                Margin="0,10,0,0"
+                HorizontalAlignment="Center"
+                Text="{x:Bind ViewModel.SystemTime, Mode=OneWay}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

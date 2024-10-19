@@ -1,0 +1,21 @@
+<UserControl
+    x:Class="DesktopWidgets3.Widget.Jack251970.Clock.Views.AnalogClockSetting"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:DesktopWidgets3.Widget.Jack251970.Clock.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:DesktopWidgets3.Widget.Jack251970.Clock.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:AnalogClockSettingViewModel}"
+    mc:Ignorable="d">
+
+    <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Spacing="{StaticResource SettingsCardSpacing}">
+        <controls:SettingsCard Description="{StaticResource WidgetSettings_ShowSeconds_SettingsCard_Description}" Header="{StaticResource WidgetSettings_ShowSeconds_SettingsCard_Header}">
+            <controls:SettingsCard.HeaderIcon>
+                <FontIcon Glyph="&#xE823;" />
+            </controls:SettingsCard.HeaderIcon>
+            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowSeconds, Mode=TwoWay}" />
+        </controls:SettingsCard>
+    </StackPanel>
+</UserControl>

@@ -23,11 +23,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
 
     private static readonly string[] PreinstalledWigdetsIds =
     [
-        "949ADC2E912C4772BC3025A1E9DA32A0",  // Analog Clock
-        "7A0C8F221280461E9B02D3CFF2D2BD35",  // Digital Clock
-        "09613A71F3FE40E4AC5FF91563BD52B2",  // Disk
-        "DB86CAFACFF0436C961D91E06B6F7FFC",  // Network
-        "34EAD000AD4840E985009002128F654C",  // Performance
+        "7A0C8F221280461E9B02D3CFF2D2BD35",  // Clock
+        "34EAD000AD4840E985009002128F654C",  // System Info
     ];
 
     #region Initialization
@@ -376,7 +373,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         {
             if (InstalledWidgetGroupPairs[installedIndex!.Value].WidgetGroup is IWidgetLocalization localization)
             {
-                return localization.GetLocalizedWidgetGroupTitle();
+                return localization.GetLocalizedWidgetGroupName();
             }
 
             return InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Name;
@@ -461,7 +458,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         {
             if (InstalledWidgetGroupPairs[installedIndex!.Value].WidgetGroup is IWidgetLocalization localization)
             {
-                return localization.GetLocalizedWidgetTitle(widgetType);
+                return localization.GetLocalizedWidgetName(widgetType);
             }
 
             if (widgetIndex != null)
