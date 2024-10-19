@@ -10,7 +10,12 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetScreenshotService
 {
-    public void RemoveScreenshotsFromCache(string definitionId);
+    // TODO: Check clean all caches.
+    public void RemoveScreenshotsFromDesktopWidgets3Cache(string widgetId, string widgetType);
 
-    public Task<Brush> GetBrushForWidgetScreenshotAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme);
+    public Task<Brush> GetBrushForDesktopWidgets3WidgetScreenshotAsync(string widgetId, string widgetType, ElementTheme actualTheme);
+
+    public void RemoveScreenshotsFromMicrosoftCache(string definitionId);
+
+    public Task<Brush> GetBrushForMicrosoftWidgetScreenshotAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
 }

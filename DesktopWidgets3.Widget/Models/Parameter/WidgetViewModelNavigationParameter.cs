@@ -9,6 +9,8 @@ public class WidgetViewModelNavigationParameter
 {
     public required string Id { get; set; }
 
+    public required string Type { get; set; }
+
     public required int IndexTag { get; set; }
 
     public required DispatcherQueue DispatcherQueue { get; set; }

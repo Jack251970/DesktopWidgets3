@@ -36,23 +36,23 @@ public interface IAppSettingsService
 
     List<JsonWidgetItem> GetWidgetsList();
 
-    JsonWidgetItem? GetWidget(string widgetId, int indexTag);
+    JsonWidgetItem? GetWidget(string widgetId, string widgetType, int indexTag);
 
     Task AddWidgetAsync(JsonWidgetItem item);
 
-    Task DeleteWidgetAsync(string widgetId, int indexTag);
+    Task DeleteWidgetAsync(string widgetId, string widgetType, int indexTag);
 
-    Task PinWidgetAsync(string widgetId, int indexTag);
+    Task PinWidgetAsync(string widgetId, string widgetType, int indexTag);
 
-    Task UnpinWidgetAsync(string widgetId, int indexTag);
+    Task UnpinWidgetAsync(string widgetId, string widgetType, int indexTag);
 
-    Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings);
+    Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int indexTag, BaseWidgetSettings settings);
 
-    Task UpdateWidgetsListIgnoreSettingsAsync(List<JsonWidgetItem> widgetList);
+    Task UpdateWidgetsListIgnoreSettingsAsync(List<JsonWidgetItem> list);
 
     Task<List<JsonWidgetStoreItem>> InitializeWidgetStoreListAsync();
 
     List<JsonWidgetStoreItem> GetWidgetStoreList();
 
-    Task SaveWidgetStoreListAsync(List<JsonWidgetStoreItem> widgetStoreList);
+    Task SaveWidgetStoreListAsync(List<JsonWidgetStoreItem> list);
 }

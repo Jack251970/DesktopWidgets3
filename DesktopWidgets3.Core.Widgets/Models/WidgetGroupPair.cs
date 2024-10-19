@@ -1,16 +1,16 @@
 ﻿namespace DesktopWidgets3.Core.Widgets.Models;
 
-public class WidgetPair
+public class WidgetGroupPair
 {
-    public WidgetMetadata Metadata { get; internal set; } = null!;
+    public WidgetGroupMetadata Metadata { get; internal set; } = null!;
 
     public IExtensionAssembly ExtensionAssembly { get; internal set; } = null!;
 
-    public IAsyncWidget Widget { get; internal set; } = null!;
+    public IAsyncWidgetGroup WidgetGroup { get; internal set; } = null!;
 
     public override bool Equals(object? obj)
     {
-        if (obj is WidgetPair widgetPair)
+        if (obj is WidgetGroupPair widgetPair)
         {
             return string.Equals(widgetPair.Metadata.ID, Metadata.ID);
         }

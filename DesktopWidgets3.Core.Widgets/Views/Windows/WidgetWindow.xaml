@@ -27,7 +27,7 @@
                     Height="16"
                     VerticalAlignment="Center">
                     <Image.Source>
-                        <BitmapImage UriSource="{x:Bind ViewModel.WidgetIcoPath, Mode=OneWay}" />
+                        <BitmapImage UriSource="{x:Bind ViewModel.WidgetIconPath, Mode=OneWay}" />
                     </Image.Source>
                 </Image>
                 <TextBlock

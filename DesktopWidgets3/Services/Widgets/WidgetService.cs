@@ -9,14 +9,16 @@ internal class WidgetService : IWidgetService
     public async Task UpdateWidgetSettings(FrameworkElement element, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
     {
         var widgetId = WidgetProperties.GetId(element);
+        var widgetType = WidgetProperties.GetType(element);
         var indexTag = WidgetProperties.GetIndexTag(element);
-        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, indexTag, settings, updateWidget, updateWidgetSetting);
+        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, indexTag, settings, updateWidget, updateWidgetSetting);
     }
 
     public async Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
     {
         var widgetId = viewModel.Id;
+        var widgetType = viewModel.Type;
         var indexTag = viewModel.IndexTag;
-        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, indexTag, settings, updateWidget, updateWidgetSetting);
+        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, indexTag, settings, updateWidget, updateWidgetSetting);
     }
 }

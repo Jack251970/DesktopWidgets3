@@ -189,11 +189,11 @@
   <data name="Dashboard_PinnedWidgets.Text" xml:space="preserve">
     <value>已固定组件</value>
   </data>
-  <data name="Dashboard_AllWidgets.Text" xml:space="preserve">
-    <value>所有组件</value>
-  </data>
   <data name="Dashboard_YourWidgets.Text" xml:space="preserve">
     <value>你的组件</value>
+  </data>
+  <data name="Dashboard_AddWidgetButton.Content" xml:space="preserve">
+    <value>添加组件</value>
   </data>
   <data name="ButtonCancel.Content" xml:space="preserve">
     <value>取消</value>

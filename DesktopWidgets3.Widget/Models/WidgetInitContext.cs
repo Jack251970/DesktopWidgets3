@@ -3,21 +3,21 @@
 /// <summary>
 /// The widget initialization context.
 /// </summary>
-/// <param name="metadata"></param>
+/// <param name="widgetGroupMetadata"></param>
 /// <param name="localizationService"></param>
 /// <param name="logService"></param>
 /// <param name="settingsService"></param>
 /// <param name="themeService"></param>
 /// <param name="widgetService"></param>
 public class WidgetInitContext(
-    WidgetMetadata metadata,
+    WidgetGroupMetadata widgetGroupMetadata,
     ILocalizationService localizationService,
     ILogService logService,
     ISettingsService settingsService,
     IThemeService themeService,
     IWidgetService widgetService)
 {
-    public WidgetMetadata WidgetMetadata { get; private set; } = metadata;
+    public WidgetGroupMetadata WidgetGroupMetadata { get; private set; } = widgetGroupMetadata;
 
     public ILocalizationService LocalizationService { get; private set; } = localizationService;
 

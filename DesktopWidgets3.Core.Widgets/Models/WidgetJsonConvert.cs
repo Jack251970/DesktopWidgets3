@@ -19,12 +19,13 @@ public class JsonWidgetItemConverter : JsonConverter
 
         var widgetName = jsonObject["Name"]?.Value<string>() ?? string.Empty;
         var widgetId = jsonObject["Id"]?.Value<string>() ?? StringUtils.GetRandomWidgetId();
+        var widgetType = jsonObject["Type"]?.Value<string>() ?? string.Empty;
         var indexTag = jsonObject["IndexTag"]?.Value<int>() ?? new Random().Next(100, 999);
         var pinned = jsonObject["Pinned"]?.Value<bool>() ?? false;
         var position = jsonObject["Position"]?.ToObject<PointInt32>(serializer) ?? new PointInt32(-1, -1);
         var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? new RectSize(318, 200);
         var displayMonitor = jsonObject["DisplayMonitor"]?.ToObject<DisplayMonitor>(serializer) ?? DisplayMonitor.GetPrimaryMonitorInfo();
-        var defaultWidgetSettings = _widgetResourceService.GetDefaultSetting(widgetId);
+        var defaultWidgetSettings = _widgetResourceService.GetDefaultSettings(widgetId, widgetType);
         var widgetSettings = jsonObject["Settings"]?.ToObject(defaultWidgetSettings.GetType(), serializer) as BaseWidgetSettings ?? defaultWidgetSettings;
         var settingsJToken = jsonObject["Settings"]?.DeepClone();
 
@@ -32,6 +33,7 @@ public class JsonWidgetItemConverter : JsonConverter
         {
             Name = widgetName,
             Id = widgetId,
+            Type = widgetType,
             IndexTag = indexTag,
             Pinned = pinned,
             Position = position,
@@ -50,6 +52,7 @@ public class JsonWidgetItemConverter : JsonConverter
         var jsonObject = new JObject(
             new JProperty("Name", widgetItem.Name),
             new JProperty("Id", widgetId),
+            new JProperty("Type", widgetItem.Type),
             new JProperty("IndexTag", widgetItem.IndexTag),
             new JProperty("Pinned", widgetItem.Pinned),
             new JProperty("Position", JToken.FromObject(widgetItem.Position, serializer)),
@@ -57,7 +60,7 @@ public class JsonWidgetItemConverter : JsonConverter
             new JProperty("DisplayMonitor", JToken.FromObject(widgetItem.DisplayMonitor, serializer))
         );
 
-        if (_widgetResourceService.IsWidgetUnknown(widgetItem.Id))
+        if (_widgetResourceService.IsWidgetGroupUnknown(widgetItem.Id, widgetItem.Type))
         {
             jsonObject.Add(new JProperty("Settings", widgetItem.SettingsJToken));
         }

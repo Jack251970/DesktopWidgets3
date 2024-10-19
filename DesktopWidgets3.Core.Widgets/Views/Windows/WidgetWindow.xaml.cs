@@ -104,6 +104,8 @@ public sealed partial class WidgetWindow : WindowEx
 
     public string Id { get; private set; } = null!;
 
+    public string Type { get; private set; } = null!;
+
     public int IndexTag { get; private set; } = -1;
 
     #endregion
@@ -176,6 +178,7 @@ public sealed partial class WidgetWindow : WindowEx
 
         // set widget item properties
         Id = widgetItem.Id;
+        Type = widgetItem.Type;
         IndexTag = widgetItem.IndexTag;
         WidgetSettings = widgetItem.Settings;
         WidgetSize = widgetItem.Size;
@@ -227,6 +230,7 @@ public sealed partial class WidgetWindow : WindowEx
         LoadCompleted?.Invoke(this, new LoadCompletedEventArgs() 
         { 
             WidgetId = Id,
+            WidgetType = Type,
             IndexTag = IndexTag,
             WidgetPosition = WidgetPosition,
             WidgetSettings = WidgetSettings
@@ -345,6 +349,8 @@ public sealed partial class WidgetWindow : WindowEx
     public class LoadCompletedEventArgs : EventArgs
     {
         public required string WidgetId { get; set; }
+
+        public required string WidgetType { get; set; }
 
         public required int IndexTag { get; set; }
 

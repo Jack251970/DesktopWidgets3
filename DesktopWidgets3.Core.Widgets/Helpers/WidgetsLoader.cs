@@ -6,7 +6,7 @@ public static class WidgetsLoader
 {
     private static string ClassName => typeof(WidgetsLoader).Name;
 
-    public static (List<WidgetPair> allWidgets, List<string> errorWidgets, Dictionary<string, string> installedWidgets) Widgets(List<WidgetMetadata> metadatas, List<string> installingIds)
+    public static (List<WidgetGroupPair> allWidgets, List<string> errorWidgets, Dictionary<string, string> installedWidgets) Widgets(List<WidgetGroupMetadata> metadatas, List<string> installingIds)
     {
         (var dotnetWidgets, var dotnetErrorWidgets, var dotnetInstalledWidgets) = DotNetWidgets(metadatas, installingIds);
 
@@ -19,11 +19,11 @@ public static class WidgetsLoader
         return (widgets, errorWidgets, installedWidgets);
     }
 
-    private static (List<WidgetPair> dotnetWidgets, List<string> dotnetErrorWidgets, Dictionary<string, string> dotnetInstalledWidgets) DotNetWidgets(List<WidgetMetadata> metadatas, List<string> installingIds)
+    private static (List<WidgetGroupPair> dotnetWidgets, List<string> dotnetErrorWidgets, Dictionary<string, string> dotnetInstalledWidgets) DotNetWidgets(List<WidgetGroupMetadata> metadatas, List<string> installingIds)
     {
         var dotnetMetadatas = metadatas.Where(o => AllowedLanguage.IsDotNet(o.Language)).ToList();
 
-        var dotnetWidgets = new List<WidgetPair>();
+        var dotnetWidgets = new List<WidgetGroupPair>();
         var dotnetErrorWidgets = new List<string>();
         var dotnetInstalledWidgets = new Dictionary<string, string>();
 
@@ -31,7 +31,7 @@ public static class WidgetsLoader
         {
             IExtensionAssembly? extensionAssembly = null;
             Assembly? assembly = null;
-            IAsyncWidget? widget = null;
+            IAsyncWidgetGroup? widget = null;
             var resourcesFolder = string.Empty;
 
             try
@@ -40,9 +40,9 @@ public static class WidgetsLoader
 
                 assembly = extensionAssembly.ForeignAssembly;
 
-                var type = ApplicationExtensionHost.Current.FromAssemblyGetTypeOfInterface(assembly, typeof(IAsyncWidget));
+                var type = ApplicationExtensionHost.Current.FromAssemblyGetTypeOfInterface(assembly, typeof(IAsyncWidgetGroup));
 
-                widget = Activator.CreateInstance(type) as IAsyncWidget;
+                widget = Activator.CreateInstance(type) as IAsyncWidgetGroup;
 
                 resourcesFolder = InstallResourceFolder(extensionAssembly);
                 if (installingIds.Contains(metadata.ID))
@@ -85,7 +85,7 @@ public static class WidgetsLoader
 
             ResourceExtensions.AddExternalResource(assembly!);
 
-            dotnetWidgets.Add(new WidgetPair { Metadata = metadata, ExtensionAssembly = extensionAssembly!, Widget = widget });
+            dotnetWidgets.Add(new WidgetGroupPair { Metadata = metadata, ExtensionAssembly = extensionAssembly!, WidgetGroup = widget });
         };
 
         return (dotnetWidgets, dotnetErrorWidgets, dotnetInstalledWidgets);

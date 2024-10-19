@@ -4,7 +4,7 @@ public static class WidgetsConfig
 {
     private static string ClassName => typeof(WidgetsConfig).Name;
 
-    public static List<WidgetMetadata> Parse(string[] widgetDirectories, string preinstalledWidgetDirectory)
+    public static List<WidgetGroupMetadata> Parse(string[] widgetDirectories, string preinstalledWidgetDirectory)
     {
         var existingWidgetDirectories = widgetDirectories.Where(Directory.Exists);
         var directories = existingWidgetDirectories.SelectMany(Directory.EnumerateDirectories);
@@ -15,9 +15,9 @@ public static class WidgetsConfig
         return [.. preinstalledMetadata, .. nonPreinstalledMetadata];
     }
 
-    private static List<WidgetMetadata> Parse(IEnumerable<string> directories, bool preinstalled)
+    private static List<WidgetGroupMetadata> Parse(IEnumerable<string> directories, bool preinstalled)
     {
-        var allWidgetMetadata = new List<WidgetMetadata>();
+        var allWidgetMetadata = new List<WidgetGroupMetadata>();
 
         // Flow.LauncherTODO: use linq when diable widget is implmented since parallel.foreach + list is not thread saft
         foreach (var directory in directories)
@@ -39,10 +39,10 @@ public static class WidgetsConfig
         return uniqueList;
     }
 
-    private static (List<WidgetMetadata>, List<WidgetMetadata>) GetUniqueLatestWidgetMetadata(List<WidgetMetadata> allWidgetMetadata)
+    private static (List<WidgetGroupMetadata>, List<WidgetGroupMetadata>) GetUniqueLatestWidgetMetadata(List<WidgetGroupMetadata> allWidgetMetadata)
     {
-        var duplicate_list = new List<WidgetMetadata>();
-        var unique_list = new List<WidgetMetadata>();
+        var duplicate_list = new List<WidgetGroupMetadata>();
+        var unique_list = new List<WidgetGroupMetadata>();
 
         var duplicateGroups = allWidgetMetadata.GroupBy(x => x.ID).Where(g => g.Count() > 1).Select(y => y).ToList();
 
@@ -79,7 +79,7 @@ public static class WidgetsConfig
         return (unique_list, duplicate_list);
     }
 
-    private static WidgetMetadata? GetWidgetMetadata(string widgetDirectory, bool preinstalled)
+    private static WidgetGroupMetadata? GetWidgetMetadata(string widgetDirectory, bool preinstalled)
     {
         var configPath = Path.Combine(widgetDirectory, Constant.WidgetMetadataFileName);
         if (!File.Exists(configPath))
@@ -88,13 +88,14 @@ public static class WidgetsConfig
             return null;
         }
 
-        WidgetMetadata? metadata;
+        WidgetGroupMetadata? metadata;
         try
         {
             var json = File.ReadAllText(configPath);
-            metadata = JsonHelper.ToObject<WidgetMetadata>(json);
-            metadata!.WidgetDirectory = widgetDirectory;
+            metadata = JsonHelper.ToObject<WidgetGroupMetadata>(json);
+            metadata.WidgetDirectory = widgetDirectory;
             metadata.Preinstalled = preinstalled;
+            metadata.WidgetTypes = metadata.Widgets.Select(x => x.Type).ToList();
         }
         catch (Exception e)
         {

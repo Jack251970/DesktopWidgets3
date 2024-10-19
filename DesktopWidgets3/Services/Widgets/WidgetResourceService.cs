@@ -4,16 +4,17 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetResourceService(IAppSettingsService appSettingsService) : IWidgetResourceService
+internal class WidgetResourceService(IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService) : IWidgetResourceService
 {
     private static string ClassName => typeof(WidgetResourceService).Name;
 
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
+    private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
 
-    private List<WidgetPair> InstalledWidgets { get; set; } = null!;
-    private List<WidgetMetadata> AllWidgetsMetadata { get; set; } = null!;
+    private List<WidgetGroupPair> InstalledWidgetGroupPairs { get; set; } = null!;
+    private List<WidgetGroupMetadata> AllWidgetGroupMetadatas { get; set; } = null!;
 
-    private readonly ConcurrentDictionary<string, Dictionary<string, string>> WidgetsLanguageResources = [];
+    private readonly Dictionary<string, Dictionary<string, string>> WidgetsLanguageResources = [];
 
     private static readonly string[] WidgetsDirectories =
     [
@@ -42,8 +43,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         // initialize all widgets
         await InitWidgetsAsync();
 
-        // initialize widgets localization
-        await InitWidgetsLocalizationAsync();
+        // initialize widgets language resources
+        InitWidgetsLanguageResources();
 
         // initialize widget list
         await _appSettingsService.InitializeWidgetListAsync();
@@ -52,15 +53,15 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     private void GetAllWidgetsMetadata()
     {
         // get all widget metadata
-        AllWidgetsMetadata = WidgetsConfig.Parse(WidgetsDirectories, Constant.PreinstalledWidgetsDirectory);
+        AllWidgetGroupMetadatas = WidgetsConfig.Parse(WidgetsDirectories, Constant.PreinstalledWidgetsDirectory);
 
         // check preinstalled widgets
-        var errorPreinstalledWidgetsIds = AllWidgetsMetadata
+        var errorPreinstalledWidgetsIds = AllWidgetGroupMetadatas
             .Where(x => x.Preinstalled && (!PreinstalledWigdetsIds.Contains(x.ID)))
             .Select(x => x.ID).ToList();
 
         // remove error preinstalled widgets
-        AllWidgetsMetadata = AllWidgetsMetadata.Where(x => !errorPreinstalledWidgetsIds.Contains(x.ID)).ToList();
+        AllWidgetGroupMetadatas = AllWidgetGroupMetadatas.Where(x => !errorPreinstalledWidgetsIds.Contains(x.ID)).ToList();
     }
 
     private async Task LoadAllInstalledWidgets()
@@ -69,7 +70,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         var widgetStoreList = await _appSettingsService.InitializeWidgetStoreListAsync();
 
         // get preinstalled widget metadata
-        var preinstalledWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Preinstalled).ToList();
+        var preinstalledWidgetsMetadata = AllWidgetGroupMetadatas.Where(x => x.Preinstalled).ToList();
 
         // check all preinstalled widgets
         var installingIds = new List<string>();
@@ -108,18 +109,18 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
                 else
                 {
                     // set uninstalled, preinstalled widgets
-                    var metadataIndex = AllWidgetsMetadata.FindIndex(x => x.ID == metadata.ID);
+                    var metadataIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == metadata.ID);
                     if (metadataIndex != -1)
                     {
-                        AllWidgetsMetadata[metadataIndex].Installed = false;
+                        AllWidgetGroupMetadatas[metadataIndex].Installed = false;
                     }
                 }
             }
         }
 
         // load all installed widgets
-        var installWidgetsMetadata = AllWidgetsMetadata.Where(x => x.Installed).ToList();
-        (InstalledWidgets, var errorWidgets, var installedWidgets) = WidgetsLoader.Widgets(installWidgetsMetadata, installingIds);
+        var installWidgetsMetadata = AllWidgetGroupMetadatas.Where(x => x.Installed).ToList();
+        (InstalledWidgetGroupPairs, var errorWidgets, var installedWidgets) = WidgetsLoader.Widgets(installWidgetsMetadata, installingIds);
 
         // save widget store list
         if (installingIds.Count != 0)
@@ -163,6 +164,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #region Widget Resources
 
+    #region Xaml Resources
+
     // Note: InstallResourceFolder is in WidgetsLoader.cs.
 
     private static void UninstallResourceFolder(string resourcesFolder)
@@ -176,13 +179,50 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
+    #region Language Resources
+
+    private void InitWidgetsLanguageResources()
+    {
+        foreach (var pair in InstalledWidgetGroupPairs)
+        {
+            var widgetLanguageResources = new Dictionary<string, string>();
+
+            var resourceMap = ResourceExtensions.TryGetResourceMap(pair.Metadata.AssemblyName);
+            if (resourceMap != null)
+            {
+                for (uint i = 0; i < resourceMap.ResourceCount; i++)
+                {
+                    (var key, var value) = resourceMap.GetValueByIndex(i);
+                    widgetLanguageResources.TryAdd(key, value.ValueAsString);
+                }
+            }
+
+            WidgetsLanguageResources.TryAdd(pair.Metadata.ID, widgetLanguageResources);
+        }
+    }
+
+    private LanguageResourceDictionary? GetWidgetLanguageResources(string widgetId)
+    {
+        WidgetsLanguageResources.TryGetValue(widgetId, out var widgetLanguageResources);
+        if (widgetLanguageResources == null)
+        {
+            return null;
+        }
+
+        return new LanguageResourceDictionary(widgetLanguageResources);
+    }
+
+    #endregion
+
+    #endregion
+
     #region Dispose
 
     public async Task DisposeWidgetsAsync()
     {
-        foreach (var widgetPair in InstalledWidgets)
+        foreach (var widgetPair in InstalledWidgetGroupPairs)
         {
-            switch (widgetPair.Widget)
+            switch (widgetPair.WidgetGroup)
             {
                 case IDisposable disposable:
                     disposable.Dispose();
@@ -199,7 +239,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
-    #region IWidget
+    #region IWidgetGroup
 
     private async Task InitWidgetsAsync()
     {
@@ -208,18 +248,15 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         var themeService = DependencyExtensions.GetRequiredService<IThemeService>();
         var widgetService = DependencyExtensions.GetRequiredService<IWidgetService>();
 
-        var failedPlugins = new ConcurrentQueue<WidgetPair>();
+        var failedPlugins = new ConcurrentQueue<WidgetGroupPair>();
 
-        var initTasks = InstalledWidgets.Select(pair => Task.Run(delegate
+        var initTasks = InstalledWidgetGroupPairs.Select(pair => Task.Run(delegate
         {
             try
             {
                 var localizationService = (LocalizationService)DependencyExtensions.GetRequiredService<ILocalizationService>();
-                if (pair.Widget is IWidgetLocalization widgetLocalization)
-                {
-                    localizationService.AssemblyName = pair.Metadata.AssemblyName;
-                }
-                pair.Widget.InitWidgetAsync(
+                localizationService.AssemblyName = pair.Metadata.AssemblyName;
+                pair.WidgetGroup.InitWidgetGroupAsync(
                     new WidgetInitContext(
                         pair.Metadata,
                         localizationService,
@@ -248,19 +285,19 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
         }
     }
 
-    public FrameworkElement GetWidgetFrameworkElement(string widgetId)
+    public FrameworkElement GetWidgetContent(string widgetId, string widgetType)
     {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = InstalledWidgets[index];
+            var pair = InstalledWidgetGroupPairs[index];
             try
             {
-                return widget.Widget.CreateWidgetFrameworkElement(GetWidgetLanguageResources(widget.Metadata.ID));
+                return pair.WidgetGroup.GetWidgetContent(widgetType, GetWidgetLanguageResources(pair.Metadata.ID));
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Error creating widget framework element for widget {widget.Metadata.ID}");
+                LogExtensions.LogError(ClassName, e, $"Error creating widget framework element for widget {pair.Metadata.ID}");
             }
         }
 
@@ -269,82 +306,38 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
-    #region IWidgetPin
+    #region IWidgetGroupSetting
 
-    public async Task PinWidgetAsync(string widgetId, bool firstWidget)
+    public BaseWidgetSettings GetDefaultSettings(string widgetId, string widgetType)
     {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = InstalledWidgets[index];
-            switch (widget.Widget)
+            var pair = InstalledWidgetGroupPairs[index];
+            if (pair.WidgetGroup is IWidgetGroupSetting widgetSetting)
             {
-                case IWidgetPin pinUnpin:
-                    pinUnpin.WidgetPinning(firstWidget);
-                    break;
-                case IAsyncWidgetPin asyncPinUnpin:
-                    await asyncPinUnpin.WidgetPinningAsync(firstWidget);
-                    break;
-            }
-        }
-
-        await Task.CompletedTask;
-    }
-
-    public async Task UnpinWidgetAsync(string widgetId, bool lastWidget)
-    {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
-        if (index != -1)
-        {
-            var widget = InstalledWidgets[index];
-            switch (widget.Widget)
-            {
-                case IWidgetPin pinUnpin:
-                    pinUnpin.WidgetUnpinned(lastWidget);
-                    break;
-                case IAsyncWidgetPin asyncPinUnpin:
-                    await asyncPinUnpin.WidgetUnpinnedAsync(lastWidget);
-                    break;
-            }
-        }
-
-        await Task.CompletedTask;
-    }
-
-    #endregion
-
-    #region IWidgetSetting
-
-    public BaseWidgetSettings GetDefaultSetting(string widgetId)
-    {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
-        if (index != -1)
-        {
-            var widget = InstalledWidgets[index];
-            if (widget.Widget is IWidgetSetting widgetSetting)
-            {
-                return widgetSetting.GetDefaultSetting();
+                return widgetSetting.GetDefaultSettings(widgetType);
             }
         }
 
         return new BaseWidgetSettings();
     }
 
-    public FrameworkElement GetWidgetSettingFrameworkElement(string widgetId)
+    public FrameworkElement GetWidgetSettingContent(string widgetId, string widgetType)
     {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
+        var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
-            var widget = InstalledWidgets[index];
-            if (widget.Widget is IWidgetSetting widgetSetting)
+            var pair = InstalledWidgetGroupPairs[index];
+            if (pair.WidgetGroup is IWidgetGroupSetting widgetSetting)
             {
                 try
                 {
-                    return widgetSetting.CreateWidgetSettingFrameworkElement(GetWidgetLanguageResources(widget.Metadata.ID));
+                    return widgetSetting.GetWidgetSettingContent(widgetType, GetWidgetLanguageResources(pair.Metadata.ID));
                 }
                 catch (Exception e)
                 {
-                    LogExtensions.LogError(ClassName, e, $"Error creating setting framework element for widget {widget.Metadata.ID}");
+                    LogExtensions.LogError(ClassName, e, $"Error creating setting framework element for widget {pair.Metadata.ID}");
                 }
             }
         }
@@ -354,210 +347,79 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
-    #region IWidgetLocalization
-
-    private async Task InitWidgetsLocalizationAsync()
-    {
-        var initTasks = InstalledWidgets.Select(pair => Task.Run(delegate
-        {
-            if (pair.Widget is IWidgetLocalization widgetLocalization)
-            {
-                var widgetLanguageResources = new Dictionary<string, string>();
-
-                var resourceMap = ResourceExtensions.TryGetResourceMap(pair.Metadata.AssemblyName);
-                if (resourceMap != null)
-                {
-                    for (uint i = 0; i < resourceMap.ResourceCount; i++)
-                    {
-                        (var key, var value) = resourceMap.GetValueByIndex(i);
-                        widgetLanguageResources.TryAdd(key, value.ValueAsString);
-                    }
-                }
-
-                WidgetsLanguageResources.TryAdd(pair.Metadata.ID, widgetLanguageResources);
-            }
-        }));
-
-        await Task.WhenAll(initTasks);
-    }
-
-    private LanguageResourceDictionary? GetWidgetLanguageResources(string widgetId)
-    {
-        WidgetsLanguageResources.TryGetValue(widgetId, out var widgetLanguageResources);
-        if (widgetLanguageResources == null)
-        {
-            return null;
-        }
-
-        return new LanguageResourceDictionary(widgetLanguageResources);
-    }
-
-    #endregion
-
     #region Metadata
 
-    #region Public
+    #region Widget Group
 
-    public string GetWidgetName(string widgetId)
+    #region Status
+
+    public bool IsWidgetGroupUnknown(string widgetId, string widgetType)
     {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
-        if (index != -1)
+        (var installed, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, null);
+        if (installed)
         {
-            if (InstalledWidgets[index].Widget is IWidgetLocalization localization)
-            {
-                return localization.GetLocalizatedTitle();
-            }
-            else
-            {
-                return InstalledWidgets[index].Metadata.Name;
-            }
-        }
-
-        return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
-    }
-
-    public string GetWidgetDescription(string widgetId)
-    {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
-        if (index != -1)
-        {
-            if (InstalledWidgets[index].Widget is IWidgetLocalization localization)
-            {
-                return localization.GetLocalizatedDescription();
-            }
-            else
-            {
-                return InstalledWidgets[index].Metadata.Description;
-            }
-        }
-
-        return string.Empty;
-    }
-
-    public string GetWidgetIcoPath(string widgetId)
-    {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
-        if (index != -1)
-        {
-            return InstalledWidgets[index].Metadata.IcoPath;
-        }
-
-        return string.Empty;
-    }
-
-    public RectSize GetDefaultSize(string widgetId)
-    {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
-        if (index != -1)
-        {
-            var widget = InstalledWidgets[index];
-            return new RectSize(widget.Metadata.DefaultWidth, widget.Metadata.DefaultHeight);
-        }
-
-        return new RectSize(318, 200);
-    }
-
-    public (RectSize MinSize, RectSize MaxSize, bool NewThread) GetMinMaxSizeNewThread(string widgetId)
-    {
-        var index = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
-        var widget = InstalledWidgets[index];
-
-        if (index != -1)
-        {
-            return (new(widget.Metadata.MinWidth, widget.Metadata.MinHeight), 
-                new(widget.Metadata.MaxWidth, widget.Metadata.MaxHeight),
-                _appSettingsService.MultiThread && widget.Metadata.InNewThread);
-        }
-
-        return (new(null, null), new (null, null), false);
-    }
-
-    #endregion
-
-    #region private
-
-    private (bool Installed, int AllIndex, int? InstalledIndex) GetWidgetIndex(string widgetId, bool? installed)
-    {
-        if (installed == true)
-        {
-            var installedIndex = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
-            return (true, 0, installedIndex);
-        }
-        else if (installed == false)
-        {
-            var allIndex = AllWidgetsMetadata.FindIndex(x => x.ID == widgetId);
-            return (false, allIndex, null);
+            return !InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.WidgetTypes.Contains(widgetType);
         }
         else
         {
-            var installedIndex = InstalledWidgets.FindIndex(x => x.Metadata.ID == widgetId);
-            var allIndex = AllWidgetsMetadata.FindIndex(x => x.ID == widgetId);
-            installed = installedIndex != -1;
-            if (installed == true)
-            {
-                return (true, allIndex, installedIndex);
-            }
-            else
-            {
-                return (false, allIndex, null);
-            }
+            return allIndex == -1;
         }
     }
 
-    private string GetWidgetName(int index, int? installedIndex)
+    #endregion
+
+    #region Name & Description & Icon
+
+    private string GetWidgetGroupnName(int? allIndex, int? installedIndex)
     {
-        if (installedIndex != null && installedIndex < InstalledWidgets.Count)
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count)
         {
-            if (InstalledWidgets[installedIndex.Value].Widget is IWidgetLocalization localization)
+            if (InstalledWidgetGroupPairs[installedIndex!.Value].WidgetGroup is IWidgetLocalization localization)
             {
-                return localization.GetLocalizatedTitle();
+                return localization.GetLocalizedWidgetGroupTitle();
             }
-            else
-            {
-                return InstalledWidgets[installedIndex.Value].Metadata.Name;
-            }
+
+            return InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Name;
         }
 
-        if (index < AllWidgetsMetadata.Count)
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count)
         {
-            return AllWidgetsMetadata[index].Name;
+            return AllWidgetGroupMetadatas[allIndex!.Value].Name;
         }
 
         return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
     }
 
-    private string GetWidgetDescription(int index, int? installedIndex)
+    private string GetWidgetGroupDescription(int? allIndex, int? installedIndex)
     {
-        if (installedIndex != null && installedIndex < InstalledWidgets.Count)
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count)
         {
-            if (InstalledWidgets[installedIndex.Value].Widget is IWidgetLocalization localization)
+            if (InstalledWidgetGroupPairs[installedIndex!.Value].WidgetGroup is IWidgetLocalization localization)
             {
-                return localization.GetLocalizatedDescription();
+                return localization.GetLocalizedWidgetGroupDescription();
             }
-            else
-            {
-                return InstalledWidgets[installedIndex.Value].Metadata.Description;
-            }
+
+            return InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Description;
         }
 
-        if (index < AllWidgetsMetadata.Count)
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count)
         {
-            return AllWidgetsMetadata[index].Description;
+            return AllWidgetGroupMetadatas[allIndex!.Value].Description;
         }
 
         return string.Empty;
     }
 
-    private string GetWidgetIcoPath(int index, int? installedIndex)
+    private string GetWidgetGroupIcoPath(int? allIndex, int? installedIndex)
     {
-        if (installedIndex != null && installedIndex < InstalledWidgets.Count)
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count)
         {
-            return InstalledWidgets[installedIndex.Value].Metadata.IcoPath;
+            return InstalledWidgetGroupPairs[installedIndex.Value].Metadata.IcoPath;
         }
 
-        if (index < AllWidgetsMetadata.Count)
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count)
         {
-            return AllWidgetsMetadata[index].IcoPath;
+            return AllWidgetGroupMetadatas[allIndex!.Value].IcoPath;
         }
 
         return Constant.UnknownWidgetIcoPath;
@@ -567,99 +429,527 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     #endregion
 
-    #region Dashboard
+    #region Widget
 
-    public List<DashboardWidgetItem> GetInstalledDashboardItems()
+    #region Name & Description
+
+    public string GetWidgetName(string widgetId, string widgetType)
     {
-        var dashboardItemList = new List<DashboardWidgetItem>();
-
-        foreach (var widget in InstalledWidgets)
+        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
         {
-            var widgetId = widget.Metadata.ID;
-            (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, true);
-            dashboardItemList.Add(new DashboardWidgetItem()
-            {
-                Id = widgetId,
-                IndexTag = 0,
-                Name = GetWidgetName(allIndex, installedIndex),
-                IcoPath = GetWidgetIcoPath(allIndex, installedIndex),
-                IsUnknown = false,
-                IsInstalled = installed,
-            });
+            return GetWidgetName(allIndex, installedIndex, widgetIndex, widgetType);
         }
 
-        return dashboardItemList;
+        return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
     }
 
-    public List<DashboardWidgetItem> GetYourDashboardItems()
+    public string GetWidgetDescription(string widgetId, string widgetType)
+    {
+        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return GetWidgetDescription(allIndex, installedIndex, widgetIndex, widgetType);
+        }
+
+        return string.Empty;
+    }
+
+    private string GetWidgetName(int? allIndex, int? installedIndex, int? widgetIndex, string widgetType)
+    {
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count)
+        {
+            if (InstalledWidgetGroupPairs[installedIndex!.Value].WidgetGroup is IWidgetLocalization localization)
+            {
+                return localization.GetLocalizedWidgetTitle(widgetType);
+            }
+
+            if (widgetIndex != null)
+            {
+                return InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetIndex!.Value].Name;
+            }
+        }
+
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetIndex != null)
+        {
+            return AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetIndex!.Value].Name;
+        }
+
+        return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
+    }
+
+    private string GetWidgetDescription(int? allIndex, int? installedIndex, int? widgetIndex, string widgetType)
+    {
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count)
+        {
+            if (InstalledWidgetGroupPairs[installedIndex!.Value].WidgetGroup is IWidgetLocalization localization)
+            {
+                return localization.GetLocalizedWidgetDescription(widgetType);
+            }
+
+            if (widgetIndex != null)
+            {
+                return InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetIndex!.Value].Description;
+            }
+        }
+
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetIndex != null)
+        {
+            return AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetIndex!.Value].Description;
+        }
+
+        return string.Empty;
+    }
+
+    #endregion
+
+    #region Icon & Screenshots
+
+    public string GetWidgetIconPath(string widgetId, string widgetType, ElementTheme? actualTheme = null)
+    {
+        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return GetWidgetIconPath(allIndex, installedIndex, widgetIndex, actualTheme);
+        }
+
+        return string.Empty;
+    }
+
+    public string GetWidgetScreenshotsPath(string widgetId, string widgetType, ElementTheme? actualTheme = null)
+    {
+        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return GetWidgetScreenshotsPath(allIndex, installedIndex, widgetIndex, actualTheme);
+        }
+
+        return string.Empty;
+    }
+
+    private string GetWidgetIconPath(int? allIndex, int? installedIndex, int? widgetIndex, ElementTheme? actualTheme = null)
+    {
+        actualTheme ??= _themeSelectorService.GetActualTheme();
+
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetIndex != null)
+        {
+            var widget = InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetIndex!.Value];
+            if (actualTheme == ElementTheme.Dark && !string.IsNullOrEmpty(widget.IcoPathDark))
+            {
+                return widget.IcoPathDark;
+            }
+            else
+            {
+                return widget.IcoPath;
+            }
+        }
+
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetIndex != null)
+        {
+            var widget = AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetIndex!.Value];
+            if (actualTheme == ElementTheme.Dark && !string.IsNullOrEmpty(widget.IcoPathDark))
+            {
+                return widget.IcoPathDark;
+            }
+            else
+            {
+                return widget.IcoPath;
+            }
+        }
+
+        return Constant.UnknownWidgetIcoPath;
+    }
+
+    private string GetWidgetScreenshotsPath(int? allIndex, int? installedIndex, int? widgetIndex, ElementTheme? actualTheme = null)
+    {
+        actualTheme ??= _themeSelectorService.GetActualTheme();
+
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetIndex != null)
+        {
+            var widget = InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetIndex!.Value];
+            if (actualTheme == ElementTheme.Dark && !string.IsNullOrEmpty(widget.ScreenshotsPathDark))
+            {
+                return widget.ScreenshotsPathDark;
+            }
+            else
+            {
+                return widget.ScreenshotsPath;
+            }
+        }
+
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetIndex != null)
+        {
+            var widget = AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetIndex!.Value];
+            if (actualTheme == ElementTheme.Dark && !string.IsNullOrEmpty(widget.ScreenshotsPathDark))
+            {
+                return widget.ScreenshotsPathDark;
+            }
+            else
+            {
+                return widget.ScreenshotsPath;
+            }
+        }
+
+        return Constant.UnknownWidgetIcoPath;
+    }
+
+    #endregion
+
+    #region Default & Min & Max Size
+
+    public RectSize GetWidgetDefaultSize(string widgetId, string widgetType)
+    {
+        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return GetWidgetDefaultSize(allIndex, installedIndex, widgetIndex);
+        }
+
+        return new RectSize(342.0, 201.0);
+    }
+
+    public (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(string widgetId, string widgetType)
+    {
+        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return GetWidgetMinMaxSize(allIndex, installedIndex, widgetIndex);
+        }
+
+        return (new(null, null), new(null, null));
+    }
+
+    private RectSize GetWidgetDefaultSize(int? allIndex, int? installedIndex, int? widgetIndex)
+    {
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetIndex != null)
+        {
+            var widget = InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetIndex!.Value];
+            return new RectSize(widget.DefaultWidth, widget.DefaultHeight);
+        }
+
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetIndex != null)
+        {
+            var widget = AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetIndex!.Value];
+            return new RectSize(widget.DefaultWidth, widget.DefaultHeight);
+        }
+
+        return new RectSize(342.0, 201.0);
+    }
+
+    private (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(int? allIndex, int? installedIndex, int? widgetIndex)
+    {
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetIndex != null)
+        {
+            var widget = InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetIndex!.Value];
+            return (new RectSize(widget.MinWidth, widget.MinHeight), new RectSize(widget.MaxWidth, widget.MaxHeight));
+        }
+
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetIndex != null)
+        {
+            var widget = AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetIndex!.Value];
+            return (new RectSize(widget.MinWidth, widget.MinHeight), new RectSize(widget.MaxWidth, widget.MaxHeight));
+        }
+
+        return (new(null, null), new(null, null));
+    }
+
+    #endregion
+
+    #region AllowMultiple & IsCustomizable
+
+    // TODO: Use these options
+
+    public bool GetWidgetAllowMultiple(string widgetId, string widgetType)
+    {
+        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return GetWidgetAllowMultiple(allIndex, installedIndex, widgetIndex);
+        }
+
+        return false;
+    }
+
+    public bool GetWidgetIsCustomizable(string widgetId, string widgetType)
+    {
+        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return GetWidgetIsCustomizable(allIndex, installedIndex, widgetIndex);
+        }
+
+        return false;
+    }
+
+    private bool GetWidgetAllowMultiple(int? allIndex, int? installedIndex, int? widgetIndex)
+    {
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetIndex != null)
+        {
+            return InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetIndex!.Value].AllowMultiple;
+        }
+
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetIndex != null)
+        {
+            return AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetIndex!.Value].AllowMultiple;
+        }
+
+        return false;
+    }
+
+    private bool GetWidgetIsCustomizable(int? allIndex, int? installedIndex, int? widgetIndex)
+    {
+        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetIndex != null)
+        {
+            return InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetIndex!.Value].IsCustomizable;
+        }
+
+        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetIndex != null)
+        {
+            return AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetIndex!.Value].IsCustomizable;
+        }
+
+        return false;
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Widget Group & Widget Index
+
+    private (bool Installed, int? AllIndex, int? InstalledIndex) GetWidgetGroupIndex(string widgetId, bool? installed)
+    {
+        if (installed == true)
+        {
+            var installedIndex = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+            if (installedIndex != -1)
+            {
+                return (true, null, installedIndex);
+            }
+
+            var allIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == widgetId);
+            if (allIndex != -1)
+            {
+                return (false, allIndex, null);
+            }
+
+            return (false, null, null);
+        }
+        else if (installed == false)
+        {
+            var allIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == widgetId);
+            if (allIndex != -1)
+            {
+                var installedIndex = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+                if (installedIndex != -1)
+                {
+                    return (true, allIndex, installedIndex);
+                }
+
+                return (false, allIndex, null);
+            }
+
+            return (false, null, null);
+        }
+        else
+        {
+            var installedIndex = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+            if (installedIndex != -1)
+            {
+                return (true, null, installedIndex);
+            }
+
+            var allIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == widgetId);
+            if (allIndex != -1)
+            {
+                return (false, allIndex, null);
+            }
+
+            return (false, null, null);
+        }
+    }
+
+    private (bool Installed, int? AllIndex, int? InstalledIndex, int? WidgetIndex) GetWidgetGroupAndWidgetIndex(string widgetId, string widgetType, bool? installed)
+    {
+        if (installed == true)
+        {
+            var installedIndex = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+            if (installedIndex != -1)
+            {
+                var widgetIndex = InstalledWidgetGroupPairs[installedIndex].Metadata.Widgets.FindIndex(x => x.Type == widgetType);
+                if (widgetIndex != -1)
+                {
+                    return (true, null, installedIndex, widgetIndex);
+                }
+
+                return (true, null, installedIndex, null);
+            }
+
+            var allIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == widgetId);
+            if (allIndex != -1)
+            {
+                var widgetIndex = AllWidgetGroupMetadatas[allIndex].Widgets.FindIndex(x => x.Type == widgetType);
+                if (widgetIndex != -1)
+                {
+                    return (false, allIndex, null, widgetIndex);
+                }
+
+                return (false, allIndex, null, null);
+            }
+
+            return (false, null, null, null);
+        }
+        else if (installed == false)
+        {
+            var allIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == widgetId);
+            if (allIndex != -1)
+            {
+                var widgetIndex = AllWidgetGroupMetadatas[allIndex].Widgets.FindIndex(x => x.Type == widgetType);
+                if (widgetIndex != -1)
+                {
+                    var installedIndex = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+                    if (installedIndex != -1)
+                    {
+                        return (true, allIndex, installedIndex, widgetIndex);
+                    }
+
+                    return (false, allIndex, null, widgetIndex);
+                }
+
+                return (false, allIndex, null, null);
+            }
+
+            return (false, null, null, null);
+        }
+        else
+        {
+            var installedIndex = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+            if (installedIndex != -1)
+            {
+                var widgetIndex = InstalledWidgetGroupPairs[installedIndex].Metadata.Widgets.FindIndex(x => x.Type == widgetType);
+                if (widgetIndex != -1)
+                {
+                    return (true, null, installedIndex, widgetIndex);
+                }
+
+                return (true, null, installedIndex, null);
+            }
+
+            var allIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == widgetId);
+            if (allIndex != -1)
+            {
+                var widgetIndex = AllWidgetGroupMetadatas[allIndex].Widgets.FindIndex(x => x.Type == widgetType);
+                if (widgetIndex != -1)
+                {
+                    return (false, allIndex, null, widgetIndex);
+                }
+
+                return (false, allIndex, null, null);
+            }
+
+            return (false, null, null, null);
+        }
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Dashboard
+
+    public List<DashboardWidgetGroupItem> GetInstalledDashboardGroupItems()
+    {
+        var dashboardGroupItemList = new List<DashboardWidgetGroupItem>();
+
+        foreach (var widget in InstalledWidgetGroupPairs)
+        {
+            var widgetId = widget.Metadata.ID;
+            (var installed, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, true);
+            if (installed)
+            {
+                dashboardGroupItemList.Add(new DashboardWidgetGroupItem()
+                {
+                    Id = widgetId,
+                    Name = GetWidgetGroupnName(allIndex, installedIndex),
+                    IcoPath = GetWidgetGroupIcoPath(allIndex, installedIndex),
+                    Types = widget.Metadata.WidgetTypes
+                });
+            }
+        }
+
+        return dashboardGroupItemList;
+    }
+
+    public List<DashboardWidgetItem> GetYourDashboardWidgetItems()
     {
         var widgetList = _appSettingsService.GetWidgetsList();
         var dashboardItemList = new List<DashboardWidgetItem>();
-        var unknownWidgetIdList = new List<string>();
+        var unknownNotInstalledWidgetList = new List<(string, string)>();
 
         foreach (var widget in widgetList)
         {
             var widgetId = widget.Id;
+            var widgetType = widget.Type;
             var indexTag = widget.IndexTag;
-            if (IsWidgetUnknown(widgetId))
+
+            (var installed, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+            if (installed && widgetIndex != null)
             {
-                if (!unknownWidgetIdList.Contains(widgetId))
-                {
-                    unknownWidgetIdList.Add(widgetId);
-                }
                 dashboardItemList.Add(new DashboardWidgetItem()
                 {
                     Id = widgetId,
+                    Type = widgetType,
                     IndexTag = indexTag,
-                    Name = string.Format("Unknown_Widget_Name".GetLocalized(), unknownWidgetIdList.Count),
+                    Name = GetWidgetName(allIndex, installedIndex, widgetIndex, widgetType),
+                    IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetIndex),
+                    Pinned = widget.Pinned,
+                    IsUnknown = false,
+                    IsInstalled = true
+                });
+            }
+            else
+            {
+                if (!unknownNotInstalledWidgetList.Contains((widgetId, widgetType)))
+                {
+                    unknownNotInstalledWidgetList.Add((widgetId, widgetType));
+                }
+
+                dashboardItemList.Add(new DashboardWidgetItem()
+                {
+                    Id = widgetId,
+                    Type = widgetType,
+                    IndexTag = indexTag,
+                    Name = string.Format("Unknown_Widget_Name".GetLocalized(), unknownNotInstalledWidgetList.Count),
                     IcoPath = Constant.UnknownWidgetIcoPath,
                     Pinned = widget.Pinned,
                     IsUnknown = true,
                     IsInstalled = false,
                 });
             }
-            else
-            {
-                (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, null);
-                dashboardItemList.Add(new DashboardWidgetItem()
-                {
-                    Id = widgetId,
-                    IndexTag = indexTag,
-                    Name = GetWidgetName(allIndex, installedIndex),
-                    IcoPath = GetWidgetIcoPath(allIndex, installedIndex),
-                    Pinned = widget.Pinned,
-                    IsUnknown = false,
-                    IsInstalled = installed
-                });
-            }
         }
 
         return dashboardItemList;
     }
 
-    public DashboardWidgetItem? GetDashboardItem(string widgetId, int indexTag)
+    public DashboardWidgetItem? GetDashboardWidgetItem(string widgetId, string widgetType, int indexTag)
     {
-        (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, null);
-        if (allIndex != -1)
+        (var installed, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installed)
         {
             return new DashboardWidgetItem()
             {
                 Id = widgetId,
+                Type = widgetType,
                 IndexTag = indexTag,
-                Name = GetWidgetName(allIndex, installedIndex),
-                IcoPath = GetWidgetIcoPath(allIndex, installedIndex),
+                Name = GetWidgetName(allIndex, installedIndex, widgetIndex, widgetType),
+                IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetIndex),
                 Pinned = true,
                 IsUnknown = false,
-                IsInstalled = installed
+                IsInstalled = true
             };
         }
 
         return null;
-    }
-
-    public bool IsWidgetUnknown(string widgetId)
-    {
-        return !AllWidgetsMetadata.Any(x => x.ID == widgetId);
     }
 
     #endregion
@@ -670,21 +960,21 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     {
         List<WidgetStoreItem> widgetStoreItemList = [];
 
-        foreach (var metadata in AllWidgetsMetadata)
+        foreach (var metadata in AllWidgetGroupMetadatas)
         {
             var widgetId = metadata.ID;
-            (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, null);
+            (var installed, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, null);
             if (installed)
             {
                 widgetStoreItemList.Add(new WidgetStoreItem()
                 {
                     Id = widgetId,
-                    Name = GetWidgetName(allIndex, installedIndex),
-                    Description = GetWidgetDescription(allIndex, installedIndex),
+                    Name = GetWidgetGroupnName(allIndex, installedIndex),
+                    Description = GetWidgetGroupDescription(allIndex, installedIndex),
                     Author = metadata.Author,
                     Version = metadata.Version,
                     Website = metadata.Website,
-                    IcoPath = GetWidgetIcoPath(allIndex, installedIndex)
+                    IcoPath = GetWidgetGroupIcoPath(allIndex, installedIndex)
                 });
             }
         }
@@ -696,23 +986,23 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
     {
         List<WidgetStoreItem> widgetStoreItemList = [];
 
-        foreach (var metadata in AllWidgetsMetadata)
+        foreach (var metadata in AllWidgetGroupMetadatas)
         {
             if (metadata.Preinstalled)
             {
                 var widgetId = metadata.ID;
-                (var installed, var allIndex, var installedIndex) = GetWidgetIndex(widgetId, null);
+                (var installed, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, null);
                 if (!installed)
                 {
                     widgetStoreItemList.Add(new WidgetStoreItem()
                     {
                         Id = metadata.ID,
-                        Name = GetWidgetName(allIndex, installedIndex),
-                        Description = GetWidgetDescription(allIndex, installedIndex),
+                        Name = GetWidgetGroupnName(allIndex, installedIndex),
+                        Description = GetWidgetGroupDescription(allIndex, installedIndex),
                         Author = metadata.Author,
                         Version = metadata.Version,
                         Website = metadata.Website,
-                        IcoPath = GetWidgetIcoPath(allIndex, installedIndex)
+                        IcoPath = GetWidgetGroupIcoPath(allIndex, installedIndex)
                     });
                 }
             }
@@ -723,7 +1013,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public async Task InstallWidgetAsync(string widgetId)
     {
-        var metadata = AllWidgetsMetadata.Find(x => x.ID == widgetId);
+        var metadata = AllWidgetGroupMetadatas.Find(x => x.ID == widgetId);
         var widgetStoreList = _appSettingsService.GetWidgetStoreList();
         if (metadata == null)
         {
@@ -752,7 +1042,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService) : I
 
     public async Task UninstallWidgetAsync(string widgetId)
     {
-        var metadata = AllWidgetsMetadata.Find(x => x.ID == widgetId);
+        var metadata = AllWidgetGroupMetadatas.Find(x => x.ID == widgetId);
         if (metadata == null)
         {
             return;

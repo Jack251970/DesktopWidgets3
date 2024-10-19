@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.Widgets.Hosts;
 using Newtonsoft.Json;
 
 namespace DesktopWidgets3.Services;
@@ -241,9 +242,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         return WidgetList;
     }
 
-    public JsonWidgetItem? GetWidget(string widgetId, int indexTag)
+    public JsonWidgetItem? GetWidget(string widgetId, string widgetType, int indexTag)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
         if (index != -1)
         {
             return WidgetList[index];
@@ -252,20 +253,20 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         return null;
     }
 
-    public async Task AddWidgetAsync(JsonWidgetItem widgetItem)
+    public async Task AddWidgetAsync(JsonWidgetItem item)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetItem.Id && x.IndexTag == widgetItem.IndexTag);
+        var index = WidgetList.FindIndex(x => x.Id == item.Id && x.Type == item.Type && x.IndexTag == item.IndexTag);
         if (index == -1)
         {
-            WidgetList.Add(widgetItem);
+            WidgetList.Add(item);
 
             await SaveWidgetListAsync();
         }
     }
 
-    public async Task DeleteWidgetAsync(string widgetId, int indexTag)
+    public async Task DeleteWidgetAsync(string widgetId, string widgetType, int indexTag)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
         if (index != -1)
         {
             WidgetList.RemoveAt(index);
@@ -274,9 +275,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task PinWidgetAsync(string widgetId, int indexTag)
+    public async Task PinWidgetAsync(string widgetId, string widgetType, int indexTag)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
         if (index != -1 && WidgetList[index].Pinned == false)
         {
             WidgetList[index].Pinned = true;
@@ -285,9 +286,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task UnpinWidgetAsync(string widgetId, int indexTag)
+    public async Task UnpinWidgetAsync(string widgetId, string widgetType, int indexTag)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
         if (index != -1 && WidgetList[index].Pinned == true)
         {
             WidgetList[index].Pinned = false;
@@ -296,9 +297,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task UpdateWidgetSettingsAsync(string widgetId, int indexTag, BaseWidgetSettings settings)
+    public async Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int indexTag, BaseWidgetSettings settings)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
         if (index != -1)
         {
             WidgetList[index].Settings = settings;
@@ -307,15 +308,15 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task UpdateWidgetsListIgnoreSettingsAsync(List<JsonWidgetItem> widgetList)
+    public async Task UpdateWidgetsListIgnoreSettingsAsync(List<JsonWidgetItem> list)
     {
-        foreach (var widget in widgetList)
+        foreach (var item in list)
         {
-            var index = WidgetList.FindIndex(x => x.Id == widget.Id && x.IndexTag == widget.IndexTag);
+            var index = WidgetList.FindIndex(x => x.Id == item.Id && x.Type == item.Type && x.IndexTag == item.IndexTag);
             if (index != -1)
             {
                 var setting = WidgetList[index].Settings;
-                WidgetList[index] = widget;
+                WidgetList[index] = item;
                 WidgetList[index].Settings = setting;
             }
         }
@@ -343,9 +344,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         return WidgetStoreList;
     }
 
-    public async Task SaveWidgetStoreListAsync(List<JsonWidgetStoreItem> widgetStoreList)
+    public async Task SaveWidgetStoreListAsync(List<JsonWidgetStoreItem> list)
     {
-        WidgetStoreList = widgetStoreList;
+        WidgetStoreList = list;
 
         await SaveWidgetStoreListAsync();
     }

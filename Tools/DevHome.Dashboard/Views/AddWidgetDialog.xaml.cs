@@ -16,6 +16,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
 
@@ -25,14 +26,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
 {
     private static string ClassName => typeof(AddWidgetDialog).Name;
 
-    private ComSafeWidgetDefinition _selectedWidget;
+    private AddedWidget _selectedWidget;
 
-    public ComSafeWidgetDefinition AddedWidget { get; private set; }
+    public AddedWidget AddedWidget { get; private set; }
 
     public AddWidgetViewModel ViewModel { get; set; }
 
     private readonly IWidgetHostingService _hostingService;
     private readonly IWidgetIconService _widgetIconService;
+    private readonly IWidgetResourceService _widgetResourceService;
     private readonly DispatcherQueue _dispatcherQueue;
 
     public AddWidgetDialog()
@@ -40,6 +42,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         ViewModel = DependencyExtensions.GetRequiredService<AddWidgetViewModel>();
         _hostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
         _widgetIconService = DependencyExtensions.GetRequiredService<IWidgetIconService>();
+        _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
         InitializeComponent();
 
@@ -65,14 +68,55 @@ public sealed partial class AddWidgetDialog : ContentDialog
             LogExtensions.LogError(ClassName, ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
         }
 
-        await FillAvailableWidgetsAsync();
+        AddWidgetNavigationView.MenuItems.Clear();
+        await FillAvailableDesktopWidget3WidgetsAsync();
+        await FillAvailableMicrosoftWidgetsAsync();
         SelectFirstWidgetByDefault();
     }
 
-    private async Task FillAvailableWidgetsAsync()
+    private async Task FillAvailableDesktopWidget3WidgetsAsync()
     {
-        AddWidgetNavigationView.MenuItems.Clear();
+        // Show the widget group and widgets underneath them in alphabetical order.
+        var installedWidgetGroups = _widgetResourceService.GetInstalledDashboardGroupItems().OrderBy(x => x.Name);
 
+        foreach (var widgetGroup in installedWidgetGroups)
+        {
+            var navItem = new NavigationViewItem
+            {
+                IsExpanded = true,
+                Tag = widgetGroup,
+                Content = new TextBlock { Text = widgetGroup.Name, TextWrapping = TextWrapping.Wrap },
+            };
+
+            navItem.SetValue(ToolTipService.ToolTipProperty, widgetGroup.Name);
+
+            foreach (var widgetType in widgetGroup.Types)
+            {
+                var widgetId = widgetGroup.Id;
+                var widgetName = _widgetResourceService.GetWidgetName(widgetId, widgetType);
+
+                var subItemContent = await BuildWidgetNavItemAsync(widgetId, widgetType, widgetName);
+                var subItem = new NavigationViewItem
+                {
+                    Tag = new AddedWidget(widgetId, widgetType, widgetGroup.Name, widgetName),
+                    Content = subItemContent
+                };
+                subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetId}_{widgetType}");
+                subItem.SetValue(AutomationProperties.NameProperty, widgetName);
+                subItem.SetValue(ToolTipService.ToolTipProperty, widgetName);
+
+                navItem.MenuItems.Add(subItem);
+            }
+
+            if (navItem.MenuItems.Count > 0)
+            {
+                AddWidgetNavigationView.MenuItems.Add(navItem);
+            }
+        }
+    }
+
+    private async Task FillAvailableMicrosoftWidgetsAsync()
+    {
         // Show the providers and widgets underneath them in alphabetical order.
         var providerDefinitions = (await _hostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
         var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_hostingService);
@@ -123,7 +167,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                         var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
                         var subItem = new NavigationViewItem
                         {
-                            Tag = widgetDef,
+                            Tag = new AddedWidget(widgetDef),
                             Content = subItemContent,
                             IsEnabled = enable,
                         };
@@ -150,12 +194,31 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
+    private async Task<Grid> BuildWidgetNavItemAsync(string widgetId, string widgetType, string widgetName)
+    {
+        return await BuildNavItemAsync(widgetId, widgetType, widgetName);
+    }
+
+    private async Task<Grid> BuildNavItemAsync(string widgetId, string widgetType, string widgetName)
+    {
+        var imageBrush = await _widgetIconService.GetBrushForDesktopWidgets3WidgetIconAsync(widgetId, widgetType, ActualTheme);
+
+        return BuildNavItem(imageBrush, widgetName);
+    }
+
     private async Task<Grid> BuildWidgetNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
         return await BuildNavItemAsync(widgetDefinition);
     }
 
     private async Task<Grid> BuildNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
+    {
+        var imageBrush = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(widgetDefinition, ActualTheme);
+
+        return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
+    }
+
+    private static Grid BuildNavItem(Brush widgetImageBrush, string widgetName)
     {
         var itemContent = new Grid
         {
@@ -166,14 +229,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
             },
         };
 
-        var imageBrush = await _widgetIconService.GetBrushForWidgetIconAsync(widgetDefinition, ActualTheme);
-
         var itemSquare = new Rectangle()
         {
             Width = 16,
             Height = 16,
             Margin = new Thickness(0, 0, 8, 0),
-            Fill = imageBrush,
+            Fill = widgetImageBrush,
         };
 
         Grid.SetColumn(itemSquare, 0);
@@ -181,7 +242,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         var itemText = new TextBlock()
         {
-            Text = widgetDefinition.DisplayTitle,
+            Text = widgetName,
             TextWrapping = TextWrapping.Wrap,
             VerticalAlignment = VerticalAlignment.Center,
         };
@@ -191,7 +252,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    private bool IsSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
+    private static bool IsSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
@@ -246,10 +307,10 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         // If the user has selected a widget, show preview. If they selected a provider, leave space blank.
-        if (selectedTag as ComSafeWidgetDefinition is ComSafeWidgetDefinition selectedWidgetDefinition)
+        if (selectedTag as AddedWidget is AddedWidget selectWidget)
         {
-            _selectedWidget = selectedWidgetDefinition;
-            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition);
+            _selectedWidget = selectWidget;
+            await ViewModel.SetWidgetDefinition(_selectedWidget);
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
@@ -265,9 +326,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
         {
             foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
             {
-                if (widgetItem.Tag is ComSafeWidgetDefinition widgetDefinition)
+                if (widgetItem.Tag as AddedWidget is AddedWidget widget)
                 {
-                    widgetItem.Content = await BuildNavItemAsync(widgetDefinition);
+                    if (widget.WidgetDefination is ComSafeWidgetDefinition widgetDefinition)
+                    {
+                        widgetItem.Content = await BuildNavItemAsync(widgetDefinition);
+                    }
+                    else
+                    {
+                        widgetItem.Content = await BuildNavItemAsync(widget.WidgetId, widget.WidgetType, widget.WidgetName);
+                    }
                 }
             }
         }
@@ -318,7 +386,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         {
             // If we currently have the deleted widget open, un-select it.
             if (_selectedWidget is not null &&
-                _selectedWidget.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
+                _selectedWidget.WidgetDefination is not null &&
+                _selectedWidget.WidgetDefination.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
             {
                 LogExtensions.LogInformation(ClassName, $"Widget definition deleted while selected.");
                 ViewModel.Clear();
@@ -369,7 +438,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var smallWidgetPreviewTopMargin = (Thickness)Resources["SmallWidgetPreviewTopMargin"];
         var largeWidgetPreviewTopMargin = (Thickness)Resources["LargeWidgetPreviewTopMargin"];
 
-        AddWidgetNavigationView.Height = Math.Min(this.ActualHeight, contentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
+        AddWidgetNavigationView.Height = Math.Min(ActualHeight, contentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
 
         var previewHeightAvailable = AddWidgetNavigationView.Height - TitleRow.ActualHeight - PinRow.ActualHeight;
 
@@ -389,5 +458,38 @@ public sealed partial class AddWidgetDialog : ContentDialog
             PreviewRow.Padding = largeWidgetPreviewTopMargin;
             PinButton.Margin = largePinButtonMargin;
         }
+    }
+}
+
+public class AddedWidget
+{
+    public ComSafeWidgetDefinition WidgetDefination { get; private set; }
+
+    // TODO: Add new model DesktopWidgets3WidgetDefinition
+
+    public string WidgetId { get; private set; }
+
+    public string WidgetType { get; private set; }
+
+    public string WidgetGroupName { get; private set; }
+
+    public string WidgetName { get; private set; }
+
+    public AddedWidget(ComSafeWidgetDefinition widgetDefination)
+    {
+        WidgetDefination = widgetDefination;
+        WidgetId = null;
+        WidgetType = null;
+        WidgetGroupName = null;
+        WidgetName = null;
+    }
+
+    public AddedWidget(string widgetId, string widgetType, string widgetGroupName, string widgetName)
+    {
+        WidgetDefination = null;
+        WidgetId = widgetId;
+        WidgetType = widgetType;
+        WidgetGroupName = widgetGroupName;
+        WidgetName = widgetName;
     }
 }

@@ -8,33 +8,35 @@ public interface IWidgetResourceService
 
     Task DisposeWidgetsAsync();
 
-    FrameworkElement GetWidgetFrameworkElement(string widgetId);
+    FrameworkElement GetWidgetContent(string widgetId, string widgetType);
 
-    Task PinWidgetAsync(string widgetId, bool firstWidget);
+    BaseWidgetSettings GetDefaultSettings(string widgetId, string widgetType);
 
-    Task UnpinWidgetAsync(string widgetId, bool lastWidget);
+    FrameworkElement GetWidgetSettingContent(string widgetId, string widgetType);
 
-    BaseWidgetSettings GetDefaultSetting(string widgetId);
+    string GetWidgetName(string widgetId, string widgetType);
 
-    FrameworkElement GetWidgetSettingFrameworkElement(string widgetId);
+    string GetWidgetDescription(string widgetId, string widgetType);
 
-    string GetWidgetName(string widgetId);
+    string GetWidgetIconPath(string widgetId, string widgetType, ElementTheme? actualTheme = null);
 
-    string GetWidgetDescription(string widgetId);
+    string GetWidgetScreenshotsPath(string widgetId, string widgetType, ElementTheme? actualTheme = null);
 
-    string GetWidgetIcoPath(string widgetId);
+    RectSize GetWidgetDefaultSize(string widgetId, string widgetType);
 
-    RectSize GetDefaultSize(string widgetId);
+    (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(string widgetId, string widgetType);
 
-    (RectSize MinSize, RectSize MaxSize, bool NewThread) GetMinMaxSizeNewThread(string widgetId);
+    bool GetWidgetAllowMultiple(string widgetId, string widgetType);
 
-    List<DashboardWidgetItem> GetInstalledDashboardItems();
+    bool GetWidgetIsCustomizable(string widgetId, string widgetType);
 
-    List<DashboardWidgetItem> GetYourDashboardItems();
+    List<DashboardWidgetGroupItem> GetInstalledDashboardGroupItems();
 
-    DashboardWidgetItem? GetDashboardItem(string widgetId, int indexTag);
+    List<DashboardWidgetItem> GetYourDashboardWidgetItems();
 
-    bool IsWidgetUnknown(string widgetId);
+    DashboardWidgetItem? GetDashboardWidgetItem(string widgetId, string widgetType, int indexTag);
+
+    bool IsWidgetGroupUnknown(string widgetId, string widgetType);
 
     List<WidgetStoreItem> GetInstalledWidgetStoreItems();
 

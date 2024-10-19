@@ -2,12 +2,12 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DesktopWidgets3.Core.Widgets.ViewModels.Pages;
+namespace DesktopWidgets3.Core.Widgets.ViewModels.Windows;
 
 public partial class WidgetViewModel : ObservableRecipient
 {
     [ObservableProperty]
-    public string _widgetIcoPath = string.Empty;
+    public string _widgetIconPath = string.Empty;
 
     [ObservableProperty]
     public string _widgetDisplayTitle = string.Empty;

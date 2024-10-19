@@ -15,69 +15,21 @@
 
     <ScrollViewer x:Name="MainScrollViewer">
         <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Orientation="Vertical">
-            <TextBlock
-                x:Uid="Dashboard_AllWidgets"
-                Margin="0,0,0,12"
-                Style="{StaticResource PageTitleStyle}" />
-
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.AllWidgets, Mode=OneWay}">
-                <ItemsRepeater.Layout>
-                    <controls:StaggeredLayout
-                        ColumnSpacing="8"
-                        DesiredColumnWidth="378"
-                        RowSpacing="8" />
-                </ItemsRepeater.Layout>
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="widgetmodels:DashboardWidgetItem">
-                        <Button
-                            Padding="0"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Stretch"
-                            Background="Transparent"
-                            BorderThickness="0">
-                            <Grid
-                                Padding="16,12"
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource OverlayCornerRadius}"
-                                RowSpacing="12">
-                                <Grid ColumnSpacing="12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Image Width="20">
-                                        <Image.Source>
-                                            <BitmapImage UriSource="{x:Bind IcoPath, Mode=OneTime}" />
-                                        </Image.Source>
-                                    </Image>
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        FontWeight="SemiBold"
-                                        Text="{x:Bind Name, Mode=OneTime}"
-                                        TextTrimming="CharacterEllipsis" />
-                                    <Button
-                                        Grid.Column="2"
-                                        HorizontalAlignment="Right"
-                                        widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
-                                        Click="AllWidgetsItem_Click"
-                                        Style="{StaticResource FontIconButton}">
-                                        <FontIcon Glyph="&#xE710;" Style="{StaticResource ButtonFontIcon}" />
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                        </Button>
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
-
-            <TextBlock
-                x:Uid="Dashboard_YourWidgets"
-                Margin="0,12,0,6"
-                Style="{StaticResource PageTitleStyle}" />
+            <Grid Margin="0,12,0,6" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    x:Uid="Dashboard_YourWidgets"
+                    Grid.Column="0"
+                    Style="{ThemeResource SubtitleTextBlockStyle}" />
+                <Button
+                    x:Uid="Dashboard_AddWidgetButton"
+                    Grid.Column="1"
+                    Command="{x:Bind ViewModel.AddWidgetCommand}"
+                    Style="{StaticResource DefaultButtonStyle}" />
+            </Grid>
 
             <TextBlock
                 x:Uid="Dashboard_PinnedWidgets"
@@ -100,6 +52,7 @@
                             widgetmodels:WidgetProperties.Editable="{x:Bind Editable, Mode=OneTime}"
                             widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
                             widgetmodels:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.Type="{x:Bind Type, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
@@ -165,6 +118,7 @@
                             widgetmodels:WidgetProperties.Editable="{x:Bind Editable, Mode=OneTime}"
                             widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
                             widgetmodels:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
+                            widgetmodels:WidgetProperties.Type="{x:Bind Type, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"

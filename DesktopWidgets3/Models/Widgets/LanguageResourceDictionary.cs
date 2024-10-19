@@ -6,7 +6,7 @@ namespace DesktopWidgets3.Models.Widgets;
 /// <summary>
 /// Language resource dictionary.
 /// </summary>
-internal class LanguageResourceDictionary : ResourceDictionary
+internal partial class LanguageResourceDictionary : ResourceDictionary
 {
     public LanguageResourceDictionary(Dictionary<string, string> dictionary)
     {

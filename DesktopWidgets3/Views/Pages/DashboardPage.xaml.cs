@@ -14,6 +14,7 @@ public sealed partial class DashboardPage : Page
     private readonly MenuFlyout RightClickMenu;
 
     private string _widgetId = string.Empty;
+    private string _widgetType = string.Empty;
     private int _indexTag = -1;
 
     public DashboardPage()
@@ -22,19 +23,6 @@ public sealed partial class DashboardPage : Page
         RightClickMenu = GetRightClickMenu();
         InitializeComponent();
     }
-
-    #region All Widgets
-
-    private async void AllWidgetsItem_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is FrameworkElement element)
-        {
-            var widgetId = WidgetProperties.GetId(element);
-            var indexTag = await _widgetManagerService.AddWidgetAsync(widgetId, ViewModel.RefreshAddedWidget, false);
-        }
-    }
-
-    #endregion
 
     #region Widget Items
 
@@ -71,8 +59,8 @@ public sealed partial class DashboardPage : Page
         {
             if (await DialogFactory.ShowDeleteWidgetDialogAsync(App.MainWindow) == WidgetDialogResult.Left)
             {
-                ViewModel.RefreshUnpinnedWidget(_widgetId, _indexTag);
-                await _widgetManagerService.DeleteWidgetAsync(_widgetId, _indexTag, false);
+                ViewModel.RefreshUnpinnedWidget(_widgetId, _widgetType, _indexTag);
+                await _widgetManagerService.DeleteWidgetAsync(_widgetId, _widgetType, _indexTag, false);
             }
             _indexTag = -1;
         }
@@ -93,10 +81,11 @@ public sealed partial class DashboardPage : Page
                 return;
             }
             _widgetId = WidgetProperties.GetId(element);
+            _widgetType = WidgetProperties.GetType(element);
             _indexTag = WidgetProperties.GetIndexTag(element);
             if (_indexTag != -1)
             {
-                _widgetManagerService.NavigateToWidgetSettingPage(_widgetId, _indexTag);
+                _widgetManagerService.NavigateToWidgetSettingPage(_widgetId, _widgetType, _indexTag);
                 _indexTag = -1;
             }
         }

@@ -4,9 +4,14 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Core.Widgets.Models;
 
-public class BaseWidgetItem
+public class BaseWidgetGroupItem
 {
     public required string Id { get; set; }
+}
+
+public class BaseWidgetItem : BaseWidgetGroupItem
+{
+    public required string Type { get; set; }
 
     public required int IndexTag { get; set; }
 
@@ -46,6 +51,15 @@ public class JsonWidgetItem : BaseWidgetItem
     public JToken? SettingsJToken { get; set; }
 }
 
+public class DashboardWidgetGroupItem : BaseWidgetGroupItem
+{
+    public required string Name { get; set; }
+
+    public required string IcoPath { get; set; }
+
+    public required List<string> Types { get; set; }
+}
+
 public class DashboardWidgetItem : BaseWidgetItem
 {
     public required string Name { get; set; }
@@ -77,10 +91,8 @@ public class DashboardWidgetItem : BaseWidgetItem
     public Action<DashboardWidgetItem>? PinnedChangedCallback { get; set; }
 }
 
-public class BaseWidgetStoreItem()
+public class BaseWidgetStoreItem : BaseWidgetGroupItem
 {
-    public required string Id { get; set; }
-
     public required string Version { get; set; }
 }
 

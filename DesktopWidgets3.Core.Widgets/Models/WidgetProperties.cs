@@ -32,6 +32,20 @@ public class WidgetProperties
         obj.SetValue(IdProperty, value);
     }
 
+    // Type
+    public static readonly DependencyProperty TypeProperty =
+        DependencyProperty.RegisterAttached("Type", typeof(string), typeof(WidgetProperties), new PropertyMetadata(string.Empty));
+
+    public static string GetType(DependencyObject obj)
+    {
+        return (string)obj.GetValue(TypeProperty);
+    }
+
+    public static void SetType(DependencyObject obj, string value)
+    {
+        obj.SetValue(TypeProperty, value);
+    }
+
     // Index Tag
     public static readonly DependencyProperty IndexTagProperty =
         DependencyProperty.RegisterAttached("IndexTag", typeof(int), typeof(WidgetProperties), new PropertyMetadata(-1));
