@@ -62,15 +62,19 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
         if (item.Pinned)
         {
             await _widgetManagerService.PinWidgetAsync(item.Id, item.Type, item.IndexTag);
-            yourWidgets.First(x => x.Id == item.Id & x.Type == item.Type & x.IndexTag == item.IndexTag).Pinned = true;
         }
         else
         {
             await _widgetManagerService.UnpinWidgetAsync(item.Id, item.Type, item.IndexTag, false);
-            yourWidgets.First(x => x.Id == item.Id & x.Type == item.Type & x.IndexTag == item.IndexTag).Pinned = false;
         }
 
-        RefreshYourWidgets();
+        var index = yourWidgets.FindIndex(x => x.Id == item.Id & x.Type == item.Type & x.IndexTag == item.IndexTag);
+        if (index != -1)
+        {
+            yourWidgets[index].Pinned = item.Pinned;
+
+            RefreshYourWidgets();
+        }
     }
 
     #endregion
@@ -91,9 +95,13 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
 
     internal void RefreshUnpinnedWidget(string widgetId, string widgetType, int indexTag)
     {
-        yourWidgets.Remove(yourWidgets.First(x => x.Id == widgetId & x.Type == widgetType & x.IndexTag == indexTag));
+        var index = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.IndexTag == indexTag);
+        if (index != -1)
+        {
+            yourWidgets.RemoveAt(index);
 
-        RefreshYourWidgets();
+            RefreshYourWidgets();
+        }
     }
 
     private void RefreshYourWidgets()

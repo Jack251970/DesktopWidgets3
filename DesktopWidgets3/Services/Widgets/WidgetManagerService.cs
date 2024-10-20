@@ -264,6 +264,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
             // set widget properties
             WidgetProperties.SetId(frameworkElement, widgetId);
+            WidgetProperties.SetType(frameworkElement, widgetType);
             WidgetProperties.SetIndexTag(frameworkElement, indexTag);
 
             // initialize widget settings
@@ -717,7 +718,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await window.SetEditMode(false);
 
             // read original position and size
-            var originalWidget = _originalWidgetList.First(x => x.Id == window.Id & x.Type == window.Type & x.IndexTag == window.IndexTag);
+            var originalWidget = _originalWidgetList.FirstOrDefault(x => x.Id == window.Id & x.Type == window.Type & x.IndexTag == window.IndexTag);
 
             // restore position and size
             if (originalWidget != null)

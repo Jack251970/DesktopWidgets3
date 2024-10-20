@@ -47,6 +47,7 @@ public sealed partial class DashboardPage : Page
         if (sender is FrameworkElement element)
         {
             _widgetId = WidgetProperties.GetId(element);
+            _widgetType = WidgetProperties.GetType(element);
             _indexTag = WidgetProperties.GetIndexTag(element);
             RightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
