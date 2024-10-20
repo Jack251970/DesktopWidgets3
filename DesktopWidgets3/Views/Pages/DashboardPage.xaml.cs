@@ -44,11 +44,11 @@ public sealed partial class DashboardPage : Page
 
     private void WidgetItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
-        if (sender is FrameworkElement element)
+        if (sender is FrameworkElement element && element.Tag is DashboardWidgetItem item)
         {
-            _widgetId = WidgetProperties.GetId(element);
-            _widgetType = WidgetProperties.GetType(element);
-            _indexTag = WidgetProperties.GetIndexTag(element);
+            _widgetId = item.Id;
+            _widgetType = item.Type;
+            _indexTag = item.IndexTag;
             RightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
         }
@@ -73,17 +73,18 @@ public sealed partial class DashboardPage : Page
 
     private void WidgetItem_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement element)
+        if (sender is FrameworkElement element && element.Tag is DashboardWidgetItem item)
         {
-            var isEditable = WidgetProperties.GetEditable(element);
+            var isEditable = item.Editable;
             if (!isEditable)
             {
                 _indexTag = -1;
                 return;
             }
-            _widgetId = WidgetProperties.GetId(element);
-            _widgetType = WidgetProperties.GetType(element);
-            _indexTag = WidgetProperties.GetIndexTag(element);
+
+            _widgetId = item.Id;
+            _widgetType = item.Type;
+            _indexTag = item.IndexTag;
             if (_indexTag != -1)
             {
                 _widgetManagerService.NavigateToWidgetSettingPage(_widgetId, _widgetType, _indexTag);

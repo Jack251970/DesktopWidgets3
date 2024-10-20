@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages"
-    xmlns:widgetmodels="using:DesktopWidgets3.Core.Widgets.Models"
+    xmlns:widgetmodels="using:DesktopWidgets3.Core.Widgets.Models.WidgetItems"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="Shell_WidgetStore.Content"
     d:DataContext="{d:DesignInstance Type=viewmodels:WidgetStoreViewModel}"
     NavigationCacheMode="Required"
@@ -33,10 +33,10 @@
                             Padding="0"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
-                            RightTapped="AvailableWidgetStoreItem_RightTapped">
+                            RightTapped="AvailableWidgetStoreItem_RightTapped"
+                            Tag="{x:Bind}">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -114,10 +114,10 @@
                             Padding="0"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
-                            RightTapped="InstalledWidgetStoreItem_RightTapped">
+                            RightTapped="InstalledWidgetStoreItem_RightTapped"
+                            Tag="{x:Bind}">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"

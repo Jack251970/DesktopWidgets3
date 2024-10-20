@@ -1,8 +1,28 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Windows.Graphics;
 
-namespace DesktopWidgets3.Core.Widgets.Models;
+namespace DesktopWidgets3.Core.Widgets.Models.WidgetItems;
+
+[JsonConverter(typeof(JsonWidgetItemConverter))]
+public class JsonWidgetItem : BaseWidgetItem
+{
+    public required string Name { get; set; }
+
+    public required PointInt32 Position { get; set; }
+
+    public required RectSize Size { get; set; }
+
+    public required DisplayMonitor DisplayMonitor { get; set; }
+
+    public new required BaseWidgetSettings Settings
+    {
+        get => base.Settings;
+        set => base.Settings = value;
+    }
+
+    public JToken? SettingsJToken { get; set; }
+}
 
 public class JsonWidgetItemConverter : JsonConverter
 {

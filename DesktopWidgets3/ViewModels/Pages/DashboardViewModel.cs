@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DesktopWidgets3.Widget;
 using System.Collections.ObjectModel;
 
 namespace DesktopWidgets3.ViewModels.Pages;

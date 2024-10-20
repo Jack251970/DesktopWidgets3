@@ -58,9 +58,9 @@ public sealed partial class WidgetStorePage : Page
 
     private void AvailableWidgetStoreItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
-        if (sender is FrameworkElement element)
+        if (sender is FrameworkElement element && element.Tag is WidgetStoreItem item)
         {
-            _widgetId = WidgetProperties.GetId(element);
+            _widgetId = item.Id;
             InstallRightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
         }
@@ -68,9 +68,9 @@ public sealed partial class WidgetStorePage : Page
 
     private void InstalledWidgetStoreItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
-        if (sender is FrameworkElement element)
+        if (sender is FrameworkElement element && element.Tag is WidgetStoreItem item)
         {
-            _widgetId = WidgetProperties.GetId(element);
+            _widgetId = item.Id;
             UninstallRightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
         }

@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages"
-    xmlns:widgetmodels="using:DesktopWidgets3.Core.Widgets.Models"
+    xmlns:widgetmodels="using:DesktopWidgets3.Core.Widgets.Models.WidgetItems"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="Shell_Dashboard.Content"
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
     NavigationCacheMode="Required"
@@ -49,14 +49,11 @@
                             Padding="0"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            widgetmodels:WidgetProperties.Editable="{x:Bind Editable, Mode=OneTime}"
-                            widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
-                            widgetmodels:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
-                            widgetmodels:WidgetProperties.Type="{x:Bind Type, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
-                            RightTapped="WidgetItem_RightTapped">
+                            RightTapped="WidgetItem_RightTapped"
+                            Tag="{x:Bind}">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -115,14 +112,11 @@
                             Padding="0"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            widgetmodels:WidgetProperties.Editable="{x:Bind Editable, Mode=OneTime}"
-                            widgetmodels:WidgetProperties.Id="{x:Bind Id, Mode=OneTime}"
-                            widgetmodels:WidgetProperties.IndexTag="{x:Bind IndexTag, Mode=OneTime}"
-                            widgetmodels:WidgetProperties.Type="{x:Bind Type, Mode=OneTime}"
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
-                            RightTapped="WidgetItem_RightTapped">
+                            RightTapped="WidgetItem_RightTapped"
+                            Tag="{x:Bind}">
                             <Grid
                                 Padding="16,12"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
