@@ -500,7 +500,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
 
     #endregion
 
-    #region Icon & Screenshots
+    #region Icon & Screenshot
 
     public string GetWidgetIconPath(string widgetId, string widgetType, ElementTheme? actualTheme = null)
     {
@@ -513,12 +513,12 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         return string.Empty;
     }
 
-    public string GetWidgetScreenshotsPath(string widgetId, string widgetType, ElementTheme? actualTheme = null)
+    public string GetWidgetScreenshotPath(string widgetId, string widgetType, ElementTheme? actualTheme = null)
     {
         (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
         if (installedIndex != -1)
         {
-            return GetWidgetScreenshotsPath(allIndex, installedIndex, widgetIndex, actualTheme);
+            return GetWidgetScreenshotPath(allIndex, installedIndex, widgetIndex, actualTheme);
         }
 
         return string.Empty;
@@ -557,33 +557,33 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         return Constant.UnknownWidgetIcoPath;
     }
 
-    private string GetWidgetScreenshotsPath(int? allIndex, int? installedIndex, int? widgetIndex, ElementTheme? actualTheme = null)
+    private string GetWidgetScreenshotPath(int? allIndex, int? installedIndex, int? widgetIndex, ElementTheme? actualTheme = null)
     {
         actualTheme ??= _themeSelectorService.GetActualTheme();
 
         if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetIndex != null)
         {
             var widget = InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetIndex!.Value];
-            if (actualTheme == ElementTheme.Dark && !string.IsNullOrEmpty(widget.ScreenshotsPathDark))
+            if (actualTheme == ElementTheme.Dark && !string.IsNullOrEmpty(widget.ScreenshotPathDark))
             {
-                return widget.ScreenshotsPathDark;
+                return widget.ScreenshotPathDark;
             }
             else
             {
-                return widget.ScreenshotsPath;
+                return widget.ScreenshotPath;
             }
         }
 
         if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetIndex != null)
         {
             var widget = AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetIndex!.Value];
-            if (actualTheme == ElementTheme.Dark && !string.IsNullOrEmpty(widget.ScreenshotsPathDark))
+            if (actualTheme == ElementTheme.Dark && !string.IsNullOrEmpty(widget.ScreenshotPathDark))
             {
-                return widget.ScreenshotsPathDark;
+                return widget.ScreenshotPathDark;
             }
             else
             {
-                return widget.ScreenshotsPath;
+                return widget.ScreenshotPath;
             }
         }
 
@@ -1030,7 +1030,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         var widgetStoreList = _appSettingsService.GetWidgetStoreList();
         if (metadata == null)
         {
-            // TODO: Install available widget from Github, not supported yet.
+            // TODO(Furture): Install available widget from Github, not supported yet.
         }
         else
         {

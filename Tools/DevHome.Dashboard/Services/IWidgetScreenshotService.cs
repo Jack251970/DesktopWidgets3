@@ -10,7 +10,7 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetScreenshotService
 {
-    // TODO: Check clean all caches.
+    // TODO: Check clean all caches. Introduce functions in DashboardView.xaml.cs to call these functions.
     public void RemoveScreenshotsFromDesktopWidgets3Cache(string widgetId, string widgetType);
 
     public Task<Brush> GetBrushForDesktopWidgets3WidgetScreenshotAsync(DesktopWidgets3WidgetDefinition widgetDefinition, ElementTheme actualTheme);

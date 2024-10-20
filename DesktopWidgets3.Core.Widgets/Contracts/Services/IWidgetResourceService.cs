@@ -20,7 +20,7 @@ public interface IWidgetResourceService
 
     string GetWidgetIconPath(string widgetId, string widgetType, ElementTheme? actualTheme = null);
 
-    string GetWidgetScreenshotsPath(string widgetId, string widgetType, ElementTheme? actualTheme = null);
+    string GetWidgetScreenshotPath(string widgetId, string widgetType, ElementTheme? actualTheme = null);
 
     RectSize GetWidgetDefaultSize(string widgetId, string widgetType);
 

@@ -59,12 +59,12 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         // If the screenshot wasn't already in the cache, get it from the widget resources service and add it to the cache before returning.
         if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await DesktopWidgets3WidgetScreenshotToBitmapImageAsync(_widgetResourceService.GetWidgetScreenshotsPath(widgetId, widgetType, ElementTheme.Dark));
+            bitmapImage = await DesktopWidgets3WidgetScreenshotToBitmapImageAsync(_widgetResourceService.GetWidgetScreenshotPath(widgetId, widgetType, ElementTheme.Dark));
             _desktopWidgets3WidgetDarkScreenshotCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
         else
         {
-            bitmapImage = await DesktopWidgets3WidgetScreenshotToBitmapImageAsync(_widgetResourceService.GetWidgetScreenshotsPath(widgetId, widgetType, ElementTheme.Light));
+            bitmapImage = await DesktopWidgets3WidgetScreenshotToBitmapImageAsync(_widgetResourceService.GetWidgetScreenshotPath(widgetId, widgetType, ElementTheme.Light));
             _desktopWidgets3WidgetLightScreenshotCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
 

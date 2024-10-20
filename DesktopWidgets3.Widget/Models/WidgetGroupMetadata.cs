@@ -87,9 +87,9 @@ public class WidgetMetaData
 
     public float? MaxWidth { get; set; }
 
-    public string ScreenshotsPath { get; set; } = string.Empty;
+    public string ScreenshotPath { get; set; } = string.Empty;
 
-    public string ScreenshotsPathDark { get; set; } = string.Empty;
+    public string ScreenshotPathDark { get; set; } = string.Empty;
 
     public bool AllowMultiple { get; set; } = false;
 
@@ -110,13 +110,13 @@ public class WidgetMetaData
             {
                 IcoPathDark = Path.Combine(value, IcoPathDark);
             }
-            if (!string.IsNullOrEmpty(ScreenshotsPath))
+            if (!string.IsNullOrEmpty(ScreenshotPath))
             {
-                ScreenshotsPath = Path.Combine(value, ScreenshotsPath);
+                ScreenshotPath = Path.Combine(value, ScreenshotPath);
             }
-            if (!string.IsNullOrEmpty(ScreenshotsPathDark))
+            if (!string.IsNullOrEmpty(ScreenshotPathDark))
             {
-                ScreenshotsPathDark = Path.Combine(value, ScreenshotsPathDark);
+                ScreenshotPathDark = Path.Combine(value, ScreenshotPathDark);
             }
         }
     }
