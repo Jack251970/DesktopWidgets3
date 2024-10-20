@@ -15,7 +15,7 @@ public sealed partial class DashboardPage : Page
 
     private string _widgetId = string.Empty;
     private string _widgetType = string.Empty;
-    private int _indexTag = -1;
+    private int _widgetIndex = -1;
 
     public DashboardPage()
     {
@@ -48,7 +48,7 @@ public sealed partial class DashboardPage : Page
         {
             _widgetId = item.Id;
             _widgetType = item.Type;
-            _indexTag = item.Index;
+            _widgetIndex = item.Index;
             RightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
         }
@@ -56,14 +56,14 @@ public sealed partial class DashboardPage : Page
 
     private async void DeleteWidget()
     {
-        if (_indexTag != -1)
+        if (_widgetIndex != -1)
         {
             if (await DialogFactory.ShowDeleteWidgetDialogAsync(App.MainWindow) == WidgetDialogResult.Left)
             {
-                ViewModel.RefreshUnpinnedWidget(_widgetId, _widgetType, _indexTag);
-                await _widgetManagerService.DeleteWidgetAsync(_widgetId, _widgetType, _indexTag, false);
+                ViewModel.RefreshUnpinnedWidget(_widgetId, _widgetType, _widgetIndex);
+                await _widgetManagerService.DeleteWidgetAsync(_widgetId, _widgetType, _widgetIndex, false);
             }
-            _indexTag = -1;
+            _widgetIndex = -1;
         }
     }
 
@@ -78,17 +78,17 @@ public sealed partial class DashboardPage : Page
             var isEditable = item.Editable;
             if (!isEditable)
             {
-                _indexTag = -1;
+                _widgetIndex = -1;
                 return;
             }
 
             _widgetId = item.Id;
             _widgetType = item.Type;
-            _indexTag = item.Index;
-            if (_indexTag != -1)
+            _widgetIndex = item.Index;
+            if (_widgetIndex != -1)
             {
-                _widgetManagerService.NavigateToWidgetSettingPage(_widgetId, _widgetType, _indexTag);
-                _indexTag = -1;
+                _widgetManagerService.NavigateToWidgetSettingPage(_widgetId, _widgetType, _widgetIndex);
+                _widgetIndex = -1;
             }
         }
     }

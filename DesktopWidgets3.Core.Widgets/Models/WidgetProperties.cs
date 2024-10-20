@@ -32,17 +32,17 @@ public class WidgetProperties
         obj.SetValue(TypeProperty, value);
     }
 
-    // Index Tag
-    public static readonly DependencyProperty IndexTagProperty =
-        DependencyProperty.RegisterAttached("IndexTag", typeof(int), typeof(WidgetProperties), new PropertyMetadata(-1));
+    // Index
+    public static readonly DependencyProperty IndexProperty =
+        DependencyProperty.RegisterAttached("Index", typeof(int), typeof(WidgetProperties), new PropertyMetadata(-1));
 
-    public static int GetIndexTag(DependencyObject obj)
+    public static int GetIndex(DependencyObject obj)
     {
-        return (int)obj.GetValue(IndexTagProperty);
+        return (int)obj.GetValue(IndexProperty);
     }
 
-    public static void SetIndexTag(DependencyObject obj, int value)
+    public static void SetIndex(DependencyObject obj, int value)
     {
-        obj.SetValue(IndexTagProperty, value);
+        obj.SetValue(IndexProperty, value);
     }
 }

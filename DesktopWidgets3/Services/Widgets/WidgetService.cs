@@ -10,15 +10,15 @@ internal class WidgetService : IWidgetService
     {
         var widgetId = WidgetProperties.GetId(element);
         var widgetType = WidgetProperties.GetType(element);
-        var indexTag = WidgetProperties.GetIndexTag(element);
-        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, indexTag, settings, updateWidget, updateWidgetSetting);
+        var widgetIndex = WidgetProperties.GetIndex(element);
+        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, widgetIndex, settings, updateWidget, updateWidgetSetting);
     }
 
     public async Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
     {
         var widgetId = viewModel.Id;
         var widgetType = viewModel.Type;
-        var indexTag = viewModel.IndexTag;
-        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, indexTag, settings, updateWidget, updateWidgetSetting);
+        var widgetIndex = viewModel.Index;
+        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, widgetIndex, settings, updateWidget, updateWidgetSetting);
     }
 }

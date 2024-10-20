@@ -231,7 +231,7 @@ public sealed partial class WidgetWindow : WindowEx
         { 
             WidgetId = Id,
             WidgetType = Type,
-            IndexTag = Index,
+            WidgetIndex = Index,
             WidgetPosition = WidgetPosition,
             WidgetSettings = WidgetSettings
         });
@@ -352,7 +352,7 @@ public sealed partial class WidgetWindow : WindowEx
 
         public required string WidgetType { get; set; }
 
-        public required int IndexTag { get; set; }
+        public required int WidgetIndex { get; set; }
 
         public required PointInt32 WidgetPosition { get; set; }
 

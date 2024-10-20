@@ -40,7 +40,7 @@ public class JsonWidgetItemConverter : JsonConverter
         var widgetName = jsonObject["Name"]?.Value<string>() ?? string.Empty;
         var widgetId = jsonObject["Id"]?.Value<string>() ?? StringUtils.GetRandomWidgetId();
         var widgetType = jsonObject["Type"]?.Value<string>() ?? string.Empty;
-        var indexTag = jsonObject["IndexTag"]?.Value<int>() ?? new Random().Next(100, 999);
+        var widgetIndex = jsonObject["Index"]?.Value<int>() ?? new Random().Next(100, 999);
         var pinned = jsonObject["Pinned"]?.Value<bool>() ?? false;
         var position = jsonObject["Position"]?.ToObject<PointInt32>(serializer) ?? new PointInt32(-1, -1);
         var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? new RectSize(318, 200);
@@ -54,7 +54,7 @@ public class JsonWidgetItemConverter : JsonConverter
             Name = widgetName,
             Id = widgetId,
             Type = widgetType,
-            Index = indexTag,
+            Index = widgetIndex,
             Pinned = pinned,
             Position = position,
             Size = size,
@@ -73,7 +73,7 @@ public class JsonWidgetItemConverter : JsonConverter
             new JProperty("Name", widgetItem.Name),
             new JProperty("Id", widgetId),
             new JProperty("Type", widgetItem.Type),
-            new JProperty("IndexTag", widgetItem.Index),
+            new JProperty("Index", widgetItem.Index),
             new JProperty("Pinned", widgetItem.Pinned),
             new JProperty("Position", JToken.FromObject(widgetItem.Position, serializer)),
             new JProperty("Size", JToken.FromObject(widgetItem.Size, serializer)),

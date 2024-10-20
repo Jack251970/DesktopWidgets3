@@ -80,24 +80,24 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
 
     #region Refresh
 
-    internal void RefreshAddedWidget(string widgetId, string widgetType, int indexTag)
+    internal void RefreshUnpinnedWidget(string widgetId, string widgetType, int widgetIndex)
     {
-        var widgetItem = _widgetResourceService.GetDashboardWidgetItem(widgetId, widgetType, indexTag);
-        if (widgetItem != null)
+        var index = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == widgetIndex);
+        if (index != -1)
         {
-            widgetItem.PinnedChangedCallback = OnPinnedChanged;
-            yourWidgets.Add(widgetItem);
+            yourWidgets.RemoveAt(index);
 
             RefreshYourWidgets();
         }
     }
 
-    internal void RefreshUnpinnedWidget(string widgetId, string widgetType, int indexTag)
+    private void RefreshAddedWidget(string widgetId, string widgetType, int widgetIndex)
     {
-        var index = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
-        if (index != -1)
+        var widgetItem = _widgetResourceService.GetDashboardWidgetItem(widgetId, widgetType, widgetIndex);
+        if (widgetItem != null)
         {
-            yourWidgets.RemoveAt(index);
+            widgetItem.PinnedChangedCallback = OnPinnedChanged;
+            yourWidgets.Add(widgetItem);
 
             RefreshYourWidgets();
         }
@@ -140,11 +140,11 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
         {
             var widgetId = navigationParameter.Id;
             var widgetType = navigationParameter.Type;
-            var indexTag = navigationParameter.Index;
+            var widgetIndex = navigationParameter.Index;
             switch (navigationParameter.Event)
             {
-                case DashboardViewModelNavigationParameter.UpdateEvent.Add:
-                    var widgetItem = _widgetResourceService.GetDashboardWidgetItem(widgetId, widgetType, indexTag);
+                case DashboardViewModelNavigationParameter.UpdateEvent.Pin:
+                    var widgetItem = _widgetResourceService.GetDashboardWidgetItem(widgetId, widgetType, widgetIndex);
                     if (widgetItem != null)
                     {
                         widgetItem.PinnedChangedCallback = OnPinnedChanged;
@@ -154,20 +154,20 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
                     }
                     break;
                 case DashboardViewModelNavigationParameter.UpdateEvent.Unpin:
-                    var widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
-                    if (widgetIndex != -1)
+                    var index = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == widgetIndex);
+                    if (index != -1)
                     {
-                        yourWidgets[widgetIndex].Pinned = false;
-                        yourWidgets[widgetIndex].PinnedChangedCallback = OnPinnedChanged;
+                        yourWidgets[index].Pinned = false;
+                        yourWidgets[index].PinnedChangedCallback = OnPinnedChanged;
 
                         RefreshYourWidgets();
                     }
                     break;
                 case DashboardViewModelNavigationParameter.UpdateEvent.Delete:
-                    widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
-                    if (widgetIndex != -1)
+                    var index1 = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == widgetIndex);
+                    if (index1 != -1)
                     {
-                        yourWidgets.RemoveAt(widgetIndex);
+                        yourWidgets.RemoveAt(index1);
 
                         RefreshYourWidgets();
                     }

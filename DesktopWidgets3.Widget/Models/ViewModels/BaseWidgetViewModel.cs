@@ -9,7 +9,7 @@ public abstract class BaseWidgetViewModel : ObservableRecipient
 
     public string Type { get; private set; } = string.Empty;
 
-    public int IndexTag { get; private set; } = 0;
+    public int Index { get; private set; } = 0;
 
     protected DispatcherQueue DispatcherQueue { get; private set; } = null!;
 
@@ -36,7 +36,7 @@ public abstract class BaseWidgetViewModel : ObservableRecipient
         {
             Id = navigationParameter.Id;
             Type = navigationParameter.Type;
-            IndexTag = navigationParameter.Index;
+            Index = navigationParameter.Index;
             DispatcherQueue = navigationParameter.DispatcherQueue;
             LoadSettings(navigationParameter.Settings, true);
             _isInitialized = true;

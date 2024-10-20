@@ -10,19 +10,19 @@ public interface IWidgetManagerService
 
     Task<int> AddWidgetAsync(string widgetId, string widgetType, Action<string, string, int> action, bool updateDashboard);
 
-    Task PinWidgetAsync(string widgetId, string widgetType, int indexTag);
+    Task PinWidgetAsync(string widgetId, string widgetType, int widgetIndex);
 
-    Task UnpinWidgetAsync(string widgetId, string widgetType, int indexTag, bool refresh);
+    Task UnpinWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh);
 
-    Task DeleteWidgetAsync(string widgetId, string widgetType, int indexTag, bool refresh);
+    Task DeleteWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh);
 
     BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow);
 
-    void NavigateToWidgetSettingPage(string widgetId, string widgetType, int indexTag);
+    void NavigateToWidgetSettingPage(string widgetId, string widgetType, int widgetIndex);
 
-    BaseWidgetSettings? GetWidgetSettings(string widgetId, string widgetType, int indexTag);
+    BaseWidgetSettings? GetWidgetSettings(string widgetId, string widgetType, int widgetIndex);
 
-    Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int indexTag, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
+    Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
 
     void EnterEditMode();
 

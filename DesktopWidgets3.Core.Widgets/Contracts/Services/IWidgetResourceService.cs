@@ -34,7 +34,7 @@ public interface IWidgetResourceService
 
     List<DashboardWidgetItem> GetYourDashboardWidgetItems();
 
-    DashboardWidgetItem? GetDashboardWidgetItem(string widgetId, string widgetType, int indexTag);
+    DashboardWidgetItem? GetDashboardWidgetItem(string widgetId, string widgetType, int widgetIndex);
 
     bool IsWidgetGroupUnknown(string widgetId, string widgetType);
 
