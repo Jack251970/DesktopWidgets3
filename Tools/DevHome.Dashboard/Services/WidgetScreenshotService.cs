@@ -35,8 +35,10 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         _desktopWidgets3WidgetDarkScreenshotCache.Remove((widgetId, widgetType), out _);
     }
 
-    private async Task<BitmapImage> GetScreenshotFromDesktopWidgets3CacheAsync(string widgetId, string widgetType, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetScreenshotFromDesktopWidgets3CacheAsync(DesktopWidgets3WidgetDefinition widgetDefination, ElementTheme actualTheme)
     {
+        var widgetId = widgetDefination.WidgetId;
+        var widgetType = widgetDefination.WidgetType;
         BitmapImage bitmapImage;
 
         // First, check the cache to see if the screenshot is already there.
@@ -69,20 +71,20 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForDesktopWidgets3WidgetScreenshotAsync(string widgetId, string widgetType, ElementTheme actualTheme)
+    public async Task<Brush> GetBrushForDesktopWidgets3WidgetScreenshotAsync(DesktopWidgets3WidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetScreenshotFromDesktopWidgets3CacheAsync(widgetId, widgetType, actualTheme);
+            image = await GetScreenshotFromDesktopWidgets3CacheAsync(widgetDefinition, actualTheme);
         }
         catch (System.IO.FileNotFoundException fileNotFoundEx)
         {
-            LogExtensions.LogWarning(ClassName, fileNotFoundEx, $"Widget screenshot missing for widget {widgetId} - {widgetType}");
+            LogExtensions.LogWarning(ClassName, fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetDefinition.DisplayTitle}");
         }
         catch (Exception ex)
         {
-            LogExtensions.LogError(ClassName, ex, $"Failed to get widget screenshot for widget {widgetId} - {widgetType}");
+            LogExtensions.LogError(ClassName, ex, $"Failed to get widget screenshot for widget definition {widgetDefinition.DisplayTitle}");
         }
 
         var brush = new ImageBrush

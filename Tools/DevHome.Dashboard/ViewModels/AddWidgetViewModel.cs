@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Services;
-using DevHome.Dashboard.Views;
 using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.Dashboard.ViewModels;
@@ -30,24 +29,25 @@ public partial class AddWidgetViewModel(
     [ObservableProperty]
     private bool _pinButtonVisibility;
 
-    private AddedWidget _selectedWidget;
+    private object _selectedWidgetDefinition;
 
-    public async Task SetWidgetDefinition(AddedWidget selectedWidget)
+    public async Task SetWidgetDefinition(ComSafeWidgetDefinition selectedWidgetDefinition)
     {
-        _selectedWidget = selectedWidget;
-        var theme = _themeSelectorService.GetActualTheme();
-        if (selectedWidget.WidgetDefination is ComSafeWidgetDefinition selectedWidgetDefinition)
-        {
-            WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
-            WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinitionDisplayName;
-            WidgetScreenshot = await _widgetScreenshotService.GetBrushForMicrosoftWidgetScreenshotAsync(selectedWidgetDefinition, theme);
-        }
-        else
-        {
-            WidgetDisplayTitle = selectedWidget.WidgetName;
-            WidgetProviderDisplayTitle = selectedWidget.WidgetGroupName;
-            WidgetScreenshot = await _widgetScreenshotService.GetBrushForDesktopWidgets3WidgetScreenshotAsync(selectedWidget.WidgetId, selectedWidget.WidgetType, theme);
-        }
+        _selectedWidgetDefinition = selectedWidgetDefinition;
+
+        WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
+        WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinitionDisplayName;
+        WidgetScreenshot = await _widgetScreenshotService.GetBrushForMicrosoftWidgetScreenshotAsync(selectedWidgetDefinition, _themeSelectorService.GetActualTheme());
+        PinButtonVisibility = true;
+    }
+
+    public async Task SetWidgetDefinition(DesktopWidgets3WidgetDefinition selectedWidgetDefinition)
+    {
+        _selectedWidgetDefinition = selectedWidgetDefinition;
+
+        WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
+        WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinitionDisplayName;
+        WidgetScreenshot = await _widgetScreenshotService.GetBrushForDesktopWidgets3WidgetScreenshotAsync(selectedWidgetDefinition, _themeSelectorService.GetActualTheme());
         PinButtonVisibility = true;
     }
 
@@ -57,23 +57,23 @@ public partial class AddWidgetViewModel(
         WidgetProviderDisplayTitle = string.Empty;
         WidgetScreenshot = null;
         PinButtonVisibility = false;
-        _selectedWidget = null;
+        _selectedWidgetDefinition = null;
     }
 
     [RelayCommand]
     private async Task UpdateThemeAsync()
     {
-        if (_selectedWidget != null)
+        if (_selectedWidgetDefinition != null)
         {
             // Update the preview image for the selected widget.
             var theme = _themeSelectorService.GetActualTheme();
-            if (_selectedWidget.WidgetDefination is ComSafeWidgetDefinition selectedWidgetDefinition)
+            if (_selectedWidgetDefinition as ComSafeWidgetDefinition is ComSafeWidgetDefinition selectedWidgetDefinition)
             {
                 WidgetScreenshot = await _widgetScreenshotService.GetBrushForMicrosoftWidgetScreenshotAsync(selectedWidgetDefinition, theme);
             }
-            else
+            else if (_selectedWidgetDefinition as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition selectedWidgetDefinition1)
             {
-                WidgetScreenshot = await _widgetScreenshotService.GetBrushForDesktopWidgets3WidgetScreenshotAsync(_selectedWidget.WidgetId, _selectedWidget.WidgetType, theme);
+                WidgetScreenshot = await _widgetScreenshotService.GetBrushForDesktopWidgets3WidgetScreenshotAsync(selectedWidgetDefinition1, theme);
             }
         }
     }

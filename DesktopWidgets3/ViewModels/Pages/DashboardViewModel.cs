@@ -33,13 +33,13 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
 
         if (newWidget != null)
         {
-            if (newWidget.WidgetDefination is ComSafeWidgetDefinition newWidgetDefinition)
+            if (newWidget is DesktopWidgets3WidgetDefinition newWidgetDefinition)
+            {
+                await _widgetManagerService.AddWidgetAsync(newWidgetDefinition.WidgetId, newWidgetDefinition.WidgetType, RefreshAddedWidget, false);
+            }
+            else if (newWidget is ComSafeWidgetDefinition newWidgetDefinition1)
             {
                 // TODO
-            }
-            else
-            {
-                await _widgetManagerService.AddWidgetAsync(newWidget.WidgetId, newWidget.WidgetType, RefreshAddedWidget, false);
             }
         }
     }
