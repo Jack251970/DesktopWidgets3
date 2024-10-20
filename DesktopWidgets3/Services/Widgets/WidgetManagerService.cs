@@ -59,7 +59,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region public
 
-    public async Task<int> AddWidgetAsync(string widgetId, string widgetType, Action<string, int> action, bool updateDashboard)
+    public async Task<int> AddWidgetAsync(string widgetId, string widgetType, Action<string, string, int> action, bool updateDashboard)
     {
         var widgetList = _appSettingsService.GetWidgetsList();
 
@@ -77,7 +77,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
 
         // invoke action
-        action(widgetId, indexTag);
+        action(widgetId, widgetType, indexTag);
 
         // create widget item
         var widget = new JsonWidgetItem()
@@ -130,7 +130,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         else
         {
             // add widget
-            await AddWidgetAsync(widgetId, widgetType, (id, tag) => { }, false);
+            await AddWidgetAsync(widgetId, widgetType, (id, type, tag) => { }, false);
         }
     }
 

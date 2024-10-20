@@ -8,7 +8,7 @@ public interface IWidgetManagerService
 
     Task CloseAllWidgetsAsync();
 
-    Task<int> AddWidgetAsync(string widgetId, string widgetType, Action<string, int> action, bool updateDashboard);
+    Task<int> AddWidgetAsync(string widgetId, string widgetType, Action<string, string, int> action, bool updateDashboard);
 
     Task PinWidgetAsync(string widgetId, string widgetType, int indexTag);
 

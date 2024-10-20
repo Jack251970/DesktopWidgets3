@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DesktopWidgets3.Widget;
 using System.Collections.ObjectModel;
 
 namespace DesktopWidgets3.ViewModels.Pages;
@@ -28,8 +29,19 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
         };
         await dialog.ShowAsync();
 
-        // TODO
-        //var indexTag = await _widgetManagerService.AddWidgetAsync(widgetId, widgetType, RefreshAddedWidget, false);
+        var newWidget = dialog.AddedWidget;
+
+        if (newWidget != null)
+        {
+            if (newWidget.WidgetDefination is ComSafeWidgetDefinition newWidgetDefinition)
+            {
+                // TODO
+            }
+            else
+            {
+                await _widgetManagerService.AddWidgetAsync(newWidget.WidgetId, newWidget.WidgetType, RefreshAddedWidget, false);
+            }
+        }
     }
 
     #endregion
