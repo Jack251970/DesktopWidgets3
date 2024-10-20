@@ -262,11 +262,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // get widget framework element
             var frameworkElement = _widgetResourceService.GetWidgetContent(widgetId, widgetType);
 
-            // set widget properties
-            WidgetProperties.SetId(frameworkElement, widgetId);
-            WidgetProperties.SetType(frameworkElement, widgetType);
-            WidgetProperties.SetIndexTag(frameworkElement, indexTag);
-
             // initialize widget settings
             BaseWidgetViewModel viewModel = null!;
             if (frameworkElement is IViewModel element)
