@@ -36,7 +36,7 @@ public abstract class BaseWidgetViewModel : ObservableRecipient
         {
             Id = navigationParameter.Id;
             Type = navigationParameter.Type;
-            IndexTag = navigationParameter.IndexTag;
+            IndexTag = navigationParameter.Index;
             DispatcherQueue = navigationParameter.DispatcherQueue;
             LoadSettings(navigationParameter.Settings, true);
             _isInitialized = true;

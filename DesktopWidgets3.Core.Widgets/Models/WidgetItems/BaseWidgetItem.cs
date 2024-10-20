@@ -9,7 +9,7 @@ public class BaseWidgetItem : BaseWidgetGroupItem
 {
     public required string Type { get; set; }
 
-    public required int IndexTag { get; set; }
+    public required int Index { get; set; }
 
     protected bool _pinned;
     public bool Pinned

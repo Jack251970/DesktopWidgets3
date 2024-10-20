@@ -242,9 +242,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         return WidgetList;
     }
 
-    public JsonWidgetItem? GetWidget(string widgetId, string widgetType, int indexTag)
+    public JsonWidgetItem? GetWidget(string widgetId, string widgetType, int widgetIndex)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.Index == widgetIndex);
         if (index != -1)
         {
             return WidgetList[index];
@@ -255,7 +255,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     public async Task AddWidgetAsync(JsonWidgetItem item)
     {
-        var index = WidgetList.FindIndex(x => x.Id == item.Id && x.Type == item.Type && x.IndexTag == item.IndexTag);
+        var index = WidgetList.FindIndex(x => x.Id == item.Id && x.Type == item.Type && x.Index == item.Index);
         if (index == -1)
         {
             WidgetList.Add(item);
@@ -264,9 +264,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task DeleteWidgetAsync(string widgetId, string widgetType, int indexTag)
+    public async Task DeleteWidgetAsync(string widgetId, string widgetType, int widgetIndex)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.Index == widgetIndex);
         if (index != -1)
         {
             WidgetList.RemoveAt(index);
@@ -275,9 +275,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task PinWidgetAsync(string widgetId, string widgetType, int indexTag)
+    public async Task PinWidgetAsync(string widgetId, string widgetType, int widgetIndex)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.Index == widgetIndex);
         if (index != -1 && WidgetList[index].Pinned == false)
         {
             WidgetList[index].Pinned = true;
@@ -286,9 +286,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task UnpinWidgetAsync(string widgetId, string widgetType, int indexTag)
+    public async Task UnpinWidgetAsync(string widgetId, string widgetType, int widgetIndex)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.Index == widgetIndex);
         if (index != -1 && WidgetList[index].Pinned == true)
         {
             WidgetList[index].Pinned = false;
@@ -297,9 +297,9 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         }
     }
 
-    public async Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int indexTag, BaseWidgetSettings settings)
+    public async Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings)
     {
-        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.IndexTag == indexTag);
+        var index = WidgetList.FindIndex(x => x.Id == widgetId && x.Type == widgetType && x.Index == widgetIndex);
         if (index != -1)
         {
             WidgetList[index].Settings = settings;
@@ -312,7 +312,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     {
         foreach (var item in list)
         {
-            var index = WidgetList.FindIndex(x => x.Id == item.Id && x.Type == item.Type && x.IndexTag == item.IndexTag);
+            var index = WidgetList.FindIndex(x => x.Id == item.Id && x.Type == item.Type && x.Index == item.Index);
             if (index != -1)
             {
                 var setting = WidgetList[index].Settings;

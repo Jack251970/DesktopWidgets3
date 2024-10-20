@@ -106,7 +106,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     public string Type { get; private set; } = null!;
 
-    public int IndexTag { get; private set; } = -1;
+    public int Index { get; private set; } = -1;
 
     #endregion
 
@@ -179,7 +179,7 @@ public sealed partial class WidgetWindow : WindowEx
         // set widget item properties
         Id = widgetItem.Id;
         Type = widgetItem.Type;
-        IndexTag = widgetItem.IndexTag;
+        Index = widgetItem.Index;
         WidgetSettings = widgetItem.Settings;
         WidgetSize = widgetItem.Size;
 
@@ -231,7 +231,7 @@ public sealed partial class WidgetWindow : WindowEx
         { 
             WidgetId = Id,
             WidgetType = Type,
-            IndexTag = IndexTag,
+            IndexTag = Index,
             WidgetPosition = WidgetPosition,
             WidgetSettings = WidgetSettings
         });

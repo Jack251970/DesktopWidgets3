@@ -48,7 +48,7 @@ public sealed partial class DashboardPage : Page
         {
             _widgetId = item.Id;
             _widgetType = item.Type;
-            _indexTag = item.IndexTag;
+            _indexTag = item.Index;
             RightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
         }
@@ -84,7 +84,7 @@ public sealed partial class DashboardPage : Page
 
             _widgetId = item.Id;
             _widgetType = item.Type;
-            _indexTag = item.IndexTag;
+            _indexTag = item.Index;
             if (_indexTag != -1)
             {
                 _widgetManagerService.NavigateToWidgetSettingPage(_widgetId, _widgetType, _indexTag);

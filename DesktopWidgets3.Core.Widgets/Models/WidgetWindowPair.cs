@@ -15,7 +15,7 @@ public class WidgetWindowPair
         if (obj is WidgetWindowPair widgetWindowPair)
         {
             return Window.Id == widgetWindowPair.Window.Id
-                && Window.IndexTag == widgetWindowPair.Window.IndexTag;
+                && Window.Index == widgetWindowPair.Window.Index;
         }
         else
         {
@@ -25,11 +25,11 @@ public class WidgetWindowPair
 
     public override int GetHashCode()
     {
-        return Window.Id.GetHashCode() ^ Window.IndexTag.GetHashCode();
+        return Window.Id.GetHashCode() ^ Window.Index.GetHashCode();
     }
 
     public override string ToString()
     {
-        return $"{Window.Id} - {Window.IndexTag}";
+        return $"{Window.Id} - {Window.Index}";
     }
 }

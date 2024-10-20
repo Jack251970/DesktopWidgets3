@@ -903,7 +903,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         {
             var widgetId = widget.Id;
             var widgetType = widget.Type;
-            var indexTag = widget.IndexTag;
+            var indexTag = widget.Index;
 
             (var installed, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
             if (installed && widgetIndex != null)
@@ -912,7 +912,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
                 {
                     Id = widgetId,
                     Type = widgetType,
-                    IndexTag = indexTag,
+                    Index = indexTag,
                     Name = GetWidgetName(allIndex, installedIndex, widgetIndex, widgetType),
                     IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetIndex),
                     Pinned = widget.Pinned,
@@ -931,7 +931,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
                 {
                     Id = widgetId,
                     Type = widgetType,
-                    IndexTag = indexTag,
+                    Index = indexTag,
                     Name = string.Format("Unknown_Widget_Name".GetLocalized(), unknownNotInstalledWidgetList.Count),
                     IcoPath = Constant.UnknownWidgetIcoPath,
                     Pinned = widget.Pinned,
@@ -953,7 +953,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             {
                 Id = widgetId,
                 Type = widgetType,
-                IndexTag = indexTag,
+                Index = indexTag,
                 Name = GetWidgetName(allIndex, installedIndex, widgetIndex, widgetType),
                 IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetIndex),
                 Pinned = true,

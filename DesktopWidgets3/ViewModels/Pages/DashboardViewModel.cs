@@ -60,14 +60,14 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
     {
         if (item.Pinned)
         {
-            await _widgetManagerService.PinWidgetAsync(item.Id, item.Type, item.IndexTag);
+            await _widgetManagerService.PinWidgetAsync(item.Id, item.Type, item.Index);
         }
         else
         {
-            await _widgetManagerService.UnpinWidgetAsync(item.Id, item.Type, item.IndexTag, false);
+            await _widgetManagerService.UnpinWidgetAsync(item.Id, item.Type, item.Index, false);
         }
 
-        var index = yourWidgets.FindIndex(x => x.Id == item.Id & x.Type == item.Type & x.IndexTag == item.IndexTag);
+        var index = yourWidgets.FindIndex(x => x.Id == item.Id & x.Type == item.Type & x.Index == item.Index);
         if (index != -1)
         {
             yourWidgets[index].Pinned = item.Pinned;
@@ -94,7 +94,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
 
     internal void RefreshUnpinnedWidget(string widgetId, string widgetType, int indexTag)
     {
-        var index = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.IndexTag == indexTag);
+        var index = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
         if (index != -1)
         {
             yourWidgets.RemoveAt(index);
@@ -140,7 +140,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
         {
             var widgetId = navigationParameter.Id;
             var widgetType = navigationParameter.Type;
-            var indexTag = navigationParameter.IndexTag;
+            var indexTag = navigationParameter.Index;
             switch (navigationParameter.Event)
             {
                 case DashboardViewModelNavigationParameter.UpdateEvent.Add:
@@ -154,7 +154,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
                     }
                     break;
                 case DashboardViewModelNavigationParameter.UpdateEvent.Unpin:
-                    var widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.IndexTag == indexTag);
+                    var widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
                     if (widgetIndex != -1)
                     {
                         yourWidgets[widgetIndex].Pinned = false;
@@ -164,7 +164,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
                     }
                     break;
                 case DashboardViewModelNavigationParameter.UpdateEvent.Delete:
-                    widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.IndexTag == indexTag);
+                    widgetIndex = yourWidgets.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
                     if (widgetIndex != -1)
                     {
                         yourWidgets.RemoveAt(widgetIndex);

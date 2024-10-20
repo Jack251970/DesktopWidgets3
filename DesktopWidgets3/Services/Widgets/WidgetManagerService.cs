@@ -64,20 +64,20 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var widgetList = _appSettingsService.GetWidgetsList();
 
         // find index tag
-        var indexTags = widgetList.Where(x => x.Id == widgetId & x.Type == widgetType).Select(x => x.IndexTag).ToList();
-        indexTags.Sort();
-        var indexTag = 0;
-        foreach (var tag in indexTags)
+        var indexs = widgetList.Where(x => x.Id == widgetId & x.Type == widgetType).Select(x => x.Index).ToList();
+        indexs.Sort();
+        var index = 0;
+        foreach (var tag in indexs)
         {
-            if (tag != indexTag)
+            if (tag != index)
             {
                 break;
             }
-            indexTag++;
+            index++;
         }
 
         // invoke action
-        action(widgetId, widgetType, indexTag);
+        action(widgetId, widgetType, index);
 
         // create widget item
         var widget = new JsonWidgetItem()
@@ -85,7 +85,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             Name = _widgetResourceService.GetWidgetName(widgetId, widgetType),
             Id = widgetId,
             Type = widgetType,
-            IndexTag = indexTag,
+            Index = index,
             Pinned = true,
             Position = new PointInt32(-10000, -10000),
             Size = _widgetResourceService.GetWidgetDefaultSize(widgetId, widgetType),
@@ -104,14 +104,14 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 Event = DashboardViewModelNavigationParameter.UpdateEvent.Add,
                 Id = widgetId,
                 Type = widgetType,
-                IndexTag = indexTag
+                Index = index
             });
         }
 
         // save widget item
         await _appSettingsService.AddWidgetAsync(widget);
 
-        return indexTag;
+        return index;
     }
 
     public async Task PinWidgetAsync(string widgetId, string widgetType, int indexTag)
@@ -147,7 +147,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 Event = DashboardViewModelNavigationParameter.UpdateEvent.Unpin,
                 Id = widgetId,
                 Type = widgetType,
-                IndexTag = indexTag
+                Index = indexTag
             });
         }
 
@@ -168,7 +168,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 Event = DashboardViewModelNavigationParameter.UpdateEvent.Delete,
                 Id = widgetId,
                 Type = widgetType,
-                IndexTag = indexTag
+                Index = indexTag
             });
         }
 
@@ -208,7 +208,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // get widget id & index tag
             var widgetId = widgetItem.Id;
             var widgetType = widgetItem.Type;
-            var indexTag = widgetItem.IndexTag;
+            var indexTag = widgetItem.Index;
 
             // set widget ico & title & framework element
             widgetWindow.ViewModel.WidgetIconPath = _widgetResourceService.GetWidgetIconPath(widgetId, widgetType);
@@ -271,7 +271,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 {
                     Id = widgetId,
                     Type = widgetType,
-                    IndexTag = indexTag,
+                    Index = indexTag,
                     DispatcherQueue = widgetWindow.DispatcherQueue,
                     Settings = widgetSettings
                 });
@@ -281,7 +281,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
 
             // add to widget list
-            var index = PinnedWidgetWindowPairs.FindIndex(x => x.Window.Id == widgetId & x.Window.Type == widgetType & x.Window.IndexTag == indexTag);
+            var index = PinnedWidgetWindowPairs.FindIndex(x => x.Window.Id == widgetId & x.Window.Type == widgetType & x.Window.Index == indexTag);
             if (index != -1)
             {
                 PinnedWidgetWindowPairs[index].ViewModel = viewModel;
@@ -294,7 +294,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         if (window is WidgetWindow widgetWindow)
         {
             // widget close event
-            var viewModel = GetWidgetViewModel(widgetWindow.Id, widgetWindow.Type, widgetWindow.IndexTag);
+            var viewModel = GetWidgetViewModel(widgetWindow.Id, widgetWindow.Type, widgetWindow.Index);
             if (viewModel is IWidgetWindowClose close)
             {
                 close.WidgetWindowClosing();
@@ -314,14 +314,14 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await WindowsExtensions.CloseWindowAsync(widgetWindow);
 
             // remove from widget list & widget window list
-            PinnedWidgetWindowPairs.RemoveAll(x => x.Window.Id == widgetId & x.Window.Type == widgetType & x.Window.IndexTag == indexTag);
-            PinnedWidgetWindows.RemoveAll(x => x.Id == widgetId & x.Type == widgetType & x.IndexTag == indexTag);
+            PinnedWidgetWindowPairs.RemoveAll(x => x.Window.Id == widgetId & x.Window.Type == widgetType & x.Window.Index == indexTag);
+            PinnedWidgetWindows.RemoveAll(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
         }
     }
 
     private WidgetWindow? GetWidgetWindow(string widgetId, string widgetType, int indexTag)
     {
-        var index = PinnedWidgetWindows.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.IndexTag == indexTag);
+        var index = PinnedWidgetWindows.FindIndex(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
         if (index != -1)
         {
             return PinnedWidgetWindows[index];
@@ -340,12 +340,12 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     public BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow)
     {
-        return GetWidgetViewModel(widgetWindow.Id, widgetWindow.Type, widgetWindow.IndexTag);
+        return GetWidgetViewModel(widgetWindow.Id, widgetWindow.Type, widgetWindow.Index);
     }
 
     private BaseWidgetViewModel? GetWidgetViewModel(string widgetId, string widgetType, int indexTag)
     {
-        var index = PinnedWidgetWindowPairs.FindIndex(x => x.Window.Id == widgetId & x.Window.Type == widgetType & x.Window.IndexTag == indexTag);
+        var index = PinnedWidgetWindowPairs.FindIndex(x => x.Window.Id == widgetId & x.Window.Type == widgetType & x.Window.Index == indexTag);
         if (index != -1)
         {
             return PinnedWidgetWindowPairs[index].ViewModel;
@@ -390,7 +390,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 {
                     Id = widgetId,
                     Type = widgetType,
-                    IndexTag = indexTag,
+                    Index = indexTag,
                     DispatcherQueue = App.MainWindow.DispatcherQueue,
                     Settings = widgetSetting
                 });
@@ -455,7 +455,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         {
             var widgetId = widgetWindow.Id;
             var widgetType = widgetWindow.Type;
-            var indexTag = widgetWindow.IndexTag;
+            var indexTag = widgetWindow.Index;
             await UnpinWidgetAsync(widgetId, widgetType, indexTag, true);
         }
     }
@@ -466,7 +466,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         {
             var widgetId = widgetWindow.Id;
             var widgetType = widgetWindow.Type;
-            var indexTag = widgetWindow.IndexTag;
+            var indexTag = widgetWindow.Index;
             await DialogFactory.ShowDeleteWidgetFullScreenDialogAsync(async () => await DeleteWidgetAsync(widgetId, widgetType, indexTag, true));
         }
     }
@@ -538,13 +538,13 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         {
             var widgetId = widgetWindow.Id;
             var widgetType = widgetWindow.Type;
-            var indexTag = widgetWindow.IndexTag;
+            var indexTag = widgetWindow.Index;
 
             await CloseWidgetWindow(widgetId, widgetType, indexTag);
 
             var widgetList = _appSettingsService.GetWidgetsList();
 
-            var widget = widgetList.FirstOrDefault(x => x.Id == widgetId & x.Type == widgetType & x.IndexTag == indexTag);
+            var widget = widgetList.FirstOrDefault(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
             if (widget != null)
             {
                 CreateWidgetWindow(widget);
@@ -569,7 +569,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     public BaseWidgetSettings? GetWidgetSettings(string widgetId, string widgetType, int indexTag)
     {
         var widgetList = _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId & x.Type == widgetType & x.IndexTag == indexTag);
+        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId & x.Type == widgetType & x.Index == indexTag);
 
         return widget?.Settings.Clone();
     }
@@ -629,7 +629,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 Name = _widgetResourceService.GetWidgetName(widgetId, widgetType),
                 Id = widgetId,
                 Type = widgetType,
-                IndexTag = widgetWindow.IndexTag,
+                Index = widgetWindow.Index,
                 Pinned = true,
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
@@ -691,7 +691,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 Name = _widgetResourceService.GetWidgetName(widgetId, widgetType),
                 Id = widgetWindow.Id,
                 Type = widgetType,
-                IndexTag = widgetWindow.IndexTag,
+                Index = widgetWindow.Index,
                 Pinned = true,
                 Position = widgetWindow.Position,
                 Size = widgetWindow.Size,
@@ -713,7 +713,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await window.SetEditMode(false);
 
             // read original position and size
-            var originalWidget = _originalWidgetList.FirstOrDefault(x => x.Id == window.Id & x.Type == window.Type & x.IndexTag == window.IndexTag);
+            var originalWidget = _originalWidgetList.FirstOrDefault(x => x.Id == window.Id & x.Type == window.Type & x.Index == window.Index);
 
             // restore position and size
             if (originalWidget != null)
