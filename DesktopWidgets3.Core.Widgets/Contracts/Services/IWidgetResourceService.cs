@@ -26,7 +26,7 @@ public interface IWidgetResourceService
 
     (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(string widgetId, string widgetType);
 
-    bool GetWidgetAllowMultiple(string widgetId, string widgetType);
+    bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType);
 
     bool GetWidgetIsCustomizable(string widgetId, string widgetType);
 

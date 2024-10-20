@@ -157,7 +157,7 @@ public partial class WidgetViewModel : ObservableObject
 
                 var hostData = new JsonObject
                 {
-                    // TODO Add support to host theme in hostData
+                    // DevHomeTODO: Add support to host theme in hostData
                     { "widgetSize", WidgetSize.ToString().ToLowerInvariant() }, // "small", "medium" or "large"
                 }.ToString();
 
@@ -393,7 +393,7 @@ public partial class WidgetViewModel : ObservableObject
             LogLevel.Critical,
             new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinitionId, WidgetDefinition.Id, args.Action.ActionTypeString));
 
-        // TODO: Handle other ActionTypes
+        // DevHomeTODO: Handle other ActionTypes
         // https://github.com/microsoft/devhome/issues/644
     }
 

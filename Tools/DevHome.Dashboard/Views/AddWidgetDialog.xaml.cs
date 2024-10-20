@@ -96,10 +96,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 var widgetName = _widgetResourceService.GetWidgetName(widgetId, widgetType);
 
                 var subItemContent = await BuildWidgetNavItemAsync(widgetId, widgetType, widgetName);
+                var enable = !IsSingleInstanceAndAlreadyPinned(widgetId, widgetType);
                 var subItem = new NavigationViewItem
                 {
                     Tag = new AddedWidget(widgetId, widgetType, widgetGroup.Name, widgetName),
-                    Content = subItemContent
+                    Content = subItemContent,
+                    IsEnabled = enable,
                 };
                 subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetId}_{widgetType}");
                 subItem.SetValue(AutomationProperties.NameProperty, widgetName);
@@ -270,6 +272,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         return false;
+    }
+
+    private bool IsSingleInstanceAndAlreadyPinned(string widgetId, string widgetType)
+    {
+        return _widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetId, widgetType);
     }
 
     private void SelectFirstWidgetByDefault()

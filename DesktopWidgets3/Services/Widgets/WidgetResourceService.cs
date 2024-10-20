@@ -654,18 +654,23 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
 
     #region AllowMultiple & IsCustomizable
 
-    // TODO: Use these options
-
-    public bool GetWidgetAllowMultiple(string widgetId, string widgetType)
+    public bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType)
     {
-        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
+        if (!GetWidgetAllowMultiple(widgetId, widgetType))
         {
-            return GetWidgetAllowMultiple(allIndex, installedIndex, widgetIndex);
+            foreach (var pinnedWidget in _appSettingsService.GetWidgetsList())
+            {
+                if (pinnedWidget.Id == widgetId & pinnedWidget.Type == widgetType)
+                {
+                    return true;
+                }
+            }
         }
 
         return false;
     }
+
+    // TODO: Use IsCustomizable API.
 
     public bool GetWidgetIsCustomizable(string widgetId, string widgetType)
     {
@@ -673,6 +678,17 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         if (installedIndex != -1)
         {
             return GetWidgetIsCustomizable(allIndex, installedIndex, widgetIndex);
+        }
+
+        return false;
+    }
+
+    private bool GetWidgetAllowMultiple(string widgetId, string widgetType)
+    {
+        (var _, var allIndex, var installedIndex, var widgetIndex) = GetWidgetGroupAndWidgetIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return GetWidgetAllowMultiple(allIndex, installedIndex, widgetIndex);
         }
 
         return false;
