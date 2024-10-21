@@ -784,74 +784,22 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
 
     private (bool Installed, int? AllIndex, int? InstalledIndex, int? WidgetTypeIndex) GetWidgetGroupAndWidgetTypeIndex(string widgetId, string widgetType, bool? installed)
     {
-        if (installed == true)
+        (var actualInstalled, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, installed);
+        if (actualInstalled)
         {
-            var installedIndex = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
-            if (installedIndex != -1)
+            var widgetTypeIndex = InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets.FindIndex(x => x.Type == widgetType);
+            if (widgetTypeIndex != -1)
             {
-                var widgetTypeIndex = InstalledWidgetGroupPairs[installedIndex].Metadata.Widgets.FindIndex(x => x.Type == widgetType);
-                if (widgetTypeIndex != -1)
-                {
-                    return (true, null, installedIndex, widgetTypeIndex);
-                }
-
-                return (true, null, installedIndex, null);
+                return (true, allIndex, installedIndex, widgetTypeIndex);
             }
 
-            var allIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == widgetId);
-            if (allIndex != -1)
-            {
-                var widgetTypeIndex = AllWidgetGroupMetadatas[allIndex].Widgets.FindIndex(x => x.Type == widgetType);
-                if (widgetTypeIndex != -1)
-                {
-                    return (false, allIndex, null, widgetTypeIndex);
-                }
-
-                return (false, allIndex, null, null);
-            }
-
-            return (false, null, null, null);
-        }
-        else if (installed == false)
-        {
-            var allIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == widgetId);
-            if (allIndex != -1)
-            {
-                var widgetTypeIndex = AllWidgetGroupMetadatas[allIndex].Widgets.FindIndex(x => x.Type == widgetType);
-                if (widgetTypeIndex != -1)
-                {
-                    var installedIndex = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
-                    if (installedIndex != -1)
-                    {
-                        return (true, allIndex, installedIndex, widgetTypeIndex);
-                    }
-
-                    return (false, allIndex, null, widgetTypeIndex);
-                }
-
-                return (false, allIndex, null, null);
-            }
-
-            return (false, null, null, null);
+            return (false, allIndex, installedIndex, null);
         }
         else
         {
-            var installedIndex = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
-            if (installedIndex != -1)
+            if (allIndex != null)
             {
-                var widgetTypeIndex = InstalledWidgetGroupPairs[installedIndex].Metadata.Widgets.FindIndex(x => x.Type == widgetType);
-                if (widgetTypeIndex != -1)
-                {
-                    return (true, null, installedIndex, widgetTypeIndex);
-                }
-
-                return (true, null, installedIndex, null);
-            }
-
-            var allIndex = AllWidgetGroupMetadatas.FindIndex(x => x.ID == widgetId);
-            if (allIndex != -1)
-            {
-                var widgetTypeIndex = AllWidgetGroupMetadatas[allIndex].Widgets.FindIndex(x => x.Type == widgetType);
+                var widgetTypeIndex = AllWidgetGroupMetadatas[allIndex!.Value].Widgets.FindIndex(x => x.Type == widgetType);
                 if (widgetTypeIndex != -1)
                 {
                     return (false, allIndex, null, widgetTypeIndex);
