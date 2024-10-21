@@ -7,10 +7,10 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
 {
     #region IWidgetGroup
 
-    public static WidgetInitContext WidgetInitContext => widgetInitContext;
-    private static WidgetInitContext widgetInitContext = null!;
+    public static IWidgetInitContext WidgetInitContext => widgetInitContext;
+    private static IWidgetInitContext widgetInitContext = null!;
 
-    public void InitWidgetGroup(WidgetInitContext widgetInitContext)
+    public void InitWidgetGroup(IWidgetInitContext widgetInitContext)
     {
         Main.widgetInitContext = widgetInitContext;
     }

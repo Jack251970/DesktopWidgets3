@@ -254,13 +254,15 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
                 var localizationService = (LocalizationService)DependencyExtensions.GetRequiredService<ILocalizationService>();
                 localizationService.AssemblyName = pair.Metadata.AssemblyName;
                 pair.WidgetGroup.InitWidgetGroupAsync(
-                    new WidgetInitContext(
-                        pair.Metadata,
-                        localizationService,
-                        logService,
-                        settingsService,
-                        themeService,
-                        widgetService));
+                    new WidgetInitContext()
+                    {
+                        WidgetGroupMetadata = pair.Metadata,
+                        LocalizationService = localizationService,
+                        LogService = logService,
+                        SettingsService = settingsService,
+                        ThemeService = themeService,
+                        WidgetService = widgetService
+                    });
             }
             catch (Exception e)
             {

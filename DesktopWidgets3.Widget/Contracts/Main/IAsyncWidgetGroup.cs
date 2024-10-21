@@ -10,9 +10,9 @@ public interface IAsyncWidgetGroup
     /// <summary>
     /// Initialize the widget group model asynchrously.
     /// </summary>
-    /// <param name="context">A object that provides information and functions for the widget group.</param>
+    /// <param name="widgetInitContext">Context to provide information and functions for the widget group.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    Task InitWidgetGroupAsync(WidgetInitContext widgetInitContext);
+    Task InitWidgetGroupAsync(IWidgetInitContext widgetInitContext);
 
     /// <summary>
     /// Get the widget content for one widget type.

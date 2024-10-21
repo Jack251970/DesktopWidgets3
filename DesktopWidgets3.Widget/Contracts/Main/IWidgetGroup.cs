@@ -8,14 +8,13 @@ public interface IWidgetGroup : IAsyncWidgetGroup
     /// <summary>
     /// Initialize the widget group model.
     /// </summary>
-    /// <param name="context">A object that provides information and functions for the widget group.</param>
-    /// <returns>The list of the widget types that the widget group contains.</returns>
-    void InitWidgetGroup(WidgetInitContext widgetInitContext);
+    /// <param name="widgetInitContext">Context to provide information and functions for the widget group.</param>
+    void InitWidgetGroup(IWidgetInitContext widgetInitContext);
 
     /// <summary>
     /// Initialize the widget group model asynchrously.
     /// </summary>
     /// <param name="context">A object that provides information and functions for the widget group.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    Task IAsyncWidgetGroup.InitWidgetGroupAsync(WidgetInitContext widgetInitContext) => Task.Run(() => InitWidgetGroup(widgetInitContext));
+    Task IAsyncWidgetGroup.InitWidgetGroupAsync(IWidgetInitContext widgetInitContext) => Task.Run(() => InitWidgetGroup(widgetInitContext));
 }
