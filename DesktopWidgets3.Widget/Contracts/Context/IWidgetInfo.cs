@@ -13,5 +13,5 @@ public interface IWidgetInfo
     /// <summary>
     /// Settings of the widget.
     /// </summary>
-    public BaseWidgetSettings WidgetSettings { get; }
+    public BaseWidgetSettings Settings { get; }
 }

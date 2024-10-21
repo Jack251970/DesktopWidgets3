@@ -6,4 +6,9 @@ public static class StringUtils
     {
         return Guid.NewGuid().ToString("N").ToUpper();
     }
+
+    public static string GetRandomWidgetRuntimeId()
+    {
+        return Guid.NewGuid().ToString();
+    }
 }
