@@ -24,4 +24,11 @@ public interface IWidgetGroupSetting
     /// </param>
     /// <returns>The widget setting content.</returns>
     FrameworkElement CreateWidgetSettingContent(string widgetType, ResourceDictionary? resourceDictionary);
+
+    /// <summary>
+    /// Handle the widget settings changed event.
+    /// This function is called when the widget settings of one widget instance is changed.
+    /// </summary>
+    /// <param name="settingsChangedArgs">The widget settings changed event arguments.</param>
+    void OnWidgetSettingsChanged(WidgetSettingsChangedArgs settingsChangedArgs);
 }
