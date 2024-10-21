@@ -15,14 +15,29 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         Main.widgetInitContext = widgetInitContext;
     }
 
-    public FrameworkElement GetWidgetContent(string widgetType, ResourceDictionary? resourceDictionary)
+    public FrameworkElement CreateWidgetContent(IWidgetContext widgetContext, ResourceDictionary? resourceDictionary)
     {
-        return widgetType switch
+        return widgetContext.Type switch
         {
             "SystemInfo_DigitalClock" => new DigitalClockWidget(resourceDictionary),
             "SystemInfo_AnalogClock" => new AnalogClockWidget(resourceDictionary),
             _ => new UserControl()
         };
+    }
+
+    public void DeleteWidget(string widgetId, BaseWidgetSettings widgetSettings)
+    {
+
+    }
+
+    public void ActivateWidget(IWidgetContext widgetContext)
+    {
+
+    }
+
+    public void DeactivateWidget(string widgetId)
+    {
+
     }
 
     #endregion
@@ -39,7 +54,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         };
     }
 
-    public FrameworkElement GetWidgetSettingContent(string widgetType, ResourceDictionary? resourceDictionary)
+    public FrameworkElement CreateWidgetSettingContent(string widgetType, ResourceDictionary? resourceDictionary)
     {
         return widgetType switch
         {

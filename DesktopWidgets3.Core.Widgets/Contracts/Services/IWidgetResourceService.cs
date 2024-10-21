@@ -8,7 +8,7 @@ public interface IWidgetResourceService
 
     Task DisposeWidgetsAsync();
 
-    FrameworkElement GetWidgetContent(string widgetId, string widgetType);
+    FrameworkElement GetWidgetContent(string widgetId, string widgetType, WidgetContext widgetContext);
 
     BaseWidgetSettings GetDefaultSettings(string widgetId, string widgetType);
 

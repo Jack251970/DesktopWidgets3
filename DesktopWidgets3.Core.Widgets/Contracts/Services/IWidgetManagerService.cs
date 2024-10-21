@@ -4,6 +4,10 @@ public interface IWidgetManagerService
 {
     (string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId);
 
+    WidgetInfo? GetWidgetInfo(string widgetId, string widgetType, int widgetIndex);
+
+    WidgetContext? GetWidgetContext(string widgetId, string widgetType, int widgetIndex);
+
     bool GetWidgetIsActive(string widgetId, string widgetType, int widgetIndex);
 
     void InitializePinnedWidgets();

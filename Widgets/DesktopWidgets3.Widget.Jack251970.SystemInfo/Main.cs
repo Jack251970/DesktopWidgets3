@@ -28,9 +28,9 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         HardwareInfoService.SampleTimer.Enabled = true;
     }
 
-    public FrameworkElement GetWidgetContent(string widgetType, ResourceDictionary? resourceDictionary)
+    public FrameworkElement CreateWidgetContent(IWidgetContext widgetContext, ResourceDictionary? resourceDictionary)
     {
-        return widgetType switch
+        return widgetContext.Type switch
         {
             "SystemInfo_Performance" => new PerformanceWidget(resourceDictionary, HardwareInfoService),
             "SystemInfo_Network" => new NetworkWidget(resourceDictionary, HardwareInfoService),
@@ -39,12 +39,19 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         };
     }
 
-    private void OnBatterySaverChanged(bool enable)
+    public void DeleteWidget(string widgetId, BaseWidgetSettings widgetSettings)
     {
-        var enabled = HardwareInfoService.SampleTimer.Enabled;
-        HardwareInfoService.SampleTimer.Enabled = false;
-        HardwareInfoService.SampleTimer.Interval = enable ? 1000 : 200;
-        HardwareInfoService.SampleTimer.Enabled = enabled;
+
+    }
+
+    public void ActivateWidget(IWidgetContext widgetContext)
+    {
+
+    }
+
+    public void DeactivateWidget(string widgetId)
+    {
+
     }
 
     #endregion
@@ -62,7 +69,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         };
     }
 
-    public FrameworkElement GetWidgetSettingContent(string widgetType, ResourceDictionary? resourceDictionary)
+    public FrameworkElement CreateWidgetSettingContent(string widgetType, ResourceDictionary? resourceDictionary)
     {
         return widgetType switch
         {
@@ -107,6 +114,18 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
             "SystemInfo_Disk" => WidgetInitContext.LocalizationService.GetLocalizedString("Disk_Description"),
             _ => string.Empty
         };
+    }
+
+    #endregion
+
+    #region Battery Saver
+
+    private void OnBatterySaverChanged(bool enable)
+    {
+        var enabled = HardwareInfoService.SampleTimer.Enabled;
+        HardwareInfoService.SampleTimer.Enabled = false;
+        HardwareInfoService.SampleTimer.Interval = enable ? 1000 : 200;
+        HardwareInfoService.SampleTimer.Enabled = enabled;
     }
 
     #endregion

@@ -284,7 +284,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         }
     }
 
-    public FrameworkElement GetWidgetContent(string widgetId, string widgetType)
+    public FrameworkElement GetWidgetContent(string widgetId, string widgetType, WidgetContext widgetContext)
     {
         var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
@@ -292,7 +292,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             var pair = InstalledWidgetGroupPairs[index];
             try
             {
-                return pair.WidgetGroup.GetWidgetContent(widgetType, GetWidgetLanguageResources(pair.Metadata.ID));
+                return pair.WidgetGroup.CreateWidgetContent(widgetContext, GetWidgetLanguageResources(pair.Metadata.ID));
             }
             catch (Exception e)
             {
@@ -332,7 +332,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             {
                 try
                 {
-                    return widgetSetting.GetWidgetSettingContent(widgetType, GetWidgetLanguageResources(pair.Metadata.ID));
+                    return widgetSetting.CreateWidgetSettingContent(widgetType, GetWidgetLanguageResources(pair.Metadata.ID));
                 }
                 catch (Exception e)
                 {

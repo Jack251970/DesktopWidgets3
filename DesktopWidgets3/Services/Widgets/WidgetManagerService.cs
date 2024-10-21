@@ -50,6 +50,42 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #endregion
 
+    #region Widget Info & Context
+
+    public WidgetInfo? GetWidgetInfo(string widgetId, string widgetType, int widgetIndex)
+    {
+        // get widget runtime id
+        var widgetRuntimeId = GetWidgetRuntimeId(widgetId, widgetType, widgetIndex);
+
+        // get widget info
+        if (widgetRuntimeId != string.Empty)
+        {
+            var widgetInfo = PinnedWidgetWindowPairs.FirstOrDefault(x => x.Window.RuntimeId == widgetRuntimeId)?.WidgetInfo;
+            if (widgetInfo != null)
+            {
+                return widgetInfo;
+            }
+        }
+
+        return null;
+    }
+
+    public WidgetContext? GetWidgetContext(string widgetId, string widgetType, int widgetIndex)
+    {
+        // get widget info
+        var widgetInfo = GetWidgetInfo(widgetId, widgetType, widgetIndex);
+
+        // get widget context
+        if (widgetInfo != null)
+        {
+            return (WidgetContext)widgetInfo.WidgetContext;
+        }
+
+        return null;
+    }
+
+    #endregion
+
     #region Is Active
 
     public bool GetWidgetIsActive(string widgetId, string widgetType, int widgetIndex)
@@ -347,7 +383,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.Position = widgetPosition;
 
             // get widget framework element
-            var frameworkElement = _widgetResourceService.GetWidgetContent(widgetId, widgetType);
+            var widgetContext = GetWidgetContext(widgetId, widgetType, widgetIndex);
+            var frameworkElement = _widgetResourceService.GetWidgetContent(widgetId, widgetType, widgetContext!);
 
             // initialize widget settings
             BaseWidgetViewModel viewModel = null!;

@@ -11,17 +11,36 @@ public interface IAsyncWidgetGroup
     /// Initialize the widget group model asynchrously.
     /// </summary>
     /// <param name="widgetInitContext">Context to provide information and functions for the widget group.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <returns>The task that represents the asynchronous operation.</returns>
     Task InitWidgetGroupAsync(IWidgetInitContext widgetInitContext);
 
     /// <summary>
-    /// Get the widget content for one widget type.
+    /// Create and get the widget content for one widget instance.
     /// </summary>
-    /// <param name="widgetType">The widget type that the content is for.</param>
+    /// <param name="widgetContext">Context to provide information for one widget instance.</param>
     /// <param name="resourceDictionary">
-    /// The resource dictionary to use for the widget content.
+    /// A resource dictionary used for the widget content.
     /// It consists of the string resources that are used by the widget content.
     /// </param>
     /// <returns>The widget content.</returns>
-    FrameworkElement GetWidgetContent(string widgetType, ResourceDictionary? resourceDictionary);
+    FrameworkElement CreateWidgetContent(IWidgetContext widgetContext, ResourceDictionary? resourceDictionary);
+
+    /// <summary>
+    /// Delete one widget instance.
+    /// </summary>
+    /// <param name="widgetId">The unique identifier of the widget instance.</param>
+    /// <param name="widgetSettings">Settings of the widget instance.</param>
+    void DeleteWidget(string widgetId, BaseWidgetSettings widgetSettings);
+
+    /// <summary>
+    /// Activate one widget instance.
+    /// </summary>
+    /// <param name="widgetContext">Context to provide information for one widget instance.</param>
+    void ActivateWidget(IWidgetContext widgetContext);
+
+    /// <summary>
+    /// Deactivate one widget instance.
+    /// </summary>
+    /// <param name="widgetId">The unique identifier of the widget instance.</param>
+    void DeactivateWidget(string widgetId);
 }
