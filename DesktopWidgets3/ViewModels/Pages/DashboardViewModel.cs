@@ -38,7 +38,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
             }
             else if (newWidget is ComSafeWidgetDefinition newWidgetDefinition1)
             {
-                // TODO
+                // TODO: supprot windows widget.
             }
         }
     }

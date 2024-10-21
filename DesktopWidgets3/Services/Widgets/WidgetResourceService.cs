@@ -672,8 +672,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         return false;
     }
 
-    // TODO: Use IsCustomizable API.
-
     public bool GetWidgetIsCustomizable(string widgetId, string widgetType)
     {
         (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);

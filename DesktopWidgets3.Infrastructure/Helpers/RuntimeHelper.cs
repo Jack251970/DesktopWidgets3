@@ -1,25 +1,15 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Security;
 
 namespace DesktopWidgets3.Infrastructure.Helpers;
 
 public class RuntimeHelper
 {
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern int GetCurrentPackageFullName(ref int packageFullNameLength, System.Text.StringBuilder? packageFullName);
-
     public static bool IsMSIX
-    {
-        get
-        {
-            var length = 0;
-
-            return GetCurrentPackageFullName(ref length, null) != 15700L;
-        }
-    }
-
-    // TODO: Finish this.
-    /*public static bool IsMSIX
     {
         get
         {
@@ -27,7 +17,7 @@ public class RuntimeHelper
 
             return PInvoke.GetCurrentPackageFullName(ref length, null) != WIN32_ERROR.APPMODEL_ERROR_NO_PACKAGE;
         }
-    }*/
+    }
 
     public static bool IsOnWindows11
     {
@@ -44,8 +34,7 @@ public class RuntimeHelper
         return identity.Owner?.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid) ?? false;
     }
 
-    // TODO: Finish this.
-    /*// Determine whether the current process is running elevated in a split token session
+    // Determine whether the current process is running elevated in a split token session
     // will not return true if UAC is disabled and the user is running as administrator by default
     public static unsafe bool IsCurrentProcessRunningElevated()
     {
@@ -58,7 +47,7 @@ public class RuntimeHelper
         try
         {
             TOKEN_ELEVATION_TYPE elevationType;
-            uint elevationTypeSize = (uint)Unsafe.SizeOf<TOKEN_ELEVATION_TYPE>();
+            var elevationTypeSize = (uint)Unsafe.SizeOf<TOKEN_ELEVATION_TYPE>();
             uint returnLength;
 
             if (!PInvoke.GetTokenInformation(tokenHandle, TOKEN_INFORMATION_CLASS.TokenElevationType, &elevationType, elevationTypeSize, &returnLength))
@@ -72,7 +61,7 @@ public class RuntimeHelper
         {
             PInvoke.CloseHandle(tokenHandle);
         }
-    }*/
+    }
 
     public static void VerifyCurrentProcessRunningAsAdmin()
     {
