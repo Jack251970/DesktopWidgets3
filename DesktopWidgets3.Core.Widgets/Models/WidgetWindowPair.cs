@@ -4,6 +4,8 @@ namespace DesktopWidgets3.Core.Widgets.Models;
 
 public class WidgetWindowPair
 {
+    public WidgetInfo WidgetInfo { get; set; } = null!;
+
     public WidgetWindow Window { get; set; } = null!;
 
     public BaseWidgetViewModel? ViewModel { get; set; }
@@ -14,8 +16,7 @@ public class WidgetWindowPair
     {
         if (obj is WidgetWindowPair widgetWindowPair)
         {
-            return Window.Id == widgetWindowPair.Window.Id
-                && Window.Index == widgetWindowPair.Window.Index;
+            return WidgetInfo.WidgetContext.Id == widgetWindowPair.WidgetInfo.WidgetContext.Id;
         }
         else
         {
@@ -30,6 +31,6 @@ public class WidgetWindowPair
 
     public override string ToString()
     {
-        return $"{Window.Id} - {Window.Index}";
+        return WidgetInfo.WidgetContext.Id;
     }
 }
