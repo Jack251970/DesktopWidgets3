@@ -60,7 +60,7 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
     {
         if (item.Pinned)
         {
-            await _widgetManagerService.PinWidgetAsync(item.Id, item.Type, item.Index);
+            await _widgetManagerService.PinWidgetAsync(item.Id, item.Type, item.Index, false);
         }
         else
         {

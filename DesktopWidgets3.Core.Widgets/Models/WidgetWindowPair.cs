@@ -26,7 +26,7 @@ public class WidgetWindowPair
 
     public override int GetHashCode()
     {
-        return Window.Id.GetHashCode() ^ Window.Index.GetHashCode();
+        return WidgetInfo.WidgetContext.Id.GetHashCode();
     }
 
     public override string ToString()

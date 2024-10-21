@@ -100,13 +100,11 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region Id & Index
+    #region Widget Info
 
-    public string Id { get; private set; } = null!;
+    public string RuntimeId { get; private set; } = string.Empty;
 
-    public string Type { get; private set; } = null!;
-
-    public int Index { get; private set; } = -1;
+    public bool IsActive { get; private set; }
 
     #endregion
 
@@ -163,7 +161,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     private MenuFlyout WidgetMenuFlyout { get; set; } = null!;
 
-    public void Initialize(JsonWidgetItem widgetItem, MenuFlyout menuFlyout)
+    public void Initialize(string widgetRuntimeId, JsonWidgetItem widgetItem, MenuFlyout menuFlyout)
     {
         // set widget position
         WidgetPosition = AppWindow.Position;
@@ -177,9 +175,7 @@ public sealed partial class WidgetWindow : WindowEx
         }
 
         // set widget item properties
-        Id = widgetItem.Id;
-        Type = widgetItem.Type;
-        Index = widgetItem.Index;
+        RuntimeId = widgetRuntimeId;
         WidgetSettings = widgetItem.Settings;
         WidgetSize = widgetItem.Size;
 
@@ -229,9 +225,7 @@ public sealed partial class WidgetWindow : WindowEx
         // envoke completed event handler
         LoadCompleted?.Invoke(this, new LoadCompletedEventArgs() 
         { 
-            WidgetId = Id,
-            WidgetType = Type,
-            WidgetIndex = Index,
+            WidgetRuntimeId = RuntimeId,
             WidgetPosition = WidgetPosition,
             WidgetSettings = WidgetSettings
         });
@@ -348,11 +342,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     public class LoadCompletedEventArgs : EventArgs
     {
-        public required string WidgetId { get; set; }
-
-        public required string WidgetType { get; set; }
-
-        public required int WidgetIndex { get; set; }
+        public required string WidgetRuntimeId { get; set; }
 
         public required PointInt32 WidgetPosition { get; set; }
 

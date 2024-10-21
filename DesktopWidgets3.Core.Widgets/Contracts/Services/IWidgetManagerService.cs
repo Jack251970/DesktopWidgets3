@@ -2,15 +2,19 @@
 
 public interface IWidgetManagerService
 {
+    (string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId);
+
+    bool GetWidgetIsActive(string widgetId, string widgetType, int widgetIndex);
+
     void InitializePinnedWidgets();
 
     Task RestartWidgetsAsync();
 
     Task CloseAllWidgetsAsync();
 
-    Task<int> AddWidgetAsync(string widgetId, string widgetType, Action<string, string, int> action, bool updateDashboard);
+    Task AddWidgetAsync(string widgetId, string widgetType, Action<string, string, int> action, bool updateDashboard);
 
-    Task PinWidgetAsync(string widgetId, string widgetType, int widgetIndex);
+    Task PinWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh);
 
     Task UnpinWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh);
 
