@@ -93,6 +93,7 @@ public static class WidgetsConfig
         {
             var json = File.ReadAllText(configPath);
             metadata = JsonHelper.ToObject<WidgetGroupMetadata>(json);
+            metadata.ID = metadata.ID.ToUpper();
             metadata.WidgetDirectory = widgetDirectory;
             metadata.Preinstalled = preinstalled;
             metadata.WidgetTypes = metadata.Widgets.Select(x => x.Type).ToList();
