@@ -15,11 +15,11 @@ public interface IWidgetGroupSetting
     BaseWidgetSettings GetDefaultSettings(string widgetType);
 
     /// <summary>
-    /// Create and get the widget setting content for one widget instance.
+    /// Create and get the widget setting content for one widgetsetting  instance.
     /// </summary>
     /// <param name="widgetContext">Context to provide information for one widget setting instance.</param>
     /// <param name="resourceDictionary">
-    /// A resource dictionary used for the widget content.
+    /// A resource dictionary used for the widget setting content.
     /// It consists of the string resources that are used by the widget setting content.
     /// </param>
     /// <returns>The widget setting content.</returns>

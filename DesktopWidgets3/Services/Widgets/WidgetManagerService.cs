@@ -228,8 +228,12 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // close all widgets
         await CloseAllWidgetWindowsAsync();
 
-        // clear all widget settings
-        // TODO
+        // clear all lists
+        PinnedWidgetRuntimeIds.Clear();
+        PinnedWidgetWindowPairs.Clear();
+        WidgetSettingRuntimeIds.Clear();
+        WidgetSettingPairs.Clear();
+        _originalWidgetList.Clear();
     }
 
     private async Task CloseAllWidgetWindowsAsync()
