@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -5,13 +6,18 @@ namespace DesktopWidgets3.Widget.Jack251970.SystemInfo;
 
 public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalization, IDisposable
 {
+    public static IWidgetInitContext WidgetInitContext => widgetInitContext;
+    private static IWidgetInitContext widgetInitContext = null!;
+
+    private HardwareInfoService HardwareInfoService = new();
+
     private static readonly Dictionary<string, WidgetCreateDelegate> _widgetTypeRegistry = [];
 
-    private readonly Dictionary<string, IWidgetViewBase> _runningWidgets = [];
+    private readonly ConcurrentDictionary<string, IWidgetViewBase> _runningWidgets = [];
 
     private static readonly Dictionary<string, WidgetSettingCreateDelegate> _widgetSettingTypeRegistry = [];
 
-    private readonly Dictionary<string, IWidgetSettingViewBase> _runningWidgetSettings = [];
+    private readonly ConcurrentDictionary<string, IWidgetSettingViewBase> _runningWidgetSettings = [];
 
     #region Constructor
 
@@ -31,11 +37,6 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
     #endregion
 
     #region IWidgetGroup
-
-    public static IWidgetInitContext WidgetInitContext => widgetInitContext;
-    private static IWidgetInitContext widgetInitContext = null!;
-
-    private HardwareInfoService HardwareInfoService = new();
 
     public void InitWidgetGroup(IWidgetInitContext widgetInitContext)
     {
@@ -70,7 +71,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
 
         var factory = value;
         var widgetView = factory(widgetId, resourceDictionary, HardwareInfoService);
-        _runningWidgets.Add(widgetId, widgetView);
+        _runningWidgets.TryAdd(widgetId, widgetView);
 
         return (FrameworkElement)widgetView;
     }
@@ -80,7 +81,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         if (_runningWidgets.TryGetValue(widgetId, out var widget))
         {
             widget.Dispose();
-            _runningWidgets.Remove(widgetId);
+            _runningWidgets.TryRemove(widgetId, out _);
         }
     }
 
@@ -89,7 +90,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         if (_runningWidgets.TryGetValue(widgetId, out var widget))
         {
             widget.Dispose();
-            _runningWidgets.Remove(widgetId);
+            _runningWidgets.TryRemove(widgetId, out _);
         }
     }
 
@@ -142,7 +143,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
 
         var factory = value;
         var widgetSettingView = factory(widgetSettingId, resourceDictionary);
-        _runningWidgetSettings.Add(widgetSettingId, widgetSettingView);
+        _runningWidgetSettings.TryAdd(widgetSettingId, widgetSettingView);
 
         return (FrameworkElement)widgetSettingView;
     }
@@ -233,11 +234,13 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
                     widget.Dispose();
                 }
                 _runningWidgets.Clear();
+                _widgetTypeRegistry.Clear();
                 foreach (var widgetSetting in _runningWidgetSettings.Values)
                 {
                     widgetSetting.Dispose();
                 }
                 _runningWidgetSettings.Clear();
+                _widgetSettingTypeRegistry.Clear();
                 HardwareInfoService.Dispose();
                 HardwareInfoService = null!;
                 widgetInitContext = null!;
