@@ -232,7 +232,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     {
         WidgetListJsonSerializerSettings = new JsonSerializerSettings { Converters = { new JsonWidgetItemConverter() } };
 
-        WidgetList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetItem>>(Constant.WidgetListFile, WidgetListJsonSerializerSettings) ?? [];
+        WidgetList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetItem>>(Constants.WidgetListFile, WidgetListJsonSerializerSettings) ?? [];
 
         return WidgetList;
     }
@@ -328,7 +328,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     {
         var valueCopy = new List<JsonWidgetItem>(WidgetList);
 
-        await _localSettingsService.SaveJsonFileAsync(Constant.WidgetListFile, valueCopy);
+        await _localSettingsService.SaveJsonFileAsync(Constants.WidgetListFile, valueCopy);
     }
 
     #endregion
@@ -339,7 +339,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     public async Task<List<JsonWidgetStoreItem>> InitializeWidgetStoreListAsync()
     {
-        WidgetStoreList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetStoreItem>>(Constant.WidgetStoreListFile) ?? [];
+        WidgetStoreList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetStoreItem>>(Constants.WidgetStoreListFile) ?? [];
 
         return WidgetStoreList;
     }
@@ -360,7 +360,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     {
         var valueCopy = new List<JsonWidgetStoreItem>(WidgetStoreList);
 
-        await _localSettingsService.SaveJsonFileAsync(Constant.WidgetStoreListFile, valueCopy);
+        await _localSettingsService.SaveJsonFileAsync(Constants.WidgetStoreListFile, valueCopy);
     }
 
     #endregion

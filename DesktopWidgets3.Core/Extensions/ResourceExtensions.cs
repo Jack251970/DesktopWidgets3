@@ -19,7 +19,7 @@ public static class ResourceExtensions
 
     private static readonly Dictionary<string, ResourceMap> resourcesTrees = new()
     {
-        { Constant.DefaultResourceFileName, HostResourceMap.TryGetSubtree(Constant.DefaultResourceFileName) }
+        { Constants.DefaultResourceFileName, HostResourceMap.TryGetSubtree(Constants.DefaultResourceFileName) }
     };
 
     #region resource management
@@ -59,7 +59,7 @@ public static class ResourceExtensions
     /// The name of the resource file or the assembly of the extension project.
     /// </param>
     /// <returns></returns>
-    public static ResourceMap? TryGetResourceMap(string resourceFileName = Constant.DefaultResourceFileName)
+    public static ResourceMap? TryGetResourceMap(string resourceFileName = Constants.DefaultResourceFileName)
     {
         return resourcesTrees.TryGetValue(resourceFileName, out var resourceMap) ? resourceMap : null;
     }
@@ -68,7 +68,7 @@ public static class ResourceExtensions
 
     #region extension methods
 
-    public static string GetLocalized(this string resourceKey, string resourceFileName = Constant.DefaultResourceFileName)
+    public static string GetLocalized(this string resourceKey, string resourceFileName = Constants.DefaultResourceFileName)
     {
         // Fix resource key
         resourceKey = resourceKey.Replace(".", "/");

@@ -50,7 +50,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
     private void GetAllWidgetsMetadata()
     {
         // get all widget metadata
-        AllWidgetGroupMetadatas = WidgetsConfig.Parse(WidgetsDirectories, Constant.PreinstalledWidgetsDirectory);
+        AllWidgetGroupMetadatas = WidgetsConfig.Parse(WidgetsDirectories, Constants.PreinstalledWidgetsDirectory);
 
         // check preinstalled widgets
         var errorPreinstalledWidgetsIds = AllWidgetGroupMetadatas
@@ -519,7 +519,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             return AllWidgetGroupMetadatas[allIndex!.Value].IcoPath;
         }
 
-        return Constant.UnknownWidgetIcoPath;
+        return Constants.UnknownWidgetIcoPath;
     }
 
     #endregion
@@ -654,7 +654,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
         }
 
-        return Constant.UnknownWidgetIcoPath;
+        return Constants.UnknownWidgetIcoPath;
     }
 
     private string GetWidgetScreenshotPath(int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme? actualTheme = null)
@@ -687,7 +687,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
         }
 
-        return Constant.UnknownWidgetIcoPath;
+        return Constants.UnknownWidgetIcoPath;
     }
 
     #endregion
@@ -979,7 +979,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
                     Type = widgetType,
                     Index = widgetIndex,
                     Name = string.Format("Unknown_Widget_Name".GetLocalized(), unknownNotInstalledWidgetList.Count),
-                    IcoPath = Constant.UnknownWidgetIcoPath,
+                    IcoPath = Constants.UnknownWidgetIcoPath,
                     Pinned = widget.Pinned,
                     IsUnknown = true,
                     IsInstalled = false,

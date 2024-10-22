@@ -14,7 +14,7 @@ public class LocalSettingsHelper
     {
         get
         {
-            var userWidgetsDirectory = Path.Combine(applicationDataPath, Constant.WidgetsFolder);
+            var userWidgetsDirectory = Path.Combine(applicationDataPath, Constants.WidgetsFolder);
             if (!Directory.Exists(userWidgetsDirectory))
             {
                 Directory.CreateDirectory(userWidgetsDirectory);
@@ -32,7 +32,7 @@ public class LocalSettingsHelper
         else
         {
             var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            applicationDataPath = Path.Combine(localAppDataPath, Constant.DesktopWidgets3, Constant.ApplicationDataFolder);
+            applicationDataPath = Path.Combine(localAppDataPath, Constants.DesktopWidgets3, Constants.ApplicationDataFolder);
         }
     }
 }

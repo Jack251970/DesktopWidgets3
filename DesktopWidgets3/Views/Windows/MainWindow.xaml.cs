@@ -48,7 +48,7 @@ public sealed partial class MainWindow : WindowEx
         _manager = WindowManager.Get(this);
         _handle = this.GetWindowHandle();
 
-        AppWindow.SetIcon(Constant.AppIconPath);
+        AppWindow.SetIcon(Constants.AppIconPath);
         Title = ConstantHelper.AppAppDisplayName;
         Content = null;
 

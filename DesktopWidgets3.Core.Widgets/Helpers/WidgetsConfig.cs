@@ -81,7 +81,7 @@ public static class WidgetsConfig
 
     private static WidgetGroupMetadata? GetWidgetMetadata(string widgetDirectory, bool preinstalled)
     {
-        var configPath = Path.Combine(widgetDirectory, Constant.WidgetMetadataFileName);
+        var configPath = Path.Combine(widgetDirectory, Constants.WidgetMetadataFileName);
         if (!File.Exists(configPath))
         {
             LogExtensions.LogError(ClassName, $"Didn't find config file <{configPath}>");

@@ -22,9 +22,9 @@ public class LocalSettingsService : ILocalSettingsService
     {
         _fileService = fileService;
 
-        _localsettingsFile = Constant.SettingsFile;
+        _localsettingsFile = Constants.SettingsFile;
 
-        _localSettingsPath = Path.Combine(LocalSettingsHelper.ApplicationDataPath, Constant.LocalSettingsFolder);
+        _localSettingsPath = Path.Combine(LocalSettingsHelper.ApplicationDataPath, Constants.LocalSettingsFolder);
 
         if (!Directory.Exists(_localSettingsPath))
         {

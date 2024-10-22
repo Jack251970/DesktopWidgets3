@@ -77,7 +77,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     public async void OnNavigatedTo(object parameter)
     {
         LanguageIndex = AppLanguageHelper.SupportedLanguages.IndexOf(AppLanguageHelper.PreferredLanguage);
-        RunStartup = await StartupHelper.GetStartup(Constant.StartupTaskId, Constant.StartupRegistryKey);
+        RunStartup = await StartupHelper.GetStartup(Constants.StartupTaskId, Constants.StartupRegistryKey);
 
         ShowRestartTip = false;
     }
@@ -132,7 +132,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     {
         if (_isInitialized)
         {
-            _ = StartupHelper.SetStartupAsync(Constant.StartupTaskId, Constant.StartupRegistryKey, value);
+            _ = StartupHelper.SetStartupAsync(Constants.StartupTaskId, Constants.StartupRegistryKey, value);
         }
     }
 

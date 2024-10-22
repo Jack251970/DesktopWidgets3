@@ -1,6 +1,6 @@
 ﻿namespace DesktopWidgets3.Infrastructure;
 
-public static class Constant
+public static class Constants
 {
     public const string DesktopWidgets3 = "DesktopWidgets3";
 
