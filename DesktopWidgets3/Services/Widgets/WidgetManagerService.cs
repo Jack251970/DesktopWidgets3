@@ -217,13 +217,22 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     public async Task RestartWidgetsAsync()
     {
         // close all widgets
-        await CloseAllWidgetsAsync();
+        await CloseAllWidgetWindowsAsync();
 
         // enable all enabled widgets
         InitializePinnedWidgets();
     }
 
     public async Task CloseAllWidgetsAsync()
+    {
+        // close all widgets
+        await CloseAllWidgetWindowsAsync();
+
+        // clear all widget settings
+        // TODO
+    }
+
+    private async Task CloseAllWidgetWindowsAsync()
     {
         await GetPinnedWidgetWindows().EnqueueOrInvokeAsync(async (window) => {
             // close window
@@ -542,10 +551,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // close window
             await WindowsExtensions.CloseWindowAsync(widgetWindow);
 
-            // remove from widget runtime id list & widget pair list
-            PinnedWidgetRuntimeIds.Remove(widgetRuntimeId);
+            // remove from widget pair list & widget runtime id list
             var widgetWindowPairIndex = GetWidgetWindowPairIndex(widgetId, widgetType, widgetIndex);
             PinnedWidgetWindowPairs.RemoveAt(widgetWindowPairIndex);
+            PinnedWidgetRuntimeIds.Remove(widgetRuntimeId);
         }
     }
 
