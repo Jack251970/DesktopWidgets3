@@ -1,16 +1,10 @@
-﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Windows.Graphics;
-using Windows.UI.ViewManagement;
 
 namespace DesktopWidgets3.Views.Windows;
 
 public sealed partial class MainWindow : WindowEx
 {
-    private readonly DispatcherQueue dispatcherQueue;
-
-    private readonly UISettings settings;
-
     #region Position & Size
 
     public PointInt32 Position
@@ -57,11 +51,6 @@ public sealed partial class MainWindow : WindowEx
         AppWindow.SetIcon(Constant.AppIconPath);
         Title = ConstantHelper.AppAppDisplayName;
         Content = null;
-
-        // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
-        dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-        settings = new UISettings();
-        settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
 
         Closed += WindowEx_Closed;
     }
@@ -111,13 +100,6 @@ public sealed partial class MainWindow : WindowEx
     #endregion
 
     #region Events
-
-    // This handles updating the caption button colors correctly when windows system theme is changed while the app is open
-    private void Settings_ColorValuesChanged(UISettings sender, object args)
-    {
-        // This calls comes off-thread, hence we will need to dispatch it to current app's thread
-        dispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () => TitleBarHelper.ApplySystemThemeToCaptionButtons(this, TitleBarText));
-    }
 
     // this enables the app to continue running in background after clicking close button
     private void WindowEx_Closed(object sender, WindowEventArgs args)
