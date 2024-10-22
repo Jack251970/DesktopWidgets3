@@ -113,20 +113,7 @@ public sealed partial class WidgetWindow : WindowEx
             if (isActive != value)
             {
                 isActive = value;
-            }
-
-            // get widget info & context
-            var (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(RuntimeId);
-            var widgetContext = _widgetManagerService.GetWidgetContext(widgetId, widgetType, widgetIndex);
-
-            // invoke activate or deactivate event
-            if (isActive)
-            {
-                _widgetResourceService.ActivateWidget(RuntimeId, widgetContext!);
-            }
-            else
-            {
-                _widgetResourceService.DeactivateWidget(widgetType, RuntimeId);
+                OnIsActiveChanged();
             }
         }
     }
@@ -341,7 +328,14 @@ public sealed partial class WidgetWindow : WindowEx
         SetTitleBarDragRegion(isEditMode);
 
         // set page update status
-        IsActive = !isEditMode;
+        if (!_isEditModeInitialized)
+        {
+            isActive = !isEditMode;
+        }
+        else
+        {
+            IsActive = !isEditMode;
+        }
 
         // set menu flyout
         ViewModel.WidgetMenuFlyout = isEditMode ? null : WidgetMenuFlyout;
@@ -349,6 +343,27 @@ public sealed partial class WidgetWindow : WindowEx
         // set edit mode flag
         _isEditModeInitialized = true;
         _isEditMode = isEditMode;
+    }
+
+    #endregion
+
+    #region Activate & Deactivate
+
+    public void OnIsActiveChanged()
+    {
+        // get widget info & context
+        var (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(RuntimeId);
+        var widgetContext = _widgetManagerService.GetWidgetContext(widgetId, widgetType, widgetIndex);
+
+        // invoke activate or deactivate event
+        if (isActive)
+        {
+            _widgetResourceService.ActivateWidget(widgetId, widgetContext!);
+        }
+        else
+        {
+            _widgetResourceService.DeactivateWidget(widgetType, RuntimeId);
+        }
     }
 
     #endregion

@@ -1,6 +1,6 @@
 ﻿namespace HardwareInfoProvider.Helpers;
 
-public class HardwareMonitor: IDisposable
+public partial class HardwareMonitor: IDisposable
 {
     #region enable properties
 

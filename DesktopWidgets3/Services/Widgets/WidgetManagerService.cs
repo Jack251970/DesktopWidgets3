@@ -485,19 +485,35 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.Position = widgetPosition;
 
             // get widget framework element
-            var widgetContext = GetWidgetContext(widgetId, widgetType, widgetIndex);
+            var widgetContext = GetWidgetContext(widgetId, widgetType, widgetIndex)!;
             var frameworkElement = _widgetResourceService.CreateWidgetContent(widgetId, widgetContext!);
 
             // set widget framework element
             widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
 
-            // invoke widget settings changed event
-            _widgetResourceService.OnWidgetSettingsChanged(widgetId, new WidgetSettingsChangedArgs()
+            // invoke widget event after widget framework element is loaded
+            if (frameworkElement.IsLoaded)
             {
-                Settings = widgetSettings,
-                WidgetContext = widgetContext!
-            });
+                WidgetFrameworkElement_Loaded(widgetId, widgetSettings, widgetContext, widgetWindow);
+            }
+            else
+            {
+                frameworkElement.Loaded += (s, e) => WidgetFrameworkElement_Loaded(widgetId, widgetSettings, widgetContext, widgetWindow);
+            }
         }
+    }
+
+    private void WidgetFrameworkElement_Loaded(string widgetId, BaseWidgetSettings widgetSettings, WidgetContext widgetContext, WidgetWindow widgetWindow)
+    {
+        // invoke widget settings changed event
+        _widgetResourceService.OnWidgetSettingsChanged(widgetId, new WidgetSettingsChangedArgs()
+        {
+            Settings = widgetSettings,
+            WidgetContext = widgetContext!
+        });
+
+        // invoke widget activate & deactivate event
+        widgetWindow.OnIsActiveChanged();
     }
 
     #endregion
@@ -811,21 +827,25 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     public async Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings)
     {
         // invoke widget settings changed event
-        var widgetContext = GetWidgetContext(widgetId, widgetType, widgetIndex);
-        if (widgetContext != null)  // if widget window exists
+        var widgetWindowPairIndex = GetWidgetWindowPairIndex(widgetId, widgetType, widgetIndex);
+        if (widgetWindowPairIndex != -1)
         {
+            // if widget window exists
+            var widgetWindowPair = PinnedWidgetWindowPairs[widgetWindowPairIndex];
             _widgetResourceService.OnWidgetSettingsChanged(widgetId, new WidgetSettingsChangedArgs()
             {
-                WidgetContext = widgetContext,
+                WidgetContext = widgetWindowPair.WidgetInfo.WidgetContext,
                 Settings = settings,
             });
         }
         var widgetSettingPairIndex = GetWidgetSettingPairIndex(widgetId, widgetType);
         if (widgetSettingPairIndex != -1 && WidgetSettingPairs[widgetSettingPairIndex].WidgetIndex == widgetIndex)
-        {  // if widget setting content exists and current index is the same
+        {
+            // if widget setting content exists and current index is the same
+            var widgetSettingPair = WidgetSettingPairs[widgetSettingPairIndex];
             _widgetResourceService.OnWidgetSettingsChanged(widgetId, new WidgetSettingsChangedArgs()
             {
-                WidgetContext = WidgetSettingPairs[widgetSettingPairIndex].WidgetSettingContext,
+                WidgetContext = widgetSettingPair.WidgetSettingContext,
                 Settings = settings,
             });
         }
