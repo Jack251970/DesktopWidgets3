@@ -45,6 +45,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         WidgetInitContext.SettingsService.OnBatterySaverChanged += OnBatterySaverChanged;
 
         HardwareInfoService.SampleTimer.Interval = widgetInitContext.SettingsService.BatterySaver ? 1000 : 200;
+
         HardwareInfoService.StartMonitor(HardwareType.CPU);
         HardwareInfoService.StartMonitor(HardwareType.GPU);
         HardwareInfoService.StartMonitor(HardwareType.Memory);

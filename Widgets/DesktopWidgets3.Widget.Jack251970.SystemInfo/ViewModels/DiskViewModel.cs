@@ -51,7 +51,7 @@ public partial class DiskViewModel : ObservableRecipient
 
     private void InitializeAllTimers()
     {
-        updateTimer.Start();
+        InitializeTimer(updateTimer, UpdateDisk);
     }
 
     private static void InitializeTimer(Timer timer, Action action)
