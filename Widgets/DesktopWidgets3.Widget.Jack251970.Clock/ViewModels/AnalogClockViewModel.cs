@@ -14,7 +14,7 @@ public partial class AnalogClockViewModel : ObservableRecipient
     private DateTime _dateTime = DateTime.Now;
 
     [ObservableProperty]
-    private string _systemTime = string.Empty;
+    private string _systemTime = DateTime.Now.ToString("T");
 
     #endregion
 

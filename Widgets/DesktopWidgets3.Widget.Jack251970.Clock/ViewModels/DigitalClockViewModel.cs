@@ -8,7 +8,7 @@ public partial class DigitalClockViewModel : ObservableRecipient
     #region view properties
 
     [ObservableProperty]
-    private string _systemTime = string.Empty;
+    private string _systemTime = DateTime.Now.ToString("T");
 
     #endregion
 
