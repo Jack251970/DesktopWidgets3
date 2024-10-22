@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
 
-public partial class NetworkSettingViewModel : BaseWidgetSettingViewModel
+public partial class NetworkSettingViewModel(string widgetId) : ObservableRecipient
 {
     #region view properties
 
@@ -11,36 +11,38 @@ public partial class NetworkSettingViewModel : BaseWidgetSettingViewModel
 
     #endregion
 
+    public string Id = widgetId;
+
     private NetworkSettings Settings = null!;
 
     private bool _initialized = false;
-
-    #region Abstract Methods
-
-    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
-    {
-        // initialize or update properties by settings
-        if (settings is NetworkSettings networkSettings)
-        {
-            Settings = networkSettings;
-
-            UseBps = Settings.UseBps;
-
-            if (!_initialized)
-            {
-                _initialized = true;
-            }
-        }
-    }
-
-    #endregion
 
     partial void OnUseBpsChanged(bool value)
     {
         if (_initialized)
         {
             Settings.UseBps = value;
-            Main.WidgetInitContext.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
+            Main.WidgetInitContext.WidgetService.UpdateWidgetSettingsAsync(Id, Settings);
         }
     }
+
+    #region Settings Methods
+
+    public void LoadSettings(BaseWidgetSettings settings)
+    {
+        if (settings is NetworkSettings networkSettings)
+        {
+            // initialize settings instance
+            if (!_initialized)
+            {
+                Settings = networkSettings;
+                _initialized = true;
+            }
+
+            // update settings
+            UseBps = Settings.UseBps;
+        }
+    }
+
+    #endregion
 }

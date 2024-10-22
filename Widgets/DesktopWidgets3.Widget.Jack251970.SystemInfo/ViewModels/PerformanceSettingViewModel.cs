@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
 
-public partial class PerformanceSettingViewModel : BaseWidgetSettingViewModel
+public partial class PerformanceSettingViewModel(string widgetId) : ObservableRecipient
 {
     #region view properties
 
@@ -10,6 +10,8 @@ public partial class PerformanceSettingViewModel : BaseWidgetSettingViewModel
     private bool _useCelsius = false;
 
     #endregion
+
+    public string Id = widgetId;
 
     private PerformanceSettings Settings = null!;
 
@@ -20,25 +22,25 @@ public partial class PerformanceSettingViewModel : BaseWidgetSettingViewModel
         if (_initialized)
         {
             Settings.UseCelsius = value;
-            Main.WidgetInitContext.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
+            Main.WidgetInitContext.WidgetService.UpdateWidgetSettingsAsync(Id, Settings);
         }
     }
 
-    #region Abstract Methods
+    #region Settings Methods
 
-    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    public void LoadSettings(BaseWidgetSettings settings)
     {
-        // initialize or update properties by settings
         if (settings is PerformanceSettings performanceSettings)
         {
-            Settings = performanceSettings;
-
-            UseCelsius = Settings.UseCelsius;
-
+            // initialize settings instance
             if (!_initialized)
             {
+                Settings = performanceSettings;
                 _initialized = true;
             }
+            
+            // update settings
+            UseCelsius = Settings.UseCelsius;
         }
     }
 

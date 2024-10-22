@@ -1,10 +1,9 @@
-﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.Clock.ViewModels;
 
-public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
+public partial class AnalogClockViewModel : ObservableRecipient
 {
     #region view properties
 
@@ -25,21 +24,44 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     #endregion
 
-    private readonly DispatcherQueueTimer dispatcherQueueTimer;
+    private readonly string Id;
 
-    public AnalogClockViewModel()
+    private DispatcherQueueTimer dispatcherQueueTimer = null!;
+
+    public AnalogClockViewModel(string widgetId)
     {
-        Main.WidgetInitContext.SettingsService.OnBatterySaverChanged += OnBatterySaverChanged;
+        Id = widgetId;
+        InitializeAllTimers();
+    }
 
+    #region Timer Methods
+
+    private void InitializeAllTimers()
+    {
         dispatcherQueueTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
         dispatcherQueueTimer.Interval = TimeSpan.FromSeconds(1);
         dispatcherQueueTimer.Tick += (_, _) => UpdateTime();
     }
 
-    private void OnBatterySaverChanged(bool enable)
+    public void StartAllTimers()
     {
-        HandsMode = enable ? HandsMode.Normal : HandsMode.Precise;
+        dispatcherQueueTimer.Start();
     }
+
+    public void StopAllTimers()
+    {
+        dispatcherQueueTimer.Stop();
+    }
+
+    public void DisposeAllTimers()
+    {
+        dispatcherQueueTimer.Stop();
+        dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
+    }
+
+    #endregion
+
+    #region Update Methods
 
     private void UpdateTime()
     {
@@ -50,11 +72,12 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, 
         SystemTime = systemTime;
     }
 
-    #region Abstract Methods
+    #endregion
 
-    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    #region Settings Methods
+
+    public void LoadSettings(BaseWidgetSettings settings)
     {
-        // initialize or update widget from settings
         if (settings is AnalogClockSettings analogClockSettings)
         {
             if (analogClockSettings.ShowSeconds != (timingFormat == "T"))
@@ -62,40 +85,6 @@ public partial class AnalogClockViewModel : BaseWidgetViewModel, IWidgetUpdate, 
                 timingFormat = analogClockSettings.ShowSeconds ? "T" : "t";
             }
         }
-
-        // initialize widget
-        if (initialized)
-        {
-            SystemTime = DateTime.Now.ToString(timingFormat);
-            dispatcherQueueTimer.Start();
-        }
-    }
-
-    #endregion
-
-    #region IWidgetUpdate
-
-    public void EnableUpdate(bool enable)
-    {
-        if (enable)
-        {
-            dispatcherQueueTimer.Start();
-        }
-        else
-        {
-            dispatcherQueueTimer.Stop();
-        }
-    }
-
-    #endregion
-
-    #region IWidgetWindowClose
-
-    public void WidgetWindowClosing()
-    {
-        Main.WidgetInitContext.SettingsService.OnBatterySaverChanged -= OnBatterySaverChanged;
-        dispatcherQueueTimer.Stop();
-        dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
     }
 
     #endregion

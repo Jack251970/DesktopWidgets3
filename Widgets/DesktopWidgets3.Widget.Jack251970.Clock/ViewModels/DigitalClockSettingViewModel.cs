@@ -2,7 +2,7 @@
 
 namespace DesktopWidgets3.Widget.Jack251970.Clock.ViewModels;
 
-public partial class DigitalClockSettingViewModel : BaseWidgetSettingViewModel
+public partial class DigitalClockSettingViewModel(string widgetId) : ObservableRecipient
 {
     #region view properties
 
@@ -10,6 +10,8 @@ public partial class DigitalClockSettingViewModel : BaseWidgetSettingViewModel
     private bool _showSeconds = true;
 
     #endregion
+
+    public string Id = widgetId;
 
     private DigitalClockSettings Settings = null!;
 
@@ -20,25 +22,25 @@ public partial class DigitalClockSettingViewModel : BaseWidgetSettingViewModel
         if (_initialized)
         {
             Settings.ShowSeconds = value;
-            Main.WidgetInitContext.WidgetService.UpdateWidgetSettings(this, Settings, true, false);
+            Main.WidgetInitContext.WidgetService.UpdateWidgetSettingsAsync(Id, Settings);
         }
     }
 
-    #region Abstract Methods
+    #region Settings Methods
 
-    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    public void LoadSettings(BaseWidgetSettings settings)
     {
-        // initialize or update properties by settings
         if (settings is DigitalClockSettings digitalClockSettings)
         {
-            Settings = digitalClockSettings;
-
-            ShowSeconds = Settings.ShowSeconds;
-
+            // initialize settings instance
             if (!_initialized)
             {
+                Settings = digitalClockSettings;
                 _initialized = true;
             }
+
+            // update settings
+            ShowSeconds = Settings.ShowSeconds;
         }
     }
 

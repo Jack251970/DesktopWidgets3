@@ -5,22 +5,25 @@ using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
 
-public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
+public partial class NetworkViewModel : ObservableRecipient
 {
     private static string ClassName => typeof(NetworkViewModel).Name;
 
     #region view properties
 
-    public ObservableCollection<Tuple<string, string>> NetworkNames { get; set; } = [];
+    public ObservableCollection<Tuple<string, string>> NetworkNames { get; set; } =
+    [
+        new Tuple<string, string>("Total", "Total")
+    ];
 
     [ObservableProperty]
     private int _selectedIndex = 0;
 
     [ObservableProperty]
-    private string _uploadSpeed = string.Empty;
+    private string _uploadSpeed = "--";
 
     [ObservableProperty]
-    private string _downloadSpeed = string.Empty;
+    private string _downloadSpeed = "--";
 
     #endregion
 
@@ -32,6 +35,8 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
     #endregion
 
+    public string Id;
+
     private List<Tuple<string, string>> lastNetworkNamesIdentifiers = [];
 
     private readonly HardwareInfoService _hardwareInfoService;
@@ -40,19 +45,11 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
     private bool listUpdating = false;
 
-    public NetworkViewModel(HardwareInfoService hardwareInfoService)
+    public NetworkViewModel(string widgetId, HardwareInfoService hardwareInfoService)
     {
+        Id = widgetId;
         _hardwareInfoService = hardwareInfoService;
-
         InitializeTimer(updateTimer, UpdateNetwork);
-    }
-
-    private static void InitializeTimer(Timer timer, Action action)
-    {
-        timer.AutoReset = true;
-        timer.Enabled = false;
-        timer.Interval = 1000;
-        timer.Elapsed += (s, e) => action();
     }
 
     partial void OnSelectedIndexChanged(int value)
@@ -72,9 +69,41 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
                 UseBps = useBps,
                 HardwareIdentifier = hardwareIdentifier
             };
-            Main.WidgetInitContext.WidgetService.UpdateWidgetSettings(this, newSettings, false, false);
+            Main.WidgetInitContext.WidgetService.UpdateWidgetSettingsAsync(Id, newSettings);
         }
     }
+
+    #region Timer Methods
+
+    private void InitializeAllTimers()
+    {
+        updateTimer.Start();
+    }
+
+    private static void InitializeTimer(Timer timer, Action action)
+    {
+        timer.AutoReset = true;
+        timer.Enabled = false;
+        timer.Interval = 1000;
+        timer.Elapsed += (s, e) => action();
+    }
+
+    public void StartAllTimers()
+    {
+        updateTimer.Start();
+    }
+
+    public void StopAllTimers()
+    {
+        updateTimer.Stop();
+    }
+
+    public void DisposeAllTimers()
+    {
+        updateTimer.Dispose();
+    }
+
+    #endregion
 
     #region Update Methods
 
@@ -128,7 +157,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
             if (lastNetworkNamesIdentifiers.Count != networkNamesIdentifiers.Count ||
                 !lastNetworkNamesIdentifiers.SequenceEqual(networkNamesIdentifiers))
             {
-                DispatcherQueue.TryEnqueue(() =>
+                DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
                 {
                     if (listUpdating)
                     {
@@ -149,7 +178,7 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
             lastNetworkNamesIdentifiers = networkNamesIdentifiers;
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
             {
                 SelectedIndex = selectedIndex;
                 UploadSpeed = selectedUploadSpeed;
@@ -180,11 +209,10 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
 
     #endregion
 
-    #region Abstract Methods
+    #region Settings Methods
 
-    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    public void LoadSettings(BaseWidgetSettings settings)
     {
-        // initialize or update widget from settings
         if (settings is NetworkSettings networkSettings)
         {
             if (networkSettings.UseBps != useBps)
@@ -197,42 +225,6 @@ public partial class NetworkViewModel : BaseWidgetViewModel, IWidgetUpdate, IWid
                 hardwareIdentifier = networkSettings.HardwareIdentifier;
             }
         }
-
-        // initialize widget
-        if (initialized)
-        {
-            if (hardwareIdentifier == "Total")
-            {
-                NetworkNames.Add(new Tuple<string, string>("Total", "Total"));
-            }
-            else
-            {
-                NetworkNames.Add(new Tuple<string, string>(hardwareIdentifier, hardwareIdentifier));
-            }
-            SelectedIndex = 0;
-            UploadSpeed = "--";
-            DownloadSpeed = "--";
-
-            updateTimer.Start();
-        }
-    }
-
-    #endregion
-
-    #region IWidgetUpdate
-
-    public void EnableUpdate(bool enable)
-    {
-        updateTimer.Enabled = enable;
-    }
-
-    #endregion
-
-    #region IWidgetWindowClose
-
-    public void WidgetWindowClosing()
-    {
-        updateTimer.Dispose();
     }
 
     #endregion

@@ -3,7 +3,7 @@ using Microsoft.UI.Dispatching;
 
 namespace DesktopWidgets3.Widget.Jack251970.Clock.ViewModels;
 
-public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
+public partial class DigitalClockViewModel : ObservableRecipient
 {
     #region view properties
 
@@ -18,25 +18,56 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
 
     #endregion
 
-    private readonly DispatcherQueueTimer dispatcherQueueTimer;
+    private readonly string Id;
 
-    public DigitalClockViewModel()
+    private DispatcherQueueTimer dispatcherQueueTimer = null!;
+
+    public DigitalClockViewModel(string widgetId)
+    {
+        Id = widgetId;
+        InitializeAllTimers();
+    }
+
+    #region Timer Methods
+
+    private void InitializeAllTimers()
     {
         dispatcherQueueTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
         dispatcherQueueTimer.Interval = TimeSpan.FromSeconds(1);
         dispatcherQueueTimer.Tick += (_, _) => UpdateTime();
     }
 
+    public void StartAllTimers()
+    {
+        dispatcherQueueTimer.Start();
+    }
+
+    public void StopAllTimers()
+    {
+        dispatcherQueueTimer.Stop();
+    }
+
+    public void DisposeAllTimers()
+    {
+        dispatcherQueueTimer.Stop();
+        dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
+    }
+
+    #endregion
+
+    #region Update Methods
+
     private void UpdateTime()
     {
         SystemTime = DateTime.Now.ToString(timingFormat);
     }
 
-    #region Abstract Methods
+    #endregion
 
-    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    #region Settings Methods
+
+    public void LoadSettings(BaseWidgetSettings settings)
     {
-        // initialize or update widget from settings
         if (settings is DigitalClockSettings digitalClockSettings)
         {
             if (digitalClockSettings.ShowSeconds != (timingFormat == "T"))
@@ -44,39 +75,6 @@ public partial class DigitalClockViewModel : BaseWidgetViewModel, IWidgetUpdate,
                 timingFormat = digitalClockSettings.ShowSeconds ? "T" : "t";
             }
         }
-
-        // initialize widget
-        if (initialized)
-        {
-            SystemTime = DateTime.Now.ToString(timingFormat);
-            dispatcherQueueTimer.Start();
-        }
-    }
-
-    #endregion
-
-    #region IWidgetUpdate
-
-    public void EnableUpdate(bool enable)
-    {
-        if (enable)
-        {
-            dispatcherQueueTimer.Start();
-        }
-        else
-        {
-            dispatcherQueueTimer.Stop();
-        }
-    }
-
-    #endregion
-
-    #region IWidgetWindowClose
-
-    public void WidgetWindowClosing()
-    {
-        dispatcherQueueTimer.Stop();
-        dispatcherQueueTimer.Tick -= (_, _) => UpdateTime();
     }
 
     #endregion

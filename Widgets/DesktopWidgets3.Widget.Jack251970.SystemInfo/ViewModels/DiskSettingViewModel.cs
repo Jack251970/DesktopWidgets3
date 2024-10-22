@@ -1,24 +1,29 @@
-﻿namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class DiskSettingViewModel : BaseWidgetSettingViewModel
+namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
+
+public partial class DiskSettingViewModel(string widgetId) : ObservableRecipient
 {
+    public string Id = widgetId;
+
     private DiskSettings Settings = null!;
 
     private bool _initialized = false;
 
-    #region Abstract Methods
+    #region Settings Methods
 
-    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    public void LoadSettings(BaseWidgetSettings settings)
     {
-        // initialize or update properties by settings
         if (settings is DiskSettings diskSettings)
         {
-            Settings = diskSettings;
-
+            // initialize settings instance
             if (!_initialized)
             {
+                Settings = diskSettings;
                 _initialized = true;
             }
+
+            // update settings
         }
     }
 

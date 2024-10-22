@@ -1,16 +1,25 @@
 ﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
 
-public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
+public partial class DiskViewModel : ObservableRecipient
 {
     private static string ClassName => typeof(DiskViewModel).Name;
 
     #region view properties
 
-    public ObservableCollection<ProgressCardData> ProgressCardItems { get; set; } = [];
+    public ObservableCollection<ProgressCardData> ProgressCardItems { get; set; } =
+    [
+        new ProgressCardData()
+        {
+            LeftTitle = "C:",
+            RightTitle = "--",
+            ProgressValue = 0
+        }
+    ];
 
     #endregion
 
@@ -20,17 +29,26 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
 
     #endregion
 
+    public string Id;
+
     private readonly HardwareInfoService _hardwareInfoService;
 
     private readonly Timer updateTimer = new();
 
     private bool listUpdating = false;
 
-    public DiskViewModel(HardwareInfoService hardwareInfoService)
+    public DiskViewModel(string widgetId, HardwareInfoService hardwareInfoService)
     {
+        Id = widgetId;
         _hardwareInfoService = hardwareInfoService;
+        InitializeAllTimers();
+    }
 
-        InitializeTimer(updateTimer, UpdateDisk);
+    #region Timer Methods
+
+    private void InitializeAllTimers()
+    {
+        updateTimer.Start();
     }
 
     private static void InitializeTimer(Timer timer, Action action)
@@ -40,6 +58,23 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
         timer.Interval = 1000;
         timer.Elapsed += (s, e) => action();
     }
+
+    public void StartAllTimers()
+    {
+        updateTimer.Start();
+    }
+
+    public void StopAllTimers()
+    {
+        updateTimer.Stop();
+    }
+
+    public void DisposeAllTimers()
+    {
+        updateTimer.Dispose();
+    }
+
+    #endregion
 
     #region Update Methods
 
@@ -83,7 +118,7 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
                 return;
             }
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
             {
                 if (listUpdating)
                 {
@@ -154,46 +189,14 @@ public partial class DiskViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidget
 
     #endregion
 
-    #region Abstract Methods
+    #region Settings Methods
 
-    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    public void LoadSettings(BaseWidgetSettings settings)
     {
-        // initialize or update widget from settings
         if (settings is DiskSettings)
         {
 
         }
-
-        // initialize widget
-        if (initialized)
-        {
-            ProgressCardItems.Add(new ProgressCardData()
-            {
-                LeftTitle = "C:",
-                RightTitle = "--",
-                ProgressValue = 0
-            });
-
-            updateTimer.Start();
-        }
-    }
-
-    #endregion
-
-    #region IWidgetUpdate
-
-    public void EnableUpdate(bool enable)
-    {
-        updateTimer.Enabled = enable;
-    }
-
-    #endregion
-
-    #region IWidgetWindowClose
-
-    public void WidgetWindowClosing()
-    {
-        updateTimer.Dispose();
     }
 
     #endregion

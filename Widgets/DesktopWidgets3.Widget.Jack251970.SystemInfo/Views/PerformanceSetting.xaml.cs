@@ -3,19 +3,30 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.Views;
 
-public sealed partial class PerformanceSetting : UserControl, ISettingViewModel
+public sealed partial class PerformanceSetting : UserControl, IWidgetSettingViewBase
 {
     public PerformanceSettingViewModel ViewModel;
 
-    BaseWidgetSettingViewModel ISettingViewModel.ViewModel => ViewModel;
+    public bool IsNavigated { get; private set; }
 
-    public PerformanceSetting(ResourceDictionary? resourceDictionary)
+    public PerformanceSetting(string widgetId, ResourceDictionary? resourceDictionary)
     {
-        ViewModel = new PerformanceSettingViewModel();
+        ViewModel = new PerformanceSettingViewModel(widgetId);
         if (resourceDictionary != null)
         {
             Resources.MergedDictionaries.Add(resourceDictionary);
         }
         InitializeComponent();
+    }
+
+    public void OnWidgetSettingsChanged(WidgetSettingsChangedArgs contextChangedArgs)
+    {
+        var widgetSettings = contextChangedArgs.Settings;
+        ViewModel.LoadSettings(widgetSettings);
+    }
+
+    public void Dispose()
+    {
+
     }
 }

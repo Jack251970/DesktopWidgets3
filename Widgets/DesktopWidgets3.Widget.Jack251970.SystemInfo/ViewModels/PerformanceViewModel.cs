@@ -4,35 +4,35 @@ using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
 
-public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, IWidgetWindowClose
+public partial class PerformanceViewModel : ObservableRecipient
 {
     private static string ClassName => typeof(PerformanceViewModel).Name;
 
     #region view properties
 
     [ObservableProperty]
-    private string _cpuLeftInfo = string.Empty;
+    private string _cpuLeftInfo = "--";
 
     [ObservableProperty]
-    private string _cpuRightInfo = string.Empty;
+    private string _cpuRightInfo = "--";
 
     [ObservableProperty]
     private double _cpuLoadValue = 0;
 
     [ObservableProperty]
-    private string _gpuLeftInfo = string.Empty;
+    private string _gpuLeftInfo = "--";
 
     [ObservableProperty]
-    private string _gpuRightInfo = string.Empty;
+    private string _gpuRightInfo = "--";
 
     [ObservableProperty]
     private double _gpuLoadValue = 0;
 
     [ObservableProperty]
-    private string _memoryLeftInfo = string.Empty;
+    private string _memoryLeftInfo = "--";
 
     [ObservableProperty]
-    private string _memoryRightInfo = string.Empty;
+    private string _memoryRightInfo = "--";
 
     [ObservableProperty]
     private double _memoryLoadValue = 0;
@@ -45,16 +45,25 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     #endregion
 
+    public string Id;
+
     private readonly HardwareInfoService _hardwareInfoService;
 
     private readonly Timer cpuUpdateTimer = new();
     private readonly Timer gpuUpdateTimer = new();
     private readonly Timer memoryUpdateTimer = new();
 
-    public PerformanceViewModel(HardwareInfoService hardwareInfoService)
+    public PerformanceViewModel(string widgetId, HardwareInfoService hardwareInfoService)
     {
+        Id = widgetId;
         _hardwareInfoService = hardwareInfoService;
+        InitializeAllTimers();
+    }
 
+    #region Timer Methods
+
+    private void InitializeAllTimers()
+    {
         InitializeTimer(cpuUpdateTimer, UpdateCPU);
         InitializeTimer(gpuUpdateTimer, UpdateGPU);
         InitializeTimer(memoryUpdateTimer, UpdateMemory);
@@ -67,6 +76,29 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
         timer.Interval = 1000;
         timer.Elapsed += (s, e) => action();
     }
+
+    public void StartAllTimers()
+    {
+        cpuUpdateTimer.Start();
+        gpuUpdateTimer.Start();
+        memoryUpdateTimer.Start();
+    }
+
+    public void StopAllTimers()
+    {
+        cpuUpdateTimer.Stop();
+        gpuUpdateTimer.Stop();
+        memoryUpdateTimer.Stop();
+    }
+
+    public void DisposeAllTimers()
+    {
+        cpuUpdateTimer.Dispose();
+        gpuUpdateTimer.Dispose();
+        memoryUpdateTimer.Dispose();
+    }
+
+    #endregion
 
     #region Update Methods
 
@@ -84,7 +116,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
             var cpuUsage = cpuStats.CpuUsage;
             var cpuSpeed = FormatUtils.FormatCpuSpeed(cpuStats.CpuSpeed);
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
             {
                 CpuLeftInfo = "CPU";
                 CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? FormatUtils.FormatPercentage(cpuUsage) : cpuSpeed;
@@ -117,7 +149,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
             // remove unnecessary strings from GPU name.
             gpuName = gpuName.Replace("(TM)", string.Empty).Replace("(R)", string.Empty).Replace("GPU", string.Empty).Trim();
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
             {
                 GpuLeftInfo = string.IsNullOrEmpty(gpuName) ? "GPU" : "GPU" + $" ({gpuName})";
                 GpuRightInfo = gpuTemperature == 0 ? FormatUtils.FormatPercentage(gpuUsage) : FormatUtils.FormatTemperature(gpuTemperature, useCelsius);
@@ -146,7 +178,7 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
             var allMem = memoryStats.AllMem;
             var memoryUsedInfo = FormatUtils.FormatUsedInfoByte(usedMem, allMem);
 
-            DispatcherQueue.TryEnqueue(() =>
+            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
             {
                 MemoryLeftInfo = Main.WidgetInitContext.LocalizationService.GetLocalizedString("Performance_Memory");
                 MemoryRightInfo = allMem == 0 ? FormatUtils.FormatPercentage(memoryUsage) : memoryUsedInfo;
@@ -161,11 +193,10 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
 
     #endregion
 
-    #region Abstract Methods
+    #region Settings Methods
 
-    protected override void LoadSettings(BaseWidgetSettings settings, bool initialized)
+    public void LoadSettings(BaseWidgetSettings settings)
     {
-        // initialize or update widget from settings
         if (settings is PerformanceSettings performanceSettings)
         {
             if (performanceSettings.UseCelsius != useCelsius)
@@ -173,43 +204,6 @@ public partial class PerformanceViewModel : BaseWidgetViewModel, IWidgetUpdate, 
                 useCelsius = performanceSettings.UseCelsius;
             }
         }
-
-        // initialize widget
-        if (initialized)
-        {
-            CpuLeftInfo = "--";
-            CpuRightInfo = "--";
-            GpuLeftInfo = "--";
-            GpuRightInfo = "--";
-            MemoryLeftInfo = "--";
-            MemoryRightInfo = "--";
-
-            cpuUpdateTimer.Start();
-            gpuUpdateTimer.Start();
-            memoryUpdateTimer.Start();
-        }
-    }
-
-    #endregion
-
-    #region IWidgetUpdate
-
-    public void EnableUpdate(bool enable)
-    {
-        cpuUpdateTimer.Enabled = enable;
-        gpuUpdateTimer.Enabled = enable;
-        memoryUpdateTimer.Enabled = enable;
-    }
-
-    #endregion
-
-    #region IWidgetWindowClose
-
-    public void WidgetWindowClosing()
-    {
-        cpuUpdateTimer.Dispose();
-        gpuUpdateTimer.Dispose();
-        memoryUpdateTimer.Dispose();
     }
 
     #endregion

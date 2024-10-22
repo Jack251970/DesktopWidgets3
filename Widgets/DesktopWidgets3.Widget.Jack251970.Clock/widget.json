@@ -10,7 +10,7 @@
   "ExecuteFileName": "DesktopWidgets3.Widget.Jack251970.Clock.dll",
   "Widgets": [
     {
-      "Type": "SystemInfo_DigitalClock",
+      "Type": "Clock_DigitalClock",
       "Name": "Digital Clock",
       "Description": "Show system time with a digital clock",
       "IcoPath": "Images\\Clock.png",
@@ -22,7 +22,7 @@
       "IsCustomizable": false
     },
     {
-      "Type": "SystemInfo_AnalogClock",
+      "Type": "Clock_AnalogClock",
       "Name": "Analog Clock",
       "Description": "Show system time with an analog clock",
       "IcoPath": "Images\\Clock.png",
