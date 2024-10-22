@@ -28,19 +28,19 @@ public partial class DigitalClockSettingViewModel(string widgetId) : ObservableR
 
     #region Settings Methods
 
-    public void LoadSettings(BaseWidgetSettings settings)
+    public void LoadSettings(BaseWidgetSettings baseSettings)
     {
-        if (settings is DigitalClockSettings digitalClockSettings)
+        if (baseSettings is DigitalClockSettings settings)
         {
+            // update settings
+            ShowSeconds = settings.ShowSeconds;
+
             // initialize settings instance
             if (!_initialized)
             {
-                Settings = digitalClockSettings;
+                Settings = settings;
                 _initialized = true;
             }
-
-            // update settings
-            ShowSeconds = Settings.ShowSeconds;
         }
     }
 

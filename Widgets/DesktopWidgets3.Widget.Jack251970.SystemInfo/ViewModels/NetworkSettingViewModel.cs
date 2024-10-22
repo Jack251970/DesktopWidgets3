@@ -28,19 +28,19 @@ public partial class NetworkSettingViewModel(string widgetId) : ObservableRecipi
 
     #region Settings Methods
 
-    public void LoadSettings(BaseWidgetSettings settings)
+    public void LoadSettings(BaseWidgetSettings baseSettings)
     {
-        if (settings is NetworkSettings networkSettings)
+        if (baseSettings is NetworkSettings settings)
         {
+            // update settings
+            UseBps = settings.UseBps;
+
             // initialize settings instance
             if (!_initialized)
             {
-                Settings = networkSettings;
+                Settings = settings;
                 _initialized = true;
             }
-
-            // update settings
-            UseBps = Settings.UseBps;
         }
     }
 

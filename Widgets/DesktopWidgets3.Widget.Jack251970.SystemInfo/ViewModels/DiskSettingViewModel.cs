@@ -12,18 +12,18 @@ public partial class DiskSettingViewModel(string widgetId) : ObservableRecipient
 
     #region Settings Methods
 
-    public void LoadSettings(BaseWidgetSettings settings)
+    public void LoadSettings(BaseWidgetSettings baseSettings)
     {
-        if (settings is DiskSettings diskSettings)
+        if (baseSettings is DiskSettings settings)
         {
+            // update settings
+
             // initialize settings instance
             if (!_initialized)
             {
-                Settings = diskSettings;
+                Settings = settings;
                 _initialized = true;
             }
-
-            // update settings
         }
     }
 

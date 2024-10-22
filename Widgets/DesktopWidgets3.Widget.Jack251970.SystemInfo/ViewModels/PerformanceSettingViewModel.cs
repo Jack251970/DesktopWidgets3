@@ -28,19 +28,19 @@ public partial class PerformanceSettingViewModel(string widgetId) : ObservableRe
 
     #region Settings Methods
 
-    public void LoadSettings(BaseWidgetSettings settings)
+    public void LoadSettings(BaseWidgetSettings baseSettings)
     {
-        if (settings is PerformanceSettings performanceSettings)
+        if (baseSettings is PerformanceSettings settings)
         {
+            // update settings
+            UseCelsius = settings.UseCelsius;
+
             // initialize settings instance
             if (!_initialized)
             {
-                Settings = performanceSettings;
+                Settings = settings;
                 _initialized = true;
             }
-            
-            // update settings
-            UseCelsius = Settings.UseCelsius;
         }
     }
 

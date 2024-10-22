@@ -26,21 +26,21 @@ public partial class AnalogClockSettingViewModel(string widgetId) : ObservableRe
         }
     }
 
-    #region Abstract Methods
+    #region Settings Methods
 
-    public void LoadSettings(BaseWidgetSettings settings)
+    public void LoadSettings(BaseWidgetSettings baseSettings)
     {
-        if (settings is AnalogClockSettings analogClockSettings)
+        if (baseSettings is AnalogClockSettings settings)
         {
+            // update settings
+            ShowSeconds = settings.ShowSeconds;
+
             // initialize settings instance
             if (!_initialized)
             {
-                Settings = analogClockSettings;
+                Settings = settings;
                 _initialized = true;
             }
-
-            // update settings
-            ShowSeconds = Settings.ShowSeconds;
         }
     }
 
