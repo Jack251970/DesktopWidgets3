@@ -4,9 +4,15 @@ namespace DesktopWidgets3.Core.Widgets.Models.WidgetPairs;
 
 public class WidgetWindowPair
 {
-    public string RuntimeId { get; set; } = string.Empty;
+    public required string RuntimeId { get; set; }
 
-    public WidgetInfo WidgetInfo { get; set; } = null!;
+    public required string WidgetId { get; set; }
+
+    public required string WidgetType { get; set; }
+
+    public required int WidgetIndex { get; set; }
+
+    public required WidgetInfo WidgetInfo { get; set; }
 
     public WidgetWindow Window { get; set; } = null!;
 

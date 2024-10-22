@@ -4,13 +4,17 @@ namespace DesktopWidgets3.Core.Widgets.Models.WidgetPairs;
 
 public class WidgetSettingPair
 {
-    public string RuntimeId { get; set; } = string.Empty;
+    public required string RuntimeId { get; set; }
 
-    public int WidgetIndex { get; set; } = -1;
+    public required string WidgetId { get; set; }
 
-    public WidgetSettingContext WidgetSettingContext { get; set; } = null!;
+    public required string WidgetType { get; set; }
 
-    public FrameworkElement WidgetSettingContent { get; set; } = null!;
+    public required int WidgetIndex { get; set; }
+
+    public required WidgetSettingContext WidgetSettingContext { get; set; }
+
+    public required FrameworkElement WidgetSettingContent { get; set; }
 
     public override bool Equals(object? obj)
     {

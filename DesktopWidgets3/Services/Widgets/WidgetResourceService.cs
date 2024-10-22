@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -245,7 +244,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         var themeService = DependencyExtensions.GetRequiredService<IThemeService>();
         var widgetService = DependencyExtensions.GetRequiredService<IWidgetService>();
 
-        var failedPlugins = new ConcurrentQueue<WidgetGroupPair>();
+        var failedPlugins = new System.Collections.Concurrent.ConcurrentQueue<WidgetGroupPair>();
 
         var initTasks = InstalledWidgetGroupPairs.Select(pair => Task.Run(delegate
         {
