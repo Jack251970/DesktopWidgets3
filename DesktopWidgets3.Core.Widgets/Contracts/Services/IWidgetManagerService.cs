@@ -4,7 +4,7 @@ public interface IWidgetManagerService
 {
     (string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId);
 
-    (string widgetId, string widgetType) GetWidgetSettingInfo(string widgetSettingRuntimeId);
+    (string widgetId, string widgetType, int widgetIndex) GetWidgetSettingInfo(string widgetSettingRuntimeId);
 
     WidgetInfo? GetWidgetInfo(string widgetId, string widgetType, int widgetIndex);
 

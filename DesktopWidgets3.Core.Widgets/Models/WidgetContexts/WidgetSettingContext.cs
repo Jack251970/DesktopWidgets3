@@ -12,7 +12,7 @@ public class WidgetSettingContext(IWidgetManagerService widgetManagerService) : 
     {
         get
         {
-            var (widgetId, widgetType) = _widgetManagerService.GetWidgetSettingInfo(Id);
+            var (widgetId, widgetType, _) = _widgetManagerService.GetWidgetSettingInfo(Id);
             return _widgetManagerService.GetWidgetSettingIsNavigated(widgetId, widgetType);
         }
     }

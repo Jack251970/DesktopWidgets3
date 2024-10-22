@@ -127,14 +127,16 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Setting Info & Runtime Id
 
-    public (string widgetId, string widgetType) GetWidgetSettingInfo(string widgetSettingRuntimeId)
+    public (string widgetId, string widgetType, int widgetIndex) GetWidgetSettingInfo(string widgetSettingRuntimeId)
     {
         if (WidgetSettingRuntimeIds.TryGetValue(widgetSettingRuntimeId, out var value))
         {
-            return value;
+            var (widgetId, widgetType) = value;
+            var widgetSettingPairIndex = GetWidgetSettingPairIndex(widgetId, widgetType);
+            return (widgetId, widgetType, WidgetSettingPairs[widgetSettingPairIndex].WidgetIndex);
         }
 
-        return (string.Empty, string.Empty);
+        return (string.Empty, string.Empty, -1);
     }
 
     private string GetWidgetSettingRuntimeId(string widgetId, string widgetType)

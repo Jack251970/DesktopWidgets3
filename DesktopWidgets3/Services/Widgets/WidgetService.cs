@@ -8,8 +8,20 @@ internal class WidgetService : IWidgetService
     {
         // get widget info
         var (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(widgetRuntimeId);
-
-        // update widget settings
-        await _widgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, widgetIndex, settings);
+        if (widgetId != string.Empty)
+        {
+            // update widget settings
+            await _widgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, widgetIndex, settings);
+        }
+        else
+        {
+            // get widget setting info
+            (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetSettingInfo(widgetRuntimeId);
+            if (widgetId != string.Empty)
+            {
+                // update widget settings
+                await _widgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, widgetIndex, settings);
+            }
+        }
     }
 }
