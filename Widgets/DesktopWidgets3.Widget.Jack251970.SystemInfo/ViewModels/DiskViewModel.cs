@@ -31,6 +31,8 @@ public partial class DiskViewModel : ObservableRecipient
 
     public string Id;
 
+    private readonly DispatcherQueue _dispatcherQueue;
+
     private readonly HardwareInfoService _hardwareInfoService;
 
     private readonly Timer updateTimer = new();
@@ -40,6 +42,7 @@ public partial class DiskViewModel : ObservableRecipient
     public DiskViewModel(string widgetId, HardwareInfoService hardwareInfoService)
     {
         Id = widgetId;
+        _dispatcherQueue = Main.WidgetInitContext.WidgetService.GetDispatcherQueue(Id);
         _hardwareInfoService = hardwareInfoService;
         InitializeAllTimers();
     }
@@ -118,7 +121,7 @@ public partial class DiskViewModel : ObservableRecipient
                 return;
             }
 
-            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+            _dispatcherQueue.TryEnqueue(() =>
             {
                 if (listUpdating)
                 {

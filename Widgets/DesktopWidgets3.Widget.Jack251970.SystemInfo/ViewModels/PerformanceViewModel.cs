@@ -47,6 +47,8 @@ public partial class PerformanceViewModel : ObservableRecipient
 
     public string Id;
 
+    private readonly DispatcherQueue _dispatcherQueue;
+
     private readonly HardwareInfoService _hardwareInfoService;
 
     private readonly Timer cpuUpdateTimer = new();
@@ -56,6 +58,7 @@ public partial class PerformanceViewModel : ObservableRecipient
     public PerformanceViewModel(string widgetId, HardwareInfoService hardwareInfoService)
     {
         Id = widgetId;
+        _dispatcherQueue = Main.WidgetInitContext.WidgetService.GetDispatcherQueue(Id);
         _hardwareInfoService = hardwareInfoService;
         InitializeAllTimers();
     }
@@ -116,7 +119,7 @@ public partial class PerformanceViewModel : ObservableRecipient
             var cpuUsage = cpuStats.CpuUsage;
             var cpuSpeed = FormatUtils.FormatCpuSpeed(cpuStats.CpuSpeed);
 
-            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+            _dispatcherQueue.TryEnqueue(() =>
             {
                 CpuLeftInfo = "CPU";
                 CpuRightInfo = string.IsNullOrEmpty(cpuSpeed) ? FormatUtils.FormatPercentage(cpuUsage) : cpuSpeed;
@@ -147,9 +150,9 @@ public partial class PerformanceViewModel : ObservableRecipient
             var gpuTemperature = gpuStats.GetGPUTemperature(_gpuActiveIndex);
 
             // remove unnecessary strings from GPU name.
-            gpuName = gpuName.Replace("(TM)", string.Empty).Replace("(R)", string.Empty).Replace("GPU", string.Empty).Trim();
+            gpuName = gpuName.Replace("GPU", string.Empty).Trim();
 
-            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+            _dispatcherQueue.TryEnqueue(() =>
             {
                 GpuLeftInfo = string.IsNullOrEmpty(gpuName) ? "GPU" : "GPU" + $" ({gpuName})";
                 GpuRightInfo = gpuTemperature == 0 ? FormatUtils.FormatPercentage(gpuUsage) : FormatUtils.FormatTemperature(gpuTemperature, useCelsius);
@@ -178,7 +181,7 @@ public partial class PerformanceViewModel : ObservableRecipient
             var allMem = memoryStats.AllMem;
             var memoryUsedInfo = FormatUtils.FormatUsedInfoByte(usedMem, allMem);
 
-            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+            _dispatcherQueue.TryEnqueue(() =>
             {
                 MemoryLeftInfo = Main.WidgetInitContext.LocalizationService.GetLocalizedString("Performance_Memory");
                 MemoryRightInfo = allMem == 0 ? FormatUtils.FormatPercentage(memoryUsage) : memoryUsedInfo;

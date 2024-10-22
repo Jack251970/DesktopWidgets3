@@ -1,8 +1,16 @@
-﻿namespace DesktopWidgets3.Services.Widgets;
+﻿using Microsoft.UI.Dispatching;
+
+namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetService : IWidgetService
 {
     private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
+
+    public DispatcherQueue GetDispatcherQueue(string widgetRuntimeId)
+    {
+        var widgetWindow = _widgetManagerService.GetWidgetWindow(widgetRuntimeId);
+        return widgetWindow!.DispatcherQueue;
+    }
 
     public async Task UpdateWidgetSettingsAsync(string widgetRuntimeId, BaseWidgetSettings settings)
     {

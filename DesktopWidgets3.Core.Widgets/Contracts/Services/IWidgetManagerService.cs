@@ -30,6 +30,8 @@ public interface IWidgetManagerService
 
     Task DeleteWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh);
 
+    WidgetWindow? GetWidgetWindow(string widgetRuntimeId);
+
     void NavigateToWidgetSettingPage(string widgetId, string widgetType, int widgetIndex);
 
     BaseWidgetSettings? GetWidgetSettings(string widgetId, string widgetType, int widgetIndex);

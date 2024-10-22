@@ -389,6 +389,17 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         await _appSettingsService.DeleteWidgetAsync(widgetId, widgetType, widgetIndex);
     }
 
+    public WidgetWindow? GetWidgetWindow(string widgetRuntimeId)
+    {
+        var widgetPairIndex = GetWidgetWindowPairIndex(widgetRuntimeId);
+        if (widgetPairIndex != -1)
+        {
+            return PinnedWidgetWindowPairs[widgetPairIndex].Window;
+        }
+
+        return null;
+    }
+
     #endregion
 
     #region Private
@@ -566,17 +577,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     {
         Unpin,
         Delete
-    }
-
-    private WidgetWindow? GetWidgetWindow(string widgetRuntimeId)
-    {
-        var widgetPairIndex = GetWidgetWindowPairIndex(widgetRuntimeId);
-        if (widgetPairIndex != -1)
-        {
-            return PinnedWidgetWindowPairs[widgetPairIndex].Window;
-        }
-
-        return null;
     }
 
     #endregion

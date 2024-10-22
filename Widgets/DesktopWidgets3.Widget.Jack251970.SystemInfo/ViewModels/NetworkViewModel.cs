@@ -37,6 +37,8 @@ public partial class NetworkViewModel : ObservableRecipient
 
     public string Id;
 
+    private readonly DispatcherQueue _dispatcherQueue;
+
     private List<Tuple<string, string>> lastNetworkNamesIdentifiers = [];
 
     private readonly HardwareInfoService _hardwareInfoService;
@@ -48,6 +50,7 @@ public partial class NetworkViewModel : ObservableRecipient
     public NetworkViewModel(string widgetId, HardwareInfoService hardwareInfoService)
     {
         Id = widgetId;
+        _dispatcherQueue = Main.WidgetInitContext.WidgetService.GetDispatcherQueue(Id);
         _hardwareInfoService = hardwareInfoService;
         InitializeTimer(updateTimer, UpdateNetwork);
     }
@@ -157,7 +160,7 @@ public partial class NetworkViewModel : ObservableRecipient
             if (lastNetworkNamesIdentifiers.Count != networkNamesIdentifiers.Count ||
                 !lastNetworkNamesIdentifiers.SequenceEqual(networkNamesIdentifiers))
             {
-                DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+                _dispatcherQueue.TryEnqueue(() =>
                 {
                     if (listUpdating)
                     {
@@ -178,7 +181,7 @@ public partial class NetworkViewModel : ObservableRecipient
 
             lastNetworkNamesIdentifiers = networkNamesIdentifiers;
 
-            DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+            _dispatcherQueue.TryEnqueue(() =>
             {
                 SelectedIndex = selectedIndex;
                 UploadSpeed = selectedUploadSpeed;
