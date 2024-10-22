@@ -36,7 +36,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     private int _backdropTypeIndex;
 
     [ObservableProperty]
-    private string _appDisplayName = ConstantHelper.AppAppDisplayName;
+    private string _appDisplayName = ConstantHelper.AppDisplayName;
 
     [ObservableProperty]
     private string _version = $"v{InfoHelper.GetVersion()}";

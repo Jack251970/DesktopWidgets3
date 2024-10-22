@@ -8,7 +8,6 @@
     xmlns:tb="using:H.NotifyIcon"
     d:DataContext="{d:DesignInstance Type=local:TrayMenuControl}"
     mc:Ignorable="d">
-
     <tb:TaskbarIcon
         x:Name="TrayIconControl"
         ContextMenuMode="SecondWindow"

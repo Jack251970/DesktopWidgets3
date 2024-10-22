@@ -8,7 +8,7 @@ namespace DesktopWidgets3.UserControls;
 public sealed partial class TrayMenuControl : UserControl
 {
     [ObservableProperty]
-    private string _appDisplayName = ConstantHelper.AppAppDisplayName;
+    private string _appDisplayName = ConstantHelper.AppDisplayName;
 
     private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 

@@ -60,7 +60,7 @@ public partial class App : Application
     public App()
     {
         // Check if app is already running
-        if (SystemHelper.IsWindowExist(null, ConstantHelper.AppAppDisplayName, true))
+        if (SystemHelper.IsWindowExist(null, ConstantHelper.AppDisplayName, true))
         {
             IsExistWindow = true;
             Current.Exit();

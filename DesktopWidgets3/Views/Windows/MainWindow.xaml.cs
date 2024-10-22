@@ -49,7 +49,7 @@ public sealed partial class MainWindow : WindowEx
         _handle = this.GetWindowHandle();
 
         AppWindow.SetIcon(Constants.AppIconPath);
-        Title = ConstantHelper.AppAppDisplayName;
+        Title = ConstantHelper.AppDisplayName;
         Content = null;
 
         Closed += WindowEx_Closed;

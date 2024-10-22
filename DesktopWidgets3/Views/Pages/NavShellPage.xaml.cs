@@ -21,7 +21,7 @@ public sealed partial class NavShellPage : Page
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.TitleBar = AppTitleBar;
 
-        AppTitleBarText.Text = ConstantHelper.AppAppDisplayName;
+        AppTitleBarText.Text = ConstantHelper.AppDisplayName;
 
         App.MainWindow.Activated += MainWindow_Activated;
     }

@@ -5,7 +5,7 @@ namespace DesktopWidgets3.ViewModels.Pages;
 public partial class HomeViewModel : ObservableRecipient
 {
     [ObservableProperty]
-    private string _appDisplayName = ConstantHelper.AppAppDisplayName;
+    private string _appDisplayName = ConstantHelper.AppDisplayName;
 
     public HomeViewModel()
     {
