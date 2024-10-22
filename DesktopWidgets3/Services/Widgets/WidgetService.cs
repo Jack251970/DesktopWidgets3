@@ -9,7 +9,13 @@ internal class WidgetService : IWidgetService
     public DispatcherQueue GetDispatcherQueue(string widgetRuntimeId)
     {
         var widgetWindow = _widgetManagerService.GetWidgetWindow(widgetRuntimeId);
-        return widgetWindow!.DispatcherQueue;
+        if (widgetWindow != null)
+        {
+            // from widget
+            return widgetWindow.DispatcherQueue;
+        }
+        // from widget setting
+        return App.MainWindow.DispatcherQueue;
     }
 
     public async Task UpdateWidgetSettingsAsync(string widgetRuntimeId, BaseWidgetSettings settings)
