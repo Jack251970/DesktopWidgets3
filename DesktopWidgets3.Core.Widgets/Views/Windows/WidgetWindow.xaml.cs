@@ -362,7 +362,7 @@ public sealed partial class WidgetWindow : WindowEx
         }
         else
         {
-            _widgetResourceService.DeactivateWidget(widgetType, RuntimeId);
+            _widgetResourceService.DeactivateWidget(widgetId, RuntimeId);
         }
     }
 
