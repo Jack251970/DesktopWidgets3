@@ -26,6 +26,13 @@ public interface IAsyncWidgetGroup
     FrameworkElement CreateWidgetContent(IWidgetContext widgetContext, ResourceDictionary? resourceDictionary);
 
     /// <summary>
+    /// Unpin one widget instance.
+    /// </summary>
+    /// <param name="widgetId">The unique identifier of the widget instance.</param>
+    /// <param name="widgetSettings">Settings of the widget instance.</param>
+    void UnpinWidget(string widgetId, BaseWidgetSettings widgetSettings);
+
+    /// <summary>
     /// Delete one widget instance.
     /// </summary>
     /// <param name="widgetId">The unique identifier of the widget instance.</param>

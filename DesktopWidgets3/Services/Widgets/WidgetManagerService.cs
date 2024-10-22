@@ -13,9 +13,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     private readonly Dictionary<string, (string, string, int)> PinnedWidgetRuntimeIds = [];
+    private readonly Dictionary<string, (string, string)> WidgetSettingRuntimeIds = [];
 
     private readonly List<WidgetWindowPair> PinnedWidgetWindowPairs = [];
-    private readonly List<WidgetWindow> PinnedWidgetWindows = [];
+    private readonly List<WidgetSettingPair> WidgetSettingPairs = [];
 
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
     private bool _inEditMode = false;
@@ -54,17 +55,13 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     public WidgetInfo? GetWidgetInfo(string widgetId, string widgetType, int widgetIndex)
     {
-        // get widget runtime id
-        var widgetRuntimeId = GetWidgetRuntimeId(widgetId, widgetType, widgetIndex);
+        // get widget window pair index
+        var widgetWindowPairIndex = GetWidgetWindowPairIndex(widgetId, widgetType, widgetIndex);
 
         // get widget info
-        if (widgetRuntimeId != string.Empty)
+        if (widgetWindowPairIndex != -1)
         {
-            var widgetInfo = PinnedWidgetWindowPairs.FirstOrDefault(x => x.Window.RuntimeId == widgetRuntimeId)?.WidgetInfo;
-            if (widgetInfo != null)
-            {
-                return widgetInfo;
-            }
+            return PinnedWidgetWindowPairs[widgetWindowPairIndex].WidgetInfo;
         }
 
         return null;
@@ -84,23 +81,115 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         return null;
     }
 
+    private int GetWidgetWindowPairIndex(string widgetId, string widgetType, int widgetIndex)
+    {
+        // get widget runtime id
+        var widgetRuntimeId = GetWidgetRuntimeId(widgetId, widgetType, widgetIndex);
+
+        // get widget pair index
+        return GetWidgetWindowPairIndex(widgetRuntimeId);
+    }
+
+    private int GetWidgetWindowPairIndex(string widgetRuntimeId)
+    {
+        // get widget pair index
+        if (widgetRuntimeId != string.Empty)
+        {
+            return PinnedWidgetWindowPairs.FindIndex(x => x.RuntimeId == widgetRuntimeId);
+        }
+
+        return -1;
+    }
+
     #endregion
 
     #region Is Active
 
     public bool GetWidgetIsActive(string widgetId, string widgetType, int widgetIndex)
     {
-        // get widget runtime id
-        var widgetRuntimeId = GetWidgetRuntimeId(widgetId, widgetType, widgetIndex);
+        // get widget window pair index
+        var widgetWindowPairIndex = GetWidgetWindowPairIndex(widgetId, widgetType, widgetIndex);
 
-        // get widget window active state
-        var index = PinnedWidgetWindowPairs.FindIndex(x => x.Window.RuntimeId == widgetRuntimeId);
-        if (index != -1)
+        // get widget is active
+        if (widgetWindowPairIndex != -1)
         {
-            return PinnedWidgetWindowPairs[index].Window.IsActive;
+            return PinnedWidgetWindowPairs[widgetWindowPairIndex].Window.IsActive;
         }
 
         return false;
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Widget Setting Info
+
+    #region Setting Info & Runtime Id
+
+    public (string widgetId, string widgetType) GetWidgetSettingInfo(string widgetSettingRuntimeId)
+    {
+        if (WidgetSettingRuntimeIds.TryGetValue(widgetSettingRuntimeId, out var value))
+        {
+            return value;
+        }
+
+        return (string.Empty, string.Empty);
+    }
+
+    private string GetWidgetSettingRuntimeId(string widgetId, string widgetType)
+    {
+        foreach (var (widgetSettingRuntimeId, widgetInfo) in WidgetSettingRuntimeIds)
+        {
+            if (widgetInfo == (widgetId, widgetType))
+            {
+                return widgetSettingRuntimeId;
+            }
+        }
+
+        return string.Empty;
+    }
+
+    #endregion
+
+    #region Widget Setting Context
+
+    public WidgetSettingContext? GetWidgetSettingContext(string widgetId, string widgetType)
+    {
+        // get widget setting pair index
+        var widgetSettingPairIndex = GetWidgetSettingPairIndex(widgetId, widgetType);
+
+        // get widget setting context
+        if (widgetSettingPairIndex != -1)
+        {
+            return WidgetSettingPairs[widgetSettingPairIndex].WidgetSettingContext;
+        }
+
+        return null;
+    }
+
+    private int GetWidgetSettingPairIndex(string widgetId, string widgetType)
+    {
+        // get widget setting runtime id
+        var widgetSettingRuntimeId = GetWidgetSettingRuntimeId(widgetId, widgetType);
+
+        // get widget setting pair index
+        if (widgetSettingRuntimeId != string.Empty)
+        {
+            return WidgetSettingPairs.FindIndex(x => x.RuntimeId == widgetSettingRuntimeId);
+        }
+
+        return -1;
+    }
+
+    #endregion
+
+    #region Is Navigated
+
+    public bool GetWidgetSettingIsNavigated(string widgetId, string widgetType)
+    {
+        // TODO: Implement GetWidgetSettingIsNavigated
+        return true;
     }
 
     #endregion
@@ -128,18 +217,21 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // close all widgets
         await CloseAllWidgetsAsync();
 
-        // clear lists
-        PinnedWidgetRuntimeIds.Clear();
-        PinnedWidgetWindowPairs.Clear();
-        PinnedWidgetWindows.Clear();
-
         // enable all enabled widgets
         InitializePinnedWidgets();
     }
 
     public async Task CloseAllWidgetsAsync()
     {
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(WindowsExtensions.CloseWindowAsync, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+        await GetPinnedWidgetWindows().EnqueueOrInvokeAsync(async (window) => {
+            // close window
+            await CloseWidgetWindowAsync(window.RuntimeId, CloseEvent.Unpin);
+        }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+    }
+
+    private List<WidgetWindow> GetPinnedWidgetWindows()
+    {
+        return PinnedWidgetWindowPairs.Select(x => x.Window).ToList();
     }
 
     #endregion
@@ -240,7 +332,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var widgetRuntimeId = GetWidgetRuntimeId(widgetId, widgetType, widgetIndex);
 
         // close widget window
-        await CloseWidgetWindow(widgetRuntimeId);
+        await CloseWidgetWindowAsync(widgetRuntimeId, CloseEvent.Unpin);
 
         // refresh dashboard page
         if (refresh)
@@ -264,7 +356,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var widgetRuntimeId = GetWidgetRuntimeId(widgetId, widgetType, widgetIndex);
 
         // close widget window
-        await CloseWidgetWindow(widgetRuntimeId);
+        await CloseWidgetWindowAsync(widgetRuntimeId, CloseEvent.Delete);
 
         // refresh dashboard page
         if (refresh)
@@ -288,32 +380,45 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     private string CreateWidgetWindow(JsonWidgetItem item)
     {
+        // get widget info
+        var (widgetId, widgetType, widgetIndex) = (item.Id, item.Type, item.Index);
+
         // create widget info & register guid
-        var id = StringUtils.GetRandomWidgetRuntimeId();
+        var widgetRuntimeId = StringUtils.GetRandomWidgetRuntimeId();
         var widgetContext = new WidgetContext(this)
         {
-            Id = id,
-            Type = item.Type,
+            Id = widgetRuntimeId,
+            Type = widgetType,
         };
         var widgetInfo = new WidgetInfo(this)
         {
             WidgetContext = widgetContext
         };
 
+        // add to widget runtime id list & widget list
+        PinnedWidgetRuntimeIds.Add(widgetInfo.WidgetContext.Id, (widgetId, widgetType, widgetIndex));
+        PinnedWidgetWindowPairs.Add(new WidgetWindowPair()
+        {
+            RuntimeId = widgetRuntimeId,
+            WidgetInfo = widgetInfo,
+            Window = null!,
+            MenuFlyout = null!
+        });
+
         // configure widget window lifecycle actions
-        (var minSize, var maxSize) = _widgetResourceService.GetWidgetMinMaxSize(item.Id, item.Type);
+        (var minSize, var maxSize) = _widgetResourceService.GetWidgetMinMaxSize(widgetId, widgetType);
         var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
         {
             Window_Creating = null,
             Window_Created = (window) => WidgetWindow_Created(widgetInfo, window, item, minSize, maxSize),
-            Window_Closing = WidgetWindow_Closing,
+            Window_Closing = null,
             Window_Closed = null
         };
 
         // create widget window
         var widgetWindow = WindowsExtensions.CreateWindow<WidgetWindow>(_appSettingsService.MultiThread, lifecycleActions, item);
 
-        return id;
+        return widgetRuntimeId;
     }
 
     #region Widget Window Lifecycle
@@ -351,16 +456,13 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // activate window
             widgetWindow.Activate();
 
-            // add to widget list & widget window list
-            PinnedWidgetRuntimeIds.Add(widgetInfo.WidgetContext.Id, (widgetId, widgetType, widgetIndex));
-            PinnedWidgetWindowPairs.Add(new WidgetWindowPair()
+            // add to widget pair list
+            var widgetWindowPairIndex = GetWidgetWindowPairIndex(widgetId, widgetType, widgetIndex);
+            if (widgetWindowPairIndex != -1)
             {
-                WidgetInfo = widgetInfo,
-                Window = widgetWindow,
-                ViewModel = null,
-                MenuFlyout = menuFlyout
-            });
-            PinnedWidgetWindows.Add(widgetWindow);
+                PinnedWidgetWindowPairs[widgetWindowPairIndex].Window = widgetWindow;
+                PinnedWidgetWindowPairs[widgetWindowPairIndex].MenuFlyout = menuFlyout;
+            }
         }
     }
 
@@ -384,77 +486,63 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
             // get widget framework element
             var widgetContext = GetWidgetContext(widgetId, widgetType, widgetIndex);
-            var frameworkElement = _widgetResourceService.GetWidgetContent(widgetId, widgetType, widgetContext!);
-
-            // initialize widget settings
-            BaseWidgetViewModel viewModel = null!;
-            if (frameworkElement is IViewModel element)
-            {
-                viewModel = element.ViewModel;
-                viewModel.InitializeSettings(new WidgetViewModelNavigationParameter()
-                {
-                    Id = widgetId,
-                    Type = widgetType,
-                    Index = widgetIndex,
-                    DispatcherQueue = widgetWindow.DispatcherQueue,
-                    Settings = widgetSettings
-                });
-            }
+            var frameworkElement = _widgetResourceService.CreateWidgetContent(widgetId, widgetContext!);
 
             // set widget framework element
             widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
 
-            // add to widget list
-            var index = PinnedWidgetWindowPairs.FindIndex(x => x.Window.RuntimeId == widgetWindow.RuntimeId);
-            if (index != -1)
+            // invoke widget settings changed event
+            _widgetResourceService.OnWidgetSettingsChanged(widgetId, new WidgetSettingsChangedArgs()
             {
-                PinnedWidgetWindowPairs[index].ViewModel = viewModel;
-            }
-        }
-    }
-
-    private void WidgetWindow_Closing(Window window)
-    {
-        if (window is WidgetWindow widgetWindow)
-        {
-            // widget close event
-            var viewModel = GetWidgetViewModel(widgetWindow.RuntimeId);
-            if (viewModel is IWidgetWindowClose close)
-            {
-                close.WidgetWindowClosing();
-            }
+                Settings = widgetSettings,
+                WidgetContext = widgetContext!
+            });
         }
     }
 
     #endregion
 
-    private async Task CloseWidgetWindow(string widgetRuntimeId)
+    private async Task CloseWidgetWindowAsync(string widgetRuntimeId, CloseEvent closeEvent)
     {
         // close widget window
         var widgetWindow = GetWidgetWindow(widgetRuntimeId);
         if (widgetWindow != null)
         {
+            // get widget info
+            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+
+            // register close event handler
+            if (closeEvent == CloseEvent.Unpin)
+            {
+                widgetWindow.Closed += (s, e) => _widgetResourceService.UnpinWidget(widgetId, widgetRuntimeId, GetWidgetSettings(widgetId, widgetType, widgetIndex)!);
+            }
+            else if (closeEvent == CloseEvent.Delete)
+            {
+                widgetWindow.Closed += (s, e) => _widgetResourceService.DeleteWidget(widgetId, widgetRuntimeId, GetWidgetSettings(widgetId, widgetType, widgetIndex)!);
+            }
+
             // close window
             await WindowsExtensions.CloseWindowAsync(widgetWindow);
 
-            // remove from widget list & widget window list
+            // remove from widget runtime id list & widget pair list
             PinnedWidgetRuntimeIds.Remove(widgetRuntimeId);
-            PinnedWidgetWindowPairs.RemoveAll(x => x.Window.RuntimeId == widgetRuntimeId);
-            PinnedWidgetWindows.RemoveAll(x => x.RuntimeId == widgetRuntimeId);
+            var widgetWindowPairIndex = GetWidgetWindowPairIndex(widgetId, widgetType, widgetIndex);
+            PinnedWidgetWindowPairs.RemoveAt(widgetWindowPairIndex);
         }
+    }
+
+    private enum CloseEvent
+    {
+        Unpin,
+        Delete
     }
 
     private WidgetWindow? GetWidgetWindow(string widgetRuntimeId)
     {
-        if (string.IsNullOrEmpty(widgetRuntimeId))
+        var widgetPairIndex = GetWidgetWindowPairIndex(widgetRuntimeId);
+        if (widgetPairIndex != -1)
         {
-            return null;
-        }
-
-        var index = PinnedWidgetWindows.FindIndex(x => x.RuntimeId == widgetRuntimeId);
-        if (index != -1)
-        {
-            return PinnedWidgetWindows[index];
+            return PinnedWidgetWindowPairs[widgetPairIndex].Window;
         }
 
         return null;
@@ -466,66 +554,73 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #endregion
 
-    #region Widget View Model
-
-    public BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow)
-    {
-        return GetWidgetViewModel(widgetWindow.RuntimeId);
-    }
-
-    private BaseWidgetViewModel? GetWidgetViewModel(string widgetRuntimeId)
-    {
-        if (string.IsNullOrEmpty(widgetRuntimeId))
-        {
-            return null;
-        }
-
-        var index = PinnedWidgetWindowPairs.FindIndex(x => x.Window.RuntimeId == widgetRuntimeId);
-        if (index != -1)
-        {
-            return PinnedWidgetWindowPairs[index].ViewModel;
-        }
-
-        return null;
-    }
-
-    #endregion
-
-    #region Widget Setting Page
+    #region Widget Setting
 
     public void NavigateToWidgetSettingPage(string widgetId, string widgetType, int widgetIndex)
     {
         // navigate to widget setting page
         _navigationService.NavigateTo(typeof(WidgetSettingViewModel).FullName!);
 
-        // set widget setting framework element
-        var frameworkElement = _widgetResourceService.GetWidgetSettingContent(widgetId, widgetType);
+        // get widget setting pair
+        var widgetSettingPair = TryGetWidgetSettingPair(widgetId, widgetType, widgetIndex);
+        if (widgetSettingPair == null)
+        {
+            // create widget setting context & register guid
+            var widgetSettingRuntimeId = StringUtils.GetRandomWidgetRuntimeId();
+            var widgetSettingContext = new WidgetSettingContext(this)
+            {
+                Id = widgetSettingRuntimeId,
+                Type = widgetType
+            };
+
+            // create widget setting framework
+            var frameworkElement = _widgetResourceService.CreateWidgetSettingContent(widgetId, widgetSettingContext);
+
+            // add to widget runtime id list & widget list
+            widgetSettingPair = new WidgetSettingPair()
+            {
+                RuntimeId = widgetSettingRuntimeId,
+                WidgetIndex = widgetIndex,
+                WidgetSettingContext = widgetSettingContext,
+                WidgetSettingContent = frameworkElement,
+            };
+            WidgetSettingRuntimeIds.Add(widgetSettingRuntimeId, (widgetId, widgetType));
+            WidgetSettingPairs.Add(widgetSettingPair);
+        }
+
+        // set widget page & add to list & handle events
         var widgetSettingPage = _navigationService.Frame?.Content as WidgetSettingPage;
         if (widgetSettingPage != null)
         {
-            widgetSettingPage.ViewModel.WidgetFrameworkElement = frameworkElement;
+            // set widget setting framework element
+            widgetSettingPage.ViewModel.WidgetFrameworkElement = widgetSettingPair.WidgetSettingContent;
             var widgetName = _widgetResourceService.GetWidgetName(widgetId, widgetType);
             NavigationViewHeaderBehavior.SetHeaderLocalize(widgetSettingPage, false);
             NavigationViewHeaderBehavior.SetHeaderContext(widgetSettingPage, widgetName);
+
+            // invoke widget settings changed event
+            var widgetSettings = GetWidgetSettings(widgetId, widgetType, widgetIndex);
+            _widgetResourceService.OnWidgetSettingsChanged(widgetId, new WidgetSettingsChangedArgs()
+            {
+                WidgetContext = widgetSettingPair.WidgetSettingContext,
+                Settings = widgetSettings!,
+            });
+        }
+    }
+
+    private WidgetSettingPair? TryGetWidgetSettingPair(string widgetId, string widgetType, int widgetIndex)
+    {
+        // get widget setting pair index
+        var widgetSettingPairIndex = GetWidgetSettingPairIndex(widgetId, widgetType);
+
+        // get widget setting pair
+        if (widgetSettingPairIndex != -1)
+        {
+            WidgetSettingPairs[widgetSettingPairIndex].WidgetIndex = widgetIndex;
+            return WidgetSettingPairs[widgetSettingPairIndex];
         }
 
-        // initialize widget settings
-        if (frameworkElement is ISettingViewModel element)
-        {
-            var viewModel = element.ViewModel;
-            var widgetSetting = GetWidgetSettings(widgetId, widgetType, widgetIndex);
-            if (widgetSetting != null)
-            {
-                viewModel.InitializeSettings(new WidgetViewModelNavigationParameter()
-                {
-                    Id = widgetId,
-                    Type = widgetType,
-                    Index = widgetIndex,
-                    DispatcherQueue = App.MainWindow.DispatcherQueue,
-                    Settings = widgetSetting
-                });
-            }
-        }
+        return null;
     }
 
     #endregion
@@ -676,7 +771,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         {
             var widgetRuntimeId = widgetWindow.RuntimeId;
 
-            await CloseWidgetWindow(widgetRuntimeId);
+            await CloseWidgetWindowAsync(widgetRuntimeId, CloseEvent.Unpin);
 
             var widgetList = _appSettingsService.GetWidgetsList();
 
@@ -713,41 +808,26 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         return widget?.Settings.Clone();
     }
 
-    public async Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
+    public async Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings)
     {
-        // get widget runtime id
-        var widgetRuntimeId = GetWidgetRuntimeId(widgetId, widgetType, widgetIndex);
-
-        // update widget window
-        if (updateWidget)
+        // invoke widget settings changed event
+        var widgetContext = GetWidgetContext(widgetId, widgetType, widgetIndex);
+        if (widgetContext != null)  // if widget window exists
         {
-            var widgetWindow = GetWidgetWindow(widgetRuntimeId);
-            if (widgetWindow != null)
+            _widgetResourceService.OnWidgetSettingsChanged(widgetId, new WidgetSettingsChangedArgs()
             {
-                var viewModel = GetWidgetViewModel(widgetRuntimeId);
-                await widgetWindow.EnqueueOrInvokeAsync((window) =>
-                {
-                    viewModel?.UpdateSettings(settings);
-                });
-            }
+                WidgetContext = widgetContext,
+                Settings = settings,
+            });
         }
-
-        // update widget setting
-        if (updateWidgetSetting)
-        {
-            var widgetSettingPage = _navigationService.Frame?.Content as WidgetSettingPage;
-            if (widgetSettingPage != null)
+        var widgetSettingPairIndex = GetWidgetSettingPairIndex(widgetId, widgetType);
+        if (widgetSettingPairIndex != -1 && WidgetSettingPairs[widgetSettingPairIndex].WidgetIndex == widgetIndex)
+        {  // if widget setting content exists and current index is the same
+            _widgetResourceService.OnWidgetSettingsChanged(widgetId, new WidgetSettingsChangedArgs()
             {
-                var settingFrameworkElement = widgetSettingPage.ViewModel.WidgetFrameworkElement;
-                if (settingFrameworkElement is ISettingViewModel settingViewModel)
-                {
-                    var viewModel = settingViewModel.ViewModel;
-                    if (viewModel.Id == widgetId & viewModel.Index == widgetIndex)
-                    {
-                        viewModel.UpdateSettings(settings);
-                    }
-                }
-            }
+                WidgetContext = WidgetSettingPairs[widgetSettingPairIndex].WidgetSettingContext,
+                Settings = settings,
+            });
         }
 
         // update widget list
@@ -760,9 +840,12 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     public async void EnterEditMode()
     {
+        // get pinned widget windows
+        var pinnedWidgetWindows = GetPinnedWidgetWindows();
+
         // save original widget list
         _originalWidgetList.Clear();
-        foreach (var widgetWindow in PinnedWidgetWindows)
+        foreach (var widgetWindow in pinnedWidgetWindows)
         {
             // get widget info
             var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetWindow.RuntimeId);
@@ -784,18 +867,18 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         _inEditMode = true;
 
         // set edit mode for all widgets
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
+        await pinnedWidgetWindows.EnqueueOrInvokeAsync((window) =>
         {
-            await window.SetEditMode(true);
+            window.SetEditMode(true);
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide main window & show edit mode overlay window
-        await App.MainWindow.EnqueueOrInvokeAsync(async (window) =>
+        await App.MainWindow.EnqueueOrInvokeAsync(async (mainWindow) =>
         {
             // hide main window
-            if (window.Visible)
+            if (mainWindow.Visible)
             {
-                await WindowsExtensions.CloseWindowAsync(window);
+                await WindowsExtensions.CloseWindowAsync(mainWindow);
                 _restoreMainWindow = true;
             }
 
@@ -806,10 +889,13 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     public async Task SaveAndExitEditMode()
     {
+        // get pinned widget windows
+        var pinnedWidgetWindows = GetPinnedWidgetWindows();
+
         // restore edit mode for all widgets
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
+        await pinnedWidgetWindows.EnqueueOrInvokeAsync((window) =>
         {
-            await window.SetEditMode(false);
+            window.SetEditMode(false);
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         // hide edit mode overlay window
@@ -824,7 +910,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
         // save widget list
         List<JsonWidgetItem> widgetList = [];
-        foreach (var widgetWindow in PinnedWidgetWindows)
+        foreach (var widgetWindow in pinnedWidgetWindows)
         {
             // get widget info
             var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetWindow.RuntimeId);
@@ -848,11 +934,14 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     public async void CancelChangesAndExitEditMode()
     {
+        // get pinned widget windows
+        var pinnedWidgetWindows = GetPinnedWidgetWindows();
+
         // restore position, size, edit mode for all widgets
-        await PinnedWidgetWindows.EnqueueOrInvokeAsync(async (window) =>
+        await pinnedWidgetWindows.EnqueueOrInvokeAsync((window) =>
         {
             // set edit mode for all widgets
-            await window.SetEditMode(false);
+            window.SetEditMode(false);
 
             // get widget info
             var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(window.RuntimeId);

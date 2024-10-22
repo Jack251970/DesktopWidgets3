@@ -1,14 +1,14 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-namespace DesktopWidgets3.Core.Widgets.Models;
+namespace DesktopWidgets3.Core.Widgets.Models.WidgetPairs;
 
 public class WidgetWindowPair
 {
+    public string RuntimeId { get; set; } = string.Empty;
+
     public WidgetInfo WidgetInfo { get; set; } = null!;
 
     public WidgetWindow Window { get; set; } = null!;
-
-    public BaseWidgetViewModel? ViewModel { get; set; }
 
     public MenuFlyout MenuFlyout { get; set; } = null!;
 
@@ -16,7 +16,7 @@ public class WidgetWindowPair
     {
         if (obj is WidgetWindowPair widgetWindowPair)
         {
-            return WidgetInfo.WidgetContext.Id == widgetWindowPair.WidgetInfo.WidgetContext.Id;
+            return RuntimeId == widgetWindowPair.RuntimeId;
         }
         else
         {
@@ -26,11 +26,11 @@ public class WidgetWindowPair
 
     public override int GetHashCode()
     {
-        return WidgetInfo.WidgetContext.Id.GetHashCode();
+        return RuntimeId.GetHashCode();
     }
 
     public override string ToString()
     {
-        return WidgetInfo.WidgetContext.Id;
+        return RuntimeId;
     }
 }

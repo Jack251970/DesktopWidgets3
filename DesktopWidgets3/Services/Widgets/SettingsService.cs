@@ -2,13 +2,13 @@
 
 internal class SettingsService : ISettingsService
 {
-    private static IAppSettingsService AppSettingsService => DependencyExtensions.GetRequiredService<IAppSettingsService>();
+    private readonly IAppSettingsService _appSettingsService = DependencyExtensions.GetRequiredService<IAppSettingsService>();
 
-    bool ISettingsService.BatterySaver => AppSettingsService.BatterySaver;
+    bool ISettingsService.BatterySaver => _appSettingsService.BatterySaver;
 
     event Action<bool>? ISettingsService.OnBatterySaverChanged
     {
-        add => AppSettingsService.OnBatterySaverChanged += value;
-        remove => AppSettingsService.OnBatterySaverChanged -= value;
+        add => _appSettingsService.OnBatterySaverChanged += value;
+        remove => _appSettingsService.OnBatterySaverChanged -= value;
     }
 }

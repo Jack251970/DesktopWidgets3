@@ -1,24 +1,15 @@
-﻿using Microsoft.UI.Xaml;
-
-namespace DesktopWidgets3.Services.Widgets;
+﻿namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetService : IWidgetService
 {
-    private static IWidgetManagerService WidgetManagerService => DependencyExtensions.GetRequiredService<IWidgetManagerService>();
+    private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
-    public async Task UpdateWidgetSettings(FrameworkElement element, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
+    public async Task UpdateWidgetSettingsAsync(string widgetRuntimeId, BaseWidgetSettings settings)
     {
-        var widgetId = WidgetProperties.GetId(element);
-        var widgetType = WidgetProperties.GetType(element);
-        var widgetIndex = WidgetProperties.GetIndex(element);
-        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, widgetIndex, settings, updateWidget, updateWidgetSetting);
-    }
+        // get widget info
+        var (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(widgetRuntimeId);
 
-    public async Task UpdateWidgetSettings(BaseWidgetViewModel viewModel, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting)
-    {
-        var widgetId = viewModel.Id;
-        var widgetType = viewModel.Type;
-        var widgetIndex = viewModel.Index;
-        await WidgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, widgetIndex, settings, updateWidget, updateWidgetSetting);
+        // update widget settings
+        await _widgetManagerService.UpdateWidgetSettingsAsync(widgetId, widgetType, widgetIndex, settings);
     }
 }

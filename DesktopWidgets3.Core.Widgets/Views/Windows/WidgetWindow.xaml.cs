@@ -104,7 +104,32 @@ public sealed partial class WidgetWindow : WindowEx
 
     public string RuntimeId { get; private set; } = string.Empty;
 
-    public bool IsActive { get; private set; }
+    private bool isActive = false;
+    public bool IsActive
+    {
+        get => isActive;
+        private set
+        {
+            if (isActive != value)
+            {
+                isActive = value;
+            }
+
+            // get widget info & context
+            var (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(RuntimeId);
+            var widgetContext = _widgetManagerService.GetWidgetContext(widgetId, widgetType, widgetIndex);
+
+            // invoke activate or deactivate event
+            if (isActive)
+            {
+                _widgetResourceService.ActivateWidget(RuntimeId, widgetContext!);
+            }
+            else
+            {
+                _widgetResourceService.DeactivateWidget(widgetType, RuntimeId);
+            }
+        }
+    }
 
     #endregion
 
@@ -123,6 +148,7 @@ public sealed partial class WidgetWindow : WindowEx
     #region Services
 
     private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
+    private readonly IWidgetResourceService _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
     #endregion
 
@@ -207,14 +233,14 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
-    private async void Content_Loaded(object sender, RoutedEventArgs e)
+    private void Content_Loaded(object sender, RoutedEventArgs e)
     {
         // set title bar
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(ContentArea);
 
         // set edit mode
-        await SetEditMode(false);
+        SetEditMode(false);
 
         // reset the size because the size will change in SetEditMode
         Size = WidgetSize;
@@ -300,7 +326,7 @@ public sealed partial class WidgetWindow : WindowEx
     private bool _isEditMode = true;
     private bool _isEditModeInitialized;
 
-    public async Task SetEditMode(bool isEditMode)
+    public void SetEditMode(bool isEditMode)
     {
         // check if edit mode is already set
         if (_isEditModeInitialized && _isEditMode == isEditMode)
@@ -315,16 +341,7 @@ public sealed partial class WidgetWindow : WindowEx
         SetTitleBarDragRegion(isEditMode);
 
         // set page update status
-        var viewModel = _widgetManagerService.GetWidgetViewModel(this);
-        switch (viewModel)
-        {
-            case IAsyncWidgetUpdate update:
-                await update.EnableUpdateAsync(!isEditMode);
-                break;
-            case IWidgetUpdate update:
-                update.EnableUpdate(!isEditMode);
-                break;
-        }
+        IsActive = !isEditMode;
 
         // set menu flyout
         ViewModel.WidgetMenuFlyout = isEditMode ? null : WidgetMenuFlyout;

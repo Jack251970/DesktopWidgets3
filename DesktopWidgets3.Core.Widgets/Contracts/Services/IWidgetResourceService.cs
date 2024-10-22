@@ -8,11 +8,21 @@ public interface IWidgetResourceService
 
     Task DisposeWidgetsAsync();
 
-    FrameworkElement GetWidgetContent(string widgetId, string widgetType, WidgetContext widgetContext);
+    FrameworkElement CreateWidgetContent(string widgetId, WidgetContext widgetContext);
+
+    void UnpinWidget(string widgetId, string widgetRuntimeId, BaseWidgetSettings widgetSettings);
+
+    void DeleteWidget(string widgetId, string widgetRuntimeId, BaseWidgetSettings widgetSettings);
+
+    void ActivateWidget(string widgetId, WidgetContext widgetContext);
+
+    void DeactivateWidget(string widgetId, string widgetRuntimeId);
 
     BaseWidgetSettings GetDefaultSettings(string widgetId, string widgetType);
 
-    FrameworkElement GetWidgetSettingContent(string widgetId, string widgetType);
+    FrameworkElement CreateWidgetSettingContent(string widgetId, WidgetSettingContext widgetSettingContext);
+
+    void OnWidgetSettingsChanged(string widgetId, WidgetSettingsChangedArgs settingsChangedArgs);
 
     string GetWidgetName(string widgetId, string widgetType);
 

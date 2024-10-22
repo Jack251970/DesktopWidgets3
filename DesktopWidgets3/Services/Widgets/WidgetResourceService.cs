@@ -284,7 +284,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         }
     }
 
-    public FrameworkElement GetWidgetContent(string widgetId, string widgetType, WidgetContext widgetContext)
+    public FrameworkElement CreateWidgetContent(string widgetId, WidgetContext widgetContext)
     {
         var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
@@ -303,45 +303,143 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         return new UserControl();
     }
 
+    public void UnpinWidget(string widgetId, string widgetRuntimeId, BaseWidgetSettings widgetSettings)
+    {
+        var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
+        {
+            var pair = InstalledWidgetGroupPairs[index];
+            try
+            {
+                pair.WidgetGroup.UnpinWidget(widgetRuntimeId, widgetSettings);
+            }
+            catch (Exception e)
+            {
+                LogExtensions.LogError(ClassName, e, $"Error deleting widget {widgetId}");
+            }
+        }
+    }
+
+    public void DeleteWidget(string widgetId, string widgetRuntimeId, BaseWidgetSettings widgetSettings)
+    {
+        var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
+        {
+            var pair = InstalledWidgetGroupPairs[index];
+            try
+            {
+                pair.WidgetGroup.DeleteWidget(widgetRuntimeId, widgetSettings);
+            }
+            catch (Exception e)
+            {
+                LogExtensions.LogError(ClassName, e, $"Error deleting widget {widgetId}");
+            }
+        }
+    }
+
+    public void ActivateWidget(string widgetId, WidgetContext widgetContext)
+    {
+        var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
+        {
+            var pair = InstalledWidgetGroupPairs[index];
+            try
+            {
+                pair.WidgetGroup.ActivateWidget(widgetContext);
+            }
+            catch (Exception e)
+            {
+                LogExtensions.LogError(ClassName, e, $"Error activating widget {widgetId}");
+            }
+        }
+    }
+
+    public void DeactivateWidget(string widgetId, string widgetRuntimeId)
+    {
+        var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
+        if (index != -1)
+        {
+            var pair = InstalledWidgetGroupPairs[index];
+            try
+            {
+                pair.WidgetGroup.DeactivateWidget(widgetRuntimeId);
+            }
+            catch (Exception e)
+            {
+                LogExtensions.LogError(ClassName, e, $"Error deactivating widget {widgetId}");
+            }
+        }
+    }
+
     #endregion
 
     #region IWidgetGroupSetting
 
     public BaseWidgetSettings GetDefaultSettings(string widgetId, string widgetType)
     {
-        var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
-        if (index != -1)
+        var (metadata, widgetGroupSetting) = GetWidgetGroupSetting(widgetId);
+        if (metadata != null && widgetGroupSetting != null)
         {
-            var pair = InstalledWidgetGroupPairs[index];
-            if (pair.WidgetGroup is IWidgetGroupSetting widgetSetting)
+            try
             {
-                return widgetSetting.GetDefaultSettings(widgetType);
+                return widgetGroupSetting.GetDefaultSettings(widgetType);
+            }
+            catch (Exception e)
+            {
+                LogExtensions.LogError(ClassName, e, $"Error getting default settings for widget {metadata.ID}");
             }
         }
 
         return new BaseWidgetSettings();
     }
 
-    public FrameworkElement GetWidgetSettingContent(string widgetId, string widgetType)
+    public FrameworkElement CreateWidgetSettingContent(string widgetId, WidgetSettingContext widgetSettingContext)
+    {
+        var (metadata, widgetGroupSetting) = GetWidgetGroupSetting(widgetId);
+        if (metadata != null && widgetGroupSetting != null)
+        {
+            try
+            {
+                return widgetGroupSetting.CreateWidgetSettingContent(widgetSettingContext, GetWidgetLanguageResources(metadata.ID));
+            }
+            catch (Exception e)
+            {
+                LogExtensions.LogError(ClassName, e, $"Error creating setting framework element for widget {metadata.ID}");
+            }
+        }
+
+        return new UserControl();
+    }
+
+    public void OnWidgetSettingsChanged(string widgetId, WidgetSettingsChangedArgs settingsChangedArgs)
+    {
+        var (metadata, widgetGroupSetting) = GetWidgetGroupSetting(widgetId);
+        if (metadata != null && widgetGroupSetting != null)
+        {
+            try
+            {
+                widgetGroupSetting.OnWidgetSettingsChanged(settingsChangedArgs);
+            }
+            catch (Exception e)
+            {
+                LogExtensions.LogError(ClassName, e, $"Error on settings changed for widget {metadata.ID}");
+            }
+        }
+    }
+
+    private (WidgetGroupMetadata? metadata, IWidgetGroupSetting? widgetGroupSetting) GetWidgetGroupSetting(string widgetId)
     {
         var index = InstalledWidgetGroupPairs.FindIndex(x => x.Metadata.ID == widgetId);
         if (index != -1)
         {
             var pair = InstalledWidgetGroupPairs[index];
-            if (pair.WidgetGroup is IWidgetGroupSetting widgetSetting)
+            if (pair.WidgetGroup is IWidgetGroupSetting widgetGroupSetting)
             {
-                try
-                {
-                    return widgetSetting.CreateWidgetSettingContent(widgetType, GetWidgetLanguageResources(pair.Metadata.ID));
-                }
-                catch (Exception e)
-                {
-                    LogExtensions.LogError(ClassName, e, $"Error creating setting framework element for widget {pair.Metadata.ID}");
-                }
+                return (pair.Metadata, widgetGroupSetting);
             }
         }
 
-        return new UserControl();
+        return (null, null);
     }
 
     #endregion

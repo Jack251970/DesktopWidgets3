@@ -6,12 +6,12 @@
 public class WidgetSettingsChangedArgs
 {
     /// <summary>
-    /// Context of the widget instance.
+    /// Context of the widget instance or the widget setting instance.
     /// </summary>
-    public required IWidgetContext WidgetContext { get; init; }
+    public required IBaseWidgetContext WidgetContext { get; init; }
 
     /// <summary>
     /// Settings of the widget instance.
     /// </summary>
-    public required BaseWidgetSettings WidgetSettings { get; init; }
+    public required BaseWidgetSettings Settings { get; init; }
 }

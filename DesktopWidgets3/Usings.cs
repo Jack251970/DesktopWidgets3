@@ -48,6 +48,7 @@ global using DesktopWidgets3.Core.Widgets.Helpers;
 global using DesktopWidgets3.Core.Widgets.Models;
 global using DesktopWidgets3.Core.Widgets.Models.WidgetContexts;
 global using DesktopWidgets3.Core.Widgets.Models.WidgetItems;
+global using DesktopWidgets3.Core.Widgets.Models.WidgetPairs;
 global using DesktopWidgets3.Core.Widgets.Utils;
 global using DesktopWidgets3.Core.Widgets.ViewModels.Pages;
 global using DesktopWidgets3.Core.Widgets.ViewModels.Windows;

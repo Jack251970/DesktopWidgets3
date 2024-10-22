@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Core.Widgets.Models;
+﻿namespace DesktopWidgets3.Core.Widgets.Models.WidgetPairs;
 
 public class WidgetGroupPair
 {

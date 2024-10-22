@@ -4,11 +4,17 @@ public interface IWidgetManagerService
 {
     (string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId);
 
+    (string widgetId, string widgetType) GetWidgetSettingInfo(string widgetSettingRuntimeId);
+
     WidgetInfo? GetWidgetInfo(string widgetId, string widgetType, int widgetIndex);
 
     WidgetContext? GetWidgetContext(string widgetId, string widgetType, int widgetIndex);
 
+    WidgetSettingContext? GetWidgetSettingContext(string widgetId, string widgetType);
+
     bool GetWidgetIsActive(string widgetId, string widgetType, int widgetIndex);
+
+    bool GetWidgetSettingIsNavigated(string widgetId, string widgetType);
 
     void InitializePinnedWidgets();
 
@@ -24,13 +30,11 @@ public interface IWidgetManagerService
 
     Task DeleteWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh);
 
-    BaseWidgetViewModel? GetWidgetViewModel(WidgetWindow widgetWindow);
-
     void NavigateToWidgetSettingPage(string widgetId, string widgetType, int widgetIndex);
 
     BaseWidgetSettings? GetWidgetSettings(string widgetId, string widgetType, int widgetIndex);
 
-    Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings, bool updateWidget, bool updateWidgetSetting);
+    Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings);
 
     void EnterEditMode();
 
