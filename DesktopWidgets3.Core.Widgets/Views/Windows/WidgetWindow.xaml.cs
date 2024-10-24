@@ -194,7 +194,6 @@ public sealed partial class WidgetWindow : WindowEx
 
         // set window properties
         var hwnd = this.GetWindowHandle();
-        SystemHelper.HideWindowFromTaskbar(hwnd); // Hide window icon from taskbar
         SystemHelper.SetWindowZPos(hwnd, SystemHelper.WINDOWZPOS.ONBOTTOM); // Force window to stay at bottom
         _manager.WindowMessageReceived += WindowManager_WindowMessageReceived; // Register window sink events
 

@@ -31,7 +31,6 @@ public sealed partial class DialogScreenWindow : WindowEx
         Activated -= DialogScreenWindow_Activated;
         this.Hide(); // Hides at the first time
         var hwnd = this.GetWindowHandle();
-        SystemHelper.HideWindowFromTaskbar(hwnd); // Hide the window from the taskbar
         HwndExtensions.SetWindowStyle(hwnd, WindowStyle.Border); // Set the window style to Border
     }
 

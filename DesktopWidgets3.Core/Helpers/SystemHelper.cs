@@ -53,28 +53,6 @@ public partial class SystemHelper
 
     #endregion
 
-    #region hide window icon
-
-    internal const int GWL_EXSTYLE = -20;
-    internal const int WS_EX_TOOLWINDOW = 0x00000080;
-
-    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
-    internal static partial IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-
-    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
-    internal static partial IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
-
-    /// <summary>
-    /// Hide window icon from taskbar.
-    /// </summary>
-    public static void HideWindowFromTaskbar(IntPtr hWnd)
-    {
-        SetWindowLongPtr(hWnd, GWL_EXSTYLE, GetWindowLongPtr(hWnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
-        ShowWindow(hWnd, SW_HIDE);
-    }
-
-    #endregion
-
     #region window z position
 
     public enum WINDOWZPOS
@@ -83,6 +61,8 @@ public partial class SystemHelper
         ONBOTTOM,
         ONDESKTOP
     }
+
+    internal const int GWL_EXSTYLE = -20;
 
     internal const uint GA_PARENT = 1;
 

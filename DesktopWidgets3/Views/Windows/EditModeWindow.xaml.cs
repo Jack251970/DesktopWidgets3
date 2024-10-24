@@ -45,7 +45,6 @@ public sealed partial class EditModeWindow : WindowEx
         Activated -= EditModeWindow_Activated;
         this.Hide(); // Hides at the first time
         var hwnd = this.GetWindowHandle();
-        SystemHelper.HideWindowFromTaskbar(hwnd); // Hide the window from the taskbar
         HwndExtensions.SetWindowStyle(hwnd, WindowStyle.PopupWindow); // Set the window style to PopupWindow
         if (Content is not FrameworkElement content || content.IsLoaded)
         {
