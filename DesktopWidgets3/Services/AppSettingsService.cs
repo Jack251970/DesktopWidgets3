@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
-using Microsoft.Windows.Widgets.Hosts;
 using Newtonsoft.Json;
 
 namespace DesktopWidgets3.Services;
