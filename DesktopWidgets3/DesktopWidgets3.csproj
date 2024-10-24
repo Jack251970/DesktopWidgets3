@@ -15,7 +15,7 @@
     <AssemblyTitle>$(Title)</AssemblyTitle>
     <ProductName>$(Title)</ProductName>
     <Product>$(AssemblyName)</Product>
-    <Description>A app for many useful desktop widgets.</Description>
+    <Description>An app for many useful desktop widgets based on WinUI 3.</Description>
     <Company>$(Title) Team</Company>
     <Authors>$(Company). Jack251970.</Authors>
     <Copyright>Copyright © 2023-2024 $(Company)</Copyright>
