@@ -54,6 +54,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
     [RelayCommand]
     public async Task OnLoadedAsync()
     {
+        AddWidgetNavigationView.MenuItems.Clear();
+        // load the desktop widget 3 widgets
+        await FillAvailableDesktopWidget3WidgetsAsync();
+
+        // load the Microsoft widgets
         try
         {
             var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
@@ -67,9 +72,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
             // https://github.com/microsoft/devhome/issues/2623
             LogExtensions.LogError(ClassName, ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
         }
-
-        AddWidgetNavigationView.MenuItems.Clear();
-        await FillAvailableDesktopWidget3WidgetsAsync();
         await FillAvailableMicrosoftWidgetsAsync();
         SelectFirstWidgetByDefault();
     }
