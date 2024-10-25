@@ -32,7 +32,7 @@ public class LocalSettingsHelper
         else
         {
             var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            applicationDataPath = Path.Combine(localAppDataPath, Constants.DesktopWidgets3, Constants.ApplicationDataFolder);
+            applicationDataPath = Path.Combine(localAppDataPath, Constants.LocalAppDataFolder, Constants.ApplicationDataFolder);
         }
     }
 }
