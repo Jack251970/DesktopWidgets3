@@ -59,18 +59,21 @@ public sealed partial class AddWidgetDialog : ContentDialog
         await FillAvailableDesktopWidget3WidgetsAsync();
 
         // load the Microsoft widgets
-        try
+        if (RuntimeHelper.IsMSIX)  // Due to unknown issue with unpackaged app, we cannot register definition deleted event
         {
-            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-            widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
-        }
-        catch (Exception ex)
-        {
-            // If there was an error getting the widget catalog, log it and continue.
-            // If a WidgetDefinition is deleted while the dialog is open, we won't know to remove it from
-            // the list automatically, but we can show a helpful error message if the user tries to pin it.
-            // https://github.com/microsoft/devhome/issues/2623
-            LogExtensions.LogError(ClassName, ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
+            try
+            {
+                var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+                widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+            }
+            catch (Exception ex)
+            {
+                // If there was an error getting the widget catalog, log it and continue.
+                // If a WidgetDefinition is deleted while the dialog is open, we won't know to remove it from
+                // the list automatically, but we can show a helpful error message if the user tries to pin it.
+                // https://github.com/microsoft/devhome/issues/2623
+                LogExtensions.LogError(ClassName, ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
+            }
         }
         await FillAvailableMicrosoftWidgetsAsync();
         SelectFirstWidgetByDefault();
@@ -376,15 +379,18 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _selectedWidget = null;
         ViewModel = null;
 
-        try
+        if (RuntimeHelper.IsMSIX)  // Due to unknown issue with unpackaged app, we cannot register definition deleted event
         {
-            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-            widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
-        }
-        catch (Exception ex)
-        {
-            // If there was an error getting the widget catalog, log it and continue.
-            LogExtensions.LogError(ClassName, ex, "Exception in HideDialogAsync:");
+            try
+            {
+                var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+                widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+            }
+            catch (Exception ex)
+            {
+                // If there was an error getting the widget catalog, log it and continue.
+                LogExtensions.LogError(ClassName, ex, "Exception in HideDialogAsync:");
+            }
         }
 
         Hide();
