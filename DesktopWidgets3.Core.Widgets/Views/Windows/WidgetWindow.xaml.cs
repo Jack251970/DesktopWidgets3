@@ -102,7 +102,17 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Widget Info
 
-    public string RuntimeId { get; private set; } = string.Empty;
+    public string RuntimeId { get; private set; }
+
+    private BaseWidgetSettings WidgetSettings { get; set; }
+
+    private PointInt32 _widgetPosition;
+
+    private RectSize _widgetSize;
+
+    #endregion
+
+    #region Active
 
     private bool isActive = false;
     public bool IsActive
@@ -141,8 +151,22 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Constructor
 
-    public WidgetWindow()
+    public WidgetWindow(string widgetRuntimeId, JsonWidgetItem widgetItem)
     {
+        RuntimeId = widgetRuntimeId;
+        WidgetSettings = widgetItem.Settings;
+        _widgetSize = widgetItem.Size;
+
+        _widgetPosition = AppWindow.Position;
+        if (widgetItem.Position.X != -10000)
+        {
+            _widgetPosition.X = widgetItem.Position.X;
+        }
+        if (widgetItem.Position.Y != -10000)
+        {
+            _widgetPosition.Y = widgetItem.Position.Y;
+        }
+
         ViewModel = DependencyExtensions.GetRequiredService<WidgetViewModel>();
 
         InitializeComponent();
@@ -166,32 +190,10 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Initialization
 
-    private PointInt32 WidgetPosition = new();
-
-    private BaseWidgetSettings WidgetSettings { get; set; } = null!;
-
-    private RectSize WidgetSize { get; set; } = new();
-
     private MenuFlyout WidgetMenuFlyout { get; set; } = null!;
 
-    public void Initialize(string widgetRuntimeId, JsonWidgetItem widgetItem, MenuFlyout menuFlyout)
+    public void Initialize(MenuFlyout menuFlyout)
     {
-        // set widget position
-        WidgetPosition = AppWindow.Position;
-        if (widgetItem.Position.X != -10000)
-        {
-            WidgetPosition.X = widgetItem.Position.X;
-        }
-        if (widgetItem.Position.Y != -10000)
-        {
-            WidgetPosition.Y = widgetItem.Position.Y;
-        }
-
-        // set widget item properties
-        RuntimeId = widgetRuntimeId;
-        WidgetSettings = widgetItem.Settings;
-        WidgetSize = widgetItem.Size;
-
         // set window properties
         var hwnd = this.GetWindowHandle();
         SystemHelper.SetWindowZPos(hwnd, SystemHelper.WINDOWZPOS.ONBOTTOM); // Force window to stay at bottom
@@ -229,7 +231,7 @@ public sealed partial class WidgetWindow : WindowEx
         SetEditMode(false);
 
         // reset the size because the size will change in SetEditMode
-        Size = WidgetSize;
+        Size = _widgetSize;
 
         // register events
         AppWindow.Changed += AppWindow_Changed;
@@ -238,7 +240,7 @@ public sealed partial class WidgetWindow : WindowEx
         LoadCompleted?.Invoke(this, new LoadCompletedEventArgs() 
         { 
             WidgetRuntimeId = RuntimeId,
-            WidgetPosition = WidgetPosition,
+            WidgetPosition = _widgetPosition,
             WidgetSettings = WidgetSettings
         });
     }

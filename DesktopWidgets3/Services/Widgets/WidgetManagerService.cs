@@ -460,7 +460,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         };
 
         // create widget window
-        var widgetWindow = WindowsExtensions.CreateWindow<WidgetWindow>(_appSettingsService.MultiThread, lifecycleActions, item);
+        var widgetWindow = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), _appSettingsService.MultiThread, lifecycleActions);
 
         return widgetRuntimeId;
     }
@@ -485,7 +485,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
             // initialize window
             var menuFlyout = GetWidgetMenuFlyout(widgetWindow);
-            widgetWindow.Initialize(widgetInfo.WidgetContext.Id, item, menuFlyout);
+            widgetWindow.Initialize(menuFlyout);
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
