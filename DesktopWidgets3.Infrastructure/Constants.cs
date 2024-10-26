@@ -2,8 +2,6 @@
 
 public static class Constants
 {
-    public const string DesktopWidgets3 = "DesktopWidgets3";
-
     #region Startup
 
     public const string StartupRegistryKey = "Desktop Widgets 3";
@@ -23,6 +21,8 @@ public static class Constants
     #endregion
 
     #region Local Settings & Logs
+
+    public const string LocalAppDataFolder = "Desktop Widgets 3";
 
 #if DEBUG
     public const string ApplicationDataFolder = "ApplicationData(Debug)";
