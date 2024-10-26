@@ -34,7 +34,7 @@ public sealed partial class DashboardPage : Page
 
         var deleteMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalized()
+            Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalizedString()
         };
         deleteMenuItem.Click += (s, e) => DeleteWidget();
         menuFlyout.Items.Add(deleteMenuItem);

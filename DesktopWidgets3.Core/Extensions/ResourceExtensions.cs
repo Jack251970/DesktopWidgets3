@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2024 Jack251970
 // Licensed under the GPL License. See the LICENSE.
 
-using Microsoft.Windows.ApplicationModel.Resources;
-
 using System.Collections.Concurrent;
 using System.Reflection;
+using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace DesktopWidgets3.Core.Extensions;
 
@@ -68,7 +67,7 @@ public static class ResourceExtensions
 
     #region extension methods
 
-    public static string GetLocalized(this string resourceKey, string resourceFileName = Constants.DefaultResourceFileName)
+    public static string GetLocalizedString(this string resourceKey, string resourceFileName = Constants.DefaultResourceFileName)
     {
         // Fix resource key
         resourceKey = resourceKey.Replace(".", "/");

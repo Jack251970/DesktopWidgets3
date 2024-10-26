@@ -34,7 +34,7 @@ public sealed partial class WidgetStorePage : Page
 
         var installMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_InstallWidget.Text".GetLocalized()
+            Text = "MenuFlyoutItem_InstallWidget.Text".GetLocalizedString()
         };
         installMenuItem.Click += (s, e) => InstallWidget();
         menuFlyout.Items.Add(installMenuItem);
@@ -48,7 +48,7 @@ public sealed partial class WidgetStorePage : Page
 
         var uninstallMenuItem = new MenuFlyoutItem
         {
-            Text = "MenuFlyoutItem_UninstallWidget.Text".GetLocalized()
+            Text = "MenuFlyoutItem_UninstallWidget.Text".GetLocalizedString()
         };
         uninstallMenuItem.Click += (s, e) => UninstallWidget();
         menuFlyout.Items.Add(uninstallMenuItem);

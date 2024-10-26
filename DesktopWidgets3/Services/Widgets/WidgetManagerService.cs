@@ -702,7 +702,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var unpinWidgetMenuItem = new MenuFlyoutItem
         {
             Tag = widgetWindow,
-            Text = "MenuFlyoutItem_UnpinWidget.Text".GetLocalized(),
+            Text = "MenuFlyoutItem_UnpinWidget.Text".GetLocalizedString(),
             Icon = unpinIcon
         };
         unpinWidgetMenuItem.Click += UnpinWidget;
@@ -715,7 +715,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var deleteWidgetMenuItem = new MenuFlyoutItem
         {
             Tag = widgetWindow,
-            Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalized(),
+            Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalizedString(),
             Icon = deleteIcon
         };
         deleteWidgetMenuItem.Click += DeleteWidget;
@@ -766,7 +766,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         {
             Tag = widgetWindow,
             Icon = layoutIcon,
-            Text = "MenuFlyoutItem_EditWidgetsLayout.Text".GetLocalized()
+            Text = "MenuFlyoutItem_EditWidgetsLayout.Text".GetLocalizedString()
         };
         editLayoutMenuItem.Click += EditWidgetsLayout;
         menuFlyout.Items.Add(editLayoutMenuItem);
@@ -793,7 +793,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var restartWidgetMenuItem = new MenuFlyoutItem
         {
             Tag = widgetWindow,
-            Text = "MenuFlyoutItem_RestartWidget.Text".GetLocalized(),
+            Text = "MenuFlyoutItem_RestartWidget.Text".GetLocalizedString(),
             Icon = restartIcon,
         };
         restartWidgetMenuItem.Click += RestartWidget;
@@ -806,7 +806,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var restartWidgetsMenuItem = new MenuFlyoutItem
         {
             Tag = widgetWindow,
-            Text = "MenuFlyoutItem_RestartWidgets.Text".GetLocalized(),
+            Text = "MenuFlyoutItem_RestartWidgets.Text".GetLocalizedString(),
             Icon = restartIcon
         };
         restartWidgetsMenuItem.Click += RestartWidgets;

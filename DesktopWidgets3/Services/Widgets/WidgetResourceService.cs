@@ -151,7 +151,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             var errorWidgetString = string.Join(Environment.NewLine, errorWidgets);
 
             DependencyExtensions.GetRequiredService<IAppNotificationService>().RunShow(
-                string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalized(),
+                string.Format("AppNotificationWidgetLoadErrorPayload".GetLocalizedString(),
                 $"{Environment.NewLine}{errorWidgetString}{Environment.NewLine}"));
         }
     }
@@ -278,7 +278,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             var failedWidgetString = string.Join(Environment.NewLine, failedPlugins.Select(x => x.Metadata.Name));
 
             DependencyExtensions.GetRequiredService<IAppNotificationService>().RunShow(
-                string.Format("AppNotificationWidgetInitializeErrorPayload".GetLocalized(),
+                string.Format("AppNotificationWidgetInitializeErrorPayload".GetLocalizedString(),
                 $"{Environment.NewLine}{failedWidgetString}{Environment.NewLine}"));
         }
     }
@@ -483,7 +483,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             return AllWidgetGroupMetadatas[allIndex!.Value].Name;
         }
 
-        return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
+        return string.Format("Unknown_Widget_Name".GetLocalizedString(), 1);
     }
 
     private string GetWidgetGroupDescription(int? allIndex, int? installedIndex)
@@ -537,7 +537,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             return GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType);
         }
 
-        return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
+        return string.Format("Unknown_Widget_Name".GetLocalizedString(), 1);
     }
 
     public string GetWidgetDescription(string widgetId, string widgetType)
@@ -571,7 +571,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             return AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetTypeIndex!.Value].Name;
         }
 
-        return string.Format("Unknown_Widget_Name".GetLocalized(), 1);
+        return string.Format("Unknown_Widget_Name".GetLocalizedString(), 1);
     }
 
     private string GetWidgetDescription(int? allIndex, int? installedIndex, int? widgetTypeIndex, string widgetType)
@@ -977,7 +977,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
                     Id = widgetId,
                     Type = widgetType,
                     Index = widgetIndex,
-                    Name = string.Format("Unknown_Widget_Name".GetLocalized(), unknownNotInstalledWidgetList.Count),
+                    Name = string.Format("Unknown_Widget_Name".GetLocalizedString(), unknownNotInstalledWidgetList.Count),
                     IcoPath = Constants.UnknownWidgetIcoPath,
                     Pinned = widget.Pinned,
                     IsUnknown = true,
