@@ -37,9 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DesktopWidgets3.Core.Widgets\DesktopWidgets3.Core.Widgets.csproj" />
-    <ProjectReference Include="..\..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
-    <ProjectReference Include="..\..\DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\DesktopWidgets3.Core.Widgets\DesktopWidgets3.Core.Widgets.csproj" />
+    <ProjectReference Include="..\..\..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
+    <ProjectReference Include="..\..\..\DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj" />
   </ItemGroup>
 
   <!--<ItemGroup>
