@@ -387,8 +387,6 @@ public sealed partial class WidgetWindow : WindowEx
     #region Window API
 
     private const int WM_WINDOWPOSCHANGING = 0x0046;
-    private const int WM_DISPLAYCHANGE = 0x007e;
-    private const int WM_DPICHANGED = 0x02E0;
     private const int SWP_NOZORDER = 0x0004;
 
     [StructLayout(LayoutKind.Sequential)]
