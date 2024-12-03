@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.Graphics;
 using WinUIEx;
@@ -272,18 +271,14 @@ public sealed partial class WidgetWindow : WindowEx
         _manager.WindowMessageReceived -= WindowManager_WindowMessageReceived;
     }
 
+    private const int WM_WINDOWPOSCHANGING = 0x0046;
     private void WindowManager_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
     {
-        switch (e.Message.MessageId)
+        if (e.Message.MessageId == WM_WINDOWPOSCHANGING)
         {
-            case WM_WINDOWPOSCHANGING:
-                // force window to stay at bottom
-                var lParam = e.Message.LParam;
-                var windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
-                windowPos.flags |= SWP_NOZORDER;
-                Marshal.StructureToPtr(windowPos, lParam, false);
-                e.Handled = true;
-                break;
+            SystemHelper.ForceWindowPosition(e.Message.LParam);
+            e.Handled = true;
+            return;
         }
     }
 
@@ -380,25 +375,6 @@ public sealed partial class WidgetWindow : WindowEx
         public required PointInt32 WidgetPosition { get; set; }
 
         public required BaseWidgetSettings WidgetSettings { get; set; }
-    }
-
-    #endregion
-
-    #region Window API
-
-    private const int WM_WINDOWPOSCHANGING = 0x0046;
-    private const int SWP_NOZORDER = 0x0004;
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct WINDOWPOS
-    {
-        internal IntPtr hwnd;
-        internal IntPtr hwndInsertAfter;
-        internal int x;
-        internal int y;
-        internal int cx;
-        internal int cy;
-        internal uint flags;
     }
 
     #endregion

@@ -83,7 +83,8 @@ public sealed partial class EditModeWindow : WindowEx
     private void NavigateSettingsPage()
     {
         _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
-        App.ShowMainWindow(true);
+        App.MainWindow.Show();
+        App.MainWindow.BringToFront();
     }
 
     [RelayCommand]

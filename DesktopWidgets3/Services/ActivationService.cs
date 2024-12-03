@@ -1,5 +1,4 @@
 ﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Services;
 
@@ -10,32 +9,47 @@ internal class ActivationService(ActivationHandler<LaunchActivatedEventArgs> def
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly IBackdropSelectorService _backdropSelectorService = backdropSelectorService;
     private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
-    private UIElement? _shell = null;
+
+#if SPLASH_SCREEN
+    public async Task<bool> LaunchMainWindowAsync(object activationArgs)
+    {
+        // Execute tasks before activation.
+        await InitializeAsync();
+
+        // Move the window to the center of the work rectangle.
+        App.MainWindow.CenterOnRectWork();
+
+        // Show splash screen in the MainWindow
+        App.MainWindow.ShowSplashScreen();
+
+        // Handle activation via ActivationHandlers.
+        await HandleActivationAsync(activationArgs);
+
+        // Execute tasks after activation.
+        await StartupAsync(App.MainWindow);
+
+        return !_appSettingsService.SilentStart;
+    }
+#endif
 
     public async Task ActivateMainWindowAsync(object activationArgs)
     {
         // Execute tasks before activation.
         await InitializeAsync();
 
-        // Set the MainWindow Content.
-        if (App.MainWindow.Content == null)
+        // Activate the MainWindow
+        if (activationArgs is LaunchActivatedEventArgs)
         {
-            _shell = DependencyExtensions.GetRequiredService<NavShellPage>();
-            App.MainWindow.Content = _shell ?? new Frame();
+            // Launched and need to check silent start
+            await App.MainWindow.InitializeApplicationAsync(activationArgs, _appSettingsService.SilentStart);
+        }
+        else
+        {
+            await App.MainWindow.InitializeApplicationAsync(activationArgs);
         }
 
         // Handle activation via ActivationHandlers.
         await HandleActivationAsync(activationArgs);
-
-        // Move the window to the center of the work rectangle.
-        App.MainWindow.CenterOnRectWork();
-
-        // Activate the MainWindow if want to show window.
-        if (!_appSettingsService.SilentStart)
-        {
-            App.MainWindow.Visible = true;
-            App.MainWindow.Activate();
-        }
 
         // Execute tasks after activation.
         await StartupAsync(App.MainWindow);

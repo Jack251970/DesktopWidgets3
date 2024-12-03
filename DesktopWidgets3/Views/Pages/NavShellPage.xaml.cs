@@ -7,12 +7,24 @@ public sealed partial class NavShellPage : Page
 {
     public NavShellViewModel ViewModel { get; }
 
+    public Frame ShellFrame => NavigationFrame;
+
     public NavShellPage()
     {
         ViewModel = DependencyExtensions.GetRequiredService<NavShellViewModel>();
         InitializeComponent();
 
-        ViewModel.NavigationService.Frame = NavigationFrame;
+#if TRAY_ICON
+        var trayIcon = new TrayMenuControl
+        {
+            TrayIconToolTip = ConstantHelper.AppDisplayName
+        };
+        ContentArea.Children.Add(trayIcon);
+
+        App.TrayIcon = trayIcon;
+#endif
+
+        ViewModel.NavigationService.Frame = ShellFrame;
         ViewModel.ShellService.Initialize(NavigationViewControl);
 
         // A custom title bar is required for full window theme and Mica support.

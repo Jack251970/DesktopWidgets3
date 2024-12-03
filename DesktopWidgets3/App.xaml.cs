@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
 
 namespace DesktopWidgets3;
 
@@ -35,8 +36,27 @@ public partial class App : Application
 
     public static MainWindow MainWindow { get; set; } = null!;
 
+#if !DISABLE_XAML_GENERATED_MAIN && SINGLE_INSTANCE
     private static bool IsExistWindow { get; set; } = false;
+#endif
+
+#if TRAY_ICON
     public static bool CanCloseWindow { get; set; } = false;
+#endif
+
+    #endregion
+
+    #region Tray Icon
+
+#if TRAY_ICON
+    public static TrayMenuControl TrayIcon { get; set; } = null!;
+#endif
+
+    #endregion
+
+    #region Splash Screen
+
+    public static TaskCompletionSource? SplashScreenLoadingTCS { get; private set; }
 
     #endregion
 
@@ -50,6 +70,7 @@ public partial class App : Application
 
     public App()
     {
+#if !DISABLE_XAML_GENERATED_MAIN && SINGLE_INSTANCE
         // Check if app is already running
         if (SystemHelper.IsWindowExist(null, ConstantHelper.AppDisplayName, true))
         {
@@ -57,6 +78,7 @@ public partial class App : Application
             Current.Exit();
             return;
         }
+#endif
 
         // Initialize the component
         InitializeComponent();
@@ -200,7 +222,9 @@ public partial class App : Application
             .Build();
 
         // Configure exception handlers
-        UnhandledException += App_UnhandledException;
+        UnhandledException += (sender, e) => HandleAppUnhandledException(e.Exception, true);
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) => HandleAppUnhandledException(e.ExceptionObject as Exception, false);
+        TaskScheduler.UnobservedTaskException += (sender, e) => HandleAppUnhandledException(e.Exception, false);
 
         // Initialize core extensions after services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
@@ -219,14 +243,16 @@ public partial class App : Application
 
     #region App Lifecycle
 
-    protected async override void OnLaunched(LaunchActivatedEventArgs args)
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        base.OnLaunched(args);
+
+#if !DISABLE_XAML_GENERATED_MAIN && SINGLE_INSTANCE
         if (IsExistWindow)
         {
             return;
         }
-
-        base.OnLaunched(args);
+#endif
 
         // Ensure the current window is active
         if (MainWindow != null)
@@ -234,27 +260,47 @@ public partial class App : Application
             return;
         }
 
-        LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
+        _ = ActivateAsync();
 
-        // Create main window
-        MainWindow = new MainWindow();
-        await GetService<IActivationService>().ActivateMainWindowAsync(args);
-        
-        // Create edit mode window
-        EditModeWindow = WindowsExtensions.CreateWindow<EditModeWindow>();
-        await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
+        async Task ActivateAsync()
+        {
+            // Get AppActivationArguments
+            var appActivationArguments = AppInstance.GetCurrent().GetActivatedEventArgs();
 
-        // Initialize dialog service
-        GetService<IDialogService>().Initialize();
+            // Initialize the window
+            MainWindow = new MainWindow();
 
-        // Initialize widgets
-        await GetService<IWidgetResourceService>().InitalizeAsync();
-        GetService<IWidgetManagerService>().InitializePinnedWidgets();
+#if SPLASH_SCREEN
+            // Show the splash screen
+            SplashScreenLoadingTCS = new TaskCompletionSource();
+            var needActivate = await GetService<IActivationService>().LaunchMainWindowAsync(appActivationArguments);
+
+            if (needActivate)
+            {
+                // Activate the window
+                MainWindow.Activate();
+            }
+#endif
+
+            LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
+
+            // Initialize dialog service
+            GetService<IDialogService>().Initialize();
+
+            // Create edit mode window
+            EditModeWindow = WindowsExtensions.CreateWindow<EditModeWindow>();
+            await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
+
+            // Initialize widgets
+            await GetService<IWidgetResourceService>().InitalizeAsync();
+            GetService<IWidgetManagerService>().InitializePinnedWidgets();
+
+            await GetService<IActivationService>().ActivateMainWindowAsync(args);
+        }
     }
 
-    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    private static void HandleAppUnhandledException(Exception? ex, bool showToastNotification)
     {
-        var ex = e.Exception;
         var exceptionString = ExceptionFormatter.FormatExcpetion(ex);
 
         Debug.WriteLine(exceptionString);
@@ -263,9 +309,19 @@ public partial class App : Application
 
         LogExtensions.LogError(ClassName, ex, "An unhandled error occurred.");
 
-        GetService<IAppNotificationService>().TryShow(
-            string.Format("AppNotificationUnhandledExceptionPayload".GetLocalizedString(),
-            $"{ex?.ToString()}{Environment.NewLine}"));
+        if (showToastNotification)
+        {
+            GetService<IAppNotificationService>().TryShow(
+                string.Format("AppNotificationUnhandledExceptionPayload".GetLocalizedString(),
+                $"{ex?.ToString()}{Environment.NewLine}"));
+        }
+    }
+
+    public async Task OnActivatedAsync(AppActivationArguments activatedEventArgs)
+    {
+        LogExtensions.LogInformation(ClassName, $"The app is being activated. Activation type: {activatedEventArgs.Data.GetType().Name}");
+
+        await GetService<IActivationService>().ActivateMainWindowAsync(activatedEventArgs);
     }
 
     public static async new void Exit()
@@ -302,7 +358,9 @@ public partial class App : Application
             });
 
             // exit the current application
+#if TRAY_ICON
             CanCloseWindow = true;
+#endif
             MainWindow.Close();
         }
     }

@@ -8,7 +8,7 @@ namespace DesktopWidgets3.UserControls;
 public sealed partial class TrayMenuControl : UserControl
 {
     [ObservableProperty]
-    private string _appDisplayName = ConstantHelper.AppDisplayName;
+    private string _trayIconToolTip = string.Empty;
 
     private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
@@ -33,7 +33,9 @@ public sealed partial class TrayMenuControl : UserControl
     {
         await _widgetManagerService.CheckEditModeAsync();
         DisposeTrayIconControl();
+#if TRAY_ICON
         App.CanCloseWindow = true;
+#endif
         App.MainWindow.Close();
     }
 

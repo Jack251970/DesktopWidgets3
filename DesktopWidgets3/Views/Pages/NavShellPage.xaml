@@ -3,7 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
-    xmlns:control="using:DesktopWidgets3.UserControls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helpers="using:DesktopWidgets3.Helpers.Navigation"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
@@ -82,7 +81,5 @@
                 <Frame x:Name="NavigationFrame" />
             </Grid>
         </NavigationView>
-        <!--  Tray Menu from H.NotifyIcon  -->
-        <control:TrayMenuControl />
     </Grid>
 </Page>
