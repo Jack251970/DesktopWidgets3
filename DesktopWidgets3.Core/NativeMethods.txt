@@ -1,4 +1,22 @@
-﻿// Monitor Info
+﻿// SystemHelper
+FindWindow
+ShowWindow
+SetForegroundWindow
+SendMessage
+WM_SHOWWINDOW
+SHOW_WINDOW_STATUS
+GetDesktopWindow
+GetAncestor
+GetWindowLong
+SetParent
+SetWindowPos
+WINDOWPOS
+WINDOW_EX_STYLE
+HWND_NOTOPMOST
+HWND_TOPMOST
+HWND_BOTTOM
+
+// MonitorInfo
 GetSystemMetrics
 EnumDisplayMonitors
 MonitorFromWindow

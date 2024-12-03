@@ -2,6 +2,12 @@
 
 public static class Constants
 {
+    #region Program
+
+    public const string DesktopWidgets3 = "DesktopWidgets3";
+
+    #endregion
+
     #region Startup
 
     public const string StartupRegistryKey = "Desktop Widgets 3";
