@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
+using Windows.Win32;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
@@ -271,10 +272,9 @@ public sealed partial class WidgetWindow : WindowEx
         _manager.WindowMessageReceived -= WindowManager_WindowMessageReceived;
     }
 
-    private const int WM_WINDOWPOSCHANGING = 0x0046;
     private void WindowManager_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
     {
-        if (e.Message.MessageId == WM_WINDOWPOSCHANGING)
+        if (e.Message.MessageId == PInvoke.WM_WINDOWPOSCHANGING)
         {
             SystemHelper.ForceWindowPosition(e.Message.LParam);
             e.Handled = true;

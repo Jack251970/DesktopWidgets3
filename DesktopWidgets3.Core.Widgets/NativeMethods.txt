@@ -1,0 +1,2 @@
+﻿// WidgetWindow
+WM_WINDOWPOSCHANGING
