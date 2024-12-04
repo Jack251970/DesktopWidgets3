@@ -338,7 +338,7 @@ public partial class App : Application
     {
         LogExtensions.LogInformation(ClassName, $"The app is being activated. Activation type: {activatedEventArgs.Data.GetType().Name}");
 
-        await GetService<IActivationService>().ActivateMainWindowAsync(activatedEventArgs);
+        await MainWindow.EnqueueOrInvokeAsync(async (_) => await GetService<IActivationService>().ActivateMainWindowAsync(activatedEventArgs));
     }
 
     public static async new void Exit()
