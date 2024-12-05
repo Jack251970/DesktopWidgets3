@@ -32,8 +32,6 @@ public sealed partial class MainWindow : WindowEx
 
     public UIElement? Shell { get; set; }
 
-    public new bool Visible { get; set; } = false;
-
     #endregion
 
     #region Manager & Handle
@@ -57,7 +55,7 @@ public sealed partial class MainWindow : WindowEx
         Title = ConstantHelper.AppDisplayName;
         Content = null;
 
-        Closed += WindowEx_Closed;
+        Closed += MainWindow_Closed;
     }
 
     public void CenterOnRectWork()
@@ -80,7 +78,6 @@ public sealed partial class MainWindow : WindowEx
     public void Hide()
     {
         WindowExtensions.Hide(this);
-        Visible = false;
     }
 
     public void Show()
@@ -93,7 +90,6 @@ public sealed partial class MainWindow : WindowEx
         {
             WindowExtensions.Show(this);
         }
-        Visible = true;
     }
 
     public new void Activate()
@@ -107,7 +103,7 @@ public sealed partial class MainWindow : WindowEx
     #region Events
 
     // this enables the app to continue running in background after clicking close button
-    private void WindowEx_Closed(object sender, WindowEventArgs args)
+    private void MainWindow_Closed(object sender, WindowEventArgs args)
     {
 #if TRAY_ICON
         if (!App.CanCloseWindow)
@@ -117,7 +113,7 @@ public sealed partial class MainWindow : WindowEx
             return;
         }
 #endif
-        Closed -= WindowEx_Closed;
+        Closed -= MainWindow_Closed;
         App.Exit();
     }
 
@@ -149,7 +145,6 @@ public sealed partial class MainWindow : WindowEx
         {
             // When resuming the cached instance
             AppWindow.Show();
-            Visible = true;
             Activate();
 
             // Bring to front

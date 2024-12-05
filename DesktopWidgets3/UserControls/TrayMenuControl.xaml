@@ -13,6 +13,7 @@
         ContextMenuMode="SecondWindow"
         DoubleClickCommand="{x:Bind ShowWindowCommand}"
         IconSource="ms-appx:///Assets/Icon.ico"
+        LeftClickCommand="{x:Bind ShowWindowCommand}"
         MenuActivation="RightClick"
         NoLeftClickDelay="True"
         ToolTipService.ToolTip="{x:Bind TrayIconToolTip, Mode=OneWay}"
