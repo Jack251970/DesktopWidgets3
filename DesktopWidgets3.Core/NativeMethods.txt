@@ -16,6 +16,13 @@ HWND_NOTOPMOST
 HWND_TOPMOST
 HWND_BOTTOM
 
+// TitleBarHelper
+GetActiveWindow
+WA_INACTIVE
+WA_ACTIVE
+WM_ACTIVATE
+DwmSetWindowAttribute
+
 // MonitorInfo
 GetSystemMetrics
 EnumDisplayMonitors
