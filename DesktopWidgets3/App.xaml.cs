@@ -381,7 +381,7 @@ public partial class App : Application
                 Verb = admin ? "runas" : string.Empty
             });
 
-            // kill the current process
+            // Kill the current process
             Process.GetCurrentProcess().Kill();
         }
     }
