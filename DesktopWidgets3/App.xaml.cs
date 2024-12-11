@@ -360,7 +360,7 @@ public partial class App : Application
         Current.Exit();
     }
 
-    public static void RestartApplication()
+    public static void RestartApplication(string? param = null, bool admin = false)
     {
         // Get the path to the executable
         var exePath = Process.GetCurrentProcess().MainModule?.FileName;
@@ -371,7 +371,10 @@ public partial class App : Application
             Process.Start(new ProcessStartInfo
             {
                 FileName = exePath,
-                UseShellExecute = true
+                UseShellExecute = true,
+                WorkingDirectory = Environment.CurrentDirectory,
+                Arguments = param,
+                Verb = admin ? "runas" : string.Empty
             });
 
             // exit the current application
