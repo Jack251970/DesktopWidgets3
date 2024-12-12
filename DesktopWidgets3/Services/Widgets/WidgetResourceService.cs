@@ -1,11 +1,12 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
 
 internal class WidgetResourceService(IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService) : IWidgetResourceService
 {
-    private static string ClassName => typeof(WidgetResourceService).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetResourceService));
 
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
@@ -265,7 +266,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Fail to Init plugin: {pair.Metadata.Name}");
+                _log.Error(e, $"Fail to Init plugin: {pair.Metadata.Name}");
                 pair.Metadata.Disabled = true;
                 failedPlugins.Enqueue(pair);
             }
@@ -295,7 +296,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Error creating widget framework element for widget {pair.Metadata.ID}");
+                _log.Error(e, $"Error creating widget framework element for widget {pair.Metadata.ID}");
             }
         }
 
@@ -314,7 +315,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Error deleting widget {widgetId}");
+                _log.Error(e, $"Error deleting widget {widgetId}");
             }
         }
     }
@@ -331,7 +332,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Error deleting widget {widgetId}");
+                _log.Error(e, $"Error deleting widget {widgetId}");
             }
         }
     }
@@ -348,7 +349,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Error activating widget {widgetId}");
+                _log.Error(e, $"Error activating widget {widgetId}");
             }
         }
     }
@@ -365,7 +366,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Error deactivating widget {widgetId}");
+                _log.Error(e, $"Error deactivating widget {widgetId}");
             }
         }
     }
@@ -385,7 +386,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Error getting default settings for widget {metadata.ID}");
+                _log.Error(e, $"Error getting default settings for widget {metadata.ID}");
             }
         }
 
@@ -403,7 +404,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Error creating setting framework element for widget {metadata.ID}");
+                _log.Error(e, $"Error creating setting framework element for widget {metadata.ID}");
             }
         }
 
@@ -421,7 +422,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Error on settings changed for widget {metadata.ID}");
+                _log.Error(e, $"Error on settings changed for widget {metadata.ID}");
             }
         }
     }

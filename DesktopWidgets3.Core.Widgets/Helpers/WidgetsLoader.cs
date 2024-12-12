@@ -1,10 +1,11 @@
 ﻿using System.Reflection;
+using Serilog;
 
 namespace DesktopWidgets3.Core.Widgets.Helpers;
 
 public static class WidgetsLoader
 {
-    private static string ClassName => typeof(WidgetsLoader).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetsLoader));
 
     public static (List<WidgetGroupPair> allWidgets, List<string> errorWidgets, Dictionary<string, string> installedWidgets) Widgets(List<WidgetGroupMetadata> metadatas, List<string> installingIds)
     {
@@ -52,23 +53,23 @@ public static class WidgetsLoader
             }
             catch (Exception e) when (extensionAssembly == null)
             {
-                LogExtensions.LogError(ClassName, e, $"Couldn't load extension assembly for the widget: {metadata.Name}");
+                _log.Error(e, $"Couldn't load extension assembly for the widget: {metadata.Name}");
             }
             catch (Exception e) when (assembly == null)
             {
-                LogExtensions.LogError(ClassName, e, $"Couldn't load assembly for the widget: {metadata.Name}");
+                _log.Error(e, $"Couldn't load assembly for the widget: {metadata.Name}");
             }
             catch (InvalidOperationException e)
             {
-                LogExtensions.LogError(ClassName, e, $"Can't find the required IWidget interface for the widget: <{metadata.Name}>");
+                _log.Error(e, $"Can't find the required IWidget interface for the widget: <{metadata.Name}>");
             }
             catch (ReflectionTypeLoadException e)
             {
-                LogExtensions.LogError(ClassName, e, $"The GetTypes method was unable to load assembly types for the widget: <{metadata.Name}>");
+                _log.Error(e, $"The GetTypes method was unable to load assembly types for the widget: <{metadata.Name}>");
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"The following widget has errored and can not be loaded: <{metadata.Name}>");
+                _log.Error(e, $"The following widget has errored and can not be loaded: <{metadata.Name}>");
             }
 
             if (widget == null || resourcesFolder == string.Empty)

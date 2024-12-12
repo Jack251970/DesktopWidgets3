@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Dashboard.Services;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 
 namespace DevHome.Dashboard.ComSafeWidgetObjects;
 
@@ -19,7 +20,7 @@ namespace DevHome.Dashboard.ComSafeWidgetObjects;
 /// </summary>
 public class ComSafeWidgetDefinition : IDisposable
 {
-    private static string ClassName => typeof(ComSafeWidgetDefinition).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComSafeWidgetDefinition));
 
     public bool AllowMultiple { get; private set; }
 
@@ -88,12 +89,12 @@ public class ComSafeWidgetDefinition : IDisposable
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 ResetOopWidgetDefinition();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception getting theme resources from widget:");
+                _log.Error(ex, "Exception getting theme resources from widget:");
                 return null;
             }
         }
@@ -113,12 +114,12 @@ public class ComSafeWidgetDefinition : IDisposable
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 ResetOopWidgetDefinition();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception getting widget capabilities from widget:");
+                _log.Error(ex, "Exception getting widget capabilities from widget:");
                 return null;
             }
         }
@@ -164,7 +165,7 @@ public class ComSafeWidgetDefinition : IDisposable
                 }
                 catch (Exception ex)
                 {
-                    LogExtensions.LogWarning(ClassName, ex, "Failed to get properties of out-of-proc object");
+                    _log.Warning(ex, "Failed to get properties of out-of-proc object");
                 }
             }
         }
@@ -189,7 +190,7 @@ public class ComSafeWidgetDefinition : IDisposable
             }
             catch (Exception ex)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
             }
 
             return string.Empty;

@@ -12,13 +12,14 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 using Windows.Storage.Streams;
 
 namespace DevHome.Dashboard.Services;
 
 public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetResourceService widgetResourceService) : IWidgetScreenshotService
 {
-    private static string ClassName => typeof(WidgetScreenshotService).Name; 
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetScreenshotService));
 
     private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
@@ -80,11 +81,11 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         }
         catch (System.IO.FileNotFoundException fileNotFoundEx)
         {
-            LogExtensions.LogWarning(ClassName, fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetDefinition.DisplayTitle}");
+            _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetDefinition.DisplayTitle}");
         }
         catch (Exception ex)
         {
-            LogExtensions.LogError(ClassName, ex, $"Failed to get widget screenshot for widget definition {widgetDefinition.DisplayTitle}");
+            _log.Error(ex, $"Failed to get widget screenshot for widget definition {widgetDefinition.DisplayTitle}");
         }
 
         var brush = new ImageBrush
@@ -145,11 +146,11 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         }
         catch (System.IO.FileNotFoundException fileNotFoundEx)
         {
-            LogExtensions.LogWarning(ClassName, fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetDefinition.DisplayTitle}");
+            _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetDefinition.DisplayTitle}");
         }
         catch (Exception ex)
         {
-            LogExtensions.LogError(ClassName, ex, $"Failed to get widget screenshot for widget definition {widgetDefinition.DisplayTitle}");
+            _log.Error(ex, $"Failed to get widget screenshot for widget definition {widgetDefinition.DisplayTitle}");
         }
 
         var brush = new ImageBrush

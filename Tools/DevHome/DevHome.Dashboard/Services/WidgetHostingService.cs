@@ -6,12 +6,13 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 
 namespace DevHome.Dashboard.Services;
 
 public class WidgetHostingService : IWidgetHostingService
 {
-    private static string ClassName => typeof(WidgetHostingService).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetHostingService));
 
     private WidgetHost _widgetHost;
     private WidgetCatalog _widgetCatalog;
@@ -35,7 +36,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
                 // Force getting a new WidgetHost before trying again. Also reset the WidgetCatalog,
                 // since if we lost the host we probably lost the catalog too.
@@ -44,7 +45,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception getting widgets from service:");
+                _log.Error(ex, "Exception getting widgets from service:");
             }
         }
 
@@ -64,14 +65,14 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
                 _widgetHost = null;
                 _widgetCatalog = null;
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, $"Exception getting widget with id {widgetId}:");
+                _log.Error(ex, $"Exception getting widget with id {widgetId}:");
             }
         }
 
@@ -91,14 +92,14 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
                 _widgetHost = null;
                 _widgetCatalog = null;
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception creating a widget:");
+                _log.Error(ex, "Exception creating a widget:");
             }
         }
 
@@ -123,14 +124,14 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
                 _widgetHost = null;
                 _widgetCatalog = null;
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception in GetWidgetCatalogAsync:");
+                _log.Error(ex, "Exception in GetWidgetCatalogAsync:");
                 _widgetCatalog = null;
             }
         }
@@ -151,7 +152,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
                 // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
                 // since if we lost the catalog we probably lost the host too.
@@ -160,7 +161,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception in GetProviderDefinitionsAsync:");
+                _log.Error(ex, "Exception in GetProviderDefinitionsAsync:");
             }
         }
 
@@ -180,7 +181,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
                 // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
                 // since if we lost the catalog we probably lost the host too.
@@ -189,7 +190,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception in GetWidgetDefinitionsAsync:");
+                _log.Error(ex, "Exception in GetWidgetDefinitionsAsync:");
             }
         }
 
@@ -209,7 +210,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
                 // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
                 // since if we lost the catalog we probably lost the host too.
@@ -218,7 +219,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception in GetWidgetDefinitionAsync:");
+                _log.Error(ex, "Exception in GetWidgetDefinitionAsync:");
             }
         }
 

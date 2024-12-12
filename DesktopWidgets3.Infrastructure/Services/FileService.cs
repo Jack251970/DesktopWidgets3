@@ -1,10 +1,11 @@
 ﻿using Newtonsoft.Json;
+using Serilog;
 
 namespace DesktopWidgets3.Infrastructure.Services;
 
 public class FileService : IFileService
 {
-    private static string ClassName => typeof(FileService).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(FileService));
 
     private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
 
@@ -20,7 +21,7 @@ public class FileService : IFileService
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Reading file {path} failed");
+                _log.Error(e, $"Reading file {path} failed : {ExceptionFormatter.FormatExcpetion(e)}");
             }
         }
 
@@ -45,7 +46,7 @@ public class FileService : IFileService
         }
         catch (Exception e)
         {
-            LogExtensions.LogError(ClassName, e, $"Writing file {path} failed");
+            _log.Error(e, $"Writing file {path} failed : {ExceptionFormatter.FormatExcpetion(e)}");
         }
         finally
         {
@@ -66,7 +67,7 @@ public class FileService : IFileService
             }
             catch (Exception e)
             {
-                LogExtensions.LogError(ClassName, e, $"Deleting file {path} failed");
+                _log.Error(e, $"Deleting file {path} failed : {ExceptionFormatter.FormatExcpetion(e)}");
             }
             return true;
         }

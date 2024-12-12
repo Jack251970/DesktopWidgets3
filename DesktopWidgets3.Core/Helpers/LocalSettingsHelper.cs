@@ -23,6 +23,19 @@ public class LocalSettingsHelper
         }
     }
 
+    public static string LogDirectory
+    {
+        get
+        {
+            var logDirectory = Path.Combine(ApplicationDataPath, Constants.LogsFolder);
+            if (!Directory.Exists(logDirectory))
+            {
+                Directory.CreateDirectory(logDirectory);
+            }
+            return logDirectory;
+        }
+    }
+
     public static string DefaultUserWidgetsDirectory
     {
         get

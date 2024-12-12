@@ -1,15 +1,18 @@
 ﻿using System.Diagnostics;
+#if !DISABLE_XAML_GENERATED_MAIN
+using Microsoft.Extensions.Configuration;
+#endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using Serilog;
 
 namespace DesktopWidgets3;
 
 public partial class App : Application
 {
-    private static string ClassName => typeof(App).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(App));
 
     #region Host
 
@@ -83,15 +86,30 @@ public partial class App : Application
         // Initialize the component
         InitializeComponent();
 
-        // Initialize core helpers before services
+#if !DISABLE_XAML_GENERATED_MAIN
+        // Initialize core helpers
         LocalSettingsHelper.Initialize();
+
+        // Set up Logging
+        Environment.SetEnvironmentVariable("LOGGING_ROOT", Path.Combine(LocalSettingsHelper.LogDirectory, InfoHelper.GetVersion().ToString()));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+#endif
 
         // Build the host
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
             .UseContentRoot(AppContext.BaseDirectory)
             .ConfigureLogging(builder => builder
-                .AddProvider(new FileLoggerProvider()))
+                .AddSerilog(dispose: true))
+            .UseDefaultServiceProvider((context, options) =>
+            {
+                options.ValidateOnBuild = true;
+            })
             .ConfigureServices((context, services) =>
             {
                 #region Core Service
@@ -228,7 +246,6 @@ public partial class App : Application
 
         // Initialize core extensions after services
         DependencyExtensions.Initialize(GetService<IDependencyService>());
-        LogExtensions.Initialize(GetService<ILogger<App>>());
 
         // Initialize core services
         GetService<IAppSettingsService>().Initialize();
@@ -237,6 +254,8 @@ public partial class App : Application
         // Initialize core helpers after services
         AppLanguageHelper.Initialize();
         ApplicationExtensionHost.Initialize(this);
+
+        _log.Information($"App initialized. Language: {AppLanguageHelper.PreferredLanguage}.");
     }
 
     #endregion
@@ -282,7 +301,7 @@ public partial class App : Application
             }
 #endif
 
-            LogExtensions.LogInformation(ClassName, $"App launched. Launch args type: {args.GetType().Name}.");
+            _log.Information($"App launched. Launch args type: {args.GetType().Name}.");
 
 #if SPLASH_SCREEN
             static async Task WithTimeoutAsync(Task task, TimeSpan timeout)
@@ -324,20 +343,28 @@ public partial class App : Application
 
         Debugger.Break();
 
-        LogExtensions.LogError(ClassName, ex, "An unhandled error occurred.");
+        // Log the error
+        _log.Fatal(ex, $"An unhandled error occurred : {exceptionString}");
 
+        // Close the log
+        Log.CloseAndFlush();
+
+        // Try to show a notification
         if (showToastNotification)
         {
             GetService<IAppNotificationService>().TryShow(
                 string.Format("AppNotificationUnhandledExceptionPayload".GetLocalizedString(),
                 $"{ex?.ToString()}{Environment.NewLine}"));
         }
+
+        // We are very likely in a bad and unrecoverable state, so ensure Dev Home crashes w/ the exception info.
+        Environment.FailFast(exceptionString, ex);
     }
 
 #if DISABLE_XAML_GENERATED_MAIN
     public async Task OnActivatedAsync(AppActivationArguments activatedEventArgs)
     {
-        LogExtensions.LogInformation(ClassName, $"The app is being activated. Activation type: {activatedEventArgs.Data.GetType().Name}");
+        _log.Information($"App is activated. Activation type: {activatedEventArgs.Data.GetType().Name}");
 
         await MainWindow.EnqueueOrInvokeAsync(async (_) => await GetService<IActivationService>().ActivateMainWindowAsync(activatedEventArgs));
     }
@@ -345,7 +372,7 @@ public partial class App : Application
 
     public static async new void Exit()
     {
-        LogExtensions.LogInformation(ClassName, "Exit current application.");
+        _log.Information("Exiting current application");
 
         // Close all widgets
         await GetService<IWidgetManagerService>().CloseAllWidgetsAsync();
@@ -364,7 +391,7 @@ public partial class App : Application
 
     public static void RestartApplication(string? param = null, bool admin = false)
     {
-        LogExtensions.LogInformation(ClassName, "Restart current application.");
+        _log.Information("Restarting current application with args: {param}, admin: {admin}", param, admin);
 
         // Get the path to the executable
         var exePath = Process.GetCurrentProcess().MainModule?.FileName;
@@ -380,6 +407,9 @@ public partial class App : Application
                 Arguments = param,
                 Verb = admin ? "runas" : string.Empty
             });
+
+            // Close the log
+            Log.CloseAndFlush();
 
             // Kill the current process
             Process.GetCurrentProcess().Kill();

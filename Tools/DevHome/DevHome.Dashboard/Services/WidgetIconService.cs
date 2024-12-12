@@ -10,13 +10,14 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 using Windows.Storage.Streams;
 
 namespace DevHome.Dashboard.Services;
 
 public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceService widgetResourceService) : IWidgetIconService
 {
-    private static string ClassName => typeof(WidgetIconService).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetIconService));
 
     private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
@@ -76,11 +77,11 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         }
         catch (System.IO.FileNotFoundException fileNotFoundEx)
         {
-            LogExtensions.LogWarning(ClassName, fileNotFoundEx, $"Widget icon missing for widget {widgetId} - {widgetType}");
+            _log.Warning(fileNotFoundEx, $"Widget icon missing for widget {widgetId} - {widgetType}");
         }
         catch (Exception ex)
         {
-            LogExtensions.LogError(ClassName, ex, $"Failed to get widget icon for widget {widgetId} - {widgetType}");
+            _log.Error(ex, $"Failed to get widget icon for widget {widgetId} - {widgetType}");
         }
 
         var brush = new ImageBrush
@@ -142,11 +143,11 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         }
         catch (System.IO.FileNotFoundException fileNotFoundEx)
         {
-            LogExtensions.LogWarning(ClassName, fileNotFoundEx, $"Widget icon missing for widget definition {widgetDefinition.DisplayTitle}");
+            _log.Warning(fileNotFoundEx, $"Widget icon missing for widget definition {widgetDefinition.DisplayTitle}");
         }
         catch (Exception ex)
         {
-            LogExtensions.LogError(ClassName, ex, $"Failed to get widget icon for widget definition {widgetDefinition.DisplayTitle}");
+            _log.Error(ex, $"Failed to get widget icon for widget definition {widgetDefinition.DisplayTitle}");
         }
 
         var brush = new ImageBrush

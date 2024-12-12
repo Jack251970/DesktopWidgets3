@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DevHome.Dashboard.Services;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.Dashboard.ComSafeWidgetObjects;
@@ -21,7 +22,7 @@ namespace DevHome.Dashboard.ComSafeWidgetObjects;
 /// </summary>
 public class ComSafeWidget
 {
-    private static string ClassName => typeof(ComSafeWidget).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComSafeWidget));
 
     // Not currently used.
     public DateTimeOffset DataLastUpdated => throw new NotImplementedException();
@@ -80,12 +81,12 @@ public class ComSafeWidget
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception getting card template from widget:");
+                _log.Error(ex, "Exception getting card template from widget:");
                 return "{}";
             }
         }
@@ -109,12 +110,12 @@ public class ComSafeWidget
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception getting card template from widget:");
+                _log.Error(ex, "Exception getting card template from widget:");
                 return "{}";
             }
         }
@@ -134,12 +135,12 @@ public class ComSafeWidget
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception getting custom state from widget:");
+                _log.Error(ex, "Exception getting custom state from widget:");
                 return string.Empty;
             }
         }
@@ -163,12 +164,12 @@ public class ComSafeWidget
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception getting size from widget:");
+                _log.Error(ex, "Exception getting size from widget:");
                 return WidgetSize.Medium;
             }
         }
@@ -187,12 +188,12 @@ public class ComSafeWidget
                 try
                 {
                     CoAllowSetForegroundWindow(_oopWidget);
-                    LogExtensions.LogInformation(ClassName, "CoAllowSetForegroundWindow result: {GetLastError}", Marshal.GetLastWin32Error().ToString(CultureInfo.CurrentCulture));
+                    _log.Information("CoAllowSetForegroundWindow result: {GetLastError}", Marshal.GetLastWin32Error().ToString(CultureInfo.CurrentCulture));
                 }
                 catch (Exception ex)
                 {
                     // If CoAllowSetForegroundWindow fails, we should still continue with the call to NotifyActionInvokedAsync.
-                    LogExtensions.LogWarning(ClassName, ex, $"Call to CoAllowSetForegroundWindow failed");
+                    _log.Warning(ex, $"Call to CoAllowSetForegroundWindow failed");
                 }
 
                 await Task.Run(async () => await _oopWidget.NotifyActionInvokedAsync(verb, data));
@@ -200,12 +201,12 @@ public class ComSafeWidget
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception calling NotifyActionInvokedAsync on widget:");
+                _log.Error(ex, "Exception calling NotifyActionInvokedAsync on widget:");
                 return;
             }
         }
@@ -224,12 +225,12 @@ public class ComSafeWidget
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception deleting widget:");
+                _log.Error(ex, "Exception deleting widget:");
                 return;
             }
         }
@@ -248,12 +249,12 @@ public class ComSafeWidget
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception setting custom state on widget:");
+                _log.Error(ex, "Exception setting custom state on widget:");
                 return;
             }
         }
@@ -272,12 +273,12 @@ public class ComSafeWidget
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception setting size on widget:");
+                _log.Error(ex, "Exception setting size on widget:");
                 return;
             }
         }
@@ -296,12 +297,12 @@ public class ComSafeWidget
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
             }
             catch (Exception ex)
             {
-                LogExtensions.LogError(ClassName, ex, "Exception notifying customization requested on widget:");
+                _log.Error(ex, "Exception notifying customization requested on widget:");
                 return;
             }
         }
@@ -342,7 +343,7 @@ public class ComSafeWidget
             }
             catch (Exception ex)
             {
-                LogExtensions.LogWarning(ClassName, ex, "Failed to get properties of out-of-proc object");
+                _log.Warning(ex, "Failed to get properties of out-of-proc object");
             }
         }
     }
@@ -362,7 +363,7 @@ public class ComSafeWidget
             }
             catch (Exception ex)
             {
-                LogExtensions.LogWarning(ClassName, ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
             }
 
             return string.Empty;

@@ -26,8 +26,6 @@ global using DesktopWidgets3.Models.Widgets;
 global using DesktopWidgets3.Services;
 global using DesktopWidgets3.Services.Widgets;
 global using DesktopWidgets3.UserControls;
-global using DesktopWidgets3.Utils;
-global using DesktopWidgets3.Utils.Logger;
 global using DesktopWidgets3.ViewModels.Pages;
 global using DesktopWidgets3.Views.Pages;
 global using DesktopWidgets3.Views.Windows;
@@ -58,7 +56,6 @@ global using DesktopWidgets3.Core.Widgets.Views.Windows;
 // DesktopWidgets3.Infrastructure
 global using DesktopWidgets3.Infrastructure;
 global using DesktopWidgets3.Infrastructure.Contracts.Services;
-global using DesktopWidgets3.Infrastructure.Extensions;
 global using DesktopWidgets3.Infrastructure.Helpers;
 global using DesktopWidgets3.Infrastructure.Services;
 

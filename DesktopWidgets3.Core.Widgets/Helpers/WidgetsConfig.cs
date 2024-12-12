@@ -1,8 +1,10 @@
-﻿namespace DesktopWidgets3.Core.Widgets.Helpers;
+﻿using Serilog;
+
+namespace DesktopWidgets3.Core.Widgets.Helpers;
 
 public static class WidgetsConfig
 {
-    private static string ClassName => typeof(WidgetsConfig).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetsConfig));
 
     public static List<WidgetGroupMetadata> Parse(string[] widgetDirectories, string preinstalledWidgetDirectory)
     {
@@ -33,7 +35,7 @@ public static class WidgetsConfig
 
         duplicateList
             .ForEach(
-                x => LogExtensions.LogWarning(ClassName, "GetUniqueLatestWidgetMetadata",
+                x => _log.Warning("GetUniqueLatestWidgetMetadata",
                 $"Duplicate widget name: {x.Name}, id: {x.ID}, version: {x.Version} not loaded due to version not the highest of the duplicates"));
 
         return uniqueList;
@@ -84,7 +86,7 @@ public static class WidgetsConfig
         var configPath = Path.Combine(widgetDirectory, Constants.WidgetMetadataFileName);
         if (!File.Exists(configPath))
         {
-            LogExtensions.LogError(ClassName, $"Didn't find config file <{configPath}>");
+            _log.Error($"Didn't find config file <{configPath}>");
             return null;
         }
 
@@ -100,19 +102,19 @@ public static class WidgetsConfig
         }
         catch (Exception e)
         {
-            LogExtensions.LogError(ClassName, e, $"invalid json for config <{configPath}>");
+            _log.Error(e, $"invalid json for config <{configPath}>");
             return null;
         }
 
         if (!AllowedLanguage.IsAllowed(metadata.Language))
         {
-            LogExtensions.LogError(ClassName, $"Invalid language <{metadata.Language}> for config <{configPath}>");
+            _log.Error($"Invalid language <{metadata.Language}> for config <{configPath}>");
             return null;
         }
 
         if (!File.Exists(metadata.ExecuteFilePath))
         {
-            LogExtensions.LogError(ClassName, $"execute file path didn't exist <{metadata.ExecuteFilePath}> for conifg <{configPath}");
+            _log.Error($"execute file path didn't exist <{metadata.ExecuteFilePath}> for conifg <{configPath}");
             return null;
         }
 

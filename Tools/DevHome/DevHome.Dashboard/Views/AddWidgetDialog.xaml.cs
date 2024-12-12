@@ -19,12 +19,13 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 
 namespace DevHome.Dashboard.Views;
 
 public sealed partial class AddWidgetDialog : ContentDialog
 {
-    private static string ClassName => typeof(AddWidgetDialog).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(AddWidgetDialog));
 
     private object _selectedWidget;
 
@@ -72,7 +73,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 // If a WidgetDefinition is deleted while the dialog is open, we won't know to remove it from
                 // the list automatically, but we can show a helpful error message if the user tries to pin it.
                 // https://github.com/microsoft/devhome/issues/2623
-                LogExtensions.LogError(ClassName, ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
+                _log.Error(ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
             }
         }
         await FillAvailableMicrosoftWidgetsAsync();
@@ -129,7 +130,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var providerDefinitions = (await _hostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
         var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_hostingService);
 
-        LogExtensions.LogInformation(ClassName, $"Filling available widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
+        _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
@@ -198,7 +199,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // This should never happen since Dev Home's core widgets are always available.
         if (!AddWidgetNavigationView.MenuItems.Any())
         {
-            LogExtensions.LogError(ClassName, $"FillAvailableWidgetsAsync found no available widgets.");
+            _log.Error($"FillAvailableWidgetsAsync found no available widgets.");
         }
     }
 
@@ -314,7 +315,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
         if (selectedTag is null)
         {
-            LogExtensions.LogError(ClassName, $"Selected widget description did not have a tag");
+            _log.Error($"Selected widget description did not have a tag");
             ViewModel.Clear();
             return;
         }
@@ -359,7 +360,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     [RelayCommand]
     private void PinButtonClick()
     {
-        LogExtensions.LogDebug(ClassName, $"Pin selected");
+        _log.Debug($"Pin selected");
         AddedWidget = _selectedWidget;
 
         HideDialogAsync();
@@ -368,7 +369,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     [RelayCommand]
     private void CancelButtonClick()
     {
-        LogExtensions.LogDebug(ClassName, $"Canceled dialog");
+        _log.Debug($"Canceled dialog");
         AddedWidget = null;
 
         HideDialogAsync();
@@ -389,7 +390,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             catch (Exception ex)
             {
                 // If there was an error getting the widget catalog, log it and continue.
-                LogExtensions.LogError(ClassName, ex, "Exception in HideDialogAsync:");
+                _log.Error(ex, "Exception in HideDialogAsync:");
             }
         }
 
@@ -407,7 +408,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 _selectedWidget as ComSafeWidgetDefinition is ComSafeWidgetDefinition selectedWidgetDefinition &&
                 selectedWidgetDefinition.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
             {
-                LogExtensions.LogInformation(ClassName, $"Widget definition deleted while selected.");
+                _log.Information($"Widget definition deleted while selected.");
                 ViewModel.Clear();
                 AddWidgetNavigationView.SelectedItem = null;
             }
@@ -433,7 +434,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                                 // This should never happen since Dev Home's core widgets are always available.
                                 if (!menuItems.Any())
                                 {
-                                    LogExtensions.LogError(ClassName, $"WidgetCatalog_WidgetDefinitionDeleted found no available widgets.");
+                                    _log.Error($"WidgetCatalog_WidgetDefinitionDeleted found no available widgets.");
                                 }
                             }
 

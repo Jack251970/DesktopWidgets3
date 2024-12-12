@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
 
@@ -8,55 +9,64 @@ internal class LogService : ILogService
 
     public void LogTrace(string className, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogTrace(className, exception, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Verbose(exception, message ?? string.Empty, args);
     }
 
     public void LogTrace(string className, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogTrace(className, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Verbose(message ?? string.Empty, args);
     }
 
     //------------------------------------------DEBUG------------------------------------------//
 
     public void LogDebug(string className, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogDebug(className, exception, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Debug(exception, message ?? string.Empty, args);
     }
 
     public void LogDebug(string className, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogDebug(className, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Debug(message ?? string.Empty, args);
     }
 
     //------------------------------------------INFORMATION------------------------------------------//
 
     public void LogInformation(string className, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogInformation(className, exception, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Information(exception, message ?? string.Empty, args);
     }
 
     public void LogInformation(string className, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogInformation(className, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Information(message ?? string.Empty, args);
     }
 
     //------------------------------------------WARNING------------------------------------------//
 
     public void LogWarning(string className, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogWarning(className, exception, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Warning(exception, message ?? string.Empty, args);
     }
 
     public void LogWarning(string className, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogWarning(className, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Warning(message ?? string.Empty, args);
     }
 
     //------------------------------------------ERROR------------------------------------------//
 
     public void LogError(string className, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogError(className, exception, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Error(exception, message ?? string.Empty, args);
     }
 
     /// <summary>
@@ -64,18 +74,21 @@ internal class LogService : ILogService
     /// </summary>
     public void LogError(string className, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogError(className, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Error(message ?? string.Empty, args);
     }
 
     //------------------------------------------CRITICAL------------------------------------------//
 
     public void LogCritical(string className, Exception? exception, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogCritical(className, exception, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Fatal(exception, message ?? string.Empty, args);
     }
 
     public void LogCritical(string className, string? message, [CallerMemberName] string methodName = "", params object?[] args)
     {
-        LogExtensions.LogCritical(className, message, methodName, args);
+        var log = Log.ForContext("SourceContext", $"{className}|{methodName}");
+        log.Fatal(message ?? string.Empty, args);
     }
 }
