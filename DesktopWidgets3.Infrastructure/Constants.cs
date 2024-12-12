@@ -26,9 +26,7 @@ public static class Constants
 
     #endregion
 
-    #region Local Settings & Logs
-
-    public const string LocalAppDataFolder = "Desktop Widgets 3";
+    #region Settings & Logs
 
 #if DEBUG
     public const string ApplicationDataFolder = "ApplicationData(Debug)";
@@ -36,9 +34,9 @@ public static class Constants
     public const string ApplicationDataFolder = "ApplicationData";
 #endif
 
-    public const string LocalSettingsFolder = "Settings";
+    public const string SettingsFolder = "Settings";
     
-    public const string SettingsFile = "LocalSettings.json";
+    public const string SettingsFile = "Settings.json";
 
     public const string WidgetListFile = "WidgetList.json";
 

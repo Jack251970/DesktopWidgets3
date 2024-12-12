@@ -10,6 +10,19 @@ public class LocalSettingsHelper
     private static string applicationDataPath = string.Empty;
     public static string ApplicationDataPath => applicationDataPath;
 
+    public static void Initialize()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            applicationDataPath = ApplicationData.Current.LocalFolder.Path;
+        }
+        else
+        {
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            applicationDataPath = Path.Combine(appDataPath, Constants.DesktopWidgets3, Constants.ApplicationDataFolder);
+        }
+    }
+
     public static string DefaultUserWidgetsDirectory
     {
         get
@@ -20,19 +33,6 @@ public class LocalSettingsHelper
                 Directory.CreateDirectory(userWidgetsDirectory);
             }
             return userWidgetsDirectory;
-        }
-    }
-
-    public static void Initialize()
-    {
-        if (RuntimeHelper.IsMSIX)
-        {
-            applicationDataPath = ApplicationData.Current.LocalFolder.Path;
-        }
-        else
-        {
-            var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            applicationDataPath = Path.Combine(localAppDataPath, Constants.LocalAppDataFolder, Constants.ApplicationDataFolder);
         }
     }
 }
