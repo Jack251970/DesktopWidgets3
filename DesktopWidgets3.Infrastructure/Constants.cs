@@ -10,12 +10,16 @@ public static class Constants
 
     #region Startup
 
-    public const string StartupRegistryKey = "Desktop Widgets 3";
-
     public const string StartupTaskId = "StartAppOnLoginTask";
 
+    public const string StartupRegistryKey = DesktopWidgets3;
+
+    public const string StartupLogonTaskName = $"{DesktopWidgets3} Startup";
+
+    public const string StartupLogonTaskDesc = $"{DesktopWidgets3} Auto Startup";
+
     #endregion
-    
+
     #region Resources
 
     public const string DefaultResourceFileName = "Resources";

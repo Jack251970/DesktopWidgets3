@@ -11,6 +11,9 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     public ObservableCollection<AppLanguageItem> AppLanguages = AppLanguageHelper.SupportedLanguages;
 
+    public Visibility NonlogonTaskCardVisibility = RuntimeHelper.IsMSIX ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility LogonTaskExpanderVisibility = RuntimeHelper.IsMSIX ? Visibility.Collapsed : Visibility.Visible;
+
     [ObservableProperty]
     private int _languageIndex;
 
@@ -19,6 +22,9 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     [ObservableProperty]
     private bool _runStartup;
+
+    [ObservableProperty]
+    private bool _logonTask;
 
     [ObservableProperty]
     private bool _silentStart;
@@ -77,7 +83,11 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     public async void OnNavigatedTo(object parameter)
     {
         LanguageIndex = AppLanguageHelper.SupportedLanguages.IndexOf(AppLanguageHelper.PreferredLanguage);
-        RunStartup = await StartupHelper.GetStartup(Constants.StartupTaskId, Constants.StartupRegistryKey);
+
+        var logonTask = await StartupHelper.GetStartupAsync(logon: true);
+        var startupEntry = await StartupHelper.GetStartupAsync();
+        RunStartup = logonTask || startupEntry;
+        LogonTask = logonTask;
 
         ShowRestartTip = false;
     }
@@ -132,7 +142,27 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
     {
         if (_isInitialized)
         {
-            _ = StartupHelper.SetStartupAsync(Constants.StartupTaskId, Constants.StartupRegistryKey, value);
+            if (value)
+            {
+                _ = StartupHelper.SetStartupAsync(true, logon: LogonTask);
+            }
+            else
+            {
+                _ = StartupHelper.SetStartupAsync(false, logon: true);
+                _ = StartupHelper.SetStartupAsync(false);
+            }
+        }
+    }
+
+    partial void OnLogonTaskChanged(bool value)
+    {
+        if (_isInitialized)
+        {
+            if (RunStartup)
+            {
+                _ = StartupHelper.SetStartupAsync(false, logon: !value);
+                _ = StartupHelper.SetStartupAsync(true, logon: value);
+            }
         }
     }
 

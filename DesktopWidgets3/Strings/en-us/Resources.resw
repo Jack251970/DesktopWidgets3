@@ -171,11 +171,14 @@
   <data name="Settings_BatterySaver_Card.Header" xml:space="preserve">
     <value>Battery saver</value>
   </data>
-  <data name="Settings_RunStartup_Card.Description" xml:space="preserve">
+  <data name="Settings_RunStartup_Expander.Description" xml:space="preserve">
     <value>Automatically launch app when you log in to Windows</value>
   </data>
-  <data name="Settings_RunStartup_Card.Header" xml:space="preserve">
+  <data name="Settings_RunStartup_Expander.Header" xml:space="preserve">
     <value>Run at startup</value>
+  </data>
+  <data name="Settings_RunStartup_Expander_Card.Header" xml:space="preserve">
+    <value>Use logon task instead of startup entry</value>
   </data>
   <data name="Shell_Dashboard.Content" xml:space="preserve">
     <value>Dashboard</value>
