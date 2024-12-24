@@ -324,7 +324,7 @@ public partial class App : Application
             GetService<IDialogService>().Initialize();
 
             // Check startup
-            _ = StartupHelper.CheckStartupTask();
+            _ = StartupHelper.CheckStartup();
 
             // Create edit mode window
             EditModeWindow = WindowsExtensions.CreateWindow<EditModeWindow>();
