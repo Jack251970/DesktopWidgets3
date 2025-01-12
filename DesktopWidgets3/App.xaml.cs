@@ -170,7 +170,7 @@ public partial class App : Application
                 services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
 
                 // Settings Management
-                services.AddSingleton<DesktopWidgets3.Contracts.Services.IAppSettingsService, DesktopWidgets3.Services.AppSettingsService>();
+                services.AddSingleton<IAppSettingsService, AppSettingsService>();
 
                 #endregion
 
