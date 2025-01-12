@@ -143,7 +143,7 @@ public partial class PerformanceViewModel : ObservableRecipient
                 return;
             }
 
-            // TODO: Add actite index support.
+            // TODO(Future): Add actite index support.
             var _gpuActiveIndex = 0;
             var gpuName = gpuStats.GetGPUName(_gpuActiveIndex);
             var gpuUsage = gpuStats.GetGPUUsage(_gpuActiveIndex);

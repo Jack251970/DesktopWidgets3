@@ -159,7 +159,7 @@ public partial class DashboardViewModel(DispatcherQueue dispatcherQueue, WidgetV
                         }
                         catch (Exception ex)
                         {
-                            // TODO Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
+                            // DEVHOMETODO: Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
                             // https://github.com/microsoft/devhome/issues/1215
                             _log.Warning(ex, $"Couldn't insert pinned widget");
                         }
