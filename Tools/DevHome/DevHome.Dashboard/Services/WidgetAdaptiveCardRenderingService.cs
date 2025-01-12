@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
@@ -109,8 +110,17 @@ public partial class WidgetAdaptiveCardRenderingService : IAdaptiveCardRendering
             try
             {
                 _log.Information($"Get HostConfig file '{hostConfigFileName}'");
-                var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
-                var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
+                StorageFile file;
+                if (RuntimeHelper.IsMSIX)
+                {
+                    var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
+                    file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
+                }
+                else
+                {
+                    var path = Path.Combine(AppContext.BaseDirectory, "DevHome.Dashboard", "Assets", hostConfigFileName);
+                    file = await StorageFile.GetFileFromPathAsync(path).AsTask().ConfigureAwait(false);
+                }
                 hostConfigContents = await FileIO.ReadTextAsync(file);
             }
             catch (Exception ex)
