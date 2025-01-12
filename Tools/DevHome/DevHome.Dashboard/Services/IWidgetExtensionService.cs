@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DevHome.Dashboard.Services;
 
-internal interface IWidgetExtensionService
+public interface IWidgetExtensionService
 {
     /// <summary>
     /// Gets whether the given providerDefinitionId represents a CoreWidgetProvider of any build ring

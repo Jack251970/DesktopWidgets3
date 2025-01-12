@@ -219,7 +219,7 @@ public partial class App : Application
                 // Widgets Window Pages
                 services.AddTransient<WidgetSettingPage>();
                 services.AddTransient<WidgetSettingViewModel>();
-                services.AddTransient<WidgetViewModel>();
+                services.AddTransient<Core.Widgets.ViewModels.Windows.WidgetViewModel>();
 
                 #endregion
 

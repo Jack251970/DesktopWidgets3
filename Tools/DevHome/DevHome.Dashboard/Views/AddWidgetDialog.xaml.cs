@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-//using DevHome.Common.Extensions;
-//using DevHome.Contracts.Services;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;

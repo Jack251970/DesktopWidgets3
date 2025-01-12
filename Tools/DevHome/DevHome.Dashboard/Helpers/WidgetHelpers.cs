@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,10 +12,8 @@ using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Helpers;
 
-internal sealed class WidgetHelpers
+public sealed class WidgetHelpers
 {
-    private static string ClassName => typeof(WidgetHelpers).Name;
-
     public const string WebExperiencePackPackageId = "9MSSGKG348SP";
     public const string WebExperiencePackageFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
     public const string WidgetsPlatformRuntimePackageId = "9N3RK8ZV2ZR8";

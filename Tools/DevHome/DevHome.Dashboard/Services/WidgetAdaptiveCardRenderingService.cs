@@ -5,9 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
-//using DevHome.Common.Renderers;
-//using DevHome.Common.Services;
-//using DevHome.Contracts.Services;
+using DevHome.Common.Renderers;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Serilog;
@@ -15,7 +13,7 @@ using Windows.Storage;
 
 namespace DevHome.Dashboard.Services;
 
-public class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
+public partial class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetAdaptiveCardRenderingService));
 
@@ -81,11 +79,10 @@ public class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService,
     private async Task ConfigureAdaptiveCardRendererAsync()
     {
         // Add custom Adaptive Card renderer.
-        // TODO: Finish this.
-        /*_renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+        _renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
         _renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
         _renderer.ElementRenderers.Set("Input.Text", new TextInputRenderer());
-        _renderer.ActionRenderers.Set(ChooseFileAction.CustomTypeString, new ChooseFileActionRenderer());*/
+        _renderer.ActionRenderers.Set(ChooseFileAction.CustomTypeString, new ChooseFileActionRenderer());
 
         // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await UpdateHostConfig();

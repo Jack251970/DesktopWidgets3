@@ -13,8 +13,6 @@ namespace DevHome.Dashboard.Services;
 
 public class WidgetServiceService : IWidgetServiceService
 {
-    private static string ClassName => typeof(WidgetServiceService).Name;
-
     private readonly IPackageDeploymentService _packageDeploymentService;
     private readonly IMicrosoftStoreService _msStoreService;
 

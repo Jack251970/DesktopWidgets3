@@ -118,6 +118,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Temporarily duplicate the Adaptive Card from DevHome.Common -->
+    <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.1-beta" GeneratePathProperty="true" />
+    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.2.1-beta" GeneratePathProperty="true" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.MetadataControl" Version="8.1.240916" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.RichSuggestBox" Version="8.1.240916" />
@@ -200,6 +203,17 @@
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
   </ItemGroup>
+
+  <!-- Workaround for Adaptive Cards not supporting correct RIDs when using .NET 8 -->
+  <ItemGroup>
+    <Content Include="$(TargetDir)\AdaptiveCards.ObjectModel.WinUI3.dll" Link="AdaptiveCards.ObjectModel.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <Target Name="CopyAdaptiveCardsToTargetDir" BeforeTargets="BeforeBuild">
+    <Copy SourceFiles="$(PkgAdaptiveCards_ObjectModel_WinUI3)\runtimes\win10-$(Platform)\native\AdaptiveCards.ObjectModel.WinUI3.dll" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="$(PkgAdaptiveCards_Rendering_WinUI3)\runtimes\win10-$(Platform)\native\AdaptiveCards.Rendering.WinUI3.dll" DestinationFolder="$(TargetDir)" />
+  </Target>
 
   <Target Name="BuildWidgetProjectsAndCopy" AfterTargets="Build">
     <!-- Build widget projects -->

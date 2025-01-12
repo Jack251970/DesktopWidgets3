@@ -1,14 +1,25 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Dispatching;
+using Microsoft.Windows.Widgets;
+using Serilog;
 using System.Collections.ObjectModel;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class DashboardViewModel(IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
+public partial class DashboardViewModel(DispatcherQueue dispatcherQueue, WidgetViewModelFactory widgetViewModelFactory, IWidgetExtensionService widgetExtensionService, IWidgetHostingService widgetHostingService, IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardViewModel));
+
     public ObservableCollection<DashboardWidgetItem> PinnedWidgets { get; set; } = [];
     public ObservableCollection<DashboardWidgetItem> UnpinnedWidgets { get; set; } = [];
 
+    private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
+
+    private readonly WidgetViewModelFactory _widgetViewModelFactory = widgetViewModelFactory;
+
+    private readonly IWidgetExtensionService _widgetExtensionService = widgetExtensionService;
+    private readonly IWidgetHostingService _widgetHostingService = widgetHostingService;
     private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
@@ -38,8 +49,142 @@ public partial class DashboardViewModel(IWidgetManagerService widgetManagerServi
             }
             else if (newWidget is ComSafeWidgetDefinition newWidgetDefinition1)
             {
-                // TODO: supprot windows widget.
+                try
+                {
+                    var size = WidgetHelpers.GetDefaultWidgetSize(await newWidgetDefinition1.GetWidgetCapabilitiesAsync());
+                    var unsafeWidget = await _widgetHostingService.CreateWidgetAsync(newWidgetDefinition1.Id, size);
+                    if (unsafeWidget == null)
+                    {
+                        // Couldn't create the widget, show an error message.
+                        _log.Error($"Failure in CreateWidgetAsync, can't create the widget");
+                        // TODO: Show error message.
+                        // await ShowCreateWidgetErrorMessage();
+                        return;
+                    }
+
+                    var unsafeWidgetId = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+                    if (unsafeWidgetId == string.Empty)
+                    {
+                        _log.Error($"Couldn't get Widget.Id, can't create the widget");
+                        // TODO: Show error message.
+                        // await ShowCreateWidgetErrorMessage();
+
+                        // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
+                        // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
+                        await TryDeleteUnsafeWidget(unsafeWidget);
+                        return;
+                    }
+
+                    var comSafeWidget = new ComSafeWidget(unsafeWidgetId);
+                    if (!await comSafeWidget.PopulateAsync())
+                    {
+                        _log.Error($"Couldn't populate the ComSafeWidget, can't create the widget");
+                        // TODO: Show error message.
+                        // await ShowCreateWidgetErrorMessage();
+
+                        // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
+                        // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
+                        await TryDeleteUnsafeWidget(unsafeWidget);
+                        return;
+                    }
+
+                    // Set custom state on new widget.
+                    // TODO: Remove position.
+                    var position = -1;
+                    var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
+                    _log.Debug($"SetCustomState: {newCustomState}");
+                    await comSafeWidget.SetCustomStateAsync(newCustomState);
+
+                    // Put new widget on the Dashboard.
+                    await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size);
+                }
+                catch (Exception ex)
+                {
+                    _log.Warning(ex, $"Creating widget failed: ");
+                    // TODO: Show error message.
+                    // await ShowCreateWidgetErrorMessage();
+                }
             }
+        }
+    }
+
+    private static async Task TryDeleteUnsafeWidget(Microsoft.Windows.Widgets.Hosts.Widget unsafeWidget)
+    {
+        try
+        {
+            await unsafeWidget.DeleteAsync();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error deleting widget");
+        }
+    }
+
+    private async Task InsertWidgetInPinnedWidgetsAsync(ComSafeWidget widget, WidgetSize size, CancellationToken cancellationToken = default)
+    {
+        await Task.Run(
+            async () =>
+            {
+                var widgetDefinitionId = widget.DefinitionId;
+                var widgetId = widget.Id;
+                _log.Information($"Insert widget in pinned widgets, id = {widgetId}");
+
+                var unsafeWidgetDefinition = await _widgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+                if (unsafeWidgetDefinition != null)
+                {
+                    var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+                    if (!await comSafeWidgetDefinition.PopulateAsync())
+                    {
+                        _log.Error($"Error inserting widget in pinned widgets, id = {widgetId}");
+                        await widget.DeleteAsync();
+                        return;
+                    }
+
+                    // The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
+                    // able to send disposed events when Dev Home closes. Ensure the provider is started here so we can
+                    // tell the extension to dispose later.
+                    if (_widgetExtensionService.IsCoreWidgetProvider(comSafeWidgetDefinition.ProviderDefinitionId))
+                    {
+                        await _widgetExtensionService.EnsureCoreWidgetExtensionStarted(comSafeWidgetDefinition.ProviderDefinitionId);
+                    }
+
+                    var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    _dispatcherQueue.TryEnqueue(async () =>
+                    {
+                        try
+                        {
+                            //await _widgetManagerService.AddWidgetAsync(wvm);
+                        }
+                        catch (Exception ex)
+                        {
+                            // TODO Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
+                            // https://github.com/microsoft/devhome/issues/1215
+                            _log.Warning(ex, $"Couldn't insert pinned widget");
+                        }
+                    });
+                }
+                else
+                {
+                    await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
+                }
+            },
+            cancellationToken);
+    }
+
+    private static async Task DeleteWidgetWithNoDefinition(ComSafeWidget widget, string widgetDefinitionId)
+    {
+        // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
+        _log.Information($"No widget definition '{widgetDefinitionId}', delete widget with that definition");
+        try
+        {
+            await widget.SetCustomStateAsync(string.Empty);
+            await widget.DeleteAsync();
+        }
+        catch (Exception ex)
+        {
+            _log.Information(ex, $"Error deleting widget");
         }
     }
 
