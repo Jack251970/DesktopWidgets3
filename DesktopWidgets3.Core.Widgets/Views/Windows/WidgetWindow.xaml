@@ -22,14 +22,12 @@
         <!--  Widget header: icon, title, menu  -->
         <Grid Grid.Row="0" Padding="15,9,15,0">
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <Image
+                <Rectangle
+                    x:Name="WidgetHeaderIcon"
                     Width="16"
                     Height="16"
-                    VerticalAlignment="Center">
-                    <Image.Source>
-                        <BitmapImage UriSource="{x:Bind ViewModel.WidgetIconPath, Mode=OneWay}" />
-                    </Image.Source>
-                </Image>
+                    VerticalAlignment="Center"
+                    Fill="{x:Bind ViewModel.WidgetIconFill, Mode=OneWay}" />
                 <TextBlock
                     MaxWidth="212"
                     VerticalAlignment="Center"

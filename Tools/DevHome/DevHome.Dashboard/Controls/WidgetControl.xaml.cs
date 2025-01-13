@@ -340,11 +340,11 @@ public sealed partial class WidgetControl : UserControl
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        WidgetHeaderIcon.Fill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(WidgetSource.WidgetDefinition);
     }
 
     private async void UpdateWidgetHeaderIconFillAsync()
     {
-        WidgetHeaderIcon.Fill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(WidgetSource.WidgetDefinition);
     }
 }

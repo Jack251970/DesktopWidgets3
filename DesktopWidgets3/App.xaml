@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="/Styles/Values.xaml" />
                 <!--  From: DevHome  -->
                 <ResourceDictionary Source="/Styles/DevHome/TextBlock.xaml" />
+                <ResourceDictionary Source="/Styles/DevHome/Dashboard_ThemeResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

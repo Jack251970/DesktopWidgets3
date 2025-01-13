@@ -6,11 +6,12 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetIconService widgetIconService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
     private readonly IActivationService _activationService = activationService;
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly INavigationService _navigationService = navigationService;
+    private readonly IWidgetIconService _widgetIconService = widgetIconService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     // Desktop Widgets 3 Widget
@@ -521,7 +522,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetIndex = item.Index;
 
             // set widget ico & title & framework element
-            widgetWindow.ViewModel.WidgetIconPath = _widgetResourceService.GetWidgetIconPath(widgetId, widgetType);
+            widgetWindow.ViewModel.WidgetIconFill = await _widgetIconService.GetBrushForDesktopWidgets3WidgetIconAsync(widgetId, widgetType);
             widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId, widgetType);
 
             // initialize window
@@ -596,9 +597,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await _activationService.ActivateWindowAsync(widgetWindow);
 
             // set widget ico & title & framework element
+            // TODO: Add theme support.
+            widgetWindow.ViewModel.WidgetIconFill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(widgetViewModel.WidgetDefinition);
             // TODO: Add support.
-            widgetWindow.ViewModel.WidgetIconPath = string.Empty;//_widgetResourceService.GetWidgetIconPath(widgetId, widgetType);
-            widgetWindow.ViewModel.WidgetDisplayTitle = string.Empty;//_widgetResourceService.GetWidgetName(widgetId, widgetType);
+            //widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId, widgetType);
 
             // initialize window
             var menuFlyout = GetWidgetMenuFlyout(widgetWindow);
@@ -633,10 +635,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
             // parse event agrs
             var widgetViewModel = args.WidgetViewModel;
+            var widgetPosition = args.WidgetPosition;
 
             // set widget position
-            // TODO: Set widget position.
-            //widgetWindow.Position = widgetPosition;
+            widgetWindow.Position = widgetPosition;
 
             // get widget framework element
             var frameworkElement = new WidgetControl() { WidgetSource = widgetViewModel };

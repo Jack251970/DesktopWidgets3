@@ -200,7 +200,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<Grid> BuildNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
     {
-        var imageBrush = await _widgetIconService.GetBrushForDesktopWidgets3WidgetIconAsync(widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
+        var imageBrush = await _widgetIconService.GetBrushForDesktopWidgets3WidgetIconAsync(widgetDefinition.WidgetId, widgetDefinition.WidgetType);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
     }
@@ -212,7 +212,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<Grid> BuildNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
-        var imageBrush = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(widgetDefinition, ActualTheme);
+        var imageBrush = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(widgetDefinition);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
     }

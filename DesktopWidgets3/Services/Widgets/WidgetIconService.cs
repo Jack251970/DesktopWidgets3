@@ -12,11 +12,12 @@ using Windows.Storage.Streams;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceService widgetResourceService) : IWidgetIconService
+public class WidgetIconService(DispatcherQueue dispatcherQueue, IThemeSelectorService themeSelectorService, IWidgetResourceService widgetResourceService) : IWidgetIconService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetIconService));
 
     private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
+    private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightIconCache = new();
@@ -31,12 +32,12 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         _desktopWidgets3WidgetDarkIconCache.TryRemove((widgetId, widgetType), out _);
     }
 
-    private async Task<BitmapImage> GetIconFromDesktopWidgets3CacheAsync(string widgetId, string widgetType, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetIconFromDesktopWidgets3CacheAsync(string widgetId, string widgetType)
     {
         BitmapImage? bitmapImage;
 
         // First, check the cache to see if the icon is already there.
-        if (actualTheme == ElementTheme.Dark)
+        if (_themeSelectorService.IsDarkTheme())
         {
             _desktopWidgets3WidgetDarkIconCache.TryGetValue((widgetId, widgetType), out bitmapImage);
         }
@@ -51,7 +52,7 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         }
 
         // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
-        if (actualTheme == ElementTheme.Dark)
+        if (_themeSelectorService.IsDarkTheme())
         {
             bitmapImage = await DesktopWidgets3WidgetIconToBitmapImageAsync(_widgetResourceService.GetWidgetIconPath(widgetId, widgetType, ElementTheme.Dark));
             _desktopWidgets3WidgetDarkIconCache.TryAdd((widgetId, widgetType), bitmapImage);
@@ -65,12 +66,12 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForDesktopWidgets3WidgetIconAsync(string widgetId, string widgetType, ElementTheme actualTheme)
+    public async Task<Brush> GetBrushForDesktopWidgets3WidgetIconAsync(string widgetId, string widgetType)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetIconFromDesktopWidgets3CacheAsync(widgetId, widgetType, actualTheme);
+            image = await GetIconFromDesktopWidgets3CacheAsync(widgetId, widgetType);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {
@@ -96,13 +97,13 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         _microsoftWidgetDarkIconCache.TryRemove(definitionId, out _);
     }
 
-    private async Task<BitmapImage> GetIconFromMicrosoftCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetIconFromMicrosoftCacheAsync(ComSafeWidgetDefinition widgetDefinition)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage? bitmapImage;
 
         // First, check the cache to see if the icon is already there.
-        if (actualTheme == ElementTheme.Dark)
+        if (_themeSelectorService.IsDarkTheme())
         {
             _microsoftWidgetDarkIconCache.TryGetValue(widgetDefinitionId, out bitmapImage);
         }
@@ -117,7 +118,7 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         }
 
         // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
-        if (actualTheme == ElementTheme.Dark)
+        if (_themeSelectorService.IsDarkTheme())
         {
             bitmapImage = await MicrosoftWidgetIconToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).Icon);
             _microsoftWidgetDarkIconCache.TryAdd(widgetDefinitionId, bitmapImage);
@@ -131,12 +132,12 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForMicrosoftWidgetIconAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    public async Task<Brush> GetBrushForMicrosoftWidgetIconAsync(ComSafeWidgetDefinition widgetDefinition)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetIconFromMicrosoftCacheAsync(widgetDefinition, actualTheme);
+            image = await GetIconFromMicrosoftCacheAsync(widgetDefinition);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {

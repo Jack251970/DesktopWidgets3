@@ -207,6 +207,8 @@ public sealed partial class WidgetWindow : WindowEx
         {
             _widgetPosition.Y = widgetItem.Position.Y;
         }*/
+        _widgetPosition.X = 20;
+        _widgetPosition.Y = 20;
 
         ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
 
