@@ -57,8 +57,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
                     {
                         // Couldn't create the widget, show an error message.
                         _log.Error($"Failure in CreateWidgetAsync, can't create the widget");
-                        // TODO: Show error message.
-                        // await ShowCreateWidgetErrorMessage();
+                        await ShowCreateWidgetErrorMessage();
                         return;
                     }
 
@@ -66,8 +65,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
                     if (unsafeWidgetId == string.Empty)
                     {
                         _log.Error($"Couldn't get Widget.Id, can't create the widget");
-                        // TODO: Show error message.
-                        // await ShowCreateWidgetErrorMessage();
+                        await ShowCreateWidgetErrorMessage();
 
                         // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
                         // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
@@ -79,8 +77,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
                     if (!await comSafeWidget.PopulateAsync())
                     {
                         _log.Error($"Couldn't populate the ComSafeWidget, can't create the widget");
-                        // TODO: Show error message.
-                        // await ShowCreateWidgetErrorMessage();
+                        await ShowCreateWidgetErrorMessage();
 
                         // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
                         // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
@@ -101,8 +98,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
                 catch (Exception ex)
                 {
                     _log.Warning(ex, $"Creating widget failed: ");
-                    // TODO: Show error message.
-                    // await ShowCreateWidgetErrorMessage();
+                    await ShowCreateWidgetErrorMessage();
                 }
             }
         }
@@ -118,6 +114,11 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
         {
             _log.Error(ex, "Error deleting widget");
         }
+    }
+
+    private static async Task ShowCreateWidgetErrorMessage()
+    {
+        await DialogFactory.ShowCreateWidgetErrorDialogAsync();
     }
 
     private async Task InsertWidgetInPinnedWidgetsAsync(ComSafeWidget widget, WidgetSize size, CancellationToken cancellationToken = default)

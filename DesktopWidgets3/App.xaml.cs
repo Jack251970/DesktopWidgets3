@@ -100,6 +100,9 @@ public partial class App : Application
             .CreateLogger();
 #endif
 
+        // Initialize core helpers
+        ResourceExtensions.AddInnerResource(Constants.DevHomeDashboard);
+
         // Build the host
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()

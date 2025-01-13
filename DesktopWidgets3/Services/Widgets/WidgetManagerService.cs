@@ -1129,7 +1129,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         {
             App.MainWindow.Show();
             App.MainWindow.BringToFront();
-            if (await DialogFactory.ShowQuitEditModeDialogAsync(App.MainWindow) == WidgetDialogResult.Left)
+            if (await DialogFactory.ShowQuitEditModeDialogAsync() == WidgetDialogResult.Left)
             {
                 await SaveAndExitEditMode();
             }

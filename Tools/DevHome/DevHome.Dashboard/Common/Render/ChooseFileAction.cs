@@ -104,13 +104,10 @@ public partial class ChooseFileParser : IAdaptiveActionParser
         AdaptiveActionParserRegistration actionParsers,
         IList<AdaptiveWarning> warnings)
     {
-        // TODO: Localize the strings.
-        //var stringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
-
         var chooseFileAction = new ChooseFileAction
         {
-            Title = "ChooseFileActionTitle",//stringResource.GetLocalized("ChooseFileActionTitle"),
-            Tooltip = "ChooseFileActionToolTip",//stringResource.GetLocalized("ChooseFileActionToolTip"),
+            Title = "ChooseFileActionTitle".GetLocalizedString(Constants.DevHomeDashboard),
+            Tooltip = "ChooseFileActionToolTip".GetLocalizedString(Constants.DevHomeDashboard),
 
             // Parse the JSON properties of the action.
             // The Verb ChooseFile is not meant to be localized.
@@ -122,7 +119,7 @@ public partial class ChooseFileParser : IAdaptiveActionParser
     }
 }
 
-public class ChooseFileActionRenderer : IAdaptiveActionRenderer
+public partial class ChooseFileActionRenderer : IAdaptiveActionRenderer
 {
     public UIElement Render(IAdaptiveActionElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {

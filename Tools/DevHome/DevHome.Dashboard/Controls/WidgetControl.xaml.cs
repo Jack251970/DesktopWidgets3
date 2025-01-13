@@ -36,9 +36,6 @@ public sealed partial class WidgetControl : UserControl
 
     private readonly UISettings _uiSettings = new();
 
-    // TODO: Localize the strings.
-    // private readonly StringResource _stringResource;
-
     // Each widget has a 16px margin around it and a 48px Attribution area in which content cannot be placed.
     // https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
     // Adaptive cards render with 8px padding on each side, so we subtract that from the header height,
@@ -80,7 +77,6 @@ public sealed partial class WidgetControl : UserControl
     public WidgetControl()
     {
         InitializeComponent();
-        // _stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
         ActualThemeChanged += OnActualThemeChanged;
     }
 
@@ -157,7 +153,7 @@ public sealed partial class WidgetControl : UserControl
         var menuItemClose = new MenuFlyoutItem
         {
             Tag = widgetViewModel,
-            Text = "RemoveWidgetMenuText",//_stringResource.GetLocalized("RemoveWidgetMenuText"),
+            Text = "RemoveWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard),
             Icon = icon,
         };
         menuItemClose.Click += OnRemoveWidgetClick;
@@ -231,7 +227,7 @@ public sealed partial class WidgetControl : UserControl
             var menuItemSmall = new SelectableMenuFlyoutItem
             {
                 Tag = WidgetSize.Small,
-                Text = "SmallWidgetMenuText",//_stringResource.GetLocalized("SmallWidgetMenuText"),
+                Text = "SmallWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard),
             };
             menuItemSmall.Click += OnMenuItemSizeClick;
             menuItemSmall.SetValue(AutomationProperties.AutomationIdProperty, "SmallWidgetButton");
@@ -244,7 +240,7 @@ public sealed partial class WidgetControl : UserControl
             var menuItemMedium = new SelectableMenuFlyoutItem
             {
                 Tag = WidgetSize.Medium,
-                Text = "MediumWidgetMenuText",//_stringResource.GetLocalized("MediumWidgetMenuText"),
+                Text = "MediumWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard),
             };
             menuItemMedium.Click += OnMenuItemSizeClick;
             menuItemMedium.SetValue(AutomationProperties.AutomationIdProperty, "MediumWidgetButton");
@@ -257,7 +253,7 @@ public sealed partial class WidgetControl : UserControl
             var menuItemLarge = new SelectableMenuFlyoutItem
             {
                 Tag = WidgetSize.Large,
-                Text = "LargeWidgetMenuText",//_stringResource.GetLocalized("LargeWidgetMenuText"),
+                Text = "LargeWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard),
             };
             menuItemLarge.Click += OnMenuItemSizeClick;
             menuItemLarge.SetValue(AutomationProperties.AutomationIdProperty, "LargeWidgetButton");
@@ -319,7 +315,7 @@ public sealed partial class WidgetControl : UserControl
             var menuItemCustomize = new MenuFlyoutItem
             {
                 Tag = widgetViewModel,
-                Text = "CustomizeWidgetMenuText",//_stringResource.GetLocalized("CustomizeWidgetMenuText");
+                Text = "CustomizeWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard),
                 Icon = icon,
             };
             menuItemCustomize.Click += OnCustomizeWidgetClick;

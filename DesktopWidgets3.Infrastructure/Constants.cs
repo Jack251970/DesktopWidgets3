@@ -28,6 +28,8 @@ public static class Constants
 
     public const string UnknownWidgetIcoPath = $"ms-appx:///Assets/FluentIcons/Unknown.png";
 
+    public const string DevHomeDashboard = "DevHome.Dashboard";
+
     #endregion
 
     #region Settings & Logs
