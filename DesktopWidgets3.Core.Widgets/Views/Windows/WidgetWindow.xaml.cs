@@ -7,6 +7,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Windows.Win32;
+using Windows.UI.ViewManagement;
+using Microsoft.Windows.Widgets;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
@@ -105,9 +107,9 @@ public sealed partial class WidgetWindow : WindowEx
 
     public string RuntimeId { get; private set; }
 
-    private BaseWidgetSettings WidgetSettings { get; set; }
+    private BaseWidgetSettings? WidgetSettings { get; set; }
 
-    private WidgetViewModel WidgetViewModel { get; set; }
+    private WidgetViewModel? WidgetSource { get; set; }
 
     private PointInt32 _widgetPosition;
 
@@ -139,9 +141,11 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region Manager & Handle
+    #region Manager & UI Settings
 
     private readonly WindowManager _manager;
+
+    private readonly UISettings _uiSettings = new();
 
     #endregion
 
@@ -156,11 +160,22 @@ public sealed partial class WidgetWindow : WindowEx
 
     public WidgetWindow(string widgetRuntimeId, JsonWidgetItem widgetItem)
     {
+        // Initialize widget info
         RuntimeId = widgetRuntimeId;
         WidgetSettings = widgetItem.Settings;
-        _widgetSize = widgetItem.Size;
-        WidgetViewModel = null!;
+        WidgetSource = null;
 
+        // Initialize view model
+        ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
+
+        // Initialize window
+        InitializeComponent();
+
+        // Initialize properties for ui elements
+        SetScaledWidthAndHeight();
+
+        // Initialize widget size & position for completed event
+        _widgetSize = widgetItem.Size;
         _widgetPosition = AppWindow.Position;
         if (widgetItem.Position.X != -10000)
         {
@@ -171,19 +186,15 @@ public sealed partial class WidgetWindow : WindowEx
             _widgetPosition.Y = widgetItem.Position.Y;
         }
 
-        ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
-
-        InitializeComponent();
-
+        // Initialize manager & title for window
         _manager = WindowManager.Get(this);
-
         Title = string.Empty;
 
-        // initialize position & size
+        // Initialize size & position for window
         position = AppWindow.Position;
         size = new Size(Width, Height);
 
-        // register events
+        // Register events
         Activated += WidgetWindow_Activated;
         Closed += WidgetWindow_Closed;
         PositionChanged += WidgetWindow_PositionChanged;
@@ -192,12 +203,23 @@ public sealed partial class WidgetWindow : WindowEx
 
     public WidgetWindow(WidgetViewModel widgetViewModel)
     {
+        // Initialize widget info
         RuntimeId = null!;
-        WidgetSettings = null!;
-        // TODO: Set widget size according to widget size.
-        _widgetSize = new RectSize(1000, 800);
-        WidgetViewModel = widgetViewModel;
+        WidgetSettings = null;
+        WidgetSource = widgetViewModel;
 
+        // Initialize view model
+        ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
+
+        // Initialize window
+        InitializeComponent();
+
+        // Initialize properties for ui elements
+        SetScaledWidthAndHeight();
+
+        // Initialize size & position for completed event
+        // TODO: Set widget size according to widget size.
+        _widgetSize = new RectSize(ContentArea.Width, ContentArea.Height);
         _widgetPosition = AppWindow.Position;
         // TODO: Set position.
         /*if (widgetItem.Position.X != -10000)
@@ -211,19 +233,15 @@ public sealed partial class WidgetWindow : WindowEx
         _widgetPosition.X = 20;
         _widgetPosition.Y = 20;
 
-        ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
-
-        InitializeComponent();
-
+        // Initialize manager & title for window
         _manager = WindowManager.Get(this);
-
         Title = string.Empty;
 
-        // initialize position & size
-        position = AppWindow.Position;
+        // Initialize size & position for window
         size = new Size(Width, Height);
+        position = AppWindow.Position;
 
-        // register events
+        // Register events
         Activated += WidgetWindow_Activated;
         Closed += WidgetWindow_Closed;
         PositionChanged += WidgetWindow_PositionChanged;
@@ -233,6 +251,40 @@ public sealed partial class WidgetWindow : WindowEx
     #endregion
 
     #region Initialization
+
+    // Adaptive cards render with 8px padding on each side, so we add that to the original padding.
+    private static readonly Thickness DesktopWidgets3WidgetScrollViewerPadding = new(16, 8, 16, 8);
+    private static readonly Thickness MicrosoftWidgetScrollViewerPadding = new(8, 0, 8, 0);
+
+    private void SetScaledWidthAndHeight()
+    {
+        var textScale = _uiSettings.TextScaleFactor;
+        ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
+        if (WidgetSource != null)
+        {
+            WidgetScrollViewer.Padding = MicrosoftWidgetScrollViewerPadding;
+            var contentHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
+            var contentWidth = WidgetHelpers.WidgetPxWidth * textScale;
+            ContentArea.Height = contentHeight;
+            ContentArea.Width = contentWidth;
+            Size = new RectSize(contentHeight, contentWidth); 
+        }
+        else
+        {
+            WidgetScrollViewer.Padding = DesktopWidgets3WidgetScrollViewerPadding;
+        }
+    }
+
+    private static double GetPixelHeightFromWidgetSize(WidgetSize size)
+    {
+        return size switch
+        {
+            WidgetSize.Small => WidgetHelpers.WidgetPxHeightSmall,
+            WidgetSize.Medium => WidgetHelpers.WidgetPxHeightMedium,
+            WidgetSize.Large => WidgetHelpers.WidgetPxHeightLarge,
+            _ => 0,
+        };
+    }
 
     private MenuFlyout WidgetMenuFlyout { get; set; } = null!;
 
@@ -286,7 +338,7 @@ public sealed partial class WidgetWindow : WindowEx
             WidgetRuntimeId = RuntimeId,
             WidgetPosition = _widgetPosition,
             WidgetSettings = WidgetSettings,
-            WidgetViewModel = WidgetViewModel,
+            WidgetViewModel = WidgetSource
         });
     }
 
@@ -419,9 +471,9 @@ public sealed partial class WidgetWindow : WindowEx
 
         public required PointInt32 WidgetPosition { get; set; }
 
-        public required BaseWidgetSettings WidgetSettings { get; set; }
+        public required BaseWidgetSettings? WidgetSettings { get; set; }
 
-        public required WidgetViewModel WidgetViewModel { get; set; }
+        public required WidgetViewModel? WidgetViewModel { get; set; }
     }
 
     #endregion

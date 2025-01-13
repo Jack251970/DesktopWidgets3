@@ -30,18 +30,10 @@ public sealed partial class WidgetControl : UserControl
     private readonly IWidgetHostingService _widgetHostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
     private readonly IWidgetIconService _widgetIconService = DependencyExtensions.GetRequiredService<IWidgetIconService>();
 
-    private readonly UISettings _uiSettings = new();
-
-    // Each widget has a 16px margin around it and a 48px Attribution area in which content cannot be placed.
-    // https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
-    // Adaptive cards render with 8px padding on each side, so we subtract that from the header height,
-    // as well as 1px for the border.
-    private const double HeaderHeightUnscaled = 39;
+    // TODO: Add support for textScale.
+    /*private readonly UISettings _uiSettings = new();*/
 
     private SelectableMenuFlyoutItem? _currentSelectedSize;
-
-    [ObservableProperty]
-    private GridLength _headerHeight;
 
     [ObservableProperty]
     private double _widgetHeight;
@@ -57,12 +49,14 @@ public sealed partial class WidgetControl : UserControl
             SetValue(WidgetSourceProperty, value);
             if (WidgetSource != null)
             {
-                SetScaledWidthAndHeight(_uiSettings.TextScaleFactor);
+                // TODO: Add support for textScale.
+                SetScaledWidthAndHeight(/*_uiSettings.TextScaleFactor*/);
 
                 // When the WidgetViewModel is updated, the widget icon must also be also updated.
                 // Since the icon update must happen asynchronously on the UI thread, it must be
                 // called in code rather than binding.
-                UpdateWidgetHeaderIconFillAsync();
+                // TODO: Update icon here.
+                //UpdateWidgetHeaderIconFillAsync();
             }
         }
     }
@@ -73,23 +67,23 @@ public sealed partial class WidgetControl : UserControl
     public WidgetControl()
     {
         InitializeComponent();
-        ActualThemeChanged += OnActualThemeChanged;
     }
 
+    // TODO: Add support for textScale.
     [RelayCommand]
     private void OnLoaded()
     {
-        _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChangedAsync;
+        /*_uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChangedAsync;*/
     }
 
     [RelayCommand]
     private void OnUnloaded()
     {
-        _uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChangedAsync;
+        /*_uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChangedAsync;*/
         WidgetSource = null!;
     }
 
-    private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
+    /*private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
     {
         await _dispatcherQueue.EnqueueAsync(() =>
         {
@@ -100,27 +94,15 @@ public sealed partial class WidgetControl : UserControl
 
             SetScaledWidthAndHeight(sender.TextScaleFactor);
         });
-    }
+    }*/
 
-    private static double GetPixelHeightFromWidgetSize(WidgetSize size)
+    // TODO: Add support for textScale.
+    private void SetScaledWidthAndHeight(/*double textScale*/)
     {
-        return size switch
-        {
-            WidgetSize.Small => WidgetHelpers.WidgetPxHeightSmall,
-            WidgetSize.Medium => WidgetHelpers.WidgetPxHeightMedium,
-            WidgetSize.Large => WidgetHelpers.WidgetPxHeightLarge,
-            _ => 0,
-        };
+        //(WidgetWidth, WidgetHeight) = WidgetHelpers.GetScaledWidthAndHeight(WidgetSource.WidgetSize/*, textScale*/);
     }
 
-    private void SetScaledWidthAndHeight(double textScale)
-    {
-        HeaderHeight = new GridLength(HeaderHeightUnscaled * textScale);
-        WidgetHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
-        WidgetWidth = WidgetHelpers.WidgetPxWidth * textScale;
-    }
-
-    private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs _)
+    /*private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs _)
     {
         if (sender as Button is Button widgetMenuButton && widgetMenuButton.Flyout is MenuFlyout widgetMenuFlyout)
         {
@@ -328,15 +310,5 @@ public sealed partial class WidgetControl : UserControl
                 await widgetViewModel.Widget.NotifyCustomizationRequestedAsync();
             }
         }
-    }
-
-    private async void OnActualThemeChanged(FrameworkElement sender, object args)
-    {
-        WidgetHeaderIcon.Fill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(WidgetSource.WidgetDefinition);
-    }
-
-    private async void UpdateWidgetHeaderIconFillAsync()
-    {
-        WidgetHeaderIcon.Fill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(WidgetSource.WidgetDefinition);
-    }
+    }*/
 }
