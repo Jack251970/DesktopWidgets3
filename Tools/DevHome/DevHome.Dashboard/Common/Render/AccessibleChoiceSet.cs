@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 
+// TODO: Change namespace.
 namespace DevHome.Common.Renderers;
 
 public partial class AccessibleChoiceSet : IAdaptiveElementRenderer

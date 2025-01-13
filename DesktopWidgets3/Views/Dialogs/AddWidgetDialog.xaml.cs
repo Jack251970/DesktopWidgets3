@@ -1,15 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Dashboard.ComSafeWidgetObjects;
-using DevHome.Dashboard.Helpers;
-using DevHome.Dashboard.Services;
-using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -19,15 +11,15 @@ using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
-namespace DevHome.Dashboard.Views;
+namespace DesktopWidgets3.Views.Dialogs;
 
 public sealed partial class AddWidgetDialog : ContentDialog
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(AddWidgetDialog));
 
-    private object _selectedWidget;
+    private object _selectedWidget = null!;
 
-    public object AddedWidget { get; private set; }
+    public object AddedWidget { get; private set; } = null!;
 
     public AddWidgetViewModel ViewModel { get; set; }
 
@@ -289,7 +281,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         if (AddWidgetNavigationView.MenuItems.Count > 0)
         {
             var firstProvider = AddWidgetNavigationView.MenuItems[0] as NavigationViewItem;
-            if (firstProvider.MenuItems.Count > 0)
+            if (firstProvider?.MenuItems.Count > 0)
             {
                 var firstWidget = firstProvider.MenuItems[0] as NavigationViewItem;
                 AddWidgetNavigationView.SelectedItem = firstWidget;
@@ -299,7 +291,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async void AddWidgetNavigationView_SelectionChanged(
         NavigationView sender,
-        NavigationViewSelectionChangedEventArgs args)
+        NavigationViewSelectionChangedEventArgs _)
     {
         // Selected item could be null if list of widgets became empty, but list should never be empty
         // since core widgets are always available.
@@ -310,7 +302,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         // Get selected widget definition.
-        var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
+        var selectedTag = (sender.SelectedItem as NavigationViewItem)?.Tag;
         if (selectedTag is null)
         {
             _log.Error($"Selected widget description did not have a tag");
@@ -368,15 +360,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private void CancelButtonClick()
     {
         _log.Debug($"Canceled dialog");
-        AddedWidget = null;
+        AddedWidget = null!;
 
         HideDialogAsync();
     }
 
     private async void HideDialogAsync()
     {
-        _selectedWidget = null;
-        ViewModel = null;
+        _selectedWidget = null!;
+        ViewModel = null!;
 
         if (RuntimeHelper.IsMSIX)  // Due to unknown issue with unpackaged app, we cannot register definition deleted event
         {
@@ -444,7 +436,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         });
     }
 
-    private void ContentDialog_SizeChanged(object sender, SizeChangedEventArgs e)
+    private void ContentDialog_SizeChanged(object? sender, SizeChangedEventArgs e)
     {
         var contentDialogMaxHeight = (double)Resources["ContentDialogMaxHeight"];
         const int SmallThreshold = 324;

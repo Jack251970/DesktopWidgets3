@@ -1,4 +1,11 @@
-﻿// DesktopWidgets3.Core.Widgets
+﻿// DevHome.Dashboard
+global using DevHome.Dashboard.ComSafeWidgetObjects;
+global using DevHome.Dashboard.Controls;
+global using DevHome.Dashboard.Helpers;
+global using DevHome.Dashboard.Services;
+global using DevHome.Dashboard.ViewModels;
+
+// DesktopWidgets3.Core.Widgets
 global using DesktopWidgets3.Core.Widgets.Contracts.Services;
 global using DesktopWidgets3.Core.Widgets.Helpers;
 global using DesktopWidgets3.Core.Widgets.Models;

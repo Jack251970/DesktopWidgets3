@@ -13,8 +13,12 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     private readonly INavigationService _navigationService = navigationService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
+    // Desktop Widgets 3 Widget
     private readonly ConcurrentDictionary<string, WidgetWindowPair> PinnedWidgetWindowPairs = [];
     private readonly ConcurrentDictionary<string, WidgetSettingPair> WidgetSettingPairs = [];
+
+    // Microsoft Widget
+    private readonly ConcurrentDictionary<WidgetViewModel, WidgetWindow> MicrosoftWidgetWindows = [];
 
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
     private bool _inEditMode = false;
@@ -321,6 +325,28 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         await _appSettingsService.AddWidgetAsync(widget);
     }
 
+    public async Task AddWidgetAsync(WidgetViewModel widgetViewModel, Action<WidgetViewModel> action, bool updateDashboard)
+    {
+        // invoke action
+        action(widgetViewModel);
+
+        // create widget window
+        CreateWidgetWindow(widgetViewModel);
+
+        // update dashboard page
+        if (updateDashboard)
+        {
+            // TODO
+            /*RefreshDashboardPage(new DashboardViewModelNavigationParameter()
+            {
+                Event = DashboardViewModelNavigationParameter.UpdateEvent.Pin,
+                Id = widgetId,
+                Type = widgetType,
+                Index = index
+            });*/
+        }
+    }
+
     public async Task PinWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
         // get widget
@@ -465,6 +491,21 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         return widgetRuntimeId;
     }
 
+    private void CreateWidgetWindow(WidgetViewModel widgetViewModel)
+    {
+        // configure widget window lifecycle actions
+        var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
+        {
+            Window_Creating = null,
+            Window_Created = (window) => WidgetWindow_Created(window, widgetViewModel),
+            Window_Closing = null,
+            Window_Closed = null
+        };
+
+        // create widget window
+        WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetViewModel), _appSettingsService.MultiThread, lifecycleActions);
+    }
+
     #region Widget Window Lifecycle
 
     private async void WidgetWindow_Created(Window window, JsonWidgetItem item, RectSize minSize, RectSize maxSize)
@@ -495,7 +536,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             WindowExtensions.Move(widgetWindow, -10000, -10000);
 
             // register load event handler
-            widgetWindow.LoadCompleted += WidgetWindow_LoadCompleted;
+            widgetWindow.LoadCompleted += DesktopWidgets3WidgetWindow_LoadCompleted;
 
             // activate window
             widgetWindow.Activate();
@@ -510,12 +551,12 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
     }
 
-    private void WidgetWindow_LoadCompleted(object? sender, WidgetWindow.LoadCompletedEventArgs args)
+    private void DesktopWidgets3WidgetWindow_LoadCompleted(object? sender, WidgetWindow.LoadCompletedEventArgs args)
     {
         if (sender is WidgetWindow widgetWindow)
         {
             // unregister load event handler
-            widgetWindow.LoadCompleted -= WidgetWindow_LoadCompleted;
+            widgetWindow.LoadCompleted -= DesktopWidgets3WidgetWindow_LoadCompleted;
 
             // parse event agrs
             var widgetRuntimeId = args.WidgetRuntimeId;
@@ -544,6 +585,64 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             {
                 frameworkElement.Loaded += (s, e) => WidgetFrameworkElement_Loaded(widgetId, widgetSettings, widgetContext, widgetWindow);
             }
+        }
+    }
+
+    private async void WidgetWindow_Created(Window window, WidgetViewModel widgetViewModel)
+    {
+        if (window is WidgetWindow widgetWindow)
+        {
+            // activate window
+            await _activationService.ActivateWindowAsync(widgetWindow);
+
+            // set widget ico & title & framework element
+            // TODO: Add support.
+            widgetWindow.ViewModel.WidgetIconPath = string.Empty;//_widgetResourceService.GetWidgetIconPath(widgetId, widgetType);
+            widgetWindow.ViewModel.WidgetDisplayTitle = string.Empty;//_widgetResourceService.GetWidgetName(widgetId, widgetType);
+
+            // initialize window
+            var menuFlyout = GetWidgetMenuFlyout(widgetWindow);
+            widgetWindow.Initialize(menuFlyout);
+
+            // set window style, size and position
+            widgetWindow.IsResizable = false;
+            // TOOD: Add support.
+            //widgetWindow.MinSize = minSize;
+            //widgetWindow.MaxSize = maxSize;
+            //widgetWindow.Size = item.Size;
+            widgetWindow.Size = new RectSize(318, 200);
+            WindowExtensions.Move(widgetWindow, -10000, -10000);
+
+            // register load event handler
+            widgetWindow.LoadCompleted += MicrosoftWidgetWindow_LoadCompleted;
+
+            // activate window
+            widgetWindow.Activate();
+
+            // add to widget window list
+            MicrosoftWidgetWindows.TryAdd(widgetViewModel, widgetWindow);
+        }
+    }
+
+    private void MicrosoftWidgetWindow_LoadCompleted(object? sender, WidgetWindow.LoadCompletedEventArgs args)
+    {
+        if (sender is WidgetWindow widgetWindow)
+        {
+            // unregister load event handler
+            widgetWindow.LoadCompleted -= MicrosoftWidgetWindow_LoadCompleted;
+
+            // parse event agrs
+            var widgetViewModel = args.WidgetViewModel;
+
+            // set widget position
+            // TODO: Set widget position.
+            //widgetWindow.Position = widgetPosition;
+
+            // get widget framework element
+            var frameworkElement = new WidgetControl() { WidgetSource = widgetViewModel };
+
+            // set widget framework element
+            widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
         }
     }
 

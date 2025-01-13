@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Threading.Tasks;
 //using DevHome.Common.Services;
 
-namespace DevHome.Dashboard.Services;
+namespace DesktopWidgets3.Services.Widgets;
 
 internal sealed class WidgetExtensionService : IWidgetExtensionService
 {
@@ -56,5 +54,6 @@ internal sealed class WidgetExtensionService : IWidgetExtensionService
         {
             await extensionWrapper.StartExtensionAsync();
         }*/
+        await Task.CompletedTask;
     }
 }

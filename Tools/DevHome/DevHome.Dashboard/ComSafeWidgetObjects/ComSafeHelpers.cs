@@ -8,7 +8,7 @@ using DevHome.Dashboard.Services;
 
 namespace DevHome.Dashboard.ComSafeWidgetObjects;
 
-internal sealed class ComSafeHelpers
+public sealed class ComSafeHelpers
 {
     public static async Task<List<ComSafeWidgetDefinition>> GetAllOrderedComSafeWidgetDefinitions(IWidgetHostingService widgetHostingService)
     {

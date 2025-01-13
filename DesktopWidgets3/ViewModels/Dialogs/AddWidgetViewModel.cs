@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Dashboard.ComSafeWidgetObjects;
-using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml.Media;
 
-namespace DevHome.Dashboard.ViewModels;
+namespace DesktopWidgets3.ViewModels.Dialogs;
 
 public partial class AddWidgetViewModel(
     IWidgetScreenshotService widgetScreenshotService,
@@ -18,18 +15,18 @@ public partial class AddWidgetViewModel(
     private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
 
     [ObservableProperty]
-    private string _widgetDisplayTitle;
+    private string _widgetDisplayTitle = string.Empty;
 
     [ObservableProperty]
-    private string _widgetProviderDisplayTitle;
+    private string _widgetProviderDisplayTitle = string.Empty;
 
     [ObservableProperty]
-    private Brush _widgetScreenshot;
+    private Brush _widgetScreenshot = null!;
 
     [ObservableProperty]
     private bool _pinButtonVisibility;
 
-    private object _selectedWidgetDefinition;
+    private object _selectedWidgetDefinition = null!;
 
     public async Task SetWidgetDefinition(ComSafeWidgetDefinition selectedWidgetDefinition)
     {
@@ -47,7 +44,7 @@ public partial class AddWidgetViewModel(
 
         WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
         WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinitionDisplayName;
-        WidgetScreenshot = await _widgetScreenshotService.GetBrushForDesktopWidgets3WidgetScreenshotAsync(selectedWidgetDefinition, _themeSelectorService.GetActualTheme());
+        WidgetScreenshot = await _widgetScreenshotService.GetBrushForDesktopWidgets3WidgetScreenshotAsync(selectedWidgetDefinition.WidgetId, selectedWidgetDefinition.WidgetType, _themeSelectorService.GetActualTheme());
         PinButtonVisibility = true;
     }
 
@@ -55,9 +52,9 @@ public partial class AddWidgetViewModel(
     {
         WidgetDisplayTitle = string.Empty;
         WidgetProviderDisplayTitle = string.Empty;
-        WidgetScreenshot = null;
+        WidgetScreenshot = null!;
         PinButtonVisibility = false;
-        _selectedWidgetDefinition = null;
+        _selectedWidgetDefinition = null!;
     }
 
     [RelayCommand]
@@ -73,7 +70,7 @@ public partial class AddWidgetViewModel(
             }
             else if (_selectedWidgetDefinition as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition selectedWidgetDefinition1)
             {
-                WidgetScreenshot = await _widgetScreenshotService.GetBrushForDesktopWidgets3WidgetScreenshotAsync(selectedWidgetDefinition1, theme);
+                WidgetScreenshot = await _widgetScreenshotService.GetBrushForDesktopWidgets3WidgetScreenshotAsync(selectedWidgetDefinition1.WidgetId, selectedWidgetDefinition1.WidgetType, theme);
             }
         }
     }

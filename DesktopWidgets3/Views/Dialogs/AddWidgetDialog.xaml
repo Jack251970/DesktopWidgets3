@@ -1,12 +1,12 @@
 <!--  Copyright (c) Microsoft Corporation..  -->
 <!--  Licensed under the MIT License.  -->
 <ContentDialog
-    x:Class="DevHome.Dashboard.Views.AddWidgetDialog"
+    x:Class="DesktopWidgets3.Views.Dialogs.AddWidgetDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:viewmodels="using:DevHome.Dashboard.ViewModels"
+    xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Dialogs"
     SizeChanged="ContentDialog_SizeChanged"
     Style="{StaticResource DefaultContentDialogStyle}">
 

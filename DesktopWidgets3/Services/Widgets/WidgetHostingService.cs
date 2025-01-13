@@ -1,21 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
-namespace DevHome.Dashboard.Services;
+namespace DesktopWidgets3.Services.Widgets;
 
 public class WidgetHostingService : IWidgetHostingService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetHostingService));
 
-    private WidgetHost _widgetHost;
-    private WidgetCatalog _widgetCatalog;
+    private WidgetHost _widgetHost = null!;
+    private WidgetCatalog _widgetCatalog = null!;
 
     // RPC error codes to recover from
     private const int RpcServerUnavailable = unchecked((int)0x800706BA);
@@ -24,7 +22,7 @@ public class WidgetHostingService : IWidgetHostingService
     private const int MaxAttempts = 3;
 
     /// <inheritdoc />
-    public async Task<Widget[]> GetWidgetsAsync()
+    public async Task<Microsoft.Windows.Widgets.Hosts.Widget[]> GetWidgetsAsync()
     {
         var attempt = 0;
         while (attempt++ < MaxAttempts)
@@ -40,8 +38,8 @@ public class WidgetHostingService : IWidgetHostingService
 
                 // Force getting a new WidgetHost before trying again. Also reset the WidgetCatalog,
                 // since if we lost the host we probably lost the catalog too.
-                _widgetHost = null;
-                _widgetCatalog = null;
+                _widgetHost = null!;
+                _widgetCatalog = null!;
             }
             catch (Exception ex)
             {
@@ -53,7 +51,7 @@ public class WidgetHostingService : IWidgetHostingService
     }
 
     /// <inheritdoc />
-    public async Task<Widget> GetWidgetAsync(string widgetId)
+    public async Task<Microsoft.Windows.Widgets.Hosts.Widget> GetWidgetAsync(string widgetId)
     {
         var attempt = 0;
         while (attempt++ < MaxAttempts)
@@ -67,8 +65,8 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
-                _widgetHost = null;
-                _widgetCatalog = null;
+                _widgetHost = null!;
+                _widgetCatalog = null!;
             }
             catch (Exception ex)
             {
@@ -76,11 +74,11 @@ public class WidgetHostingService : IWidgetHostingService
             }
         }
 
-        return null;
+        return null!;
     }
 
     /// <inheritdoc />
-    public async Task<Widget> CreateWidgetAsync(string widgetDefinitionId, WidgetSize widgetSize)
+    public async Task<Microsoft.Windows.Widgets.Hosts.Widget> CreateWidgetAsync(string widgetDefinitionId, WidgetSize widgetSize)
     {
         var attempt = 0;
         while (attempt++ < MaxAttempts)
@@ -94,8 +92,8 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
-                _widgetHost = null;
-                _widgetCatalog = null;
+                _widgetHost = null!;
+                _widgetCatalog = null!;
             }
             catch (Exception ex)
             {
@@ -103,7 +101,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
         }
 
-        return null;
+        return null!;
     }
 
     /// <inheritdoc />
@@ -126,13 +124,13 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
 
-                _widgetHost = null;
-                _widgetCatalog = null;
+                _widgetHost = null!;
+                _widgetCatalog = null!;
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception in GetWidgetCatalogAsync:");
-                _widgetCatalog = null;
+                _widgetCatalog = null!;
             }
         }
 
@@ -156,8 +154,8 @@ public class WidgetHostingService : IWidgetHostingService
 
                 // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
                 // since if we lost the catalog we probably lost the host too.
-                _widgetHost = null;
-                _widgetCatalog = null;
+                _widgetHost = null!;
+                _widgetCatalog = null!;
             }
             catch (Exception ex)
             {
@@ -185,8 +183,8 @@ public class WidgetHostingService : IWidgetHostingService
 
                 // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
                 // since if we lost the catalog we probably lost the host too.
-                _widgetHost = null;
-                _widgetCatalog = null;
+                _widgetHost = null!;
+                _widgetCatalog = null!;
             }
             catch (Exception ex)
             {
@@ -214,8 +212,8 @@ public class WidgetHostingService : IWidgetHostingService
 
                 // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
                 // since if we lost the catalog we probably lost the host too.
-                _widgetHost = null;
-                _widgetCatalog = null;
+                _widgetHost = null!;
+                _widgetCatalog = null!;
             }
             catch (Exception ex)
             {
@@ -223,6 +221,6 @@ public class WidgetHostingService : IWidgetHostingService
             }
         }
 
-        return null;
+        return null!;
     }
 }

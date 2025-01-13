@@ -4,11 +4,9 @@ global using WinUIEx;
 // DevHome.Dashboard
 global using DevHome.Dashboard.ComSafeWidgetObjects;
 global using DevHome.Dashboard.Controls;
-global using DevHome.Dashboard.Extensions;
 global using DevHome.Dashboard.Helpers;
 global using DevHome.Dashboard.Services;
 global using DevHome.Dashboard.ViewModels;
-global using DevHome.Dashboard.Views;
 
 // DesktopWidgets3
 global using DesktopWidgets3.Activation;
@@ -26,7 +24,9 @@ global using DesktopWidgets3.Models.Widgets;
 global using DesktopWidgets3.Services;
 global using DesktopWidgets3.Services.Widgets;
 global using DesktopWidgets3.UserControls;
+global using DesktopWidgets3.ViewModels.Dialogs;
 global using DesktopWidgets3.ViewModels.Pages;
+global using DesktopWidgets3.Views.Dialogs;
 global using DesktopWidgets3.Views.Pages;
 global using DesktopWidgets3.Views.Windows;
 

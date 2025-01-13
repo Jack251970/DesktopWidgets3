@@ -43,6 +43,7 @@
     <ProjectReference Include="..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj" />
     <ProjectReference Include="..\DesktopWidgets3.Widget\DesktopWidgets3.Widget.csproj" />
+    <ProjectReference Include="..\Tools\DevHome\DevHome.Dashboard\DevHome.Dashboard.csproj" />
   </ItemGroup>
 
   <ItemGroup>

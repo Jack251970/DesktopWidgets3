@@ -155,7 +155,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
                     {
                         try
                         {
-                            //await _widgetManagerService.AddWidgetAsync(wvm);
+                            await _widgetManagerService.AddWidgetAsync(wvm, RefreshAddedWidget, false);
                         }
                         catch (Exception ex)
                         {
@@ -246,6 +246,19 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
 
             RefreshYourWidgets();
         }
+    }
+
+    private void RefreshAddedWidget(WidgetViewModel widgetViewModel)
+    {
+        // TODO: Add support for showing the microsoft widget in the list.
+        /*var widgetItem = _widgetResourceService.GetDashboardWidgetItem(widgetId, widgetType, widgetIndex);
+        if (widgetItem != null)
+        {
+            widgetItem.PinnedChangedCallback = OnPinnedChanged;
+            yourWidgets.Add(widgetItem);
+
+            RefreshYourWidgets();
+        }*/
     }
 
     private void RefreshYourWidgets()

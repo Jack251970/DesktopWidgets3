@@ -45,7 +45,7 @@ public partial class WidgetViewModel : ObservableObject
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
 
     private readonly DispatcherQueue _dispatcherQueue;
-    private readonly WidgetAdaptiveCardRenderingService _renderingService;
+    private readonly IAdaptiveCardRenderingService _renderingService;
     // TODO: Add support for screen reader service.
     //private readonly IScreenReaderService _screenReaderService;
 
@@ -106,7 +106,7 @@ public partial class WidgetViewModel : ObservableObject
         ComSafeWidget widget,
         WidgetSize widgetSize,
         ComSafeWidgetDefinition widgetDefinition,
-        WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
+        IAdaptiveCardRenderingService adaptiveCardRenderingService,
         //IScreenReaderService screenReaderService,
         DispatcherQueue dispatcherQueue)
     {

@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using DevHome.Dashboard.ComSafeWidgetObjects;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -13,7 +10,7 @@ using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 using Windows.Storage.Streams;
 
-namespace DevHome.Dashboard.Services;
+namespace DesktopWidgets3.Services.Widgets;
 
 public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceService widgetResourceService) : IWidgetIconService
 {
@@ -36,7 +33,7 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
 
     private async Task<BitmapImage> GetIconFromDesktopWidgets3CacheAsync(string widgetId, string widgetType, ElementTheme actualTheme)
     {
-        BitmapImage bitmapImage;
+        BitmapImage? bitmapImage;
 
         // First, check the cache to see if the icon is already there.
         if (actualTheme == ElementTheme.Dark)
@@ -75,7 +72,7 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         {
             image = await GetIconFromDesktopWidgets3CacheAsync(widgetId, widgetType, actualTheme);
         }
-        catch (System.IO.FileNotFoundException fileNotFoundEx)
+        catch (FileNotFoundException fileNotFoundEx)
         {
             _log.Warning(fileNotFoundEx, $"Widget icon missing for widget {widgetId} - {widgetType}");
         }
@@ -102,7 +99,7 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
     private async Task<BitmapImage> GetIconFromMicrosoftCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
-        BitmapImage bitmapImage;
+        BitmapImage? bitmapImage;
 
         // First, check the cache to see if the icon is already there.
         if (actualTheme == ElementTheme.Dark)
@@ -141,7 +138,7 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IWidgetResourceS
         {
             image = await GetIconFromMicrosoftCacheAsync(widgetDefinition, actualTheme);
         }
-        catch (System.IO.FileNotFoundException fileNotFoundEx)
+        catch (FileNotFoundException fileNotFoundEx)
         {
             _log.Warning(fileNotFoundEx, $"Widget icon missing for widget definition {widgetDefinition.DisplayTitle}");
         }

@@ -10,6 +10,7 @@ using Windows.Win32;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
+// TODO: Improve code quality for this class. Devide it into smaller classes.
 public sealed partial class WidgetWindow : WindowEx
 {
     #region Position & Size
@@ -106,6 +107,8 @@ public sealed partial class WidgetWindow : WindowEx
 
     private BaseWidgetSettings WidgetSettings { get; set; }
 
+    private WidgetViewModel WidgetViewModel { get; set; }
+
     private PointInt32 _widgetPosition;
 
     private RectSize _widgetSize;
@@ -186,6 +189,44 @@ public sealed partial class WidgetWindow : WindowEx
         SizeChanged += WidgetWindow_SizeChanged;
     }
 
+    public WidgetWindow(WidgetViewModel widgetViewModel)
+    {
+        RuntimeId = string.Empty;
+        WidgetSettings = null!;
+        // TODO: Set widget size.
+        //_widgetSize = widgetItem.Size;
+        _widgetSize = new RectSize(318, 200);
+
+        _widgetPosition = AppWindow.Position;
+        // TODO: Set position.
+        /*if (widgetItem.Position.X != -10000)
+        {
+            _widgetPosition.X = widgetItem.Position.X;
+        }
+        if (widgetItem.Position.Y != -10000)
+        {
+            _widgetPosition.Y = widgetItem.Position.Y;
+        }*/
+
+        ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
+
+        InitializeComponent();
+
+        _manager = WindowManager.Get(this);
+
+        Title = string.Empty;
+
+        // initialize position & size
+        position = AppWindow.Position;
+        size = new Size(Width, Height);
+
+        // register events
+        Activated += WidgetWindow_Activated;
+        Closed += WidgetWindow_Closed;
+        PositionChanged += WidgetWindow_PositionChanged;
+        SizeChanged += WidgetWindow_SizeChanged;
+    }
+
     #endregion
 
     #region Initialization
@@ -241,7 +282,8 @@ public sealed partial class WidgetWindow : WindowEx
         { 
             WidgetRuntimeId = RuntimeId,
             WidgetPosition = _widgetPosition,
-            WidgetSettings = WidgetSettings
+            WidgetSettings = WidgetSettings,
+            WidgetViewModel = WidgetViewModel,
         });
     }
 
@@ -375,6 +417,8 @@ public sealed partial class WidgetWindow : WindowEx
         public required PointInt32 WidgetPosition { get; set; }
 
         public required BaseWidgetSettings WidgetSettings { get; set; }
+
+        public required WidgetViewModel WidgetViewModel { get; set; }
     }
 
     #endregion

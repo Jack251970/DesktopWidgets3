@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
 using Microsoft.UI.Dispatching;
@@ -12,7 +8,7 @@ using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Storage;
 
-namespace DevHome.Dashboard.Services;
+namespace DesktopWidgets3.Services.Widgets;
 
 public partial class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {
@@ -26,7 +22,7 @@ public partial class WidgetAdaptiveCardRenderingService : IAdaptiveCardRendering
 
     private readonly SemaphoreSlim _rendererLock = new(1, 1);
 
-    private AdaptiveCardRenderer _renderer;
+    private AdaptiveCardRenderer _renderer = null!;
 
     private bool _disposedValue;
 
@@ -143,9 +139,9 @@ public partial class WidgetAdaptiveCardRenderingService : IAdaptiveCardRendering
                 }
             });
 
-            RendererUpdated(this, null);
+            RendererUpdated(this, null!);
         }
     }
 
-    private async void OnThemeChanged(object sender, ElementTheme e) => await UpdateHostConfig();
+    private async void OnThemeChanged(object? sender, ElementTheme e) => await UpdateHostConfig();
 }

@@ -1,12 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DevHome.Dashboard.ComSafeWidgetObjects;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -15,7 +10,7 @@ using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 using Windows.Storage.Streams;
 
-namespace DevHome.Dashboard.Services;
+namespace DesktopWidgets3.Services.Widgets;
 
 public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetResourceService widgetResourceService) : IWidgetScreenshotService
 {
@@ -36,11 +31,9 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         _desktopWidgets3WidgetDarkScreenshotCache.Remove((widgetId, widgetType), out _);
     }
 
-    private async Task<BitmapImage> GetScreenshotFromDesktopWidgets3CacheAsync(DesktopWidgets3WidgetDefinition widgetDefination, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetScreenshotFromDesktopWidgets3CacheAsync(string widgetId, string widgetType, ElementTheme actualTheme)
     {
-        var widgetId = widgetDefination.WidgetId;
-        var widgetType = widgetDefination.WidgetType;
-        BitmapImage bitmapImage;
+        BitmapImage? bitmapImage;
 
         // First, check the cache to see if the screenshot is already there.
         if (actualTheme == ElementTheme.Dark)
@@ -72,20 +65,20 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForDesktopWidgets3WidgetScreenshotAsync(DesktopWidgets3WidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    public async Task<Brush> GetBrushForDesktopWidgets3WidgetScreenshotAsync(string widgetId, string widgetType, ElementTheme actualTheme)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetScreenshotFromDesktopWidgets3CacheAsync(widgetDefinition, actualTheme);
+            image = await GetScreenshotFromDesktopWidgets3CacheAsync(widgetId, widgetType, actualTheme);
         }
         catch (System.IO.FileNotFoundException fileNotFoundEx)
         {
-            _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetDefinition.DisplayTitle}");
+            _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetId} {widgetType}");
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Failed to get widget screenshot for widget definition {widgetDefinition.DisplayTitle}");
+            _log.Error(ex, $"Failed to get widget screenshot for widget definition {widgetId} {widgetType}");
         }
 
         var brush = new ImageBrush
@@ -105,7 +98,7 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
     private async Task<BitmapImage> GetScreenshotFromMicrosoftCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
-        BitmapImage bitmapImage;
+        BitmapImage? bitmapImage;
 
         // First, check the cache to see if the screenshot is already there.
         if (actualTheme == ElementTheme.Dark)
@@ -125,12 +118,12 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         // If the screenshot wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
         if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await MicrosoftWidgetScreenshotToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).GetScreenshots().FirstOrDefault().Image);
+            bitmapImage = await MicrosoftWidgetScreenshotToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).GetScreenshots().FirstOrDefault()!.Image);
             _microsoftWidgetDarkScreenshotCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
         else
         {
-            bitmapImage = await MicrosoftWidgetScreenshotToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).GetScreenshots().FirstOrDefault().Image);
+            bitmapImage = await MicrosoftWidgetScreenshotToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).GetScreenshots().FirstOrDefault()!.Image);
             _microsoftWidgetLightScreenshotCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
 
