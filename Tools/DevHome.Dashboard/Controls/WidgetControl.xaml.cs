@@ -170,8 +170,6 @@ public sealed partial class WidgetControl : UserControl
                 var widgetIdToDelete = widgetViewModel.Widget.Id;
                 var widgetToDelete = widgetViewModel.Widget;
                 _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
-                // var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-                // Application.Current.GetService<IScreenReaderService>().Announce(stringResource.GetLocalized("WidgetRemoved"));
                 _dispatcherQueue.TryEnqueue(() =>
                 {
                     // TODO: Add support for removing widgets from the dashboard.
