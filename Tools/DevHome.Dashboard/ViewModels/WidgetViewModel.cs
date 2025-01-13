@@ -256,7 +256,7 @@ public partial class WidgetViewModel : ObservableObject
         });
     }
 
-    private Grid GetErrorCard(string error, string subError = null!)
+    private static Grid GetErrorCard(string error, string subError = null!)
     {
         var grid = new Grid
         {
@@ -278,8 +278,6 @@ public partial class WidgetViewModel : ObservableObject
         };
         sp.Children.Add(errorText);
 
-        var errorTextToAnnounce = errorText.Text;
-
         if (subError is not null)
         {
             var subErrorText = new TextBlock
@@ -291,7 +289,6 @@ public partial class WidgetViewModel : ObservableObject
             };
 
             sp.Children.Add(subErrorText);
-            errorTextToAnnounce += $" {subErrorText.Text}";
         }
 
         grid.Children.Add(sp);
