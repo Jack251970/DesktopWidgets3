@@ -454,20 +454,20 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
         {
             Window_Creating = null,
-            Window_Created = (window) => WidgetWindow_Created(widgetInfo, window, item, minSize, maxSize),
+            Window_Created = (window) => WidgetWindow_Created(window, item, minSize, maxSize),
             Window_Closing = null,
             Window_Closed = null
         };
 
         // create widget window
-        var widgetWindow = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), _appSettingsService.MultiThread, lifecycleActions);
+        WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), _appSettingsService.MultiThread, lifecycleActions);
 
         return widgetRuntimeId;
     }
 
     #region Widget Window Lifecycle
 
-    private async void WidgetWindow_Created(WidgetInfo _, Window window, JsonWidgetItem item, RectSize minSize, RectSize maxSize)
+    private async void WidgetWindow_Created(Window window, JsonWidgetItem item, RectSize minSize, RectSize maxSize)
     {
         if (window is WidgetWindow widgetWindow)
         {
