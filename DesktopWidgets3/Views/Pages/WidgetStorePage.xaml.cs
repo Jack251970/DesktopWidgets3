@@ -7,7 +7,7 @@ namespace DesktopWidgets3.Views.Pages;
 
 public sealed partial class WidgetStorePage : Page
 {
-    public WidgetStoreViewModel ViewModel { get; }
+    public WidgetStorePageViewModel ViewModel { get; }
 
     private readonly IWidgetResourceService _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
@@ -18,7 +18,7 @@ public sealed partial class WidgetStorePage : Page
 
     public WidgetStorePage()
     {
-        ViewModel = DependencyExtensions.GetRequiredService<WidgetStoreViewModel>();
+        ViewModel = DependencyExtensions.GetRequiredService<WidgetStorePageViewModel>();
         InstallRightClickMenu = GetInstalledRightClickMenu();
         UninstallRightClickMenu = GetUninstalledRightClickMenu();
         InitializeComponent();

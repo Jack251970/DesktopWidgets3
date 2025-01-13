@@ -467,7 +467,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Widget Window Lifecycle
 
-    private async void WidgetWindow_Created(WidgetInfo widgetInfo, Window window, JsonWidgetItem item, RectSize minSize, RectSize maxSize)
+    private async void WidgetWindow_Created(WidgetInfo _, Window window, JsonWidgetItem item, RectSize minSize, RectSize maxSize)
     {
         if (window is WidgetWindow widgetWindow)
         {
@@ -606,7 +606,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     public void NavigateToWidgetSettingPage(string widgetId, string widgetType, int widgetIndex)
     {
         // navigate to widget setting page
-        _navigationService.NavigateTo(typeof(WidgetSettingViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(WidgetSettingPageViewModel).FullName!);
 
         // get widget setting pair
         var widgetSettingPair = TryGetWidgetSettingPair(widgetId, widgetType, widgetIndex);
@@ -1040,7 +1040,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     private void RefreshDashboardPage(object parameter)
     {
-        var dashboardPageKey = typeof(DashboardViewModel).FullName!;
+        var dashboardPageKey = typeof(DashboardPageViewModel).FullName!;
         App.MainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             var currentKey = _navigationService.GetCurrentPageKey();

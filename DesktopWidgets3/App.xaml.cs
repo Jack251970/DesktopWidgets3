@@ -206,20 +206,20 @@ public partial class App : Application
 
                 // Main Window Pages
                 services.AddTransient<NavShellPage>();
-                services.AddTransient<NavShellViewModel>();
-                services.AddTransient<HomeViewModel>();
+                services.AddTransient<NavShellPageViewModel>();
+                services.AddTransient<HomePageViewModel>();
                 services.AddTransient<HomePage>();
-                services.AddTransient<SettingsViewModel>();
+                services.AddTransient<SettingsPageViewModel>();
                 services.AddTransient<SettingsPage>();
-                services.AddTransient<DashboardViewModel>();
+                services.AddTransient<DashboardPageViewModel>();
                 services.AddTransient<DashboardPage>();
                 services.AddTransient<WidgetStorePage>();
-                services.AddTransient<WidgetStoreViewModel>();
+                services.AddTransient<WidgetStorePageViewModel>();
 
                 // Widgets Window Pages
                 services.AddTransient<WidgetSettingPage>();
-                services.AddTransient<WidgetSettingViewModel>();
-                services.AddTransient<Core.Widgets.ViewModels.Windows.WidgetViewModel>();
+                services.AddTransient<WidgetSettingPageViewModel>();
+                services.AddTransient<WidgetWindowViewModel>();
 
                 #endregion
 

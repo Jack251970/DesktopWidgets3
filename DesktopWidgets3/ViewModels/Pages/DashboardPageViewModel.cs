@@ -7,9 +7,9 @@ using System.Collections.ObjectModel;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class DashboardViewModel(DispatcherQueue dispatcherQueue, WidgetViewModelFactory widgetViewModelFactory, IWidgetExtensionService widgetExtensionService, IWidgetHostingService widgetHostingService, IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
+public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, WidgetViewModelFactory widgetViewModelFactory, IWidgetExtensionService widgetExtensionService, IWidgetHostingService widgetHostingService, IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
 {
-    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardViewModel));
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardPageViewModel));
 
     public ObservableCollection<DashboardWidgetItem> PinnedWidgets { get; set; } = [];
     public ObservableCollection<DashboardWidgetItem> UnpinnedWidgets { get; set; } = [];

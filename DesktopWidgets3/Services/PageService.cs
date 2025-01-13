@@ -11,11 +11,11 @@ internal class PageService : IPageService
     public PageService()
     {
         // Main Window Pages
-        Configure<HomeViewModel, HomePage>();
-        Configure<SettingsViewModel, SettingsPage>();
-        Configure<DashboardViewModel, DashboardPage>();
-        Configure<WidgetStoreViewModel, WidgetStorePage>();
-        Configure<WidgetSettingViewModel, WidgetSettingPage>();
+        Configure<HomePageViewModel, HomePage>();
+        Configure<SettingsPageViewModel, SettingsPage>();
+        Configure<DashboardPageViewModel, DashboardPage>();
+        Configure<WidgetStorePageViewModel, WidgetStorePage>();
+        Configure<WidgetSettingPageViewModel, WidgetSettingPage>();
     }
 
     public Type GetPageType(string viewModel)

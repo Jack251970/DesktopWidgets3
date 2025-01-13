@@ -4,11 +4,11 @@ namespace DesktopWidgets3.Core.Widgets.Views.Pages;
 
 public sealed partial class WidgetSettingPage : Page
 {
-    public WidgetSettingViewModel ViewModel { get; }
+    public WidgetSettingPageViewModel ViewModel { get; }
 
     public WidgetSettingPage()
     {
-        ViewModel = DependencyExtensions.GetRequiredService<WidgetSettingViewModel>();
+        ViewModel = DependencyExtensions.GetRequiredService<WidgetSettingPageViewModel>();
         InitializeComponent();
     }
 }

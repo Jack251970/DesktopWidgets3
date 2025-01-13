@@ -132,7 +132,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region View Model
 
-    public WidgetViewModel ViewModel { get; }
+    public WidgetWindowViewModel ViewModel { get; }
 
     #endregion
 
@@ -167,7 +167,7 @@ public sealed partial class WidgetWindow : WindowEx
             _widgetPosition.Y = widgetItem.Position.Y;
         }
 
-        ViewModel = DependencyExtensions.GetRequiredService<WidgetViewModel>();
+        ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
 
         InitializeComponent();
 

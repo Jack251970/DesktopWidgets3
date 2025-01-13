@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Core.Widgets.ViewModels.Windows;
 
-public partial class WidgetViewModel : ObservableRecipient
+public partial class WidgetWindowViewModel : ObservableRecipient
 {
     [ObservableProperty]
     public string _widgetIconPath = string.Empty;
@@ -18,7 +18,7 @@ public partial class WidgetViewModel : ObservableRecipient
     [ObservableProperty]
     public MenuFlyout? _widgetMenuFlyout = null;
 
-    public WidgetViewModel()
+    public WidgetWindowViewModel()
     {
 
     }

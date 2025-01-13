@@ -7,7 +7,7 @@ namespace DesktopWidgets3.Views.Pages;
 
 public sealed partial class DashboardPage : Page
 {
-    public DashboardViewModel ViewModel { get; }
+    public DashboardPageViewModel ViewModel { get; }
 
     private readonly IWidgetManagerService _widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
@@ -19,7 +19,7 @@ public sealed partial class DashboardPage : Page
 
     public DashboardPage()
     {
-        ViewModel = DependencyExtensions.GetRequiredService<DashboardViewModel>();
+        ViewModel = DependencyExtensions.GetRequiredService<DashboardPageViewModel>();
         RightClickMenu = GetRightClickMenu();
         InitializeComponent();
     }

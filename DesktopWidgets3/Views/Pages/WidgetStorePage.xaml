@@ -9,7 +9,7 @@
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages"
     xmlns:widgetmodels="using:DesktopWidgets3.Core.Widgets.Models.WidgetItems"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="Shell_WidgetStore.Content"
-    d:DataContext="{d:DesignInstance Type=viewmodels:WidgetStoreViewModel}"
+    d:DataContext="{d:DesignInstance Type=viewmodels:WidgetStorePageViewModel}"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 

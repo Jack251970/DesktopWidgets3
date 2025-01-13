@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class WidgetStoreViewModel(IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
+public partial class WidgetStorePageViewModel(IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
 {
     public ObservableCollection<WidgetStoreItem> AvailableWidgets { get; set; } = [];
     public ObservableCollection<WidgetStoreItem> InstalledWidgets { get; set; } = [];
