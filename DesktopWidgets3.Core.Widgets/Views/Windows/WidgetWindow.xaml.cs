@@ -159,6 +159,7 @@ public sealed partial class WidgetWindow : WindowEx
         RuntimeId = widgetRuntimeId;
         WidgetSettings = widgetItem.Settings;
         _widgetSize = widgetItem.Size;
+        WidgetViewModel = null!;
 
         _widgetPosition = AppWindow.Position;
         if (widgetItem.Position.X != -10000)
@@ -191,10 +192,9 @@ public sealed partial class WidgetWindow : WindowEx
 
     public WidgetWindow(WidgetViewModel widgetViewModel)
     {
-        RuntimeId = string.Empty;
+        RuntimeId = null!;
         WidgetSettings = null!;
-        // TODO: Set widget size.
-        //_widgetSize = widgetItem.Size;
+        // TODO: Set widget size according to widget size.
         _widgetSize = new RectSize(1000, 800);
         WidgetViewModel = widgetViewModel;
 
