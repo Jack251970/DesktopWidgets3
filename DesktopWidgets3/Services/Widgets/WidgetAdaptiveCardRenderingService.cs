@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using AdaptiveCards.Rendering.WinUI3;
-using DevHome.Common.Renderers;
+using DevHome.Dashboard.Common.Renderers;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Serilog;

@@ -14,6 +14,9 @@
     <UseWinUI>true</UseWinUI>
     <!-- CsWinRt Properties -->
     <CsWinRTIncludes>Microsoft.Windows.Widgets.Hosts</CsWinRTIncludes>
+    <!-- Other Settings -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

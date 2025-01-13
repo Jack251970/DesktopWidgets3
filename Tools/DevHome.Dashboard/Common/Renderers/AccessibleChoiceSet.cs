@@ -1,15 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Linq;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 
-// TODO: Change namespace.
-namespace DevHome.Common.Renderers;
+namespace DevHome.Dashboard.Common.Renderers;
 
 public partial class AccessibleChoiceSet : IAdaptiveElementRenderer
 {

@@ -7,7 +7,7 @@ using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.Common.Renderers;
+namespace DevHome.Dashboard.Common.Renderers;
 
 public partial class TextInputRenderer : IAdaptiveElementRenderer
 {

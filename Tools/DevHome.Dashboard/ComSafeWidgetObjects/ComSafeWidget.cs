@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using DevHome.Dashboard.Services;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
@@ -20,32 +18,27 @@ namespace DevHome.Dashboard.ComSafeWidgetObjects;
 /// This class will handle the COM exceptions and get a new OOP Widget if needed.
 /// All APIs on the IWidget and IWidget2 interfaces are reflected here.
 /// </summary>
-public class ComSafeWidget
+public class ComSafeWidget(string widgetId)
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComSafeWidget));
 
     // Not currently used.
     public DateTimeOffset DataLastUpdated => throw new NotImplementedException();
 
-    public string DefinitionId { get; private set; }
+    public string DefinitionId { get; private set; } = string.Empty;
 
-    public string Id { get; private set; }
+    public string Id { get; private set; } = widgetId;
 
     // Not currently used.
     public DateTimeOffset TemplateLastUpdated => throw new NotImplementedException();
 
-    private Widget _oopWidget;
+    private Widget _oopWidget = null!;
 
     private const int RpcServerUnavailable = unchecked((int)0x800706BA);
     private const int RpcCallFailed = unchecked((int)0x800706BE);
 
     private bool _hasValidProperties;
     private const int MaxAttempts = 3;
-
-    public ComSafeWidget(string widgetId)
-    {
-        Id = widgetId;
-    }
 
     public event TypedEventHandler<ComSafeWidget, WidgetUpdatedEventArgs> WidgetUpdated = (_, _) => { };
 
@@ -316,7 +309,7 @@ public class ComSafeWidget
 
     private async Task GetNewOopWidgetAsync()
     {
-        _oopWidget = null;
+        _oopWidget = null!;
         _hasValidProperties = false;
         await LazilyLoadOopWidget();
     }
@@ -381,7 +374,7 @@ public class ComSafeWidget
     [DllImport("ole32.dll", ExactSpelling = true, PreserveSig = false, SetLastError = true)]
     private static extern void CoAllowSetForegroundWindow(IntPtr pUnk, IntPtr lpvReserved);
 
-    private void CoAllowSetForegroundWindow(Widget widget)
+    private static void CoAllowSetForegroundWindow(Widget widget)
     {
         CoAllowSetForegroundWindow(Marshal.GetIUnknownForObject(widget), IntPtr.Zero);
     }

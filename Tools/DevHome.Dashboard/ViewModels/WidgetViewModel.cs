@@ -1,19 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Renderers;
-//using DevHome.Common.Services;
+using DevHome.Dashboard.Common.Renderers;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Dispatching;
@@ -46,13 +41,11 @@ public partial class WidgetViewModel : ObservableObject
 
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly IAdaptiveCardRenderingService _renderingService;
-    // TODO: Add support for screen reader service.
-    //private readonly IScreenReaderService _screenReaderService;
 
     private readonly AdaptiveElementParserRegistration _elementParser;
     private readonly AdaptiveActionParserRegistration _actionParser;
 
-    private RenderedAdaptiveCard _renderedCard;
+    private RenderedAdaptiveCard _renderedCard = null!;
 
     [ObservableProperty]
     private ComSafeWidget _widget;
@@ -67,13 +60,13 @@ public partial class WidgetViewModel : ObservableObject
     private bool _isCustomizable;
 
     [ObservableProperty]
-    private string _widgetDisplayTitle;
+    private string _widgetDisplayTitle = string.Empty;
 
     [ObservableProperty]
-    private string _widgetProviderDisplayTitle;
+    private string _widgetProviderDisplayTitle = string.Empty;
 
     [ObservableProperty]
-    private FrameworkElement _widgetFrameworkElement;
+    private FrameworkElement _widgetFrameworkElement = null!;
 
     partial void OnWidgetChanging(ComSafeWidget value)
     {
@@ -107,11 +100,9 @@ public partial class WidgetViewModel : ObservableObject
         WidgetSize widgetSize,
         ComSafeWidgetDefinition widgetDefinition,
         IAdaptiveCardRenderingService adaptiveCardRenderingService,
-        //IScreenReaderService screenReaderService,
         DispatcherQueue dispatcherQueue)
     {
         _renderingService = adaptiveCardRenderingService;
-        //_screenReaderService = screenReaderService;
         _dispatcherQueue = dispatcherQueue;
 
         Widget = widget;
@@ -257,7 +248,7 @@ public partial class WidgetViewModel : ObservableObject
     }
 
     // Used to show a message instead of Adaptive Card content in a widget.
-    public void ShowErrorCard(string error, string subError = null)
+    public void ShowErrorCard(string error, string subError = null!)
     {
         _dispatcherQueue.TryEnqueue(() =>
         {
@@ -265,17 +256,15 @@ public partial class WidgetViewModel : ObservableObject
         });
     }
 
-    private Grid GetErrorCard(string error, string subError = null)
+    private Grid GetErrorCard(string error, string subError = null!)
     {
-        /*var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");*/
-
         var grid = new Grid
         {
             Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent),
             Padding = new Thickness(15, 0, 15, 0),
         };
 
-        /*var sp = new StackPanel
+        var sp = new StackPanel
         {
             HorizontalAlignment = HorizontalAlignment.Center,
         };
@@ -285,7 +274,7 @@ public partial class WidgetViewModel : ObservableObject
             HorizontalAlignment = HorizontalAlignment.Center,
             TextWrapping = TextWrapping.WrapWholeWords,
             FontWeight = FontWeights.Bold,
-            Text = stringResource.GetLocalized(error),
+            Text = error.GetLocalizedString(Constants.DevHomeDashboard),
         };
         sp.Children.Add(errorText);
 
@@ -297,7 +286,7 @@ public partial class WidgetViewModel : ObservableObject
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextWrapping = TextWrapping.WrapWholeWords,
-                Text = stringResource.GetLocalized(subError),
+                Text = subError.GetLocalizedString(Constants.DevHomeDashboard),
                 Margin = new Thickness(0, 12, 0, 0),
             };
 
@@ -305,13 +294,11 @@ public partial class WidgetViewModel : ObservableObject
             errorTextToAnnounce += $" {subErrorText.Text}";
         }
 
-        _screenReaderService.Announce(errorTextToAnnounce);
-
-        grid.Children.Add(sp);*/
+        grid.Children.Add(sp);
         return grid;
     }
 
-    private string MergeJsonData(string jsonStringA, string jsonStringB)
+    private static string MergeJsonData(string jsonStringA, string jsonStringB)
     {
         if (string.IsNullOrEmpty(jsonStringA))
         {
@@ -431,15 +418,10 @@ public partial class WidgetViewModel : ObservableObject
         { typeof(AdaptiveColumnSet), "get_Columns" },
     };
 
-    private void SearchForWarning(IAdaptiveCardElement element, bool isInsideWarningContainer)
+    private static void SearchForWarning(IAdaptiveCardElement element, bool isInsideWarningContainer)
     {
         if (element is AdaptiveTextBlock textBlock)
         {
-            if (isInsideWarningContainer)
-            {
-                //_screenReaderService.Announce(textBlock.Text);
-            }
-
             return;
         }
 
@@ -450,13 +432,16 @@ public partial class WidgetViewModel : ObservableObject
 
         var containerElement = element as IAdaptiveContainerBase;
 
-        foreach (var containerType in _containerTypes.Where(containerType => containerType.Key == containerElement.GetType()))
+        foreach (var containerType in _containerTypes.Where(containerType => containerType.Key == containerElement?.GetType()))
         {
             var itemsMethod = containerType.Key.GetMethod(containerType.Value, BindingFlags.Public | BindingFlags.Instance);
 
-            foreach (var subelement in itemsMethod.Invoke(containerElement, null) as IEnumerable)
+            if (itemsMethod?.Invoke(containerElement, null) is IEnumerable subelements)
             {
-                SearchForWarning((IAdaptiveCardElement)subelement, isInsideWarningContainer || (containerElement.Style == ContainerStyle.Warning));
+                foreach (var subelement in subelements)
+                {
+                    SearchForWarning((IAdaptiveCardElement)subelement, isInsideWarningContainer || (containerElement?.Style == ContainerStyle.Warning));
+                }
             }
         }
     }

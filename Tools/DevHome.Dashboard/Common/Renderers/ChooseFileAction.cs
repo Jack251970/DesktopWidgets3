@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using Microsoft.UI.Xaml;
@@ -11,7 +9,7 @@ using Windows.Data.Json;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
-namespace DevHome.Common.Renderers;
+namespace DevHome.Dashboard.Common.Renderers;
 
 public partial class ChooseFileAction : IAdaptiveActionElement
 {

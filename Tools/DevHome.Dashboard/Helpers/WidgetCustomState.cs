@@ -8,7 +8,7 @@ namespace DevHome.Dashboard.Helpers;
 internal sealed class WidgetCustomState
 {
     [JsonPropertyName("host")]
-    public string Host { get; set; }
+    public string Host { get; set; } = string.Empty;
 
     [JsonPropertyName("position")]
     public int Position { get; set; } = -1;

@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using DevHome.Dashboard.Services;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
@@ -24,21 +21,21 @@ public partial class ComSafeWidgetDefinition(string widgetDefinitionId) : IDispo
 
     public bool AllowMultiple { get; private set; }
 
-    public string Description { get; private set; }
+    public string Description { get; private set; } = string.Empty;
 
-    public string DisplayTitle { get; private set; }
+    public string DisplayTitle { get; private set; } = string.Empty;
 
     public string Id { get; private set; } = widgetDefinitionId;
 
-    public WidgetProviderDefinition ProviderDefinition { get; private set; }
+    public WidgetProviderDefinition ProviderDefinition { get; private set; } = null!;
 
     // Since the ProviderDefinition could have died, save the display name and id so we can use it in that case.
     // These can be removed if we keep a ComSafeWidgetProviderDefinition here.
-    public string ProviderDefinitionDisplayName { get; private set; }
+    public string ProviderDefinitionDisplayName { get; private set; } = string.Empty;
 
-    public string ProviderDefinitionId { get; private set; }
+    public string ProviderDefinitionId { get; private set; } = string.Empty;
 
-    public string AdditionalInfoUri { get; private set; }
+    public string AdditionalInfoUri { get; private set; } = string.Empty;
 
     public bool IsCustomizable { get; private set; }
 
@@ -46,7 +43,7 @@ public partial class ComSafeWidgetDefinition(string widgetDefinitionId) : IDispo
 
     public WidgetType Type { get; private set; }
 
-    private WidgetDefinition _oopWidgetDefinition;
+    private WidgetDefinition _oopWidgetDefinition = null!;
 
     private const int RpcServerUnavailable = unchecked((int)0x800706BA);
     private const int RpcCallFailed = unchecked((int)0x800706BE);
@@ -90,11 +87,11 @@ public partial class ComSafeWidgetDefinition(string widgetDefinitionId) : IDispo
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception getting theme resources from widget:");
-                return null;
+                return null!;
             }
         }
 
-        return null;
+        return null!;
     }
 
     public async Task<WidgetCapability[]> GetWidgetCapabilitiesAsync()
@@ -115,16 +112,16 @@ public partial class ComSafeWidgetDefinition(string widgetDefinitionId) : IDispo
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception getting widget capabilities from widget:");
-                return null;
+                return null!;
             }
         }
 
-        return null;
+        return null!;
     }
 
     private void ResetOopWidgetDefinition()
     {
-        _oopWidgetDefinition = null;
+        _oopWidgetDefinition = null!;
         _hasValidProperties = false;
     }
 

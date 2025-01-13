@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.WinUI.Controls;
@@ -10,9 +9,9 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 using Windows.UI;
 
-namespace DevHome.Common.Renderers;
+namespace DevHome.Dashboard.Common.Renderers;
 
-public class LabelGroup : IAdaptiveCardElement
+public partial class LabelGroup : IAdaptiveCardElement
 {
     public LabelGroup()
     {
@@ -42,7 +41,6 @@ public class LabelGroup : IAdaptiveCardElement
 
     public HeightType Height { get; set; } = HeightType.Auto;
 
-    // TODO: Add Nullable support.
     public string? Id { get; set; } = CustomTypeString + "Id";
 
     public bool IsVisible { get; set; } = true;
@@ -54,7 +52,7 @@ public class LabelGroup : IAdaptiveCardElement
     IList<AdaptiveRequirement>? IAdaptiveCardElement.Requirements { get; }
 }
 
-public class LabelGroupParser : IAdaptiveElementParser
+public partial class LabelGroupParser : IAdaptiveElementParser
 {
     public IAdaptiveCardElement FromJson(
         JsonObject inputJson,
@@ -88,7 +86,7 @@ public class LabelGroupParser : IAdaptiveElementParser
     }
 }
 
-public class LabelGroupRenderer : IAdaptiveElementRenderer
+public partial class LabelGroupRenderer : IAdaptiveElementRenderer
 {
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
@@ -140,10 +138,10 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
     {
         if (!string.IsNullOrEmpty(colorString))
         {
-            var a = (byte)System.Convert.ToUInt32(255 * opacity);
-            var r = (byte)System.Convert.ToUInt32(colorString[..2], 16);
-            var g = (byte)System.Convert.ToUInt32(colorString.Substring(2, 2), 16);
-            var b = (byte)System.Convert.ToUInt32(colorString.Substring(4, 2), 16);
+            var a = (byte)Convert.ToUInt32(255 * opacity);
+            var r = (byte)Convert.ToUInt32(colorString[..2], 16);
+            var g = (byte)Convert.ToUInt32(colorString.Substring(2, 2), 16);
+            var b = (byte)Convert.ToUInt32(colorString.Substring(4, 2), 16);
 
             return new Microsoft.UI.Xaml.Media.SolidColorBrush(Color.FromArgb(a, r, g, b));
         }

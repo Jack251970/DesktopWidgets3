@@ -1,10 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
@@ -42,7 +38,7 @@ public sealed partial class WidgetControl : UserControl
     // as well as 1px for the border.
     private const double HeaderHeightUnscaled = 39;
 
-    private SelectableMenuFlyoutItem _currentSelectedSize;
+    private SelectableMenuFlyoutItem? _currentSelectedSize;
 
     [ObservableProperty]
     private GridLength _headerHeight;
@@ -90,7 +86,7 @@ public sealed partial class WidgetControl : UserControl
     private void OnUnloaded()
     {
         _uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChangedAsync;
-        WidgetSource = null;
+        WidgetSource = null!;
     }
 
     private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
@@ -124,11 +120,10 @@ public sealed partial class WidgetControl : UserControl
         WidgetWidth = WidgetHelpers.WidgetPxWidth * textScale;
     }
 
-    private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs e)
+    private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs _)
     {
-        if (sender as Button is Button widgetMenuButton)
+        if (sender as Button is Button widgetMenuButton && widgetMenuButton.Flyout is MenuFlyout widgetMenuFlyout)
         {
-            var widgetMenuFlyout = widgetMenuButton.Flyout as MenuFlyout;
             widgetMenuFlyout.Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.BottomEdgeAlignedLeft;
             if (widgetMenuFlyout?.Items.Count == 0)
             {
@@ -263,7 +258,10 @@ public sealed partial class WidgetControl : UserControl
 
         // Mark current widget size.
         _currentSelectedSize = sizeMenuItems.FirstOrDefault(x => (WidgetSize)x.Tag == widgetViewModel.WidgetSize);
-        MarkSize(_currentSelectedSize);
+        if (_currentSelectedSize is not null)
+        {
+            MarkSize(_currentSelectedSize);
+        }
     }
 
     private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
@@ -277,7 +275,7 @@ public sealed partial class WidgetControl : UserControl
                 {
                     _currentSelectedSize.Icon = null;
                     var peer = FrameworkElementAutomationPeer.FromElement(_currentSelectedSize) as SelectableMenuFlyoutItemAutomationPeer;
-                    peer.RemoveFromSelection();
+                    peer?.RemoveFromSelection();
                 }
 
                 // Resize widget.
@@ -301,7 +299,7 @@ public sealed partial class WidgetControl : UserControl
         };
         menuSizeItem.Icon = fontIcon;
         var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
-        peer.AddToSelection();
+        peer?.AddToSelection();
     }
 
     private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)

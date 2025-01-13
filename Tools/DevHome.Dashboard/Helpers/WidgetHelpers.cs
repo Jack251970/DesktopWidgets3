@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 //using DevHome.Common.Extensions;
 //using DevHome.Common.Services;
 using DevHome.Dashboard.ComSafeWidgetObjects;
@@ -118,8 +116,11 @@ public sealed class WidgetHelpers
     {
         var stateStr = await widget.GetCustomStateAsync();
         var state = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
-        state.Position = ordinal;
-        stateStr = JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
-        await widget.SetCustomStateAsync(stateStr);
+        if (state is not null)
+        {
+            state.Position = ordinal;
+            stateStr = JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
+            await widget.SetCustomStateAsync(stateStr);
+        }
     }
 }
