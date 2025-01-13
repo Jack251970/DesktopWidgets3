@@ -597,10 +597,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await _activationService.ActivateWindowAsync(widgetWindow);
 
             // set widget ico & title & framework element
-            // TODO: Add theme support.
             widgetWindow.ViewModel.WidgetIconFill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(widgetViewModel.WidgetDefinition);
-            // TODO: Add support.
-            //widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId, widgetType);
+            widgetWindow.ViewModel.WidgetDisplayTitle = widgetViewModel.WidgetDisplayTitle;
 
             // initialize window
             var menuFlyout = GetWidgetMenuFlyout(widgetWindow);
@@ -612,7 +610,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             //widgetWindow.MinSize = minSize;
             //widgetWindow.MaxSize = maxSize;
             //widgetWindow.Size = item.Size;
-            widgetWindow.Size = new RectSize(318, 200);
+            widgetWindow.Size = new RectSize(1000, 800);
             WindowExtensions.Move(widgetWindow, -10000, -10000);
 
             // register load event handler
@@ -641,7 +639,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.Position = widgetPosition;
 
             // get widget framework element
-            var frameworkElement = new WidgetControl() { WidgetSource = widgetViewModel };
+            var frameworkElement = new WidgetControl
+            {
+                WidgetSource = widgetViewModel
+            };
 
             // set widget framework element
             widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;

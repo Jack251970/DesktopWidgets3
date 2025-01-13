@@ -195,7 +195,8 @@ public sealed partial class WidgetWindow : WindowEx
         WidgetSettings = null!;
         // TODO: Set widget size.
         //_widgetSize = widgetItem.Size;
-        _widgetSize = new RectSize(318, 200);
+        _widgetSize = new RectSize(1000, 800);
+        WidgetViewModel = widgetViewModel;
 
         _widgetPosition = AppWindow.Position;
         // TODO: Set position.

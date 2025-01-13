@@ -318,6 +318,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
         else if (selectedTag as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition selectedWidgetDefinition1)
         {
+            // TODO: Fix ViewModel == null issue.
             _selectedWidget = selectedWidgetDefinition1;
             await ViewModel.SetWidgetDefinition(selectedWidgetDefinition1);
         }
