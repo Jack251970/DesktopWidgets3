@@ -13,9 +13,7 @@ public static class ServiceExtensions
 {
     public static IServiceCollection AddDashboard(this IServiceCollection services, HostBuilderContext context)
     {
-        /*// View-models
-        services.AddSingleton<DashboardViewModel>();
-        services.AddTransient<DashboardBannerViewModel>();*/
+        // View-models
         services.AddTransient<AddWidgetViewModel>();
 
         // DI factory pattern for creating instances with certain parameters

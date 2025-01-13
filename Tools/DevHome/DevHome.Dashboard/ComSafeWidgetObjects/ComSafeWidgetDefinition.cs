@@ -18,7 +18,7 @@ namespace DevHome.Dashboard.ComSafeWidgetObjects;
 /// This class will handle the COM exceptions and get a new OOP WidgetDefinition if needed.
 /// All APIs on the IWidgetDefinition and IWidgetDefinition2 interfaces are reflected here.
 /// </summary>
-public class ComSafeWidgetDefinition : IDisposable
+public partial class ComSafeWidgetDefinition(string widgetDefinitionId) : IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComSafeWidgetDefinition));
 
@@ -28,7 +28,7 @@ public class ComSafeWidgetDefinition : IDisposable
 
     public string DisplayTitle { get; private set; }
 
-    public string Id { get; private set; }
+    public string Id { get; private set; } = widgetDefinitionId;
 
     public WidgetProviderDefinition ProviderDefinition { get; private set; }
 
@@ -56,11 +56,6 @@ public class ComSafeWidgetDefinition : IDisposable
 
     private bool _hasValidProperties;
     private const int MaxAttempts = 3;
-
-    public ComSafeWidgetDefinition(string widgetDefinitionId)
-    {
-        Id = widgetDefinitionId;
-    }
 
     /// <summary>
     /// ComSafeWidgetDefinitions must be populated before use to guarantee their properties are valid.

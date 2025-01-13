@@ -12,7 +12,7 @@ using Windows.UI.ViewManagement;
 
 namespace DevHome.Dashboard.Controls;
 
-public sealed class WidgetBoard : Panel
+public sealed partial class WidgetBoard : Panel
 {
     private double _columnWidth;
     private const int _maxColumns = 4;

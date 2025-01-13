@@ -20,7 +20,7 @@ public sealed class WidgetHelpers
     public const string WidgetsPlatformRuntimePackageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
 
     public static readonly string[] DefaultWidgetDefinitionIds =
-    {
+    [
     #if CANARY_BUILD
         "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
         "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
@@ -34,7 +34,7 @@ public sealed class WidgetHelpers
         "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
         "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
     #endif
-    };
+    ];
 
     public const string DevHomeHostName = "DevHome";
 

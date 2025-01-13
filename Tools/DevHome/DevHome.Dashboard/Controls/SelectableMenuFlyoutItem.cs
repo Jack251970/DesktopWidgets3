@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Dashboard.Controls;
 
-public sealed class SelectableMenuFlyoutItem : MenuFlyoutItem
+public sealed partial class SelectableMenuFlyoutItem : MenuFlyoutItem
 {
     protected override AutomationPeer OnCreateAutomationPeer()
     {
@@ -16,21 +16,15 @@ public sealed class SelectableMenuFlyoutItem : MenuFlyoutItem
     }
 }
 
-public class SelectableMenuFlyoutItemAutomationPeer : MenuFlyoutItemAutomationPeer, ISelectionItemProvider
+public partial class SelectableMenuFlyoutItemAutomationPeer(SelectableMenuFlyoutItem owner) : MenuFlyoutItemAutomationPeer(owner), ISelectionItemProvider
 {
-    private readonly FrameworkElement _owner;
+    private readonly FrameworkElement _owner = owner;
     private bool _selected;
 
     public bool IsSelected
     {
         get => _selected;
         set => _selected = value;
-    }
-
-    public SelectableMenuFlyoutItemAutomationPeer(SelectableMenuFlyoutItem owner)
-        : base(owner)
-    {
-        _owner = owner;
     }
 
     public IRawElementProviderSimple SelectionContainer => (IRawElementProviderSimple)_owner.Parent;
