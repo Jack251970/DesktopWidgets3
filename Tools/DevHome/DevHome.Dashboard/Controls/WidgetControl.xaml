@@ -1,0 +1,82 @@
+<!--  Copyright (c) Microsoft Corporation..  -->
+<!--  Licensed under the MIT License.  -->
+<UserControl
+    x:Class="DevHome.Dashboard.Controls.WidgetControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    AutomationProperties.Name="{x:Bind WidgetSource.WidgetDisplayTitle}">
+
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="Unloaded">
+            <ic:InvokeCommandAction Command="{x:Bind UnloadedCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+
+    <Grid
+        Width="{x:Bind WidgetWidth, Mode=OneWay}"
+        Height="{x:Bind WidgetHeight, Mode=OneWay}"
+        Background="{ThemeResource WidgetCardBackground}"
+        BorderBrush="{ThemeResource WidgetCardBorderBrush}"
+        BorderThickness="1"
+        CornerRadius="7">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{x:Bind HeaderHeight, Mode=OneWay}" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Widget header: icon, title, menu  -->
+        <Grid Grid.Row="0" Padding="15,9,15,0">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Rectangle
+                    x:Name="WidgetHeaderIcon"
+                    Width="16"
+                    Height="16" />
+                <TextBlock
+                    MaxWidth="212"
+                    VerticalAlignment="Center"
+                    AutomationProperties.AutomationId="WidgetTitle"
+                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                    Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}"
+                    TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+            <Button
+                x:Uid="WidgetMoreOptionsButton"
+                Padding="5"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                AutomationProperties.AutomationId="WidgetMoreOptionsButton"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="OpenWidgetMenuAsync"
+                Content="&#xE712;"
+                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                Tag="{x:Bind}">
+                <Button.Flyout>
+                    <MenuFlyout />
+                </Button.Flyout>
+            </Button>
+        </Grid>
+
+        <!--  Widget content  -->
+        <!--
+            Each widget has a 16px margin around it in which content cannot be placed.
+            https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
+            Adaptive cards render with 8px padding on each side and the widget has a 1px border,
+            so we add 7px more of padding on the left and right.
+        -->
+        <ScrollViewer
+            x:Name="WidgetScrollViewer"
+            Grid.Row="1"
+            Padding="7,0"
+            Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}"
+            HorizontalScrollMode="Disabled"
+            VerticalScrollBarVisibility="Auto" />
+    </Grid>
+</UserControl>

@@ -19,9 +19,8 @@
   <ItemGroup>
     <None Remove="Assets\HostConfigDark.json" />
     <None Remove="Assets\HostConfigLight.json" />
+    <None Remove="Controls\WidgetControl.xaml" />
     <None Remove="Views\AddWidgetDialog.xaml" />
-    <!--<None Remove="Views\DashboardView.xaml" />
-    <None Remove="Views\WidgetControl.xaml" />-->
   </ItemGroup>
 
   <ItemGroup>
@@ -42,19 +41,8 @@
     <ProjectReference Include="..\..\..\DesktopWidgets3.Core\DesktopWidgets3.Core.csproj" />
     <ProjectReference Include="..\..\..\DesktopWidgets3.Infrastructure\DesktopWidgets3.Infrastructure.csproj" />
   </ItemGroup>
-
-  <!--<ItemGroup>
-    <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Internal.winmd" Link="Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.winmd" Link="Microsoft.Windows.Widgets.winmd" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.Windows.Widgets.Hosts">
-      <HintPath>.\BuildAssets\Microsoft.Windows.Widgets.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
-  </ItemGroup>-->
-
+  
+  <!-- Fix winmd file link issue -->
   <ItemGroup>
     <CsWinRTInputs Include=".\BuildAssets\Microsoft.Windows.Widgets.winmd">
       <Name>Microsoft.Windows.Widgets.Hosts</Name>
@@ -83,15 +71,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Controls\WidgetControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\AddWidgetDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <!--<Page Update="Views\DashboardView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\WidgetControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>-->
   </ItemGroup>
   
 </Project>
