@@ -605,6 +605,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     // If not updated, widgets pinned later may be assigned the same position as existing widgets,
     // since the saved position may be greater than the number of pinned widgets.
     // Unsubscribe from this event during drag and drop, since the drop event takes care of re-numbering.
+    // TODO: Check if we need this event and check ViewModel.PinnedWidgets.
     private async void OnPinnedWidgetsCollectionChangedAsync(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.OldItems != null)
