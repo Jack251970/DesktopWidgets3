@@ -388,6 +388,8 @@ public sealed partial class WidgetWindow : WindowEx
     private void WidgetWindow_Closed(object? sender, WindowEventArgs args)
     {
         WidgetMenuFlyout = null!;
+        WidgetSource = null;
+        WidgetSettings = null;
 
         Closed -= WidgetWindow_Closed;
         AppWindow.Changed -= AppWindow_Changed;
