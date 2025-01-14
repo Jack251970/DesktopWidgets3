@@ -72,21 +72,29 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
+    /// <summary>
+    /// Diviation size of the window and its content.
+    /// This property is not related to Text size of the system (TextScaleFactor) and Scale of the display (DPI).
+    /// </summary>
+    /// <remarks>
+    /// Initialize this property after initializing the styles of the windows, like <see cref="WindowEx.IsResizable"/>.
+    /// </remarks>
     private RectSize WindowContentDiviation;
 
     /// <summary>
     /// Get or set the size of the content in the window.
     /// </summary>
     /// <remarks>
-    /// This property can be used in non-UI thread.
+    /// This property is used for recording the <see cref="JsonWidgetItem.Size"/> of the widget.
     /// </remarks>
     public RectSize ContentSize
     {
-        get => Size - WindowContentDiviation;
+        get => (Size - WindowContentDiviation) / _uiSettings.TextScaleFactor;
         set
         {
-            var width = value.Width!.Value + WindowContentDiviation.Width!.Value;
-            var height = value.Height!.Value + WindowContentDiviation.Height!.Value;
+            var textScale = _uiSettings.TextScaleFactor;
+            var width = value.Width!.Value * textScale + WindowContentDiviation.Width!.Value;
+            var height = value.Height!.Value * textScale + WindowContentDiviation.Height!.Value;
             if (size.Width != width || size.Height != height)
             {
                 size = new(width, height);
@@ -203,13 +211,10 @@ public sealed partial class WidgetWindow : WindowEx
         // Initialize ui elements
         InitializeComponent();
 
-        // Initialize properties for ui elements
-        WidgetScrollViewer.Padding = DesktopWidgets3WidgetScrollViewerPadding;
-        var textScale = _uiSettings.TextScaleFactor;
-        ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
-
         // Initialize widget size & position for completed event
-        _widgetSize = widgetItem.Size;
+        var widgetSizeHeight = widgetItem.Size.Height!.Value;
+        var widgetSizeWidth = widgetItem.Size.Width!.Value;
+        _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
         _widgetPosition = AppWindow.Position;
         if (widgetItem.Position.X != -10000)
         {
@@ -219,6 +224,13 @@ public sealed partial class WidgetWindow : WindowEx
         {
             _widgetPosition.Y = widgetItem.Position.Y;
         }
+
+        // Initialize properties for ui elements
+        WidgetScrollViewer.Padding = DesktopWidgets3WidgetScrollViewerPadding;
+        var textScale = _uiSettings.TextScaleFactor;
+        ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
+        ContentArea.Height = widgetSizeHeight * textScale;
+        ContentArea.Width = widgetSizeWidth * textScale;
 
         // Initialize manager & title for window
         _manager = WindowManager.Get(this);
@@ -251,17 +263,10 @@ public sealed partial class WidgetWindow : WindowEx
         // Initialize ui elements
         InitializeComponent();
 
-        // Initialize properties for ui elements
-        WidgetScrollViewer.Padding = MicrosoftWidgetScrollViewerPadding;
-        var textScale = _uiSettings.TextScaleFactor;
-        ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
-        var contentHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
-        var contentWidth = WidgetHelpers.WidgetPxWidth * textScale;
-        ContentArea.Height = contentHeight;
-        ContentArea.Width = contentWidth;
-
         // Initialize size & position for completed event
-        _widgetSize = new RectSize(contentWidth, contentHeight);
+        var widgetSizeHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize);
+        var widgetSizeWidth = WidgetHelpers.WidgetPxWidth;
+        _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
         _widgetPosition = AppWindow.Position;
         // TODO: Set position.
         /*if (widgetItem.Position.X != -10000)
@@ -274,6 +279,13 @@ public sealed partial class WidgetWindow : WindowEx
         }*/
         _widgetPosition.X = 20;
         _widgetPosition.Y = 20;
+
+        // Initialize properties for ui elements
+        WidgetScrollViewer.Padding = MicrosoftWidgetScrollViewerPadding;
+        var textScale = _uiSettings.TextScaleFactor;
+        ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
+        ContentArea.Height = widgetSizeHeight * textScale;
+        ContentArea.Width = widgetSizeWidth * textScale;
 
         // Initialize manager & title for window
         _manager = WindowManager.Get(this);
@@ -344,10 +356,8 @@ public sealed partial class WidgetWindow : WindowEx
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(ContentArea);
 
-        // set edit mode (it can cause size change)
+        // set edit mode (it can cause window size change)
         SetEditMode(false);
-
-        Size = _widgetSize;
 
         // initialize diviation size between window and its content
         WindowContentDiviation.Height = Height - Bounds.Height;

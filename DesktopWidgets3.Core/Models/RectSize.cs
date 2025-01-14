@@ -84,6 +84,26 @@ public struct RectSize
         return new RectSize(size1.Width - size2.Width, size1.Height - size2.Height);
     }
 
+    public static RectSize operator *(RectSize size, float value)
+    {
+        return new RectSize(size.Width * value, size.Height * value);
+    }
+
+    public static RectSize operator *(RectSize size, double value)
+    {
+        return new RectSize(size.Width * value, size.Height * value);
+    }
+
+    public static RectSize operator /(RectSize size, float value)
+    {
+        return new RectSize(size.Width / value, size.Height / value);
+    }
+
+    public static RectSize operator /(RectSize size, double value)
+    {
+        return new RectSize(size.Width / value, size.Height / value);
+    }
+
     public static bool operator ==(RectSize size1, RectSize size2)
     {
         if (size1._width == size2._width)

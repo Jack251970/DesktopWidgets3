@@ -998,7 +998,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 Index = widgetIndex,
                 Pinned = true,
                 Position = widgetWindow.Position,
-                Size = widgetWindow.ContentSize,
+                Size = RoundContentSize(widgetWindow.ContentSize),
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
             });
@@ -1063,7 +1063,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 Index = widgetIndex,
                 Pinned = true,
                 Position = widgetWindow.Position,
-                Size = widgetWindow.ContentSize,
+                Size = RoundContentSize(widgetWindow.ContentSize),
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
             });
@@ -1123,6 +1123,14 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 await SaveAndExitEditMode();
             }
         }
+    }
+
+    // TODO: Check round & Fix widget size save changed issue
+    private static RectSize RoundContentSize(RectSize size)
+    {
+        var width = (float)decimal.Round(Convert.ToDecimal(size.Width), 3);
+        var height = (float)decimal.Round(Convert.ToDecimal(size.Height), 3);
+        return new(width, height);
     }
 
     #endregion
