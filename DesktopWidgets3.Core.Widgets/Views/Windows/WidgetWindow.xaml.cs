@@ -17,9 +17,10 @@ public sealed partial class WidgetWindow : WindowEx
 {
     #region Constants
 
-    // Adaptive cards render with 8px padding on each side, so we add that to the original padding.
+    private static readonly Thickness MicrosoftWidgetScrollViewerPadding = new(8, 8, 8, 8);
+
+    // Adaptive cards render with 8px padding on each side, so we add 8px more of padding on the left and right.
     private static readonly Thickness DesktopWidgets3WidgetScrollViewerPadding = new(16, 8, 16, 8);
-    private static readonly Thickness MicrosoftWidgetScrollViewerPadding = new(8, 0, 8, 0);
 
     #endregion
 
@@ -58,7 +59,7 @@ public sealed partial class WidgetWindow : WindowEx
     /// </remarks>
     public RectSize Size
     {
-        get => new(size.Width, size.Height);
+        get => new(size);
         set
         {
             var width = value.Width!.Value;
@@ -71,8 +72,7 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
-    private double WindowContentDiviationHeight;
-    private double WindowContentDiviationWidth;
+    private RectSize WindowContentDiviation;
 
     /// <summary>
     /// Get or set the size of the content in the window.
@@ -82,11 +82,11 @@ public sealed partial class WidgetWindow : WindowEx
     /// </remarks>
     public RectSize ContentSize
     {
-        get => new(size.Width - WindowContentDiviationWidth, size.Height - WindowContentDiviationHeight);
+        get => Size - WindowContentDiviation;
         set
         {
-            var width = value.Width!.Value + WindowContentDiviationWidth;
-            var height = value.Height!.Value + WindowContentDiviationHeight;
+            var width = value.Width!.Value + WindowContentDiviation.Width!.Value;
+            var height = value.Height!.Value + WindowContentDiviation.Height!.Value;
             if (size.Width != width || size.Height != height)
             {
                 size = new(width, height);
@@ -292,10 +292,6 @@ public sealed partial class WidgetWindow : WindowEx
         SizeChanged += WidgetWindow_SizeChanged;
     }
 
-    #endregion
-
-    #region Initialization
-
     private static double GetPixelHeightFromWidgetSize(WidgetSize size)
     {
         return size switch
@@ -306,6 +302,10 @@ public sealed partial class WidgetWindow : WindowEx
             _ => 0,
         };
     }
+
+    #endregion
+
+    #region Initialization
 
     private MenuFlyout WidgetMenuFlyout { get; set; } = null!;
 
@@ -347,9 +347,11 @@ public sealed partial class WidgetWindow : WindowEx
         // set edit mode (it can cause size change)
         SetEditMode(false);
 
+        Size = _widgetSize;
+
         // initialize diviation size between window and its content
-        WindowContentDiviationHeight = Height - Bounds.Height;
-        WindowContentDiviationWidth = Width - Bounds.Width;
+        WindowContentDiviation.Height = Height - Bounds.Height;
+        WindowContentDiviation.Width = Width - Bounds.Width;
 
         // set content size
         ContentSize = _widgetSize;

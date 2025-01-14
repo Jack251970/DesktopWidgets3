@@ -68,6 +68,22 @@ public struct RectSize
     {
     }
 
+    public RectSize(Windows.Foundation.Size size)
+        : this (size.Width, size.Height)
+    {
+
+    }
+
+    public static RectSize operator +(RectSize size1, RectSize size2)
+    {
+        return new RectSize(size1.Width + size2.Width, size1.Height + size2.Height);
+    }
+
+    public static RectSize operator -(RectSize size1, RectSize size2)
+    {
+        return new RectSize(size1.Width - size2.Width, size1.Height - size2.Height);
+    }
+
     public static bool operator ==(RectSize size1, RectSize size2)
     {
         if (size1._width == size2._width)
