@@ -1,9 +1,8 @@
-﻿/*// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Helpers;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
 
@@ -11,7 +10,7 @@ namespace DevHome.Dashboard.ViewModels;
 
 public partial class DashboardViewModel : ObservableObject
 {
-    public IWidgetServiceService WidgetServiceService { get; }
+    /*public IWidgetServiceService WidgetServiceService { get; }*/
 
     public IWidgetHostingService WidgetHostingService { get; }
 
@@ -28,17 +27,18 @@ public partial class DashboardViewModel : ObservableObject
     private bool _hasWidgetServiceInitialized;
 
     public DashboardViewModel(
-        IWidgetServiceService widgetServiceService,
+        // TODO: Add support for widgetServiceService.
+        /*IWidgetServiceService widgetServiceService,*/
         IWidgetHostingService widgetHostingService,
         IWidgetIconService widgetIconService,
         IWidgetScreenshotService widgetScreenshotService)
     {
-        WidgetServiceService = widgetServiceService;
+        /*WidgetServiceService = widgetServiceService;*/
         WidgetHostingService = widgetHostingService;
         WidgetIconService = widgetIconService;
         WidgetScreenshotService = widgetScreenshotService;
 
-        PinnedWidgets = new ObservableCollection<WidgetViewModel>();
+        PinnedWidgets = [];
     }
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
@@ -50,4 +50,4 @@ public partial class DashboardViewModel : ObservableObject
     {
         return RuntimeHelper.IsCurrentProcessRunningElevated();
     }
-}*/
+}
