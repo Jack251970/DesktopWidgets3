@@ -99,11 +99,10 @@ public partial class WidgetViewModel : ObservableObject
         ComSafeWidget widget,
         WidgetSize widgetSize,
         ComSafeWidgetDefinition widgetDefinition,
-        IAdaptiveCardRenderingService adaptiveCardRenderingService,
-        DispatcherQueue dispatcherQueue)
+        IAdaptiveCardRenderingService adaptiveCardRenderingService)
     {
         _renderingService = adaptiveCardRenderingService;
-        _dispatcherQueue = dispatcherQueue;
+        _dispatcherQueue = DependencyExtensions.GetRequiredService<IWidgetService>().GetDispatcherQueue(widgetDefinition.Id);
 
         Widget = widget;
         WidgetSize = widgetSize;

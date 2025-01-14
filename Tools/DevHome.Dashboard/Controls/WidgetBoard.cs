@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿/*// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using CommunityToolkit.WinUI;
@@ -268,4 +268,4 @@ public sealed partial class WidgetBoard : Panel
             InvalidateMeasure();
         });
     }
-}
+}*/

@@ -520,7 +520,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetType = item.Type;
             var widgetIndex = item.Index;
 
-            // set widget ico & title & framework element
+            // set widget icon & title
             widgetWindow.ViewModel.WidgetIconFill = await _widgetIconService.GetBrushForDesktopWidgets3WidgetIconAsync(widgetId, widgetType);
             widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId, widgetType);
 
@@ -530,8 +530,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
-            // TODO: Change these codes to elsewhere.
-            widgetWindow.Size = item.Size;
             WindowExtensions.Move(widgetWindow, -10000, -10000);
 
             // register load event handler
@@ -594,7 +592,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // activate window
             await _activationService.ActivateWindowAsync(widgetWindow);
 
-            // set widget ico & title & framework element
+            // set widget icon & title
             widgetWindow.ViewModel.WidgetIconFill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(widgetViewModel.WidgetDefinition);
             widgetWindow.ViewModel.WidgetDisplayTitle = widgetViewModel.WidgetDisplayTitle;
 
@@ -604,8 +602,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
-            // no need to set min & max size
-            // no need to set size - it have been set in window creation
             WindowExtensions.Move(widgetWindow, -10000, -10000);
 
             // register load event handler
