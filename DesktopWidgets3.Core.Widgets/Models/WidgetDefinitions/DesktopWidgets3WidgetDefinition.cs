@@ -1,4 +1,4 @@
-﻿namespace DesktopWidgets3.Core.Widgets.Models;
+﻿namespace DesktopWidgets3.Core.Widgets.Models.WidgetDefinitions;
 
 public class DesktopWidgets3WidgetDefinition(string widgetId, string widgetType, string widgetGroupName, string widgetName)
 {
