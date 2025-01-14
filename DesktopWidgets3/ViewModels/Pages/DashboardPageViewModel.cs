@@ -152,6 +152,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
                     var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
                     cancellationToken.ThrowIfCancellationRequested();
 
+                    // Because we use task to execute this, so we need to fall back to ui thread.
                     _dispatcherQueue.TryEnqueue(async () =>
                     {
                         try

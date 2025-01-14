@@ -250,10 +250,10 @@ public sealed partial class WidgetWindow : WindowEx
         SizeChanged += WidgetWindow_SizeChanged;
     }
 
-    public WidgetWindow(WidgetViewModel widgetViewModel)
+    public WidgetWindow(string widgetRuntimeId, WidgetViewModel widgetViewModel)
     {
         // Initialize widget info
-        RuntimeId = null!;
+        RuntimeId = widgetRuntimeId;
         WidgetSettings = null;
         WidgetSource = widgetViewModel;
 

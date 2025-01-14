@@ -21,7 +21,7 @@ public partial class DashboardViewModel : ObservableObject
     public ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
     [ObservableProperty]
-    private bool _isLoading;
+    public bool _isLoading;
 
     [ObservableProperty]
     private bool _hasWidgetServiceInitialized;

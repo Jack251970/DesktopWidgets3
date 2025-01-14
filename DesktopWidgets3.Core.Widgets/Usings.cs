@@ -4,6 +4,7 @@ global using DevHome.Dashboard.Controls;
 global using DevHome.Dashboard.Helpers;
 global using DevHome.Dashboard.Services;
 global using DevHome.Dashboard.ViewModels;
+global using DevHome.Dashboard.Views;
 
 // DesktopWidgets3.Core.Widgets
 global using DesktopWidgets3.Core.Widgets.Contracts.Services;
