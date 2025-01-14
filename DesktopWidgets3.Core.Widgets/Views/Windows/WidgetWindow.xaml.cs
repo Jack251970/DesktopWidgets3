@@ -82,7 +82,7 @@ public sealed partial class WidgetWindow : WindowEx
     /// </remarks>
     public RectSize ContentSize
     {
-        get => new(size.Width + WindowContentDiviationWidth, size.Height + WindowContentDiviationHeight);
+        get => new(size.Width - WindowContentDiviationWidth, size.Height - WindowContentDiviationHeight);
         set
         {
             var width = value.Width!.Value + WindowContentDiviationWidth;
