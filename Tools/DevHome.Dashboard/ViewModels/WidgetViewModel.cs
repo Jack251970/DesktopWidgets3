@@ -386,7 +386,7 @@ public partial class WidgetViewModel : ObservableObject
         Widget.WidgetUpdated -= HandleWidgetUpdated;
     }
 
-    private void AnnounceWarnings(AdaptiveCard card)
+    private static void AnnounceWarnings(AdaptiveCard card)
     {
         if (!AutomationPeer.ListenerExists(AutomationEvents.AutomationFocusChanged))
         {
