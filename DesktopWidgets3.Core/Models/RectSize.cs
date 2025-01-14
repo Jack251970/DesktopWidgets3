@@ -6,6 +6,8 @@
 /// </summary>
 public struct RectSize
 {
+    public static RectSize NULL => new(null, null);
+
     private float? _width;
 
     private float? _height;

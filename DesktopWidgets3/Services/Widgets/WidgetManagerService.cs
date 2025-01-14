@@ -477,11 +477,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         });
 
         // configure widget window lifecycle actions
-        (var minSize, var maxSize) = _widgetResourceService.GetWidgetMinMaxSize(widgetId, widgetType);
         var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
         {
             Window_Creating = null,
-            Window_Created = (window) => WidgetWindow_Created(window, item, minSize, maxSize),
+            Window_Created = (window) => WidgetWindow_Created(window, item),
             Window_Closing = null,
             Window_Closed = null
         };
@@ -509,7 +508,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Widget Window Lifecycle
 
-    private async void WidgetWindow_Created(Window window, JsonWidgetItem item, RectSize minSize, RectSize maxSize)
+    private async void WidgetWindow_Created(Window window, JsonWidgetItem item)
     {
         if (window is WidgetWindow widgetWindow)
         {
@@ -531,8 +530,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
-            widgetWindow.MinSize = minSize;
-            widgetWindow.MaxSize = maxSize;
+            // TODO: Change these codes to elsewhere.
             widgetWindow.Size = item.Size;
             WindowExtensions.Move(widgetWindow, -10000, -10000);
 
@@ -606,11 +604,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
-            // TOOD: Add support.
-            //widgetWindow.MinSize = minSize;
-            //widgetWindow.MaxSize = maxSize;
-            //widgetWindow.Size = item.Size;
-            //widgetWindow.Size = new RectSize(1000, 800);
+            // no need to set min & max size
+            // no need to set size - it have been set in window creation
             WindowExtensions.Move(widgetWindow, -10000, -10000);
 
             // register load event handler
@@ -1003,7 +998,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 Index = widgetIndex,
                 Pinned = true,
                 Position = widgetWindow.Position,
-                Size = widgetWindow.Size,
+                Size = widgetWindow.ContentSize,
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
             });
@@ -1068,7 +1063,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 Index = widgetIndex,
                 Pinned = true,
                 Position = widgetWindow.Position,
-                Size = widgetWindow.Size,
+                Size = widgetWindow.ContentSize,
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
             });
@@ -1099,7 +1094,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             if (originalWidget != null)
             {
                 window.Position = originalWidget.Position;
-                window.Size = originalWidget.Size;
+                window.ContentSize = originalWidget.Size;
                 window.Show();
             };
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);

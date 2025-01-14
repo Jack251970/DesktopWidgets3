@@ -15,6 +15,14 @@ namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 // TODO: Improve code quality for this class. Devide it into smaller classes.
 public sealed partial class WidgetWindow : WindowEx
 {
+    #region Constants
+
+    // Adaptive cards render with 8px padding on each side, so we add that to the original padding.
+    private static readonly Thickness DesktopWidgets3WidgetScrollViewerPadding = new(16, 8, 16, 8);
+    private static readonly Thickness MicrosoftWidgetScrollViewerPadding = new(8, 0, 8, 0);
+
+    #endregion
+
     #region Position & Size
 
     private PointInt32 position;
@@ -55,6 +63,30 @@ public sealed partial class WidgetWindow : WindowEx
         {
             var width = value.Width!.Value;
             var height = value.Height!.Value;
+            if (size.Width != width || size.Height != height)
+            {
+                size = new(width, height);
+                this.SetWindowSize(width, height);
+            }
+        }
+    }
+
+    private double WindowContentDiviationHeight;
+    private double WindowContentDiviationWidth;
+
+    /// <summary>
+    /// Get or set the size of the content in the window.
+    /// </summary>
+    /// <remarks>
+    /// This property can be used in non-UI thread.
+    /// </remarks>
+    public RectSize ContentSize
+    {
+        get => new(size.Width + WindowContentDiviationWidth, size.Height + WindowContentDiviationHeight);
+        set
+        {
+            var width = value.Width!.Value + WindowContentDiviationWidth;
+            var height = value.Height!.Value + WindowContentDiviationHeight;
             if (size.Width != width || size.Height != height)
             {
                 size = new(width, height);
@@ -168,11 +200,13 @@ public sealed partial class WidgetWindow : WindowEx
         // Initialize view model
         ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
 
-        // Initialize window
+        // Initialize ui elements
         InitializeComponent();
 
         // Initialize properties for ui elements
-        SetScaledWidthAndHeight();
+        WidgetScrollViewer.Padding = DesktopWidgets3WidgetScrollViewerPadding;
+        var textScale = _uiSettings.TextScaleFactor;
+        ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
 
         // Initialize widget size & position for completed event
         _widgetSize = widgetItem.Size;
@@ -190,9 +224,12 @@ public sealed partial class WidgetWindow : WindowEx
         _manager = WindowManager.Get(this);
         Title = string.Empty;
 
-        // Initialize size & position for window
+        // Initiliaze size & position for window
+        (var minSize, var maxSize) = _widgetResourceService.GetWidgetMinMaxSize(widgetItem.Id, widgetItem.Type);
+        MinSize = minSize;
+        MaxSize = maxSize;
+        Size = _widgetSize;
         position = AppWindow.Position;
-        size = new Size(Width, Height);
 
         // Register events
         Activated += WidgetWindow_Activated;
@@ -211,15 +248,20 @@ public sealed partial class WidgetWindow : WindowEx
         // Initialize view model
         ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
 
-        // Initialize window
+        // Initialize ui elements
         InitializeComponent();
 
         // Initialize properties for ui elements
-        SetScaledWidthAndHeight();
+        WidgetScrollViewer.Padding = MicrosoftWidgetScrollViewerPadding;
+        var textScale = _uiSettings.TextScaleFactor;
+        ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
+        var contentHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
+        var contentWidth = WidgetHelpers.WidgetPxWidth * textScale;
+        ContentArea.Height = contentHeight;
+        ContentArea.Width = contentWidth;
 
         // Initialize size & position for completed event
-        // TODO: Set widget size according to widget size.
-        _widgetSize = new RectSize(ContentArea.Width, ContentArea.Height);
+        _widgetSize = new RectSize(contentWidth, contentHeight);
         _widgetPosition = AppWindow.Position;
         // TODO: Set position.
         /*if (widgetItem.Position.X != -10000)
@@ -237,8 +279,10 @@ public sealed partial class WidgetWindow : WindowEx
         _manager = WindowManager.Get(this);
         Title = string.Empty;
 
-        // Initialize size & position for window
-        size = new Size(Width, Height);
+        // Initiliaze size & position for window
+        MinSize = RectSize.NULL;
+        MaxSize = RectSize.NULL;
+        Size = _widgetSize;
         position = AppWindow.Position;
 
         // Register events
@@ -251,29 +295,6 @@ public sealed partial class WidgetWindow : WindowEx
     #endregion
 
     #region Initialization
-
-    // Adaptive cards render with 8px padding on each side, so we add that to the original padding.
-    private static readonly Thickness DesktopWidgets3WidgetScrollViewerPadding = new(16, 8, 16, 8);
-    private static readonly Thickness MicrosoftWidgetScrollViewerPadding = new(8, 0, 8, 0);
-
-    private void SetScaledWidthAndHeight()
-    {
-        var textScale = _uiSettings.TextScaleFactor;
-        ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
-        if (WidgetSource != null)
-        {
-            WidgetScrollViewer.Padding = MicrosoftWidgetScrollViewerPadding;
-            var contentHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
-            var contentWidth = WidgetHelpers.WidgetPxWidth * textScale;
-            ContentArea.Height = contentHeight;
-            ContentArea.Width = contentWidth;
-            Size = new RectSize(contentHeight, contentWidth); 
-        }
-        else
-        {
-            WidgetScrollViewer.Padding = DesktopWidgets3WidgetScrollViewerPadding;
-        }
-    }
 
     private static double GetPixelHeightFromWidgetSize(WidgetSize size)
     {
@@ -323,11 +344,15 @@ public sealed partial class WidgetWindow : WindowEx
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(ContentArea);
 
-        // set edit mode
+        // set edit mode (it can cause size change)
         SetEditMode(false);
 
-        // reset the size because the size will change in SetEditMode
-        Size = _widgetSize;
+        // initialize diviation size between window and its content
+        WindowContentDiviationHeight = Height - Bounds.Height;
+        WindowContentDiviationWidth = Width - Bounds.Width;
+
+        // set content size
+        ContentSize = _widgetSize;
 
         // register events
         AppWindow.Changed += AppWindow_Changed;

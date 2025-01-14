@@ -135,6 +135,7 @@ public partial class ComSafeWidgetDefinition(string widgetDefinitionId) : IDispo
             {
                 try
                 {
+                    // TODO: Fix issue that when app is closed and this task still is running
                     _oopWidgetDefinition ??= await DependencyExtensions.GetRequiredService<IWidgetHostingService>().GetWidgetDefinitionAsync(Id);
 
                     if (!_hasValidProperties)
