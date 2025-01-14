@@ -16,25 +16,8 @@ public class WidgetSettingPair
 
     public required FrameworkElement WidgetSettingContent { get; set; }
 
-    public override bool Equals(object? obj)
+    public bool Equals(string widgetId, string widgetType)
     {
-        if (obj is WidgetWindowPair widgetWindowPair)
-        {
-            return RuntimeId == widgetWindowPair.RuntimeId;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public override int GetHashCode()
-    {
-        return RuntimeId.GetHashCode();
-    }
-
-    public override string ToString()
-    {
-        return RuntimeId;
+        return WidgetId == widgetId && WidgetType == widgetType;
     }
 }

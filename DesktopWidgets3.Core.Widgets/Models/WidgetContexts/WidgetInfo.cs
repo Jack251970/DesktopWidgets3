@@ -10,7 +10,7 @@ public class WidgetInfo(IWidgetManagerService widgetManagerService) : IWidgetInf
     {
         get
         {
-            var (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(WidgetContext.Id);
+            var (_, widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(WidgetContext.Id);
             return _widgetManagerService.GetWidgetSettings(widgetId, widgetType, widgetIndex)!;
         }
     }

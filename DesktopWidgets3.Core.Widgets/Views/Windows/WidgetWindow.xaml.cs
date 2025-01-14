@@ -145,6 +145,8 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Widget Info
 
+    public WidgetProviderType ProviderType { get; private set; }
+
     public string RuntimeId { get; private set; }
 
     private BaseWidgetSettings? WidgetSettings { get; set; }
@@ -201,6 +203,7 @@ public sealed partial class WidgetWindow : WindowEx
     public WidgetWindow(string widgetRuntimeId, JsonWidgetItem widgetItem)
     {
         // Initialize widget info
+        ProviderType = widgetItem.ProviderType;
         RuntimeId = widgetRuntimeId;
         WidgetSettings = widgetItem.Settings;
         WidgetSource = null;
@@ -253,6 +256,8 @@ public sealed partial class WidgetWindow : WindowEx
     public WidgetWindow(string widgetRuntimeId, WidgetViewModel widgetViewModel)
     {
         // Initialize widget info
+        // TODO: Use widgetItem.ProviderType with JsonItem
+        ProviderType = WidgetProviderType.Microsoft;
         RuntimeId = widgetRuntimeId;
         WidgetSettings = null;
         WidgetSource = widgetViewModel;
@@ -484,8 +489,8 @@ public sealed partial class WidgetWindow : WindowEx
     public void OnIsActiveChanged()
     {
         // get widget info & context
-        var (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(RuntimeId);
-        var widgetContext = _widgetManagerService.GetWidgetContext(widgetId, widgetType, widgetIndex);
+        var (providerType, widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(RuntimeId);
+        var widgetContext = _widgetManagerService.GetWidgetContext(providerType, widgetId, widgetType, widgetIndex);
 
         // invoke activate or deactivate event
         if (isActive)

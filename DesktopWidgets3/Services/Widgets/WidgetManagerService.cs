@@ -27,21 +27,21 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Runtime Id
 
-    public (string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId)
+    public (WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId)
     {
         if (PinnedWidgetWindowPairs.TryGetValue(widgetRuntimeId, out var widgetWindowPairs))
         {
-            return (widgetWindowPairs.WidgetId, widgetWindowPairs.WidgetType, widgetWindowPairs.WidgetIndex);
+            return (widgetWindowPairs.ProviderType, widgetWindowPairs.WidgetId, widgetWindowPairs.WidgetType, widgetWindowPairs.WidgetIndex);
         }
 
-        return (string.Empty, string.Empty, -1);
+        return (WidgetProviderType.DesktopWidgets3, string.Empty, string.Empty, -1);
     }
 
-    private string GetWidgetRuntimeId(string widgetId, string widgetType, int widgetIndex)
+    private string GetWidgetRuntimeId(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
     {
         foreach (var (widgetRuntimeId, widgetWindowPair) in PinnedWidgetWindowPairs)
         {
-            if (widgetWindowPair.WidgetId == widgetId && widgetWindowPair.WidgetType == widgetType && widgetWindowPair.WidgetIndex == widgetIndex)
+            if (widgetWindowPair.Equals(providerType, widgetId, widgetType, widgetIndex))
             {
                 return widgetRuntimeId;
             }
@@ -54,10 +54,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Widget Info & Context
 
-    public WidgetInfo? GetWidgetInfo(string widgetId, string widgetType, int widgetIndex)
+    public WidgetInfo? GetWidgetInfo(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
     {
         // get widget window pair
-        var widgetWindowPair = GetWidgetWindowPair(widgetId, widgetType, widgetIndex);
+        var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
 
         // get widget info
         if (widgetWindowPair != null)
@@ -68,10 +68,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         return null;
     }
 
-    public WidgetContext? GetWidgetContext(string widgetId, string widgetType, int widgetIndex)
+    public WidgetContext? GetWidgetContext(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
     {
         // get widget info
-        var widgetInfo = GetWidgetInfo(widgetId, widgetType, widgetIndex);
+        var widgetInfo = GetWidgetInfo(providerType, widgetId, widgetType, widgetIndex);
 
         // get widget context
         if (widgetInfo != null)
@@ -82,12 +82,12 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         return null;
     }
 
-    private WidgetWindowPair? GetWidgetWindowPair(string widgetId, string widgetType, int widgetIndex)
+    private WidgetWindowPair? GetWidgetWindowPair(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
     {
         // get widget pair
         foreach (var widgetWindowPair in PinnedWidgetWindowPairs.Values)
         {
-            if (widgetWindowPair.WidgetId == widgetId && widgetWindowPair.WidgetType == widgetType && widgetWindowPair.WidgetIndex == widgetIndex)
+            if (widgetWindowPair.Equals(providerType, widgetId, widgetType, widgetIndex))
             {
                 return widgetWindowPair;
             }
@@ -111,10 +111,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Is Active
 
-    public bool GetWidgetIsActive(string widgetId, string widgetType, int widgetIndex)
+    public bool GetWidgetIsActive(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
     {
         // get widget window pair
-        var widgetWindowPair = GetWidgetWindowPair(widgetId, widgetType, widgetIndex);
+        var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
 
         // get widget is active
         if (widgetWindowPair != null)
@@ -147,7 +147,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     {
         foreach (var (widgetSettingRuntimeId, widgetSettingPair) in WidgetSettingPairs)
         {
-            if (widgetSettingPair.WidgetId == widgetId && widgetSettingPair.WidgetType == widgetType)
+            if (widgetSettingPair.Equals(widgetId, widgetType))
             {
                 return widgetSettingRuntimeId;
             }
@@ -208,25 +208,52 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #endregion
 
+    #region Widget View Model
+
+    // TODO: Move this to _microsoftWidgetModel.ViewModel.PinnedWidgets.
+    public WidgetViewModel? GetWidgetViewModel(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
+    {
+        // return null if not microsoft widget
+        if (providerType != WidgetProviderType.Microsoft)
+        {
+            return null;
+        }
+
+        // get widget window pair
+        var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
+
+        // get widget view model
+        if (widgetWindowPair != null)
+        {
+            return widgetWindowPair.Window.ViewModel.WidgetSource;
+        }
+
+        return null!;
+    }
+
+    #endregion
+
     #region Widget Window
 
     #region All Widgets Management
 
-    public void InitializePinnedWidgets()
+    public async void InitializePinnedWidgets()
     {
         var widgetList = _appSettingsService.GetWidgetsList();
         foreach (var widget in widgetList)
         {
-            if (widget.Pinned)
+            if (widget.ProviderType == WidgetProviderType.DesktopWidgets3 && widget.Pinned)
             {
                 CreateWidgetWindow(widget);
             }
         }
 
-        _microsoftWidgetModel = new(CreateWidgetWindow);
-        _ = _microsoftWidgetModel.OnLoadedAsync();
+        // TODO: Check the widget list here.
+        _microsoftWidgetModel ??= new(CreateWidgetWindow);
+        await _microsoftWidgetModel.OnLoadedAsync();
     }
 
+    // TODO: Test restart.
     public async Task RestartWidgetsAsync()
     {
         // close all widgets
@@ -241,23 +268,26 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // close all widgets
         await CloseAllWidgetWindowsAsync();
 
-        // dispose microsoft widget model
-        await _microsoftWidgetModel.OnUnloadedAsync();
-        _microsoftWidgetModel.Dispose();
-
         // clear all lists
         PinnedWidgetWindowPairs.Clear();
         WidgetSettingPairs.Clear();
         _originalWidgetList.Clear();
+        
+        // dispose microsoft widget model
+        _microsoftWidgetModel.Dispose();
     }
 
     private async Task CloseAllWidgetWindowsAsync()
     {
-        await GetPinnedWidgetWindows().EnqueueOrInvokeAsync(async (window) => {
-            // close window
+        // close all windows
+        await GetPinnedWidgetWindows().EnqueueOrInvokeAsync(async (window) =>
+        {
             // TODO: Check if will this set open widgets to unpin?
             await CloseWidgetWindowAsync(window.RuntimeId, CloseEvent.Unpin);
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+
+        // unload microsoft widget model
+        await _microsoftWidgetModel.OnUnloadedAsync();
     }
 
     private List<WidgetWindow> GetPinnedWidgetWindows()
@@ -283,8 +313,11 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     {
         var widgetList = _appSettingsService.GetWidgetsList();
 
+        // get widget info
+        var providerType = WidgetProviderType.DesktopWidgets3;
+
         // find index tag
-        var indexs = widgetList.Where(x => x.Id == widgetId & x.Type == widgetType).Select(x => x.Index).ToList();
+        var indexs = widgetList.Where(x => x.Equals(providerType, widgetId, widgetType)).Select(x => x.Index).ToList();
         indexs.Sort();
         var index = 0;
         foreach (var tag in indexs)
@@ -302,6 +335,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // create widget item
         var widget = new JsonWidgetItem()
         {
+            ProviderType = providerType,
             Name = _widgetResourceService.GetWidgetName(widgetId, widgetType),
             Id = widgetId,
             Type = widgetType,
@@ -322,6 +356,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
                 Event = DashboardViewModelNavigationParameter.UpdateEvent.Pin,
+                ProviderType = providerType,
                 Id = widgetId,
                 Type = widgetType,
                 Index = index
@@ -336,7 +371,9 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     {
         var widgetList = _appSettingsService.GetWidgetsList();
 
+        // TODO: Combine these codes?
         // get widget info
+        var providerType = WidgetProviderType.Microsoft;
         var widgetName = widgetViewModel.WidgetDisplayTitle;
         var widgetId = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
         var widgetType = widgetViewModel.WidgetDefinition.Id;
@@ -344,7 +381,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var widgetIndex = 0;
 
         // find index tag
-        var indexs = widgetList.Where(x => x.Id == widgetId & x.Type == widgetType).Select(x => x.Index).ToList();
+        var indexs = widgetList.Where(x => x.Equals(providerType, widgetId, widgetType)).Select(x => x.Index).ToList();
         indexs.Sort();
         var index = 0;
         foreach (var tag in indexs)
@@ -362,6 +399,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // create widget item
         var widget = new JsonWidgetItem()
         {
+            ProviderType = providerType,
             Name = widgetName,
             Id = widgetId,
             Type = widgetType,
@@ -379,25 +417,30 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // update dashboard page
         if (updateDashboard)
         {
-            // TODO: Add support.
-            /*RefreshDashboardPage(new DashboardViewModelNavigationParameter()
+            RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
                 Event = DashboardViewModelNavigationParameter.UpdateEvent.Pin,
+                ProviderType = providerType,
                 Id = widgetId,
                 Type = widgetType,
                 Index = index
-            });*/
+            });
         }
 
         // save widget item
-        // TODO: Add support for json saving.
-        //await _appSettingsService.AddWidgetAsync(widget);
+        await _appSettingsService.AddWidgetAsync(widget);
     }
 
-    public async Task PinWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh)
+    public async Task PinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
+        // TODO: Add support for micrsoft widgets pin.
+        if (providerType == WidgetProviderType.Microsoft)
+        {
+            return;
+        }
+
         // get widget
-        var widget = _appSettingsService.GetWidget(widgetId, widgetType, widgetIndex);
+        var widget = _appSettingsService.GetWidget(providerType, widgetId, widgetType, widgetIndex);
 
         // pin widget
         if (widget != null)
@@ -406,7 +449,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             CreateWidgetWindow(widget);
 
             // update widget list
-            await _appSettingsService.PinWidgetAsync(widgetId, widgetType, widgetIndex);
+            await _appSettingsService.PinWidgetAsync(providerType, widgetId, widgetType, widgetIndex);
         }
         else
         {
@@ -420,6 +463,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
                 Event = DashboardViewModelNavigationParameter.UpdateEvent.Pin,
+                ProviderType = providerType,
                 Id = widgetId,
                 Type = widgetType,
                 Index = widgetIndex
@@ -427,10 +471,16 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
     }
 
-    public async Task UnpinWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh)
+    public async Task UnpinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
+        // TODO: Add support for micrsoft widgets unpin.
+        if (providerType == WidgetProviderType.Microsoft)
+        {
+            return;
+        }
+
         // get widget runtime id
-        var widgetRuntimeId = GetWidgetRuntimeId(widgetId, widgetType, widgetIndex);
+        var widgetRuntimeId = GetWidgetRuntimeId(providerType, widgetId, widgetType, widgetIndex);
 
         // close widget window
         await CloseWidgetWindowAsync(widgetRuntimeId, CloseEvent.Unpin);
@@ -441,6 +491,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
                 Event = DashboardViewModelNavigationParameter.UpdateEvent.Unpin,
+                ProviderType = providerType,
                 Id = widgetId,
                 Type = widgetType,
                 Index = widgetIndex
@@ -448,13 +499,20 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
 
         // update widget list
-        await _appSettingsService.UnpinWidgetAsync(widgetId, widgetType, widgetIndex);
+        await _appSettingsService.UnpinWidgetAsync(providerType, widgetId, widgetType, widgetIndex);
     }
 
-    public async Task DeleteWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh)
+    public async Task DeleteWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
+        // delete microsoft widget if need
+        var widgetViewModel = GetWidgetViewModel(providerType, widgetId, widgetType, widgetIndex);
+        if (widgetViewModel != null)
+        {
+            await _microsoftWidgetModel.TryDeleteUnsafeWidget(widgetViewModel.Widget.GetUnsafeWidgetObject());
+        }
+
         // get widget runtime id
-        var widgetRuntimeId = GetWidgetRuntimeId(widgetId, widgetType, widgetIndex);
+        var widgetRuntimeId = GetWidgetRuntimeId(providerType, widgetId, widgetType, widgetIndex);
 
         // close widget window
         await CloseWidgetWindowAsync(widgetRuntimeId, CloseEvent.Delete);
@@ -465,6 +523,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
                 Event = DashboardViewModelNavigationParameter.UpdateEvent.Delete,
+                ProviderType = providerType,
                 Id = widgetId,
                 Type = widgetType,
                 Index = widgetIndex
@@ -472,7 +531,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
 
         // update widget list
-        await _appSettingsService.DeleteWidgetAsync(widgetId, widgetType, widgetIndex);
+        await _appSettingsService.DeleteWidgetAsync(providerType, widgetId, widgetType, widgetIndex);
     }
 
     public WidgetWindow? GetWidgetWindow(string widgetRuntimeId)
@@ -502,6 +561,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var widgetRuntimeId = StringUtils.GetRandomWidgetRuntimeId();
         var widgetContext = new WidgetContext(this)
         {
+            ProviderType = WidgetProviderType.DesktopWidgets3,
             Id = widgetRuntimeId,
             Type = widgetType,
         };
@@ -513,6 +573,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // add to widget window list
         PinnedWidgetWindowPairs.TryAdd(widgetRuntimeId, new WidgetWindowPair()
         {
+            ProviderType = WidgetProviderType.DesktopWidgets3,
             RuntimeId = widgetRuntimeId,
             WidgetId = widgetId,
             WidgetType = widgetType,
@@ -547,6 +608,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var widgetRuntimeId = widgetViewModel.Widget.Id;
         var widgetContext = new WidgetContext(this)
         {
+            ProviderType = WidgetProviderType.Microsoft,
             Id = widgetRuntimeId,
             Type = widgetType
         };
@@ -558,6 +620,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // add to widget window list
         PinnedWidgetWindowPairs.TryAdd(widgetRuntimeId, new WidgetWindowPair()
         {
+            ProviderType = WidgetProviderType.Microsoft,
             RuntimeId = widgetRuntimeId,
             WidgetId = widgetId,
             WidgetType = widgetType,
@@ -613,7 +676,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.Activate();
 
             // add to widget window pair list
-            var widgetWindowPair = GetWidgetWindowPair(widgetId, widgetType, widgetIndex);
+            var widgetWindowPair = GetWidgetWindowPair(WidgetProviderType.DesktopWidgets3, widgetId, widgetType, widgetIndex);
             if (widgetWindowPair != null)
             {
                 widgetWindowPair.Window = widgetWindow;
@@ -635,13 +698,13 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetSettings = args.WidgetSettings!;
 
             // get widget info
-            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
 
             // set widget position
             widgetWindow.Position = widgetPosition;
 
             // set widget framework element
-            var widgetContext = GetWidgetContext(widgetId, widgetType, widgetIndex)!;
+            var widgetContext = GetWidgetContext(providerType, widgetId, widgetType, widgetIndex)!;
             var frameworkElement = _widgetResourceService.CreateWidgetContent(widgetId, widgetContext!);
             widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
 
@@ -665,8 +728,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await _activationService.ActivateWindowAsync(widgetWindow);
 
             // get widget info
-            var widgetId = widgetViewModel.WidgetDefinition.Id;
-            var widgetType = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
+            var widgetId = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
+            var widgetType = widgetViewModel.WidgetDefinition.Id;
             // TODO: Get widget index.
             var widgetIndex = 0;
 
@@ -689,7 +752,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.Activate();
 
             // add to widget window pair list
-            var widgetWindowPair = GetWidgetWindowPair(widgetId, widgetType, widgetIndex);
+            var widgetWindowPair = GetWidgetWindowPair(WidgetProviderType.Microsoft, widgetId, widgetType, widgetIndex);
             if (widgetWindowPair != null)
             {
                 widgetWindowPair.Window = widgetWindow;
@@ -711,7 +774,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetViewModel = args.WidgetViewModel;
 
             // get widget info
-            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
 
             // set widget position
             widgetWindow.Position = widgetPosition;
@@ -719,8 +782,17 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // set widget framework element
             widgetWindow.ViewModel.WidgetSource = widgetViewModel;
 
-            // invoke widget event after widget framework element is loaded
-            // TODO(Future): Implement this?
+            // TODO: Check this?
+            /*// invoke widget event after widget framework element is loaded
+            var widgetContext = GetWidgetContext(providerType, widgetId, widgetType, widgetIndex)!;
+            if (frameworkElement.IsLoaded)
+            {
+                WidgetFrameworkElement_Loaded(widgetId, widgetContext, widgetWindow);
+            }
+            else
+            {
+                frameworkElement.Loaded += (s, e) => WidgetFrameworkElement_Loaded(widgetId, widgetContext, widgetWindow);
+            }*/
         }
     }
 
@@ -737,6 +809,12 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         widgetWindow.OnIsActiveChanged();
     }
 
+    private void WidgetFrameworkElement_Loaded(string widgetId, WidgetContext widgetContext, WidgetWindow widgetWindow)
+    {
+        // invoke widget activate & deactivate event
+        widgetWindow.OnIsActiveChanged();
+    }
+
     #endregion
 
     private async Task CloseWidgetWindowAsync(string widgetRuntimeId, CloseEvent closeEvent)
@@ -746,7 +824,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         if (widgetWindow != null)
         {
             // get widget info
-            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
 
             // register close event handler
             if (closeEvent == CloseEvent.Unpin)
@@ -907,10 +985,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetRuntimeId = widgetWindow.RuntimeId;
 
             // get widget info
-            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
 
             // unpin widget
-            await UnpinWidgetAsync(widgetId, widgetType, widgetIndex, true);
+            await UnpinWidgetAsync(providerType, widgetId, widgetType, widgetIndex, true);
         }
     }
 
@@ -922,10 +1000,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetRuntimeId = widgetWindow.RuntimeId;
 
             // get widget info
-            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
 
             // delete widget
-            await DialogFactory.ShowDeleteWidgetFullScreenDialogAsync(async () => await DeleteWidgetAsync(widgetId, widgetType, widgetIndex, true));
+            await DialogFactory.ShowDeleteWidgetFullScreenDialogAsync(async () => await DeleteWidgetAsync(providerType, widgetId, widgetType, widgetIndex, true));
         }
     }
 
@@ -1001,8 +1079,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetList = _appSettingsService.GetWidgetsList();
 
             // get widget info
-            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
-            var widget = widgetList.FirstOrDefault(x => x.Id == widgetId & x.Type == widgetType & x.Index == widgetIndex);
+            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+
+            // find widget
+            var widget = widgetList.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
             if (widget != null)
             {
                 CreateWidgetWindow(widget);
@@ -1028,7 +1108,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     {
         // get widget settings
         var widgetList = _appSettingsService.GetWidgetsList();
-        var widget = widgetList.FirstOrDefault(x => x.Id == widgetId & x.Type == widgetType & x.Index == widgetIndex);
+        var widget = widgetList.FirstOrDefault(x => x.Equals(WidgetProviderType.DesktopWidgets3, widgetId, widgetType, widgetIndex));
 
         return widget?.Settings.Clone();
     }
@@ -1036,7 +1116,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     public async Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings)
     {
         // invoke widget settings changed event
-        var widgetWindowPair = GetWidgetWindowPair(widgetId, widgetType, widgetIndex);
+        var widgetWindowPair = GetWidgetWindowPair(WidgetProviderType.DesktopWidgets3, widgetId, widgetType, widgetIndex);
         if (widgetWindowPair != null)
         {
             // if widget window exists
@@ -1058,7 +1138,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
 
         // update widget list
-        await _appSettingsService.UpdateWidgetSettingsAsync(widgetId, widgetType, widgetIndex, settings);
+        await _appSettingsService.UpdateWidgetSettingsAsync(WidgetProviderType.DesktopWidgets3, widgetId, widgetType, widgetIndex, settings);
     }
 
     #endregion
@@ -1075,9 +1155,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         foreach (var widgetWindow in pinnedWidgetWindows)
         {
             // get widget info
-            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetWindow.RuntimeId);
+            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetWindow.RuntimeId);
             _originalWidgetList.Add(new JsonWidgetItem()
             {
+                ProviderType = providerType,
                 Name = _widgetResourceService.GetWidgetName(widgetId, widgetType),
                 Id = widgetId,
                 Type = widgetType,
@@ -1140,9 +1221,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         foreach (var widgetWindow in pinnedWidgetWindows)
         {
             // get widget info
-            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetWindow.RuntimeId);
+            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetWindow.RuntimeId);
             widgetList.Add(new JsonWidgetItem()
             {
+                ProviderType = providerType,
                 Name = _widgetResourceService.GetWidgetName(widgetId, widgetType),
                 Id = widgetId,
                 Type = widgetType,
@@ -1171,10 +1253,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             window.SetEditMode(false);
 
             // get widget info
-            var (widgetId, widgetType, widgetIndex) = GetWidgetInfo(window.RuntimeId);
+            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(window.RuntimeId);
 
-            // read original position and size
-            var originalWidget = _originalWidgetList.FirstOrDefault(x => x.Id == widgetId & x.Type == widgetType & x.Index == widgetIndex);
+            // find original widget
+            var originalWidget = _originalWidgetList.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
 
             // restore position and size
             if (originalWidget != null)

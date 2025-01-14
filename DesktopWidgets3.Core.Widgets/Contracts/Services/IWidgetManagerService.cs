@@ -2,19 +2,21 @@
 
 public interface IWidgetManagerService
 {
-    (string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId);
+    (WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId);
 
     (string widgetId, string widgetType, int widgetIndex) GetWidgetSettingInfo(string widgetSettingRuntimeId);
 
-    WidgetInfo? GetWidgetInfo(string widgetId, string widgetType, int widgetIndex);
+    WidgetInfo? GetWidgetInfo(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex);
 
-    WidgetContext? GetWidgetContext(string widgetId, string widgetType, int widgetIndex);
+    WidgetContext? GetWidgetContext(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex);
 
     WidgetSettingContext? GetWidgetSettingContext(string widgetId, string widgetType);
 
-    bool GetWidgetIsActive(string widgetId, string widgetType, int widgetIndex);
+    bool GetWidgetIsActive(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex);
 
     bool GetWidgetSettingIsNavigated(string widgetId, string widgetType);
+
+    WidgetViewModel? GetWidgetViewModel(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex);
 
     void InitializePinnedWidgets();
 
@@ -26,11 +28,11 @@ public interface IWidgetManagerService
 
     Task AddWidgetAsync(WidgetViewModel widgetViewModel, Action<WidgetViewModel> action, bool updateDashboard);
 
-    Task PinWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh);
+    Task PinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh);
 
-    Task UnpinWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh);
+    Task UnpinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh);
 
-    Task DeleteWidgetAsync(string widgetId, string widgetType, int widgetIndex, bool refresh);
+    Task DeleteWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh);
 
     WidgetWindow? GetWidgetWindow(string widgetRuntimeId);
 

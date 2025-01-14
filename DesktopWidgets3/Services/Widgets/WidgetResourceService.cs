@@ -760,7 +760,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         {
             foreach (var pinnedWidget in _appSettingsService.GetWidgetsList())
             {
-                if (pinnedWidget.Id == widgetId & pinnedWidget.Type == widgetType)
+                if (pinnedWidget.ProviderType == WidgetProviderType.DesktopWidgets3 && pinnedWidget.Id == widgetId && pinnedWidget.Type == widgetType)
                 {
                     return true;
                 }
@@ -947,20 +947,41 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
 
         foreach (var widget in widgetList)
         {
+            var providerType = widget.ProviderType;
             var widgetId = widget.Id;
             var widgetType = widget.Type;
             var widgetIndex = widget.Index;
+
+            // TODO: IsUnknown support.
+            if (providerType == WidgetProviderType.Microsoft)
+            {
+                dashboardItemList.Add(new DashboardWidgetItem()
+                {
+                    ProviderType = providerType,
+                    Id = widgetId,
+                    Type = widgetType,
+                    Index = widgetIndex,
+                    Name = widget.Name,
+                    IconFill = null,
+                    Pinned = widget.Pinned,
+                    IsUnknown = false,
+                    IsInstalled = true
+                });
+                continue;
+            }
 
             (var installed, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
             if (installed && widgetTypeIndex != null)
             {
                 dashboardItemList.Add(new DashboardWidgetItem()
                 {
+                    ProviderType = providerType,
                     Id = widgetId,
                     Type = widgetType,
                     Index = widgetIndex,
                     Name = GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType),
-                    IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex),
+                    //IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex),
+                    IconFill = null,
                     Pinned = widget.Pinned,
                     IsUnknown = false,
                     IsInstalled = true
@@ -975,11 +996,13 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
 
                 dashboardItemList.Add(new DashboardWidgetItem()
                 {
+                    ProviderType = providerType,
                     Id = widgetId,
                     Type = widgetType,
                     Index = widgetIndex,
                     Name = string.Format("Unknown_Widget_Name".GetLocalizedString(), unknownNotInstalledWidgetList.Count),
-                    IcoPath = Constants.UnknownWidgetIcoPath,
+                    //IcoPath = Constants.UnknownWidgetIcoPath,
+                    IconFill = null,
                     Pinned = widget.Pinned,
                     IsUnknown = true,
                     IsInstalled = false,
@@ -997,11 +1020,13 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         {
             return new DashboardWidgetItem()
             {
+                ProviderType = WidgetProviderType.DesktopWidgets3,
                 Id = widgetId,
                 Type = widgetType,
                 Index = widgetIndex,
                 Name = GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType),
-                IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex),
+                IconFill = null,
+                //IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex),
                 Pinned = true,
                 IsUnknown = false,
                 IsInstalled = true
@@ -1009,6 +1034,29 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         }
 
         return null;
+    }
+
+    public DashboardWidgetItem? GetDashboardWidgetItem(WidgetViewModel widgetViewModel)
+    {
+        var providerType = WidgetProviderType.Microsoft;
+        var widgetName = widgetViewModel.WidgetDisplayTitle;
+        var widgetId = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
+        var widgetType = widgetViewModel.WidgetDefinition.Id;
+        // TODO: Get widget index.
+        var widgetIndex = 0;
+        return new DashboardWidgetItem()
+        {
+            ProviderType = providerType,
+            Id = widgetId,
+            Type = widgetType,
+            Index = widgetIndex,
+            Name = widgetViewModel.WidgetDisplayTitle,
+            IconFill = null,
+            //IcoPath = string.Empty,
+            Pinned = true,
+            IsUnknown = false,
+            IsInstalled = true
+        };
     }
 
     #endregion

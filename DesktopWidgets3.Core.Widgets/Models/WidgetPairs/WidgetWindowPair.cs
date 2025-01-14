@@ -6,6 +6,8 @@ public class WidgetWindowPair
 {
     public required string RuntimeId { get; set; }
 
+    public required WidgetProviderType ProviderType { get; set; }
+
     public required string WidgetId { get; set; }
 
     public required string WidgetType { get; set; }
@@ -18,25 +20,13 @@ public class WidgetWindowPair
 
     public MenuFlyout MenuFlyout { get; set; } = null!;
 
-    public override bool Equals(object? obj)
+    public bool Equals(WidgetProviderType providerType, string widgetId, string widgetType)
     {
-        if (obj is WidgetWindowPair widgetWindowPair)
-        {
-            return RuntimeId == widgetWindowPair.RuntimeId;
-        }
-        else
-        {
-            return false;
-        }
+        return ProviderType == providerType && WidgetId == widgetId && WidgetType == widgetType;
     }
 
-    public override int GetHashCode()
+    public bool Equals(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
     {
-        return RuntimeId.GetHashCode();
-    }
-
-    public override string ToString()
-    {
-        return RuntimeId;
+        return ProviderType == providerType && WidgetId == widgetId && WidgetType == widgetType && WidgetIndex == widgetIndex;
     }
 }

@@ -21,7 +21,7 @@ internal class WidgetService : IWidgetService
     public async Task UpdateWidgetSettingsAsync(string widgetRuntimeId, BaseWidgetSettings settings)
     {
         // get widget info
-        var (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(widgetRuntimeId);
+        var (_, widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(widgetRuntimeId);
         if (widgetId != string.Empty)
         {
             // update widget settings

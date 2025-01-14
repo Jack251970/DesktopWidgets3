@@ -231,6 +231,59 @@ public partial class MicrosoftWidgetModel : IDisposable
         _log.Information($"Done restoring pinned widgets");
     }
 
+    private async Task InsertWidgetInPinnedWidgetsAsync(ComSafeWidget widget, WidgetSize size, CancellationToken cancellationToken = default)
+    {
+        await Task.Run(
+            async () =>
+            {
+                var widgetDefinitionId = widget.DefinitionId;
+                var widgetId = widget.Id;
+                _log.Information($"Insert widget in pinned widgets, id = {widgetId}");
+
+                var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+                if (unsafeWidgetDefinition != null)
+                {
+                    var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+                    if (!await comSafeWidgetDefinition.PopulateAsync())
+                    {
+                        _log.Error($"Error inserting widget in pinned widgets, id = {widgetId}");
+                        await widget.DeleteAsync();
+                        return;
+                    }
+
+                    // The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
+                    // able to send disposed events when Dev Home closes. Ensure the provider is started here so we can
+                    // tell the extension to dispose later.
+                    if (_widgetExtensionService.IsCoreWidgetProvider(comSafeWidgetDefinition.ProviderDefinitionId))
+                    {
+                        await _widgetExtensionService.EnsureCoreWidgetExtensionStarted(comSafeWidgetDefinition.ProviderDefinitionId);
+                    }
+
+                    var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    _dispatcherQueue.TryEnqueue(() =>
+                    {
+                        try
+                        {
+                            CreateWidgetWindow(wvm);
+                        }
+                        catch (Exception ex)
+                        {
+                            // DevHomeTODO: Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
+                            // https://github.com/microsoft/devhome/issues/1215
+                            _log.Warning(ex, $"Couldn't insert pinned widget");
+                        }
+                    });
+                }
+                else
+                {
+                    await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
+                }
+            },
+            cancellationToken);
+    }
+
     private async Task DeleteWidgetWithNoDefinition(ComSafeWidget widget, string widgetDefinitionId)
     {
         // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
@@ -546,57 +599,16 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #region Add Widget
 
-    private async Task InsertWidgetInPinnedWidgetsAsync(ComSafeWidget widget, WidgetSize size, CancellationToken cancellationToken = default)
+    public async Task TryDeleteUnsafeWidget(Widget unsafeWidget)
     {
-        await Task.Run(
-            async () =>
-            {
-                var widgetDefinitionId = widget.DefinitionId;
-                var widgetId = widget.Id;
-                _log.Information($"Insert widget in pinned widgets, id = {widgetId}");
-
-                var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
-                if (unsafeWidgetDefinition != null)
-                {
-                    var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
-                    if (!await comSafeWidgetDefinition.PopulateAsync())
-                    {
-                        _log.Error($"Error inserting widget in pinned widgets, id = {widgetId}");
-                        await widget.DeleteAsync();
-                        return;
-                    }
-
-                    // The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
-                    // able to send disposed events when Dev Home closes. Ensure the provider is started here so we can
-                    // tell the extension to dispose later.
-                    if (_widgetExtensionService.IsCoreWidgetProvider(comSafeWidgetDefinition.ProviderDefinitionId))
-                    {
-                        await _widgetExtensionService.EnsureCoreWidgetExtensionStarted(comSafeWidgetDefinition.ProviderDefinitionId);
-                    }
-
-                    var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    _dispatcherQueue.TryEnqueue(() =>
-                    {
-                        try
-                        {
-                            CreateWidgetWindow(wvm);
-                        }
-                        catch (Exception ex)
-                        {
-                            // DevHomeTODO: Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
-                            // https://github.com/microsoft/devhome/issues/1215
-                            _log.Warning(ex, $"Couldn't insert pinned widget");
-                        }
-                    });
-                }
-                else
-                {
-                    await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
-                }
-            },
-            cancellationToken);
+        try
+        {
+            await unsafeWidget.DeleteAsync();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error deleting widget");
+        }
     }
 
     #endregion

@@ -46,6 +46,8 @@ public interface IWidgetResourceService
 
     DashboardWidgetItem? GetDashboardWidgetItem(string widgetId, string widgetType, int widgetIndex);
 
+    DashboardWidgetItem? GetDashboardWidgetItem(WidgetViewModel widgetViewModel);
+
     bool IsWidgetGroupUnknown(string widgetId, string widgetType);
 
     List<WidgetStoreItem> GetInstalledWidgetStoreItems();

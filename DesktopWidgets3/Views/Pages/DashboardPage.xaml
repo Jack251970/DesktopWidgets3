@@ -67,11 +67,12 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Width="20">
-                                        <Image.Source>
-                                            <BitmapImage UriSource="{x:Bind IcoPath, Mode=OneTime}" />
-                                        </Image.Source>
-                                    </Image>
+                                    <Rectangle
+                                        x:Name="WidgetHeaderIcon"
+                                        Width="16"
+                                        Height="16"
+                                        VerticalAlignment="Center"
+                                        Fill="{x:Bind IconFill, Mode=OneTime}" />
                                     <TextBlock
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
@@ -130,11 +131,12 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Width="20">
-                                        <Image.Source>
-                                            <BitmapImage UriSource="{x:Bind IcoPath, Mode=OneTime}" />
-                                        </Image.Source>
-                                    </Image>
+                                    <Rectangle
+                                        x:Name="WidgetHeaderIcon"
+                                        Width="16"
+                                        Height="16"
+                                        VerticalAlignment="Center"
+                                        Fill="{x:Bind IconFill, Mode=OneTime}" />
                                     <TextBlock
                                         Grid.Column="1"
                                         VerticalAlignment="Center"

@@ -2,6 +2,8 @@
 
 public class WidgetContext(IWidgetManagerService widgetManagerService) : IWidgetContext
 {
+    public required WidgetProviderType ProviderType { get; set; }
+
     public required string Id { get; set; }
 
     public required string Type { get; set; }
@@ -12,8 +14,8 @@ public class WidgetContext(IWidgetManagerService widgetManagerService) : IWidget
     {
         get
         {
-            var (widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(Id);
-            return _widgetManagerService.GetWidgetIsActive(widgetId, widgetType, widgetIndex);
+            var (providerType, widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(Id);
+            return _widgetManagerService.GetWidgetIsActive(providerType, widgetId, widgetType, widgetIndex);
         }
     }
 }

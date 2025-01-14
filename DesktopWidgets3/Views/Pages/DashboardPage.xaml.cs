@@ -13,6 +13,7 @@ public sealed partial class DashboardPage : Page
 
     private readonly MenuFlyout RightClickMenu;
 
+    private WidgetProviderType _providerType = WidgetProviderType.DesktopWidgets3;
     private string _widgetId = string.Empty;
     private string _widgetType = string.Empty;
     private int _widgetIndex = -1;
@@ -46,6 +47,7 @@ public sealed partial class DashboardPage : Page
     {
         if (sender is FrameworkElement element && element.Tag is DashboardWidgetItem item)
         {
+            _providerType = item.ProviderType;
             _widgetId = item.Id;
             _widgetType = item.Type;
             _widgetIndex = item.Index;
@@ -60,8 +62,8 @@ public sealed partial class DashboardPage : Page
         {
             if (await DialogFactory.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
             {
-                ViewModel.RefreshUnpinnedWidget(_widgetId, _widgetType, _widgetIndex);
-                await _widgetManagerService.DeleteWidgetAsync(_widgetId, _widgetType, _widgetIndex, false);
+                ViewModel.RefreshDeletedWidget(_providerType, _widgetId, _widgetType, _widgetIndex);
+                await _widgetManagerService.DeleteWidgetAsync(_providerType, _widgetId, _widgetType, _widgetIndex, false);
             }
             _widgetIndex = -1;
         }

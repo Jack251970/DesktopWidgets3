@@ -7,6 +7,8 @@ namespace DesktopWidgets3.Core.Widgets.Models.WidgetItems;
 [JsonConverter(typeof(JsonWidgetItemConverter))]
 public class JsonWidgetItem : BaseWidgetItem
 {
+    public required WidgetProviderType ProviderType { get; set; }
+
     public required string Name { get; set; }
 
     public required PointInt32 Position { get; set; }
@@ -22,6 +24,16 @@ public class JsonWidgetItem : BaseWidgetItem
     }
 
     public JToken? SettingsJToken { get; set; }
+
+    public bool Equals(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
+    {
+        return ProviderType == providerType && Id == widgetId && Type == widgetType && Index == widgetIndex;
+    }
+
+    public bool Equals(WidgetProviderType providerType, string widgetId, string widgetType)
+    {
+        return ProviderType == providerType && Id == widgetId && Type == widgetType;
+    }
 }
 
 public class JsonWidgetItemConverter : JsonConverter
@@ -36,7 +48,8 @@ public class JsonWidgetItemConverter : JsonConverter
     public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         var jsonObject = JObject.Load(reader);
-
+        
+        var widgetProviderType = jsonObject["ProviderType"]?.ToObject<WidgetProviderType>(serializer) ?? WidgetProviderType.DesktopWidgets3;
         var widgetName = jsonObject["Name"]?.Value<string>() ?? string.Empty;
         var widgetId = jsonObject["Id"]?.Value<string>() ?? StringUtils.GetRandomWidgetId();
         var widgetType = jsonObject["Type"]?.Value<string>() ?? string.Empty;
@@ -51,6 +64,7 @@ public class JsonWidgetItemConverter : JsonConverter
 
         return new JsonWidgetItem
         {
+            ProviderType = widgetProviderType,
             Name = widgetName,
             Id = widgetId,
             Type = widgetType,
@@ -70,6 +84,7 @@ public class JsonWidgetItemConverter : JsonConverter
 
         var widgetId = widgetItem!.Id;
         var jsonObject = new JObject(
+            new JProperty("ProviderType", widgetItem.ProviderType),
             new JProperty("Name", widgetItem.Name),
             new JProperty("Id", widgetId),
             new JProperty("Type", widgetItem.Type),

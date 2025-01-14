@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Core.Widgets.Models.WidgetItems;
+﻿using Microsoft.UI.Xaml.Media;
+
+namespace DesktopWidgets3.Core.Widgets.Models.WidgetItems;
 
 public class DashboardWidgetGroupItem : BaseWidgetGroupItem
 {
@@ -11,9 +13,11 @@ public class DashboardWidgetGroupItem : BaseWidgetGroupItem
 
 public class DashboardWidgetItem : BaseWidgetItem
 {
+    public required WidgetProviderType ProviderType { get; set; }
+
     public required string Name { get; set; }
 
-    public required string IcoPath { get; set; }
+    public required Brush IconFill { get; set; }
 
     public new bool Pinned
     {
@@ -38,4 +42,9 @@ public class DashboardWidgetItem : BaseWidgetItem
     public bool Editable => !IsUnknown && IsInstalled;
 
     public Action<DashboardWidgetItem>? PinnedChangedCallback { get; set; }
+
+    public bool Equals(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
+    {
+        return ProviderType == providerType && Id == widgetId && Type == widgetType && Index == widgetIndex;
+    }
 }
