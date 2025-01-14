@@ -953,6 +953,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
             var widgetIndex = widget.Index;
 
             // TODO: IsUnknown support.
+            // TODO: Icon fill here.
             if (providerType == WidgetProviderType.Microsoft)
             {
                 dashboardItemList.Add(new DashboardWidgetItem()
