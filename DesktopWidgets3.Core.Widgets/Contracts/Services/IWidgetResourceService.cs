@@ -48,17 +48,17 @@ public interface IWidgetResourceService
 
     List<DashboardWidgetGroupItem> GetInstalledDashboardGroupItems();
 
-    Task<List<DashboardWidgetItem>> GetYourDashboardWidgetItems(ElementTheme actualTheme);
+    Task<List<DashboardWidgetItem>> GetYourDashboardWidgetItemsAsync(ElementTheme actualTheme);
 
-    Task<DashboardWidgetItem?> GetDashboardWidgetItem(string widgetId, string widgetType, int widgetIndex, ElementTheme actualTheme);
+    Task<DashboardWidgetItem?> GetDashboardWidgetItemAsync(string widgetId, string widgetType, int widgetIndex, ElementTheme actualTheme);
 
-    Task<DashboardWidgetItem> GetDashboardWidgetItem(WidgetViewModel widgetViewModel, ElementTheme actualTheme);
+    Task<DashboardWidgetItem> GetDashboardWidgetItemAsync(WidgetViewModel widgetViewModel, ElementTheme actualTheme);
 
     bool IsWidgetGroupUnknown(string widgetId, string widgetType);
 
-    List<WidgetStoreItem> GetInstalledWidgetStoreItems();
+    Task<List<WidgetStoreItem>> GetInstalledWidgetStoreItemsAsync();
 
-    List<WidgetStoreItem> GetPreinstalledAvailableWidgetStoreItems();
+    Task<List<WidgetStoreItem>> GetPreinstalledAvailableWidgetStoreItemsAsync();
 
     Task InstallWidgetAsync(string widgetId);
 

@@ -612,49 +612,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #region Icon
 
-    private readonly ConcurrentDictionary<string, BitmapImage> _pathIconCache = new();
-
-    private async Task<Brush> GetPathIconBrushAsync(DispatcherQueue dispatcherQueue, string iconPath)
-    {
-        var image = new BitmapImage();
-        try
-        {
-            BitmapImage? bitmapImage;
-
-            // First, check the cache to see if the icon is already there.
-            _pathIconCache.TryGetValue(iconPath, out bitmapImage);
-
-            if (bitmapImage != null)
-            {
-                image = bitmapImage;
-            }
-            else
-            {
-                // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
-                bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, iconPath);
-                _pathIconCache.TryAdd(iconPath, bitmapImage);
-
-                image = bitmapImage;
-            }
-        }
-        catch (FileNotFoundException fileNotFoundEx)
-        {
-            _log.Warning(fileNotFoundEx, $"Widget icon missing for {iconPath}");
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"Failed to get widget icon for {iconPath}");
-        }
-
-        var brush = new ImageBrush
-        {
-            ImageSource = image,
-            Stretch = Stretch.Uniform,
-        };
-
-        return brush;
-    }
-
     private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightIconCache = new();
     private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkIconCache = new();
 
@@ -1181,7 +1138,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         return dashboardGroupItemList;
     }
 
-    public async Task<List<DashboardWidgetItem>> GetYourDashboardWidgetItems(ElementTheme actualTheme)
+    public async Task<List<DashboardWidgetItem>> GetYourDashboardWidgetItemsAsync(ElementTheme actualTheme)
     {
         var widgetList = _appSettingsService.GetWidgetsList();
         var dashboardItemList = new List<DashboardWidgetItem>();
@@ -1254,7 +1211,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         return dashboardItemList;
     }
 
-    public async Task<DashboardWidgetItem?> GetDashboardWidgetItem(string widgetId, string widgetType, int widgetIndex, ElementTheme actualTheme)
+    public async Task<DashboardWidgetItem?> GetDashboardWidgetItemAsync(string widgetId, string widgetType, int widgetIndex, ElementTheme actualTheme)
     {
         (var installed, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
         if (installed)
@@ -1276,7 +1233,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         return null;
     }
 
-    public async Task<DashboardWidgetItem> GetDashboardWidgetItem(WidgetViewModel widgetViewModel, ElementTheme actualTheme)
+    public async Task<DashboardWidgetItem> GetDashboardWidgetItemAsync(WidgetViewModel widgetViewModel, ElementTheme actualTheme)
     {
         var providerType = WidgetProviderType.Microsoft;
         var widgetName = widgetViewModel.WidgetDisplayTitle;
@@ -1303,7 +1260,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #region Widget Store
 
-    public List<WidgetStoreItem> GetInstalledWidgetStoreItems()
+    public async Task<List<WidgetStoreItem>> GetInstalledWidgetStoreItemsAsync()
     {
         List<WidgetStoreItem> widgetStoreItemList = [];
 
@@ -1321,7 +1278,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
                     Author = metadata.Author,
                     Version = metadata.Version,
                     Website = metadata.Website,
-                    IcoPath = GetWidgetGroupIcoPath(allIndex, installedIndex)
+                    IconFill = await GetPathIconBrushAsync(_dispatcherQueue, GetWidgetGroupIcoPath(allIndex, installedIndex))
                 });
             }
         }
@@ -1329,7 +1286,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         return widgetStoreItemList;
     }
 
-    public List<WidgetStoreItem> GetPreinstalledAvailableWidgetStoreItems()
+    public async Task<List<WidgetStoreItem>> GetPreinstalledAvailableWidgetStoreItemsAsync()
     {
         List<WidgetStoreItem> widgetStoreItemList = [];
 
@@ -1349,7 +1306,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
                         Author = metadata.Author,
                         Version = metadata.Version,
                         Website = metadata.Website,
-                        IcoPath = GetWidgetGroupIcoPath(allIndex, installedIndex)
+                        IconFill = await GetPathIconBrushAsync(_dispatcherQueue, GetWidgetGroupIcoPath(allIndex, installedIndex))
                     });
                 }
             }
@@ -1412,6 +1369,53 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         }
 
         App.RestartApplication();
+    }
+
+    #endregion
+
+    #region Path Icon
+
+    private readonly ConcurrentDictionary<string, BitmapImage> _pathIconCache = new();
+
+    private async Task<Brush> GetPathIconBrushAsync(DispatcherQueue dispatcherQueue, string iconPath)
+    {
+        var image = new BitmapImage();
+        try
+        {
+            BitmapImage? bitmapImage;
+
+            // First, check the cache to see if the icon is already there.
+            _pathIconCache.TryGetValue(iconPath, out bitmapImage);
+
+            if (bitmapImage != null)
+            {
+                image = bitmapImage;
+            }
+            else
+            {
+                // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
+                bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, iconPath);
+                _pathIconCache.TryAdd(iconPath, bitmapImage);
+
+                image = bitmapImage;
+            }
+        }
+        catch (FileNotFoundException fileNotFoundEx)
+        {
+            _log.Warning(fileNotFoundEx, $"Widget icon missing for {iconPath}");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get widget icon for {iconPath}");
+        }
+
+        var brush = new ImageBrush
+        {
+            ImageSource = image,
+            Stretch = Stretch.Uniform,
+        };
+
+        return brush;
     }
 
     #endregion

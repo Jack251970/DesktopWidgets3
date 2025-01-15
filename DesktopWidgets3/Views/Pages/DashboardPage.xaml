@@ -68,7 +68,6 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Rectangle
-                                        x:Name="WidgetHeaderIcon"
                                         Width="16"
                                         Height="16"
                                         VerticalAlignment="Center"
@@ -132,7 +131,6 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Rectangle
-                                        x:Name="WidgetHeaderIcon"
                                         Width="16"
                                         Height="16"
                                         VerticalAlignment="Center"

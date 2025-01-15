@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
@@ -17,19 +18,19 @@ public partial class WidgetStorePageViewModel(IWidgetResourceService widgetResou
 
     #region Load
 
-    private async Task LoadAvailableWidgets()
+    private async Task LoadAvailableWidgetsAsync()
     {
         // TODO(Furture): Load available widgets from Github, not supported yet.
         var githubAvailableWidgets = new List<WidgetStoreItem>();
-        var preinstalledAvailableWidgets = _widgetResourceService.GetPreinstalledAvailableWidgetStoreItems();
+        var preinstalledAvailableWidgets = await _widgetResourceService.GetPreinstalledAvailableWidgetStoreItemsAsync();
         availableWidgets = [.. githubAvailableWidgets, .. preinstalledAvailableWidgets];
 
         await Task.CompletedTask;
     }
 
-    private void LoadInstalledWidgets()
+    private async Task LoadInstalledWidgetsAsync()
     {
-        installedWidgets = _widgetResourceService.GetInstalledWidgetStoreItems();
+        installedWidgets = await _widgetResourceService.GetInstalledWidgetStoreItemsAsync();
     }
 
     #endregion
@@ -62,9 +63,9 @@ public partial class WidgetStorePageViewModel(IWidgetResourceService widgetResou
     {
         if (!_isInitialized)
         {
-            await LoadAvailableWidgets();
+            await LoadAvailableWidgetsAsync();
             RefreshAvailableWidgets();
-            LoadInstalledWidgets();
+            await LoadInstalledWidgetsAsync();
             RefreshInstalledWidgets();
 
             _isInitialized = true;
@@ -76,6 +77,15 @@ public partial class WidgetStorePageViewModel(IWidgetResourceService widgetResou
     public void OnNavigatedFrom()
     {
 
+    }
+
+    #endregion
+
+    #region Theme Change
+
+    public async Task UpdateThemeAsync(ElementTheme actualTheme)
+    {
+        // TODO: Add support.
     }
 
     #endregion

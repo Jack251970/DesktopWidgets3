@@ -1,4 +1,6 @@
-﻿namespace DesktopWidgets3.Core.Widgets.Models.WidgetItems;
+﻿using Microsoft.UI.Xaml.Media;
+
+namespace DesktopWidgets3.Core.Widgets.Models.WidgetItems;
 
 public class BaseWidgetStoreItem : BaseWidgetGroupItem
 {
@@ -24,5 +26,5 @@ public class WidgetStoreItem : BaseWidgetStoreItem
 
     public required string Website { get; set; }
 
-    public required string IcoPath { get; set; }
+    public required Brush IconFill { get; set; }
 }
