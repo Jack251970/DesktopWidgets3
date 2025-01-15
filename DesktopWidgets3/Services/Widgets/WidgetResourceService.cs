@@ -8,10 +8,11 @@ using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetResourceService(IAppSettingsService appSettingsService, IWidgetIconService widgetIconService, IWidgetScreenshotService widgetScreenshotService) : IWidgetResourceService
+internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettingsService appSettingsService, IWidgetIconService widgetIconService, IWidgetScreenshotService widgetScreenshotService) : IWidgetResourceService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetResourceService));
 
+    private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly IWidgetIconService _widgetIconService = widgetIconService;
     private readonly IWidgetScreenshotService _widgetScreenshotService = widgetScreenshotService;
@@ -524,7 +525,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
             return AllWidgetGroupMetadatas[allIndex!.Value].IcoPath;
         }
 
-        return Constants.UnknownWidgetIcoPath;
+        return Constants.UnknownWidgetIconPath;
     }
 
     #endregion
@@ -609,18 +610,78 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
 
     #region Desktop Widgets 3
 
-    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightScreenshotCache = new();
-    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkScreenshotCache = new();
+    #region Icon
 
-    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightIconCache = new();
-    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkIconCache = new();
+    private readonly ConcurrentDictionary<string, BitmapImage> _pathIconCache = new();
 
-    public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
+    private async Task<Brush> GetPathIconBrushAsync(DispatcherQueue dispatcherQueue, string iconPath)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetIconFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, widgetType, actualTheme);
+            BitmapImage? bitmapImage;
+
+            // First, check the cache to see if the icon is already there.
+            _pathIconCache.TryGetValue(iconPath, out bitmapImage);
+
+            if (bitmapImage != null)
+            {
+                image = bitmapImage;
+            }
+            else
+            {
+                // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
+                bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, iconPath);
+                _pathIconCache.TryAdd(iconPath, bitmapImage);
+
+                image = bitmapImage;
+            }
+        }
+        catch (FileNotFoundException fileNotFoundEx)
+        {
+            _log.Warning(fileNotFoundEx, $"Widget icon missing for {iconPath}");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get widget icon for {iconPath}");
+        }
+
+        var brush = new ImageBrush
+        {
+            ImageSource = image,
+            Stretch = Stretch.Uniform,
+        };
+
+        return brush;
+    }
+
+    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightIconCache = new();
+    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkIconCache = new();
+
+    // TODO: Add support for cache clean.
+    private void RemoveIconsFromDesktopWidgets3Cache(string widgetId, string widgetType)
+    {
+        _desktopWidgets3WidgetLightIconCache.TryRemove((widgetId, widgetType), out _);
+        _desktopWidgets3WidgetDarkIconCache.TryRemove((widgetId, widgetType), out _);
+    }
+
+    public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
+    {
+        (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return await GetWidgetIconBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
+        }
+
+        return null!;
+    }
+
+    private async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
+    {
+        var image = new BitmapImage();
+        try
+        {
+            image = await GetIconFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {
@@ -639,46 +700,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
 
         return brush;
     }
-    
-    public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
-    {
-        var image = new BitmapImage();
-        try
-        {
-            image = await GetScreenshotFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, widgetType, actualTheme);
-        }
-        catch (FileNotFoundException fileNotFoundEx)
-        {
-            _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetId} {widgetType}");
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"Failed to get widget screenshot for widget definition {widgetId} {widgetType}");
-        }
 
-        var brush = new ImageBrush
-        {
-            ImageSource = image,
-        };
-
-        return brush;
-    }
-    
-    // TODO: Add support for cache clean.
-    private void RemoveIconsFromDesktopWidgets3Cache(string widgetId, string widgetType)
-    {
-        _desktopWidgets3WidgetLightIconCache.TryRemove((widgetId, widgetType), out _);
-        _desktopWidgets3WidgetDarkIconCache.TryRemove((widgetId, widgetType), out _);
-    }
-
-    // TODO: Add support for cache clean.
-    private void RemoveScreenshotsFromDesktopWidgets3Cache(string widgetId, string widgetType)
-    {
-        _desktopWidgets3WidgetLightScreenshotCache.Remove((widgetId, widgetType), out _);
-        _desktopWidgets3WidgetDarkScreenshotCache.Remove((widgetId, widgetType), out _);
-    }
-
-    private async Task<BitmapImage> GetIconFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetIconFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
     {
         BitmapImage? bitmapImage;
 
@@ -700,19 +723,68 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
         // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
         if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetIconPath(widgetId, widgetType, ElementTheme.Dark));
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Dark));
             _desktopWidgets3WidgetDarkIconCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
         else
         {
-            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetIconPath(widgetId, widgetType, ElementTheme.Dark));
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Dark));
             _desktopWidgets3WidgetLightIconCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
 
         return bitmapImage;
     }
 
-    private async Task<BitmapImage> GetScreenshotFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
+    #endregion
+
+    #region Screenshot
+
+    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightScreenshotCache = new();
+    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkScreenshotCache = new();
+
+    // TODO: Add support for cache clean.
+    private void RemoveScreenshotsFromDesktopWidgets3Cache(string widgetId, string widgetType)
+    {
+        _desktopWidgets3WidgetLightScreenshotCache.Remove((widgetId, widgetType), out _);
+        _desktopWidgets3WidgetDarkScreenshotCache.Remove((widgetId, widgetType), out _);
+    }
+
+    public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
+    {
+        (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return await GetWidgetScreenshotBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
+        }
+
+        return null!;
+    }
+
+    private async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
+    {
+        var image = new BitmapImage();
+        try
+        {
+            image = await GetScreenshotFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
+        }
+        catch (FileNotFoundException fileNotFoundEx)
+        {
+            _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetId} {widgetType}");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get widget screenshot for widget definition {widgetId} {widgetType}");
+        }
+
+        var brush = new ImageBrush
+        {
+            ImageSource = image,
+        };
+
+        return brush;
+    }
+
+    private async Task<BitmapImage> GetScreenshotFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
     {
         BitmapImage? bitmapImage;
 
@@ -734,19 +806,23 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
         // If the screenshot wasn't already in the cache, get it from the widget resources service and add it to the cache before returning.
         if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetScreenshotPath(widgetId, widgetType, ElementTheme.Dark));
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Dark));
             _desktopWidgets3WidgetDarkScreenshotCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
         else
         {
-            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetScreenshotPath(widgetId, widgetType, ElementTheme.Light));
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Light));
             _desktopWidgets3WidgetLightScreenshotCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
 
         return bitmapImage;
     }
 
+    #endregion
+
     #region Image Path
+
+    #region Icon
 
     private string GetWidgetIconPath(string widgetId, string widgetType, ElementTheme actualTheme)
     {
@@ -754,17 +830,6 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
         if (installedIndex != -1)
         {
             return GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex, actualTheme);
-        }
-
-        return string.Empty;
-    }
-
-    private string GetWidgetScreenshotPath(string widgetId, string widgetType, ElementTheme actualTheme)
-    {
-        (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
-        {
-            return GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, actualTheme);
         }
 
         return string.Empty;
@@ -798,7 +863,22 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
             }
         }
 
-        return Constants.UnknownWidgetIcoPath;
+        return Constants.UnknownWidgetIconPath;
+    }
+
+    #endregion
+
+    #region Screenshot
+
+    private string GetWidgetScreenshotPath(string widgetId, string widgetType, ElementTheme actualTheme)
+    {
+        (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
+        if (installedIndex != -1)
+        {
+            return GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, actualTheme);
+        }
+
+        return string.Empty;
     }
 
     private string GetWidgetScreenshotPath(int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
@@ -829,8 +909,10 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
             }
         }
 
-        return Constants.UnknownWidgetIcoPath;
+        return Constants.UnknownWidgetIconPath;
     }
+
+    #endregion
 
     #endregion
 
@@ -1099,7 +1181,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
         return dashboardGroupItemList;
     }
 
-    public List<DashboardWidgetItem> GetYourDashboardWidgetItems()
+    public async Task<List<DashboardWidgetItem>> GetYourDashboardWidgetItems(ElementTheme actualTheme)
     {
         var widgetList = _appSettingsService.GetWidgetsList();
         var dashboardItemList = new List<DashboardWidgetItem>();
@@ -1141,8 +1223,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
                     Type = widgetType,
                     Index = widgetIndex,
                     Name = GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType),
-                    //IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex),
-                    IconFill = null,
+                    IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
                     Pinned = widget.Pinned,
                     IsUnknown = false,
                     IsInstalled = true
@@ -1162,8 +1243,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
                     Type = widgetType,
                     Index = widgetIndex,
                     Name = string.Format("Unknown_Widget_Name".GetLocalizedString(), unknownNotInstalledWidgetList.Count),
-                    //IcoPath = Constants.UnknownWidgetIcoPath,
-                    IconFill = null,
+                    IconFill = await GetPathIconBrushAsync(_dispatcherQueue, Constants.UnknownWidgetIconPath),
                     Pinned = widget.Pinned,
                     IsUnknown = true,
                     IsInstalled = false,
@@ -1174,7 +1254,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
         return dashboardItemList;
     }
 
-    public DashboardWidgetItem? GetDashboardWidgetItem(string widgetId, string widgetType, int widgetIndex)
+    public async Task<DashboardWidgetItem?> GetDashboardWidgetItem(string widgetId, string widgetType, int widgetIndex, ElementTheme actualTheme)
     {
         (var installed, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
         if (installed)
@@ -1186,8 +1266,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
                 Type = widgetType,
                 Index = widgetIndex,
                 Name = GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType),
-                IconFill = null,
-                //IcoPath = GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex),
+                IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
                 Pinned = true,
                 IsUnknown = false,
                 IsInstalled = true
@@ -1197,7 +1276,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
         return null;
     }
 
-    public DashboardWidgetItem? GetDashboardWidgetItem(WidgetViewModel widgetViewModel)
+    public async Task<DashboardWidgetItem> GetDashboardWidgetItem(WidgetViewModel widgetViewModel, ElementTheme actualTheme)
     {
         var providerType = WidgetProviderType.Microsoft;
         var widgetName = widgetViewModel.WidgetDisplayTitle;
@@ -1212,8 +1291,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, IWi
             Type = widgetType,
             Index = widgetIndex,
             Name = widgetViewModel.WidgetDisplayTitle,
+            // TODO: Icon fill here.
             IconFill = null,
-            //IcoPath = string.Empty,
             Pinned = true,
             IsUnknown = false,
             IsInstalled = true

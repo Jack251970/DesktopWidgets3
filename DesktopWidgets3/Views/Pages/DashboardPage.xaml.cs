@@ -25,6 +25,11 @@ public sealed partial class DashboardPage : Page
         InitializeComponent();
     }
 
+    private async void MainScrollViewer_ActualThemeChanged(FrameworkElement sender, object args)
+    {
+        await ViewModel.UpdateThemeAsync(sender.ActualTheme);
+    }
+
     #region Widget Items
 
     #region Context Menu

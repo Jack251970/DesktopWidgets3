@@ -26,7 +26,7 @@ public static class Constants
 
     public static readonly string AppIconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "Icon.ico");
 
-    public const string UnknownWidgetIcoPath = $"ms-appx:///Assets/FluentIcons/Unknown.png";
+    public const string UnknownWidgetIconPath = $"ms-appx:///Assets/FluentIcons/Unknown.png";
 
     public const string DevHomeDashboard = "DevHome.Dashboard";
 

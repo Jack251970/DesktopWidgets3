@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using DesktopWidgets3.Core.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -309,7 +308,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Public
 
-    public async Task AddWidgetAsync(string widgetId, string widgetType, Action<string, string, int> action, bool updateDashboard)
+    public async Task AddWidgetAsync(string widgetId, string widgetType, Func<string, string, int, Task>? action, bool updateDashboard)
     {
         var widgetList = _appSettingsService.GetWidgetsList();
 
@@ -330,7 +329,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
 
         // invoke action
-        action(widgetId, widgetType, index);
+        if (action != null)
+        {
+            await action(widgetId, widgetType, index);
+        }
 
         // create widget item
         var widget = new JsonWidgetItem()
@@ -367,7 +369,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         await _appSettingsService.AddWidgetAsync(widget);
     }
 
-    public async Task AddWidgetAsync(WidgetViewModel widgetViewModel, Action<WidgetViewModel> action, bool updateDashboard)
+    public async Task AddWidgetAsync(WidgetViewModel widgetViewModel, Func<WidgetViewModel, Task> action, bool updateDashboard)
     {
         var widgetList = _appSettingsService.GetWidgetsList();
 
@@ -394,7 +396,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
 
         // invoke action
-        action(widgetViewModel);
+        if (action != null)
+        {
+            await action(widgetViewModel);
+        }
 
         // create widget item
         var widget = new JsonWidgetItem()
@@ -454,7 +459,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         else
         {
             // add widget
-            await AddWidgetAsync(widgetId, widgetType, (id, type, tag) => { }, false);
+            await AddWidgetAsync(widgetId, widgetType, null, false);
         }
 
         // refresh dashboard page

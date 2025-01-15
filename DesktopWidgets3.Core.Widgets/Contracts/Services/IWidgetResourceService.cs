@@ -48,11 +48,11 @@ public interface IWidgetResourceService
 
     List<DashboardWidgetGroupItem> GetInstalledDashboardGroupItems();
 
-    List<DashboardWidgetItem> GetYourDashboardWidgetItems();
+    Task<List<DashboardWidgetItem>> GetYourDashboardWidgetItems(ElementTheme actualTheme);
 
-    DashboardWidgetItem? GetDashboardWidgetItem(string widgetId, string widgetType, int widgetIndex);
+    Task<DashboardWidgetItem?> GetDashboardWidgetItem(string widgetId, string widgetType, int widgetIndex, ElementTheme actualTheme);
 
-    DashboardWidgetItem? GetDashboardWidgetItem(WidgetViewModel widgetViewModel);
+    Task<DashboardWidgetItem> GetDashboardWidgetItem(WidgetViewModel widgetViewModel, ElementTheme actualTheme);
 
     bool IsWidgetGroupUnknown(string widgetId, string widgetType);
 

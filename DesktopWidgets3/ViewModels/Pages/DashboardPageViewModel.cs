@@ -1,13 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.Widgets;
 using Serilog;
 using System.Collections.ObjectModel;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, WidgetViewModelFactory widgetViewModelFactory, IWidgetExtensionService widgetExtensionService, IWidgetHostingService widgetHostingService, IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService) : ObservableRecipient, INavigationAware
+public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, WidgetViewModelFactory widgetViewModelFactory, IWidgetExtensionService widgetExtensionService, IWidgetHostingService widgetHostingService, IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService, IThemeSelectorService themeSelectorService) : ObservableRecipient, INavigationAware
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardPageViewModel));
 
@@ -22,6 +23,8 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
     private readonly IWidgetHostingService _widgetHostingService = widgetHostingService;
     private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
+    // TODO: Move to ActualTheme.
+    private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
 
     private List<DashboardWidgetItem> yourWidgets = null!;
 
@@ -45,7 +48,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
         {
             if (newWidget is DesktopWidgets3WidgetDefinition newWidgetDefinition)
             {
-                await _widgetManagerService.AddWidgetAsync(newWidgetDefinition.WidgetId, newWidgetDefinition.WidgetType, RefreshAddedWidget, false);
+                await _widgetManagerService.AddWidgetAsync(newWidgetDefinition.WidgetId, newWidgetDefinition.WidgetType, RefreshAddedWidgetAsync, false);
             }
             else if (newWidget is ComSafeWidgetDefinition newWidgetDefinition1)
             {
@@ -157,7 +160,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
                     {
                         try
                         {
-                            await _widgetManagerService.AddWidgetAsync(wvm, RefreshAddedWidget, false);
+                            await _widgetManagerService.AddWidgetAsync(wvm, RefreshAddedWidgetAsync, false);
                         }
                         catch (Exception ex)
                         {
@@ -194,9 +197,9 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
 
     #region Load
 
-    private void LoadYourWidgets()
+    private async Task LoadYourWidgets()
     {
-        yourWidgets = _widgetResourceService.GetYourDashboardWidgetItems();
+        yourWidgets = await _widgetResourceService.GetYourDashboardWidgetItems(_themeSelectorService.GetActualTheme());
         foreach (var item in yourWidgets)
         {
             item.PinnedChangedCallback = OnPinnedChanged;
@@ -238,9 +241,9 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
         }
     }
 
-    private void RefreshAddedWidget(string widgetId, string widgetType, int widgetIndex)
+    private async Task RefreshAddedWidgetAsync(string widgetId, string widgetType, int widgetIndex)
     {
-        var widgetItem = _widgetResourceService.GetDashboardWidgetItem(widgetId, widgetType, widgetIndex);
+        var widgetItem = await _widgetResourceService.GetDashboardWidgetItem(widgetId, widgetType, widgetIndex, _themeSelectorService.GetActualTheme());
         if (widgetItem != null)
         {
             widgetItem.PinnedChangedCallback = OnPinnedChanged;
@@ -251,9 +254,9 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
     }
 
     // TODO: Improve code quality to unifying function like this.
-    private void RefreshAddedWidget(WidgetViewModel widgetViewModel)
+    private async Task RefreshAddedWidgetAsync(WidgetViewModel widgetViewModel)
     {
-        var widgetItem = _widgetResourceService.GetDashboardWidgetItem(widgetViewModel);
+        var widgetItem = await _widgetResourceService.GetDashboardWidgetItem(widgetViewModel, _themeSelectorService.GetActualTheme());
         if (widgetItem != null)
         {
             widgetItem.PinnedChangedCallback = OnPinnedChanged;
@@ -284,11 +287,11 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
 
     #region Navigation Aware
 
-    public void OnNavigatedTo(object parameter)
+    public async void OnNavigatedTo(object parameter)
     {
         if (!_isInitialized)
         {
-            LoadYourWidgets();
+            await LoadYourWidgets();
             RefreshYourWidgets();
 
             _isInitialized = true;
@@ -302,12 +305,13 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
             var widgetId = navigationParameter.Id;
             var widgetType = navigationParameter.Type;
             var widgetIndex = navigationParameter.Index;
+            var actualTheme = _themeSelectorService.GetActualTheme();
             switch (navigationParameter.Event)
             {
                 case DashboardViewModelNavigationParameter.UpdateEvent.Pin:
                     if (providerType == WidgetProviderType.DesktopWidgets3)
                     {
-                        var widgetItem = _widgetResourceService.GetDashboardWidgetItem(widgetId, widgetType, widgetIndex);
+                        var widgetItem = await _widgetResourceService.GetDashboardWidgetItem(widgetId, widgetType, widgetIndex, actualTheme);
                         if (widgetItem != null)
                         {
                             widgetItem.PinnedChangedCallback = OnPinnedChanged;
@@ -321,7 +325,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
                         var widgetViewModel = _widgetManagerService.GetWidgetViewModel(providerType, widgetId, widgetType, widgetIndex);
                         if (widgetViewModel != null)
                         {
-                            var widgetItem = _widgetResourceService.GetDashboardWidgetItem(widgetViewModel);
+                            var widgetItem = await _widgetResourceService.GetDashboardWidgetItem(widgetViewModel, actualTheme);
                             if (widgetItem != null)
                             {
                                 widgetItem.PinnedChangedCallback = OnPinnedChanged;
@@ -358,6 +362,15 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
     public void OnNavigatedFrom()
     {
 
+    }
+
+    #endregion
+
+    #region Theme Change
+
+    public async Task UpdateThemeAsync(ElementTheme actualTheme)
+    {
+        // TODO: Add support.
     }
 
     #endregion
