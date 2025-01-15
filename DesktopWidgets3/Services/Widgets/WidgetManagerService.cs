@@ -256,6 +256,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
         // initialize microsoft widgets
         await _microsoftWidgetModel.InitializePinnedWidgetsAsync((widget) => CreateWidgetWindowAsync(microsoftWidgetList, widget));
+        // We don't delete microsoft widget json items that aren't in the system widget storage,
+        // because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
     }
 
     // TODO: Test restart.
