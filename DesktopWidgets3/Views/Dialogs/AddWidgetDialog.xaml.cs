@@ -40,6 +40,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         RequestedTheme = DependencyExtensions.GetRequiredService<IThemeSelectorService>().Theme;
     }
 
+    #region Load Widgets
+
     [RelayCommand]
     public async Task OnLoadedAsync()
     {
@@ -67,6 +69,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         await FillAvailableMicrosoftWidgetsAsync();
         SelectFirstWidgetByDefault();
     }
+
+    #region Desktop Widgets 3 Widgets
 
     private async Task FillAvailableDesktopWidget3WidgetsAsync()
     {
@@ -111,6 +115,42 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
         }
     }
+
+    private async Task<Grid> BuildWidgetNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
+    {
+        return await BuildNavItemAsync(widgetDefinition);
+    }
+
+    private async Task<Grid> BuildNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
+    {
+        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
+
+        return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
+    }
+
+    private static bool IsSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
+    {
+        // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
+        if (!widgetDef.AllowMultiple)
+        {
+            if (currentlyPinnedWidgets != null)
+            {
+                foreach (var pinnedWidget in currentlyPinnedWidgets)
+                {
+                    if (pinnedWidget.DefinitionId == widgetDef.Id)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    #endregion
+
+    #region Microsoft Widgets
 
     private async Task FillAvailableMicrosoftWidgetsAsync()
     {
@@ -191,18 +231,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }*/
     }
 
-    private async Task<Grid> BuildWidgetNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
-    {
-        return await BuildNavItemAsync(widgetDefinition);
-    }
-
-    private async Task<Grid> BuildNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
-    {
-        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
-
-        return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
-    }
-
     private async Task<Grid> BuildWidgetNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
         return await BuildNavItemAsync(widgetDefinition);
@@ -214,6 +242,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
     }
+
+    private bool IsSingleInstanceAndAlreadyPinned(string widgetId, string widgetType)
+    {
+        return _widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetId, widgetType);
+    }
+
+    #endregion
 
     private static Grid BuildNavItem(Brush widgetImageBrush, string widgetName)
     {
@@ -249,31 +284,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    private static bool IsSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
-    {
-        // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
-        if (!widgetDef.AllowMultiple)
-        {
-            if (currentlyPinnedWidgets != null)
-            {
-                foreach (var pinnedWidget in currentlyPinnedWidgets)
-                {
-                    if (pinnedWidget.DefinitionId == widgetDef.Id)
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private bool IsSingleInstanceAndAlreadyPinned(string widgetId, string widgetType)
-    {
-        return _widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetId, widgetType);
-    }
-
     private void SelectFirstWidgetByDefault()
     {
         if (AddWidgetNavigationView.MenuItems.Count > 0)
@@ -286,6 +296,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
         }
     }
+
+    #endregion
 
     private async void AddWidgetNavigationView_SelectionChanged(
         NavigationView sender,
@@ -388,6 +400,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         Hide();
     }
+
+    // TODO: Support WidgetCatalog_WidgetDefinitionAdded and Updated?
 
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
