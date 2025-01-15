@@ -6,17 +6,16 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService, MicrosoftWidgetModel microsoftWidgetModel) : IWidgetManagerService
 {
     private readonly IActivationService _activationService = activationService;
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
+    private readonly MicrosoftWidgetModel _microsoftWidgetModel = microsoftWidgetModel;
 
     private readonly ConcurrentDictionary<string, WidgetWindowPair> PinnedWidgetWindowPairs = [];
     private readonly ConcurrentDictionary<string, WidgetSettingPair> WidgetSettingPairs = [];
-
-    private MicrosoftWidgetModel _microsoftWidgetModel = null!;
 
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
     private bool _inEditMode = false;

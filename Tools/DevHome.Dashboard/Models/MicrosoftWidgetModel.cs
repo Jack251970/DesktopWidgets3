@@ -26,32 +26,30 @@ public partial class MicrosoftWidgetModel : IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));
 
-    private readonly Action<WidgetViewModel> CreateWidgetWindow;
+    private Action<WidgetViewModel>? CreateWidgetWindow;
 
     public DashboardViewModel ViewModel { get; }
 
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
-
     private readonly IWidgetExtensionService _widgetExtensionService;
-    private readonly IWidgetService _widgetService;
 
     private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
 
     private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
 
-    private bool _disposedValue;
-
-    public MicrosoftWidgetModel(Action<WidgetViewModel> createWidgetWindow)
+    public MicrosoftWidgetModel()
     {
-        CreateWidgetWindow = createWidgetWindow;
-
         ViewModel = DependencyExtensions.GetRequiredService<DashboardViewModel>();
 
         _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
         _widgetViewModelFactory = DependencyExtensions.GetRequiredService<WidgetViewModelFactory>();
         _widgetExtensionService = DependencyExtensions.GetRequiredService<IWidgetExtensionService>();
-        _widgetService = DependencyExtensions.GetRequiredService<IWidgetService>();
+    }
+
+    public void Initialize(Action<WidgetViewModel> createWidgetWindow)
+    {
+        CreateWidgetWindow = createWidgetWindow;
     }
 
     #region Loaded & UnLoaded
@@ -270,7 +268,10 @@ public partial class MicrosoftWidgetModel : IDisposable
                     {
                         try
                         {
-                            CreateWidgetWindow(wvm);
+                            if (CreateWidgetWindow != null)
+                            {
+                                CreateWidgetWindow.Invoke(wvm);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -647,6 +648,8 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #region Dispose
 
+    private bool _disposed;
+
     public void Dispose()
     {
         Dispose(disposing: true);
@@ -655,14 +658,14 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposedValue)
+        if (!_disposed)
         {
             if (disposing)
             {
                 _pinnedWidgetsLock.Dispose();
             }
 
-            _disposedValue = true;
+            _disposed = true;
         }
     }
 

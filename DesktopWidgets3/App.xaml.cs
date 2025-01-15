@@ -30,6 +30,9 @@ public partial class App : Application
             throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
         }
 
+        // Uncomment to log the service retrieval for checking the recrusive call
+        // _log.Debug("Service {service} retrieved.", typeof(T).Name);
+
         return service;
     }
 
@@ -235,6 +238,9 @@ public partial class App : Application
 
                 #region DevHome.Dashboard
 
+                // Models
+                services.AddSingleton<MicrosoftWidgetModel>();
+
                 // View-models
                 services.AddSingleton<DashboardViewModel>();
                 services.AddTransient<AddWidgetViewModel>();
@@ -344,15 +350,21 @@ public partial class App : Application
             // Check startup
             _ = StartupHelper.CheckStartup();
 
+            // Initialize microsoft widgets
+            GetService<MicrosoftWidgetModel>();
+
+            // Initialize widget resources
+            await GetService<IWidgetResourceService>().InitalizeAsync();
+
+            // Initialize pinned widgets
+            GetService<IWidgetManagerService>().InitializePinnedWidgets();
+
+            // Activate the main window
+            await GetService<IActivationService>().ActivateMainWindowAsync(args);
+
             // Create edit mode window
             EditModeWindow = WindowsExtensions.CreateWindow<EditModeWindow>();
             await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
-
-            // Initialize widgets
-            await GetService<IWidgetResourceService>().InitalizeAsync();
-            GetService<IWidgetManagerService>().InitializePinnedWidgets();
-
-            await GetService<IActivationService>().ActivateMainWindowAsync(args);
         }
     }
 

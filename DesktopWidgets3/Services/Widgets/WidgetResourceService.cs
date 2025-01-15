@@ -8,7 +8,7 @@ using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettingsService appSettingsService, IWidgetIconService widgetIconService, IWidgetScreenshotService widgetScreenshotService) : IWidgetResourceService
+internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettingsService appSettingsService, IWidgetIconService widgetIconService, IWidgetScreenshotService widgetScreenshotService, MicrosoftWidgetModel microsoftWidgetModel) : IWidgetResourceService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetResourceService));
 
@@ -16,6 +16,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly IWidgetIconService _widgetIconService = widgetIconService;
     private readonly IWidgetScreenshotService _widgetScreenshotService = widgetScreenshotService;
+    private readonly MicrosoftWidgetModel _microsoftWidgetModel = microsoftWidgetModel;
 
     private List<WidgetGroupPair> InstalledWidgetGroupPairs { get; set; } = null!;
     private List<WidgetGroupMetadata> AllWidgetGroupMetadatas { get; set; } = null!;
