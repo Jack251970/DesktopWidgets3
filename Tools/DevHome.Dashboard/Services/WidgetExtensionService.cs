@@ -3,9 +3,9 @@
 
 //using DevHome.Common.Services;
 
-namespace DesktopWidgets3.Services.Widgets;
+namespace DevHome.Dashboard.Services;
 
-internal sealed class WidgetExtensionService : IWidgetExtensionService
+public sealed class WidgetExtensionService : IWidgetExtensionService
 {
     private const string ExtensionUniqueIdStable = "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!PG-SP-ID1";
     private const string ExtensionUniqueIdCanary = "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!PG-SP-ID1";

@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Storage;
 
-namespace DesktopWidgets3.Services.Widgets;
+namespace DevHome.Dashboard.Services;
 
 public partial class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {

@@ -6,7 +6,7 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
-namespace DesktopWidgets3.Services.Widgets;
+namespace DevHome.Dashboard.Services;
 
 public class WidgetHostingService : IWidgetHostingService
 {
@@ -22,7 +22,7 @@ public class WidgetHostingService : IWidgetHostingService
     private const int MaxAttempts = 3;
 
     /// <inheritdoc />
-    public async Task<Microsoft.Windows.Widgets.Hosts.Widget[]> GetWidgetsAsync()
+    public async Task<Widget[]> GetWidgetsAsync()
     {
         var attempt = 0;
         while (attempt++ < MaxAttempts)
@@ -51,7 +51,7 @@ public class WidgetHostingService : IWidgetHostingService
     }
 
     /// <inheritdoc />
-    public async Task<Microsoft.Windows.Widgets.Hosts.Widget> GetWidgetAsync(string widgetId)
+    public async Task<Widget> GetWidgetAsync(string widgetId)
     {
         var attempt = 0;
         while (attempt++ < MaxAttempts)
@@ -78,7 +78,7 @@ public class WidgetHostingService : IWidgetHostingService
     }
 
     /// <inheritdoc />
-    public async Task<Microsoft.Windows.Widgets.Hosts.Widget> CreateWidgetAsync(string widgetDefinitionId, WidgetSize widgetSize)
+    public async Task<Widget> CreateWidgetAsync(string widgetDefinitionId, WidgetSize widgetSize)
     {
         var attempt = 0;
         while (attempt++ < MaxAttempts)
