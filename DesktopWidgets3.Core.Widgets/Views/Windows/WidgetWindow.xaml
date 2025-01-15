@@ -13,7 +13,7 @@
     IsTitleBarVisible="False"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea">
+    <Grid x:Name="ContentArea" ActualThemeChanged="ContentArea_ActualThemeChanged">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />

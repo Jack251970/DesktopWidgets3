@@ -24,33 +24,61 @@ public partial class WidgetWindowViewModel : ObservableRecipient
     public MenuFlyout? _widgetMenuFlyout = null;
 
     [ObservableProperty]
-    public WidgetViewModel? _widgetSource = null;
+    public WidgetViewModel? _widgetViewModel = null;
+
+    public Action<object, RoutedEventArgs>? FrameworkElementLoaded;
+
+    private bool _frameworkElementInitialized;
 
     public WidgetWindowViewModel()
     {
 
     }
 
-    partial void OnWidgetSourceChanging(WidgetViewModel? oldValue, WidgetViewModel? newValue)
+    public void InitializeWidgetViewmodel(WidgetViewModel? widgetViewModel)
     {
-        if (oldValue != null)
+        if (WidgetViewModel == null && widgetViewModel != null)
         {
-            oldValue.PropertyChanged -= WidgetSource_PropertyChanged;
-        }
-        if (newValue != null)
-        {
-            // TODO: SetScaledWidthAndHeight
-            newValue.PropertyChanged += WidgetSource_PropertyChanged;
+            widgetViewModel.PropertyChanged += WidgetViewModel_PropertyChanged;
+
+            WidgetViewModel = widgetViewModel;
         }
     }
 
-    private void WidgetSource_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
+    {
+        if (!_frameworkElementInitialized)
+        {
+            if (value.IsLoaded)
+            {
+                FrameworkElementLoaded?.Invoke(value, new RoutedEventArgs());
+            }
+            else
+            {
+                value.Loaded += WidgetFrameworkElement_Loaded;
+            }
+
+            _frameworkElementInitialized = true;
+        }
+    }
+
+    private void WidgetFrameworkElement_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement frameworkElement)
+        {
+            frameworkElement.Loaded -= WidgetFrameworkElement_Loaded;
+
+            FrameworkElementLoaded?.Invoke(frameworkElement, e);
+        }
+    }
+
+    private void WidgetViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
         {
             case nameof(WidgetViewModel.WidgetFrameworkElement)
-                when WidgetSource != null:
-                WidgetFrameworkElement = WidgetSource.WidgetFrameworkElement;
+                when WidgetViewModel != null:
+                WidgetFrameworkElement = WidgetViewModel.WidgetFrameworkElement;
                 break;
         }
     }

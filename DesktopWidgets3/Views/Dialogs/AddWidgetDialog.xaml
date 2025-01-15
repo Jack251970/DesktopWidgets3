@@ -15,7 +15,6 @@
             <ic:InvokeCommandAction Command="{x:Bind LoadedCommand}" />
         </ic:EventTriggerBehavior>
         <ic:EventTriggerBehavior EventName="ActualThemeChanged">
-            <ic:InvokeCommandAction Command="{x:Bind ViewModel.UpdateThemeCommand}" />
             <ic:InvokeCommandAction Command="{x:Bind UpdateThemeCommand}" />
         </ic:EventTriggerBehavior>
     </i:Interaction.Behaviors>

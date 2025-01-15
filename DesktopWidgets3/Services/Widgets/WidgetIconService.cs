@@ -8,88 +8,15 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
-using Windows.Storage.Streams;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-public class WidgetIconService(DispatcherQueue dispatcherQueue, IThemeSelectorService themeSelectorService, IWidgetResourceService widgetResourceService) : IWidgetIconService
+public class WidgetIconService : IWidgetIconService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetIconService));
 
-    private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
-    private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
-    private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
-
-    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightIconCache = new();
-    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkIconCache = new();
-
     private readonly ConcurrentDictionary<string, BitmapImage> _microsoftWidgetLightIconCache = new();
     private readonly ConcurrentDictionary<string, BitmapImage> _microsoftWidgetDarkIconCache = new();
-
-    public void RemoveIconsFromDesktopWidgets3Cache(string widgetId, string widgetType)
-    {
-        _desktopWidgets3WidgetLightIconCache.TryRemove((widgetId, widgetType), out _);
-        _desktopWidgets3WidgetDarkIconCache.TryRemove((widgetId, widgetType), out _);
-    }
-
-    private async Task<BitmapImage> GetIconFromDesktopWidgets3CacheAsync(string widgetId, string widgetType)
-    {
-        BitmapImage? bitmapImage;
-
-        // First, check the cache to see if the icon is already there.
-        if (_themeSelectorService.IsDarkTheme())
-        {
-            _desktopWidgets3WidgetDarkIconCache.TryGetValue((widgetId, widgetType), out bitmapImage);
-        }
-        else
-        {
-            _desktopWidgets3WidgetLightIconCache.TryGetValue((widgetId, widgetType), out bitmapImage);
-        }
-
-        if (bitmapImage != null)
-        {
-            return bitmapImage;
-        }
-
-        // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
-        if (_themeSelectorService.IsDarkTheme())
-        {
-            bitmapImage = await DesktopWidgets3WidgetIconToBitmapImageAsync(_widgetResourceService.GetWidgetIconPath(widgetId, widgetType, ElementTheme.Dark));
-            _desktopWidgets3WidgetDarkIconCache.TryAdd((widgetId, widgetType), bitmapImage);
-        }
-        else
-        {
-            bitmapImage = await DesktopWidgets3WidgetIconToBitmapImageAsync(_widgetResourceService.GetWidgetIconPath(widgetId, widgetType, ElementTheme.Dark));
-            _desktopWidgets3WidgetLightIconCache.TryAdd((widgetId, widgetType), bitmapImage);
-        }
-
-        return bitmapImage;
-    }
-
-    public async Task<Brush> GetBrushForDesktopWidgets3WidgetIconAsync(string widgetId, string widgetType)
-    {
-        var image = new BitmapImage();
-        try
-        {
-            image = await GetIconFromDesktopWidgets3CacheAsync(widgetId, widgetType);
-        }
-        catch (FileNotFoundException fileNotFoundEx)
-        {
-            _log.Warning(fileNotFoundEx, $"Widget icon missing for widget {widgetId} - {widgetType}");
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"Failed to get widget icon for widget {widgetId} - {widgetType}");
-        }
-
-        var brush = new ImageBrush
-        {
-            ImageSource = image,
-            Stretch = Stretch.Uniform,
-        };
-
-        return brush;
-    }
 
     public void RemoveIconsFromMicrosoftCache(string definitionId)
     {
@@ -97,13 +24,13 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IThemeSelectorSe
         _microsoftWidgetDarkIconCache.TryRemove(definitionId, out _);
     }
 
-    private async Task<BitmapImage> GetIconFromMicrosoftCacheAsync(ComSafeWidgetDefinition widgetDefinition)
+    private async Task<BitmapImage> GetIconFromMicrosoftCacheAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage? bitmapImage;
 
         // First, check the cache to see if the icon is already there.
-        if (_themeSelectorService.IsDarkTheme())
+        if (actualTheme == ElementTheme.Dark)
         {
             _microsoftWidgetDarkIconCache.TryGetValue(widgetDefinitionId, out bitmapImage);
         }
@@ -118,26 +45,26 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IThemeSelectorSe
         }
 
         // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
-        if (_themeSelectorService.IsDarkTheme())
+        if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await MicrosoftWidgetIconToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).Icon);
+            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).Icon);
             _microsoftWidgetDarkIconCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
         else
         {
-            bitmapImage = await MicrosoftWidgetIconToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).Icon);
+            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).Icon);
             _microsoftWidgetLightIconCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
 
         return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForMicrosoftWidgetIconAsync(ComSafeWidgetDefinition widgetDefinition)
+    public async Task<Brush> GetBrushForMicrosoftWidgetIconAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetIconFromMicrosoftCacheAsync(widgetDefinition);
+            image = await GetIconFromMicrosoftCacheAsync(dispatcherQueue, widgetDefinition, actualTheme);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {
@@ -155,42 +82,5 @@ public class WidgetIconService(DispatcherQueue dispatcherQueue, IThemeSelectorSe
         };
 
         return brush;
-    }
-
-    private async Task<BitmapImage> DesktopWidgets3WidgetIconToBitmapImageAsync(string iconPath)
-    {
-        // Return the bitmap image via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
-        // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
-        var completionSource = new TaskCompletionSource<BitmapImage>();
-        _dispatcherQueue.TryEnqueue(() =>
-        {
-            var itemImage = new BitmapImage
-            {
-                UriSource = new Uri(iconPath)
-            };
-            completionSource.TrySetResult(itemImage);
-        });
-
-        var bitmapImage = await completionSource.Task;
-
-        return bitmapImage;
-    }
-
-    private async Task<BitmapImage> MicrosoftWidgetIconToBitmapImageAsync(IRandomAccessStreamReference iconStreamRef)
-    {
-        // Return the bitmap image via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
-        // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
-        var completionSource = new TaskCompletionSource<BitmapImage>();
-        _dispatcherQueue.TryEnqueue(async () =>
-        {
-            using var bitmapStream = await iconStreamRef.OpenReadAsync();
-            var itemImage = new BitmapImage();
-            await itemImage.SetSourceAsync(bitmapStream);
-            completionSource.TrySetResult(itemImage);
-        });
-
-        var bitmapImage = await completionSource.Task;
-
-        return bitmapImage;
     }
 }

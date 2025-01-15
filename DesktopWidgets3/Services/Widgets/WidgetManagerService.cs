@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using DesktopWidgets3.Core.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -6,12 +7,11 @@ using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetIconService widgetIconService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
     private readonly IActivationService _activationService = activationService;
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly INavigationService _navigationService = navigationService;
-    private readonly IWidgetIconService _widgetIconService = widgetIconService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     private readonly ConcurrentDictionary<string, WidgetWindowPair> PinnedWidgetWindowPairs = [];
@@ -225,7 +225,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // get widget view model
         if (widgetWindowPair != null)
         {
-            return widgetWindowPair.Window.ViewModel.WidgetSource;
+            return widgetWindowPair.Window.ViewModel.WidgetViewModel;
         }
 
         return null!;
@@ -249,8 +249,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
 
         // TODO: Check the widget list here.
-        _microsoftWidgetModel ??= new(CreateWidgetWindow);
-        await _microsoftWidgetModel.OnLoadedAsync();
+        /*_microsoftWidgetModel ??= new(CreateWidgetWindow);
+        await _microsoftWidgetModel.OnLoadedAsync();*/
     }
 
     // TODO: Test restart.
@@ -412,7 +412,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         };
 
         // create widget window
-        CreateWidgetWindow(widgetViewModel);
+        CreateWidgetWindow(widget, widgetViewModel);
 
         // update dashboard page
         if (updateDashboard)
@@ -596,7 +596,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), _appSettingsService.MultiThread, lifecycleActions);
     }
 
-    private void CreateWidgetWindow(WidgetViewModel widgetViewModel)
+    private void CreateWidgetWindow(JsonWidgetItem item, WidgetViewModel widgetViewModel)
     {
         // get widget info
         var widgetId = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
@@ -640,7 +640,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         };
 
         // create widget window
-        WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, widgetViewModel), _appSettingsService.MultiThread, lifecycleActions);
+        WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item, widgetViewModel), _appSettingsService.MultiThread, lifecycleActions);
     }
 
     #region Widget Window Lifecycle
@@ -657,8 +657,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetType = item.Type;
             var widgetIndex = item.Index;
 
-            // set widget icon & title
-            widgetWindow.ViewModel.WidgetIconFill = await _widgetIconService.GetBrushForDesktopWidgets3WidgetIconAsync(widgetId, widgetType);
+            // set widget title
             widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId, widgetType);
 
             // initialize window
@@ -703,20 +702,13 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // set widget position
             widgetWindow.Position = widgetPosition;
 
-            // set widget framework element
+            // set widget framework element loaded event
             var widgetContext = GetWidgetContext(providerType, widgetId, widgetType, widgetIndex)!;
-            var frameworkElement = _widgetResourceService.CreateWidgetContent(widgetId, widgetContext!);
-            widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
+            widgetWindow.ViewModel.FrameworkElementLoaded = (s, e) => WidgetFrameworkElement_Loaded(widgetId, widgetSettings, widgetContext, widgetWindow);
 
-            // invoke widget event after widget framework element is loaded
-            if (frameworkElement.IsLoaded)
-            {
-                WidgetFrameworkElement_Loaded(widgetId, widgetSettings, widgetContext, widgetWindow);
-            }
-            else
-            {
-                frameworkElement.Loaded += (s, e) => WidgetFrameworkElement_Loaded(widgetId, widgetSettings, widgetContext, widgetWindow);
-            }
+            // set widget framework element
+            var frameworkElement = _widgetResourceService.CreateWidgetContent(widgetId, widgetContext);
+            widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
         }
     }
 
@@ -733,8 +725,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // TODO: Get widget index.
             var widgetIndex = 0;
 
-            // set widget icon & title
-            widgetWindow.ViewModel.WidgetIconFill = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(widgetViewModel.WidgetDefinition);
+            // set widget title
             widgetWindow.ViewModel.WidgetDisplayTitle = widgetViewModel.WidgetDisplayTitle;
 
             // initialize window
@@ -779,20 +770,11 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // set widget position
             widgetWindow.Position = widgetPosition;
 
-            // set widget framework element
-            widgetWindow.ViewModel.WidgetSource = widgetViewModel;
+            // set widget framework element loaded event
+            widgetWindow.ViewModel.FrameworkElementLoaded = (s, e) => WidgetFrameworkElement_Loaded(widgetWindow);
 
-            // TODO: Check this?
-            /*// invoke widget event after widget framework element is loaded
-            var widgetContext = GetWidgetContext(providerType, widgetId, widgetType, widgetIndex)!;
-            if (frameworkElement.IsLoaded)
-            {
-                WidgetFrameworkElement_Loaded(widgetId, widgetContext, widgetWindow);
-            }
-            else
-            {
-                frameworkElement.Loaded += (s, e) => WidgetFrameworkElement_Loaded(widgetId, widgetContext, widgetWindow);
-            }*/
+            // set widget framework element
+            widgetWindow.ViewModel.InitializeWidgetViewmodel(widgetViewModel);
         }
     }
 
@@ -809,7 +791,8 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         widgetWindow.OnIsActiveChanged();
     }
 
-    private void WidgetFrameworkElement_Loaded(string widgetId, WidgetContext widgetContext, WidgetWindow widgetWindow)
+    // TODO: Check this?
+    private static void WidgetFrameworkElement_Loaded(WidgetWindow widgetWindow)
     {
         // invoke widget activate & deactivate event
         widgetWindow.OnIsActiveChanged();

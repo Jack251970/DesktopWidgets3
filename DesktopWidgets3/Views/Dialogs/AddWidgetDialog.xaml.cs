@@ -24,7 +24,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
     public AddWidgetViewModel ViewModel { get; set; }
 
     private readonly IWidgetHostingService _hostingService;
-    private readonly IWidgetIconService _widgetIconService;
     private readonly IWidgetResourceService _widgetResourceService;
     private readonly DispatcherQueue _dispatcherQueue;
 
@@ -32,7 +31,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         ViewModel = DependencyExtensions.GetRequiredService<AddWidgetViewModel>();
         _hostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
-        _widgetIconService = DependencyExtensions.GetRequiredService<IWidgetIconService>();
         _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
         InitializeComponent();
@@ -200,7 +198,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<Grid> BuildNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
     {
-        var imageBrush = await _widgetIconService.GetBrushForDesktopWidgets3WidgetIconAsync(widgetDefinition.WidgetId, widgetDefinition.WidgetType);
+        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
     }
@@ -212,7 +210,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<Grid> BuildNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
-        var imageBrush = await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(widgetDefinition);
+        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinition, ActualTheme);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
     }
@@ -314,13 +312,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
         if (selectedTag as ComSafeWidgetDefinition is ComSafeWidgetDefinition selectedWidgetDefinition)
         {
             _selectedWidget = selectedWidgetDefinition;
-            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition);
+            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition, ActualTheme);
         }
         else if (selectedTag as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition selectedWidgetDefinition1)
         {
             // TODO: Fix ViewModel == null issue.
             _selectedWidget = selectedWidgetDefinition1;
-            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition1);
+            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition1, ActualTheme);
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
@@ -331,6 +329,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
     [RelayCommand]
     private async Task UpdateThemeAsync()
     {
+        // Update the icon and screenshot for the selected widget.
+        await ViewModel.UpdateThemeAsync(ActualTheme);
+
         // Update the icons for each available widget listed.
         foreach (var providerItem in AddWidgetNavigationView.MenuItems.OfType<NavigationViewItem>())
         {

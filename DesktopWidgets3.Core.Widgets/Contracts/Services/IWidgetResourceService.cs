@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 
 namespace DesktopWidgets3.Core.Widgets.Contracts.Services;
 
@@ -28,9 +30,13 @@ public interface IWidgetResourceService
 
     string GetWidgetDescription(string widgetId, string widgetType);
 
-    string GetWidgetIconPath(string widgetId, string widgetType, ElementTheme? actualTheme = null);
+    Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme);
 
-    string GetWidgetScreenshotPath(string widgetId, string widgetType, ElementTheme? actualTheme = null);
+    Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
+
+    Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme);
+
+    Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
 
     RectSize GetWidgetDefaultSize(string widgetId, string widgetType);
 

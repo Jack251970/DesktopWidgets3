@@ -1,15 +1,20 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.Collections.Concurrent;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetResourceService(IAppSettingsService appSettingsService, IThemeSelectorService themeSelectorService) : IWidgetResourceService
+internal class WidgetResourceService(IAppSettingsService appSettingsService, IWidgetIconService widgetIconService, IWidgetScreenshotService widgetScreenshotService) : IWidgetResourceService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetResourceService));
 
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
-    private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
+    private readonly IWidgetIconService _widgetIconService = widgetIconService;
+    private readonly IWidgetScreenshotService _widgetScreenshotService = widgetScreenshotService;
 
     private List<WidgetGroupPair> InstalledWidgetGroupPairs { get; set; } = null!;
     private List<WidgetGroupMetadata> AllWidgetGroupMetadatas { get; set; } = null!;
@@ -602,7 +607,148 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
 
     #region Icon & Screenshot
 
-    public string GetWidgetIconPath(string widgetId, string widgetType, ElementTheme? actualTheme = null)
+    #region Desktop Widgets 3
+
+    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightScreenshotCache = new();
+    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkScreenshotCache = new();
+
+    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightIconCache = new();
+    private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkIconCache = new();
+
+    public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
+    {
+        var image = new BitmapImage();
+        try
+        {
+            image = await GetIconFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, widgetType, actualTheme);
+        }
+        catch (FileNotFoundException fileNotFoundEx)
+        {
+            _log.Warning(fileNotFoundEx, $"Widget icon missing for widget {widgetId} - {widgetType}");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get widget icon for widget {widgetId} - {widgetType}");
+        }
+
+        var brush = new ImageBrush
+        {
+            ImageSource = image,
+            Stretch = Stretch.Uniform,
+        };
+
+        return brush;
+    }
+    
+    public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
+    {
+        var image = new BitmapImage();
+        try
+        {
+            image = await GetScreenshotFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, widgetType, actualTheme);
+        }
+        catch (FileNotFoundException fileNotFoundEx)
+        {
+            _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetId} {widgetType}");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get widget screenshot for widget definition {widgetId} {widgetType}");
+        }
+
+        var brush = new ImageBrush
+        {
+            ImageSource = image,
+        };
+
+        return brush;
+    }
+    
+    // TODO: Add support for cache clean.
+    private void RemoveIconsFromDesktopWidgets3Cache(string widgetId, string widgetType)
+    {
+        _desktopWidgets3WidgetLightIconCache.TryRemove((widgetId, widgetType), out _);
+        _desktopWidgets3WidgetDarkIconCache.TryRemove((widgetId, widgetType), out _);
+    }
+
+    // TODO: Add support for cache clean.
+    private void RemoveScreenshotsFromDesktopWidgets3Cache(string widgetId, string widgetType)
+    {
+        _desktopWidgets3WidgetLightScreenshotCache.Remove((widgetId, widgetType), out _);
+        _desktopWidgets3WidgetDarkScreenshotCache.Remove((widgetId, widgetType), out _);
+    }
+
+    private async Task<BitmapImage> GetIconFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
+    {
+        BitmapImage? bitmapImage;
+
+        // First, check the cache to see if the icon is already there.
+        if (actualTheme == ElementTheme.Dark)
+        {
+            _desktopWidgets3WidgetDarkIconCache.TryGetValue((widgetId, widgetType), out bitmapImage);
+        }
+        else
+        {
+            _desktopWidgets3WidgetLightIconCache.TryGetValue((widgetId, widgetType), out bitmapImage);
+        }
+
+        if (bitmapImage != null)
+        {
+            return bitmapImage;
+        }
+
+        // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
+        if (actualTheme == ElementTheme.Dark)
+        {
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetIconPath(widgetId, widgetType, ElementTheme.Dark));
+            _desktopWidgets3WidgetDarkIconCache.TryAdd((widgetId, widgetType), bitmapImage);
+        }
+        else
+        {
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetIconPath(widgetId, widgetType, ElementTheme.Dark));
+            _desktopWidgets3WidgetLightIconCache.TryAdd((widgetId, widgetType), bitmapImage);
+        }
+
+        return bitmapImage;
+    }
+
+    private async Task<BitmapImage> GetScreenshotFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
+    {
+        BitmapImage? bitmapImage;
+
+        // First, check the cache to see if the screenshot is already there.
+        if (actualTheme == ElementTheme.Dark)
+        {
+            _desktopWidgets3WidgetDarkScreenshotCache.TryGetValue((widgetId, widgetType), out bitmapImage);
+        }
+        else
+        {
+            _desktopWidgets3WidgetLightScreenshotCache.TryGetValue((widgetId, widgetType), out bitmapImage);
+        }
+
+        if (bitmapImage != null)
+        {
+            return bitmapImage;
+        }
+
+        // If the screenshot wasn't already in the cache, get it from the widget resources service and add it to the cache before returning.
+        if (actualTheme == ElementTheme.Dark)
+        {
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetScreenshotPath(widgetId, widgetType, ElementTheme.Dark));
+            _desktopWidgets3WidgetDarkScreenshotCache.TryAdd((widgetId, widgetType), bitmapImage);
+        }
+        else
+        {
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetScreenshotPath(widgetId, widgetType, ElementTheme.Light));
+            _desktopWidgets3WidgetLightScreenshotCache.TryAdd((widgetId, widgetType), bitmapImage);
+        }
+
+        return bitmapImage;
+    }
+
+    #region Image Path
+
+    private string GetWidgetIconPath(string widgetId, string widgetType, ElementTheme actualTheme)
     {
         (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
         if (installedIndex != -1)
@@ -613,7 +759,7 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         return string.Empty;
     }
 
-    public string GetWidgetScreenshotPath(string widgetId, string widgetType, ElementTheme? actualTheme = null)
+    private string GetWidgetScreenshotPath(string widgetId, string widgetType, ElementTheme actualTheme)
     {
         (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
         if (installedIndex != -1)
@@ -624,10 +770,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         return string.Empty;
     }
 
-    private string GetWidgetIconPath(int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme? actualTheme = null)
+    private string GetWidgetIconPath(int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
     {
-        actualTheme ??= _themeSelectorService.GetActualTheme();
-
         if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetTypeIndex != null)
         {
             var widget = InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetTypeIndex!.Value];
@@ -657,10 +801,8 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
         return Constants.UnknownWidgetIcoPath;
     }
 
-    private string GetWidgetScreenshotPath(int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme? actualTheme = null)
+    private string GetWidgetScreenshotPath(int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
     {
-        actualTheme ??= _themeSelectorService.GetActualTheme();
-
         if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetTypeIndex != null)
         {
             var widget = InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetTypeIndex!.Value];
@@ -689,6 +831,24 @@ internal class WidgetResourceService(IAppSettingsService appSettingsService, ITh
 
         return Constants.UnknownWidgetIcoPath;
     }
+
+    #endregion
+
+    #endregion
+
+    #region Microsoft
+
+    public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    {
+        return await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(dispatcherQueue, widgetDefinition, actualTheme);
+    }
+
+    public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    {
+        return await _widgetScreenshotService.GetBrushForMicrosoftWidgetScreenshotAsync(dispatcherQueue, widgetDefinition, actualTheme);
+    }
+
+    #endregion
 
     #endregion
 

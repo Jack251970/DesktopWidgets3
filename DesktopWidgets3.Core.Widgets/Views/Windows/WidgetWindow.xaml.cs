@@ -147,11 +147,15 @@ public sealed partial class WidgetWindow : WindowEx
 
     public WidgetProviderType ProviderType { get; private set; }
 
+    public string WidgetId { get; private set; }
+
+    public string WidgetType { get; private set; }
+
     public string RuntimeId { get; private set; }
 
     private BaseWidgetSettings? WidgetSettings { get; set; }
 
-    private WidgetViewModel? WidgetSource { get; set; }
+    private WidgetViewModel? WidgetViewModel;
 
     private PointInt32 _widgetPosition;
 
@@ -204,9 +208,11 @@ public sealed partial class WidgetWindow : WindowEx
     {
         // Initialize widget info
         ProviderType = widgetItem.ProviderType;
+        WidgetId = widgetItem.Id;
+        WidgetType = widgetItem.Type;
         RuntimeId = widgetRuntimeId;
         WidgetSettings = widgetItem.Settings;
-        WidgetSource = null;
+        WidgetViewModel = null;
 
         // Initialize view model
         ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
@@ -253,14 +259,15 @@ public sealed partial class WidgetWindow : WindowEx
         SizeChanged += WidgetWindow_SizeChanged;
     }
 
-    public WidgetWindow(string widgetRuntimeId, WidgetViewModel widgetViewModel)
+    public WidgetWindow(string widgetRuntimeId, JsonWidgetItem widgetItem, WidgetViewModel widgetViewModel)
     {
         // Initialize widget info
-        // TODO: Use widgetItem.ProviderType with JsonItem
-        ProviderType = WidgetProviderType.Microsoft;
+        ProviderType = widgetItem.ProviderType;
+        WidgetId = widgetItem.Id;
+        WidgetType = widgetItem.Type;
         RuntimeId = widgetRuntimeId;
         WidgetSettings = null;
-        WidgetSource = widgetViewModel;
+        WidgetViewModel = widgetViewModel;
 
         // Initialize view model
         ViewModel = DependencyExtensions.GetRequiredService<WidgetWindowViewModel>();
@@ -269,21 +276,18 @@ public sealed partial class WidgetWindow : WindowEx
         InitializeComponent();
 
         // Initialize size & position for completed event
-        var widgetSizeHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize);
+        var widgetSizeHeight = GetPixelHeightFromWidgetSize(WidgetViewModel.WidgetSize);
         var widgetSizeWidth = WidgetHelpers.WidgetPxWidth;
         _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
         _widgetPosition = AppWindow.Position;
-        // TODO: Set position.
-        /*if (widgetItem.Position.X != -10000)
+        if (widgetItem.Position.X != -10000)
         {
             _widgetPosition.X = widgetItem.Position.X;
         }
         if (widgetItem.Position.Y != -10000)
         {
             _widgetPosition.Y = widgetItem.Position.Y;
-        }*/
-        _widgetPosition.X = 20;
-        _widgetPosition.Y = 20;
+        }
 
         // Initialize properties for ui elements
         WidgetScrollViewer.Padding = MicrosoftWidgetScrollViewerPadding;
@@ -357,6 +361,9 @@ public sealed partial class WidgetWindow : WindowEx
 
     private void Content_Loaded(object sender, RoutedEventArgs e)
     {
+        // initialize widget icon
+        UpdateWidgetHeaderIconFillAsync(ContentArea.ActualTheme);
+
         // set title bar
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(ContentArea);
@@ -380,7 +387,7 @@ public sealed partial class WidgetWindow : WindowEx
             WidgetRuntimeId = RuntimeId,
             WidgetPosition = _widgetPosition,
             WidgetSettings = WidgetSettings,
-            WidgetViewModel = WidgetSource
+            WidgetViewModel = WidgetViewModel
         });
     }
 
@@ -403,8 +410,7 @@ public sealed partial class WidgetWindow : WindowEx
     private void WidgetWindow_Closed(object? sender, WindowEventArgs args)
     {
         WidgetMenuFlyout = null!;
-        WidgetSource = null;
-        WidgetSettings = null;
+        WidgetViewModel = null;
 
         Closed -= WidgetWindow_Closed;
         AppWindow.Changed -= AppWindow_Changed;
@@ -421,6 +427,40 @@ public sealed partial class WidgetWindow : WindowEx
             e.Handled = true;
             return;
         }
+    }
+
+    private void ContentArea_ActualThemeChanged(FrameworkElement sender, object args)
+    {
+        UpdateWidgetHeaderIconFillAsync(sender.ActualTheme);
+    }
+
+    private async void UpdateWidgetHeaderIconFillAsync(ElementTheme actualTheme)
+    {
+        if (ProviderType == WidgetProviderType.DesktopWidgets3)
+        {
+            ViewModel.WidgetIconFill = await _widgetResourceService.GetWidgetIconBrushAsync(DispatcherQueue, WidgetId, WidgetType, actualTheme);
+        }
+        else
+        {
+            ViewModel.WidgetIconFill = await _widgetResourceService.GetWidgetIconBrushAsync(DispatcherQueue, WidgetViewModel!.WidgetDefinition, actualTheme);
+        }
+    }
+
+    #endregion
+
+    #region Event Handler
+
+    public event EventHandler<LoadCompletedEventArgs>? LoadCompleted;
+
+    public class LoadCompletedEventArgs : EventArgs
+    {
+        public required string WidgetRuntimeId { get; set; }
+
+        public required PointInt32 WidgetPosition { get; set; }
+
+        public required BaseWidgetSettings? WidgetSettings { get; set; }
+
+        public required WidgetViewModel? WidgetViewModel { get; set; }
     }
 
     #endregion
@@ -501,23 +541,6 @@ public sealed partial class WidgetWindow : WindowEx
         {
             _widgetResourceService.DeactivateWidget(widgetId, RuntimeId);
         }
-    }
-
-    #endregion
-
-    #region Event Handler
-
-    public event EventHandler<LoadCompletedEventArgs>? LoadCompleted;
-
-    public class LoadCompletedEventArgs : EventArgs
-    {
-        public required string WidgetRuntimeId { get; set; }
-
-        public required PointInt32 WidgetPosition { get; set; }
-
-        public required BaseWidgetSettings? WidgetSettings { get; set; }
-
-        public required WidgetViewModel? WidgetViewModel { get; set; }
     }
 
     #endregion
