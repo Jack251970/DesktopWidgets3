@@ -1247,9 +1247,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
             Id = widgetId,
             Type = widgetType,
             Index = widgetIndex,
-            Name = widgetViewModel.WidgetDisplayTitle,
-            // TODO: Icon fill here.
-            IconFill = null,
+            Name = widgetName,
+            IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetViewModel.WidgetDefinition, actualTheme),
             Pinned = true,
             IsUnknown = false,
             IsInstalled = true

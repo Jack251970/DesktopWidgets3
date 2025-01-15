@@ -71,7 +71,7 @@
                                         Width="16"
                                         Height="16"
                                         VerticalAlignment="Center"
-                                        Fill="{x:Bind IconFill, Mode=OneTime}" />
+                                        Fill="{x:Bind IconFill, Mode=OneWay}" />
                                     <TextBlock
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
@@ -134,7 +134,7 @@
                                         Width="16"
                                         Height="16"
                                         VerticalAlignment="Center"
-                                        Fill="{x:Bind IconFill, Mode=OneTime}" />
+                                        Fill="{x:Bind IconFill, Mode=OneWay}" />
                                     <TextBlock
                                         Grid.Column="1"
                                         VerticalAlignment="Center"

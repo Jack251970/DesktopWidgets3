@@ -370,7 +370,18 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Wid
 
     public async Task UpdateThemeAsync(ElementTheme actualTheme)
     {
-        // TODO: Add support.
+        foreach (var widgetItem in yourWidgets)
+        {
+            if (widgetItem.ProviderType == WidgetProviderType.DesktopWidgets3)
+            {
+                widgetItem.IconFill = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetItem.Id, widgetItem.Type, actualTheme);
+            }
+            else
+            {
+                // TODO: Add support.
+                /*widgetItem.IconFill = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetItem.Id, widgetItem.Type, actualTheme);*/
+            }
+        }
     }
 
     #endregion

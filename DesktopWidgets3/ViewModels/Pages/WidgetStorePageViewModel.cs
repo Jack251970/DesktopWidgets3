@@ -85,7 +85,7 @@ public partial class WidgetStorePageViewModel(IWidgetResourceService widgetResou
 
     public async Task UpdateThemeAsync(ElementTheme actualTheme)
     {
-        // TODO: Add support.
+        await Task.CompletedTask;
     }
 
     #endregion

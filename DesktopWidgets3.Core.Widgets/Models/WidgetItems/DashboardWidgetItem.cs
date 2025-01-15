@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Media;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Media;
 
 namespace DesktopWidgets3.Core.Widgets.Models.WidgetItems;
 
@@ -11,13 +12,17 @@ public class DashboardWidgetGroupItem : BaseWidgetGroupItem
     public required List<string> Types { get; set; }
 }
 
-public class DashboardWidgetItem : BaseWidgetItem
+[ObservableObject]
+public partial class DashboardWidgetItem : BaseWidgetItem
 {
     public required WidgetProviderType ProviderType { get; set; }
 
     public required string Name { get; set; }
 
-    public required Brush IconFill { get; set; }
+    /*public required Brush IconFill { get; set; }*/
+
+    [ObservableProperty]
+    private Brush? _iconFill;
 
     public new bool Pinned
     {
