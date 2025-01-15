@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Dashboard.ViewModels;
 
+// TODO: Remove this.
 public partial class DashboardViewModel : ObservableObject
 {
     /*public IWidgetServiceService WidgetServiceService { get; }*/

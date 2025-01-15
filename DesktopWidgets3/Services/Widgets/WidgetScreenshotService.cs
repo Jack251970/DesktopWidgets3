@@ -72,7 +72,7 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         {
             image = await GetScreenshotFromDesktopWidgets3CacheAsync(widgetId, widgetType, actualTheme);
         }
-        catch (System.IO.FileNotFoundException fileNotFoundEx)
+        catch (FileNotFoundException fileNotFoundEx)
         {
             _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetId} {widgetType}");
         }
@@ -137,7 +137,7 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue, IWidgetRes
         {
             image = await GetScreenshotFromMicrosoftCacheAsync(widgetDefinition, actualTheme);
         }
-        catch (System.IO.FileNotFoundException fileNotFoundEx)
+        catch (FileNotFoundException fileNotFoundEx)
         {
             _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetDefinition.DisplayTitle}");
         }
