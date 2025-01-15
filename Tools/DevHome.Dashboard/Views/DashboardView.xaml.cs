@@ -16,8 +16,12 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
-namespace DevHome.Dashboard.Views;
+namespace DevHome.Dashboard.Models;
 
+/// <summary>
+/// Resource model and management model for microsoft widgets.
+/// Edited from DashboardView.xaml.cs.
+/// </summary>
 public partial class MicrosoftWidgetModel : IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));

@@ -7,7 +7,7 @@ global using DevHome.Dashboard.Controls;
 global using DevHome.Dashboard.Helpers;
 global using DevHome.Dashboard.Services;
 global using DevHome.Dashboard.ViewModels;
-global using DevHome.Dashboard.Views;
+global using DevHome.Dashboard.Models;
 
 // DesktopWidgets3
 global using DesktopWidgets3.Activation;
