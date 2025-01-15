@@ -183,12 +183,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
         }
 
-        // If there were no available widgets, log an error.
+        /*// If there were no available widgets, log an error.
         // This should never happen since Dev Home's core widgets are always available.
         if (!AddWidgetNavigationView.MenuItems.Any())
         {
             _log.Error($"FillAvailableWidgetsAsync found no available widgets.");
-        }
+        }*/
     }
 
     private async Task<Grid> BuildWidgetNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
