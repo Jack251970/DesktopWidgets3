@@ -519,7 +519,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var widgetViewModel = GetWidgetViewModel(providerType, widgetId, widgetType, widgetIndex);
         if (widgetViewModel != null)
         {
-            await _microsoftWidgetModel.TryDeleteUnsafeWidget(widgetViewModel.Widget.GetUnsafeWidgetObject());
+            await _microsoftWidgetModel.TryDeleteWidgetViewModel(widgetViewModel);
         }
 
         // get widget runtime id
