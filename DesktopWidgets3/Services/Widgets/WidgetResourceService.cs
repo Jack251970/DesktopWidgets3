@@ -38,6 +38,9 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     public async Task InitalizeAsync()
     {
+        // initialize microsoft widget resources
+        await _microsoftWidgetModel.InitializeResourcesAsync();
+
         // get all widget metadata
         GetAllWidgetsMetadata();
 
@@ -49,9 +52,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
         // initialize widgets language resources
         InitWidgetsLanguageResources();
-
-        // initialize widget list
-        await _appSettingsService.InitializeWidgetListAsync();
     }
 
     private void GetAllWidgetsMetadata()

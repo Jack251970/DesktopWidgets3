@@ -26,7 +26,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));
 
-    private Action<WidgetViewModel>? CreateWidgetWindow;
+    private Func<WidgetViewModel, Task>? CreateWidgetWindow;
 
     public DashboardViewModel ViewModel { get; }
 
@@ -47,9 +47,15 @@ public partial class MicrosoftWidgetModel : IDisposable
         _widgetExtensionService = DependencyExtensions.GetRequiredService<IWidgetExtensionService>();
     }
 
-    public void Initialize(Action<WidgetViewModel> createWidgetWindow)
+    public async Task InitializeResourcesAsync()
+    {
+        // TODO: Add support
+    }
+
+    public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, Task> createWidgetWindow)
     {
         CreateWidgetWindow = createWidgetWindow;
+        await OnLoadedAsync();
     }
 
     #region Loaded & UnLoaded
@@ -264,13 +270,13 @@ public partial class MicrosoftWidgetModel : IDisposable
                     var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    _dispatcherQueue.TryEnqueue(() =>
+                    _dispatcherQueue.TryEnqueue(async () =>
                     {
                         try
                         {
                             if (CreateWidgetWindow != null)
                             {
-                                CreateWidgetWindow.Invoke(wvm);
+                                await CreateWidgetWindow.Invoke(wvm);
                             }
                         }
                         catch (Exception ex)

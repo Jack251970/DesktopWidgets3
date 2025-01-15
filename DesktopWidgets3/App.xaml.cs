@@ -350,9 +350,6 @@ public partial class App : Application
             // Check startup
             _ = StartupHelper.CheckStartup();
 
-            // Initialize microsoft widgets
-            GetService<MicrosoftWidgetModel>();
-
             // Initialize widget resources
             await GetService<IWidgetResourceService>().InitalizeAsync();
 
@@ -413,7 +410,10 @@ public partial class App : Application
         // Close all windows
         await WindowsExtensions.CloseAllWindowsAsync();
 
-        // Dispose all widgets
+        // Dispose microsoft widgets
+        GetService<MicrosoftWidgetModel>().Dispose();
+
+        // Dispose desktop widgets 3 widgets
         await GetService<IWidgetResourceService>().DisposeWidgetsAsync();
 
         // Unregister app notification service
