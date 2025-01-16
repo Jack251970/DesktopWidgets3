@@ -232,7 +232,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
 
     #endregion
 
-    #region Theme Change
+    #region Update Theme
 
     public async Task UpdateThemeAsync(ElementTheme actualTheme)
     {

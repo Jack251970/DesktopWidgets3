@@ -23,21 +23,58 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     public AddWidgetViewModel ViewModel { get; set; }
 
+    private readonly DispatcherQueue _dispatcherQueue;
+    private readonly MicrosoftWidgetModel _microsoftWidgetModel;
+
     private readonly IWidgetHostingService _hostingService;
     private readonly IWidgetResourceService _widgetResourceService;
-    private readonly DispatcherQueue _dispatcherQueue;
 
     public AddWidgetDialog()
     {
         ViewModel = DependencyExtensions.GetRequiredService<AddWidgetViewModel>();
+
+        _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
+        _microsoftWidgetModel = DependencyExtensions.GetRequiredService<MicrosoftWidgetModel>();
+
         _hostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
         _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
         InitializeComponent();
 
-        _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
-
         RequestedTheme = DependencyExtensions.GetRequiredService<IThemeSelectorService>().Theme;
+    }
+
+    private void ContentDialog_SizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        var contentDialogMaxHeight = (double)Resources["ContentDialogMaxHeight"];
+        const int SmallThreshold = 324;
+        const int MediumThreshold = 360;
+
+        var smallPinButtonMargin = (Thickness)Resources["SmallPinButtonMargin"];
+        var largePinButtonMargin = (Thickness)Resources["LargePinButtonMargin"];
+        var smallWidgetPreviewTopMargin = (Thickness)Resources["SmallWidgetPreviewTopMargin"];
+        var largeWidgetPreviewTopMargin = (Thickness)Resources["LargeWidgetPreviewTopMargin"];
+
+        AddWidgetNavigationView.Height = Math.Min(ActualHeight, contentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
+
+        var previewHeightAvailable = AddWidgetNavigationView.Height - TitleRow.ActualHeight - PinRow.ActualHeight;
+
+        // Adjust margins when the height gets too small to show everything.
+        if (previewHeightAvailable < SmallThreshold)
+        {
+            PreviewRow.Padding = smallWidgetPreviewTopMargin;
+            PinButton.Margin = smallPinButtonMargin;
+        }
+        else if (previewHeightAvailable < MediumThreshold)
+        {
+            PreviewRow.Padding = smallWidgetPreviewTopMargin;
+            PinButton.Margin = largePinButtonMargin;
+        }
+        else
+        {
+            PreviewRow.Padding = largeWidgetPreviewTopMargin;
+            PinButton.Margin = largePinButtonMargin;
+        }
     }
 
     #region Load Widgets
@@ -46,28 +83,18 @@ public sealed partial class AddWidgetDialog : ContentDialog
     public async Task OnLoadedAsync()
     {
         AddWidgetNavigationView.MenuItems.Clear();
+
         // load the desktop widget 3 widgets
         await FillAvailableDesktopWidget3WidgetsAsync();
 
-        // load the Microsoft widgets
-        if (RuntimeHelper.IsMSIX)  // Due to unknown issue with unpackaged app, we cannot register definition deleted event
-        {
-            try
-            {
-                var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-                widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
-            }
-            catch (Exception ex)
-            {
-                // If there was an error getting the widget catalog, log it and continue.
-                // If a WidgetDefinition is deleted while the dialog is open, we won't know to remove it from
-                // the list automatically, but we can show a helpful error message if the user tries to pin it.
-                // https://github.com/microsoft/devhome/issues/2623
-                _log.Error(ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
-            }
-        }
+        // load the microsoft widgets
         await FillAvailableMicrosoftWidgetsAsync();
+
+        // select the first widget by default
         SelectFirstWidgetByDefault();
+
+        // bind the microsoft widgets event
+        _microsoftWidgetModel.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
     }
 
     #region Desktop Widgets 3 Widgets
@@ -154,12 +181,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task FillAvailableMicrosoftWidgetsAsync()
     {
-        // Show the providers and widgets underneath them in alphabetical order.
-        var providerDefinitions = (await _hostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
-        var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_hostingService);
-
-        _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
-
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
@@ -178,7 +199,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
         }
 
-        foreach (var providerDef in providerDefinitions)
+        foreach (var providerDef in _microsoftWidgetModel.WidgetProviderDefinitions)
         {
             if (providerDef.DisplayName == "PeregrineWidgets")
             {
@@ -196,7 +217,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
                 navItem.SetValue(ToolTipService.ToolTipProperty, providerDef.DisplayName);
 
-                foreach (var widgetDef in comSafeWidgetDefinitions)
+                foreach (var widgetDef in _microsoftWidgetModel.WidgetDefinitions)
                 {
                     if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
@@ -284,6 +305,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
+    // TODO: Fix selected index jump issue when loading is very slow and user clicks on a widget before it is loaded.
     private void SelectFirstWidgetByDefault()
     {
         if (AddWidgetNavigationView.MenuItems.Count > 0)
@@ -298,6 +320,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
     }
 
     #endregion
+
+    #region Select Widget
 
     private async void AddWidgetNavigationView_SelectionChanged(
         NavigationView sender,
@@ -339,36 +363,17 @@ public sealed partial class AddWidgetDialog : ContentDialog
     }
 
     [RelayCommand]
-    private async Task UpdateThemeAsync()
-    {
-        // Update the icon and screenshot for the selected widget.
-        await ViewModel.UpdateThemeAsync(ActualTheme);
-
-        // Update the icons for each available widget listed.
-        foreach (var providerItem in AddWidgetNavigationView.MenuItems.OfType<NavigationViewItem>())
-        {
-            foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
-            {
-                if (widgetItem.Tag as ComSafeWidgetDefinition is ComSafeWidgetDefinition widgetDefinition)
-                {
-                    widgetItem.Content = await BuildNavItemAsync(widgetDefinition);
-                }
-                else if (widgetItem.Tag as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition widgetDefinition1)
-                {
-                    widgetItem.Content = await BuildNavItemAsync(widgetDefinition1);
-                }
-            }
-        }
-    }
-
-    [RelayCommand]
     private void PinButtonClick()
     {
         _log.Debug($"Pin selected");
         AddedWidget = _selectedWidget;
 
-        HideDialogAsync();
+        HideDialog();
     }
+
+    #endregion
+
+    #region Hide Dialog
 
     [RelayCommand]
     private void CancelButtonClick()
@@ -376,30 +381,20 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _log.Debug($"Canceled dialog");
         AddedWidget = null!;
 
-        HideDialogAsync();
+        HideDialog();
     }
 
-    private async void HideDialogAsync()
+    private void HideDialog()
     {
         _selectedWidget = null!;
         ViewModel = null!;
 
-        if (RuntimeHelper.IsMSIX)  // Due to unknown issue with unpackaged app, we cannot register definition deleted event
-        {
-            try
-            {
-                var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-                widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
-            }
-            catch (Exception ex)
-            {
-                // If there was an error getting the widget catalog, log it and continue.
-                _log.Error(ex, "Exception in HideDialogAsync:");
-            }
-        }
+        _microsoftWidgetModel.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
 
         Hide();
     }
+
+    #endregion
 
     // TODO: Support WidgetCatalog_WidgetDefinitionAdded and Updated?
 
@@ -452,36 +447,30 @@ public sealed partial class AddWidgetDialog : ContentDialog
         });
     }
 
-    private void ContentDialog_SizeChanged(object? sender, SizeChangedEventArgs e)
+    #region Update Theme
+
+    [RelayCommand]
+    private async Task UpdateThemeAsync()
     {
-        var contentDialogMaxHeight = (double)Resources["ContentDialogMaxHeight"];
-        const int SmallThreshold = 324;
-        const int MediumThreshold = 360;
+        // Update the icon and screenshot for the selected widget.
+        await ViewModel.UpdateThemeAsync(ActualTheme);
 
-        var smallPinButtonMargin = (Thickness)Resources["SmallPinButtonMargin"];
-        var largePinButtonMargin = (Thickness)Resources["LargePinButtonMargin"];
-        var smallWidgetPreviewTopMargin = (Thickness)Resources["SmallWidgetPreviewTopMargin"];
-        var largeWidgetPreviewTopMargin = (Thickness)Resources["LargeWidgetPreviewTopMargin"];
-
-        AddWidgetNavigationView.Height = Math.Min(ActualHeight, contentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
-
-        var previewHeightAvailable = AddWidgetNavigationView.Height - TitleRow.ActualHeight - PinRow.ActualHeight;
-
-        // Adjust margins when the height gets too small to show everything.
-        if (previewHeightAvailable < SmallThreshold)
+        // Update the icons for each available widget listed.
+        foreach (var providerItem in AddWidgetNavigationView.MenuItems.OfType<NavigationViewItem>())
         {
-            PreviewRow.Padding = smallWidgetPreviewTopMargin;
-            PinButton.Margin = smallPinButtonMargin;
-        }
-        else if (previewHeightAvailable < MediumThreshold)
-        {
-            PreviewRow.Padding = smallWidgetPreviewTopMargin;
-            PinButton.Margin = largePinButtonMargin;
-        }
-        else
-        {
-            PreviewRow.Padding = largeWidgetPreviewTopMargin;
-            PinButton.Margin = largePinButtonMargin;
+            foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
+            {
+                if (widgetItem.Tag as ComSafeWidgetDefinition is ComSafeWidgetDefinition widgetDefinition)
+                {
+                    widgetItem.Content = await BuildNavItemAsync(widgetDefinition);
+                }
+                else if (widgetItem.Tag as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition widgetDefinition1)
+                {
+                    widgetItem.Content = await BuildNavItemAsync(widgetDefinition1);
+                }
+            }
         }
     }
+
+    #endregion
 }

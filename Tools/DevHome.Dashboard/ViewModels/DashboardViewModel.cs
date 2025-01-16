@@ -19,7 +19,7 @@ public partial class DashboardViewModel : ObservableObject
 
     public IWidgetScreenshotService WidgetScreenshotService { get; }
 
-    public ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
+    public ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; } = [];
 
     [ObservableProperty]
     public bool _isLoading;
@@ -38,8 +38,6 @@ public partial class DashboardViewModel : ObservableObject
         WidgetHostingService = widgetHostingService;
         WidgetIconService = widgetIconService;
         WidgetScreenshotService = widgetScreenshotService;
-
-        PinnedWidgets = [];
     }
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)

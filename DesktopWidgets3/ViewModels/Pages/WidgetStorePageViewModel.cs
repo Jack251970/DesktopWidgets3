@@ -81,7 +81,7 @@ public partial class WidgetStorePageViewModel(IWidgetResourceService widgetResou
 
     #endregion
 
-    #region Theme Change
+    #region Update Theme
 
     public async Task UpdateThemeAsync(ElementTheme actualTheme)
     {

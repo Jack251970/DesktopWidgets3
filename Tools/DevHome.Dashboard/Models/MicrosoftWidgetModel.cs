@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 //using DevHome.Dashboard.Common.Contracts;
 //using DevHome.Dashboard.Common.Extensions;
@@ -15,6 +16,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
+using Windows.Foundation;
 
 namespace DevHome.Dashboard.Models;
 
@@ -26,13 +28,16 @@ public partial class MicrosoftWidgetModel : IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));
 
-    private Func<WidgetViewModel, Task>? CreateWidgetWindow;
-
     public DashboardViewModel ViewModel { get; }
+
+    public ObservableCollection<WidgetProviderDefinition> WidgetProviderDefinitions { get; set; } = [];
+    public ObservableCollection<ComSafeWidgetDefinition> WidgetDefinitions { get; set; } = [];
 
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
     private readonly IWidgetExtensionService _widgetExtensionService;
+
+    private Func<WidgetViewModel, Task>? CreateWidgetWindow;
 
     private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
 
@@ -49,7 +54,15 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public async Task InitializeResourcesAsync()
     {
-        // TODO: Add support
+        // Show the providers and widgets underneath them in alphabetical order
+        var providerDefinitions = (await ViewModel.WidgetHostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
+        var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(ViewModel.WidgetHostingService);
+
+        _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
+
+        // Update the collections
+        WidgetProviderDefinitions = new ObservableCollection<WidgetProviderDefinition>(providerDefinitions);
+        WidgetDefinitions = new ObservableCollection<ComSafeWidgetDefinition>(comSafeWidgetDefinitions);
     }
 
     public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, Task> createWidgetWindow)
@@ -352,11 +365,20 @@ public partial class MicrosoftWidgetModel : IDisposable
                 return false;
             }
 
-            widgetCatalog.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
+            widgetCatalog.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
             widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+            widgetCatalog.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
+
+            widgetCatalog.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
+            widgetCatalog.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
+            widgetCatalog.WidgetProviderDefinitionUpdated += WidgetCatalog_WidgetProviderDefinitionUpdated;
         }
         catch (Exception ex)
         {
+            // If there was an error getting the widget catalog, log it and continue.
+            // If a WidgetDefinition is deleted while the dialog is open, we won't know to remove it from
+            // the list automatically, but we can show a helpful error message if the user tries to pin it.
+            // https://github.com/microsoft/devhome/issues/2623
             _log.Error(ex, "Exception in SubscribeToWidgetCatalogEvents:");
             return false;
         }
@@ -417,17 +439,65 @@ public partial class MicrosoftWidgetModel : IDisposable
                 return;
             }
 
-            widgetCatalog!.WidgetDefinitionUpdated -= WidgetCatalog_WidgetDefinitionUpdated;
-            widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+            widgetCatalog.WidgetDefinitionAdded -= WidgetCatalog_WidgetDefinitionAdded;
+            widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+            widgetCatalog.WidgetDefinitionUpdated -= WidgetCatalog_WidgetDefinitionUpdated;
+
+            widgetCatalog.WidgetProviderDefinitionAdded -= WidgetCatalog_WidgetProviderDefinitionAdded;
+            widgetCatalog.WidgetProviderDefinitionDeleted -= WidgetCatalog_WidgetProviderDefinitionDeleted;
+            widgetCatalog.WidgetProviderDefinitionUpdated -= WidgetCatalog_WidgetProviderDefinitionUpdated;
         }
         catch (Exception ex)
         {
+            // If there was an error getting the widget catalog, log it and continue.
             _log.Error(ex, "Exception in UnsubscribeFromWidgetCatalogEventsAsync:");
         }
     }
 
+    #endregion
+
+    #region WidgetCatalog Events
+
+    public event TypedEventHandler<WidgetCatalog, WidgetDefinitionAddedEventArgs>? WidgetDefinitionAdded;
+    public event TypedEventHandler<WidgetCatalog, WidgetDefinitionDeletedEventArgs>? WidgetDefinitionDeleted;
+    public event TypedEventHandler<WidgetCatalog, WidgetDefinitionUpdatedEventArgs>? WidgetDefinitionUpdated;
+
+    public event TypedEventHandler<WidgetCatalog, WidgetProviderDefinitionAddedEventArgs>? WidgetProviderDefinitionAdded;
+    public event TypedEventHandler<WidgetCatalog, WidgetProviderDefinitionDeletedEventArgs>? WidgetProviderDefinitionDeleted;
+    public event TypedEventHandler<WidgetCatalog, WidgetProviderDefinitionUpdatedEventArgs>? WidgetProviderDefinitionUpdated;
+
+    private void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
+    {
+        WidgetDefinitionAdded?.Invoke(sender, args);
+    }
+
+    // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
+    private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
+    {
+        WidgetDefinitionDeleted?.Invoke(sender, args);
+
+        var definitionId = args.DefinitionId;
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            _log.Information($"WidgetDefinitionDeleted {definitionId}");
+            foreach (var widgetToRemove in ViewModel.PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
+            {
+                _log.Information($"Remove widget {widgetToRemove.Widget.Id}");
+                ViewModel.PinnedWidgets.Remove(widgetToRemove);
+
+                // The widget definition is gone, so delete widgets with that definition.
+                await widgetToRemove.Widget.DeleteAsync();
+            }
+        });
+
+        ViewModel.WidgetIconService.RemoveIconsFromMicrosoftCache(definitionId);
+        ViewModel.WidgetScreenshotService.RemoveScreenshotsFromMicrosoftCache(definitionId);
+    }
+
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
     {
+        WidgetDefinitionUpdated?.Invoke(sender, args);
+
         WidgetDefinition unsafeWidgetDefinition;
         try
         {
@@ -503,25 +573,19 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
     }
 
-    // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
-    private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
+    private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args)
     {
-        var definitionId = args.DefinitionId;
-        _dispatcherQueue.TryEnqueue(async () =>
-        {
-            _log.Information($"WidgetDefinitionDeleted {definitionId}");
-            foreach (var widgetToRemove in ViewModel.PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
-            {
-                _log.Information($"Remove widget {widgetToRemove.Widget.Id}");
-                ViewModel.PinnedWidgets.Remove(widgetToRemove);
+        WidgetProviderDefinitionAdded?.Invoke(sender, args);
+    }
 
-                // The widget definition is gone, so delete widgets with that definition.
-                await widgetToRemove.Widget.DeleteAsync();
-            }
-        });
+    private void WidgetCatalog_WidgetProviderDefinitionDeleted(WidgetCatalog sender, WidgetProviderDefinitionDeletedEventArgs args)
+    {
+        WidgetProviderDefinitionDeleted?.Invoke(sender, args);
+    }
 
-        ViewModel.WidgetIconService.RemoveIconsFromMicrosoftCache(definitionId);
-        ViewModel.WidgetScreenshotService.RemoveScreenshotsFromMicrosoftCache(definitionId);
+    private void WidgetCatalog_WidgetProviderDefinitionUpdated(WidgetCatalog sender, WidgetProviderDefinitionUpdatedEventArgs args)
+    {
+        WidgetProviderDefinitionUpdated?.Invoke(sender, args);
     }
 
     #endregion
