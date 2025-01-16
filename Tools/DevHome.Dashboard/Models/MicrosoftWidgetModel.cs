@@ -611,6 +611,15 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #endregion
 
+    #region Get Widgets
+
+    public Task<Widget[]> GetWidgetsAsync()
+    {
+        return ViewModel.WidgetHostingService.GetWidgetsAsync();
+    }
+
+    #endregion
+
     #region Add Widget
 
     public async Task TryDeleteWidgetViewModel(WidgetViewModel widgetViewModel)

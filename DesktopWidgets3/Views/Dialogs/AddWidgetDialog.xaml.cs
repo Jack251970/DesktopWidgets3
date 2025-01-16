@@ -26,7 +26,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly MicrosoftWidgetModel _microsoftWidgetModel;
 
-    private readonly IWidgetHostingService _hostingService;
     private readonly IWidgetResourceService _widgetResourceService;
 
     public AddWidgetDialog()
@@ -36,7 +35,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
         _microsoftWidgetModel = DependencyExtensions.GetRequiredService<MicrosoftWidgetModel>();
 
-        _hostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
         _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
         InitializeComponent();
@@ -184,7 +182,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
-        var unsafeCurrentlyPinnedWidgets = await _hostingService.GetWidgetsAsync();
+        var unsafeCurrentlyPinnedWidgets = await _microsoftWidgetModel.GetWidgetsAsync();
         var comSafeCurrentlyPinnedWidgets = new List<ComSafeWidget>();
         foreach (var unsafeWidget in unsafeCurrentlyPinnedWidgets)
         {

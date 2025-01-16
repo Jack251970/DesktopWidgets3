@@ -7,7 +7,7 @@ using Serilog;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
-public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, MicrosoftWidgetModel microsoftWidgetModel, WidgetViewModelFactory widgetViewModelFactory, IWidgetExtensionService widgetExtensionService, IWidgetHostingService widgetHostingService, IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService, IThemeSelectorService themeSelectorService) : ObservableRecipient, INavigationAware
+public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, MicrosoftWidgetModel microsoftWidgetModel, WidgetViewModelFactory widgetViewModelFactory, IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService, IThemeSelectorService themeSelectorService) : ObservableRecipient, INavigationAware
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardPageViewModel));
 
@@ -18,8 +18,6 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
     private readonly MicrosoftWidgetModel _microsoftWidgetModel = microsoftWidgetModel;
     private readonly WidgetViewModelFactory _widgetViewModelFactory = widgetViewModelFactory;
 
-    private readonly IWidgetExtensionService _widgetExtensionService = widgetExtensionService;
-    private readonly IWidgetHostingService _widgetHostingService = widgetHostingService;
     private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
     // TODO: Move to ActualTheme.
