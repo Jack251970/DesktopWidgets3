@@ -26,6 +26,8 @@ public interface IWidgetResourceService
 
     void OnWidgetSettingsChanged(string widgetId, WidgetSettingsChangedArgs settingsChangedArgs);
 
+    bool IsWidgetGroupUnknown(WidgetProviderType providerType, string widgetId, string widgetType);
+
     string GetWidgetName(string widgetId, string widgetType);
 
     string GetWidgetDescription(string widgetId, string widgetType);
@@ -53,8 +55,6 @@ public interface IWidgetResourceService
     Task<DashboardWidgetItem?> GetDashboardWidgetItemAsync(string widgetId, string widgetType, int widgetIndex, ElementTheme actualTheme);
 
     Task<DashboardWidgetItem> GetDashboardWidgetItemAsync(WidgetViewModel widgetViewModel, ElementTheme actualTheme);
-
-    bool IsWidgetGroupUnknown(string widgetId, string widgetType);
 
     Task<List<WidgetStoreItem>> GetInstalledWidgetStoreItemsAsync();
 

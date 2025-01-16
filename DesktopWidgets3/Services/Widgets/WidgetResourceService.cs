@@ -1,11 +1,9 @@
 ﻿using System.Collections.Concurrent;
-using System.Linq;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -459,16 +457,24 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #region Status
 
-    public bool IsWidgetGroupUnknown(string widgetId, string widgetType)
+    public bool IsWidgetGroupUnknown(WidgetProviderType providerType, string widgetId, string widgetType)
     {
-        (var installed, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, null);
-        if (installed)
+        if (providerType == WidgetProviderType.DesktopWidgets3)
         {
-            return !InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.WidgetTypes.Contains(widgetType);
+            (var installed, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, null);
+            if (installed)
+            {
+                return !InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.WidgetTypes.Contains(widgetType);
+            }
+            else
+            {
+                return allIndex == -1;
+            }
         }
         else
         {
-            return allIndex == -1;
+            var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
+            return definitionIndex == -1;
         }
     }
 
@@ -631,7 +637,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         }
         else
         {
-            var definitionIndex = GetWidgetIndex(widgetId, widgetType);
+            var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
             if (definitionIndex != -1)
             {
                 return await GetWidgetIconBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
@@ -653,7 +659,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         }
         else
         {
-            var definitionIndex = GetWidgetIndex(widgetId, widgetType);
+            var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
             if (definitionIndex != -1)
             {
                 return await GetWidgetScreenshotBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
@@ -1156,7 +1162,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #region Microsoft
 
-    private int GetWidgetProviderIndex(string widgetId)
+    private int GetWidgetProviderDefinitionIndex(string widgetId)
     {
         var providerDefinitionIndex = -1;
         foreach (var providerDefinition in _microsoftWidgetModel.WidgetProviderDefinitions)
@@ -1172,7 +1178,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         return -1;
     }
 
-    private int GetWidgetIndex(string widgetId, string widgetType)
+    private int GetWidgetDefinitionIndex(string widgetId, string widgetType)
     {
         var definitionIndex = -1;
         foreach (var definition in _microsoftWidgetModel.WidgetDefinitions)

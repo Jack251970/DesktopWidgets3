@@ -95,7 +95,7 @@ public class JsonWidgetItemConverter : JsonConverter
             new JProperty("DisplayMonitor", JToken.FromObject(widgetItem.DisplayMonitor, serializer))
         );
 
-        if (_widgetResourceService.IsWidgetGroupUnknown(widgetItem.Id, widgetItem.Type))
+        if (_widgetResourceService.IsWidgetGroupUnknown(widgetItem.ProviderType, widgetItem.Id, widgetItem.Type))
         {
             jsonObject.Add(new JProperty("Settings", widgetItem.SettingsJToken));
         }
