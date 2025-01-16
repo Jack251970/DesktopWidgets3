@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml;
 
 namespace DesktopWidgets3.ViewModels.Pages;
 
@@ -77,15 +76,6 @@ public partial class WidgetStorePageViewModel(IWidgetResourceService widgetResou
     public void OnNavigatedFrom()
     {
 
-    }
-
-    #endregion
-
-    #region Update Theme
-
-    public async Task UpdateThemeAsync(ElementTheme actualTheme)
-    {
-        await Task.CompletedTask;
     }
 
     #endregion
