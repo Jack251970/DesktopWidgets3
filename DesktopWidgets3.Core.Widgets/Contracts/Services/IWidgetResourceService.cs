@@ -30,11 +30,11 @@ public interface IWidgetResourceService
 
     string GetWidgetDescription(string widgetId, string widgetType);
 
-    Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme);
+    Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme);
+
+    Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme);
 
     Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
-
-    Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme);
 
     Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
 

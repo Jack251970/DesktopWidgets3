@@ -115,14 +115,62 @@ public partial class WidgetViewModel : ObservableObject
         _actionParser.Set(ChooseFileAction.CustomTypeString, new ChooseFileParser());
     }
 
-    public (string widgetGroupName, string widgetName, string widgetId, string widgetType) GetWidgetInfo()
+    #region Widget Info
+
+    public (string WidgetGroupName, string WidgetName, string WidgetDescription, string WidgetId, string WidgetType) GetWidgetProviderAndWidgetInfo()
     {
-        var widgetGroupName = WidgetProviderDisplayTitle;
-        var widgetName = WidgetDisplayTitle;
-        var widgetId = WidgetDefinition.ProviderDefinition.Id;
-        var widgetType = WidgetDefinition.Id;
-        return (widgetGroupName, widgetName, widgetId, widgetType);
+        return GetWidgetProviderAndWidgetInfo(WidgetDefinition);
     }
+
+    public (string WidgetGroupName, string WidgetId) GetWidgetProviderInfo()
+    {
+        return GetWidgetProviderInfo(WidgetDefinition.ProviderDefinition);
+    }
+
+    public (string WidgetName, string WidgetDescription, string WidgetType) GetWidgetInfo()
+    {
+        return GetWidgetInfo(WidgetDefinition);
+    }
+
+    public static (string WidgetGroupName, string WidgetName, string WidgetDescription, string WidgetId, string WidgetType) GetWidgetProviderAndWidgetInfo(ComSafeWidgetDefinition comSafeWidgetDefinition)
+    {
+        if (comSafeWidgetDefinition != null)
+        {
+            var (widgetName, widgetDescription, widgetType) = GetWidgetInfo(comSafeWidgetDefinition);
+            var (widgetGroupName, widgetId) = GetWidgetProviderInfo(comSafeWidgetDefinition.ProviderDefinition);
+            return (widgetGroupName, widgetName, widgetDescription, widgetId, widgetType);
+        }
+
+        return (string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
+    }
+
+    public static (string WidgetGroupName, string WidgetId) GetWidgetProviderInfo(WidgetProviderDefinition? widgetProviderDefinition)
+    {
+        if (widgetProviderDefinition != null)
+        {
+            var widgetGroupName = widgetProviderDefinition.DisplayName;
+            var widgetId = widgetProviderDefinition.Id;
+
+            return (widgetGroupName, widgetId);
+        }
+
+        return (string.Empty, string.Empty);
+    }
+
+    public static (string WidgetName, string WidgetDescription, string WidgetType) GetWidgetInfo(ComSafeWidgetDefinition? comSafeWidgetDefinition)
+    {
+        if (comSafeWidgetDefinition != null)
+        {
+            var widgetName = comSafeWidgetDefinition.DisplayTitle;
+            var widgetDescription = comSafeWidgetDefinition.Description;
+            var widgetType = comSafeWidgetDefinition.Id;
+            return (widgetName, widgetDescription, widgetType);
+        }
+
+        return (string.Empty, string.Empty, string.Empty);
+    }
+
+    #endregion
 
     public async Task RenderAsync()
     {

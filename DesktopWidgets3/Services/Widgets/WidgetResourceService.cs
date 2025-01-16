@@ -1,9 +1,11 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -472,7 +474,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #endregion
 
-    #region Name & Description & Icon
+    #region Name & Description
 
     private string GetWidgetGroupnName(int? allIndex, int? installedIndex)
     {
@@ -514,6 +516,10 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         return string.Empty;
     }
 
+    #endregion
+
+    #region Icon
+
     private string GetWidgetGroupIcoPath(int? allIndex, int? installedIndex)
     {
         if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count)
@@ -536,6 +542,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
     #region Widget
 
     #region Name & Description
+
+    #region Desktop Widgets 3
 
     public string GetWidgetName(string widgetId, string widgetType)
     {
@@ -607,7 +615,53 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #endregion
 
+    #endregion
+
     #region Icon & Screenshot
+
+    public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme)
+    {
+        if (providerType == WidgetProviderType.DesktopWidgets3)
+        {
+            (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
+            if (installedIndex != -1)
+            {
+                return await GetWidgetIconBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
+            }
+        }
+        else
+        {
+            var definitionIndex = GetWidgetIndex(widgetId, widgetType);
+            if (definitionIndex != -1)
+            {
+                return await GetWidgetIconBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
+            }
+        }
+
+        return null!;
+    }
+
+    public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme)
+    {
+        if (providerType == WidgetProviderType.DesktopWidgets3)
+        {
+            (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
+            if (installedIndex != -1)
+            {
+                return await GetWidgetScreenshotBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
+            }
+        }
+        else
+        {
+            var definitionIndex = GetWidgetIndex(widgetId, widgetType);
+            if (definitionIndex != -1)
+            {
+                return await GetWidgetScreenshotBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
+            }
+        }
+
+        return null!;
+    }
 
     #region Desktop Widgets 3
 
@@ -621,17 +675,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
     {
         _desktopWidgets3WidgetLightIconCache.TryRemove((widgetId, widgetType), out _);
         _desktopWidgets3WidgetDarkIconCache.TryRemove((widgetId, widgetType), out _);
-    }
-
-    public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
-    {
-        (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
-        {
-            return await GetWidgetIconBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
-        }
-
-        return null!;
     }
 
     private async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
@@ -705,17 +748,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
     {
         _desktopWidgets3WidgetLightScreenshotCache.Remove((widgetId, widgetType), out _);
         _desktopWidgets3WidgetDarkScreenshotCache.Remove((widgetId, widgetType), out _);
-    }
-
-    public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, ElementTheme actualTheme)
-    {
-        (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
-        {
-            return await GetWidgetScreenshotBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
-        }
-
-        return null!;
     }
 
     private async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
@@ -878,15 +910,23 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #region Microsoft
 
+    #region Icon
+
     public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         return await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(dispatcherQueue, widgetDefinition, actualTheme);
     }
 
+    #endregion
+
+    #region Screenshot
+
     public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         return await _widgetScreenshotService.GetBrushForMicrosoftWidgetScreenshotAsync(dispatcherQueue, widgetDefinition, actualTheme);
     }
+
+    #endregion
 
     #endregion
 
@@ -1028,6 +1068,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #region Widget Group & Widget Index
 
+    #region Desktop Widgets 3
+
     private (bool Installed, int? AllIndex, int? InstalledIndex) GetWidgetGroupIndex(string widgetId, bool? installed)
     {
         if (installed == true)
@@ -1109,6 +1151,44 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
             return (false, null, null, null);
         }
     }
+
+    #endregion
+
+    #region Microsoft
+
+    private int GetWidgetProviderIndex(string widgetId)
+    {
+        var providerDefinitionIndex = -1;
+        foreach (var providerDefinition in _microsoftWidgetModel.WidgetProviderDefinitions)
+        {
+            providerDefinitionIndex++;
+            var (_, widgetId1) = WidgetViewModel.GetWidgetProviderInfo(providerDefinition);
+            if (widgetId1 == widgetId)
+            {
+                return providerDefinitionIndex;
+            }
+        }
+
+        return -1;
+    }
+
+    private int GetWidgetIndex(string widgetId, string widgetType)
+    {
+        var definitionIndex = -1;
+        foreach (var definition in _microsoftWidgetModel.WidgetDefinitions)
+        {
+            definitionIndex++;
+            var (_, _, _, widgetId1, widgetType1) = WidgetViewModel.GetWidgetProviderAndWidgetInfo(definition);
+            if (widgetId == widgetId1 && widgetType == widgetType1)
+            {
+                return definitionIndex;
+            }
+        }
+
+        return -1;
+    }
+
+    #endregion
 
     #endregion
 
@@ -1238,7 +1318,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
     {
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
-        var (_, widgetName, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
+        var (_, widgetName, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
         // TODO: Get widget index.
         var widgetIndex = 0;
 

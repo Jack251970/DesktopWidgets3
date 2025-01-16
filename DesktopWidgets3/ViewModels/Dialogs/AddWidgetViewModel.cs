@@ -45,7 +45,12 @@ public partial class AddWidgetViewModel(
 
         WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
         WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinitionDisplayName;
-        WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(_dispatcherQueue, selectedWidgetDefinition.WidgetId, selectedWidgetDefinition.WidgetType, actualTheme);
+        WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(
+            _dispatcherQueue, 
+            WidgetProviderType.DesktopWidgets3, 
+            selectedWidgetDefinition.WidgetId, 
+            selectedWidgetDefinition.WidgetType, 
+            actualTheme);
         PinButtonVisibility = true;
     }
 
@@ -65,11 +70,19 @@ public partial class AddWidgetViewModel(
             // Update the preview image for the selected widget.
             if (_selectedWidgetDefinition as ComSafeWidgetDefinition is ComSafeWidgetDefinition selectedWidgetDefinition)
             {
-                WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(_dispatcherQueue, selectedWidgetDefinition, actualTheme);
+                WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(
+                    _dispatcherQueue, 
+                    selectedWidgetDefinition, 
+                    actualTheme);
             }
             else if (_selectedWidgetDefinition as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition selectedWidgetDefinition1)
             {
-                WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(_dispatcherQueue, selectedWidgetDefinition1.WidgetId, selectedWidgetDefinition1.WidgetType, actualTheme);
+                WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(
+                    _dispatcherQueue,
+                    WidgetProviderType.DesktopWidgets3,
+                    selectedWidgetDefinition1.WidgetId, 
+                    selectedWidgetDefinition1.WidgetType, 
+                    actualTheme);
             }
         }
     }

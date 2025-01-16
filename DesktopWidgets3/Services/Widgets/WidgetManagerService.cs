@@ -383,7 +383,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
-        var (_, widgetName, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
+        var (_, widgetName, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
 
         // find index tag
         var indexs = widgetList.Where(x => x.Equals(providerType, widgetId, widgetType)).Select(x => x.Index).ToList();
@@ -608,7 +608,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     {
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
-        var (_, _, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
+        var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
         // TODO: Get widget index.
         var widgetIndex = 0;
 
@@ -636,7 +636,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     private void CreateWidgetWindow(JsonWidgetItem item, WidgetViewModel widgetViewModel)
     {
         // get widget info
-        var (_, _, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
+        var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
         // TODO: Get widget index.
         var widgetIndex = 0;
 
@@ -756,7 +756,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await _activationService.ActivateWindowAsync(widgetWindow);
 
             // get widget info
-            var (_, _, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
+            var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
             // TODO: Get widget index.
             var widgetIndex = 0;
 

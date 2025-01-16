@@ -236,15 +236,12 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
     {
         foreach (var widgetItem in yourWidgets)
         {
-            if (widgetItem.ProviderType == WidgetProviderType.DesktopWidgets3)
-            {
-                widgetItem.IconFill = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetItem.Id, widgetItem.Type, actualTheme);
-            }
-            else
-            {
-                // TODO: Add support.
-                /*widgetItem.IconFill = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetItem.Id, widgetItem.Type, actualTheme);*/
-            }
+            widgetItem.IconFill = await _widgetResourceService.GetWidgetIconBrushAsync(
+                _dispatcherQueue, 
+                widgetItem.ProviderType, 
+                widgetItem.Id, 
+                widgetItem.Type, 
+                actualTheme);
         }
     }
 

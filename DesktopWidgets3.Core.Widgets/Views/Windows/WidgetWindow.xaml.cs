@@ -438,7 +438,7 @@ public sealed partial class WidgetWindow : WindowEx
     {
         if (ProviderType == WidgetProviderType.DesktopWidgets3)
         {
-            ViewModel.WidgetIconFill = await _widgetResourceService.GetWidgetIconBrushAsync(DispatcherQueue, WidgetId, WidgetType, actualTheme);
+            ViewModel.WidgetIconFill = await _widgetResourceService.GetWidgetIconBrushAsync(DispatcherQueue, ProviderType, WidgetId, WidgetType, actualTheme);
         }
         else
         {

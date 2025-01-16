@@ -148,7 +148,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<Grid> BuildNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
     {
-        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
+        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, WidgetProviderType.DesktopWidgets3, widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
     }
