@@ -480,9 +480,11 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #endregion
 
-    #region Name & Description
+    #region Name
 
-    private string GetWidgetGroupnName(int? allIndex, int? installedIndex)
+    #region Desktop Widgets 3
+
+    private string GetWidgetGroupName(int? allIndex, int? installedIndex)
     {
         if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count)
         {
@@ -501,6 +503,29 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
         return string.Format("Unknown_Widget_Name".GetLocalizedString(), 1);
     }
+
+    #endregion
+
+    #region Microsoft
+
+    private string GetWidgetGroupName(int providerDefinitionIndex)
+    {
+        if (providerDefinitionIndex != -1)
+        {
+            var (widgetGroupName, _) = _microsoftWidgetModel.WidgetProviderDefinitions.ElementAt(providerDefinitionIndex).GetWidgetProviderInfo();
+            return widgetGroupName;
+        }
+
+        return string.Format("Unknown_Widget_Name".GetLocalizedString(), 1);
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Description
+
+    #region Desktop Widgets 3
 
     private string GetWidgetGroupDescription(int? allIndex, int? installedIndex)
     {
@@ -524,7 +549,80 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #endregion
 
+    #region Microsoft
+
+    private string GetWidgetGroupDescription(int providerDefinitionIndex)
+    {
+        if (providerDefinitionIndex != -1)
+        {
+            // TODO(Future): How can we get the description of the provider?
+            return string.Empty;
+        }
+
+        return string.Empty;
+    }
+
+    #endregion
+
+    #endregion
+
     #region Icon
+
+    #region Desktop Widgets 3
+
+    private readonly ConcurrentDictionary<string, BitmapImage> _desktopWidgets3WidgetGroupIconCache = new();
+
+    // TODO: Add support for cache clean.
+    private void RemoveIconsFromDesktopWidgets3Cache(string widgetId)
+    {
+        _desktopWidgets3WidgetGroupIconCache.TryRemove(widgetId, out _);
+    }
+
+    private async Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, int? allIndex, int? installedIndex)
+    {
+        var image = new BitmapImage();
+        try
+        {
+            image = await GetGroupIconFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, allIndex, installedIndex);
+        }
+        catch (FileNotFoundException fileNotFoundEx)
+        {
+            _log.Warning(fileNotFoundEx, $"Widget group icon missing for widget {widgetId}");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get widget group icon for widget {widgetId}");
+        }
+
+        var brush = new ImageBrush
+        {
+            ImageSource = image,
+            Stretch = Stretch.Uniform,
+        };
+
+        return brush;
+    }
+
+    private async Task<BitmapImage> GetGroupIconFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, int? allIndex, int? installedIndex)
+    {
+        BitmapImage? bitmapImage;
+
+        // First, check the cache to see if the icon is already there.
+        _desktopWidgets3WidgetGroupIconCache.TryGetValue(widgetId, out bitmapImage);
+
+        if (bitmapImage != null)
+        {
+            return bitmapImage;
+        }
+
+        // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
+        bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetGroupIcoPath(allIndex, installedIndex));
+        _desktopWidgets3WidgetGroupIconCache.TryAdd(widgetId, bitmapImage);
+
+        return bitmapImage;
+    }
+
+    #region Image Path
 
     private string GetWidgetGroupIcoPath(int? allIndex, int? installedIndex)
     {
@@ -540,6 +638,16 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
         return Constants.UnknownWidgetIconPath;
     }
+
+    #endregion
+
+    #endregion
+
+    #region Microsoft
+
+    // TODO: Add support
+
+    #endregion
 
     #endregion
 
@@ -1200,7 +1308,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #endregion
 
-    #region Dashboard
+    #region Add Widget Dialog
 
     public List<DashboardWidgetGroupItem> GetInstalledDashboardGroupItems()
     {
@@ -1215,8 +1323,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
                 dashboardGroupItemList.Add(new DashboardWidgetGroupItem()
                 {
                     Id = widgetId,
-                    Name = GetWidgetGroupnName(allIndex, installedIndex),
-                    IcoPath = GetWidgetGroupIcoPath(allIndex, installedIndex),
+                    Name = GetWidgetGroupName(allIndex, installedIndex),
                     Types = widget.Metadata.WidgetTypes
                 });
             }
@@ -1224,6 +1331,10 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
         return dashboardGroupItemList;
     }
+
+    #endregion
+
+    #region Dashboard
 
     public async Task<List<DashboardWidgetItem>> GetYourDashboardWidgetItemsAsync(ElementTheme actualTheme)
     {
@@ -1360,12 +1471,12 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
                 widgetStoreItemList.Add(new WidgetStoreItem()
                 {
                     Id = widgetId,
-                    Name = GetWidgetGroupnName(allIndex, installedIndex),
+                    Name = GetWidgetGroupName(allIndex, installedIndex),
                     Description = GetWidgetGroupDescription(allIndex, installedIndex),
                     Author = metadata.Author,
                     Version = metadata.Version,
                     Website = metadata.Website,
-                    IconFill = await GetPathIconBrushAsync(_dispatcherQueue, GetWidgetGroupIcoPath(allIndex, installedIndex))
+                    IconFill = await GetWidgetGroupIconBrushAsync(_dispatcherQueue, widgetId, allIndex, installedIndex)
                 });
             }
         }
@@ -1388,12 +1499,12 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
                     widgetStoreItemList.Add(new WidgetStoreItem()
                     {
                         Id = metadata.ID,
-                        Name = GetWidgetGroupnName(allIndex, installedIndex),
+                        Name = GetWidgetGroupName(allIndex, installedIndex),
                         Description = GetWidgetGroupDescription(allIndex, installedIndex),
                         Author = metadata.Author,
                         Version = metadata.Version,
                         Website = metadata.Website,
-                        IconFill = await GetPathIconBrushAsync(_dispatcherQueue, GetWidgetGroupIcoPath(allIndex, installedIndex))
+                        IconFill = await GetWidgetGroupIconBrushAsync(_dispatcherQueue, widgetId, allIndex, installedIndex)
                     });
                 }
             }

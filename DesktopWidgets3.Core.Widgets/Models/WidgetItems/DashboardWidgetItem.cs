@@ -7,7 +7,9 @@ public class DashboardWidgetGroupItem : BaseWidgetGroupItem
 {
     public required string Name { get; set; }
 
-    public required string IcoPath { get; set; }
+    // TODO: Add support for icon fill in add widget dialog
+    /*[ObservableProperty]
+    private Brush? _iconFill;*/
 
     public required List<string> Types { get; set; }
 }
@@ -18,8 +20,6 @@ public partial class DashboardWidgetItem : BaseWidgetItem
     public required WidgetProviderType ProviderType { get; set; }
 
     public required string Name { get; set; }
-
-    /*public required Brush IconFill { get; set; }*/
 
     [ObservableProperty]
     private Brush? _iconFill;
