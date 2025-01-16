@@ -346,7 +346,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var widget = new JsonWidgetItem()
         {
             ProviderType = providerType,
-            Name = _widgetResourceService.GetWidgetName(widgetId, widgetType),
+            Name = _widgetResourceService.GetWidgetName(WidgetProviderType.DesktopWidgets3, widgetId, widgetType),
             Id = widgetId,
             Type = widgetType,
             Index = index,
@@ -694,7 +694,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetIndex = item.Index;
 
             // set widget title
-            widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(widgetId, widgetType);
+            widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(WidgetProviderType.DesktopWidgets3, widgetId, widgetType);
 
             // initialize window
             var menuFlyout = GetWidgetMenuFlyout(widgetWindow);
@@ -915,7 +915,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         {
             // set widget setting framework element
             widgetSettingPage.ViewModel.WidgetFrameworkElement = widgetSettingPair.WidgetSettingContent;
-            var widgetName = _widgetResourceService.GetWidgetName(widgetId, widgetType);
+            var widgetName = _widgetResourceService.GetWidgetName(WidgetProviderType.DesktopWidgets3, widgetId, widgetType);
             NavigationViewHeaderBehavior.SetHeaderLocalize(widgetSettingPage, false);
             NavigationViewHeaderBehavior.SetHeaderContext(widgetSettingPage, widgetName);
 
@@ -1177,7 +1177,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             _originalWidgetList.Add(new JsonWidgetItem()
             {
                 ProviderType = providerType,
-                Name = _widgetResourceService.GetWidgetName(widgetId, widgetType),
+                Name = _widgetResourceService.GetWidgetName(providerType, widgetId, widgetType),
                 Id = widgetId,
                 Type = widgetType,
                 Index = widgetIndex,
@@ -1243,7 +1243,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetList.Add(new JsonWidgetItem()
             {
                 ProviderType = providerType,
-                Name = _widgetResourceService.GetWidgetName(widgetId, widgetType),
+                Name = _widgetResourceService.GetWidgetName(providerType, widgetId, widgetType),
                 Id = widgetId,
                 Type = widgetType,
                 Index = widgetIndex,

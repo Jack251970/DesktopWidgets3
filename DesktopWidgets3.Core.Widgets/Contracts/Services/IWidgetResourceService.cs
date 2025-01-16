@@ -28,9 +28,9 @@ public interface IWidgetResourceService
 
     bool IsWidgetGroupUnknown(WidgetProviderType providerType, string widgetId, string widgetType);
 
-    string GetWidgetName(string widgetId, string widgetType);
+    string GetWidgetName(WidgetProviderType providerType, string widgetId, string widgetType);
 
-    string GetWidgetDescription(string widgetId, string widgetType);
+    string GetWidgetDescription(WidgetProviderType providerType, string widgetId, string widgetType);
 
     Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme);
 

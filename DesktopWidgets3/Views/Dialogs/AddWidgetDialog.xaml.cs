@@ -116,7 +116,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             foreach (var widgetType in widgetGroup.Types)
             {
                 var widgetId = widgetGroup.Id;
-                var widgetName = _widgetResourceService.GetWidgetName(widgetId, widgetType);
+                var widgetName = _widgetResourceService.GetWidgetName(WidgetProviderType.DesktopWidgets3, widgetId, widgetType);
                 var widgetDefinition = new DesktopWidgets3WidgetDefinition(widgetId, widgetType, widgetGroup.Name, widgetName);
 
                 var subItemContent = await BuildWidgetNavItemAsync(widgetDefinition);
