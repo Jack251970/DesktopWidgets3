@@ -56,7 +56,7 @@ public interface IWidgetResourceService
 
     Task<DashboardWidgetItem?> GetDashboardWidgetItemAsync(string widgetId, string widgetType, int widgetIndex, ElementTheme actualTheme);
 
-    Task<DashboardWidgetItem> GetDashboardWidgetItemAsync(WidgetViewModel widgetViewModel, ElementTheme actualTheme);
+    Task<DashboardWidgetItem> GetDashboardWidgetItemAsync(string widgetId, string widgetType, int widgetIndex, WidgetViewModel widgetViewModel, ElementTheme actualTheme);
 
     Task<List<WidgetStoreItem>> GetInstalledWidgetStoreItemsAsync();
 

@@ -151,9 +151,11 @@ public sealed partial class WidgetWindow : WindowEx
 
     public string WidgetType { get; private set; }
 
+    public int WidgetIndex { get; private set; }
+
     public string RuntimeId { get; private set; }
 
-    private BaseWidgetSettings? WidgetSettings { get; set; }
+    private BaseWidgetSettings? WidgetSettings;
 
     private WidgetViewModel? WidgetViewModel;
 
@@ -210,6 +212,7 @@ public sealed partial class WidgetWindow : WindowEx
         ProviderType = widgetItem.ProviderType;
         WidgetId = widgetItem.Id;
         WidgetType = widgetItem.Type;
+        WidgetIndex = widgetItem.Index;
         RuntimeId = widgetRuntimeId;
         WidgetSettings = widgetItem.Settings;
         WidgetViewModel = null;
@@ -265,6 +268,7 @@ public sealed partial class WidgetWindow : WindowEx
         ProviderType = widgetItem.ProviderType;
         WidgetId = widgetItem.Id;
         WidgetType = widgetItem.Type;
+        WidgetIndex = widgetItem.Index;
         RuntimeId = widgetRuntimeId;
         WidgetSettings = null;
         WidgetViewModel = widgetViewModel;
@@ -411,6 +415,7 @@ public sealed partial class WidgetWindow : WindowEx
     private void WidgetWindow_Closed(object? sender, WindowEventArgs args)
     {
         WidgetMenuFlyout = null!;
+        WidgetSettings = null;
         WidgetViewModel = null;
 
         Closed -= WidgetWindow_Closed;

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
@@ -18,8 +17,6 @@ public partial class DashboardViewModel : ObservableObject
     public IWidgetIconService WidgetIconService { get; }
 
     public IWidgetScreenshotService WidgetScreenshotService { get; }
-
-    public ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; } = [];
 
     [ObservableProperty]
     public bool _isLoading;

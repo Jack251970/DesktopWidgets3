@@ -1598,13 +1598,11 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         return null;
     }
 
-    public async Task<DashboardWidgetItem> GetDashboardWidgetItemAsync(WidgetViewModel widgetViewModel, ElementTheme actualTheme)
+    public async Task<DashboardWidgetItem> GetDashboardWidgetItemAsync(string widgetId, string widgetType, int widgetIndex, WidgetViewModel widgetViewModel, ElementTheme actualTheme)
     {
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
-        var (_, widgetName, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
-        // TODO: Get widget index.
-        var widgetIndex = 0;
+        var (_, widgetName, _, _, _) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
 
         // get widget item
         return new DashboardWidgetItem()

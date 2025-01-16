@@ -26,7 +26,7 @@ public interface IWidgetManagerService
 
     Task AddWidgetAsync(string widgetId, string widgetType, Func<string, string, int, Task>? action, bool updateDashboard);
 
-    Task AddWidgetAsync(WidgetViewModel widgetViewModel, Func<WidgetViewModel, Task>? action, bool updateDashboard);
+    Task<int> AddWidgetAsync(WidgetViewModel widgetViewModel, Func<string, string, int, WidgetViewModel, Task>? action, bool updateDashboard);
 
     Task PinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh);
 

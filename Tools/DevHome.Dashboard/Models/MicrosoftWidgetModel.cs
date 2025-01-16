@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+using System.Text.Json;
 //using DevHome.Dashboard.Common.Contracts;
 //using DevHome.Dashboard.Common.Extensions;
 //using DevHome.Dashboard.Common.Helpers;
@@ -30,14 +30,16 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public DashboardViewModel ViewModel { get; }
 
-    public ObservableCollection<WidgetProviderDefinition> WidgetProviderDefinitions { get; set; } = [];
-    public ObservableCollection<ComSafeWidgetDefinition> WidgetDefinitions { get; set; } = [];
+    public ObservableCollection<WidgetProviderDefinition> WidgetProviderDefinitions { get; private set; } = [];
+    public ObservableCollection<ComSafeWidgetDefinition> WidgetDefinitions { get; private set; } = [];
+
+    public ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; } = [];
 
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
     private readonly IWidgetExtensionService _widgetExtensionService;
 
-    private Func<WidgetViewModel, Task>? CreateWidgetWindow;
+    private Func<WidgetViewModel, int, Task>? CreateWidgetWindow;
 
     private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
 
@@ -67,7 +69,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         WidgetDefinitions = new ObservableCollection<ComSafeWidgetDefinition>(comSafeWidgetDefinitions);
     }
 
-    public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, Task> createWidgetWindow)
+    public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task> createWidgetWindow)
     {
         CreateWidgetWindow = createWidgetWindow;
         await OnLoadedAsync();
@@ -108,7 +110,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     private async void HandleRendererUpdated(object? sender, object args)
     {
         // Re-render the widgets with the new theme and renderer.
-        foreach (var widget in ViewModel.PinnedWidgets)
+        foreach (var widget in PinnedWidgets)
         {
             await widget.RenderAsync();
         }
@@ -131,9 +133,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     private async Task RestorePinnedWidgetsAsync(ComSafeWidget[] hostWidgets, CancellationToken cancellationToken)
     {
-        var restoredWidgetsWithPosition = new SortedDictionary<int, ComSafeWidget>();
-        var restoredWidgetsWithoutPosition = new SortedDictionary<int, ComSafeWidget>();
-        var numUnorderedWidgets = 0;
+        var restoredWidgetsWithPosition = new Dictionary<ComSafeWidget, int>();
 
         var pinnedSingleInstanceWidgets = new List<string>();
 
@@ -159,7 +159,7 @@ public partial class MicrosoftWidgetModel : IDisposable
                     continue;
                 }
 
-                var stateObj = System.Text.Json.JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
+                var stateObj = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
                 if (stateObj?.Host != WidgetHelpers.DevHomeHostName)
                 {
                     // This shouldn't be able to be reached
@@ -206,20 +206,11 @@ public partial class MicrosoftWidgetModel : IDisposable
                     }
                 }
 
+                // We use position to get widget index info.
                 var position = stateObj.Position;
                 if (position >= 0)
                 {
-                    if (!restoredWidgetsWithPosition.TryAdd(position, widget))
-                    {
-                        // If there was an error and a widget with this position is already there,
-                        // treat this widget as unordered and put it into the unordered map.
-                        restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
-                    }
-                }
-                else
-                {
-                    // Widgets with no position will get the default of -1. Append these at the end.
-                    restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
+                    restoredWidgetsWithPosition.Add(widget, position);
                 }
             }
             catch (Exception ex)
@@ -228,14 +219,11 @@ public partial class MicrosoftWidgetModel : IDisposable
             }
         }
 
-        // Merge the dictionaries for easier looping. restoredWidgetsWithoutPosition should be empty, so this should be fast.
-        var lastOrderedKey = restoredWidgetsWithPosition.Count > 0 ? restoredWidgetsWithPosition.Last().Key : -1;
-        restoredWidgetsWithoutPosition.ToList().ForEach(x => restoredWidgetsWithPosition.Add(++lastOrderedKey, x.Value));
-
         // Now that we've ordered the widgets, put them in their final collection.
         foreach (var orderedWidget in restoredWidgetsWithPosition)
         {
-            var comSafeWidget = orderedWidget.Value;
+            var comSafeWidget = orderedWidget.Key;
+            var index = orderedWidget.Value;
             var size = await comSafeWidget.GetSizeAsync();
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -243,20 +231,9 @@ public partial class MicrosoftWidgetModel : IDisposable
             {
                 if (CreateWidgetWindow != null)
                 {
-                    await CreateWidgetWindow.Invoke(wvm);
+                    await CreateWidgetWindow.Invoke(wvm, index);
                 }
             }, cancellationToken);
-        }
-
-        // Go through the newly created list of pinned widgets and update any positions that may have changed.
-        // For example, if the provider for the widget at position 0 was deleted, the widget at position 1
-        // should be updated to have position 0, etc.
-        var updatedPlace = 0;
-        foreach (var widget in ViewModel.PinnedWidgets)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            await WidgetHelpers.SetPositionCustomStateAsync(widget.Widget, updatedPlace++);
         }
 
         _log.Information($"Done restoring pinned widgets");
@@ -394,7 +371,6 @@ public partial class MicrosoftWidgetModel : IDisposable
     {
         _log.Debug($"Unloading Dashboard, cancel any loading.");
         _initWidgetsCancellationTokenSource?.Cancel();
-        ViewModel.PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
         // TODO: What is the function of it?
         // Bindings.StopTracking();
 
@@ -409,7 +385,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
         finally
         {
-            ViewModel.PinnedWidgets.Clear();
+            PinnedWidgets.Clear();
             _pinnedWidgetsLock.Release();
         }
 
@@ -420,7 +396,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     {
         try
         {
-            foreach (var widget in ViewModel.PinnedWidgets)
+            foreach (var widget in PinnedWidgets)
             {
                 widget.UnsubscribeFromWidgetUpdates();
             }
@@ -484,10 +460,10 @@ public partial class MicrosoftWidgetModel : IDisposable
         _dispatcherQueue.TryEnqueue(async () =>
         {
             _log.Information($"WidgetDefinitionDeleted {definitionId}");
-            foreach (var widgetToRemove in ViewModel.PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
+            foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
             {
                 _log.Information($"Remove widget {widgetToRemove.Widget.Id}");
-                ViewModel.PinnedWidgets.Remove(widgetToRemove);
+                PinnedWidgets.Remove(widgetToRemove);
 
                 // The widget definition is gone, so delete widgets with that definition.
                 await widgetToRemove.Widget.DeleteAsync();
@@ -532,7 +508,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
         var matchingWidgetsFound = 0;
 
-        foreach (var widgetToUpdate in ViewModel.PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
+        foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
         {
             // Things in the definition that we need to update to if they have changed:
             // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
@@ -545,7 +521,7 @@ public partial class MicrosoftWidgetModel : IDisposable
                 {
                     _log.Information($"No longer allowed to have multiple of widget {updatedDefinitionId}");
                     _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
-                    ViewModel.PinnedWidgets.Remove(widgetToUpdate);
+                    PinnedWidgets.Remove(widgetToUpdate);
                     await widgetToUpdate.Widget.DeleteAsync();
                     _log.Information($"Deleted Widget {widgetToUpdate.Widget.Id}");
                 });
@@ -642,7 +618,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         await TryDeleteUnsafeWidget(widgetViewModel.Widget.GetUnsafeWidgetObject());
     }
 
-    public async Task AddWidgetsAsync(ComSafeWidgetDefinition newWidgetDefinition, Func<Task> showCreateErrorMessageAsync, Func<WidgetViewModel, Task> insertWidgetAsync)
+    public async Task AddWidgetsAsync(ComSafeWidgetDefinition newWidgetDefinition, Func<Task> showCreateErrorMessageAsync, Func<WidgetViewModel, Task<int>> insertWidgetAsync)
     {
         try
         {
@@ -680,15 +656,16 @@ public partial class MicrosoftWidgetModel : IDisposable
                 return;
             }
 
-            // Set custom state on new widget.
-            // TODO: Remove position.
-            var position = -1;
-            var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
-            _log.Debug($"SetCustomState: {newCustomState}");
-            await comSafeWidget.SetCustomStateAsync(newCustomState);
-
             // Put new widget on the Dashboard.
-            await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, insertWidgetAsync);
+            await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, async (wvm) =>
+            {
+                // Set custom state on new widget.
+                // We use position to store widget index info.
+                var position = await insertWidgetAsync(wvm);
+                var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
+                _log.Debug($"SetCustomState: {newCustomState}");
+                await comSafeWidget.SetCustomStateAsync(newCustomState);
+            });
         }
         catch (Exception ex)
         {
@@ -778,34 +755,6 @@ public partial class MicrosoftWidgetModel : IDisposable
     }
 
     #endregion
-
-    // If a widget is removed from the list, update the saved positions of the following widgets.
-    // If not updated, widgets pinned later may be assigned the same position as existing widgets,
-    // since the saved position may be greater than the number of pinned widgets.
-    // Unsubscribe from this event during drag and drop, since the drop event takes care of re-numbering.
-    // TODO: Check if we need this event and check ViewModel.PinnedWidgets.
-    private async void OnPinnedWidgetsCollectionChangedAsync(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.OldItems != null)
-        {
-            await _pinnedWidgetsLock.WaitAsync();
-            try
-            {
-                var removedIndex = e.OldStartingIndex;
-                _log.Debug($"Removed widget at index {removedIndex}");
-                for (var i = removedIndex; i < ViewModel.PinnedWidgets.Count; i++)
-                {
-                    _log.Debug($"Updating widget position for widget now at {i}");
-                    var widgetToUpdate = ViewModel.PinnedWidgets.ElementAt(i);
-                    await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
-                }
-            }
-            finally
-            {
-                _pinnedWidgetsLock.Release();
-            }
-        }
-    }
 
     #region Dispose
 

@@ -39,9 +39,37 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
 
         // initialize microsoft widgets
-        await _microsoftWidgetModel.InitializePinnedWidgetsAsync((widget) => CreateWidgetWindowAsync(microsoftWidgetList, widget));
+        await _microsoftWidgetModel.InitializePinnedWidgetsAsync((widget, index) => CreateWidgetWindowAsync(microsoftWidgetList, index, widget));
         // We don't delete microsoft widget json items that aren't in the system widget storage,
         // because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
+    }
+
+    private async Task CreateWidgetWindowAsync(List<JsonWidgetItem> itemList, int index, WidgetViewModel widgetViewModel)
+    {
+        // get widget info
+        var providerType = WidgetProviderType.Microsoft;
+        var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
+        var widgetIndex = index;
+
+        // find item
+        var item = itemList.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
+        if (item != null)
+        {
+            if (item.Pinned)
+            {
+                // create widget window
+                CreateWidgetWindow(item, widgetViewModel);
+            }
+            else
+            {
+                // TODO: Add support for microsoft widgets unpinned.
+            }
+        }
+        else
+        {
+            // add widget
+            await AddWidgetAsync(widgetViewModel, null, false);
+        }
     }
 
     #endregion
@@ -377,7 +405,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         await _appSettingsService.AddWidgetAsync(widget);
     }
 
-    public async Task AddWidgetAsync(WidgetViewModel widgetViewModel, Func<WidgetViewModel, Task>? action, bool updateDashboard)
+    public async Task<int> AddWidgetAsync(WidgetViewModel widgetViewModel, Func<string, string, int, WidgetViewModel, Task>? action, bool updateDashboard)
     {
         var widgetList = _appSettingsService.GetWidgetsList();
 
@@ -401,11 +429,11 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         // invoke action
         if (action != null)
         {
-            await action(widgetViewModel);
+            await action(widgetId, widgetType, index, widgetViewModel);
         }
 
         // create widget item
-        var widget = new JsonWidgetItem()
+        var item = new JsonWidgetItem()
         {
             ProviderType = providerType,
             Name = widgetName,
@@ -420,7 +448,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         };
 
         // create widget window
-        CreateWidgetWindow(widget, widgetViewModel);
+        CreateWidgetWindow(item, widgetViewModel);
 
         // update dashboard page
         if (updateDashboard)
@@ -436,7 +464,9 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
 
         // save widget item
-        await _appSettingsService.AddWidgetAsync(widget);
+        await _appSettingsService.AddWidgetAsync(item);
+
+        return index;
     }
 
     public async Task PinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
@@ -595,7 +625,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
         {
             Window_Creating = null,
-            Window_Created = (window) => WidgetWindow_Created(window, item),
+            Window_Created = WidgetWindow_Created,
             Window_Closing = null,
             Window_Closed = null
         };
@@ -604,41 +634,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), _appSettingsService.MultiThread, lifecycleActions);
     }
 
-    private async Task CreateWidgetWindowAsync(List<JsonWidgetItem> itemList, WidgetViewModel widgetViewModel)
-    {
-        // get widget info
-        var providerType = WidgetProviderType.Microsoft;
-        var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
-        // TODO: Get widget index.
-        var widgetIndex = 0;
-
-        // find item
-        var item = itemList.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
-        if (item != null)
-        {
-            if (item.Pinned)
-            {
-                // create widget window
-                CreateWidgetWindow(item, widgetViewModel);
-            }
-            else
-            {
-                // TODO: Add support for microsoft widgets unpinned.
-            }
-        }
-        else
-        {
-            // add widget
-            await AddWidgetAsync(widgetViewModel, null, false);
-        }
-    }
-
     private void CreateWidgetWindow(JsonWidgetItem item, WidgetViewModel widgetViewModel)
     {
         // get widget info
-        var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
-        // TODO: Get widget index.
-        var widgetIndex = 0;
+        var (widgetId, widgetType, widgetIndex) = (item.Id, item.Type, item.Index);
 
         // create widget info & register guid
         var widgetRuntimeId = widgetViewModel.Widget.Id;
@@ -681,7 +680,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Widget Window Lifecycle
 
-    private async void WidgetWindow_Created(Window window, JsonWidgetItem item)
+    private async void WidgetWindow_Created(Window window)
     {
         if (window is WidgetWindow widgetWindow)
         {
@@ -689,9 +688,9 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await _activationService.ActivateWindowAsync(widgetWindow);
 
             // get widget info
-            var widgetId = item.Id;
-            var widgetType = item.Type;
-            var widgetIndex = item.Index;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
 
             // set widget title
             widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(WidgetProviderType.DesktopWidgets3, widgetId, widgetType);
@@ -756,9 +755,9 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await _activationService.ActivateWindowAsync(widgetWindow);
 
             // get widget info
-            var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
-            // TODO: Get widget index.
-            var widgetIndex = 0;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
 
             // set widget title
             widgetWindow.ViewModel.WidgetDisplayTitle = widgetViewModel.WidgetDisplayTitle;
@@ -784,6 +783,9 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
                 widgetWindowPair.Window = widgetWindow;
                 widgetWindowPair.MenuFlyout = menuFlyout;
             }
+
+            // add to microsoft widget model
+            _microsoftWidgetModel.PinnedWidgets.Add(widgetViewModel);
         }
     }
 

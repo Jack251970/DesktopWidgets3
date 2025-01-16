@@ -51,7 +51,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
             {
                 await _microsoftWidgetModel.AddWidgetsAsync(newWidgetDefinition1, () => DialogFactory.ShowCreateWidgetErrorDialogAsync(), async (wvm) =>
                 {
-                    await _widgetManagerService.AddWidgetAsync(wvm, RefreshAddedWidgetAsync, false);
+                    return await _widgetManagerService.AddWidgetAsync(wvm, RefreshAddedWidgetAsync, false);
                 });
             }
         }
@@ -117,16 +117,15 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
         }
     }
 
-    // TODO: Improve code quality to unifying function like this.
-    private async Task RefreshAddedWidgetAsync(WidgetViewModel widgetViewModel)
+    private async Task RefreshAddedWidgetAsync(string widgetId, string widgetType, int widgetIndex, WidgetViewModel widgetViewModel)
     {
-        var widgetItem = await _widgetResourceService.GetDashboardWidgetItemAsync(widgetViewModel, _themeSelectorService.GetActualTheme());
+        var widgetItem = await _widgetResourceService.GetDashboardWidgetItemAsync(widgetId, widgetType, widgetIndex, widgetViewModel, _themeSelectorService.GetActualTheme());
         if (widgetItem != null)
         {
             widgetItem.PinnedChangedCallback = OnPinnedChanged;
             yourWidgets.Add(widgetItem);
 
-            RefreshYourWidgets();
+            RefreshYourWidgets(); 
         }
     }
 
@@ -189,7 +188,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
                         var widgetViewModel = _widgetManagerService.GetWidgetViewModel(providerType, widgetId, widgetType, widgetIndex);
                         if (widgetViewModel != null)
                         {
-                            var widgetItem = await _widgetResourceService.GetDashboardWidgetItemAsync(widgetViewModel, actualTheme);
+                            var widgetItem = await _widgetResourceService.GetDashboardWidgetItemAsync(widgetId, widgetType, widgetIndex, widgetViewModel, actualTheme);
                             if (widgetItem != null)
                             {
                                 widgetItem.PinnedChangedCallback = OnPinnedChanged;

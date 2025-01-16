@@ -4,12 +4,12 @@
 using System.Text.Json;
 //using DevHome.Common.Extensions;
 //using DevHome.Common.Services;
-using DevHome.Dashboard.ComSafeWidgetObjects;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Helpers;
 
+// TODO: Check this.
 public sealed class WidgetHelpers
 {
     public const string WebExperiencePackPackageId = "9MSSGKG348SP";
@@ -108,6 +108,7 @@ public sealed class WidgetHelpers
 
     public static string CreateWidgetCustomState(int ordinal)
     {
+        // TODO: Conflict with DevHome?
         var state = new WidgetCustomState
         {
             Host = DevHomeHostName,
@@ -115,17 +116,5 @@ public sealed class WidgetHelpers
         };
 
         return JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
-    }
-
-    public static async Task SetPositionCustomStateAsync(ComSafeWidget widget, int ordinal)
-    {
-        var stateStr = await widget.GetCustomStateAsync();
-        var state = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
-        if (state is not null)
-        {
-            state.Position = ordinal;
-            stateStr = JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
-            await widget.SetCustomStateAsync(stateStr);
-        }
     }
 }
