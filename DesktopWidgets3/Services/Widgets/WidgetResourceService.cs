@@ -1162,7 +1162,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         foreach (var providerDefinition in _microsoftWidgetModel.WidgetProviderDefinitions)
         {
             providerDefinitionIndex++;
-            var (_, widgetId1) = WidgetViewModel.GetWidgetProviderInfo(providerDefinition);
+            var (_, widgetId1) = providerDefinition.GetWidgetProviderInfo();
             if (widgetId1 == widgetId)
             {
                 return providerDefinitionIndex;
@@ -1178,7 +1178,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         foreach (var definition in _microsoftWidgetModel.WidgetDefinitions)
         {
             definitionIndex++;
-            var (_, _, _, widgetId1, widgetType1) = WidgetViewModel.GetWidgetProviderAndWidgetInfo(definition);
+            var (_, _, _, widgetId1, widgetType1) = definition.GetWidgetProviderAndWidgetInfo();
             if (widgetId == widgetId1 && widgetType == widgetType1)
             {
                 return definitionIndex;
