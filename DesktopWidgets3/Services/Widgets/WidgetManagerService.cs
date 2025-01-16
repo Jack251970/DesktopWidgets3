@@ -381,12 +381,9 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     {
         var widgetList = _appSettingsService.GetWidgetsList();
 
-        // TODO: Combine these codes?
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
-        var widgetName = widgetViewModel.WidgetDisplayTitle;
-        var widgetId = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
-        var widgetType = widgetViewModel.WidgetDefinition.Id;
+        var (_, widgetName, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
 
         // find index tag
         var indexs = widgetList.Where(x => x.Equals(providerType, widgetId, widgetType)).Select(x => x.Index).ToList();
@@ -611,8 +608,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     {
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
-        var widgetId = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
-        var widgetType = widgetViewModel.WidgetDefinition.Id;
+        var (_, _, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
         // TODO: Get widget index.
         var widgetIndex = 0;
 
@@ -640,8 +636,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     private void CreateWidgetWindow(JsonWidgetItem item, WidgetViewModel widgetViewModel)
     {
         // get widget info
-        var widgetId = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
-        var widgetType = widgetViewModel.WidgetDefinition.Id;
+        var (_, _, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
         // TODO: Get widget index.
         var widgetIndex = 0;
 
@@ -761,8 +756,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await _activationService.ActivateWindowAsync(widgetWindow);
 
             // get widget info
-            var widgetId = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
-            var widgetType = widgetViewModel.WidgetDefinition.Id;
+            var (_, _, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
             // TODO: Get widget index.
             var widgetIndex = 0;
 

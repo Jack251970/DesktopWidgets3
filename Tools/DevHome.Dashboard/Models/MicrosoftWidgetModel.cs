@@ -52,6 +52,8 @@ public partial class MicrosoftWidgetModel : IDisposable
         _widgetExtensionService = DependencyExtensions.GetRequiredService<IWidgetExtensionService>();
     }
 
+    #region Initialization
+
     public async Task InitializeResourcesAsync()
     {
         // Show the providers and widgets underneath them in alphabetical order
@@ -70,6 +72,8 @@ public partial class MicrosoftWidgetModel : IDisposable
         CreateWidgetWindow = createWidgetWindow;
         await OnLoadedAsync();
     }
+
+    #endregion
 
     #region Loaded & UnLoaded
 

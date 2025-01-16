@@ -252,7 +252,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         var themeService = DependencyExtensions.GetRequiredService<IThemeService>();
         var widgetService = DependencyExtensions.GetRequiredService<IWidgetService>();
 
-        var failedPlugins = new System.Collections.Concurrent.ConcurrentQueue<WidgetGroupPair>();
+        var failedPlugins = new ConcurrentQueue<WidgetGroupPair>();
 
         var initTasks = InstalledWidgetGroupPairs.Select(pair => Task.Run(delegate
         {
@@ -1236,12 +1236,13 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     public async Task<DashboardWidgetItem> GetDashboardWidgetItemAsync(WidgetViewModel widgetViewModel, ElementTheme actualTheme)
     {
+        // get widget info
         var providerType = WidgetProviderType.Microsoft;
-        var widgetName = widgetViewModel.WidgetDisplayTitle;
-        var widgetId = widgetViewModel.WidgetDefinition.ProviderDefinition.Id;
-        var widgetType = widgetViewModel.WidgetDefinition.Id;
+        var (_, widgetName, widgetId, widgetType) = widgetViewModel.GetWidgetInfo();
         // TODO: Get widget index.
         var widgetIndex = 0;
+
+        // get widget item
         return new DashboardWidgetItem()
         {
             ProviderType = providerType,

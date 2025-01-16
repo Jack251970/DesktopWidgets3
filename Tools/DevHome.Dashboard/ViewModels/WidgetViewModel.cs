@@ -115,6 +115,15 @@ public partial class WidgetViewModel : ObservableObject
         _actionParser.Set(ChooseFileAction.CustomTypeString, new ChooseFileParser());
     }
 
+    public (string widgetGroupName, string widgetName, string widgetId, string widgetType) GetWidgetInfo()
+    {
+        var widgetGroupName = WidgetProviderDisplayTitle;
+        var widgetName = WidgetDisplayTitle;
+        var widgetId = WidgetDefinition.ProviderDefinition.Id;
+        var widgetType = WidgetDefinition.Id;
+        return (widgetGroupName, widgetName, widgetId, widgetType);
+    }
+
     public async Task RenderAsync()
     {
         await RenderWidgetFrameworkElementAsync();
@@ -181,7 +190,7 @@ public partial class WidgetViewModel : ObservableObject
                 try
                 {
                     var renderer = await _renderingService.GetRendererAsync();
-                    // TODO: System.AccessViolationException: 'Attempted to read or write protected memory. This is often an indication that other memory is corrupt.'
+                    // TODO: Fix System.AccessViolationException: 'Attempted to read or write protected memory. This is often an indication that other memory is corrupt.'
                     _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
                     if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                     {
