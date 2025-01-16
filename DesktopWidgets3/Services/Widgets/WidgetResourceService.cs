@@ -456,31 +456,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Widget Group
 
-    #region Status
-
-    public bool IsWidgetGroupUnknown(WidgetProviderType providerType, string widgetId, string widgetType)
-    {
-        if (providerType == WidgetProviderType.DesktopWidgets3)
-        {
-            (var installed, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, null);
-            if (installed)
-            {
-                return !InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.WidgetTypes.Contains(widgetType);
-            }
-            else
-            {
-                return allIndex != null;
-            }
-        }
-        else
-        {
-            var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
-            return definitionIndex == -1;
-        }
-    }
-
-    #endregion
-
     #region Name
 
     #region Desktop Widgets 3
@@ -656,6 +631,31 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Widget
 
+    #region Status
+
+    public bool IsWidgetGroupUnknown(WidgetProviderType providerType, string widgetId, string widgetType)
+    {
+        if (providerType == WidgetProviderType.DesktopWidgets3)
+        {
+            (var installed, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, null);
+            if (installed)
+            {
+                return !InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.WidgetTypes.Contains(widgetType);
+            }
+            else
+            {
+                return allIndex != null;
+            }
+        }
+        else
+        {
+            var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
+            return definitionIndex == -1;
+        }
+    }
+
+    #endregion
+
     #region Name
 
     public string GetWidgetName(WidgetProviderType providerType, string widgetId, string widgetType)
@@ -668,13 +668,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         else
         {
             var widgetDefinitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
-            if (widgetDefinitionIndex != -1)
-            {
-                return GetWidgetName(widgetDefinitionIndex);
-            }
+            return GetWidgetName(widgetDefinitionIndex);
         }
-
-        return string.Format("Unknown_Widget_Name".GetLocalizedString(), 1);
     }
 
     #region Desktop Widgets 3
@@ -733,13 +728,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         else
         {
             var widgetDefinitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
-            if (widgetDefinitionIndex != -1)
-            {
-                return GetWidgetDescription(widgetDefinitionIndex);
-            }
+            return GetWidgetDescription(widgetDefinitionIndex);
         }
-
-        return string.Empty;
     }
 
     #region Desktop Widgets 3
@@ -949,13 +939,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         else
         {
             var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
-            if (definitionIndex != -1)
-            {
-                return await GetWidgetScreenshotBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
-            }
+            return await GetWidgetScreenshotBrushAsync(dispatcherQueue, definitionIndex, actualTheme);
         }
-
-        return null!;
     }
 
     #region Desktop Widgets 3
@@ -1076,6 +1061,16 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
     public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         return await _widgetScreenshotService.GetBrushForMicrosoftWidgetScreenshotAsync(dispatcherQueue, widgetDefinition, actualTheme);
+    }
+
+    private async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, int definitionIndex, ElementTheme actualTheme)
+    {
+        if (definitionIndex != -1)
+        {
+            return await GetWidgetScreenshotBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
+        }
+
+        return null!;
     }
 
     #endregion
