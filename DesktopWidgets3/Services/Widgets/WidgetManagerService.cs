@@ -20,6 +20,32 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     private bool _inEditMode = false;
     private bool _restoreMainWindow = false;
 
+    #region Initialization
+
+    public async void InitializePinnedWidgets()
+    {
+        // get microsoft widgets 3 widget list & microsoft widget list
+        var widgetList = _appSettingsService.GetWidgetsList();
+        var desktopWidgets3WidgetList = widgetList.Where(x => x.ProviderType == WidgetProviderType.DesktopWidgets3).ToList();
+        var microsoftWidgetList = widgetList.Where(x => x.ProviderType == WidgetProviderType.Microsoft).ToList();
+
+        // initialize desktop widgets 3 widgets
+        foreach (var widget in desktopWidgets3WidgetList)
+        {
+            if (widget.ProviderType == WidgetProviderType.DesktopWidgets3 && widget.Pinned)
+            {
+                CreateWidgetWindow(widget);
+            }
+        }
+
+        // initialize microsoft widgets
+        await _microsoftWidgetModel.InitializePinnedWidgetsAsync((widget) => CreateWidgetWindowAsync(microsoftWidgetList, widget));
+        // We don't delete microsoft widget json items that aren't in the system widget storage,
+        // because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
+    }
+
+    #endregion
+
     #region Widget Info
 
     #region Runtime Id
@@ -233,31 +259,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     #region Widget Window
 
     #region All Widgets Management
-
-    public async void InitializePinnedWidgets()
-    {
-        // initialize widget list
-        await _appSettingsService.InitializeWidgetListAsync();
-
-        // get microsoft widgets 3 widget list & microsoft widget list
-        var widgetList = _appSettingsService.GetWidgetsList();
-        var desktopWidgets3WidgetList = widgetList.Where(x => x.ProviderType == WidgetProviderType.DesktopWidgets3).ToList();
-        var microsoftWidgetList = widgetList.Where(x => x.ProviderType == WidgetProviderType.Microsoft).ToList();
-
-        // initialize desktop widgets 3 widgets
-        foreach (var widget in desktopWidgets3WidgetList)
-        {
-            if (widget.ProviderType == WidgetProviderType.DesktopWidgets3 && widget.Pinned)
-            {
-                CreateWidgetWindow(widget);
-            }
-        }
-
-        // initialize microsoft widgets
-        await _microsoftWidgetModel.InitializePinnedWidgetsAsync((widget) => CreateWidgetWindowAsync(microsoftWidgetList, widget));
-        // We don't delete microsoft widget json items that aren't in the system widget storage,
-        // because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
-    }
 
     // TODO: Test restart.
     public async Task RestartWidgetsAsync()

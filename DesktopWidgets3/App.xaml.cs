@@ -350,8 +350,14 @@ public partial class App : Application
             // Check startup
             _ = StartupHelper.CheckStartup();
 
+            // initialize widget store list
+            await GetService<IAppSettingsService>().InitializeWidgetStoreListAsync();
+
             // Initialize widget resources
             await GetService<IWidgetResourceService>().InitalizeAsync();
+
+            // initialize widget list
+            await GetService<IAppSettingsService>().InitializeWidgetListAsync();
 
             // Initialize pinned widgets
             GetService<IWidgetManagerService>().InitializePinnedWidgets();

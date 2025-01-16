@@ -8,15 +8,16 @@ using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettingsService appSettingsService, IWidgetIconService widgetIconService, IWidgetScreenshotService widgetScreenshotService, MicrosoftWidgetModel microsoftWidgetModel) : IWidgetResourceService
+internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftWidgetModel microsoftWidgetModel, IAppSettingsService appSettingsService, IWidgetIconService widgetIconService, IWidgetScreenshotService widgetScreenshotService) : IWidgetResourceService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetResourceService));
 
     private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
+    private readonly MicrosoftWidgetModel _microsoftWidgetModel = microsoftWidgetModel;
+
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly IWidgetIconService _widgetIconService = widgetIconService;
     private readonly IWidgetScreenshotService _widgetScreenshotService = widgetScreenshotService;
-    private readonly MicrosoftWidgetModel _microsoftWidgetModel = microsoftWidgetModel;
 
     private List<WidgetGroupPair> InstalledWidgetGroupPairs { get; set; } = null!;
     private List<WidgetGroupMetadata> AllWidgetGroupMetadatas { get; set; } = null!;
@@ -70,8 +71,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     private async Task LoadAllInstalledWidgets()
     {
-        // load widget store list
-        var widgetStoreList = await _appSettingsService.InitializeWidgetStoreListAsync();
+        // get widget store list
+        var widgetStoreList = _appSettingsService.GetWidgetStoreList();
 
         // get preinstalled widget metadata
         var preinstalledWidgetsMetadata = AllWidgetGroupMetadatas.Where(x => x.Preinstalled).ToList();
@@ -797,13 +798,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         else
         {
             var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
-            if (definitionIndex != -1)
-            {
-                return await GetWidgetIconBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
-            }
+            return await GetWidgetIconBrushAsync(dispatcherQueue, definitionIndex, actualTheme);
         }
-
-        return null!;
     }
 
     #region Desktop Widgets 3
@@ -925,6 +921,16 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
     public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         return await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(dispatcherQueue, widgetDefinition, actualTheme);
+    }
+
+    private async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, int definitionIndex, ElementTheme actualTheme)
+    {
+        if (definitionIndex != -1)
+        {
+            return await GetWidgetIconBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
+        }
+
+        return null!;
     }
 
     #endregion
@@ -1492,60 +1498,83 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
             var widgetType = widget.Type;
             var widgetIndex = widget.Index;
 
-            // TODO: IsUnknown support.
-            // TODO: Icon fill here.
-            if (providerType == WidgetProviderType.Microsoft)
+            if (providerType == WidgetProviderType.DesktopWidgets3)
             {
-                dashboardItemList.Add(new DashboardWidgetItem()
+                (var installed, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
+                if (installed && widgetTypeIndex != null)
                 {
-                    ProviderType = providerType,
-                    Id = widgetId,
-                    Type = widgetType,
-                    Index = widgetIndex,
-                    Name = widget.Name,
-                    IconFill = null,
-                    Pinned = widget.Pinned,
-                    IsUnknown = false,
-                    IsInstalled = true
-                });
-                continue;
-            }
+                    dashboardItemList.Add(new DashboardWidgetItem()
+                    {
+                        ProviderType = providerType,
+                        Id = widgetId,
+                        Type = widgetType,
+                        Index = widgetIndex,
+                        Name = GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType),
+                        IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
+                        Pinned = widget.Pinned,
+                        IsUnknown = false,
+                        IsInstalled = true
+                    });
+                }
+                else
+                {
+                    if (!unknownNotInstalledWidgetList.Contains((widgetId, widgetType)))
+                    {
+                        unknownNotInstalledWidgetList.Add((widgetId, widgetType));
+                    }
 
-            (var installed, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-            if (installed && widgetTypeIndex != null)
-            {
-                dashboardItemList.Add(new DashboardWidgetItem()
-                {
-                    ProviderType = providerType,
-                    Id = widgetId,
-                    Type = widgetType,
-                    Index = widgetIndex,
-                    Name = GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType),
-                    IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
-                    Pinned = widget.Pinned,
-                    IsUnknown = false,
-                    IsInstalled = true
-                });
+                    dashboardItemList.Add(new DashboardWidgetItem()
+                    {
+                        ProviderType = providerType,
+                        Id = widgetId,
+                        Type = widgetType,
+                        Index = widgetIndex,
+                        Name = string.Format("Unknown_Widget_Name".GetLocalizedString(), unknownNotInstalledWidgetList.Count),
+                        IconFill = await GetIconBrushFromPathAsync(_dispatcherQueue, Constants.UnknownWidgetIconPath),
+                        Pinned = widget.Pinned,
+                        IsUnknown = true,
+                        IsInstalled = false,
+                    });
+                }
             }
             else
             {
-                if (!unknownNotInstalledWidgetList.Contains((widgetId, widgetType)))
+                var widgetDefinitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
+                if (widgetDefinitionIndex != -1)
                 {
-                    unknownNotInstalledWidgetList.Add((widgetId, widgetType));
+                    dashboardItemList.Add(new DashboardWidgetItem()
+                    {
+                        ProviderType = providerType,
+                        Id = widgetId,
+                        Type = widgetType,
+                        Index = widgetIndex,
+                        Name = GetWidgetName(widgetDefinitionIndex),
+                        IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinitionIndex, actualTheme),
+                        Pinned = widget.Pinned,
+                        IsUnknown = false,
+                        IsInstalled = true
+                    });
                 }
-
-                dashboardItemList.Add(new DashboardWidgetItem()
+                else
                 {
-                    ProviderType = providerType,
-                    Id = widgetId,
-                    Type = widgetType,
-                    Index = widgetIndex,
-                    Name = string.Format("Unknown_Widget_Name".GetLocalizedString(), unknownNotInstalledWidgetList.Count),
-                    IconFill = await GetPathIconBrushAsync(_dispatcherQueue, Constants.UnknownWidgetIconPath),
-                    Pinned = widget.Pinned,
-                    IsUnknown = true,
-                    IsInstalled = false,
-                });
+                    if (!unknownNotInstalledWidgetList.Contains((widgetId, widgetType)))
+                    {
+                        unknownNotInstalledWidgetList.Add((widgetId, widgetType));
+                    }
+
+                    dashboardItemList.Add(new DashboardWidgetItem()
+                    {
+                        ProviderType = providerType,
+                        Id = widgetId,
+                        Type = widgetType,
+                        Index = widgetIndex,
+                        Name = string.Format("Unknown_Widget_Name".GetLocalizedString(), unknownNotInstalledWidgetList.Count),
+                        IconFill = await GetIconBrushFromPathAsync(_dispatcherQueue, Constants.UnknownWidgetIconPath),
+                        Pinned = widget.Pinned,
+                        IsUnknown = true,
+                        IsInstalled = false,
+                    });
+                }
             }
         }
 
@@ -1718,7 +1747,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     private readonly ConcurrentDictionary<string, BitmapImage> _pathIconCache = new();
 
-    private async Task<Brush> GetPathIconBrushAsync(DispatcherQueue dispatcherQueue, string iconPath)
+    private async Task<Brush> GetIconBrushFromPathAsync(DispatcherQueue dispatcherQueue, string iconPath)
     {
         var image = new BitmapImage();
         try
