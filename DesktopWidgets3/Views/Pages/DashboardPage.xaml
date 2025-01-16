@@ -52,6 +52,7 @@
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
+                            CornerRadius="{ThemeResource OverlayCornerRadius}"
                             RightTapped="WidgetItem_RightTapped"
                             Tag="{x:Bind}">
                             <Grid
@@ -115,6 +116,7 @@
                             Background="Transparent"
                             BorderThickness="0"
                             Click="WidgetItem_Click"
+                            CornerRadius="{ThemeResource OverlayCornerRadius}"
                             RightTapped="WidgetItem_RightTapped"
                             Tag="{x:Bind}">
                             <Grid
