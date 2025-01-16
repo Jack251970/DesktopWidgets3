@@ -468,7 +468,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
             }
             else
             {
-                return allIndex == -1;
+                return allIndex != null;
             }
         }
         else
@@ -551,7 +551,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #region Microsoft
 
-    private string GetWidgetGroupDescription(int providerDefinitionIndex)
+    private static string GetWidgetGroupDescription(int providerDefinitionIndex)
     {
         if (providerDefinitionIndex != -1)
         {
@@ -662,10 +662,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         if (providerType == WidgetProviderType.DesktopWidgets3)
         {
             (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-            if (installedIndex != -1)
-            {
-                return GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType);
-            }
+            return GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType);
         }
         else
         {
@@ -730,10 +727,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         if (providerType == WidgetProviderType.DesktopWidgets3)
         {
             (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-            if (installedIndex != -1)
-            {
-                return GetWidgetDescription(allIndex, installedIndex, widgetTypeIndex, widgetType);
-            }
+            return GetWidgetDescription(allIndex, installedIndex, widgetTypeIndex, widgetType);
         }
         else
         {
@@ -798,10 +792,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         if (providerType == WidgetProviderType.DesktopWidgets3)
         {
             (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-            if (installedIndex != -1)
-            {
-                return await GetWidgetIconBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
-            }
+            return await GetWidgetIconBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
         }
         else
         {
@@ -891,12 +882,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
     private string GetWidgetIconPath(string widgetId, string widgetType, ElementTheme actualTheme)
     {
         (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
-        {
-            return GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex, actualTheme);
-        }
-
-        return string.Empty;
+        return GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex, actualTheme);
     }
 
     private string GetWidgetIconPath(int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
@@ -952,10 +938,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         if (providerType == WidgetProviderType.DesktopWidgets3)
         {
             (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-            if (installedIndex != -1)
-            {
-                return await GetWidgetScreenshotBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
-            }
+            return await GetWidgetScreenshotBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
         }
         else
         {
@@ -1044,12 +1027,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
     private string GetWidgetScreenshotPath(string widgetId, string widgetType, ElementTheme actualTheme)
     {
         (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
-        {
-            return GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, actualTheme);
-        }
-
-        return string.Empty;
+        return GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, actualTheme);
     }
 
     private string GetWidgetScreenshotPath(int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
@@ -1107,12 +1085,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
     public RectSize GetWidgetDefaultSize(string widgetId, string widgetType)
     {
         (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
-        {
-            return GetWidgetDefaultSize(allIndex, installedIndex, widgetTypeIndex);
-        }
-
-        return WidgetConstants.DefaultWidgetSize;
+        return GetWidgetDefaultSize(allIndex, installedIndex, widgetTypeIndex);
     }
 
     private RectSize GetWidgetDefaultSize(int? allIndex, int? installedIndex, int? widgetTypeIndex)
@@ -1149,18 +1122,13 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         if (providerType == WidgetProviderType.DesktopWidgets3)
         {
             (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-            if (installedIndex != -1)
-            {
-                return GetWidgetMinMaxSize(allIndex, installedIndex, widgetTypeIndex);
-            }
+            return GetWidgetMinMaxSize(allIndex, installedIndex, widgetTypeIndex);
         }
         else
         {
             var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
             return GetWidgetMinMaxSizeMicrosoft(definitionIndex);
         }
-
-        return (RectSize.NULL, RectSize.NULL);
     }
 
     #region Desktop Widgets 3
@@ -1203,15 +1171,17 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #endregion
 
-    #region AllowMultiple & IsCustomizable
+    #region Single Instance And Already Pinned
 
-    public bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType)
+    #region Desktop Widgets 3
+
+    public bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType, List<JsonWidgetItem> currentlyPinnedWidgets)
     {
-        if (!GetWidgetAllowMultiple(widgetId, widgetType))
+        if (!GetWidgetAllowMultiple(WidgetProviderType.DesktopWidgets3, widgetId, widgetType))
         {
-            foreach (var pinnedWidget in _appSettingsService.GetWidgetsList())
+            foreach (var pinnedWidget in currentlyPinnedWidgets)
             {
-                if (pinnedWidget.ProviderType == WidgetProviderType.DesktopWidgets3 && pinnedWidget.Id == widgetId && pinnedWidget.Type == widgetType)
+                if (pinnedWidget.Equals(WidgetProviderType.DesktopWidgets3, widgetId, widgetType))
                 {
                     return true;
                 }
@@ -1221,27 +1191,51 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         return false;
     }
 
-    public bool GetWidgetIsCustomizable(string widgetId, string widgetType)
+    #endregion
+
+    #region Microsoft
+
+    public bool IsWidgetSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[]? currentlyPinnedWidgets)
     {
-        (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
+        // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
+        if (!widgetDef.AllowMultiple)
         {
-            return GetWidgetIsCustomizable(allIndex, installedIndex, widgetTypeIndex);
+            if (currentlyPinnedWidgets != null)
+            {
+                foreach (var pinnedWidget in currentlyPinnedWidgets)
+                {
+                    if (pinnedWidget.DefinitionId == widgetDef.Id)
+                    {
+                        return true;
+                    }
+                }
+            }
         }
 
         return false;
     }
 
-    private bool GetWidgetAllowMultiple(string widgetId, string widgetType)
+    #endregion
+
+    #endregion
+
+    #region AllowMultiple
+
+    private bool GetWidgetAllowMultiple(WidgetProviderType widgetProvider, string widgetId, string widgetType)
     {
-        (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
+        if (widgetProvider == WidgetProviderType.DesktopWidgets3)
         {
+            (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
             return GetWidgetAllowMultiple(allIndex, installedIndex, widgetTypeIndex);
         }
-
-        return false;
+        else
+        {
+            var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
+            return GetWidgetAllowMultiple(definitionIndex);
+        }
     }
+
+    #region Desktop Widgets 3
 
     private bool GetWidgetAllowMultiple(int? allIndex, int? installedIndex, int? widgetTypeIndex)
     {
@@ -1258,6 +1252,42 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
         return false;
     }
 
+    #endregion
+
+    #region Microsoft
+
+    private bool GetWidgetAllowMultiple(int definitionIndex)
+    {
+        if (definitionIndex != -1)
+        {
+            return _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex).AllowMultiple;
+        }
+
+        return false;
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Is Customizable
+
+    public bool GetWidgetIsCustomizable(WidgetProviderType providerType, string widgetId, string widgetType)
+    {
+        if (providerType == WidgetProviderType.DesktopWidgets3)
+        {
+            (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
+            return GetWidgetIsCustomizable(allIndex, installedIndex, widgetTypeIndex);
+        }
+        else
+        {
+            var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
+            return GetWidgetIsCustomizable(definitionIndex);
+        }
+    }
+
+    #region Desktop Widgets 3
+
     private bool GetWidgetIsCustomizable(int? allIndex, int? installedIndex, int? widgetTypeIndex)
     {
         if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetTypeIndex != null)
@@ -1272,6 +1302,22 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
         return false;
     }
+
+    #endregion
+
+    #region Microsoft
+
+    private bool GetWidgetIsCustomizable(int definitionIndex)
+    {
+        if (definitionIndex != -1)
+        {
+            return _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex).IsCustomizable;
+        }
+
+        return false;
+    }
+
+    #endregion
 
     #endregion
 

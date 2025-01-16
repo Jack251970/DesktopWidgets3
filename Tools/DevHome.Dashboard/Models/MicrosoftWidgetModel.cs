@@ -613,9 +613,24 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #region Get Widgets
 
-    public Task<Widget[]> GetWidgetsAsync()
+    public async Task<ComSafeWidget[]> GetComSafeWidgetsAsync()
     {
-        return ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var unsafeCurrentlyPinnedWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var comSafeCurrentlyPinnedWidgets = new List<ComSafeWidget>();
+        foreach (var unsafeWidget in unsafeCurrentlyPinnedWidgets)
+        {
+            var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+            if (!string.IsNullOrEmpty(id))
+            {
+                var comSafeWidget = new ComSafeWidget(id);
+                if (await comSafeWidget.PopulateAsync())
+                {
+                    comSafeCurrentlyPinnedWidgets.Add(comSafeWidget);
+                }
+            }
+        }
+
+        return [.. comSafeCurrentlyPinnedWidgets];
     }
 
     #endregion

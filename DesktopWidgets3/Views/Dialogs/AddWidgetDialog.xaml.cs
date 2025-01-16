@@ -26,6 +26,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly MicrosoftWidgetModel _microsoftWidgetModel;
 
+    private readonly IAppSettingsService _appSettingsService;
     private readonly IWidgetResourceService _widgetResourceService;
 
     public AddWidgetDialog()
@@ -35,6 +36,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
         _microsoftWidgetModel = DependencyExtensions.GetRequiredService<MicrosoftWidgetModel>();
 
+        _appSettingsService = DependencyExtensions.GetRequiredService<AppSettingsService>();
         _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
         InitializeComponent();
@@ -101,6 +103,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         // Show the widget group and widgets underneath them in alphabetical order.
         var installedWidgetGroups = _widgetResourceService.GetInstalledDashboardGroupItems().OrderBy(x => x.Name);
+        var currentlyPinnedWidgets = _appSettingsService.GetWidgetsList();
 
         foreach (var widgetGroup in installedWidgetGroups)
         {
@@ -120,7 +123,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 var widgetDefinition = new DesktopWidgets3WidgetDefinition(widgetId, widgetType, widgetGroup.Name, widgetName);
 
                 var subItemContent = await BuildWidgetNavItemAsync(widgetDefinition);
-                var enable = !IsSingleInstanceAndAlreadyPinned(widgetId, widgetType);
+                var enable = !_widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetId, widgetType, currentlyPinnedWidgets);
                 var subItem = new NavigationViewItem
                 {
                     Tag = widgetDefinition,
@@ -153,26 +156,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
     }
 
-    private static bool IsSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
-    {
-        // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
-        if (!widgetDef.AllowMultiple)
-        {
-            if (currentlyPinnedWidgets != null)
-            {
-                foreach (var pinnedWidget in currentlyPinnedWidgets)
-                {
-                    if (pinnedWidget.DefinitionId == widgetDef.Id)
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
     #endregion
 
     #region Microsoft Widgets
@@ -182,20 +165,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
-        var unsafeCurrentlyPinnedWidgets = await _microsoftWidgetModel.GetWidgetsAsync();
-        var comSafeCurrentlyPinnedWidgets = new List<ComSafeWidget>();
-        foreach (var unsafeWidget in unsafeCurrentlyPinnedWidgets)
-        {
-            var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
-            if (!string.IsNullOrEmpty(id))
-            {
-                var comSafeWidget = new ComSafeWidget(id);
-                if (await comSafeWidget.PopulateAsync())
-                {
-                    comSafeCurrentlyPinnedWidgets.Add(comSafeWidget);
-                }
-            }
-        }
+        var currentlyPinnedWidgets = await _microsoftWidgetModel.GetComSafeWidgetsAsync();
 
         foreach (var providerDef in _microsoftWidgetModel.WidgetProviderDefinitions)
         {
@@ -220,7 +190,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItemAsync(widgetDef);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
+                        var enable = !_widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,
@@ -260,11 +230,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinition, ActualTheme);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
-    }
-
-    private bool IsSingleInstanceAndAlreadyPinned(string widgetId, string widgetType)
-    {
-        return _widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetId, widgetType);
     }
 
     #endregion

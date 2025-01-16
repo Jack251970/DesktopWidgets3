@@ -44,9 +44,11 @@ public interface IWidgetResourceService
 
     (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(WidgetProviderType providerType, string widgetId, string widgetType);
 
-    bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType);
+    bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType, List<JsonWidgetItem> currentlyPinnedWidgets);
 
-    bool GetWidgetIsCustomizable(string widgetId, string widgetType);
+    bool IsWidgetSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[]? currentlyPinnedWidgets);
+
+    bool GetWidgetIsCustomizable(WidgetProviderType providerType, string widgetId, string widgetType);
 
     List<DashboardWidgetGroupItem> GetInstalledDashboardGroupItems();
 
