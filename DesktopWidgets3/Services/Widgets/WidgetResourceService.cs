@@ -1098,7 +1098,11 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
 
     #endregion
 
-    #region Default & Min & Max Size
+    #region Size
+
+    #region Default
+
+    #region Desktop Widgets 3
 
     public RectSize GetWidgetDefaultSize(string widgetId, string widgetType)
     {
@@ -1108,18 +1112,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
             return GetWidgetDefaultSize(allIndex, installedIndex, widgetTypeIndex);
         }
 
-        return new RectSize(342.0, 201.0);
-    }
-
-    public (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(string widgetId, string widgetType)
-    {
-        (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-        if (installedIndex != -1)
-        {
-            return GetWidgetMinMaxSize(allIndex, installedIndex, widgetTypeIndex);
-        }
-
-        return (new(null, null), new(null, null));
+        return WidgetConstants.DefaultWidgetSize;
     }
 
     private RectSize GetWidgetDefaultSize(int? allIndex, int? installedIndex, int? widgetTypeIndex)
@@ -1136,8 +1129,41 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
             return new RectSize(widget.DefaultWidth, widget.DefaultHeight);
         }
 
-        return new RectSize(342.0, 201.0);
+        return WidgetConstants.DefaultWidgetSize;
     }
+
+    #endregion
+
+    #region Microsoft
+
+    // We don't need to set the default size for Microsoft widgets.
+
+    #endregion
+
+    #endregion
+
+    #region Min & Max
+
+    public (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(WidgetProviderType providerType, string widgetId, string widgetType)
+    {
+        if (providerType == WidgetProviderType.DesktopWidgets3)
+        {
+            (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
+            if (installedIndex != -1)
+            {
+                return GetWidgetMinMaxSize(allIndex, installedIndex, widgetTypeIndex);
+            }
+        }
+        else
+        {
+            var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
+            return GetWidgetMinMaxSizeMicrosoft(definitionIndex);
+        }
+
+        return (RectSize.NULL, RectSize.NULL);
+    }
+
+    #region Desktop Widgets 3
 
     private (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(int? allIndex, int? installedIndex, int? widgetTypeIndex)
     {
@@ -1153,8 +1179,27 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, IAppSettin
             return (new RectSize(widget.MinWidth, widget.MinHeight), new RectSize(widget.MaxWidth, widget.MaxHeight));
         }
 
-        return (new(null, null), new(null, null));
+        return (RectSize.NULL, RectSize.NULL);
     }
+
+    #endregion
+
+    #region Microsoft
+
+    private static (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSizeMicrosoft(int definitionIndex)
+    {
+        if (definitionIndex != -1)
+        {
+            // We don't set min & max size for Microsoft widgets.
+            return (RectSize.NULL, RectSize.NULL);
+        }
+
+        return (RectSize.NULL, RectSize.NULL);
+    }
+
+    #endregion
+
+    #endregion
 
     #endregion
 

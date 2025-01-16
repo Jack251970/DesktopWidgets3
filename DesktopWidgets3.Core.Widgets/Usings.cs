@@ -7,6 +7,7 @@ global using DevHome.Dashboard.ViewModels;
 global using DevHome.Dashboard.Models;
 
 // DesktopWidgets3.Core.Widgets
+global using DesktopWidgets3.Core.Widgets;
 global using DesktopWidgets3.Core.Widgets.Contracts.Services;
 global using DesktopWidgets3.Core.Widgets.Enums;
 global using DesktopWidgets3.Core.Widgets.Helpers;

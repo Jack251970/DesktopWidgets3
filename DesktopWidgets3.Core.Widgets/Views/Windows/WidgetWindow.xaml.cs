@@ -225,11 +225,11 @@ public sealed partial class WidgetWindow : WindowEx
         var widgetSizeWidth = widgetItem.Size.Width!.Value;
         _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
         _widgetPosition = AppWindow.Position;
-        if (widgetItem.Position.X != -10000)
+        if (widgetItem.Position.X != WidgetConstants.DefaultWidgetPosition.X)
         {
             _widgetPosition.X = widgetItem.Position.X;
         }
-        if (widgetItem.Position.Y != -10000)
+        if (widgetItem.Position.Y != WidgetConstants.DefaultWidgetPosition.Y)
         {
             _widgetPosition.Y = widgetItem.Position.Y;
         }
@@ -246,7 +246,7 @@ public sealed partial class WidgetWindow : WindowEx
         Title = string.Empty;
 
         // Initiliaze size & position for window
-        (var minSize, var maxSize) = _widgetResourceService.GetWidgetMinMaxSize(widgetItem.Id, widgetItem.Type);
+        (var minSize, var maxSize) = _widgetResourceService.GetWidgetMinMaxSize(ProviderType, widgetItem.Id, widgetItem.Type);
         MinSize = minSize;
         MaxSize = maxSize;
         Size = _widgetSize;
@@ -280,11 +280,11 @@ public sealed partial class WidgetWindow : WindowEx
         var widgetSizeWidth = WidgetHelpers.WidgetPxWidth;
         _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
         _widgetPosition = AppWindow.Position;
-        if (widgetItem.Position.X != -10000)
+        if (widgetItem.Position.X != WidgetConstants.DefaultWidgetPosition.X)
         {
             _widgetPosition.X = widgetItem.Position.X;
         }
-        if (widgetItem.Position.Y != -10000)
+        if (widgetItem.Position.Y != WidgetConstants.DefaultWidgetPosition.Y)
         {
             _widgetPosition.Y = widgetItem.Position.Y;
         }
@@ -301,8 +301,9 @@ public sealed partial class WidgetWindow : WindowEx
         Title = string.Empty;
 
         // Initiliaze size & position for window
-        MinSize = RectSize.NULL;
-        MaxSize = RectSize.NULL;
+        (var minSize, var maxSize) = _widgetResourceService.GetWidgetMinMaxSize(ProviderType, widgetItem.Id, widgetItem.Type);
+        MinSize = minSize;
+        MaxSize = maxSize;
         Size = _widgetSize;
         position = AppWindow.Position;
 

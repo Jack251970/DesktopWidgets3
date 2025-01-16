@@ -55,8 +55,8 @@ public class JsonWidgetItemConverter : JsonConverter
         var widgetType = jsonObject["Type"]?.Value<string>() ?? string.Empty;
         var widgetIndex = jsonObject["Index"]?.Value<int>() ?? new Random().Next(100, 999);
         var pinned = jsonObject["Pinned"]?.Value<bool>() ?? false;
-        var position = jsonObject["Position"]?.ToObject<PointInt32>(serializer) ?? new PointInt32(-1, -1);
-        var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? new RectSize(318, 200);
+        var position = jsonObject["Position"]?.ToObject<PointInt32>(serializer) ?? WidgetConstants.DefaultWidgetPosition;
+        var size = jsonObject["Size"]?.ToObject<RectSize>(serializer) ?? WidgetConstants.DefaultWidgetSize;
         var displayMonitor = jsonObject["DisplayMonitor"]?.ToObject<DisplayMonitor>(serializer) ?? DisplayMonitor.GetPrimaryMonitorInfo();
         var defaultWidgetSettings = _widgetResourceService.GetDefaultSettings(widgetId, widgetType);
         var widgetSettings = jsonObject["Settings"]?.ToObject(defaultWidgetSettings.GetType(), serializer) as BaseWidgetSettings ?? defaultWidgetSettings;

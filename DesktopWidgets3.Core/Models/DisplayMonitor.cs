@@ -7,9 +7,9 @@ public class DisplayMonitor
 {
     public string Name { get; set; } = string.Empty;
 
-    public RectSize RectMonitor { get; set; } = new(null, null);
+    public RectSize RectMonitor { get; set; } = RectSize.NULL;
 
-    public RectSize RectWork { get; set; } = new(null, null);
+    public RectSize RectWork { get; set; } = RectSize.NULL;
 
     public bool IsPrimary { get; set; } = false;
 

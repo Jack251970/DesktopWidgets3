@@ -42,6 +42,7 @@ global using DesktopWidgets3.Core.Utils.Interop;
 global using DesktopWidgets3.Core.Views.Windows;
 
 // DesktopWidgets3.Core.Widgets
+global using DesktopWidgets3.Core.Widgets;
 global using DesktopWidgets3.Core.Widgets.Contracts.Services;
 global using DesktopWidgets3.Core.Widgets.Enums;
 global using DesktopWidgets3.Core.Widgets.Helpers;

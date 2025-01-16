@@ -42,7 +42,7 @@ public interface IWidgetResourceService
 
     RectSize GetWidgetDefaultSize(string widgetId, string widgetType);
 
-    (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(string widgetId, string widgetType);
+    (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(WidgetProviderType providerType, string widgetId, string widgetType);
 
     bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType);
 

@@ -2,7 +2,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
@@ -351,7 +350,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             Type = widgetType,
             Index = index,
             Pinned = true,
-            Position = new PointInt32(-10000, -10000),
+            Position = WidgetConstants.DefaultWidgetPosition,
             Size = _widgetResourceService.GetWidgetDefaultSize(widgetId, widgetType),
             DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
             Settings = _widgetResourceService.GetDefaultSettings(widgetId, widgetType),
@@ -413,7 +412,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             Type = widgetType,
             Index = index,
             Pinned = true,
-            Position = new PointInt32(-10000, -10000),
+            Position = WidgetConstants.DefaultWidgetPosition,
             Size = RectSize.NULL,
             DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
             Settings = new BaseWidgetSettings()
