@@ -36,7 +36,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
         _microsoftWidgetModel = DependencyExtensions.GetRequiredService<MicrosoftWidgetModel>();
 
-        _appSettingsService = DependencyExtensions.GetRequiredService<AppSettingsService>();
+        _appSettingsService = DependencyExtensions.GetRequiredService<IAppSettingsService>();
         _widgetResourceService = DependencyExtensions.GetRequiredService<IWidgetResourceService>();
 
         InitializeComponent();
