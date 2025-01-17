@@ -39,6 +39,10 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
 
+    public bool IsLoaded { get; private set; }
+
+    public RoutedEventHandler? Loaded { get; set; }
+
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly IAdaptiveCardRenderingService _renderingService;
 
@@ -73,6 +77,7 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
         if (Widget != null)
         {
             Widget.WidgetUpdated -= HandleWidgetUpdated;
+            IsLoaded = false;
         }
     }
 
@@ -229,6 +234,8 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
         if (await IsWidgetContentAvailable())
         {
             await RenderWidgetFrameworkElementAsync();
+            IsLoaded = true;
+            Loaded?.Invoke(this, new RoutedEventArgs());
         }
         else
         {

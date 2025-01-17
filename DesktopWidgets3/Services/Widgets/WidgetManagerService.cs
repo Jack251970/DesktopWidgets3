@@ -288,7 +288,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region All Widgets Management
 
-    // TODO: Test restart.
     public async Task RestartWidgetsAsync()
     {
         // close all widgets
@@ -737,13 +736,20 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // set widget position
             widgetWindow.Position = widgetPosition;
 
-            // set widget framework element loaded event
-            var widgetContext = GetWidgetContext(providerType, widgetId, widgetType, widgetIndex)!;
-            widgetWindow.ViewModel.FrameworkElementLoaded = (s, e) => WidgetFrameworkElement_Loaded(widgetId, widgetSettings, widgetContext, widgetWindow);
-
             // set widget framework element
+            var widgetContext = GetWidgetContext(providerType, widgetId, widgetType, widgetIndex)!;
             var frameworkElement = _widgetResourceService.CreateWidgetContent(widgetId, widgetContext);
             widgetWindow.ViewModel.WidgetFrameworkElement = frameworkElement;
+
+            // invoke framework loaded event
+            if (frameworkElement.IsLoaded)
+            {
+                WidgetFrameworkElement_Loaded(widgetId, widgetSettings, widgetContext, widgetWindow);
+            }
+            else
+            {
+                frameworkElement.Loaded += (s, e) => WidgetFrameworkElement_Loaded(widgetId, widgetSettings, widgetContext, widgetWindow);
+            }
         }
     }
 
@@ -807,11 +813,18 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             // set widget position
             widgetWindow.Position = widgetPosition;
 
-            // set widget framework element loaded event
-            widgetWindow.ViewModel.FrameworkElementLoaded = (s, e) => WidgetFrameworkElement_Loaded(widgetWindow);
-
             // set widget framework element
             widgetWindow.ViewModel.InitializeWidgetViewmodel(widgetViewModel);
+
+            // invoke framework loaded event
+            if (widgetWindow.ViewModel.WidgetViewModel!.IsLoaded)
+            {
+                WidgetFrameworkElement_Loaded(widgetWindow);
+            }
+            else
+            {
+                widgetWindow.ViewModel.WidgetViewModel.Loaded += (s, e) => WidgetFrameworkElement_Loaded(widgetWindow);
+            }
         }
     }
 
@@ -828,7 +841,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         widgetWindow.OnIsActiveChanged();
     }
 
-    // TODO: Check this?
     private static void WidgetFrameworkElement_Loaded(WidgetWindow widgetWindow)
     {
         // invoke widget activate & deactivate event

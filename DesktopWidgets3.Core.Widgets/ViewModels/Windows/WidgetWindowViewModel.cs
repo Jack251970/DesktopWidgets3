@@ -26,10 +26,6 @@ public partial class WidgetWindowViewModel : ObservableRecipient
     [ObservableProperty]
     public WidgetViewModel? _widgetViewModel = null;
 
-    public Action<object, RoutedEventArgs>? FrameworkElementLoaded;
-
-    private bool _frameworkElementInitialized;
-
     public WidgetWindowViewModel()
     {
 
@@ -42,33 +38,6 @@ public partial class WidgetWindowViewModel : ObservableRecipient
             widgetViewModel.PropertyChanged += WidgetViewModel_PropertyChanged;
 
             WidgetViewModel = widgetViewModel;
-        }
-    }
-
-    partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
-    {
-        if (!_frameworkElementInitialized)
-        {
-            if (value.IsLoaded)
-            {
-                FrameworkElementLoaded?.Invoke(value, new RoutedEventArgs());
-            }
-            else
-            {
-                value.Loaded += WidgetFrameworkElement_Loaded;
-            }
-
-            _frameworkElementInitialized = true;
-        }
-    }
-
-    private void WidgetFrameworkElement_Loaded(object sender, RoutedEventArgs e)
-    {
-        if (sender is FrameworkElement frameworkElement)
-        {
-            frameworkElement.Loaded -= WidgetFrameworkElement_Loaded;
-
-            FrameworkElementLoaded?.Invoke(frameworkElement, e);
         }
     }
 

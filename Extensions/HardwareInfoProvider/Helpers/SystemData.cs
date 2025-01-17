@@ -11,7 +11,7 @@ internal sealed partial class SystemData : IDisposable
 
     public static GPUStats GPUStats { get; set; } = new GPUStats();
 
-    // TODO: Exception when starting DevHome???
+    // TODO(Future): Check exception when starting DevHome.
     public static CPUStats CpuStats { get; set; } = new CPUStats();
 
     public static DiskStats DiskStats { get; set; } = new DiskStats();
