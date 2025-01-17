@@ -273,7 +273,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         // If the view model is already valid, don't select a default widget.
         // Because the user may have already selected a widget before the widgets were all loaded.
-        if (ViewModel.IsValid())
+        if (ViewModel != null && ViewModel.IsValid())
         {
             return;
         }
