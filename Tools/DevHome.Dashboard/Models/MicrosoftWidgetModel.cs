@@ -567,7 +567,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #region Store
 
-    // TODO: Add support.
+    // TODO(Future): Check if we need this function.
     public async Task GoToWidgetsInStoreAsync()
     {
         if (RuntimeHelper.IsOnWindows11)
@@ -768,6 +768,19 @@ public partial class MicrosoftWidgetModel : IDisposable
             if (disposing)
             {
                 _pinnedWidgetsLock.Dispose();
+
+                foreach (var widget in PinnedWidgets)
+                {
+                    widget.Dispose();
+                }
+                foreach (var widget in WidgetDefinitions)
+                {
+                    widget.Dispose();
+                }
+
+                PinnedWidgets.Clear();
+                WidgetProviderDefinitions.Clear();
+                WidgetDefinitions.Clear();
             }
 
             _disposed = true;

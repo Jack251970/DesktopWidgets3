@@ -35,7 +35,7 @@ public delegate WidgetViewModel WidgetViewModelFactory(
     WidgetSize widgetSize,
     ComSafeWidgetDefinition widgetDefinition);
 
-public partial class WidgetViewModel : ObservableObject
+public partial class WidgetViewModel : ObservableObject, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
 
@@ -441,4 +441,30 @@ public partial class WidgetViewModel : ObservableObject
             }
         }
     }
+
+    #region Dispose
+
+    private bool _disposedValue;
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _renderedCard = null!;
+                WidgetDefinition?.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    #endregion
 }

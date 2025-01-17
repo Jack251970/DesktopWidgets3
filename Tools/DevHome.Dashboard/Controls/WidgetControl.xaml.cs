@@ -30,8 +30,8 @@ public sealed partial class WidgetControl : UserControl
     private readonly IWidgetHostingService _widgetHostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
     private readonly IWidgetIconService _widgetIconService = DependencyExtensions.GetRequiredService<IWidgetIconService>();
 
-    // TODO: Add support for textScale.
-    /*private readonly UISettings _uiSettings = new();*/
+    // TODO(Future): Add support for TextScaleFactorChanged.
+    private readonly UISettings _uiSettings = new();
 
     private SelectableMenuFlyoutItem? _currentSelectedSize;
 
@@ -49,7 +49,7 @@ public sealed partial class WidgetControl : UserControl
             SetValue(WidgetSourceProperty, value);
             if (WidgetSource != null)
             {
-                SetScaledWidthAndHeight(/*_uiSettings.TextScaleFactor*/);
+                SetScaledWidthAndHeight(_uiSettings.TextScaleFactor);
 
                 // When the WidgetViewModel is updated, the widget icon must also be also updated.
                 // Since the icon update must happen asynchronously on the UI thread, it must be
@@ -67,21 +67,20 @@ public sealed partial class WidgetControl : UserControl
         InitializeComponent();
     }
 
-    // TODO: Add support for textScale.
     [RelayCommand]
     private void OnLoaded()
     {
-        /*_uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChangedAsync;*/
+        _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChangedAsync;
     }
 
     [RelayCommand]
     private void OnUnloaded()
     {
-        /*_uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChangedAsync;*/
+        _uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChangedAsync;
         WidgetSource = null!;
     }
 
-    /*private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
+    private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
     {
         await _dispatcherQueue.EnqueueAsync(() =>
         {
@@ -92,10 +91,9 @@ public sealed partial class WidgetControl : UserControl
 
             SetScaledWidthAndHeight(sender.TextScaleFactor);
         });
-    }*/
+    }
 
-    // TODO: Add support for textScale.
-    private void SetScaledWidthAndHeight(/*double textScale*/)
+    private void SetScaledWidthAndHeight(double textScale)
     {
         //(WidgetWidth, WidgetHeight) = WidgetHelpers.GetScaledWidthAndHeight(WidgetSource.WidgetSize/*, textScale*/);
     }
@@ -152,7 +150,6 @@ public sealed partial class WidgetControl : UserControl
                 _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
                 _dispatcherQueue.TryEnqueue(() =>
                 {
-                    // TODO: Add support for removing widgets from the dashboard.
                     // Application.Current.GetService<DashboardViewModel>().PinnedWidgets.Remove(widgetViewModel);
                 });
                 try
