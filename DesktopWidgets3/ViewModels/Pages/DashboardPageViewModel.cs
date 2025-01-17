@@ -20,7 +20,6 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
 
     private readonly IWidgetManagerService _widgetManagerService = widgetManagerService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
-    // TODO: Move to ActualTheme.
     private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
 
     private List<DashboardWidgetItem> yourWidgets = null!;

@@ -25,7 +25,7 @@ public sealed partial class DashboardPage : Page
         InitializeComponent();
     }
 
-    private async void MainScrollViewer_ActualThemeChanged(FrameworkElement sender, object args)
+    private async void Page_ActualThemeChanged(FrameworkElement sender, object _)
     {
         await ViewModel.UpdateThemeAsync(sender.ActualTheme);
     }
@@ -82,6 +82,12 @@ public sealed partial class DashboardPage : Page
     {
         if (sender is FrameworkElement element && element.Tag is DashboardWidgetItem item)
         {
+            var providerType = item.ProviderType;
+            if (providerType != WidgetProviderType.DesktopWidgets3)
+            {
+                return;
+            }
+
             var isEditable = item.Editable;
             if (!isEditable)
             {

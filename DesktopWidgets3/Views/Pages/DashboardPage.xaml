@@ -10,10 +10,11 @@
     xmlns:widgetmodels="using:DesktopWidgets3.Core.Widgets.Models.WidgetItems"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="Shell_Dashboard.Content"
     d:DataContext="{d:DesignInstance Type=viewmodels:DashboardPageViewModel}"
+    ActualThemeChanged="Page_ActualThemeChanged"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
-    <ScrollViewer x:Name="MainScrollViewer" ActualThemeChanged="MainScrollViewer_ActualThemeChanged">
+    <ScrollViewer x:Name="MainScrollViewer">
         <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Orientation="Vertical">
             <Grid Margin="0,12,0,6" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
