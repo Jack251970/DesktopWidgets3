@@ -19,7 +19,7 @@ public partial class WidgetStorePageViewModel(IWidgetResourceService widgetResou
 
     private async Task LoadAvailableWidgetsAsync()
     {
-        // TODO(Furture): Load available widgets from Github, not supported yet.
+        // TODO(Future): Load available widgets from Github, not supported yet.
         var githubAvailableWidgets = new List<WidgetStoreItem>();
         var preinstalledAvailableWidgets = await _widgetResourceService.GetPreinstalledAvailableWidgetStoreItemsAsync();
         availableWidgets = [.. githubAvailableWidgets, .. preinstalledAvailableWidgets];

@@ -29,6 +29,11 @@ public partial class AddWidgetViewModel(
 
     private object _selectedWidgetDefinition = null!;
 
+    public bool IsValid()
+    {
+        return _selectedWidgetDefinition != null;
+    }
+
     public async Task SetWidgetDefinition(ComSafeWidgetDefinition selectedWidgetDefinition, ElementTheme actualTheme)
     {
         _selectedWidgetDefinition = selectedWidgetDefinition;

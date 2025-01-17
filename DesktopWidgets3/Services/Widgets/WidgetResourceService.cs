@@ -1684,7 +1684,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         var widgetStoreList = _appSettingsService.GetWidgetStoreList();
         if (metadata == null)
         {
-            // TODO(Furture): Install available widget from Github, not supported yet.
+            // TODO(Future): Install available widget from Github, not supported yet.
         }
         else
         {

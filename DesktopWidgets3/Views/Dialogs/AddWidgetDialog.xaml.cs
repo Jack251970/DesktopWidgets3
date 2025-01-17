@@ -88,6 +88,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         await FillAvailableDesktopWidget3WidgetsAsync();
 
         // load the microsoft widgets
+        await Task.Delay(10000);
         await FillAvailableMicrosoftWidgetsAsync();
 
         // select the first widget by default
@@ -268,9 +269,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    // TODO: Fix selected index jump issue when loading is very slow and user clicks on a widget before it is loaded.
     private void SelectFirstWidgetByDefault()
     {
+        // If the view model is already valid, don't select a default widget.
+        // Because the user may have already selected a widget before the widgets were all loaded.
+        if (ViewModel.IsValid())
+        {
+            return;
+        }
+
         if (AddWidgetNavigationView.MenuItems.Count > 0)
         {
             var firstProvider = AddWidgetNavigationView.MenuItems[0] as NavigationViewItem;
@@ -315,7 +322,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
         else if (selectedTag as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition selectedWidgetDefinition1)
         {
-            // TODO: Fix ViewModel == null issue.
             _selectedWidget = selectedWidgetDefinition1;
             await ViewModel.SetWidgetDefinition(selectedWidgetDefinition1, ActualTheme);
         }
@@ -352,6 +358,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _selectedWidget = null!;
         ViewModel = null!;
 
+        AddWidgetNavigationView.SelectionChanged -= AddWidgetNavigationView_SelectionChanged;
         _microsoftWidgetModel.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
 
         Hide();
@@ -359,7 +366,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     #endregion
 
-    // TODO: Support WidgetCatalog_WidgetDefinitionAdded and Updated?
+    // TODO(Future): Support WidgetCatalog_WidgetDefinitionAdded and Updated?
 
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
