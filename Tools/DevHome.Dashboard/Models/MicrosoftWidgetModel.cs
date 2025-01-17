@@ -466,8 +466,8 @@ public partial class MicrosoftWidgetModel : IDisposable
             }
         });
 
-        ViewModel.WidgetIconService.RemoveIconsFromMicrosoftCache(definitionId);
-        ViewModel.WidgetScreenshotService.RemoveScreenshotsFromMicrosoftCache(definitionId);
+        ViewModel.WidgetIconService.RemoveIconsFromMicrosoftIconCache(definitionId);
+        ViewModel.WidgetScreenshotService.RemoveScreenshotsFromMicrosoftIconCache(definitionId);
     }
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)

@@ -16,10 +16,12 @@ public class WidgetIconService : IWidgetIconService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetIconService));
 
+    #region Widget Icon
+
     private readonly ConcurrentDictionary<string, BitmapImage> _microsoftWidgetLightIconCache = new();
     private readonly ConcurrentDictionary<string, BitmapImage> _microsoftWidgetDarkIconCache = new();
 
-    public void RemoveIconsFromMicrosoftCache(string definitionId)
+    public void RemoveIconsFromMicrosoftIconCache(string definitionId)
     {
         _microsoftWidgetLightIconCache.TryRemove(definitionId, out _);
         _microsoftWidgetDarkIconCache.TryRemove(definitionId, out _);
@@ -84,4 +86,62 @@ public class WidgetIconService : IWidgetIconService
 
         return brush;
     }
+
+    #endregion
+
+    #region Widget Group Icon
+
+    private readonly ConcurrentDictionary<string, BitmapImage> _microsoftWidgetProviderIconCache = new();
+
+    public void RemoveIconsFromMicrosoftProviderIconCache(string providerDefinitionId)
+    {
+        _microsoftWidgetProviderIconCache.TryRemove(providerDefinitionId, out _);
+    }
+
+    private async Task<BitmapImage> GetIconFromMicrosoftProviderCacheAsync(DispatcherQueue dispatcherQueue, WidgetProviderDefinition widgetProviderDefinition)
+    {
+        var widgetDefinitionId = widgetProviderDefinition.Id;
+        BitmapImage? bitmapImage;
+
+        // First, check the cache to see if the icon is already there.
+        _microsoftWidgetProviderIconCache.TryGetValue(widgetDefinitionId, out bitmapImage);
+
+        if (bitmapImage != null)
+        {
+            return bitmapImage;
+        }
+
+        // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
+        bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(dispatcherQueue, widgetProviderDefinition.Icon);
+        _microsoftWidgetProviderIconCache.TryAdd(widgetDefinitionId, bitmapImage);
+
+        return bitmapImage;
+    }
+
+    public async Task<Brush> GetBrushForMicrosoftWidgetProviderIconAsync(DispatcherQueue dispatcherQueue, WidgetProviderDefinition widgetProviderDefinition)
+    {
+        var image = new BitmapImage();
+        try
+        {
+            image = await GetIconFromMicrosoftProviderCacheAsync(dispatcherQueue, widgetProviderDefinition);
+        }
+        catch (FileNotFoundException fileNotFoundEx)
+        {
+            _log.Warning(fileNotFoundEx, $"Widget icon missing for widget provider definition {widgetProviderDefinition.DisplayName}");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get widget icon for widget provider definition {widgetProviderDefinition.DisplayName}");
+        }
+
+        var brush = new ImageBrush
+        {
+            ImageSource = image,
+            Stretch = Stretch.Uniform,
+        };
+
+        return brush;
+    }
+
+    #endregion
 }

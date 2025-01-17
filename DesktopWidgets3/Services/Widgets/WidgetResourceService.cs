@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -544,6 +545,20 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Icon
 
+    public async Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId)
+    {
+        if (providerType == WidgetProviderType.DesktopWidgets3)
+        {
+            (var _, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, true);
+            return await GetWidgetGroupIconBrushAsync(dispatcherQueue, widgetId, allIndex, installedIndex);
+        }
+        else
+        {
+            var providerDefinitionIndex = GetWidgetProviderDefinitionIndex(widgetId);
+            return await GetWidgetGroupIconBrushAsync(dispatcherQueue, providerDefinitionIndex);
+        }
+    }
+
     #region Desktop Widgets 3
 
     private readonly ConcurrentDictionary<string, BitmapImage> _desktopWidgets3WidgetGroupIconCache = new();
@@ -620,7 +635,20 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Microsoft
 
-    // TODO: Add support
+    public async Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderDefinition widgetProviderDefinition)
+    {
+        return await _widgetIconService.GetBrushForMicrosoftWidgetProviderIconAsync(dispatcherQueue, widgetProviderDefinition);
+    }
+
+    private async Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, int providerDefinitionIndex)
+    {
+        if (providerDefinitionIndex != -1)
+        {
+            return await GetWidgetGroupIconBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetProviderDefinitions.ElementAt(providerDefinitionIndex));
+        }
+
+        return null!;
+    }
 
     #endregion
 
@@ -1451,7 +1479,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Add Widget Dialog
 
-    public List<DashboardWidgetGroupItem> GetInstalledDashboardGroupItems()
+    public async Task<List<DashboardWidgetGroupItem>> GetInstalledDashboardGroupItems()
     {
         var dashboardGroupItemList = new List<DashboardWidgetGroupItem>();
 
@@ -1465,6 +1493,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                 {
                     Id = widgetId,
                     Name = GetWidgetGroupName(allIndex, installedIndex),
+                    IconFill = await GetWidgetGroupIconBrushAsync(_dispatcherQueue, widgetId, allIndex, installedIndex),
                     Types = widget.Metadata.WidgetTypes
                 });
             }

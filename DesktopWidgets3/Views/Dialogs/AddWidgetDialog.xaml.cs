@@ -102,16 +102,17 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private async Task FillAvailableDesktopWidget3WidgetsAsync()
     {
         // Show the widget group and widgets underneath them in alphabetical order.
-        var installedWidgetGroups = _widgetResourceService.GetInstalledDashboardGroupItems().OrderBy(x => x.Name);
+        var installedWidgetGroups = (await _widgetResourceService.GetInstalledDashboardGroupItems()).OrderBy(x => x.Name);
         var currentlyPinnedWidgets = _appSettingsService.GetWidgetsList();
 
         foreach (var widgetGroup in installedWidgetGroups)
         {
+            var itemContent = BuildWidgetGroupNavItem(widgetGroup);
             var navItem = new NavigationViewItem
             {
                 IsExpanded = true,
                 Tag = widgetGroup,
-                Content = new TextBlock { Text = widgetGroup.Name, TextWrapping = TextWrapping.Wrap },
+                Content = itemContent,
             };
 
             navItem.SetValue(ToolTipService.ToolTipProperty, widgetGroup.Name);
@@ -144,12 +145,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private async Task<Grid> BuildWidgetNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
+    private static Grid BuildWidgetGroupNavItem(DashboardWidgetGroupItem widgetGroupItem)
     {
-        return await BuildNavItemAsync(widgetDefinition);
+        var imageBrush = widgetGroupItem.IconFill;
+
+        return BuildNavItem(imageBrush, widgetGroupItem.Name);
     }
 
-    private async Task<Grid> BuildNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
+    private async Task<Grid> BuildWidgetNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
     {
         var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, WidgetProviderType.DesktopWidgets3, widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
 
@@ -169,18 +172,20 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         foreach (var providerDef in _microsoftWidgetModel.WidgetProviderDefinitions)
         {
+            // CHANGE: PeregrineWidgets can cause issues in IsSingleInstanceAndAlreadyPinned function
             if (providerDef.DisplayName == "PeregrineWidgets")
             {
-                continue;  // CHANGE: PeregrineWidgets can cause issues in IsSingleInstanceAndAlreadyPinned function
+                continue;
             }
 
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
+                var itemContent = await BuildWidgetGroupNavItemAsync(providerDef);
                 var navItem = new NavigationViewItem
                 {
                     IsExpanded = true,
                     Tag = providerDef,
-                    Content = new TextBlock { Text = providerDef.DisplayName, TextWrapping = TextWrapping.Wrap },
+                    Content = itemContent,
                 };
 
                 navItem.SetValue(ToolTipService.ToolTipProperty, providerDef.DisplayName);
@@ -220,12 +225,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }*/
     }
 
-    private async Task<Grid> BuildWidgetNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
+    private async Task<Grid> BuildWidgetGroupNavItemAsync(WidgetProviderDefinition widgetProviderDefinition)
     {
-        return await BuildNavItemAsync(widgetDefinition);
+        var imageBrush = await _widgetResourceService.GetWidgetGroupIconBrushAsync(_dispatcherQueue, widgetProviderDefinition);
+
+        return BuildNavItem(imageBrush, widgetProviderDefinition.DisplayName);
     }
 
-    private async Task<Grid> BuildNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
+    private async Task<Grid> BuildWidgetNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
         var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinition, ActualTheme);
 
@@ -234,7 +241,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     #endregion
 
-    private static Grid BuildNavItem(Brush widgetImageBrush, string widgetName)
+    private static Grid BuildNavItem(Brush? widgetImageBrush, string widgetName)
     {
         var itemContent = new Grid
         {
@@ -431,11 +438,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 if (widgetItem.Tag as ComSafeWidgetDefinition is ComSafeWidgetDefinition widgetDefinition)
                 {
-                    widgetItem.Content = await BuildNavItemAsync(widgetDefinition);
+                    widgetItem.Content = await BuildWidgetNavItemAsync(widgetDefinition);
                 }
                 else if (widgetItem.Tag as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition widgetDefinition1)
                 {
-                    widgetItem.Content = await BuildNavItemAsync(widgetDefinition1);
+                    widgetItem.Content = await BuildWidgetNavItemAsync(widgetDefinition1);
                 }
             }
         }

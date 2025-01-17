@@ -10,7 +10,7 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetScreenshotService
 {
-    public void RemoveScreenshotsFromMicrosoftCache(string definitionId);
+    public void RemoveScreenshotsFromMicrosoftIconCache(string definitionId);
 
     public Task<Brush> GetBrushForMicrosoftWidgetScreenshotAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
 }

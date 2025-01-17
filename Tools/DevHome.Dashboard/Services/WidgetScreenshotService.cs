@@ -19,7 +19,7 @@ public class WidgetScreenshotService : IWidgetScreenshotService
     private readonly ConcurrentDictionary<string, BitmapImage> _microsoftWidgetLightScreenshotCache = new();
     private readonly ConcurrentDictionary<string, BitmapImage> _microsoftWidgetDarkScreenshotCache = new();
 
-    public void RemoveScreenshotsFromMicrosoftCache(string definitionId)
+    public void RemoveScreenshotsFromMicrosoftIconCache(string definitionId)
     {
         _microsoftWidgetLightScreenshotCache.Remove(definitionId, out _);
         _microsoftWidgetDarkScreenshotCache.Remove(definitionId, out _);

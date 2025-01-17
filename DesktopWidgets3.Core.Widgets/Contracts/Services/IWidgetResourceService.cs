@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.Windows.Widgets.Hosts;
 
 namespace DesktopWidgets3.Core.Widgets.Contracts.Services;
 
@@ -28,6 +29,10 @@ public interface IWidgetResourceService
 
     bool IsWidgetGroupUnknown(WidgetProviderType providerType, string widgetId, string widgetType);
 
+    Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId);
+
+    Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderDefinition widgetProviderDefinition);
+
     string GetWidgetName(WidgetProviderType providerType, string widgetId, string widgetType);
 
     string GetWidgetDescription(WidgetProviderType providerType, string widgetId, string widgetType);
@@ -50,7 +55,7 @@ public interface IWidgetResourceService
 
     bool GetWidgetIsCustomizable(WidgetProviderType providerType, string widgetId, string widgetType);
 
-    List<DashboardWidgetGroupItem> GetInstalledDashboardGroupItems();
+    Task<List<DashboardWidgetGroupItem>> GetInstalledDashboardGroupItems();
 
     Task<List<DashboardWidgetItem>> GetYourDashboardWidgetItemsAsync(ElementTheme actualTheme);
 

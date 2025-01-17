@@ -7,9 +7,7 @@ public class DashboardWidgetGroupItem : BaseWidgetGroupItem
 {
     public required string Name { get; set; }
 
-    // TODO: Add support for icon fill in add widget dialog
-    /*[ObservableProperty]
-    private Brush? _iconFill;*/
+    public required Brush? IconFill { get; set; }
 
     public required List<string> Types { get; set; }
 }
