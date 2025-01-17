@@ -282,19 +282,18 @@ public partial class MicrosoftWidgetModel : IDisposable
         return [.. comSafeHostWidgets];
     }
 
+    // TODO(Future): Let the user know why the dashboard is not available and set false flag.
     private async Task<bool> ValidateDashboardState()
     {
         // Ensure we're not running elevated. Display an error and don't allow using the Dashboard if we are.
         if (ViewModel.IsRunningElevated())
         {
             _log.Error($"Dev Home is running as admin, can't show Dashboard");
-            // TODO: Let user known this.
             // RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
             return false;
         }
 
         // Ensure the WidgetService is installed and up to date.
-        // TODO: Let user known this.
         /*var widgetServiceState = ViewModel.WidgetServiceService.GetWidgetServiceState();
         switch (widgetServiceState)
         {
@@ -325,7 +324,6 @@ public partial class MicrosoftWidgetModel : IDisposable
         if (!await SubscribeToWidgetCatalogEventsAsync())
         {
             _log.Error($"Catalog event subscriptions failed, show error");
-            // TODO: Let user known this.
             /*RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;*/
             return false;
         }
@@ -371,8 +369,6 @@ public partial class MicrosoftWidgetModel : IDisposable
     {
         _log.Debug($"Unloading Dashboard, cancel any loading.");
         _initWidgetsCancellationTokenSource?.Cancel();
-        // TODO: What is the function of it?
-        // Bindings.StopTracking();
 
         DependencyExtensions.GetRequiredService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
 

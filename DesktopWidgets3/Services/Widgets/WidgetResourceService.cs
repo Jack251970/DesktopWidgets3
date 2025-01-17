@@ -548,7 +548,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     private readonly ConcurrentDictionary<string, BitmapImage> _desktopWidgets3WidgetGroupIconCache = new();
 
-    // TODO: Add support for cache clean.
     private void RemoveIconsFromDesktopWidgets3Cache(string widgetId)
     {
         _desktopWidgets3WidgetGroupIconCache.TryRemove(widgetId, out _);
@@ -797,7 +796,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
     private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightIconCache = new();
     private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkIconCache = new();
 
-    // TODO: Add support for cache clean.
     private void RemoveIconsFromDesktopWidgets3Cache(string widgetId, string widgetType)
     {
         _desktopWidgets3WidgetLightIconCache.TryRemove((widgetId, widgetType), out _);
@@ -948,7 +946,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
     private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetLightScreenshotCache = new();
     private readonly ConcurrentDictionary<(string, string), BitmapImage> _desktopWidgets3WidgetDarkScreenshotCache = new();
 
-    // TODO: Add support for cache clean.
     private void RemoveScreenshotsFromDesktopWidgets3Cache(string widgetId, string widgetType)
     {
         _desktopWidgets3WidgetLightScreenshotCache.Remove((widgetId, widgetType), out _);

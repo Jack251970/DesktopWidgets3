@@ -12,7 +12,6 @@ using Microsoft.Windows.Widgets;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
-// TODO: Improve code quality for this class. Devide it into smaller classes.
 public sealed partial class WidgetWindow : WindowEx
 {
     #region Constants
@@ -417,6 +416,9 @@ public sealed partial class WidgetWindow : WindowEx
         WidgetMenuFlyout = null!;
         WidgetSettings = null;
         WidgetViewModel = null;
+
+        // DevHome does this, but I'm not sure if it's necessary
+        Bindings.StopTracking();
 
         Closed -= WidgetWindow_Closed;
         AppWindow.Changed -= AppWindow_Changed;

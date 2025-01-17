@@ -1313,7 +1313,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
     }
 
-    // TODO: Check round & Fix widget size save changed issue
     private static RectSize RoundContentSize(RectSize size)
     {
         var width = (float)decimal.Round(Convert.ToDecimal(size.Width), 3);
