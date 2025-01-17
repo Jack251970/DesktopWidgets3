@@ -251,7 +251,6 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     public bool GetWidgetSettingIsNavigated(string widgetId, string widgetType)
     {
-        // TODO: Implement GetWidgetSettingIsNavigated
         return true;
     }
 
@@ -261,17 +260,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Widget View Model
 
-    // TODO: Move this to _microsoftWidgetModel.ViewModel.PinnedWidgets.
-    public WidgetViewModel? GetWidgetViewModel(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
+    public WidgetViewModel? GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex)
     {
-        // return null if not microsoft widget
-        if (providerType != WidgetProviderType.Microsoft)
-        {
-            return null;
-        }
-
         // get widget window pair
-        var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
+        var widgetWindowPair = GetWidgetWindowPair(WidgetProviderType.Microsoft, widgetId, widgetType, widgetIndex);
 
         // get widget view model
         if (widgetWindowPair != null)
@@ -542,7 +534,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
     public async Task DeleteWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
         // delete microsoft widget if need
-        var widgetViewModel = GetWidgetViewModel(providerType, widgetId, widgetType, widgetIndex);
+        var widgetViewModel = GetWidgetViewModel(widgetId, widgetType, widgetIndex);
         if (widgetViewModel != null)
         {
             await _microsoftWidgetModel.TryDeleteWidgetViewModel(widgetViewModel);

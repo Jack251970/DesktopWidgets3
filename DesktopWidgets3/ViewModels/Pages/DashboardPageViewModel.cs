@@ -184,7 +184,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
                     }
                     else
                     {
-                        var widgetViewModel = _widgetManagerService.GetWidgetViewModel(providerType, widgetId, widgetType, widgetIndex);
+                        var widgetViewModel = _widgetManagerService.GetWidgetViewModel(widgetId, widgetType, widgetIndex);
                         if (widgetViewModel != null)
                         {
                             var widgetItem = await _widgetResourceService.GetDashboardWidgetItemAsync(widgetId, widgetType, widgetIndex, widgetViewModel, actualTheme);

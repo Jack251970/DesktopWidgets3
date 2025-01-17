@@ -16,7 +16,7 @@ public interface IWidgetManagerService
 
     bool GetWidgetSettingIsNavigated(string widgetId, string widgetType);
 
-    WidgetViewModel? GetWidgetViewModel(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex);
+    WidgetViewModel? GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex);
 
     void InitializePinnedWidgets();
 
