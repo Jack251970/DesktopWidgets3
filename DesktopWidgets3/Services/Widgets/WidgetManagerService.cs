@@ -731,16 +731,16 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             // unregister load event handler
             widgetWindow.LoadCompleted -= DesktopWidgets3WidgetWindow_LoadCompleted;
 
-            // parse event agrs
-            var widgetRuntimeId = args.WidgetRuntimeId;
-            var widgetPosition = args.WidgetPosition;
-            var widgetSettings = args.WidgetSettings!;
-
             // get widget info
             var providerType = widgetWindow.ProviderType;
             var widgetId = widgetWindow.WidgetId;
             var widgetType = widgetWindow.WidgetType;
             var widgetIndex = widgetWindow.WidgetIndex;
+
+            // parse event agrs
+            var widgetRuntimeId = args.WidgetRuntimeId;
+            var widgetPosition = args.WidgetPosition;
+            var widgetSettings = args.WidgetSettings!;
 
             // set widget position
             widgetWindow.Position = widgetPosition;
@@ -813,16 +813,16 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             // unregister load event handler
             widgetWindow.LoadCompleted -= MicrosoftWidgetWindow_LoadCompleted;
 
-            // parse event agrs
-            var widgetRuntimeId = args.WidgetRuntimeId;
-            var widgetPosition = args.WidgetPosition;
-            var widgetViewModel = args.WidgetViewModel;
-
             // get widget info
             var providerType = widgetWindow.ProviderType;
             var widgetId = widgetWindow.WidgetId;
             var widgetType = widgetWindow.WidgetType;
             var widgetIndex = widgetWindow.WidgetIndex;
+
+            // parse event agrs
+            var widgetRuntimeId = args.WidgetRuntimeId;
+            var widgetPosition = args.WidgetPosition;
+            var widgetViewModel = args.WidgetViewModel;
 
             // set widget position
             widgetWindow.Position = widgetPosition;
@@ -870,7 +870,10 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         if (widgetWindow != null)
         {
             // get widget info
-            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var providerType = widgetWindow.ProviderType;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
 
             // register close event handler
             if (closeEvent == CloseEvent.Unpin)
@@ -1053,11 +1056,11 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
     {
         if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
         {
-            // get widget runtime id
-            var widgetRuntimeId = widgetWindow.RuntimeId;
-
             // get widget info
-            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var providerType = widgetWindow.ProviderType;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
 
             // unpin widget
             await UnpinWidgetAsync(providerType, widgetId, widgetType, widgetIndex, true);
@@ -1068,11 +1071,11 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
     {
         if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
         {
-            // get widget runtime id
-            var widgetRuntimeId = widgetWindow.RuntimeId;
-
             // get widget info
-            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var providerType = widgetWindow.ProviderType;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
 
             // delete widget
             await DialogFactory.ShowDeleteWidgetFullScreenDialogAsync(async () =>
@@ -1308,14 +1311,18 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
     {
         if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
         {
+            // close widget window
             var widgetRuntimeId = widgetWindow.RuntimeId;
-
             await CloseWidgetWindowAsync(widgetRuntimeId, CloseEvent.Unpin);
 
+            // get widget list
             var widgetList = _appSettingsService.GetWidgetsList();
 
             // get widget info
-            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var providerType = widgetWindow.ProviderType;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
 
             // find widget
             var widget = widgetList.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
@@ -1391,7 +1398,12 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         foreach (var widgetWindow in pinnedWidgetWindows)
         {
             // get widget info
-            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetWindow.RuntimeId);
+            var providerType = widgetWindow.ProviderType;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
+
+            // save original widget
             _originalWidgetList.Add(new JsonWidgetItem()
             {
                 ProviderType = providerType,
@@ -1457,7 +1469,12 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         foreach (var widgetWindow in pinnedWidgetWindows)
         {
             // get widget info
-            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetWindow.RuntimeId);
+            var providerType = widgetWindow.ProviderType;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
+
+            // find original widget
             widgetList.Add(new JsonWidgetItem()
             {
                 ProviderType = providerType,
@@ -1489,7 +1506,10 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             window.SetEditMode(false);
 
             // get widget info
-            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(window.RuntimeId);
+            var providerType = window.ProviderType;
+            var widgetId = window.WidgetId;
+            var widgetType = window.WidgetType;
+            var widgetIndex = window.WidgetIndex;
 
             // find original widget
             var originalWidget = _originalWidgetList.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));

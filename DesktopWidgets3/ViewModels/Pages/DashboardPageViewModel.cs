@@ -9,7 +9,7 @@ namespace DesktopWidgets3.ViewModels.Pages;
 
 public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, MicrosoftWidgetModel microsoftWidgetModel, WidgetViewModelFactory widgetViewModelFactory, IWidgetManagerService widgetManagerService, IWidgetResourceService widgetResourceService, IThemeSelectorService themeSelectorService) : ObservableRecipient, INavigationAware
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardPageViewModel));
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardPageViewModel));
 
     public ObservableCollection<DashboardWidgetItem> PinnedWidgets { get; set; } = [];
     public ObservableCollection<DashboardWidgetItem> UnpinnedWidgets { get; set; } = [];

@@ -37,7 +37,7 @@ public delegate WidgetViewModel WidgetViewModelFactory(
 
 public partial class WidgetViewModel : ObservableObject, IDisposable
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
 
     public bool IsLoaded { get; private set; }
 

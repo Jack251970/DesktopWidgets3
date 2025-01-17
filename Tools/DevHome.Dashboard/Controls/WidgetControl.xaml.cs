@@ -24,7 +24,7 @@ namespace DevHome.Dashboard.Controls;
 [ObservableObject]
 public sealed partial class WidgetControl : UserControl
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetControl));
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetControl));
 
     private readonly DispatcherQueue _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
     private readonly IWidgetHostingService _widgetHostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();

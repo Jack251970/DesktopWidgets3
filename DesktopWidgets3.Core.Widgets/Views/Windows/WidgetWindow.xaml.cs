@@ -536,8 +536,13 @@ public sealed partial class WidgetWindow : WindowEx
 
     public void OnIsActiveChanged()
     {
-        // get widget info & context
-        var (providerType, widgetId, widgetType, widgetIndex) = _widgetManagerService.GetWidgetInfo(RuntimeId);
+        // get widget info
+        var providerType = ProviderType;
+        var widgetId = WidgetId;
+        var widgetType = WidgetType;
+        var widgetIndex = WidgetIndex;
+
+        // get widget context
         var widgetContext = _widgetManagerService.GetWidgetContext(providerType, widgetId, widgetType, widgetIndex);
 
         // invoke activate or deactivate event

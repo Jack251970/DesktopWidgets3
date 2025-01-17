@@ -26,7 +26,7 @@ namespace DevHome.Dashboard.Models;
 /// </summary>
 public partial class MicrosoftWidgetModel : IDisposable
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));
 
     public DashboardViewModel ViewModel { get; }
 
@@ -569,7 +569,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     #region Store
 
     // TODO(Future): Check if we need this function.
-    public async Task GoToWidgetsInStoreAsync()
+    public static async Task GoToWidgetsInStoreAsync()
     {
         if (RuntimeHelper.IsOnWindows11)
         {
@@ -675,7 +675,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
     }
 
-    private async Task TryDeleteWidgetAsync(Widget widgetToDelete)
+    private static async Task TryDeleteWidgetAsync(Widget widgetToDelete)
     {
         // Remove the widget from the list before deleting, otherwise the widget will
         // have changed and the collection won't be able to find it to remove it.
