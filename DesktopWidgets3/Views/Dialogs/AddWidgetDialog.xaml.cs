@@ -79,6 +79,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     #region Load Widgets
 
+    // TODO(Future): Improve performance by loading widgets in parallel.
+    // TODO(Future): If dialog is hidden, stop loading widgets.
     [RelayCommand]
     public async Task OnLoadedAsync()
     {
