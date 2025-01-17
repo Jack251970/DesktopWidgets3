@@ -88,7 +88,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         await FillAvailableDesktopWidget3WidgetsAsync();
 
         // load the microsoft widgets
-        await Task.Delay(10000);
         await FillAvailableMicrosoftWidgetsAsync();
 
         // select the first widget by default
