@@ -9,7 +9,6 @@ using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Helpers;
 
-// TODO: Check this.
 public sealed class WidgetHelpers
 {
     public const string WebExperiencePackPackageId = "9MSSGKG348SP";
@@ -17,23 +16,7 @@ public sealed class WidgetHelpers
     public const string WidgetsPlatformRuntimePackageId = "9N3RK8ZV2ZR8";
     public const string WidgetsPlatformRuntimePackageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
 
-    public static readonly string[] DefaultWidgetDefinitionIds =
-    [
-    #if CANARY_BUILD
-        "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
-        "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
-        "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
-    #elif STABLE_BUILD
-        "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
-        "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
-        "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
-    #else
-        "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
-        "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
-        "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
-    #endif
-    ];
-
+    // TODO(Future): Remove this and use our own host name.
     public const string DevHomeHostName = "DevHome";
 
     // Each widget has a 16px margin around it and a 48px Attribution area in which content cannot be placed.
@@ -101,14 +84,17 @@ public sealed class WidgetHelpers
         var include = enabledWidgetProviderIds.ToList().Contains(familyNamePartOfProviderId);
         LogExtensions.LogInformation(ClassName, $"Found provider Id = {providerId}, include = {include}");
         return include;*/
-        // TODO: Check if the widget provider is included in the list of enabled widget providers.
+        if (provider.DisplayName == "PeregrineWidgets")
+        {
+            return false;
+        }
+
         await Task.CompletedTask;
         return true;
     }
 
     public static string CreateWidgetCustomState(int ordinal)
     {
-        // TODO: Conflict with DevHome?
         var state = new WidgetCustomState
         {
             Host = DevHomeHostName,

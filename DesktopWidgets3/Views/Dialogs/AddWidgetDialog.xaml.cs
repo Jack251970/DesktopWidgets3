@@ -172,12 +172,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         foreach (var providerDef in _microsoftWidgetModel.WidgetProviderDefinitions)
         {
-            // CHANGE: PeregrineWidgets can cause issues in IsSingleInstanceAndAlreadyPinned function
-            if (providerDef.DisplayName == "PeregrineWidgets")
-            {
-                continue;
-            }
-
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
                 var itemContent = await BuildWidgetGroupNavItemAsync(providerDef);

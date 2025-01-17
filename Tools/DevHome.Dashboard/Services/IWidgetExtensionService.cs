@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿/*// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 namespace DevHome.Dashboard.Services;
@@ -12,4 +12,4 @@ public interface IWidgetExtensionService
     bool IsCoreWidgetProvider(string providerDefinitionId);
 
     Task EnsureCoreWidgetExtensionStarted(string providerDefinitionId);
-}
+}*/

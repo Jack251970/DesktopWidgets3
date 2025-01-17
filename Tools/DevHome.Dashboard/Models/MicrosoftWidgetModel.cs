@@ -37,7 +37,6 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
-    private readonly IWidgetExtensionService _widgetExtensionService;
 
     private Func<WidgetViewModel, int, Task>? CreateWidgetWindow;
 
@@ -51,7 +50,6 @@ public partial class MicrosoftWidgetModel : IDisposable
 
         _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
         _widgetViewModelFactory = DependencyExtensions.GetRequiredService<WidgetViewModelFactory>();
-        _widgetExtensionService = DependencyExtensions.GetRequiredService<IWidgetExtensionService>();
     }
 
     #region Initialization
@@ -293,6 +291,7 @@ public partial class MicrosoftWidgetModel : IDisposable
             return false;
         }
 
+        // TODO(Future): Add support for widget service.
         // Ensure the WidgetService is installed and up to date.
         /*var widgetServiceState = ViewModel.WidgetServiceService.GetWidgetServiceState();
         switch (widgetServiceState)
@@ -702,13 +701,13 @@ public partial class MicrosoftWidgetModel : IDisposable
                         return;
                     }
 
-                    // The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
+                    /*// The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
                     // able to send disposed events when Dev Home closes. Ensure the provider is started here so we can
                     // tell the extension to dispose later.
                     if (_widgetExtensionService.IsCoreWidgetProvider(comSafeWidgetDefinition.ProviderDefinitionId))
                     {
                         await _widgetExtensionService.EnsureCoreWidgetExtensionStarted(comSafeWidgetDefinition.ProviderDefinitionId);
-                    }
+                    }*/
 
                     var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
                     cancellationToken.ThrowIfCancellationRequested();

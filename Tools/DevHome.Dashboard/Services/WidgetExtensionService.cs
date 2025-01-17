@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+﻿/*// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 //using DevHome.Common.Services;
@@ -15,12 +15,12 @@ public sealed class WidgetExtensionService : IWidgetExtensionService
     private const string ProviderDefinitionCanary = "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider";
     private const string ProviderDefinitionDev = "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider";
 
-    /*private readonly IExtensionService _extensionService;
+    private readonly IExtensionService _extensionService;
 
     public WidgetExtensionService(IExtensionService extensionService)
     {
         _extensionService = extensionService;
-    }*/
+    }
 
     /// <inheritdoc/>
     public bool IsCoreWidgetProvider(string providerDefinitionId)
@@ -48,12 +48,10 @@ public sealed class WidgetExtensionService : IWidgetExtensionService
 
     private async Task EnsureExtensionStarted(string extensionUniqueId)
     {
-        // TODO: Start extension.
-        /*var extensionWrapper = _extensionService.GetInstalledExtension(extensionUniqueId);
+        var extensionWrapper = _extensionService.GetInstalledExtension(extensionUniqueId);
         if (!extensionWrapper.IsRunning())
         {
             await extensionWrapper.StartExtensionAsync();
-        }*/
-        await Task.CompletedTask;
+        }
     }
-}
+}*/

@@ -7,11 +7,9 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Dashboard.ViewModels;
 
-// TODO: Remove this.
+// TODO(Future): Remove this class and merge it to MicrosoftWidgetModel.
 public partial class DashboardViewModel : ObservableObject
 {
-    /*public IWidgetServiceService WidgetServiceService { get; }*/
-
     public IWidgetHostingService WidgetHostingService { get; }
 
     public IWidgetIconService WidgetIconService { get; }
@@ -25,13 +23,10 @@ public partial class DashboardViewModel : ObservableObject
     private bool _hasWidgetServiceInitialized;
 
     public DashboardViewModel(
-        // TODO: Add support for widgetServiceService.
-        /*IWidgetServiceService widgetServiceService,*/
         IWidgetHostingService widgetHostingService,
         IWidgetIconService widgetIconService,
         IWidgetScreenshotService widgetScreenshotService)
     {
-        /*WidgetServiceService = widgetServiceService;*/
         WidgetHostingService = widgetHostingService;
         WidgetIconService = widgetIconService;
         WidgetScreenshotService = widgetScreenshotService;

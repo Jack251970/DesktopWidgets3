@@ -257,7 +257,6 @@ public partial class App : Application
                 services.AddSingleton<IWidgetIconService, WidgetIconService>();
                 services.AddSingleton<IWidgetScreenshotService, WidgetScreenshotService>();
                 services.AddSingleton<IAdaptiveCardRenderingService, WidgetAdaptiveCardRenderingService>();
-                services.AddSingleton<IWidgetExtensionService, WidgetExtensionService>();
 
                 #endregion
             })
