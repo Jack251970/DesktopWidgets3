@@ -2,16 +2,20 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService, MicrosoftWidgetModel microsoftWidgetModel) : IWidgetManagerService
+internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetManagerService));
+
+    private readonly MicrosoftWidgetModel _microsoftWidgetModel = microsoftWidgetModel;
+
     private readonly IActivationService _activationService = activationService;
     private readonly IAppSettingsService _appSettingsService = appSettingsService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
-    private readonly MicrosoftWidgetModel _microsoftWidgetModel = microsoftWidgetModel;
 
     private readonly ConcurrentDictionary<string, WidgetWindowPair> PinnedWidgetWindowPairs = [];
     private readonly ConcurrentDictionary<string, WidgetSettingPair> WidgetSettingPairs = [];
@@ -537,7 +541,16 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         var widgetViewModel = GetWidgetViewModel(widgetId, widgetType, widgetIndex);
         if (widgetViewModel != null)
         {
-            await _microsoftWidgetModel.TryDeleteWidgetViewModel(widgetViewModel);
+            // Remove any custom state from the widget. In case the deletion fails, we won't show the widget anymore.
+            await widgetViewModel.Widget.SetCustomStateAsync(string.Empty);
+
+            // Remove the widget from the list before deleting, otherwise the widget will
+            // have changed and the collection won't be able to find it to remove it.
+            widgetViewModel.Dispose();
+            _microsoftWidgetModel.PinnedWidgets.Remove(widgetViewModel);
+
+            // Try delete widget
+            await _microsoftWidgetModel.TryDeleteWidgetAsync(widgetViewModel);
         }
 
         // get widget runtime id
@@ -679,15 +692,16 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await _activationService.ActivateWindowAsync(widgetWindow);
 
             // get widget info
+            var providerType = widgetWindow.ProviderType;
             var widgetId = widgetWindow.WidgetId;
             var widgetType = widgetWindow.WidgetType;
             var widgetIndex = widgetWindow.WidgetIndex;
 
             // set widget title
-            widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(WidgetProviderType.DesktopWidgets3, widgetId, widgetType);
+            widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(providerType, widgetId, widgetType);
 
             // initialize window
-            var menuFlyout = GetWidgetMenuFlyout(widgetWindow);
+            var menuFlyout = await GetWidgetMenuFlyoutAsync(widgetWindow);
             widgetWindow.Initialize(menuFlyout);
 
             // set window style, size and position
@@ -701,7 +715,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.Activate();
 
             // add to widget window pair list
-            var widgetWindowPair = GetWidgetWindowPair(WidgetProviderType.DesktopWidgets3, widgetId, widgetType, widgetIndex);
+            var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
             if (widgetWindowPair != null)
             {
                 widgetWindowPair.Window = widgetWindow;
@@ -723,7 +737,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetSettings = args.WidgetSettings!;
 
             // get widget info
-            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var providerType = widgetWindow.ProviderType;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
 
             // set widget position
             widgetWindow.Position = widgetPosition;
@@ -753,15 +770,17 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             await _activationService.ActivateWindowAsync(widgetWindow);
 
             // get widget info
+            var providerType = widgetWindow.ProviderType;
             var widgetId = widgetWindow.WidgetId;
             var widgetType = widgetWindow.WidgetType;
             var widgetIndex = widgetWindow.WidgetIndex;
 
             // set widget title
-            widgetWindow.ViewModel.WidgetDisplayTitle = widgetViewModel.WidgetDisplayTitle;
+            var (widgetName, _, _) = widgetViewModel.GetWidgetInfo();
+            widgetWindow.ViewModel.WidgetDisplayTitle = widgetName;
 
             // initialize window
-            var menuFlyout = GetWidgetMenuFlyout(widgetWindow);
+            var menuFlyout = await GetWidgetMenuFlyoutAsync(widgetWindow);
             widgetWindow.Initialize(menuFlyout);
 
             // set window style, size and position
@@ -775,7 +794,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             widgetWindow.Activate();
 
             // add to widget window pair list
-            var widgetWindowPair = GetWidgetWindowPair(WidgetProviderType.Microsoft, widgetId, widgetType, widgetIndex);
+            var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
             if (widgetWindowPair != null)
             {
                 widgetWindowPair.Window = widgetWindow;
@@ -800,7 +819,10 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var widgetViewModel = args.WidgetViewModel;
 
             // get widget info
-            var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
+            var providerType = widgetWindow.ProviderType;
+            var widgetId = widgetWindow.WidgetId;
+            var widgetType = widgetWindow.WidgetType;
+            var widgetIndex = widgetWindow.WidgetIndex;
 
             // set widget position
             widgetWindow.Position = widgetPosition;
@@ -954,17 +976,40 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
 
     #region Widget Menu
 
-    private MenuFlyout GetWidgetMenuFlyout(WidgetWindow widgetWindow)
+    private async Task<MenuFlyout> GetWidgetMenuFlyoutAsync(WidgetWindow widgetWindow)
     {
+        // get widget info
+        var providerType = widgetWindow.ProviderType;
+        var widgetId = widgetWindow.WidgetId;
+        var widgetType = widgetWindow.WidgetType;
+
+        // create menu flyout
         var menuFlyout = new MenuFlyout
         {
             Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft
         };
 
+        // add menu items
+        // pin & delete & customize
         AddUnpinDeleteItemsToWidgetMenu(menuFlyout, widgetWindow);
+        if (_widgetResourceService.GetWidgetIsCustomizable(providerType, widgetId, widgetType))
+        {
+            AddCustomizeToWidgetMenu(menuFlyout, widgetWindow);
+        }
+
+        // size
+        if (providerType == WidgetProviderType.Microsoft)
+        {
+            // TODO: Add support for widget size menu items.
+            /*menuFlyout.Items.Add(new MenuFlyoutSeparator());
+            await AddSizesToWidgetMenuAsync(menuFlyout, widgetWindow);*/
+        }
+
+        // layout
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
         AddLayoutItemsToWidgetMenu(menuFlyout, widgetWindow);
 
+        // restart
 #if DEBUG
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
         AddRestartItemsToWidgetMenu(menuFlyout, widgetWindow);
@@ -987,7 +1032,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             Text = "MenuFlyoutItem_UnpinWidget.Text".GetLocalizedString(),
             Icon = unpinIcon
         };
-        unpinWidgetMenuItem.Click += UnpinWidget;
+        unpinWidgetMenuItem.Click += OnUnpinWidgetClick;
         menuFlyout.Items.Add(unpinWidgetMenuItem);
 
         var deleteIcon = new FontIcon()
@@ -1000,11 +1045,11 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             Text = "MenuFlyoutItem_DeleteWidget.Text".GetLocalizedString(),
             Icon = deleteIcon
         };
-        deleteWidgetMenuItem.Click += DeleteWidget;
+        deleteWidgetMenuItem.Click += OnDeleteWidgetClick;
         menuFlyout.Items.Add(deleteWidgetMenuItem);
     }
 
-    private async void UnpinWidget(object sender, RoutedEventArgs e)
+    private async void OnUnpinWidgetClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
         {
@@ -1019,7 +1064,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
     }
 
-    private async void DeleteWidget(object sender, RoutedEventArgs e)
+    private async void OnDeleteWidgetClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
         {
@@ -1030,9 +1075,173 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             var (providerType, widgetId, widgetType, widgetIndex) = GetWidgetInfo(widgetRuntimeId);
 
             // delete widget
-            await DialogFactory.ShowDeleteWidgetFullScreenDialogAsync(async () => await DeleteWidgetAsync(providerType, widgetId, widgetType, widgetIndex, true));
+            await DialogFactory.ShowDeleteWidgetFullScreenDialogAsync(async () =>
+            {
+                await DeleteWidgetAsync(providerType, widgetId, widgetType, widgetIndex, true);
+            });
         }
     }
+
+    #endregion
+
+    #region Customize
+
+    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetWindow widgetWindow)
+    {
+        var icon = new FontIcon()
+        {
+            Glyph = "\xE70F"
+        };
+        var customizeWidgetItem = new MenuFlyoutItem
+        {
+            Tag = widgetWindow,
+            Icon = icon,
+            Text = "MenuFlyoutItem_CustomizeWidget.Text".GetLocalizedString()
+        };
+        customizeWidgetItem.Click += OnCustomizeWidgetClick;
+        widgetMenuFlyout.Items.Add(customizeWidgetItem);
+    }
+
+    private async void OnCustomizeWidgetClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem customizeMenuItem && customizeMenuItem?.Tag is WidgetWindow widgetWindow)
+        {
+            var providerType = widgetWindow.ProviderType;
+            if (providerType == WidgetProviderType.DesktopWidgets3)
+            {
+                // TODO: Add support for desktop widgets customization and combine this codes in one function.
+            }
+            else
+            {
+                await widgetWindow.ViewModel.WidgetViewModel!.Widget.NotifyCustomizationRequestedAsync();
+            }
+        }
+    }
+
+    #endregion
+
+    #region Size
+
+    // TODO: Add support for widget size menu items.
+    /*private async Task AddSizesToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetWindow widgetWindow)
+    {
+        var widgetViewModel = widgetWindow.ViewModel.WidgetViewModel;
+        if (widgetViewModel is null)
+        {
+            // If we can't get the widgetViewModel, bail and don't show sizes.
+            return;
+        }
+
+        var widgetHostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
+        var unsafeWidgetDefinition = await widgetHostingService.GetWidgetDefinitionAsync(widgetViewModel.Widget.DefinitionId);
+        if (unsafeWidgetDefinition == null)
+        {
+            // If we can't get the widgetDefinition, bail and don't show sizes.
+            return;
+        }
+
+        var widgetDefinitionId = await ComSafeWidgetDefinition.GetIdFromUnsafeWidgetDefinitionAsync(unsafeWidgetDefinition);
+        if (string.IsNullOrEmpty(widgetDefinitionId))
+        {
+            // If we can't get the widgetDefinitionId, bail and don't show sizes.
+            return;
+        }
+
+        var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+        if (!await comSafeWidgetDefinition.PopulateAsync())
+        {
+            // If we can't populate the widgetDefinition, bail and don't show sizes.
+            return;
+        }
+
+        var capabilities = await comSafeWidgetDefinition.GetWidgetCapabilitiesAsync();
+        var sizeMenuItems = new List<SelectableMenuFlyoutItem>();
+
+        // Add the three possible sizes. Each side should only be enabled if it is included in the widget's capabilities.
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Small))
+        {
+            var menuItemSmall = new SelectableMenuFlyoutItem
+            {
+                Tag = WidgetSize.Small,
+                Text = "SmallWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard),
+            };
+            menuItemSmall.Click += OnMenuItemSizeClick;
+            menuItemSmall.SetValue(AutomationProperties.AutomationIdProperty, "SmallWidgetButton");
+            widgetMenuFlyout.Items.Add(menuItemSmall);
+            sizeMenuItems.Add(menuItemSmall);
+        }
+
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Medium))
+        {
+            var menuItemMedium = new SelectableMenuFlyoutItem
+            {
+                Tag = WidgetSize.Medium,
+                Text = "MediumWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard),
+            };
+            menuItemMedium.Click += OnMenuItemSizeClick;
+            menuItemMedium.SetValue(AutomationProperties.AutomationIdProperty, "MediumWidgetButton");
+            widgetMenuFlyout.Items.Add(menuItemMedium);
+            sizeMenuItems.Add(menuItemMedium);
+        }
+
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Large))
+        {
+            var menuItemLarge = new SelectableMenuFlyoutItem
+            {
+                Tag = WidgetSize.Large,
+                Text = "LargeWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard),
+            };
+            menuItemLarge.Click += OnMenuItemSizeClick;
+            menuItemLarge.SetValue(AutomationProperties.AutomationIdProperty, "LargeWidgetButton");
+            widgetMenuFlyout.Items.Add(menuItemLarge);
+            sizeMenuItems.Add(menuItemLarge);
+        }
+
+        // Mark current widget size.
+        _currentSelectedSize = sizeMenuItems.FirstOrDefault(x => (WidgetSize)x.Tag == widgetViewModel.WidgetSize);
+        if (_currentSelectedSize is not null)
+        {
+            MarkSize(_currentSelectedSize);
+        }
+    }
+
+    private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is SelectableMenuFlyoutItem menuSizeItem)
+        {
+            if (menuSizeItem.DataContext is WidgetViewModel widgetViewModel)
+            {
+                // Unset mark on current size.
+                if (_currentSelectedSize is not null)
+                {
+                    _currentSelectedSize.Icon = null;
+                    var peer = FrameworkElementAutomationPeer.FromElement(_currentSelectedSize) as SelectableMenuFlyoutItemAutomationPeer;
+                    peer?.RemoveFromSelection();
+                }
+
+                // Resize widget.
+                var size = (WidgetSize)menuSizeItem.Tag;
+                widgetViewModel.WidgetSize = size;
+                await widgetViewModel.Widget.SetSizeAsync(size);
+                SetScaledWidthAndHeight(_uiSettings.TextScaleFactor);
+
+                // Set mark on new size.
+                _currentSelectedSize = menuSizeItem;
+                MarkSize(_currentSelectedSize);
+            }
+        }
+    }
+
+    private static void MarkSize(SelectableMenuFlyoutItem menuSizeItem)
+    {
+        var fontIcon = new FontIcon
+        {
+            Glyph = "\xE915",
+        };
+        menuSizeItem.Icon = fontIcon;
+        var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
+        peer?.AddToSelection();
+    }*/
 
     #endregion
 
@@ -1050,11 +1259,11 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             Icon = layoutIcon,
             Text = "MenuFlyoutItem_EditWidgetsLayout.Text".GetLocalizedString()
         };
-        editLayoutMenuItem.Click += EditWidgetsLayout;
+        editLayoutMenuItem.Click += OnEditWidgetsLayoutClick;
         menuFlyout.Items.Add(editLayoutMenuItem);
     }
 
-    private void EditWidgetsLayout(object sender, RoutedEventArgs e)
+    private void OnEditWidgetsLayoutClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow)
         {
@@ -1078,7 +1287,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             Text = "MenuFlyoutItem_RestartWidget.Text".GetLocalizedString(),
             Icon = restartIcon,
         };
-        restartWidgetMenuItem.Click += RestartWidget;
+        restartWidgetMenuItem.Click += OnRestartWidgetClick;
         menuFlyout.Items.Add(restartWidgetMenuItem);
 
         restartIcon = new FontIcon()
@@ -1091,11 +1300,11 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
             Text = "MenuFlyoutItem_RestartWidgets.Text".GetLocalizedString(),
             Icon = restartIcon
         };
-        restartWidgetsMenuItem.Click += RestartWidgets;
+        restartWidgetsMenuItem.Click += OnRestartWidgetsClick;
         menuFlyout.Items.Add(restartWidgetsMenuItem);
     }
 
-    private async void RestartWidget(object sender, RoutedEventArgs e)
+    private async void OnRestartWidgetClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow widgetWindow)
         {
@@ -1117,7 +1326,7 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         }
     }
 
-    private async void RestartWidgets(object sender, RoutedEventArgs e)
+    private async void OnRestartWidgetsClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem deleteMenuItem && deleteMenuItem?.Tag is WidgetWindow)
         {

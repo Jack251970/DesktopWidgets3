@@ -30,6 +30,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public DashboardViewModel ViewModel { get; }
 
+    // TODO(Future): Move this to concurrent collections and add multi-threading support.
     public ObservableCollection<WidgetProviderDefinition> WidgetProviderDefinitions { get; private set; } = [];
     public ObservableCollection<ComSafeWidgetDefinition> WidgetDefinitions { get; private set; } = [];
 
@@ -608,9 +609,14 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #region Add Widget
 
-    public async Task TryDeleteWidgetViewModel(WidgetViewModel widgetViewModel)
+    public async Task TryDeleteWidgetAsync(WidgetViewModel widgetViewModel)
     {
-        await TryDeleteUnsafeWidget(widgetViewModel.Widget.GetUnsafeWidgetObject());
+        await TryDeleteWidgetAsync(widgetViewModel.Widget);
+    }
+
+    private async Task TryDeleteWidgetAsync(ComSafeWidget widgetToDelete)
+    {
+        await TryDeleteWidgetAsync(widgetToDelete.GetUnsafeWidgetObject());
     }
 
     public async Task AddWidgetsAsync(ComSafeWidgetDefinition newWidgetDefinition, Func<Task> showCreateErrorMessageAsync, Func<WidgetViewModel, Task<int>> insertWidgetAsync)
@@ -635,7 +641,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
                 // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
                 // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
-                await TryDeleteUnsafeWidget(unsafeWidget);
+                await TryDeleteWidgetAsync(unsafeWidget);
                 return;
             }
 
@@ -647,7 +653,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
                 // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
                 // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
-                await TryDeleteUnsafeWidget(unsafeWidget);
+                await TryDeleteWidgetAsync(unsafeWidget);
                 return;
             }
 
@@ -669,15 +675,19 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
     }
 
-    private async Task TryDeleteUnsafeWidget(Widget unsafeWidget)
+    private async Task TryDeleteWidgetAsync(Widget widgetToDelete)
     {
+        // Remove the widget from the list before deleting, otherwise the widget will
+        // have changed and the collection won't be able to find it to remove it.
+        var widgetIdToDelete = widgetToDelete.Id;
+        _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
         try
         {
-            await unsafeWidget.DeleteAsync();
+            await widgetToDelete.DeleteAsync();
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Error deleting widget");
+            _log.Error(ex, $"Error deleting widget {widgetIdToDelete}");
         }
     }
 

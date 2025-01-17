@@ -345,4 +345,7 @@
   <data name="Settings_Backdrop_Transparent.Content" xml:space="preserve">
     <value>Transparent</value>
   </data>
+  <data name="MenuFlyoutItem_CustomizeWidget.Text" xml:space="preserve">
+    <value>Customize this widget</value>
+  </data>
 </root>

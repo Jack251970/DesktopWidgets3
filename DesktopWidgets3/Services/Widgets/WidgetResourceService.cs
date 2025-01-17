@@ -1245,7 +1245,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #endregion
 
-    #region AllowMultiple
+    #region Allow Multiple
 
     private bool GetWidgetAllowMultiple(WidgetProviderType widgetProvider, string widgetId, string widgetType)
     {
