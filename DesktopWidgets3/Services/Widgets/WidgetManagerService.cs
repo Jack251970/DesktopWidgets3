@@ -964,8 +964,11 @@ internal class WidgetManagerService(IActivationService activationService, IAppSe
         AddUnpinDeleteItemsToWidgetMenu(menuFlyout, widgetWindow);
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
         AddLayoutItemsToWidgetMenu(menuFlyout, widgetWindow);
+
+#if DEBUG
         menuFlyout.Items.Add(new MenuFlyoutSeparator());
         AddRestartItemsToWidgetMenu(menuFlyout, widgetWindow);
+#endif
 
         return menuFlyout;
     }
