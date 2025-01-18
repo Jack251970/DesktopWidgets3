@@ -6,11 +6,11 @@ public interface IDialogService
 {
     void Initialize();
 
-    Task ShowOneButtonDialogAsync(WindowEx window, string title, string context);
+    Task ShowOneButtonDialogAsync(WindowEx? window, string title, string context);
 
-    Task<WidgetDialogResult> ShowTwoButtonDialogAsync(WindowEx window, string title, string context, string leftButton = null!, string rightButton = null!);
+    Task<WidgetDialogResult> ShowTwoButtonDialogAsync(WindowEx? window, string title, string context, string leftButton = null!, string rightButton = null!);
 
-    Task<WidgetDialogResult> ShowThreeButtonDialogAsync(WindowEx window, string title, string context, string leftButton = null!, string centerButton = null!, string rightButton = null!);
+    Task<WidgetDialogResult> ShowThreeButtonDialogAsync(WindowEx? window, string title, string context, string leftButton = null!, string centerButton = null!, string rightButton = null!);
 
     Task ShowFullScreenOneButtonDialogAsync(string title, string context);
 

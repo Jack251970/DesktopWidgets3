@@ -34,6 +34,8 @@ public interface IWidgetManagerService
 
     Task DeleteWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh);
 
+    Task RestartWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex);
+
     WidgetWindow? GetWidgetWindow(string widgetRuntimeId);
 
     void NavigateToWidgetSettingPage(string widgetId, string widgetType, int widgetIndex);

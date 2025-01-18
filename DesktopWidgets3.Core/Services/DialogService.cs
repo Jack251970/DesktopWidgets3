@@ -1,4 +1,5 @@
-﻿using Windows.UI.Popups;
+﻿using Microsoft.UI.Xaml;
+using Windows.UI.Popups;
 using WinUIEx;
 
 namespace DesktopWidgets3.Core.Services;
@@ -19,13 +20,15 @@ public class DialogService : IDialogService
 
     #region Public
 
-    public async Task ShowOneButtonDialogAsync(WindowEx window, string title, string context)
+    public async Task ShowOneButtonDialogAsync(WindowEx? window, string title, string context)
     {
+        window ??= (WindowEx)DependencyExtensions.GetRequiredService<Window>();
         await ShowMessageDialogAsync(window, context, null, title: title);
     }
 
-    public async Task<WidgetDialogResult> ShowTwoButtonDialogAsync(WindowEx window, string title, string context, string leftButton = null!, string rightButton = null!)
+    public async Task<WidgetDialogResult> ShowTwoButtonDialogAsync(WindowEx? window, string title, string context, string leftButton = null!, string rightButton = null!)
     {
+        window ??= (WindowEx)DependencyExtensions.GetRequiredService<Window>();
         leftButton = leftButton is null ? Ok : leftButton;
         rightButton = rightButton is null ? Cancel : rightButton;
         var commands = new List<IUICommand>
@@ -51,13 +54,14 @@ public class DialogService : IDialogService
         }
     }
 
-    public async Task<WidgetDialogResult> ShowThreeButtonDialogAsync(WindowEx window, string title, string context, string leftButton = null!, string centerButton = null!, string rightButton = null!)
+    public async Task<WidgetDialogResult> ShowThreeButtonDialogAsync(WindowEx? window, string title, string context, string leftButton = null!, string centerButton = null!, string rightButton = null!)
     {
         if (centerButton is null)
         {
             return await ShowTwoButtonDialogAsync(window, title, context, leftButton, rightButton);
         }
 
+        window ??= (WindowEx)DependencyExtensions.GetRequiredService<Window>();
         leftButton = leftButton is null ? Ok : leftButton;
         rightButton = rightButton is null ? Cancel : rightButton;
         var commands = new List<IUICommand>

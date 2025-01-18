@@ -16,7 +16,6 @@ global using DesktopWidgets3.Contracts.Services;
 global using DesktopWidgets3.Contracts.ViewModels;
 global using DesktopWidgets3.Extensions;
 global using DesktopWidgets3.Helpers.Application;
-global using DesktopWidgets3.Helpers.Dialog;
 global using DesktopWidgets3.Helpers.Navigation;
 global using DesktopWidgets3.Models.Application;
 global using DesktopWidgets3.Models.Parameters;

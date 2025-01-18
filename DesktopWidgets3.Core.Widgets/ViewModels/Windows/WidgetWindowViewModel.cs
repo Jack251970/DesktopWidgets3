@@ -21,9 +21,6 @@ public partial class WidgetWindowViewModel : ObservableRecipient
     public FrameworkElement _widgetFrameworkElement = new ProgressRing();
 
     [ObservableProperty]
-    public MenuFlyout? _widgetMenuFlyout = null;
-
-    [ObservableProperty]
     public WidgetViewModel? _widgetViewModel = null;
 
     public WidgetWindowViewModel()

@@ -235,6 +235,7 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
         {
             await RenderWidgetFrameworkElementAsync();
             IsLoaded = true;
+            // TODO: Fix COM issue here.
             Loaded?.Invoke(this, new RoutedEventArgs());
         }
         else

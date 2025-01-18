@@ -22,7 +22,6 @@
   <ItemGroup>
     <None Remove="Assets\HostConfigDark.json" />
     <None Remove="Assets\HostConfigLight.json" />
-    <None Remove="Controls\WidgetControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,12 +69,6 @@
     <Content Update="Assets\HostConfigDark.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Controls\WidgetControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   
 </Project>

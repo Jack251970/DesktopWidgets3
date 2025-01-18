@@ -1,6 +1,8 @@
-﻿namespace DesktopWidgets3.Helpers.Dialog;
+﻿using WinUIEx;
 
-internal static class DialogFactory
+namespace DesktopWidgets3.Core.Widgets.Helpers;
+
+public static class DialogFactory
 {
     private static readonly IDialogService WidgetDialogService = DependencyExtensions.GetRequiredService<IDialogService>();
 
@@ -8,7 +10,7 @@ internal static class DialogFactory
     {
         var title = "Dialog_DeleteWidget.Title".GetLocalizedString();
         var content = "Dialog_DeleteWidget.Content".GetLocalizedString();
-        return await WidgetDialogService.ShowTwoButtonDialogAsync(window ?? App.MainWindow, title, content);
+        return await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content);
     }
 
     public static async Task ShowDeleteWidgetFullScreenDialogAsync(Func<Task> deleteFunc)
@@ -28,13 +30,13 @@ internal static class DialogFactory
     {
         var title = "Dialog_SaveCurrentLayout.Title".GetLocalizedString();
         var content = "Dialog_SaveCurrentLayout.Content".GetLocalizedString();
-        return await WidgetDialogService.ShowTwoButtonDialogAsync(window ?? App.MainWindow, title, content);
+        return await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content);
     }
 
     public static async Task ShowCreateWidgetErrorDialogAsync(WindowEx? window = null)
     {
         var title = string.Empty;
         var content = "CouldNotCreateWidgetError".GetLocalizedString(Constants.DevHomeDashboard);
-        await WidgetDialogService.ShowOneButtonDialogAsync(window ?? App.MainWindow, title, content);
+        await WidgetDialogService.ShowOneButtonDialogAsync(window, title, content);
     }
 }

@@ -1,6 +1,4 @@
-﻿using Microsoft.UI.Xaml.Controls;
-
-namespace DesktopWidgets3.Core.Widgets.Models.WidgetPairs;
+﻿namespace DesktopWidgets3.Core.Widgets.Models.WidgetPairs;
 
 public class WidgetWindowPair
 {
@@ -17,8 +15,6 @@ public class WidgetWindowPair
     public required WidgetInfo WidgetInfo { get; set; }
 
     public WidgetWindow Window { get; set; } = null!;
-
-    public MenuFlyout MenuFlyout { get; set; } = null!;
 
     public bool Equals(WidgetProviderType providerType, string widgetId, string widgetType)
     {
