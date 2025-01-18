@@ -76,6 +76,52 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #endregion
 
+    #region Widget View Model
+
+    public async Task<WidgetViewModel?> GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex, CancellationToken cancellationToken = default)
+    {
+        var hostWidgets = await GetPreviouslyPinnedWidgets();
+        await _existedWidgetsLock.WaitAsync(CancellationToken.None);
+        try
+        {
+            foreach (var widget in hostWidgets)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    var checkResult = await CheckWidgetAsync(widget);
+                    if (checkResult == null)
+                    {
+                        continue;
+                    }
+
+                    var (stateObj, comSafeWidgetDefinition) = checkResult.Value;
+                    var widgetIndex1 = stateObj.Position;
+                    var (_, _, _, widgetId1, widgetType1) = comSafeWidgetDefinition.GetWidgetProviderAndWidgetInfo();
+                    if (widgetId1 == widgetId && widgetType1 == widgetType && widgetIndex1 == widgetIndex)
+                    {
+                        var size = await widget.GetSizeAsync();
+                        return await GetWidgetViewModel(widget, size, cancellationToken);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, $"GetWidgetViewModel(): ");
+                }
+            }
+        }
+        finally
+        {
+            // No cleanup to do if the operation is cancelled.
+            _existedWidgetsLock.Release();
+        }
+
+        return null;
+    }
+
+    #endregion
+
     #region Loaded & UnLoaded
 
     private async Task OnLoadedAsync()
@@ -111,10 +157,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         // Re-render the widgets with the new theme and renderer.
         foreach (var widget in ExistedWidgets)
         {
-            if (widget.IsEnabled)
-            {
-                await widget.RenderAsync();
-            }
+            await widget.RenderAsync();
         }
     }
 
@@ -150,47 +193,14 @@ public partial class MicrosoftWidgetModel : IDisposable
 
             try
             {
-                var stateStr = await widget.GetCustomStateAsync();
-                _log.Information($"GetWidgetCustomState: {stateStr}");
-
-                if (string.IsNullOrEmpty(stateStr))
+                var checkResult = await CheckWidgetAsync(widget);
+                if (checkResult == null)
                 {
-                    // If we have a widget with no state, Dev Home does not consider it a valid widget
-                    // and should delete it, rather than letting it run invisibly in the background.
-                    await DeleteAbandonedWidgetAsync(widget);
-                    continue;
-                }
-
-                var stateObj = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
-                if (stateObj?.Host != WidgetHelpers.DevHomeHostName)
-                {
-                    // This shouldn't be able to be reached
-                    _log.Error($"Widget has custom state but no HostName.");
                     continue;
                 }
 
                 var widgetDefinitionId = widget.DefinitionId;
-                var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
-                if (unsafeWidgetDefinition == null)
-                {
-                    await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
-                    continue;
-                }
-
-                var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
-                if (!await comSafeWidgetDefinition.PopulateAsync())
-                {
-                    _log.Error($"Error populating widget definition for widget {widgetDefinitionId}");
-                    await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
-                    continue;
-                }
-
-                // If the widget's extension was disabled, hide the widget (don't add it to the list), but don't delete it.
-                if (!await WidgetHelpers.IsIncludedWidgetProviderAsync(comSafeWidgetDefinition.ProviderDefinition))
-                {
-                    _log.Information($"Not adding widget from disabled extension {comSafeWidgetDefinition.ProviderDefinitionId}");
-                    continue;
-                }
+                var (stateObj, comSafeWidgetDefinition) = checkResult.Value;
 
                 // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
                 if (comSafeWidgetDefinition.AllowMultiple == false)
@@ -239,6 +249,53 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
 
         _log.Information($"Done restoring pinned widgets");
+    }
+
+    private async Task<(WidgetCustomState, ComSafeWidgetDefinition)?> CheckWidgetAsync(ComSafeWidget widget)
+    {
+        var stateStr = await widget.GetCustomStateAsync();
+        _log.Information($"GetWidgetCustomState: {stateStr}");
+
+        if (string.IsNullOrEmpty(stateStr))
+        {
+            // If we have a widget with no state, Dev Home does not consider it a valid widget
+            // and should delete it, rather than letting it run invisibly in the background.
+            await DeleteAbandonedWidgetAsync(widget);
+            return null;
+        }
+
+        var stateObj = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
+        if (stateObj?.Host != WidgetHelpers.DevHomeHostName)
+        {
+            // This shouldn't be able to be reached
+            _log.Error($"Widget has custom state but no HostName.");
+            return null;
+        }
+
+        var widgetDefinitionId = widget.DefinitionId;
+        var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+        if (unsafeWidgetDefinition == null)
+        {
+            await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
+            return null;
+        }
+
+        var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+        if (!await comSafeWidgetDefinition.PopulateAsync())
+        {
+            _log.Error($"Error populating widget definition for widget {widgetDefinitionId}");
+            await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
+            return null;
+        }
+
+        // If the widget's extension was disabled, hide the widget (don't add it to the list), but don't delete it.
+        if (!await WidgetHelpers.IsIncludedWidgetProviderAsync(comSafeWidgetDefinition.ProviderDefinition))
+        {
+            _log.Information($"Not adding widget from disabled extension {comSafeWidgetDefinition.ProviderDefinitionId}");
+            return null;
+        }
+
+        return (stateObj, comSafeWidgetDefinition);
     }
 
     private async Task DeleteAbandonedWidgetAsync(ComSafeWidget widget)
@@ -625,7 +682,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         await TryDeleteWidgetAsync(widgetViewModel.Widget);
     }
 
-    private async Task TryDeleteWidgetAsync(ComSafeWidget widgetToDelete)
+    private static async Task TryDeleteWidgetAsync(ComSafeWidget widgetToDelete)
     {
         await TryDeleteWidgetAsync(widgetToDelete.GetUnsafeWidgetObject());
     }
@@ -707,55 +764,66 @@ public partial class MicrosoftWidgetModel : IDisposable
         await Task.Run(
             async () =>
             {
-                var widgetDefinitionId = widget.DefinitionId;
-                var widgetId = widget.Id;
-                _log.Information($"Insert widget in pinned widgets, id = {widgetId}");
-
-                var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
-                if (unsafeWidgetDefinition != null)
+                var wvm = await GetWidgetViewModel(widget, size, cancellationToken);
+                if (wvm == null)
                 {
-                    var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
-                    if (!await comSafeWidgetDefinition.PopulateAsync())
+                    return;
+                }
+
+                _log.Information($"Insert widget in pinned widgets, id = {widget.Id}");
+                _dispatcherQueue.TryEnqueue(async () =>
+                {
+                    try
                     {
-                        _log.Error($"Error inserting widget in pinned widgets, id = {widgetId}");
-                        await widget.DeleteAsync();
-                        return;
+                        await insertWidgetAsync(wvm);
                     }
-
-                    /*// The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
-                    // able to send disposed events when Dev Home closes. Ensure the provider is started here so we can
-                    // tell the extension to dispose later.
-                    if (_widgetExtensionService.IsCoreWidgetProvider(comSafeWidgetDefinition.ProviderDefinitionId))
+                    catch (Exception ex)
                     {
-                        await _widgetExtensionService.EnsureCoreWidgetExtensionStarted(comSafeWidgetDefinition.ProviderDefinitionId);
-                    }*/
-
-                    var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    _dispatcherQueue.TryEnqueue(async () =>
-                    {
-                        try
-                        {
-                            await insertWidgetAsync(wvm);
-                        }
-                        catch (Exception ex)
-                        {
-                            // DevHomeTODO: Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
-                            // https://github.com/microsoft/devhome/issues/1215
-                            _log.Warning(ex, $"Couldn't insert pinned widget");
-                        }
-                    });
-                }
-                else
-                {
-                    await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
-                }
+                        // DevHomeTODO: Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
+                        // https://github.com/microsoft/devhome/issues/1215
+                        _log.Warning(ex, $"Couldn't insert pinned widget");
+                    }
+                });
             },
             cancellationToken);
     }
 
-    private async Task DeleteWidgetWithNoDefinition(ComSafeWidget widget, string widgetDefinitionId)
+    private async Task<WidgetViewModel?> GetWidgetViewModel(ComSafeWidget widget, WidgetSize size, CancellationToken cancellationToken)
+    {
+        var widgetDefinitionId = widget.DefinitionId;
+        var widgetId = widget.Id;
+
+        var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+        if (unsafeWidgetDefinition != null)
+        {
+            var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+            if (!await comSafeWidgetDefinition.PopulateAsync())
+            {
+                _log.Error($"Error getting widget in pinned widgets, id = {widgetId}");
+                await widget.DeleteAsync();
+                return null;
+            }
+
+            /*// The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
+            // able to send disposed events when Dev Home closes. Ensure the provider is started here so we can
+            // tell the extension to dispose later.
+            if (_widgetExtensionService.IsCoreWidgetProvider(comSafeWidgetDefinition.ProviderDefinitionId))
+            {
+                await _widgetExtensionService.EnsureCoreWidgetExtensionStarted(comSafeWidgetDefinition.ProviderDefinitionId);
+            }*/
+
+            var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
+            cancellationToken.ThrowIfCancellationRequested();
+            return wvm;
+        }
+        else
+        {
+            await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
+            return null;
+        }
+    }
+
+    private static async Task DeleteWidgetWithNoDefinition(ComSafeWidget widget, string widgetDefinitionId)
     {
         // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
         _log.Information($"No widget definition '{widgetDefinitionId}', delete widget with that definition");

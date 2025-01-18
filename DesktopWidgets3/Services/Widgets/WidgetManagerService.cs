@@ -42,14 +42,14 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
         if (initialized)
         {
-        // initialize microsoft widgets
+            // initialize microsoft widgets
             await _microsoftWidgetModel.InitializePinnedWidgetsAsync(async (widget, index) =>
             {
                 await CreateWidgetWindowAsync(microsoftWidgetList, index, widget);
             });
-        // We don't delete microsoft widget json items that aren't in the system widget storage.
-        // Because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
-    }
+            // We don't delete microsoft widget json items that aren't in the system widget storage.
+            // Because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
+        }
         else
         {
             // TODO(Future): Add support for restarting widgets.
@@ -71,10 +71,6 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             {
                 // create widget window
                 CreateWidgetWindow(item, widgetViewModel);
-            }
-            else
-            {
-                // If microsoft widget is not pinned, we don't create the widget window.
             }
         }
         else
@@ -473,20 +469,31 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async Task PinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
-        // TODO: Add support for micrsoft widgets pin.
-        if (providerType == WidgetProviderType.Microsoft)
-        {
-            return;
-        }
-
         // get widget
         var widget = _appSettingsService.GetWidget(providerType, widgetId, widgetType, widgetIndex);
 
         // pin widget
         if (widget != null)
         {
-            // create widget window
-            CreateWidgetWindow(widget);
+            if (widget.ProviderType == WidgetProviderType.DesktopWidgets3)
+            {
+                // create widget window
+                CreateWidgetWindow(widget);
+            }
+            else
+            {
+                // create widget window
+                var widgetViewModel = await _microsoftWidgetModel.GetWidgetViewModel(widgetId, widgetType, widgetIndex);
+                if (widgetViewModel != null)
+                {
+                    CreateWidgetWindow(widget, widgetViewModel);
+                }
+                else
+                {
+                    // If we cannot find the widget view model, we need to check if the installed providers has this widget
+                    // TODO(Future): Add support for creating unpinned widgets from installed providers.
+                }
+            }
 
             // update widget list
             await _appSettingsService.PinWidgetAsync(providerType, widgetId, widgetType, widgetIndex);
@@ -513,12 +520,6 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async Task UnpinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
-        // TODO: Add support for micrsoft widgets unpin.
-        if (providerType == WidgetProviderType.Microsoft)
-        {
-            return;
-        }
-
         // get widget runtime id
         var widgetRuntimeId = GetWidgetRuntimeId(providerType, widgetId, widgetType, widgetIndex);
 
@@ -550,11 +551,6 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         {
             // Remove any custom state from the widget. In case the deletion fails, we won't show the widget anymore.
             await widgetViewModel.Widget.SetCustomStateAsync(string.Empty);
-
-            // Remove the widget from the list before deleting, otherwise the widget will
-            // have changed and the collection won't be able to find it to remove it.
-            widgetViewModel.Dispose();
-            _microsoftWidgetModel.ExistedWidgets.Remove(widgetViewModel);
 
             // Try delete widget
             await _microsoftWidgetModel.TryDeleteWidgetAsync(widgetViewModel);
@@ -601,7 +597,20 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             var widget = widgetList.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
             if (widget != null)
             {
-                CreateWidgetWindow(widget);
+                if (widget.ProviderType == WidgetProviderType.DesktopWidgets3)
+                {
+                    // create widget window
+                    CreateWidgetWindow(widget);
+                }
+                else if (widget.ProviderType == WidgetProviderType.Microsoft)
+                {
+                    // create widget window
+                    var widgetViewModel = await _microsoftWidgetModel.GetWidgetViewModel(widgetId, widgetType, widgetIndex);
+                    if (widgetViewModel != null)
+                    {
+                        CreateWidgetWindow(widget, widgetViewModel);
+                    }
+                }
             }
         }
     }
@@ -907,6 +916,15 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             else if (closeEvent == CloseEvent.Delete)
             {
                 widgetWindow.Closed += (s, e) => _widgetResourceService.DeleteWidget(widgetId, widgetRuntimeId, GetWidgetSettings(widgetId, widgetType, widgetIndex)!);
+            }
+
+            if (providerType == WidgetProviderType.Microsoft)
+            {
+                // Remove the widget from the list before deleting, otherwise the widget will
+                // have changed and the collection won't be able to find it to remove it.
+                var widgetViewModel = widgetWindow.ViewModel.WidgetViewModel!;
+                widgetViewModel.Dispose();
+                _microsoftWidgetModel.ExistedWidgets.Remove(widgetViewModel);
             }
 
             // close window
