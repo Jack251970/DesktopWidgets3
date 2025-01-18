@@ -359,7 +359,7 @@ public partial class App : Application
             await GetService<IAppSettingsService>().InitializeWidgetListAsync();
 
             // Initialize pinned widgets
-            GetService<IWidgetManagerService>().InitializePinnedWidgets();
+            GetService<IWidgetManagerService>().InitializePinnedWidgets(true);
 
             // Activate the main window
             await GetService<IActivationService>().ActivateMainWindowAsync(args);
