@@ -39,8 +39,6 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
 
-    public bool IsLoaded { get; private set; }
-
     public RoutedEventHandler? Loaded { get; set; }
 
     private readonly DispatcherQueue _dispatcherQueue;
@@ -72,6 +70,12 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement = null!;
 
+    [ObservableProperty]
+    private bool _isLoaded = false;
+
+    [ObservableProperty]
+    private bool _isEnabled = true;
+
     partial void OnWidgetChanging(ComSafeWidget value)
     {
         if (Widget != null)
@@ -97,6 +101,30 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
             WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinitionDisplayName;
             IsCustomizable = WidgetDefinition.IsCustomizable;
+        }
+    }
+
+    partial void OnIsLoadedChanged(bool value)
+    {
+        _log.Debug(IsLoaded ? "Load" : "Unload" + $" widget {Widget.Id}");
+        if (IsLoaded)
+        {
+            Loaded?.Invoke(this, new RoutedEventArgs());
+        }
+    }
+
+    partial void OnIsEnabledChanged(bool value)
+    {
+        _log.Debug(IsEnabled ? "Enable" : "Disable" + $" widget {Widget.Id}");
+        if (IsEnabled)
+        {
+            Widget.WidgetUpdated += HandleWidgetUpdated;
+            ShowWidgetContentIfAvailable();
+        }
+        else
+        {
+            Widget.WidgetUpdated -= HandleWidgetUpdated;
+            WidgetFrameworkElement = null!;
         }
     }
 
@@ -127,6 +155,12 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
 
     private async Task RenderWidgetFrameworkElementAsync()
     {
+        if (!IsEnabled)
+        {
+            // Don't render the widget if it's disabled.
+            return;
+        }
+
         await Task.Run(async () =>
         {
             var cardTemplate = await Widget.GetCardTemplateAsync();
@@ -199,6 +233,9 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
                         _log.Error("Error in RenderedAdaptiveCard");
                         WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
                     }
+
+                    // Set IsLoaded to true after the card is rendered.
+                    IsLoaded = true;
                 }
                 catch (Exception ex)
                 {
@@ -234,9 +271,6 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
         if (await IsWidgetContentAvailable())
         {
             await RenderWidgetFrameworkElementAsync();
-            IsLoaded = true;
-            // TODO: Fix COM issue here.
-            Loaded?.Invoke(this, new RoutedEventArgs());
         }
         else
         {

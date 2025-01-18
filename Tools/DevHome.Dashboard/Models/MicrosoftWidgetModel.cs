@@ -34,7 +34,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     public ObservableCollection<WidgetProviderDefinition> WidgetProviderDefinitions { get; private set; } = [];
     public ObservableCollection<ComSafeWidgetDefinition> WidgetDefinitions { get; private set; } = [];
 
-    public ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; } = [];
+    public ObservableCollection<WidgetViewModel> ExistedWidgets { get; set; } = [];
 
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
@@ -109,7 +109,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     private async void HandleRendererUpdated(object? sender, object args)
     {
         // Re-render the widgets with the new theme and renderer.
-        foreach (var widget in PinnedWidgets)
+        foreach (var widget in ExistedWidgets)
         {
             await widget.RenderAsync();
         }
@@ -381,7 +381,11 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
         finally
         {
-            PinnedWidgets.Clear();
+            foreach (var widget in ExistedWidgets)
+            {
+                widget.Dispose();
+            }
+            ExistedWidgets.Clear();
             _pinnedWidgetsLock.Release();
         }
 
@@ -392,7 +396,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     {
         try
         {
-            foreach (var widget in PinnedWidgets)
+            foreach (var widget in ExistedWidgets)
             {
                 widget.UnsubscribeFromWidgetUpdates();
             }
@@ -452,14 +456,16 @@ public partial class MicrosoftWidgetModel : IDisposable
     {
         WidgetDefinitionDeleted?.Invoke(sender, args);
 
-        var definitionId = args.DefinitionId;
+        // TODO(Future): Add support for widget deletion.
+        /*var definitionId = args.DefinitionId;
         _dispatcherQueue.TryEnqueue(async () =>
         {
             _log.Information($"WidgetDefinitionDeleted {definitionId}");
-            foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
+            foreach (var widgetToRemove in ExistedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
             {
                 _log.Information($"Remove widget {widgetToRemove.Widget.Id}");
-                PinnedWidgets.Remove(widgetToRemove);
+                widgetToRemove.Dispose();
+                ExistedWidgets.Remove(widgetToRemove);
 
                 // The widget definition is gone, so delete widgets with that definition.
                 await widgetToRemove.Widget.DeleteAsync();
@@ -467,14 +473,15 @@ public partial class MicrosoftWidgetModel : IDisposable
         });
 
         ViewModel.WidgetIconService.RemoveIconsFromMicrosoftIconCache(definitionId);
-        ViewModel.WidgetScreenshotService.RemoveScreenshotsFromMicrosoftIconCache(definitionId);
+        ViewModel.WidgetScreenshotService.RemoveScreenshotsFromMicrosoftIconCache(definitionId);*/
     }
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
     {
         WidgetDefinitionUpdated?.Invoke(sender, args);
 
-        WidgetDefinition unsafeWidgetDefinition;
+        // TODO(Future): Add support for widget update.
+        /*WidgetDefinition unsafeWidgetDefinition;
         try
         {
             unsafeWidgetDefinition = await Task.Run(() => args.Definition);
@@ -504,7 +511,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
         var matchingWidgetsFound = 0;
 
-        foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
+        foreach (var widgetToUpdate in ExistedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
         {
             // Things in the definition that we need to update to if they have changed:
             // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
@@ -517,7 +524,8 @@ public partial class MicrosoftWidgetModel : IDisposable
                 {
                     _log.Information($"No longer allowed to have multiple of widget {updatedDefinitionId}");
                     _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
-                    PinnedWidgets.Remove(widgetToUpdate);
+                    widgetToUpdate.Dispose();
+                    ExistedWidgets.Remove(widgetToUpdate);
                     await widgetToUpdate.Widget.DeleteAsync();
                     _log.Information($"Deleted Widget {widgetToUpdate.Widget.Id}");
                 });
@@ -546,7 +554,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
             // DevHomeTODO: ThemeResource (icons) changed.
             // https://github.com/microsoft/devhome/issues/641
-        }
+        }*/
     }
 
     private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args)
@@ -779,7 +787,7 @@ public partial class MicrosoftWidgetModel : IDisposable
             {
                 _pinnedWidgetsLock.Dispose();
 
-                foreach (var widget in PinnedWidgets)
+                foreach (var widget in ExistedWidgets)
                 {
                     widget.Dispose();
                 }
@@ -788,7 +796,7 @@ public partial class MicrosoftWidgetModel : IDisposable
                     widget.Dispose();
                 }
 
-                PinnedWidgets.Clear();
+                ExistedWidgets.Clear();
                 WidgetProviderDefinitions.Clear();
                 WidgetDefinitions.Clear();
             }

@@ -42,8 +42,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
         // initialize microsoft widgets
         await _microsoftWidgetModel.InitializePinnedWidgetsAsync((widget, index) => CreateWidgetWindowAsync(microsoftWidgetList, index, widget));
-        // We don't delete microsoft widget json items that aren't in the system widget storage,
-        // because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
+        // We don't delete microsoft widget json items that aren't in the system widget storage.
+        // Because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
     }
 
     private async Task CreateWidgetWindowAsync(List<JsonWidgetItem> itemList, int index, WidgetViewModel widgetViewModel)
@@ -64,7 +64,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             }
             else
             {
-                // TODO: Add support for microsoft widgets unpinned.
+                // If microsoft widget is not pinned, we don't create the widget window.
             }
         }
         else
@@ -300,7 +300,10 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         PinnedWidgetWindowPairs.Clear();
         WidgetSettingPairs.Clear();
         _originalWidgetList.Clear();
-        
+
+        // unload microsoft widget model
+        await _microsoftWidgetModel.OnUnloadedAsync();
+
         // dispose microsoft widget model
         _microsoftWidgetModel.Dispose();
     }
@@ -310,12 +313,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         // close all windows
         await GetPinnedWidgetWindows().EnqueueOrInvokeAsync(async (window) =>
         {
-            // TODO: Check if will this set open widgets to unpin?
             await CloseWidgetWindowAsync(window.RuntimeId, CloseEvent.Unpin);
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
-
-        // unload microsoft widget model
-        await _microsoftWidgetModel.OnUnloadedAsync();
     }
 
     private List<WidgetWindow> GetPinnedWidgetWindows()
@@ -545,7 +544,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             // Remove the widget from the list before deleting, otherwise the widget will
             // have changed and the collection won't be able to find it to remove it.
             widgetViewModel.Dispose();
-            _microsoftWidgetModel.PinnedWidgets.Remove(widgetViewModel);
+            _microsoftWidgetModel.ExistedWidgets.Remove(widgetViewModel);
 
             // Try delete widget
             await _microsoftWidgetModel.TryDeleteWidgetAsync(widgetViewModel);
@@ -817,7 +816,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             }
 
             // add to microsoft widget model
-            _microsoftWidgetModel.PinnedWidgets.Add(widgetViewModel);
+            _microsoftWidgetModel.ExistedWidgets.Add(widgetViewModel);
         }
     }
 
