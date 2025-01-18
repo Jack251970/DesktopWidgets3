@@ -73,9 +73,6 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _isLoaded = false;
 
-    [ObservableProperty]
-    private bool _isEnabled = true;
-
     partial void OnWidgetChanging(ComSafeWidget value)
     {
         if (Widget != null)
@@ -114,19 +111,6 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
         }
     }
 
-    partial void OnIsEnabledChanged(bool value)
-    {
-        _log.Debug(IsEnabled ? "Enable" : "Disable" + $" widget {Widget.Id}");
-        if (IsEnabled)
-        {
-            OnWidgetChanged(Widget);
-        }
-        else
-        {
-            OnWidgetChanging(Widget);
-        }
-    }
-
     public WidgetViewModel(
         ComSafeWidget widget,
         WidgetSize widgetSize,
@@ -154,12 +138,6 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
 
     private async Task RenderWidgetFrameworkElementAsync()
     {
-        if (!IsEnabled)
-        {
-            // Don't render the widget if it's disabled.
-            return;
-        }
-
         await Task.Run(async () =>
         {
             var cardTemplate = await Widget.GetCardTemplateAsync();

@@ -41,7 +41,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     private Func<WidgetViewModel, int, Task>? CreateWidgetWindow;
 
-    private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
+    private readonly SemaphoreSlim _existedWidgetsLock = new(1, 1);
 
     private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
 
@@ -78,7 +78,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #region Loaded & UnLoaded
 
-    public async Task OnLoadedAsync()
+    private async Task OnLoadedAsync()
     {
         ViewModel.IsLoading = true;
         ViewModel.HasWidgetServiceInitialized = false;
@@ -121,7 +121,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     private async Task InitializePinnedWidgetListAsync(CancellationToken cancellationToken)
     {
         var hostWidgets = await GetPreviouslyPinnedWidgets();
-        await _pinnedWidgetsLock.WaitAsync(CancellationToken.None);
+        await _existedWidgetsLock.WaitAsync(CancellationToken.None);
         try
         {
             await RestorePinnedWidgetsAsync(hostWidgets, cancellationToken);
@@ -129,7 +129,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         finally
         {
             // No cleanup to do if the operation is cancelled.
-            _pinnedWidgetsLock.Release();
+            _existedWidgetsLock.Release();
         }
     }
 
@@ -377,7 +377,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
 
-        await _pinnedWidgetsLock.WaitAsync();
+        await _existedWidgetsLock.WaitAsync();
         try
         {
             await Task.Run(UnsubscribeFromWidgets);
@@ -389,7 +389,7 @@ public partial class MicrosoftWidgetModel : IDisposable
                 widget.Dispose();
             }
             ExistedWidgets.Clear();
-            _pinnedWidgetsLock.Release();
+            _existedWidgetsLock.Release();
         }
 
         await UnsubscribeFromWidgetCatalogEventsAsync();
@@ -788,7 +788,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         {
             if (disposing)
             {
-                _pinnedWidgetsLock.Dispose();
+                _existedWidgetsLock.Dispose();
 
                 foreach (var widget in ExistedWidgets)
                 {
