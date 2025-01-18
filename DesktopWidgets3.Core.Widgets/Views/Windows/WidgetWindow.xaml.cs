@@ -240,8 +240,8 @@ public sealed partial class WidgetWindow : WindowEx
         WidgetScrollViewer.Padding = DesktopWidgets3WidgetScrollViewerPadding;
         var textScale = _uiSettings.TextScaleFactor;
         ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
-        ContentArea.Height = widgetSizeHeight * textScale;
-        ContentArea.Width = widgetSizeWidth * textScale;
+        ContentArea.Height = double.NaN;  // Use auto height
+        ContentArea.Width = double.NaN;  // Use auto width
 
         // Initialize manager & title for window
         _manager = WindowManager.Get(this);
