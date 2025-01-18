@@ -111,7 +111,10 @@ public partial class MicrosoftWidgetModel : IDisposable
         // Re-render the widgets with the new theme and renderer.
         foreach (var widget in ExistedWidgets)
         {
-            await widget.RenderAsync();
+            if (widget.IsEnabled)
+            {
+                await widget.RenderAsync();
+            }
         }
     }
 

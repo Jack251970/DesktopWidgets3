@@ -81,8 +81,9 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
         if (Widget != null)
         {
             Widget.WidgetUpdated -= HandleWidgetUpdated;
-            IsLoaded = false;
         }
+        WidgetFrameworkElement = null!;
+        IsLoaded = false;
     }
 
     partial void OnWidgetChanged(ComSafeWidget value)
@@ -118,13 +119,11 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
         _log.Debug(IsEnabled ? "Enable" : "Disable" + $" widget {Widget.Id}");
         if (IsEnabled)
         {
-            Widget.WidgetUpdated += HandleWidgetUpdated;
-            ShowWidgetContentIfAvailable();
+            OnWidgetChanged(Widget);
         }
         else
         {
-            Widget.WidgetUpdated -= HandleWidgetUpdated;
-            WidgetFrameworkElement = null!;
+            OnWidgetChanging(Widget);
         }
     }
 
