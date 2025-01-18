@@ -309,17 +309,6 @@ public sealed partial class WidgetWindow : WindowEx
         SizeChanged += WidgetWindow_SizeChanged;
     }
 
-    private static double GetPixelHeightFromWidgetSize(WidgetSize size)
-    {
-        return size switch
-        {
-            WidgetSize.Small => WidgetHelpers.WidgetPxHeightSmall,
-            WidgetSize.Medium => WidgetHelpers.WidgetPxHeightMedium,
-            WidgetSize.Large => WidgetHelpers.WidgetPxHeightLarge,
-            _ => 0,
-        };
-    }
-
     #endregion
 
     #region Initialization
@@ -336,6 +325,52 @@ public sealed partial class WidgetWindow : WindowEx
         // set widget menu flyout
         WidgetMenuFlyout = menuFlyout;
         ViewModel.WidgetMenuFlyout = menuFlyout;
+    }
+
+    #endregion
+
+    #region Size
+
+    public void SetScaledWindowSizeAndContentSize(double textScale)
+    {
+        if (ProviderType == WidgetProviderType.DesktopWidgets3)
+        {
+            ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
+            ContentArea.Height = double.NaN;  // Use auto height
+            ContentArea.Width = double.NaN;  // Use auto width
+        }
+        else
+        {
+            var widgetSizeHeight = GetPixelHeightFromWidgetSize(WidgetViewModel!.WidgetSize);
+            var widgetSizeWidth = WidgetHelpers.WidgetPxWidth;
+            _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
+            ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
+            ContentArea.Height = widgetSizeHeight * textScale;
+            ContentArea.Width = widgetSizeWidth * textScale;
+        }
+
+        // initialize diviation size between window and its content
+        WindowContentDiviation.Height = Height - Bounds.Height;
+        WindowContentDiviation.Width = Width - Bounds.Width;
+
+        // set content size
+        ContentSize = _widgetSize;
+
+        // recalculate diviation size (the window pixel size is integer so our content size can be truncated, so
+        // we need to fill the gap here so that content size will not changed when user saves the widget without resizing)
+        WindowContentDiviation.Height = Size.Height - _widgetSize.Height * textScale;
+        WindowContentDiviation.Width = Size.Width - _widgetSize.Width * textScale;
+    }
+
+    private static double GetPixelHeightFromWidgetSize(WidgetSize size)
+    {
+        return size switch
+        {
+            WidgetSize.Small => WidgetHelpers.WidgetPxHeightSmall,
+            WidgetSize.Medium => WidgetHelpers.WidgetPxHeightMedium,
+            WidgetSize.Large => WidgetHelpers.WidgetPxHeightLarge,
+            _ => 0,
+        };
     }
 
     #endregion
@@ -433,37 +468,6 @@ public sealed partial class WidgetWindow : WindowEx
         {
             SetScaledWindowSizeAndContentSize(sender.TextScaleFactor);
         });
-    }
-
-    private void SetScaledWindowSizeAndContentSize(double textScale)
-    {
-        if (ProviderType == WidgetProviderType.DesktopWidgets3)
-        {
-            ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
-            ContentArea.Height = double.NaN;  // Use auto height
-            ContentArea.Width = double.NaN;  // Use auto width
-        }
-        else
-        {
-            var widgetSizeHeight = GetPixelHeightFromWidgetSize(WidgetViewModel!.WidgetSize);
-            var widgetSizeWidth = WidgetHelpers.WidgetPxWidth;
-            _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
-            ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
-            ContentArea.Height = widgetSizeHeight * textScale;
-            ContentArea.Width = widgetSizeWidth * textScale;
-        }
-
-        // initialize diviation size between window and its content
-        WindowContentDiviation.Height = Height - Bounds.Height;
-        WindowContentDiviation.Width = Width - Bounds.Width;
-
-        // set content size
-        ContentSize = _widgetSize;
-
-        // recalculate diviation size (the window pixel size is integer so our content size can be truncated, so
-        // we need to fill the gap here so that content size will not changed when user saves the widget without resizing)
-        WindowContentDiviation.Height = Size.Height - _widgetSize.Height * textScale;
-        WindowContentDiviation.Width = Size.Width - _widgetSize.Width * textScale;
     }
 
     private void ContentArea_ActualThemeChanged(FrameworkElement sender, object args)
