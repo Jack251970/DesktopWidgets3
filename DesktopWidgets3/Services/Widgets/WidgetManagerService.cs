@@ -1413,7 +1413,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
                 Index = widgetIndex,
                 Pinned = true,
                 Position = widgetWindow.Position,
-                Size = RoundContentSize(widgetWindow.ContentSize),
+                Size = widgetWindow.ContentSize,
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
             });
@@ -1484,7 +1484,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
                 Index = widgetIndex,
                 Pinned = true,
                 Position = widgetWindow.Position,
-                Size = RoundContentSize(widgetWindow.ContentSize),
+                Size = widgetWindow.ContentSize,
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
             });
@@ -1547,13 +1547,6 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
                 await SaveAndExitEditMode();
             }
         }
-    }
-
-    private static RectSize RoundContentSize(RectSize size)
-    {
-        var width = (float)decimal.Round(Convert.ToDecimal(size.Width), 3);
-        var height = (float)decimal.Round(Convert.ToDecimal(size.Height), 3);
-        return new(width, height);
     }
 
     #endregion

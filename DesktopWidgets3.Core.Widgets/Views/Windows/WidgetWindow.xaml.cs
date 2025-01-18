@@ -382,6 +382,11 @@ public sealed partial class WidgetWindow : WindowEx
         // set content size
         ContentSize = _widgetSize;
 
+        // recalculate diviation size (the window pixel size is integer so our content size can be truncated, so
+        // we need to fill the gap here so that content size will not changed when user saves the widget without resizing)
+        WindowContentDiviation.Height += (ContentSize.Height - _widgetSize.Height) * _uiSettings.TextScaleFactor;
+        WindowContentDiviation.Width += (ContentSize.Width - _widgetSize.Width) * _uiSettings.TextScaleFactor;
+
         // register events
         AppWindow.Changed += AppWindow_Changed;
 
