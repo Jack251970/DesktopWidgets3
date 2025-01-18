@@ -24,7 +24,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     #region Initialization
 
-    public async void InitializePinnedWidgets()
+    public async void InitializePinnedWidgets(bool initialized)
     {
         // get microsoft widgets 3 widget list & microsoft widget list
         var widgetList = _appSettingsService.GetWidgetsList();
@@ -40,10 +40,20 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             }
         }
 
+        if (initialized)
+        {
         // initialize microsoft widgets
-        await _microsoftWidgetModel.InitializePinnedWidgetsAsync((widget, index) => CreateWidgetWindowAsync(microsoftWidgetList, index, widget));
+            await _microsoftWidgetModel.InitializePinnedWidgetsAsync(async (widget, index) =>
+            {
+                await CreateWidgetWindowAsync(microsoftWidgetList, index, widget);
+            });
         // We don't delete microsoft widget json items that aren't in the system widget storage.
         // Because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
+    }
+        else
+        {
+            // TODO(Future): Add support for restarting widgets.
+        }
     }
 
     private async Task CreateWidgetWindowAsync(List<JsonWidgetItem> itemList, int index, WidgetViewModel widgetViewModel)
@@ -288,7 +298,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         await CloseAllWidgetWindowsAsync();
 
         // enable all enabled widgets
-        InitializePinnedWidgets();
+        InitializePinnedWidgets(false);
     }
 
     public async Task CloseAllWidgetsAsync()

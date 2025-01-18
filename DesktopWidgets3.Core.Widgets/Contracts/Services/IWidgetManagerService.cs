@@ -2,6 +2,8 @@
 
 public interface IWidgetManagerService
 {
+    void InitializePinnedWidgets(bool initialized);
+
     (WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId);
 
     (string widgetId, string widgetType, int widgetIndex) GetWidgetSettingInfo(string widgetSettingRuntimeId);
@@ -17,8 +19,6 @@ public interface IWidgetManagerService
     bool GetWidgetSettingIsNavigated(string widgetId, string widgetType);
 
     WidgetViewModel? GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex);
-
-    void InitializePinnedWidgets();
 
     Task RestartWidgetsAsync();
 
