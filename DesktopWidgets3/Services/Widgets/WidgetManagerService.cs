@@ -551,7 +551,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             await widgetViewModel.Widget.SetCustomStateAsync(string.Empty);
 
             // Try delete widget
-            await _microsoftWidgetModel.TryDeleteWidgetAsync(widgetViewModel);
+            await MicrosoftWidgetModel.TryDeleteWidgetAsync(widgetViewModel);
         }
 
         // get widget runtime id

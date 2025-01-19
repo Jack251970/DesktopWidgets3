@@ -706,7 +706,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #region Add Widget
 
-    public async Task TryDeleteWidgetAsync(WidgetViewModel widgetViewModel)
+    public static async Task TryDeleteWidgetAsync(WidgetViewModel widgetViewModel)
     {
         await TryDeleteWidgetAsync(widgetViewModel.Widget);
     }
