@@ -104,7 +104,7 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
 
     partial void OnIsLoadedChanged(bool value)
     {
-        _log.Debug(IsLoaded ? "Load" : "Unload" + $" widget {Widget.Id}");
+        _log.Debug((IsLoaded ? "Load" : "Unload") + $" widget {Widget.Id}");
         if (IsLoaded)
         {
             Loaded?.Invoke(this, new RoutedEventArgs());
