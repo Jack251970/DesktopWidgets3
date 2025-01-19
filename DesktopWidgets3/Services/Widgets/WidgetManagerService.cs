@@ -477,17 +477,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             }
             else
             {
-                // create widget window
-                var widgetViewModel = await _microsoftWidgetModel.GetWidgetViewModel(widgetId, widgetType, widgetIndex);
-                if (widgetViewModel != null)
-                {
-                    CreateWidgetWindow(widget, widgetViewModel);
-                }
-                else
-                {
-                    // If we cannot find the widget view model, we need to check if the installed providers has this widget
-                    // TODO(Future): Add support for creating unpinned widgets from installed providers.
-                }
+                // create widget view model and window
+                await CreateWidgetViewModelAndWindowAsync(widget);
             }
 
             // update widget list
@@ -599,12 +590,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
                 }
                 else if (widget.ProviderType == WidgetProviderType.Microsoft)
                 {
-                    // create widget window
-                    var widgetViewModel = await _microsoftWidgetModel.GetWidgetViewModel(widgetId, widgetType, widgetIndex);
-                    if (widgetViewModel != null)
-                    {
-                        CreateWidgetWindow(widget, widgetViewModel);
-                    }
+                    // create widget view model and window
+                    await CreateWidgetViewModelAndWindowAsync(widget);
                 }
             }
         }
@@ -887,6 +874,35 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
     }
 
     #endregion
+
+    private async Task CreateWidgetViewModelAndWindowAsync(JsonWidgetItem item)
+    {
+        // get widget info
+        var (widgetId, widgetType, widgetIndex) = (item.Id, item.Type, item.Index);
+
+        // create widget window
+        var widgetViewModel = await _microsoftWidgetModel.GetWidgetViewModel(widgetId, widgetType, widgetIndex);
+        if (widgetViewModel != null)
+        {
+            CreateWidgetWindow(item, widgetViewModel);
+        }
+        else
+        {
+            // If we cannot find the widget view model, we need to check if the installed providers has this widget
+            var newWidgetDefinition = _microsoftWidgetModel.GetWidgetDefinition(widgetId, widgetType);
+            if (newWidgetDefinition != null)
+            {
+                await _microsoftWidgetModel.AddWidgetsAsync(newWidgetDefinition, null, async (wvm) =>
+                {
+                    return await AddWidgetAsync(wvm, null, false);
+                });
+            }
+            else
+            {
+                // If we cannot find the widget definition, we can do nothing because the provider is not installed.
+            }
+        }
+    }
 
     private async Task CloseWidgetWindowAsync(string widgetRuntimeId, CloseEvent closeEvent)
     {

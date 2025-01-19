@@ -86,6 +86,38 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #endregion
 
+    #region Widget Definition
+
+    public WidgetProviderDefinition? GetWidgetProviderDefinition(string widgetId)
+    {
+        foreach (var providerDefinition in WidgetProviderDefinitions)
+        {
+            var (_, widgetId1) = providerDefinition.GetWidgetProviderInfo();
+            if (widgetId == widgetId1)
+            {
+                return providerDefinition;
+            }
+        }
+
+        return null;
+    }
+
+    public ComSafeWidgetDefinition? GetWidgetDefinition(string widgetId, string widgetType)
+    {
+        foreach (var widgetDefinition in WidgetDefinitions)
+        {
+            var (_, _, _, widgetId1, widgetType1) = widgetDefinition.GetWidgetProviderAndWidgetInfo();
+            if (widgetId == widgetId1 && widgetType == widgetType1)
+            {
+                return widgetDefinition;
+            }
+        }
+
+        return null;
+    }
+
+    #endregion
+
     #region Widget View Model
 
     public async Task<WidgetViewModel?> GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex, CancellationToken cancellationToken = default)
@@ -716,7 +748,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         await TryDeleteWidgetAsync(widgetToDelete.GetUnsafeWidgetObject());
     }
 
-    public async Task AddWidgetsAsync(ComSafeWidgetDefinition newWidgetDefinition, Func<Task> showCreateErrorMessageAsync, Func<WidgetViewModel, Task<int>> insertWidgetAsync)
+    public async Task AddWidgetsAsync(ComSafeWidgetDefinition newWidgetDefinition, Func<Task>? showCreateErrorMessageAsync, Func<WidgetViewModel, Task<int>> insertWidgetAsync)
     {
         try
         {
@@ -726,7 +758,10 @@ public partial class MicrosoftWidgetModel : IDisposable
             {
                 // Couldn't create the widget, show an error message.
                 _log.Error($"Failure in CreateWidgetAsync, can't create the widget");
-                await showCreateErrorMessageAsync();
+                if (showCreateErrorMessageAsync != null)
+                {
+                    await showCreateErrorMessageAsync();
+                }
                 return;
             }
 
@@ -734,7 +769,10 @@ public partial class MicrosoftWidgetModel : IDisposable
             if (unsafeWidgetId == string.Empty)
             {
                 _log.Error($"Couldn't get Widget.Id, can't create the widget");
-                await showCreateErrorMessageAsync();
+                if (showCreateErrorMessageAsync != null)
+                {
+                    await showCreateErrorMessageAsync();
+                }
 
                 // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
                 // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
@@ -746,7 +784,10 @@ public partial class MicrosoftWidgetModel : IDisposable
             if (!await comSafeWidget.PopulateAsync())
             {
                 _log.Error($"Couldn't populate the ComSafeWidget, can't create the widget");
-                await showCreateErrorMessageAsync();
+                if (showCreateErrorMessageAsync != null)
+                {
+                    await showCreateErrorMessageAsync();
+                }
 
                 // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
                 // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
@@ -768,7 +809,10 @@ public partial class MicrosoftWidgetModel : IDisposable
         catch (Exception ex)
         {
             _log.Warning(ex, $"Creating widget failed: ");
-            await showCreateErrorMessageAsync();
+            if (showCreateErrorMessageAsync != null)
+            {
+                await showCreateErrorMessageAsync();
+            }
         }
     }
 
