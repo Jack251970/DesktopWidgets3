@@ -651,6 +651,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
     private void CreateWidgetWindow(JsonWidgetItem item)
     {
         // get widget info
+        var providerType = item.ProviderType;
         var (widgetId, widgetType, widgetIndex) = (item.Id, item.Type, item.Index);
 
         _log.Debug("Creating Desktop Widgets 3 widget window (WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", widgetId, widgetType, widgetIndex);
@@ -659,7 +660,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         var widgetRuntimeId = StringUtils.GetRandomWidgetRuntimeId();
         var widgetContext = new WidgetContext(this)
         {
-            ProviderType = WidgetProviderType.DesktopWidgets3,
+            ProviderType = providerType,
             Id = widgetRuntimeId,
             Type = widgetType,
         };
@@ -671,7 +672,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         // add to widget window list
         PinnedWidgetWindowPairs.TryAdd(widgetRuntimeId, new WidgetWindowPair()
         {
-            ProviderType = WidgetProviderType.DesktopWidgets3,
+            ProviderType = providerType,
             RuntimeId = widgetRuntimeId,
             WidgetId = widgetId,
             WidgetType = widgetType,
@@ -690,12 +691,20 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         };
 
         // create widget window
-        WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), _appSettingsService.MultiThread, lifecycleActions);
+        var window = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), _appSettingsService.MultiThread, lifecycleActions);
+
+        // add to widget window pair list
+        var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
+        if (widgetWindowPair != null)
+        {
+            widgetWindowPair.Window = window;
+        }
     }
 
     private void CreateWidgetWindow(JsonWidgetItem item, WidgetViewModel widgetViewModel)
     {
         // get widget info
+        var providerType = item.ProviderType;
         var (widgetId, widgetType, widgetIndex) = (item.Id, item.Type, item.Index);
 
         _log.Debug("Creating Microsoft widget window (WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", widgetId, widgetType, widgetIndex);
@@ -704,7 +713,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         var widgetRuntimeId = widgetViewModel.Widget.Id;
         var widgetContext = new WidgetContext(this)
         {
-            ProviderType = WidgetProviderType.Microsoft,
+            ProviderType = providerType,
             Id = widgetRuntimeId,
             Type = widgetType
         };
@@ -716,7 +725,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         // add to widget window list
         PinnedWidgetWindowPairs.TryAdd(widgetRuntimeId, new WidgetWindowPair()
         {
-            ProviderType = WidgetProviderType.Microsoft,
+            ProviderType = providerType,
             RuntimeId = widgetRuntimeId,
             WidgetId = widgetId,
             WidgetType = widgetType,
@@ -735,7 +744,14 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         };
 
         // create widget window
-        WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item, widgetViewModel), _appSettingsService.MultiThread, lifecycleActions);
+        var window = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item, widgetViewModel), _appSettingsService.MultiThread, lifecycleActions);
+
+        // add to widget window pair list
+        var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
+        if (widgetWindowPair != null)
+        {
+            widgetWindowPair.Window = window;
+        }
     }
 
     #region Widget Window Lifecycle
@@ -768,13 +784,6 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
             // activate window
             widgetWindow.Activate();
-
-            // add to widget window pair list
-            var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
-            if (widgetWindowPair != null)
-            {
-                widgetWindowPair.Window = widgetWindow;
-            }
         }
     }
 
@@ -845,13 +854,6 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
             // activate window
             widgetWindow.Activate();
-
-            // add to widget window pair list
-            var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
-            if (widgetWindowPair != null)
-            {
-                widgetWindowPair.Window = widgetWindow;
-            }
         }
     }
 
