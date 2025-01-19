@@ -13,30 +13,30 @@
   xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4"
   xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
   IgnorableNamespaces="mp rescap desktop desktop4 desktop6 uap uap5 genTemplate">
-
+  
   <Identity
     Name="Jack251970.DesktopWidgets3"
     Publisher="CN=11602"
     Version="3.0.0.0" />
-    
+  
   <mp:PhoneIdentity PhoneProductId="8f256a41-5ee3-4218-97c6-12e1f8d5c234" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
-    
+  
   <Properties>
     <DisplayName>Desktop Widgets 3 (Debug)</DisplayName>
     <PublisherDisplayName>Jack251970</PublisherDisplayName>
     <Logo>Assets\Logos\StoreLogo.png</Logo>
     <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
   </Properties>
-
+  
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22621.0" />
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22621.0" />
   </Dependencies>
-
+  
   <Resources>
     <Resource Language="x-generate"/>
   </Resources>
-
+  
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
@@ -72,7 +72,7 @@
       </Extensions>
     </Application>
   </Applications>
-
+  
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
     <rescap:Capability Name="broadFileSystemAccess" />
@@ -84,7 +84,7 @@
     <rescap:Capability Name="packageManagement" />
     <rescap:Capability Name="packageQuery" />
   </Capabilities>
-
+  
   <genTemplate:Metadata>
     <genTemplate:Item Name="generator" Value="Template Studio"/>
     <genTemplate:Item Name="wizardVersion" Version="v5.5" />
@@ -93,4 +93,5 @@
     <genTemplate:Item Name="platform" Value="WinUI" />
     <genTemplate:Item Name="appmodel" Value="Desktop" />
   </genTemplate:Metadata>
+  
 </Package>
