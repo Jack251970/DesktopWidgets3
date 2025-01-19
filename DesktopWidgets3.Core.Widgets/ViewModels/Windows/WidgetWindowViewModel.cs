@@ -28,13 +28,13 @@ public partial class WidgetWindowViewModel : ObservableRecipient
 
     }
 
-    public void InitializeWidgetViewmodel(WidgetViewModel? widgetViewModel)
+    public async void InitializeWidgetViewmodel(WidgetViewModel? widgetViewModel)
     {
         if (WidgetViewModel == null && widgetViewModel != null)
         {
             widgetViewModel.PropertyChanged += WidgetViewModel_PropertyChanged;
-
             WidgetViewModel = widgetViewModel;
+            await widgetViewModel.RenderAsync();
         }
     }
 
@@ -42,9 +42,8 @@ public partial class WidgetWindowViewModel : ObservableRecipient
     {
         switch (e.PropertyName)
         {
-            case nameof(WidgetViewModel.WidgetFrameworkElement)
-                when WidgetViewModel != null:
-                WidgetFrameworkElement = WidgetViewModel.WidgetFrameworkElement;
+            case nameof(WidgetViewModel.WidgetFrameworkElement):
+                WidgetFrameworkElement = WidgetViewModel!.WidgetFrameworkElement;
                 break;
         }
     }
