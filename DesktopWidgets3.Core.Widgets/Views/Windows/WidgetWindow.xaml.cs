@@ -434,7 +434,7 @@ public sealed partial class WidgetWindow : WindowEx
         {
             if (ProviderType == WidgetProviderType.DesktopWidgets3)
             {
-                // TODO: Add support for desktop widgets customization and combine this codes in one function.
+                // TODO(Future): Add support for desktop widgets customization and combine this codes in one function.
             }
             else
             {

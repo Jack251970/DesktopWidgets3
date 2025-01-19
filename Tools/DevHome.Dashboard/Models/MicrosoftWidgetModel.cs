@@ -30,18 +30,18 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public DashboardViewModel ViewModel { get; }
 
-    // TODO(Future): Move this to concurrent collections and add multi-threading support.
+    // TODO(Future): Use lock like _existedWidgetsLock to add multi-threading support.
     public ObservableCollection<WidgetProviderDefinition> WidgetProviderDefinitions { get; private set; } = [];
     public ObservableCollection<ComSafeWidgetDefinition> WidgetDefinitions { get; private set; } = [];
 
-    public ObservableCollection<WidgetViewModel> ExistedWidgets { get; set; } = [];
+    public List<WidgetViewModel> ExistedWidgets { get; set; } = [];
 
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
 
     private Func<WidgetViewModel, int, Task>? CreateWidgetWindow;
 
-    private readonly SemaphoreSlim _existedWidgetsLock = new(1, 1);
+    public readonly SemaphoreSlim _existedWidgetsLock = new(1, 1);
 
     private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
 
@@ -71,7 +71,17 @@ public partial class MicrosoftWidgetModel : IDisposable
     public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task> createWidgetWindow)
     {
         CreateWidgetWindow = createWidgetWindow;
-        await OnLoadedAsync();
+        await OnLoadedAsync(true);
+    }
+
+    public async Task ReinitializePinnedWidgetsAsync()
+    {
+        await OnLoadedAsync(false);
+    }
+
+    public async Task ClosePinnedWidgetsAsync()
+    {
+        await OnUnloadedAsync();
     }
 
     #endregion
@@ -102,7 +112,12 @@ public partial class MicrosoftWidgetModel : IDisposable
                     if (widgetId1 == widgetId && widgetType1 == widgetType && widgetIndex1 == widgetIndex)
                     {
                         var size = await widget.GetSizeAsync();
-                        return await GetWidgetViewModel(widget, size, cancellationToken);
+                        var widgetViewModel = await GetWidgetViewModel(widget, size, cancellationToken);
+                        if (widgetViewModel != null)
+                        {
+                            ExistedWidgets.Add(widgetViewModel);
+                            return widgetViewModel;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -124,12 +139,26 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #region Loaded & UnLoaded
 
-    private async Task OnLoadedAsync()
+    private async Task OnLoadedAsync(bool validate)
     {
         ViewModel.IsLoading = true;
-        ViewModel.HasWidgetServiceInitialized = false;
 
-        if (await ValidateDashboardState())
+        if (validate)
+        {
+            ViewModel.HasWidgetServiceInitialized = false;
+
+            if (await ValidateDashboardState())
+            {
+                ViewModel.HasWidgetServiceInitialized = true;
+                DependencyExtensions.GetRequiredService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
+                await InitializeDashboard();
+            }
+        }
+        else if (ViewModel.HasWidgetServiceInitialized)
+        {
+            await InitializeDashboard();
+        }
+        else if (await ValidateDashboardState())
         {
             ViewModel.HasWidgetServiceInitialized = true;
             await InitializeDashboard();
@@ -143,7 +172,6 @@ public partial class MicrosoftWidgetModel : IDisposable
         try
         {
             await InitializePinnedWidgetListAsync(_initWidgetsCancellationTokenSource.Token);
-            DependencyExtensions.GetRequiredService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         }
         catch (OperationCanceledException ex)
         {
@@ -244,6 +272,7 @@ public partial class MicrosoftWidgetModel : IDisposable
                 if (CreateWidgetWindow != null)
                 {
                     await CreateWidgetWindow.Invoke(wvm, index);
+                    ExistedWidgets.Add(wvm);
                 }
             }, cancellationToken);
         }
@@ -425,7 +454,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         return true;
     }
 
-    public async Task OnUnloadedAsync()
+    private async Task OnUnloadedAsync()
     {
         _log.Debug($"Unloading Dashboard, cancel any loading.");
         _initWidgetsCancellationTokenSource?.Cancel();

@@ -52,7 +52,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         }
         else
         {
-            // TODO(Future): Add support for restarting widgets.
+            // reinitalize microsoft widgets
+            await _microsoftWidgetModel.ReinitializePinnedWidgetsAsync();
         }
     }
 
@@ -299,19 +300,16 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async Task CloseAllWidgetsAsync()
     {
-        // close all widgets
+        // close desktop widgets 3 widgets
         await CloseAllWidgetWindowsAsync();
+
+        // close microsoft widgets
+        await _microsoftWidgetModel.ClosePinnedWidgetsAsync();
 
         // clear all lists
         PinnedWidgetWindowPairs.Clear();
         WidgetSettingPairs.Clear();
         _originalWidgetList.Clear();
-
-        // unload microsoft widget model
-        await _microsoftWidgetModel.OnUnloadedAsync();
-
-        // dispose microsoft widget model
-        _microsoftWidgetModel.Dispose();
     }
 
     private async Task CloseAllWidgetWindowsAsync()
@@ -833,9 +831,6 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             {
                 widgetWindowPair.Window = widgetWindow;
             }
-
-            // add to microsoft widget model
-            _microsoftWidgetModel.ExistedWidgets.Add(widgetViewModel);
         }
     }
 
@@ -920,11 +915,19 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
             if (providerType == WidgetProviderType.Microsoft)
             {
-                // Remove the widget from the list before deleting, otherwise the widget will
-                // have changed and the collection won't be able to find it to remove it.
-                var widgetViewModel = widgetWindow.ViewModel.WidgetViewModel!;
-                widgetViewModel.Dispose();
-                _microsoftWidgetModel.ExistedWidgets.Remove(widgetViewModel);
+                await _microsoftWidgetModel._existedWidgetsLock.WaitAsync(CancellationToken.None);
+                try
+                {
+                    // Remove the widget from the list before deleting, otherwise the widget will
+                    // have changed and the collection won't be able to find it to remove it.
+                    var widgetViewModel = widgetWindow.ViewModel.WidgetViewModel!;
+                    widgetViewModel.Dispose();
+                    _microsoftWidgetModel.ExistedWidgets.Remove(widgetViewModel);
+                }
+                finally
+                {
+                    _microsoftWidgetModel._existedWidgetsLock.Release();
+                }
             }
 
             // close window
