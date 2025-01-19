@@ -95,13 +95,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // select the first widget by default
         if (!_isHidden)
         {
+            AddWidgetNavigationView.SelectionChanged += AddWidgetNavigationView_SelectionChanged;
             SelectFirstWidgetByDefault();
         }
 
         // bind the microsoft widgets event
         if (!_isHidden)
         {
-            AddWidgetNavigationView.SelectionChanged += AddWidgetNavigationView_SelectionChanged;
             _microsoftWidgetModel.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
         }
     }
@@ -307,13 +307,25 @@ public sealed partial class AddWidgetDialog : ContentDialog
             return;
         }
 
-        if (AddWidgetNavigationView.MenuItems.Count > 0)
+        var navViewItemsCount = AddWidgetNavigationView.MenuItems.Count;
+        if (navViewItemsCount > 0)
         {
-            var firstProvider = AddWidgetNavigationView.MenuItems[0] as NavigationViewItem;
-            if (firstProvider?.MenuItems.Count > 0)
+            for (var i = 0; i < navViewItemsCount; i++)
             {
-                var firstWidget = firstProvider.MenuItems[0] as NavigationViewItem;
-                AddWidgetNavigationView.SelectedItem = firstWidget;
+                var provider = AddWidgetNavigationView.MenuItems[i] as NavigationViewItem;
+                var providerItemsCount = provider?.MenuItems.Count ?? 0;
+                if (providerItemsCount > 0)
+                {
+                    for (var j = 0; j < providerItemsCount; j++)
+                    {
+                        var widget = provider!.MenuItems[j] as NavigationViewItem;
+                        if (widget != null && widget.IsEnabled)
+                        {
+                            AddWidgetNavigationView.SelectedItem = widget;
+                            return;
+                        }
+                    }
+                }
             }
         }
     }
