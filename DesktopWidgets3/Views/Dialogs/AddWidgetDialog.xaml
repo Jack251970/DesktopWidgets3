@@ -68,8 +68,7 @@
             IsTabStop="False"
             IsTitleBarAutoPaddingEnabled="False"
             OpenPaneLength="218"
-            PaneDisplayMode="Left"
-            SelectionChanged="AddWidgetNavigationView_SelectionChanged">
+            PaneDisplayMode="Left">
             <NavigationView.MenuItems />
 
             <!--  Widget preview  -->

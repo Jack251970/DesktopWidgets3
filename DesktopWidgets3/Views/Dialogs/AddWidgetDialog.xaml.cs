@@ -93,10 +93,17 @@ public sealed partial class AddWidgetDialog : ContentDialog
         await FillAvailableMicrosoftWidgetsAsync();
 
         // select the first widget by default
-        SelectFirstWidgetByDefault();
+        if (!_isHidden)
+        {
+            SelectFirstWidgetByDefault();
+        }
 
         // bind the microsoft widgets event
-        _microsoftWidgetModel.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        if (!_isHidden)
+        {
+            AddWidgetNavigationView.SelectionChanged += AddWidgetNavigationView_SelectionChanged;
+            _microsoftWidgetModel.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        }
     }
 
     #region Desktop Widgets 3 Widgets
