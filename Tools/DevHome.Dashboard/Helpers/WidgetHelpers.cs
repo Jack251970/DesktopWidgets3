@@ -16,9 +16,6 @@ public sealed class WidgetHelpers
     public const string WidgetsPlatformRuntimePackageId = "9N3RK8ZV2ZR8";
     public const string WidgetsPlatformRuntimePackageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
 
-    // TODO(Future): Remove this and use our own host name.
-    public const string DevHomeHostName = "DevHome";
-
     // Each widget has a 16px margin around it and a 48px Attribution area in which content cannot be placed.
     // https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
     // Adaptive cards render with 8px padding on each side, so we subtract that from the header height.
@@ -97,7 +94,7 @@ public sealed class WidgetHelpers
     {
         var state = new WidgetCustomState
         {
-            Host = DevHomeHostName,
+            Host = Constants.MicrosoftWidgetHostName,
             Position = ordinal,
         };
 

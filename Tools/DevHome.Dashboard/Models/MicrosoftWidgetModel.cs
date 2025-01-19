@@ -368,7 +368,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
 
         var stateObj = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
-        if (stateObj?.Host != WidgetHelpers.DevHomeHostName)
+        if (stateObj?.Host != Constants.MicrosoftWidgetHostName)
         {
             // This shouldn't be able to be reached
             _log.Error($"Widget has custom state but no HostName.");

@@ -60,5 +60,9 @@ public static class Constants
 
     public const string WidgetsFolder = "Widgets";
 
+    public const string MicrosoftWidgetHostId = "2E346282-C662-4D02-B70A-864721310F55";
+
+    public const string MicrosoftWidgetHostName = DesktopWidgets3;
+
     #endregion
 }
