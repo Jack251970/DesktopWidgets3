@@ -1,8 +1,12 @@
 ﻿namespace DesktopWidgets3.Core.Widgets.Contracts.Services;
 
-public interface IWidgetManagerService
+public interface IWidgetManagerService : IDisposable
 {
     void InitializePinnedWidgets(bool initialized);
+
+    Task RestartAllWidgetsAsync();
+
+    Task CloseAllWidgetsAsync();
 
     (WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId);
 
@@ -19,10 +23,6 @@ public interface IWidgetManagerService
     bool GetWidgetSettingIsNavigated(string widgetId, string widgetType);
 
     WidgetViewModel? GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex);
-
-    Task RestartWidgetsAsync();
-
-    Task CloseAllWidgetsAsync();
 
     Task AddWidgetAsync(string widgetId, string widgetType, Func<string, string, int, Task>? action, bool updateDashboard);
 

@@ -634,7 +634,7 @@ public sealed partial class WidgetWindow : WindowEx
     {
         if (sender is MenuFlyoutItem)
         {
-            await _widgetManagerService.RestartWidgetsAsync();
+            await _widgetManagerService.RestartAllWidgetsAsync();
         }
     }
 

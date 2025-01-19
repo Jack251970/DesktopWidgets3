@@ -4,7 +4,7 @@ using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
+internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, IActivationService activationService, IAppSettingsService appSettingsService, INavigationService navigationService, IWidgetResourceService widgetResourceService) : IWidgetManagerService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetManagerService));
 
@@ -18,12 +18,14 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
     private readonly ConcurrentDictionary<string, WidgetWindowPair> PinnedWidgetWindowPairs = [];
     private readonly ConcurrentDictionary<string, WidgetSettingPair> WidgetSettingPairs = [];
 
+    private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
+
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
     private readonly SemaphoreSlim _editModeLock = new(1, 1);
     private bool _inEditMode = false;
     private bool _restoreMainWindow = false;
 
-    #region Initialization
+    #region Initialization & Restart & Close
 
     public async void InitializePinnedWidgets(bool initialized)
     {
@@ -33,6 +35,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         var widgetList = _appSettingsService.GetWidgetsList();
         foreach (var widget in widgetList)
         {
+            _initWidgetsCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
             if (widget.ProviderType == WidgetProviderType.DesktopWidgets3 && widget.Pinned)
             {
                 CreateWidgetWindow(widget);
@@ -47,14 +51,15 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             await _microsoftWidgetModel.InitializePinnedWidgetsAsync(async (widget, index) =>
             {
                 await CreateWidgetWindowAsync(index, widget);
-            });
+            }, _initWidgetsCancellationTokenSource);
+
             // We don't delete microsoft widget json items that aren't in the system widget storage.
             // Because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
         }
         else
         {
             // reinitalize microsoft widgets
-            await _microsoftWidgetModel.ReinitializePinnedWidgetsAsync();
+            await _microsoftWidgetModel.RestartPinnedWidgetsAsync();
         }
 
         _log.Debug("Microsoft Widgets initialized");
@@ -85,6 +90,48 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             // add widget
             await AddWidgetAsync(widgetViewModel, null, true);
         }
+    }
+
+    public async Task RestartAllWidgetsAsync()
+    {
+        _log.Debug("Restarting widgets");
+
+        // close all widgets
+        await CloseAllWidgetWindowsAsync();
+
+        // enable all enabled widgets
+        InitializePinnedWidgets(false);
+
+        _log.Debug("Widgets restarted");
+    }
+
+    public async Task CloseAllWidgetsAsync()
+    {
+        _log.Debug("Closing all widgets");
+
+        // cancel initialization
+        _initWidgetsCancellationTokenSource?.Cancel();
+
+        // close desktop widgets 3 widgets
+        await CloseAllWidgetWindowsAsync();
+
+        // close microsoft widgets
+        await _microsoftWidgetModel.ClosePinnedWidgetsAsync();
+
+        _log.Debug("All widgets closed");
+    }
+
+    private async Task CloseAllWidgetWindowsAsync()
+    {
+        _log.Information("Closing all widget windows");
+
+        // close all windows
+        await GetPinnedWidgetWindows().EnqueueOrInvokeAsync(async (window) =>
+        {
+            await CloseWidgetWindowAsync(window.RuntimeId, CloseEvent.Unpin);
+        }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+
+        _log.Debug("All widget windows closed");
     }
 
     #endregion
@@ -293,51 +340,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     #region Widget Window
 
-    #region All Widgets Management
-
-    public async Task RestartWidgetsAsync()
-    {
-        _log.Debug("Restarting widgets");
-
-        // close all widgets
-        await CloseAllWidgetWindowsAsync();
-
-        // enable all enabled widgets
-        InitializePinnedWidgets(false);
-
-        _log.Debug("Widgets restarted");
-    }
-
-    public async Task CloseAllWidgetsAsync()
-    {
-        _log.Debug("Closing all widgets");
-
-        // close desktop widgets 3 widgets
-        await CloseAllWidgetWindowsAsync();
-
-        // close microsoft widgets
-        await _microsoftWidgetModel.ClosePinnedWidgetsAsync();
-
-        // clear all lists
-        PinnedWidgetWindowPairs.Clear();
-        WidgetSettingPairs.Clear();
-        _originalWidgetList.Clear();
-
-        _log.Debug("All widgets closed");
-    }
-
-    private async Task CloseAllWidgetWindowsAsync()
-    {
-        _log.Information("Closing all widget windows");
-
-        // close all windows
-        await GetPinnedWidgetWindows().EnqueueOrInvokeAsync(async (window) =>
-        {
-            await CloseWidgetWindowAsync(window.RuntimeId, CloseEvent.Unpin);
-        }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
-
-        _log.Debug("All widget windows closed");
-    }
+    #region All Widgets
 
     private List<WidgetWindow> GetPinnedWidgetWindows()
     {
@@ -354,7 +357,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     #endregion
 
-    #region Single Widget Management
+    #region Single Widget
 
     #region Public
 
@@ -1315,6 +1318,36 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
                 _navigationService.SetNextParameter(dashboardPageKey, parameter);
             }
         });
+    }
+
+    #endregion
+
+    #region Dispose
+
+    private bool _disposed;
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _editModeLock.Dispose();
+                _initWidgetsCancellationTokenSource.Dispose();
+
+                PinnedWidgetWindowPairs.Clear();
+                WidgetSettingPairs.Clear();
+                _originalWidgetList.Clear();
+            }
+
+            _disposed = true;
+        }
     }
 
     #endregion

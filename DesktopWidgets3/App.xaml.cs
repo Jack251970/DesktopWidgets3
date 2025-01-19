@@ -408,17 +408,20 @@ public partial class App : Application
     {
         _log.Information("Exiting current application");
 
-        // Close all widgets
+        // Close all desktop widgets 3 widgets
         await GetService<IWidgetManagerService>().CloseAllWidgetsAsync();
+
+        // Dispose widget manager service
+        GetService<IWidgetManagerService>().Dispose();
 
         // Close all windows
         await WindowsExtensions.CloseAllWindowsAsync();
 
-        // Dispose microsoft widgets
-        GetService<MicrosoftWidgetModel>().Dispose();
-
         // Dispose desktop widgets 3 widgets
         await GetService<IWidgetResourceService>().DisposeWidgetsAsync();
+
+        // Dispose microsoft widgets
+        GetService<MicrosoftWidgetModel>().Dispose();
 
         // Unregister app notification service
         GetService<IAppNotificationService>().Unregister();

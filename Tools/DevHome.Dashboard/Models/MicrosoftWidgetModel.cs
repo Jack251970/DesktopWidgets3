@@ -43,11 +43,11 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     private readonly SemaphoreSlim _existedWidgetsLock = new(1, 1);
 
-    private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
+    public CancellationTokenSource InitWidgetsCancellationTokenSource { get; private set; } = null!;
 
-    public bool IsLoading { get; private set; }
+    public bool IsLoading { get; private set; } = false;
 
-    public bool HasWidgetServiceInitialized { get; private set; }
+    public bool HasWidgetServiceInitialized { get; private set; } = false;
 
     public MicrosoftWidgetModel()
     {
@@ -66,7 +66,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         return RuntimeHelper.IsCurrentProcessRunningElevated();
     }
 
-    #region Initialization
+    #region Initialization & Restart & Close
 
     public async Task InitializeResourcesAsync()
     {
@@ -81,23 +81,24 @@ public partial class MicrosoftWidgetModel : IDisposable
         WidgetDefinitions = new ObservableCollection<ComSafeWidgetDefinition>(comSafeWidgetDefinitions);
     }
 
-    public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task> createWidgetWindow)
+    public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task> createWidgetWindow, CancellationTokenSource initWidgetsCancellationTokenSource)
     {
         _log.Information($"Initializing MicrosoftWidgetModel");
 
         CreateWidgetWindow = createWidgetWindow;
+        InitWidgetsCancellationTokenSource = initWidgetsCancellationTokenSource;
         await OnLoadedAsync(true);
 
-        _log.Debug($"MicrosoftWidgetModel Initialized");
+        _log.Debug($"MicrosoftWidgetModel initialized");
     }
 
-    public async Task ReinitializePinnedWidgetsAsync()
+    public async Task RestartPinnedWidgetsAsync()
     {
-        _log.Information($"Reinitializing MicrosoftWidgetModel");
+        _log.Information($"Restarting MicrosoftWidgetModel");
 
         await OnLoadedAsync(false);
 
-        _log.Debug($"MicrosoftWidgetModel Reinitialized");
+        _log.Debug($"MicrosoftWidgetModel restarted");
     }
 
     public async Task ClosePinnedWidgetsAsync()
@@ -106,7 +107,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
         await OnUnloadedAsync();
 
-        _log.Debug($"MicrosoftWidgetModel Closed");
+        _log.Debug($"MicrosoftWidgetModel closed");
     }
 
     #endregion
@@ -145,7 +146,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     #region Widget View Model
 
-    public async Task<WidgetViewModel?> GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex, CancellationToken cancellationToken = default)
+    public async Task<WidgetViewModel?> GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex)
     {
         var hostWidgets = await GetPreviouslyPinnedWidgets();
         await _existedWidgetsLock.WaitAsync(CancellationToken.None);
@@ -153,7 +154,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         {
             foreach (var widget in hostWidgets)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                InitWidgetsCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                 try
                 {
@@ -169,7 +170,7 @@ public partial class MicrosoftWidgetModel : IDisposable
                     if (widgetId1 == widgetId && widgetType1 == widgetType && widgetIndex1 == widgetIndex)
                     {
                         var size = await widget.GetSizeAsync();
-                        var widgetViewModel = await GetWidgetViewModel(widget, size, cancellationToken);
+                        var widgetViewModel = await GetWidgetViewModel(widget, size, InitWidgetsCancellationTokenSource.Token);
                         if (widgetViewModel != null)
                         {
                             ExistedWidgets.Add(widgetViewModel);
@@ -244,7 +245,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     {
         try
         {
-            await InitializePinnedWidgetListAsync(_initWidgetsCancellationTokenSource.Token);
+            await InitializePinnedWidgetListAsync(InitWidgetsCancellationTokenSource.Token);
         }
         catch (OperationCanceledException ex)
         {
@@ -530,7 +531,6 @@ public partial class MicrosoftWidgetModel : IDisposable
     private async Task OnUnloadedAsync()
     {
         _log.Debug($"Unloading Dashboard, cancel any loading.");
-        _initWidgetsCancellationTokenSource?.Cancel();
 
         DependencyExtensions.GetRequiredService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
 
