@@ -29,6 +29,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly IAppSettingsService _appSettingsService;
     private readonly IWidgetResourceService _widgetResourceService;
 
+    private bool _isHidden;
+
     public AddWidgetDialog()
     {
         ViewModel = DependencyExtensions.GetRequiredService<AddWidgetViewModel>();
@@ -79,8 +81,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     #region Load Widgets
 
-    // TODO(Future): Improve performance by loading widgets in parallel.
-    // TODO(Future): If dialog is hidden, stop loading widgets.
     [RelayCommand]
     public async Task OnLoadedAsync()
     {
@@ -109,6 +109,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         foreach (var widgetGroup in installedWidgetGroups)
         {
+            if (_isHidden)
+            {
+                return;
+            }
+
             var itemContent = BuildWidgetGroupNavItem(widgetGroup);
             var navItem = new NavigationViewItem
             {
@@ -121,6 +126,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
             foreach (var widgetType in widgetGroup.Types)
             {
+                if (_isHidden)
+                {
+                    return;
+                }
+
                 var widgetId = widgetGroup.Id;
                 var widgetName = _widgetResourceService.GetWidgetName(WidgetProviderType.DesktopWidgets3, widgetId, widgetType);
                 var widgetDefinition = new DesktopWidgets3WidgetDefinition(widgetId, widgetType, widgetGroup.Name, widgetName);
@@ -174,6 +184,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         foreach (var providerDef in _microsoftWidgetModel.WidgetProviderDefinitions)
         {
+            if (_isHidden)
+            {
+                return;
+            }
+
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
                 var itemContent = await BuildWidgetGroupNavItemAsync(providerDef);
@@ -188,6 +203,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
                 foreach (var widgetDef in _microsoftWidgetModel.WidgetDefinitions)
                 {
+                    if (_isHidden)
+                    {
+                        return;
+                    }
+
                     if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItemAsync(widgetDef);
@@ -357,6 +377,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private void HideDialog()
     {
+        _isHidden = true;
         _selectedWidget = null!;
         ViewModel = null!;
 
