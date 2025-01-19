@@ -197,7 +197,6 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
                 try
                 {
                     var renderer = await _renderingService.GetRendererAsync();
-                    // TODO(Future): Fix System.AccessViolationException: 'Attempted to read or write protected memory. This is often an indication that other memory is corrupt.'
                     _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
                     if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                     {

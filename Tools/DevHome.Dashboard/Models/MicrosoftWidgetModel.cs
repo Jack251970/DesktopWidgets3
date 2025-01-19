@@ -13,6 +13,7 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
@@ -28,8 +29,6 @@ public partial class MicrosoftWidgetModel : IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));
 
-    public DashboardViewModel ViewModel { get; }
-
     // TODO(Future): Use lock like _existedWidgetsLock to add multi-threading support.
     public ObservableCollection<WidgetProviderDefinition> WidgetProviderDefinitions { get; private set; } = [];
     public ObservableCollection<ComSafeWidgetDefinition> WidgetDefinitions { get; private set; } = [];
@@ -38,6 +37,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
+    private readonly IWidgetHostingService _widgetHostingService;
 
     private Func<WidgetViewModel, int, Task>? CreateWidgetWindow;
 
@@ -45,12 +45,25 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
 
+    public bool IsLoading { get; private set; }
+
+    public bool HasWidgetServiceInitialized { get; private set; }
+
     public MicrosoftWidgetModel()
     {
-        ViewModel = DependencyExtensions.GetRequiredService<DashboardViewModel>();
-
         _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
         _widgetViewModelFactory = DependencyExtensions.GetRequiredService<WidgetViewModelFactory>();
+        _widgetHostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
+    }
+
+    public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
+    {
+        return (widgetCount == 0 && !isLoading && HasWidgetServiceInitialized) ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public static bool IsRunningElevated()
+    {
+        return RuntimeHelper.IsCurrentProcessRunningElevated();
     }
 
     #region Initialization
@@ -58,8 +71,8 @@ public partial class MicrosoftWidgetModel : IDisposable
     public async Task InitializeResourcesAsync()
     {
         // Show the providers and widgets underneath them in alphabetical order
-        var providerDefinitions = (await ViewModel.WidgetHostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
-        var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(ViewModel.WidgetHostingService);
+        var providerDefinitions = (await _widgetHostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
+        var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_widgetHostingService);
 
         _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
 
@@ -70,18 +83,30 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task> createWidgetWindow)
     {
+        _log.Debug($"Initializing MicrosoftWidgetModel");
+
         CreateWidgetWindow = createWidgetWindow;
         await OnLoadedAsync(true);
+
+        _log.Debug($"Initialized MicrosoftWidgetModel");
     }
 
     public async Task ReinitializePinnedWidgetsAsync()
     {
+        _log.Debug($"Reinitializing MicrosoftWidgetModel");
+
         await OnLoadedAsync(false);
+
+        _log.Debug($"Reinitialized MicrosoftWidgetModel");
     }
 
     public async Task ClosePinnedWidgetsAsync()
     {
+        _log.Debug($"Closing MicrosoftWidgetModel");
+
         await OnUnloadedAsync();
+
+        _log.Debug($"Closed MicrosoftWidgetModel");
     }
 
     #endregion
@@ -173,30 +198,30 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     private async Task OnLoadedAsync(bool validate)
     {
-        ViewModel.IsLoading = true;
+        IsLoading = true;
 
         if (validate)
         {
-            ViewModel.HasWidgetServiceInitialized = false;
+            HasWidgetServiceInitialized = false;
 
             if (await ValidateDashboardState())
             {
-                ViewModel.HasWidgetServiceInitialized = true;
+                HasWidgetServiceInitialized = true;
                 DependencyExtensions.GetRequiredService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
                 await InitializeDashboard();
             }
         }
-        else if (ViewModel.HasWidgetServiceInitialized)
+        else if (HasWidgetServiceInitialized)
         {
             await InitializeDashboard();
         }
         else if (await ValidateDashboardState())
         {
-            ViewModel.HasWidgetServiceInitialized = true;
+            HasWidgetServiceInitialized = true;
             await InitializeDashboard();
         }
 
-        ViewModel.IsLoading = false;
+        IsLoading = false;
     }
 
     private async Task InitializeDashboard()
@@ -334,7 +359,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
 
         var widgetDefinitionId = widget.DefinitionId;
-        var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+        var unsafeWidgetDefinition = await _widgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
         if (unsafeWidgetDefinition == null)
         {
             await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
@@ -361,14 +386,14 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     private async Task DeleteAbandonedWidgetAsync(ComSafeWidget widget)
     {
-        var widgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var widgetList = await _widgetHostingService.GetWidgetsAsync();
         var length = widgetList.Length;
         _log.Information($"Found abandoned widget, try to delete it...");
         _log.Information($"Before delete, {length} widgets for this host");
 
         await widget.DeleteAsync();
 
-        var newWidgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var newWidgetList = await _widgetHostingService.GetWidgetsAsync();
         length = newWidgetList.Length;
         _log.Information($"After delete, {length} widgets for this host");
     }
@@ -376,7 +401,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     private async Task<ComSafeWidget[]> GetPreviouslyPinnedWidgets()
     {
         _log.Information("Get widgets for current host");
-        var unsafeHostWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var unsafeHostWidgets = await _widgetHostingService.GetWidgetsAsync();
         if (unsafeHostWidgets.Length == 0)
         {
             _log.Information($"Found 0 widgets for this host");
@@ -406,7 +431,7 @@ public partial class MicrosoftWidgetModel : IDisposable
     private async Task<bool> ValidateDashboardState()
     {
         // Ensure we're not running elevated. Display an error and don't allow using the Dashboard if we are.
-        if (ViewModel.IsRunningElevated())
+        if (IsRunningElevated())
         {
             _log.Error($"Dev Home is running as admin, can't show Dashboard");
             // RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
@@ -415,7 +440,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
         // TODO(Future): Add support for widget service.
         // Ensure the WidgetService is installed and up to date.
-        /*var widgetServiceState = ViewModel.WidgetServiceService.GetWidgetServiceState();
+        /*var widgetServiceState = _widgetServiceService.GetWidgetServiceState();
         switch (widgetServiceState)
         {
             case WidgetServiceService.WidgetServiceStates.MeetsMinVersion:
@@ -458,7 +483,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
         try
         {
-            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+            var widgetCatalog = await _widgetHostingService.GetWidgetCatalogAsync();
             if (widgetCatalog == null)
             {
                 _log.Error("Error in in SubscribeToWidgetCatalogEvents, widgetCatalog == null");
@@ -534,7 +559,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
         try
         {
-            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+            var widgetCatalog = await _widgetHostingService.GetWidgetCatalogAsync();
             if (widgetCatalog == null)
             {
                 return;
@@ -716,7 +741,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public async Task<ComSafeWidget[]> GetComSafeWidgetsAsync()
     {
-        var unsafeCurrentlyPinnedWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var unsafeCurrentlyPinnedWidgets = await _widgetHostingService.GetWidgetsAsync();
         var comSafeCurrentlyPinnedWidgets = new List<ComSafeWidget>();
         foreach (var unsafeWidget in unsafeCurrentlyPinnedWidgets)
         {
@@ -753,7 +778,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         try
         {
             var size = WidgetHelpers.GetDefaultWidgetSize(await newWidgetDefinition.GetWidgetCapabilitiesAsync());
-            var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
+            var unsafeWidget = await _widgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
             if (unsafeWidget == null)
             {
                 // Couldn't create the widget, show an error message.
@@ -866,7 +891,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         var widgetDefinitionId = widget.DefinitionId;
         var widgetId = widget.Id;
 
-        var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+        var unsafeWidgetDefinition = await _widgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
         if (unsafeWidgetDefinition != null)
         {
             var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);

@@ -242,7 +242,6 @@ public partial class App : Application
                 services.AddSingleton<MicrosoftWidgetModel>();
 
                 // View-models
-                services.AddSingleton<DashboardViewModel>();
                 services.AddTransient<AddWidgetViewModel>();
 
                 // DI factory pattern for creating instances with certain parameters
