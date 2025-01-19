@@ -39,7 +39,7 @@ public class WidgetServiceService : IWidgetServiceService
         LogExtensions.LogInformation(ClassName, $"Checking for WidgetService on {isWindows11String}");
 
         // First check for the WidgetsPlatformRuntime package. If it's installed and has a valid state, we return that state.
-        LogExtensions.LogInformation(ClassName, "Checking for WidgetsPlatformRuntime...");
+        LogExtensions.LogInformation(ClassName, "Checking for WidgetsPlatformRuntime");
         var package = GetWidgetsPlatformRuntimePackage();
         _widgetServiceState = ValidatePackage(package);
         if (_widgetServiceState == WidgetServiceStates.MeetsMinVersion ||
@@ -49,7 +49,7 @@ public class WidgetServiceService : IWidgetServiceService
         }
 
         // If the WidgetsPlatformRuntime package is not installed or not high enough version, check for the WebExperience package.
-        LogExtensions.LogInformation(ClassName, "Checking for WebExperiencePack...");
+        LogExtensions.LogInformation(ClassName, "Checking for WebExperiencePack");
         package = GetWebExperiencePackPackage();
         _widgetServiceState = ValidatePackage(package);
 
@@ -58,7 +58,7 @@ public class WidgetServiceService : IWidgetServiceService
 
     public async Task<bool> TryInstallingWidgetService()
     {
-        LogExtensions.LogInformation(ClassName, "Try installing widget service...");
+        LogExtensions.LogInformation(ClassName, "Try installing widget service");
         var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetsPlatformRuntimePackageId);
         _widgetServiceState = ValidatePackage(GetWidgetsPlatformRuntimePackage());
         LogExtensions.LogInformation(ClassName, $"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");

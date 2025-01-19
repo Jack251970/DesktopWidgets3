@@ -40,24 +40,31 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     public async Task InitalizeAsync()
     {
-        _log.Information("Initializing widget resources...");
+        _log.Information("Initializing widget resources");
 
-        // initialize microsoft widget resources
-        await _microsoftWidgetModel.InitializeResourcesAsync();
+        try
+        {
+            // initialize microsoft widget resources
+            await _microsoftWidgetModel.InitializeResourcesAsync();
 
-        // get all widget metadata
-        GetAllWidgetsMetadata();
+            // get all widget metadata
+            GetAllWidgetsMetadata();
 
-        // load all installed widgets
-        await LoadAllInstalledWidgets();
+            // load all installed widgets
+            await LoadAllInstalledWidgets();
 
-        // initialize all widgets
-        await InitWidgetsAsync();
+            // initialize all widgets
+            await InitWidgetsAsync();
 
-        // initialize widgets language resources
-        InitWidgetsLanguageResources();
+            // initialize widgets language resources
+            InitWidgetsLanguageResources();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to initialize widget resources");
+        }
 
-        _log.Debug("Widget resources initialized.");
+        _log.Debug("Widget resources initialized");
     }
 
     private void GetAllWidgetsMetadata()

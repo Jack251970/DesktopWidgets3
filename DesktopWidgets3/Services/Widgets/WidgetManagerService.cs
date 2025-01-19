@@ -91,29 +91,43 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
     public async Task RestartAllWidgetsAsync()
     {
-        _log.Debug("Restarting widgets");
+        _log.Debug("Restarting all widgets");
 
-        // close all widgets
-        await CloseAllWidgetWindowsAsync();
+        try
+        {
+            // close all widgets
+            await CloseAllWidgetWindowsAsync();
 
-        // enable all enabled widgets
-        InitializePinnedWidgets(false);
+            // enable all enabled widgets
+            InitializePinnedWidgets(false);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error restarting all widgets");
+        }
 
-        _log.Debug("Widgets restarted");
+        _log.Debug("All widgets restarted");
     }
 
     public async Task CloseAllWidgetsAsync()
     {
         _log.Debug("Closing all widgets");
 
-        // cancel initialization
-        _initWidgetsCancellationTokenSource?.Cancel();
+        try
+        {
+            // cancel initialization
+            _initWidgetsCancellationTokenSource?.Cancel();
 
-        // close desktop widgets 3 widgets
-        await CloseAllWidgetWindowsAsync();
+            // close desktop widgets 3 widgets
+            await CloseAllWidgetWindowsAsync();
 
-        // close microsoft widgets
-        await _microsoftWidgetModel.ClosePinnedWidgetsAsync();
+            // close microsoft widgets
+            await _microsoftWidgetModel.ClosePinnedWidgetsAsync();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error closing all widgets");
+        }
 
         _log.Debug("All widgets closed");
     }

@@ -70,15 +70,22 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public async Task InitializeResourcesAsync()
     {
-        // Show the providers and widgets underneath them in alphabetical order
-        var providerDefinitions = (await _widgetHostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
-        var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_widgetHostingService);
+        try
+        {
+            // Show the providers and widgets underneath them in alphabetical order
+            var providerDefinitions = (await _widgetHostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
+            var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_widgetHostingService);
 
-        _log.Information($"Filling available Microsoft widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
+            _log.Information($"Filling available Microsoft widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
 
-        // Update the collections
-        WidgetProviderDefinitions = new ObservableCollection<WidgetProviderDefinition>(providerDefinitions);
-        WidgetDefinitions = new ObservableCollection<ComSafeWidgetDefinition>(comSafeWidgetDefinitions);
+            // Update the collections
+            WidgetProviderDefinitions = new ObservableCollection<WidgetProviderDefinition>(providerDefinitions);
+            WidgetDefinitions = new ObservableCollection<ComSafeWidgetDefinition>(comSafeWidgetDefinitions);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error initializing Microsoft widget resources");
+        }
     }
 
     public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task> createWidgetWindow, CancellationTokenSource initWidgetsCancellationTokenSource)
@@ -87,7 +94,15 @@ public partial class MicrosoftWidgetModel : IDisposable
 
         CreateWidgetWindow = createWidgetWindow;
         InitWidgetsCancellationTokenSource = initWidgetsCancellationTokenSource;
-        await OnLoadedAsync(true);
+
+        try
+        {
+            await OnLoadedAsync(true);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error initializing Microsoft widget pinned widgets");
+        }
 
         _log.Debug($"MicrosoftWidgetModel initialized");
     }
@@ -96,7 +111,14 @@ public partial class MicrosoftWidgetModel : IDisposable
     {
         _log.Information($"Restarting MicrosoftWidgetModel");
 
-        await OnLoadedAsync(false);
+        try
+        {
+            await OnLoadedAsync(false);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error restarting Microsoft widget pinned widgets");
+        }
 
         _log.Debug($"MicrosoftWidgetModel restarted");
     }
@@ -105,7 +127,14 @@ public partial class MicrosoftWidgetModel : IDisposable
     {
         _log.Information($"Closing MicrosoftWidgetModel");
 
-        await OnUnloadedAsync();
+        try
+        {
+            await OnUnloadedAsync();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error closing Microsoft widget pinned widgets");
+        }
 
         _log.Debug($"MicrosoftWidgetModel closed");
     }
@@ -405,13 +434,15 @@ public partial class MicrosoftWidgetModel : IDisposable
     {
         var widgetList = await _widgetHostingService.GetWidgetsAsync();
         var length = widgetList.Length;
-        _log.Information($"Found abandoned widget, try to delete it...");
+
+        _log.Information($"Found abandoned widget, try to delete it");
         _log.Information($"Before delete, {length} widgets for this host");
 
         await widget.DeleteAsync();
 
         var newWidgetList = await _widgetHostingService.GetWidgetsAsync();
         length = newWidgetList.Length;
+
         _log.Information($"After delete, {length} widgets for this host");
     }
 
