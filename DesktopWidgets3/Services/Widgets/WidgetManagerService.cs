@@ -26,13 +26,9 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async void InitializePinnedWidgets(bool initialized)
     {
-        // get microsoft widgets 3 widget list & microsoft widget list
-        var widgetList = _appSettingsService.GetWidgetsList();
-        var desktopWidgets3WidgetList = widgetList.Where(x => x.ProviderType == WidgetProviderType.DesktopWidgets3).ToList();
-        var microsoftWidgetList = widgetList.Where(x => x.ProviderType == WidgetProviderType.Microsoft).ToList();
-
         // initialize desktop widgets 3 widgets
-        foreach (var widget in desktopWidgets3WidgetList)
+        var widgetList = _appSettingsService.GetWidgetsList();
+        foreach (var widget in widgetList)
         {
             if (widget.ProviderType == WidgetProviderType.DesktopWidgets3 && widget.Pinned)
             {
@@ -45,7 +41,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             // initialize microsoft widgets
             await _microsoftWidgetModel.InitializePinnedWidgetsAsync(async (widget, index) =>
             {
-                await CreateWidgetWindowAsync(microsoftWidgetList, index, widget);
+                await CreateWidgetWindowAsync(index, widget);
             });
             // We don't delete microsoft widget json items that aren't in the system widget storage.
             // Because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
@@ -57,7 +53,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         }
     }
 
-    private async Task CreateWidgetWindowAsync(List<JsonWidgetItem> itemList, int index, WidgetViewModel widgetViewModel)
+    private async Task CreateWidgetWindowAsync(int index, WidgetViewModel widgetViewModel)
     {
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
@@ -65,7 +61,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         var widgetIndex = index;
 
         // find item
-        var item = itemList.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
+        var widgetList = _appSettingsService.GetWidgetsList();
+        var item = widgetList.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
         if (item != null)
         {
             if (item.Pinned)
@@ -77,7 +74,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         else
         {
             // add widget
-            await AddWidgetAsync(widgetViewModel, null, false);
+            await AddWidgetAsync(widgetViewModel, null, true);
         }
     }
 
