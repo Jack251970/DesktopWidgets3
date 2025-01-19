@@ -92,10 +92,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // load the microsoft widgets
         await FillAvailableMicrosoftWidgetsAsync();
 
-        // select the first widget by default
+        // bind the navigation view event
         if (!_isHidden)
         {
             AddWidgetNavigationView.SelectionChanged += AddWidgetNavigationView_SelectionChanged;
+        }
+
+        // select the first widget by default
+        if (!_isHidden)
+        {
             SelectFirstWidgetByDefault();
         }
 
