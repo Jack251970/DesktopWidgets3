@@ -903,17 +903,20 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             var widgetType = widgetWindow.WidgetType;
             var widgetIndex = widgetWindow.WidgetIndex;
 
-            // register close event handler
-            if (closeEvent == CloseEvent.Unpin)
+            // handle close event
+            if (providerType == WidgetProviderType.DesktopWidgets3)
             {
-                widgetWindow.Closed += (s, e) => _widgetResourceService.UnpinWidget(widgetId, widgetRuntimeId, GetWidgetSettings(widgetId, widgetType, widgetIndex)!);
+                // register close event handler
+                if (closeEvent == CloseEvent.Unpin)
+                {
+                    widgetWindow.Closed += (s, e) => _widgetResourceService.UnpinWidget(widgetId, widgetRuntimeId, GetWidgetSettings(widgetId, widgetType, widgetIndex)!);
+                }
+                else if (closeEvent == CloseEvent.Delete)
+                {
+                    widgetWindow.Closed += (s, e) => _widgetResourceService.DeleteWidget(widgetId, widgetRuntimeId, GetWidgetSettings(widgetId, widgetType, widgetIndex)!);
+                }
             }
-            else if (closeEvent == CloseEvent.Delete)
-            {
-                widgetWindow.Closed += (s, e) => _widgetResourceService.DeleteWidget(widgetId, widgetRuntimeId, GetWidgetSettings(widgetId, widgetType, widgetIndex)!);
-            }
-
-            if (providerType == WidgetProviderType.Microsoft)
+            else
             {
                 await _microsoftWidgetModel._existedWidgetsLock.WaitAsync(CancellationToken.None);
                 try
