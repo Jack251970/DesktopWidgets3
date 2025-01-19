@@ -971,19 +971,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             }
             else
             {
-                await _microsoftWidgetModel._existedWidgetsLock.WaitAsync(CancellationToken.None);
-                try
-                {
-                    // Remove the widget from the list before deleting, otherwise the widget will
-                    // have changed and the collection won't be able to find it to remove it.
-                    var widgetViewModel = widgetWindow.ViewModel.WidgetViewModel!;
-                    widgetViewModel.Dispose();
-                    _microsoftWidgetModel.ExistedWidgets.Remove(widgetViewModel);
-                }
-                finally
-                {
-                    _microsoftWidgetModel._existedWidgetsLock.Release();
-                }
+                // remove widget view model
+                await _microsoftWidgetModel.RemoveWidgetViewModelAsync(widgetWindow.ViewModel.WidgetViewModel!);
             }
 
             // close window

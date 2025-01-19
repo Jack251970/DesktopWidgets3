@@ -41,7 +41,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     private Func<WidgetViewModel, int, Task>? CreateWidgetWindow;
 
-    public readonly SemaphoreSlim _existedWidgetsLock = new(1, 1);
+    private readonly SemaphoreSlim _existedWidgetsLock = new(1, 1);
 
     private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
 
@@ -190,6 +190,22 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
 
         return null;
+    }
+
+    public async Task RemoveWidgetViewModelAsync(WidgetViewModel widgetViewModel)
+    {
+        await _existedWidgetsLock.WaitAsync(CancellationToken.None);
+        try
+        {
+            // Remove the widget from the list before deleting, otherwise the widget will
+            // have changed and the collection won't be able to find it to remove it.
+            widgetViewModel.Dispose();
+            ExistedWidgets.Remove(widgetViewModel);
+        }
+        finally
+        {
+            _existedWidgetsLock.Release();
+        }
     }
 
     #endregion
