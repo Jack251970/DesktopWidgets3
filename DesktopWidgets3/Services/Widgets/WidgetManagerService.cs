@@ -32,15 +32,12 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         _log.Information("Initializing pinned widgets (Initialized: {Initialized})", initialized);
 
         // initialize desktop widgets 3 widgets
-        var widgetList = _appSettingsService.GetWidgetsList();
-        foreach (var widget in widgetList)
+        var pinnedDesktopWidgets3Widgets = _appSettingsService.GetWidgetsList().Where(x => x.ProviderType == WidgetProviderType.DesktopWidgets3 && x.Pinned).ToList();
+        foreach (var widget in pinnedDesktopWidgets3Widgets)
         {
             _initWidgetsCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-            if (widget.ProviderType == WidgetProviderType.DesktopWidgets3 && widget.Pinned)
-            {
-                CreateWidgetWindow(widget);
-            }
+            CreateWidgetWindow(widget);
         }
 
         _log.Debug("Desktop Widgets 3 widgets initialized");
