@@ -16,11 +16,6 @@ public interface IWidgetInitContext
     ILocalizationService LocalizationService { get; }
 
     /// <summary>
-    /// Service to provide log functions.
-    /// </summary>
-    ILogService LogService { get; }
-
-    /// <summary>
     /// Service to provide settings functions.
     /// </summary>
     ISettingsService SettingsService { get; }

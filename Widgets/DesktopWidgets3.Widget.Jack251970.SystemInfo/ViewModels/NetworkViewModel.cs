@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
+using Serilog;
 using System.Collections.ObjectModel;
 using Timer = System.Timers.Timer;
 
@@ -7,7 +8,7 @@ namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
 
 public partial class NetworkViewModel : ObservableRecipient
 {
-    private static string ClassName => typeof(NetworkViewModel).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(NetworkViewModel));
 
     #region view properties
 
@@ -188,9 +189,9 @@ public partial class NetworkViewModel : ObservableRecipient
                 DownloadSpeed = selectedDownloadSpeed;
             });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Main.WidgetInitContext.LogService.LogError(ClassName, e, "Failed to update network card.");
+            _log.Error(ex, "Failed to update network card.");
         }
     }
 

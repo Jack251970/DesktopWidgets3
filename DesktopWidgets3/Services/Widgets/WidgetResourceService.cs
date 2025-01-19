@@ -264,7 +264,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     private async Task InitWidgetsAsync()
     {
-        var logService = DependencyExtensions.GetRequiredService<ILogService>();
         var settingsService = DependencyExtensions.GetRequiredService<ISettingsService>();
         var themeService = DependencyExtensions.GetRequiredService<IThemeService>();
         var widgetService = DependencyExtensions.GetRequiredService<IWidgetService>();
@@ -282,7 +281,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                     {
                         WidgetGroupMetadata = pair.Metadata,
                         LocalizationService = localizationService,
-                        LogService = logService,
                         SettingsService = settingsService,
                         ThemeService = themeService,
                         WidgetService = widgetService

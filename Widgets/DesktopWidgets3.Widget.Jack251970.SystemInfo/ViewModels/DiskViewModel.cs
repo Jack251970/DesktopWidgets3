@@ -1,13 +1,14 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
+using Serilog;
 using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
 
 public partial class DiskViewModel : ObservableRecipient
 {
-    private static string ClassName => typeof(DiskViewModel).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(DiskViewModel));
 
     #region view properties
 
@@ -176,17 +177,17 @@ public partial class DiskViewModel : ObservableRecipient
                         }
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Main.WidgetInitContext.LogService.LogError(ClassName, e, "Disk Widget Update Error on DispatcherQueue");
+                    _log.Error(ex, "Disk Widget Update Error on DispatcherQueue");
                 }
 
                 listUpdating = false;
             });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Main.WidgetInitContext.LogService.LogError(ClassName, e, "Disk Widget Update Error");
+            _log.Error(ex, "Disk Widget Update Error");
         }
     }
 

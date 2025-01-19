@@ -1,11 +1,14 @@
 using System.Collections.Concurrent;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo;
 
 public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalization, IDisposable
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(Main));
+
     public static IWidgetInitContext WidgetInitContext => widgetInitContext;
     private static IWidgetInitContext widgetInitContext = null!;
 
@@ -40,6 +43,8 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
 
     public void InitWidgetGroup(IWidgetInitContext widgetInitContext)
     {
+        _log.Information("Initializing widget group {WidgetGroupId}", widgetInitContext.WidgetGroupMetadata.ID);
+
         Main.widgetInitContext = widgetInitContext;
 
         WidgetInitContext.SettingsService.OnBatterySaverChanged += OnBatterySaverChanged;

@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
+using Serilog;
 using Timer = System.Timers.Timer;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels;
 
 public partial class PerformanceViewModel : ObservableRecipient
 {
-    private static string ClassName => typeof(PerformanceViewModel).Name;
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(PerformanceViewModel));
 
     #region view properties
 
@@ -126,9 +127,9 @@ public partial class PerformanceViewModel : ObservableRecipient
                 CpuLoadValue = cpuUsage * 100;
             });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Main.WidgetInitContext.LogService.LogError(ClassName, e, "Error updating performance widget.");
+            _log.Error(ex, "Error updating performance widget.");
         }
     }
 
@@ -159,9 +160,9 @@ public partial class PerformanceViewModel : ObservableRecipient
                 GpuLoadValue = gpuUsage * 100;
             });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Main.WidgetInitContext.LogService.LogError(ClassName, e, "Error updating performance widget.");
+            _log.Error(ex, "Error updating performance widget.");
         }
     }
 
@@ -188,9 +189,9 @@ public partial class PerformanceViewModel : ObservableRecipient
                 MemoryLoadValue = memoryUsage * 100;
             });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Main.WidgetInitContext.LogService.LogError(ClassName, e, "Error updating performance widget.");
+            _log.Error(ex, "Error updating performance widget.");
         }
     }
 

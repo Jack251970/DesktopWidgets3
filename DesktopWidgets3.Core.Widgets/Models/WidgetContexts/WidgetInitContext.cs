@@ -6,8 +6,6 @@ public class WidgetInitContext : IWidgetInitContext
 
     public required ILocalizationService LocalizationService { get; set; }
 
-    public required ILogService LogService { get; set; }
-
     public required ISettingsService SettingsService { get; set; }
 
     public required IThemeService ThemeService { get; set; }

@@ -196,8 +196,6 @@ public partial class App : Application
 
                 services.AddTransient<ILocalizationService, LocalizationService>();
 
-                services.AddSingleton<ILogService, LogService>();
-
                 services.AddSingleton<ISettingsService, SettingsService>();
 
                 services.AddSingleton<IThemeService, ThemeService>();
