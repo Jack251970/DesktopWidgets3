@@ -1,5 +1,7 @@
-﻿using System.Runtime.Versioning;
+﻿using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using Windows.Win32;
+using Windows.Win32.Foundation;
 using Windows.Win32.System.Threading;
 
 namespace DesktopWidgets3.Core.Utils.EfficiencyMode;
@@ -104,5 +106,16 @@ public static class EfficiencyModeUtilities
         _ = PInvoke.SetPriorityClass(
             hProcess: PInvoke.GetCurrentProcess(),
             dwPriorityClass: flags).EnsureNonZero();
+    }
+
+    /// <exception cref="COMException"></exception>
+    private static BOOL EnsureNonZero(this BOOL value)
+    {
+        if (value.Value == 0)
+        {
+            Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+        }
+
+        return value;
     }
 }

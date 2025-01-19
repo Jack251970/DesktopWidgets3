@@ -90,7 +90,7 @@ public partial class SystemHelper
             PInvoke.SetParent(fHwnd, fZero);
         }
 
-        PInvoke.SetWindowPos(fHwnd, new(winPos), 0, 0, 0, 0, 
+        PInvoke.SetWindowPos(fHwnd, winPos, 0, 0, 0, 0, 
             SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
     }
 

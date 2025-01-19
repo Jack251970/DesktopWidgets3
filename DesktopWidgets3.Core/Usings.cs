@@ -5,7 +5,6 @@ global using DesktopWidgets3.Core.Helpers;
 global using DesktopWidgets3.Core.Models;
 global using DesktopWidgets3.Core.Services;
 global using DesktopWidgets3.Core.Utils.EfficiencyMode;
-global using DesktopWidgets3.Core.Utils.Interop;
 global using DesktopWidgets3.Core.Views.Windows;
 
 // DesktopWidgets3.Infrastructure
