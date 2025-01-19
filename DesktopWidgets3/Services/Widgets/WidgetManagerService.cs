@@ -26,6 +26,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async void InitializePinnedWidgets(bool initialized)
     {
+        _log.Information("Initializing pinned widgets (Initialized: {Initialized})", initialized);
+
         // initialize desktop widgets 3 widgets
         var widgetList = _appSettingsService.GetWidgetsList();
         foreach (var widget in widgetList)
@@ -35,6 +37,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
                 CreateWidgetWindow(widget);
             }
         }
+
+        _log.Debug("Desktop Widgets 3 widgets initialized");
 
         if (initialized)
         {
@@ -51,6 +55,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             // reinitalize microsoft widgets
             await _microsoftWidgetModel.ReinitializePinnedWidgetsAsync();
         }
+
+        _log.Debug("Microsoft Widgets initialized");
     }
 
     private async Task CreateWidgetWindowAsync(int index, WidgetViewModel widgetViewModel)
@@ -59,6 +65,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         var providerType = WidgetProviderType.Microsoft;
         var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
         var widgetIndex = index;
+
+        _log.Debug("Creating Microsoft widget window (WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", widgetId, widgetType, widgetIndex);
 
         // find item
         var widgetList = _appSettingsService.GetWidgetsList();
@@ -288,15 +296,21 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async Task RestartWidgetsAsync()
     {
+        _log.Debug("Restarting widgets");
+
         // close all widgets
         await CloseAllWidgetWindowsAsync();
 
         // enable all enabled widgets
         InitializePinnedWidgets(false);
+
+        _log.Debug("Widgets restarted");
     }
 
     public async Task CloseAllWidgetsAsync()
     {
+        _log.Debug("Closing all widgets");
+
         // close desktop widgets 3 widgets
         await CloseAllWidgetWindowsAsync();
 
@@ -307,15 +321,21 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         PinnedWidgetWindowPairs.Clear();
         WidgetSettingPairs.Clear();
         _originalWidgetList.Clear();
+
+        _log.Debug("All widgets closed");
     }
 
     private async Task CloseAllWidgetWindowsAsync()
     {
+        _log.Information("Closing all widget windows");
+
         // close all windows
         await GetPinnedWidgetWindows().EnqueueOrInvokeAsync(async (window) =>
         {
             await CloseWidgetWindowAsync(window.RuntimeId, CloseEvent.Unpin);
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+
+        _log.Debug("All widget windows closed");
     }
 
     private List<WidgetWindow> GetPinnedWidgetWindows()
@@ -343,6 +363,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
         // get widget info
         var providerType = WidgetProviderType.DesktopWidgets3;
+
+        _log.Information("Add Desktop Widgets 3 widget (WidgetId: {WidgetId}, WidgetType: {WidgetType})", widgetId, widgetType);
 
         // find index tag
         var indexs = widgetList.Where(x => x.Equals(providerType, widgetId, widgetType)).Select(x => x.Index).ToList();
@@ -406,6 +428,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         var providerType = WidgetProviderType.Microsoft;
         var (_, widgetName, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
 
+        _log.Information("Add Microsoft widget (WidgetId: {WidgetId}, WidgetType: {WidgetType})", widgetId, widgetType);
+
         // find index tag
         var indexs = widgetList.Where(x => x.Equals(providerType, widgetId, widgetType)).Select(x => x.Index).ToList();
         indexs.Sort();
@@ -464,6 +488,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async Task PinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
+        _log.Information("Pin widget (ProviderType: {ProviderType}, WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", providerType, widgetId, widgetType, widgetIndex);
+
         // get widget
         var widget = _appSettingsService.GetWidget(providerType, widgetId, widgetType, widgetIndex);
 
@@ -506,6 +532,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async Task UnpinWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
+        _log.Information("Unpin widget (ProviderType: {ProviderType}, WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", providerType, widgetId, widgetType, widgetIndex);
+
         // get widget runtime id
         var widgetRuntimeId = GetWidgetRuntimeId(providerType, widgetId, widgetType, widgetIndex);
 
@@ -531,6 +559,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async Task DeleteWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, bool refresh)
     {
+        _log.Information("Delete widget (ProviderType: {ProviderType}, WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", providerType, widgetId, widgetType, widgetIndex);
+
         // delete microsoft widget if need
         var widgetViewModel = GetWidgetViewModel(widgetId, widgetType, widgetIndex);
         if (widgetViewModel != null)
@@ -567,6 +597,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     public async Task RestartWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
     {
+        _log.Information("Restart widget (ProviderType: {ProviderType}, WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", providerType, widgetId, widgetType, widgetIndex);
+
         // get widget runtime id
         var widgetRuntimeId = GetWidgetRuntimeId(providerType, widgetId, widgetType, widgetIndex);
 
@@ -620,6 +652,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         // get widget info
         var (widgetId, widgetType, widgetIndex) = (item.Id, item.Type, item.Index);
 
+        _log.Debug("Creating Desktop Widgets 3 widget window (WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", widgetId, widgetType, widgetIndex);
+
         // create widget info & register guid
         var widgetRuntimeId = StringUtils.GetRandomWidgetRuntimeId();
         var widgetContext = new WidgetContext(this)
@@ -662,6 +696,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
     {
         // get widget info
         var (widgetId, widgetType, widgetIndex) = (item.Id, item.Type, item.Index);
+
+        _log.Debug("Creating Microsoft widget window (WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", widgetId, widgetType, widgetIndex);
 
         // create widget info & register guid
         var widgetRuntimeId = widgetViewModel.Widget.Id;
@@ -880,6 +916,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         // get widget info
         var (widgetId, widgetType, widgetIndex) = (item.Id, item.Type, item.Index);
 
+        _log.Debug("Creating Microsoft widget view model and window (WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", widgetId, widgetType, widgetIndex);
+
         // create widget window
         var widgetViewModel = await _microsoftWidgetModel.GetWidgetViewModel(widgetId, widgetType, widgetIndex);
         if (widgetViewModel != null)
@@ -915,6 +953,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             var widgetId = widgetWindow.WidgetId;
             var widgetType = widgetWindow.WidgetType;
             var widgetIndex = widgetWindow.WidgetIndex;
+
+            _log.Debug("Closing widget window (ProviderType: {ProviderType}, WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", providerType, widgetId, widgetType, widgetIndex);
 
             // handle close event
             if (providerType == WidgetProviderType.DesktopWidgets3)

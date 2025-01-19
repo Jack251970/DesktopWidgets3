@@ -6,6 +6,10 @@ public interface IAppSettingsService
 {
     void Initialize();
 
+    Task<List<JsonWidgetItem>> InitializeWidgetListAsync();
+
+    Task<List<JsonWidgetStoreItem>> InitializeWidgetStoreListAsync();
+
     string Language { get; }
 
     Task SaveLanguageInSettingsAsync(string language);
@@ -32,8 +36,6 @@ public interface IAppSettingsService
 
     Task SaveBackdropTypeInSettingsAsync(BackdropType type);
 
-    Task<List<JsonWidgetItem>> InitializeWidgetListAsync();
-
     List<JsonWidgetItem> GetWidgetsList();
 
     JsonWidgetItem? GetWidget(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex);
@@ -49,8 +51,6 @@ public interface IAppSettingsService
     Task UpdateWidgetSettingsAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings);
 
     Task UpdateWidgetsListIgnoreSettingsAsync(List<JsonWidgetItem> list);
-
-    Task<List<JsonWidgetStoreItem>> InitializeWidgetStoreListAsync();
 
     List<JsonWidgetStoreItem> GetWidgetStoreList();
 

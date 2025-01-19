@@ -74,7 +74,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         var providerDefinitions = (await _widgetHostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
         var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_widgetHostingService);
 
-        _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
+        _log.Information($"Filling available Microsoft widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
 
         // Update the collections
         WidgetProviderDefinitions = new ObservableCollection<WidgetProviderDefinition>(providerDefinitions);
@@ -83,30 +83,30 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task> createWidgetWindow)
     {
-        _log.Debug($"Initializing MicrosoftWidgetModel");
+        _log.Information($"Initializing MicrosoftWidgetModel");
 
         CreateWidgetWindow = createWidgetWindow;
         await OnLoadedAsync(true);
 
-        _log.Debug($"Initialized MicrosoftWidgetModel");
+        _log.Debug($"MicrosoftWidgetModel Initialized");
     }
 
     public async Task ReinitializePinnedWidgetsAsync()
     {
-        _log.Debug($"Reinitializing MicrosoftWidgetModel");
+        _log.Information($"Reinitializing MicrosoftWidgetModel");
 
         await OnLoadedAsync(false);
 
-        _log.Debug($"Reinitialized MicrosoftWidgetModel");
+        _log.Debug($"MicrosoftWidgetModel Reinitialized");
     }
 
     public async Task ClosePinnedWidgetsAsync()
     {
-        _log.Debug($"Closing MicrosoftWidgetModel");
+        _log.Information($"Closing MicrosoftWidgetModel");
 
         await OnUnloadedAsync();
 
-        _log.Debug($"Closed MicrosoftWidgetModel");
+        _log.Debug($"MicrosoftWidgetModel Closed");
     }
 
     #endregion

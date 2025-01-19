@@ -40,6 +40,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     public async Task InitalizeAsync()
     {
+        _log.Information("Initializing widget resources...");
+
         // initialize microsoft widget resources
         await _microsoftWidgetModel.InitializeResourcesAsync();
 
@@ -54,6 +56,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
         // initialize widgets language resources
         InitWidgetsLanguageResources();
+
+        _log.Debug("Widget resources initialized.");
     }
 
     private void GetAllWidgetsMetadata()
@@ -68,6 +72,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
         // remove error preinstalled widgets
         AllWidgetGroupMetadatas = AllWidgetGroupMetadatas.Where(x => !errorPreinstalledWidgetsIds.Contains(x.ID)).ToList();
+
+        _log.Information($"Filling available Desktop Widgets 3 widget list, found {AllWidgetGroupMetadatas.Count} widgets");
     }
 
     private async Task LoadAllInstalledWidgets()
@@ -127,6 +133,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         // load all installed widgets
         var installWidgetsMetadata = AllWidgetGroupMetadatas.Where(x => x.Installed).ToList();
         (InstalledWidgetGroupPairs, var errorWidgets, var installedWidgets) = WidgetsLoader.Widgets(installWidgetsMetadata, installingIds);
+
+        _log.Information($"Filling installed Desktop Widgets 3 widget list, found {InstalledWidgetGroupPairs.Count} widgets");
 
         // save widget store list
         if (installingIds.Count != 0)

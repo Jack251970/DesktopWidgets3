@@ -1,20 +1,27 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace DesktopWidgets3.Services;
 
 internal class AppSettingsService(ILocalSettingsService localSettingsService, IOptions<LocalSettingsKeys> localSettingsKeys) : IAppSettingsService
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(AppSettingsService));
+
     private readonly ILocalSettingsService _localSettingsService = localSettingsService;
     private readonly LocalSettingsKeys _localSettingsKeys = localSettingsKeys.Value;
 
     private bool _isInitialized;
 
+    #region Initialization
+
     public void Initialize()
     {
         if (!_isInitialized)
         {
+            _log.Information("Initializing App Settings Service");
+
             // initialize local settings
             Language = GetLanguage();
             SilentStart = GetSilentStart();
@@ -30,6 +37,34 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
             _isInitialized = true;
         }
     }
+
+    public async Task<List<JsonWidgetItem>> InitializeWidgetListAsync()
+    {
+        if (WidgetList == null)
+        {
+            _log.Information("Initializing Widget List");
+
+            WidgetListJsonSerializerSettings = new JsonSerializerSettings { Converters = { new JsonWidgetItemConverter() } };
+
+            WidgetList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetItem>>(Constants.WidgetListFile, WidgetListJsonSerializerSettings) ?? [];
+        }
+
+        return WidgetList;
+    }
+
+    public async Task<List<JsonWidgetStoreItem>> InitializeWidgetStoreListAsync()
+    {
+        if (WidgetStoreList == null)
+        {
+            _log.Information("Initializing Widget Store List");
+
+            WidgetStoreList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetStoreItem>>(Constants.WidgetStoreListFile) ?? [];
+        }
+
+        return WidgetStoreList;
+    }
+
+    #endregion
 
     #region Language
 
@@ -227,15 +262,6 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     private JsonSerializerSettings? WidgetListJsonSerializerSettings;
 
-    public async Task<List<JsonWidgetItem>> InitializeWidgetListAsync()
-    {
-        WidgetListJsonSerializerSettings = new JsonSerializerSettings { Converters = { new JsonWidgetItemConverter() } };
-
-        WidgetList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetItem>>(Constants.WidgetListFile, WidgetListJsonSerializerSettings) ?? [];
-
-        return WidgetList;
-    }
-
     public List<JsonWidgetItem> GetWidgetsList()
     {
         return WidgetList;
@@ -335,13 +361,6 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     #region Widget Store
 
     private List<JsonWidgetStoreItem> WidgetStoreList = null!;
-
-    public async Task<List<JsonWidgetStoreItem>> InitializeWidgetStoreListAsync()
-    {
-        WidgetStoreList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetStoreItem>>(Constants.WidgetStoreListFile) ?? [];
-
-        return WidgetStoreList;
-    }
 
     public async Task SaveWidgetStoreListAsync(List<JsonWidgetStoreItem> list)
     {
