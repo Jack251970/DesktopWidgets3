@@ -194,7 +194,7 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public async Task RemoveWidgetViewModelAsync(WidgetViewModel widgetViewModel)
     {
-        await _existedWidgetsLock.WaitAsync(CancellationToken.None);
+        await _existedWidgetsLock.WaitAsync();
         try
         {
             // Remove the widget from the list before deleting, otherwise the widget will

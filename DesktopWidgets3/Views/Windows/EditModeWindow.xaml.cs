@@ -88,9 +88,9 @@ public sealed partial class EditModeWindow : WindowEx
     }
 
     [RelayCommand]
-    private void CancelChangesAndExitEditMode()
+    private async Task CancelChangesAndExitEditModeAsync()
     {
-        _widgetManagerService.CancelChangesAndExitEditMode();
+        await _widgetManagerService.CancelChangesAndExitEditModeAsync();
     }
 
     #endregion

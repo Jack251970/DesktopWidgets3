@@ -44,11 +44,11 @@ public interface IWidgetManagerService
 
     Task UpdateWidgetSettingsAsync(string widgetId, string widgetType, int widgetIndex, BaseWidgetSettings settings);
 
-    void EnterEditMode();
+    Task EnterEditModeAsync();
 
     Task SaveAndExitEditMode();
 
-    void CancelChangesAndExitEditMode();
+    Task CancelChangesAndExitEditModeAsync();
 
     Task CheckEditModeAsync();
 }

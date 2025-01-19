@@ -19,6 +19,7 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
     private readonly ConcurrentDictionary<string, WidgetSettingPair> WidgetSettingPairs = [];
 
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
+    private readonly SemaphoreSlim _editModeLock = new(1, 1);
     private bool _inEditMode = false;
     private bool _restoreMainWindow = false;
 
@@ -1110,8 +1111,12 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
 
     #region Widget Edit Mode
 
-    public async void EnterEditMode()
+    public async Task EnterEditModeAsync()
     {
+        await _editModeLock.WaitAsync();
+
+        _log.Information("Enter edit mode");
+
         // get pinned widget windows
         var pinnedWidgetWindows = GetPinnedWidgetWindows();
 
@@ -1141,9 +1146,6 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             });
         }
 
-        // set flag
-        _inEditMode = true;
-
         // set edit mode for all widgets
         await pinnedWidgetWindows.EnqueueOrInvokeAsync((window) =>
         {
@@ -1163,10 +1165,19 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
             // show edit mode overlay window
             App.EditModeWindow.Show();
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
+
+        // set flag
+        _inEditMode = true;
+
+        _editModeLock.Release();
     }
 
     public async Task SaveAndExitEditMode()
     {
+        await _editModeLock.WaitAsync();
+
+        _log.Information("Save and exit edit mode");
+
         // get pinned widget windows
         var pinnedWidgetWindows = GetPinnedWidgetWindows();
 
@@ -1214,10 +1225,16 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         await _appSettingsService.UpdateWidgetsListIgnoreSettingsAsync(widgetList);
 
         _inEditMode = false;
+
+        _editModeLock.Release();
     }
 
-    public async void CancelChangesAndExitEditMode()
+    public async Task CancelChangesAndExitEditModeAsync()
     {
+        await _editModeLock.WaitAsync();
+
+        _log.Information("Cancel changes and exit edit mode");
+
         // get pinned widget windows
         var pinnedWidgetWindows = GetPinnedWidgetWindows();
 
@@ -1256,10 +1273,16 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
         }
 
         _inEditMode = false;
+
+        _editModeLock.Release();
     }
 
     public async Task CheckEditModeAsync()
     {
+        await _editModeLock.WaitAsync();
+
+        _log.Information("Check edit mode");
+
         if (_inEditMode)
         {
             App.MainWindow.Show();
@@ -1269,6 +1292,8 @@ internal class WidgetManagerService(MicrosoftWidgetModel microsoftWidgetModel, I
                 await SaveAndExitEditMode();
             }
         }
+
+        _editModeLock.Release();
     }
 
     #endregion

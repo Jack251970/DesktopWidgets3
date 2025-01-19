@@ -583,11 +583,11 @@ public sealed partial class WidgetWindow : WindowEx
         menuFlyout.Items.Add(editLayoutMenuItem);
     }
 
-    private void OnEditWidgetsLayoutClick(object sender, RoutedEventArgs e)
+    private async void OnEditWidgetsLayoutClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem)
         {
-            _widgetManagerService.EnterEditMode();
+            await _widgetManagerService.EnterEditModeAsync();
         }
     }
 
