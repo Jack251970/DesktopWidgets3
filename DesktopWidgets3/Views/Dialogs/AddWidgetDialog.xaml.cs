@@ -29,7 +29,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly IAppSettingsService _appSettingsService;
     private readonly IWidgetResourceService _widgetResourceService;
 
-    private bool _isHidden;
+    private bool _isHidden = false;
 
     public AddWidgetDialog()
     {

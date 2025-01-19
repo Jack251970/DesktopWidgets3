@@ -116,7 +116,6 @@
                 <Grid x:Name="PinRow" Grid.Row="2">
                     <Button
                         x:Name="PinButton"
-                        x:Uid="PinButton"
                         MinWidth="118"
                         MinHeight="32"
                         Margin="{StaticResource LargePinButtonMargin}"
@@ -130,7 +129,7 @@
                                 FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 FontSize="16"
                                 Glyph="&#xE840;" />
-                            <TextBlock x:Uid="PinButtonText" FontSize="14" />
+                            <TextBlock x:Uid="AddWidgetDialog_PinButtonText" FontSize="14" />
                         </StackPanel>
                     </Button>
                 </Grid>

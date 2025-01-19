@@ -348,4 +348,7 @@
   <data name="MenuFlyoutItem_CustomizeWidget.Text" xml:space="preserve">
     <value>自定义组件</value>
   </data>
+  <data name="AddWidgetDialog_PinButtonText.Text" xml:space="preserve">
+    <value>固定</value>
+  </data>
 </root>

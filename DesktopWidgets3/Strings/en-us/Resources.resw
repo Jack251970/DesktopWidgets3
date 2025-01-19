@@ -348,4 +348,7 @@
   <data name="MenuFlyoutItem_CustomizeWidget.Text" xml:space="preserve">
     <value>Customize this widget</value>
   </data>
+  <data name="AddWidgetDialog_PinButtonText.Text" xml:space="preserve">
+    <value>Pin</value>
+  </data>
 </root>
