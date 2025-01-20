@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="using:DesktopWidgets3.Widget.Jack251970.SystemInfo.Helpers"
     xmlns:local="using:DesktopWidgets3.Widget.Jack251970.SystemInfo.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels"
@@ -11,7 +12,10 @@
     mc:Ignorable="d">
 
     <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Spacing="{StaticResource SettingsCardSpacing}">
-        <controls:SettingsCard Description="{StaticResource Performance_WidgetSettings_UseCelsius_SettingsCard_Description}" Header="{StaticResource Performance_WidgetSettings_UseCelsius_SettingsCard_Header}">
+        <controls:SettingsCard
+            x:Name="Performance_WidgetSettings_UseCelsius_SettingsCard"
+            Description="{helpers:ResourceHelper Name=Performance_WidgetSettings_UseCelsius_SettingsCard/Description}"
+            Header="{helpers:ResourceHelper Name=Performance_WidgetSettings_UseCelsius_SettingsCard/Header}">
             <ToggleSwitch IsOn="{x:Bind ViewModel.UseCelsius, Mode=TwoWay}" />
         </controls:SettingsCard>
     </StackPanel>

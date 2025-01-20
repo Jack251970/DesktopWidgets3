@@ -123,46 +123,46 @@
   <data name="Description" xml:space="preserve">
     <value>显示系统信息，如CPU，GPU，内存，网络和磁盘</value>
   </data>
-  <data name="Performance_Name" xml:space="preserve">
+  <data name="Performance.Name" xml:space="preserve">
     <value>性能</value>
   </data>
-  <data name="Performance_Description" xml:space="preserve">
+  <data name="Performance.Description" xml:space="preserve">
     <value>显示系统CPU，GPU和内存状态</value>
   </data>
-  <data name="Performance_WidgetSettings_UseCelsius_SettingsCard_Header" xml:space="preserve">
+  <data name="Performance_WidgetSettings_UseCelsius_SettingsCard.Header" xml:space="preserve">
     <value>显示摄氏度</value>
   </data>
-  <data name="Performance_WidgetSettings_UseCelsius_SettingsCard_Description" xml:space="preserve">
+  <data name="Performance_WidgetSettings_UseCelsius_SettingsCard.Description" xml:space="preserve">
     <value>使用摄氏度而不是华氏度作为温度单位</value>
   </data>
-  <data name="Performance_Memory" xml:space="preserve">
+  <data name="Performance.Memory" xml:space="preserve">
     <value>内存</value>
   </data>
-  <data name="Network_Name" xml:space="preserve">
+  <data name="Network.Name" xml:space="preserve">
     <value>网络</value>
   </data>
-  <data name="Network_Description" xml:space="preserve">
+  <data name="Network.Description" xml:space="preserve">
     <value>显示系统网络状态</value>
   </data>
-  <data name="Network_WidgetSettings_UseBps_SettingsCard_Header" xml:space="preserve">
+  <data name="Network_WidgetSettings_UseBps_SettingsCard.Header" xml:space="preserve">
     <value>显示Bps</value>
   </data>
-  <data name="Network_WidgetSettings_UseBps_SettingsCard_Description" xml:space="preserve">
+  <data name="Network_WidgetSettings_UseBps_SettingsCard.Description" xml:space="preserve">
     <value>使用Bps而不是B/s作为网络单位</value>
   </data>
-  <data name="Network_Widget_UploadSpeed_TextBlock_Text" xml:space="preserve">
+  <data name="Network_Widget_UploadSpeed_TextBlock.Text" xml:space="preserve">
     <value>上传速度：</value>
   </data>
-  <data name="Network_Widget_DownloadSpeed_TextBlock_Text" xml:space="preserve">
+  <data name="Network_Widget_DownloadSpeed_TextBlock.Text" xml:space="preserve">
     <value>下载速度：</value>
   </data>
-  <data name="Network_Widget_NetworkAdapter_TextBlock_Text" xml:space="preserve">
+  <data name="Network_Widget_NetworkAdapter_TextBlock.Text" xml:space="preserve">
     <value>网络适配器：</value>
   </data>
-  <data name="Disk_Name" xml:space="preserve">
+  <data name="Disk.Name" xml:space="preserve">
     <value>磁盘</value>
   </data>
-  <data name="Disk_Description" xml:space="preserve">
+  <data name="Disk.Description" xml:space="preserve">
     <value>显示系统磁盘状态</value>
   </data>
 </root>

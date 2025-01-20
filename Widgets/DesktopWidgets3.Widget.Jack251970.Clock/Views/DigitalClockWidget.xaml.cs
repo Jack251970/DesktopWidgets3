@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.Clock.Views;
@@ -11,13 +10,9 @@ public sealed partial class DigitalClockWidget : UserControl, IWidgetViewBase
 
     public bool IsActivated { get; private set; } = false;
 
-    public DigitalClockWidget(string widgetId, ResourceDictionary? resourceDictionary)
+    public DigitalClockWidget(string widgetId)
     {
         ViewModel = new DigitalClockViewModel(widgetId);
-        if (resourceDictionary != null)
-        {
-            Resources.MergedDictionaries.Add(resourceDictionary);
-        }
         InitializeComponent();
     }
 

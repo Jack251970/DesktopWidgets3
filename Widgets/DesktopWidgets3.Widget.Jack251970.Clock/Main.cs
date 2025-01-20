@@ -25,12 +25,12 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
     public Main()
     {
         // Register widgets
-        _widgetTypeRegistry.Add(DigitalClockWidget.Type, (widgetId, resourceDictionary) => new DigitalClockWidget(widgetId, resourceDictionary));
-        _widgetTypeRegistry.Add(AnalogClockWidget.Type, (widgetId, resourceDictionary) => new AnalogClockWidget(widgetId, resourceDictionary));
+        _widgetTypeRegistry.Add(DigitalClockWidget.Type, (widgetId) => new DigitalClockWidget(widgetId));
+        _widgetTypeRegistry.Add(AnalogClockWidget.Type, (widgetId) => new AnalogClockWidget(widgetId));
 
         // Register widget settings
-        _widgetSettingTypeRegistry.Add(DigitalClockWidget.Type, (widgetId, resourceDictionary) => new DigitalClockSetting(widgetId, resourceDictionary));
-        _widgetSettingTypeRegistry.Add(AnalogClockWidget.Type, (widgetId, resourceDictionary) => new AnalogClockSetting(widgetId, resourceDictionary));
+        _widgetSettingTypeRegistry.Add(DigitalClockWidget.Type, (widgetId) => new DigitalClockSetting(widgetId));
+        _widgetSettingTypeRegistry.Add(AnalogClockWidget.Type, (widgetId) => new AnalogClockSetting(widgetId));
     }
 
     #endregion
@@ -44,7 +44,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         Main.widgetInitContext = widgetInitContext;
     }
 
-    public FrameworkElement CreateWidgetContent(IWidgetContext widgetContext, ResourceDictionary? resourceDictionary)
+    public FrameworkElement CreateWidgetContent(IWidgetContext widgetContext)
     {
         var widgetId = widgetContext.Id;
         var widgetType = widgetContext.Type;
@@ -60,7 +60,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         }
 
         var factory = value;
-        var widgetView = factory(widgetId, resourceDictionary);
+        var widgetView = factory(widgetId);
         _runningWidgets.TryAdd(widgetId, widgetView);
 
         return (FrameworkElement)widgetView;
@@ -115,7 +115,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         };
     }
 
-    public FrameworkElement CreateWidgetSettingContent(IWidgetSettingContext widgetSettingContext, ResourceDictionary? resourceDictionary)
+    public FrameworkElement CreateWidgetSettingContent(IWidgetSettingContext widgetSettingContext)
     {
         var widgetSettingId = widgetSettingContext.Id;
         var widgetType = widgetSettingContext.Type;
@@ -131,7 +131,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         }
 
         var factory = value;
-        var widgetSettingView = factory(widgetSettingId, resourceDictionary);
+        var widgetSettingView = factory(widgetSettingId);
         _runningWidgetSettings.TryAdd(widgetSettingId, widgetSettingView);
 
         return (FrameworkElement)widgetSettingView;
@@ -175,8 +175,8 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
     {
         return widgetType switch
         {
-            DigitalClockWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("DigitalClock_Name"),
-            AnalogClockWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("AnalogClock_Name"),
+            DigitalClockWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("DigitalClock.Name"),
+            AnalogClockWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("AnalogClock.Name"),
             _ => string.Empty
         };
     }
@@ -185,8 +185,8 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
     {
         return widgetType switch
         {
-            DigitalClockWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("DigitalClock_Description"),
-            AnalogClockWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("AnalogClock_Description"),
+            DigitalClockWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("DigitalClock.Description"),
+            AnalogClockWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("AnalogClock.Description"),
             _ => string.Empty
         };
     }

@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.Clock.Views;
@@ -11,13 +10,9 @@ public sealed partial class AnalogClockWidget : UserControl, IWidgetViewBase
 
     public bool IsActivated { get; private set; } = false;
 
-    public AnalogClockWidget(string widgetId, ResourceDictionary? resourceDictionary)
+    public AnalogClockWidget(string widgetId)
     {
         ViewModel = new AnalogClockViewModel(widgetId);
-        if (resourceDictionary != null)
-        {
-            Resources.MergedDictionaries.Add(resourceDictionary);
-        }
         InitializeComponent();
     }
 

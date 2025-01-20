@@ -27,14 +27,14 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
     public Main()
     {
         // Register widgets
-        _widgetTypeRegistry.Add(PerformanceWidget.Type, (widgetId, resourceDictionary, hardwareInfoService) => new PerformanceWidget(widgetId, resourceDictionary, hardwareInfoService));
-        _widgetTypeRegistry.Add(NetworkWidget.Type, (widgetId, resourceDictionary, hardwareInfoService) => new NetworkWidget(widgetId, resourceDictionary, hardwareInfoService));
-        _widgetTypeRegistry.Add(DiskWidget.Type, (widgetId, resourceDictionary, hardwareInfoService) => new DiskWidget(widgetId, resourceDictionary, hardwareInfoService));
+        _widgetTypeRegistry.Add(PerformanceWidget.Type, (widgetId, hardwareInfoService) => new PerformanceWidget(widgetId, hardwareInfoService));
+        _widgetTypeRegistry.Add(NetworkWidget.Type, (widgetId, hardwareInfoService) => new NetworkWidget(widgetId, hardwareInfoService));
+        _widgetTypeRegistry.Add(DiskWidget.Type, (widgetId, hardwareInfoService) => new DiskWidget(widgetId, hardwareInfoService));
 
         // Register widget settings
-        _widgetSettingTypeRegistry.Add(PerformanceWidget.Type, (widgetId, resourceDictionary) => new PerformanceSetting(widgetId, resourceDictionary));
-        _widgetSettingTypeRegistry.Add(NetworkWidget.Type, (widgetId, resourceDictionary) => new NetworkSetting(widgetId, resourceDictionary));
-        _widgetSettingTypeRegistry.Add(DiskWidget.Type, (widgetId, resourceDictionary) => new DiskSetting(widgetId, resourceDictionary));
+        _widgetSettingTypeRegistry.Add(PerformanceWidget.Type, (widgetId) => new PerformanceSetting(widgetId));
+        _widgetSettingTypeRegistry.Add(NetworkWidget.Type, (widgetId) => new NetworkSetting(widgetId));
+        _widgetSettingTypeRegistry.Add(DiskWidget.Type, (widgetId) => new DiskSetting(widgetId));
     }
 
     #endregion
@@ -60,7 +60,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         HardwareInfoService.SampleTimer.Enabled = true;
     }
 
-    public FrameworkElement CreateWidgetContent(IWidgetContext widgetContext, ResourceDictionary? resourceDictionary)
+    public FrameworkElement CreateWidgetContent(IWidgetContext widgetContext)
     {
         var widgetId = widgetContext.Id;
         var widgetType = widgetContext.Type;
@@ -76,7 +76,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         }
 
         var factory = value;
-        var widgetView = factory(widgetId, resourceDictionary, HardwareInfoService);
+        var widgetView = factory(widgetId, HardwareInfoService);
         _runningWidgets.TryAdd(widgetId, widgetView);
 
         return (FrameworkElement)widgetView;
@@ -132,7 +132,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         };
     }
 
-    public FrameworkElement CreateWidgetSettingContent(IWidgetSettingContext widgetSettingContext, ResourceDictionary? resourceDictionary)
+    public FrameworkElement CreateWidgetSettingContent(IWidgetSettingContext widgetSettingContext)
     {
         var widgetSettingId = widgetSettingContext.Id;
         var widgetType = widgetSettingContext.Type;
@@ -148,7 +148,7 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
         }
 
         var factory = value;
-        var widgetSettingView = factory(widgetSettingId, resourceDictionary);
+        var widgetSettingView = factory(widgetSettingId);
         _runningWidgetSettings.TryAdd(widgetSettingId, widgetSettingView);
 
         return (FrameworkElement)widgetSettingView;
@@ -192,9 +192,9 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
     {
         return widgetType switch
         {
-            PerformanceWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Performance_Name"),
-            NetworkWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Network_Name"),
-            DiskWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Disk_Name"),
+            PerformanceWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Performance.Name"),
+            NetworkWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Network.Name"),
+            DiskWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Disk.Name"),
             _ => string.Empty
         };
     }
@@ -203,9 +203,9 @@ public partial class Main : IWidgetGroup, IWidgetGroupSetting, IWidgetLocalizati
     {
         return widgetType switch
         {
-            PerformanceWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Performance_Description"),
-            NetworkWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Network_Description"),
-            DiskWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Disk_Description"),
+            PerformanceWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Performance.Description"),
+            NetworkWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Network.Description"),
+            DiskWidget.Type => WidgetInitContext.LocalizationService.GetLocalizedString("Disk.Description"),
             _ => string.Empty
         };
     }

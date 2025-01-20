@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helper="using:DesktopWidgets3.Widget.Jack251970.Clock.Helpers"
     xmlns:local="using:DesktopWidgets3.Widget.Jack251970.Clock.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DesktopWidgets3.Widget.Jack251970.Clock.ViewModels"
@@ -11,7 +12,10 @@
     mc:Ignorable="d">
 
     <StackPanel Padding="{StaticResource ScrollViewerContentPadding}" Spacing="{StaticResource SettingsCardSpacing}">
-        <controls:SettingsCard Description="{StaticResource DigitalClock_WidgetSettings_ShowSeconds_SettingsCard_Description}" Header="{StaticResource DigitalClock_WidgetSettings_ShowSeconds_SettingsCard_Header}">
+        <controls:SettingsCard
+            x:Name="DigitalClock_WidgetSettings_ShowSeconds_SettingsCard"
+            Description="{helper:ResourceHelper Name=WidgetSettings_ShowSeconds_SettingsCard/Description}"
+            Header="{helper:ResourceHelper Name=WidgetSettings_ShowSeconds_SettingsCard/Header}">
             <controls:SettingsCard.HeaderIcon>
                 <FontIcon Glyph="&#xE823;" />
             </controls:SettingsCard.HeaderIcon>

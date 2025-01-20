@@ -18,12 +18,8 @@ public interface IWidgetGroupSetting
     /// Create and get the widget setting content for one widgetsetting  instance.
     /// </summary>
     /// <param name="widgetContext">Context to provide information for one widget setting instance.</param>
-    /// <param name="resourceDictionary">
-    /// A resource dictionary used for the widget setting content.
-    /// It consists of the string resources that are used by the widget setting content.
-    /// </param>
     /// <returns>The widget setting content.</returns>
-    FrameworkElement CreateWidgetSettingContent(IWidgetSettingContext widgetSettingContext, ResourceDictionary? resourceDictionary);
+    FrameworkElement CreateWidgetSettingContent(IWidgetSettingContext widgetSettingContext);
 
     /// <summary>
     /// Handle the widget settings changed event.

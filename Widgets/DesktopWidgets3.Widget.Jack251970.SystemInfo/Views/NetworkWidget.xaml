@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="using:DesktopWidgets3.Widget.Jack251970.SystemInfo.Helpers"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DesktopWidgets3.Widget.Jack251970.SystemInfo.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:NetworkViewModel}"
@@ -32,7 +33,7 @@
             <TextBlock
                 Margin="8,0,0,0"
                 VerticalAlignment="Center"
-                Text="{StaticResource Network_Widget_NetworkAdapter_TextBlock_Text}" />
+                Text="{helpers:ResourceHelper Name=Network_Widget_NetworkAdapter/TextBlock}" />
         </StackPanel>
         <ComboBox
             Grid.Row="0"
@@ -55,7 +56,7 @@
             <TextBlock
                 Margin="8,0,0,0"
                 VerticalAlignment="Center"
-                Text="{StaticResource Network_Widget_UploadSpeed_TextBlock_Text}" />
+                Text="{helpers:ResourceHelper Name=Network_Widget_UploadSpeed_TextBlock/Text}" />
         </StackPanel>
         <TextBlock
             Grid.Row="2"
@@ -75,7 +76,7 @@
             <TextBlock
                 Margin="8,0,0,0"
                 VerticalAlignment="Center"
-                Text="{StaticResource Network_Widget_DownloadSpeed_TextBlock_Text}" />
+                Text="{helpers:ResourceHelper Name=Network_Widget_DownloadSpeed_TextBlock/Text}" />
         </StackPanel>
         <TextBlock
             Grid.Row="4"

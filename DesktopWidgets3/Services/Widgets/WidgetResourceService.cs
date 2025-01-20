@@ -23,8 +23,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
     private List<WidgetGroupPair> InstalledWidgetGroupPairs { get; set; } = null!;
     private List<WidgetGroupMetadata> AllWidgetGroupMetadatas { get; set; } = null!;
 
-    private readonly Dictionary<string, Dictionary<string, string>> WidgetsLanguageResources = [];
-
     private static readonly string[] WidgetsDirectories =
     [
         LocalSettingsHelper.DefaultUserWidgetsDirectory
@@ -55,9 +53,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
             // initialize all widgets
             await InitWidgetsAsync();
-
-            // initialize widgets language resources
-            InitWidgetsLanguageResources();
         }
         catch (Exception ex)
         {
@@ -200,41 +195,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #endregion
 
-    #region Language Resources
-
-    private void InitWidgetsLanguageResources()
-    {
-        foreach (var pair in InstalledWidgetGroupPairs)
-        {
-            var widgetLanguageResources = new Dictionary<string, string>();
-
-            var resourceMap = ResourceExtensions.TryGetResourceMap(pair.Metadata.AssemblyName);
-            if (resourceMap != null)
-            {
-                for (uint i = 0; i < resourceMap.ResourceCount; i++)
-                {
-                    (var key, var value) = resourceMap.GetValueByIndex(i);
-                    widgetLanguageResources.TryAdd(key, value.ValueAsString);
-                }
-            }
-
-            WidgetsLanguageResources.TryAdd(pair.Metadata.ID, widgetLanguageResources);
-        }
-    }
-
-    private LanguageResourceDictionary? GetWidgetLanguageResources(string widgetId)
-    {
-        WidgetsLanguageResources.TryGetValue(widgetId, out var widgetLanguageResources);
-        if (widgetLanguageResources == null)
-        {
-            return null;
-        }
-
-        return new LanguageResourceDictionary(widgetLanguageResources);
-    }
-
-    #endregion
-
     #endregion
 
     #region Dispose
@@ -314,7 +274,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
             var pair = InstalledWidgetGroupPairs[index];
             try
             {
-                return pair.WidgetGroup.CreateWidgetContent(widgetContext, GetWidgetLanguageResources(pair.Metadata.ID));
+                return pair.WidgetGroup.CreateWidgetContent(widgetContext);
             }
             catch (Exception e)
             {
@@ -422,7 +382,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         {
             try
             {
-                return widgetGroupSetting.CreateWidgetSettingContent(widgetSettingContext, GetWidgetLanguageResources(metadata.ID));
+                return widgetGroupSetting.CreateWidgetSettingContent(widgetSettingContext);
             }
             catch (Exception e)
             {

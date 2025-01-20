@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.Views;
@@ -9,13 +8,9 @@ public sealed partial class NetworkSetting : UserControl, IWidgetSettingViewBase
 
     public bool IsNavigated { get; private set; }
 
-    public NetworkSetting(string widgetId, ResourceDictionary? resourceDictionary)
+    public NetworkSetting(string widgetId)
     {
         ViewModel = new NetworkSettingViewModel(widgetId);
-        if (resourceDictionary != null)
-        {
-            Resources.MergedDictionaries.Add(resourceDictionary);
-        }
         InitializeComponent();
     }
 

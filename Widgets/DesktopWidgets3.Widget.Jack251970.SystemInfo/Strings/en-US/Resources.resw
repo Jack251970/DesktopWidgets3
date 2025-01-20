@@ -123,46 +123,46 @@
   <data name="Description" xml:space="preserve">
     <value>Show system info, e.g. CPU, GPU, memory, network and disk</value>
   </data>
-  <data name="Performance_Name" xml:space="preserve">
+  <data name="Performance.Name" xml:space="preserve">
     <value>Performance</value>
   </data>
-  <data name="Performance_Description" xml:space="preserve">
+  <data name="Performance.Description" xml:space="preserve">
     <value>Show system CPU, GPU and memory status</value>
   </data>
-  <data name="Performance_WidgetSettings_UseCelsius_SettingsCard_Header" xml:space="preserve">
+  <data name="Performance_WidgetSettings_UseCelsius_SettingsCard.Header" xml:space="preserve">
     <value>Show celsius</value>
   </data>
-  <data name="Performance_WidgetSettings_UseCelsius_SettingsCard_Description" xml:space="preserve">
+  <data name="Performance_WidgetSettings_UseCelsius_SettingsCard.Description" xml:space="preserve">
     <value>Use celsius instead of fahrenheit as the unit of the temprature</value>
   </data>
-  <data name="Performance_Memory" xml:space="preserve">
+  <data name="Performance.Memory" xml:space="preserve">
     <value>Memory</value>
   </data>
-  <data name="Network_Name" xml:space="preserve">
+  <data name="Network.Name" xml:space="preserve">
     <value>Network</value>
   </data>
-  <data name="Network_Description" xml:space="preserve">
+  <data name="Network.Description" xml:space="preserve">
     <value>Show system network status</value>
   </data>
-  <data name="Network_WidgetSettings_UseBps_SettingsCard_Header" xml:space="preserve">
+  <data name="Network_WidgetSettings_UseBps_SettingsCard.Header" xml:space="preserve">
     <value>Show Bps</value>
   </data>
-  <data name="Network_WidgetSettings_UseBps_SettingsCard_Description" xml:space="preserve">
+  <data name="Network_WidgetSettings_UseBps_SettingsCard.Description" xml:space="preserve">
     <value>Use Bps instead of B/s as the unit of the network speed</value>
   </data>
-  <data name="Network_Widget_UploadSpeed_TextBlock_Text" xml:space="preserve">
+  <data name="Network_Widget_UploadSpeed_TextBlock.Text" xml:space="preserve">
     <value>Upload speed:</value>
   </data>
-  <data name="Network_Widget_DownloadSpeed_TextBlock_Text" xml:space="preserve">
+  <data name="Network_Widget_DownloadSpeed_TextBlock.Text" xml:space="preserve">
     <value>Download speed:</value>
   </data>
-  <data name="Network_Widget_NetworkAdapter_TextBlock_Text" xml:space="preserve">
+  <data name="Network_Widget_NetworkAdapter_TextBlock.Text" xml:space="preserve">
     <value>Network adapter:</value>
   </data>
-  <data name="Disk_Name" xml:space="preserve">
+  <data name="Disk.Name" xml:space="preserve">
     <value>Disk</value>
   </data>
-  <data name="Disk_Description" xml:space="preserve">
+  <data name="Disk.Description" xml:space="preserve">
     <value>Show system disk status</value>
   </data>
 </root>

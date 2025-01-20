@@ -18,12 +18,8 @@ public interface IAsyncWidgetGroup
     /// Create and get the widget content for one widget instance.
     /// </summary>
     /// <param name="widgetContext">Context to provide information for one widget instance.</param>
-    /// <param name="resourceDictionary">
-    /// A resource dictionary used for the widget content.
-    /// It consists of the string resources that are used by the widget content.
-    /// </param>
     /// <returns>The widget content.</returns>
-    FrameworkElement CreateWidgetContent(IWidgetContext widgetContext, ResourceDictionary? resourceDictionary);
+    FrameworkElement CreateWidgetContent(IWidgetContext widgetContext);
 
     /// <summary>
     /// Unpin one widget instance.

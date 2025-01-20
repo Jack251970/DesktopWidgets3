@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.Views;
@@ -9,13 +8,9 @@ public sealed partial class DiskSetting : UserControl, IWidgetSettingViewBase
 
     public bool IsNavigated { get; private set; }
 
-    public DiskSetting(string widgetId, ResourceDictionary? resourceDictionary)
+    public DiskSetting(string widgetId)
     {
         ViewModel = new DiskSettingViewModel(widgetId);
-        if (resourceDictionary != null)
-        {
-            Resources.MergedDictionaries.Add(resourceDictionary);
-        }
         InitializeComponent();
     }
 

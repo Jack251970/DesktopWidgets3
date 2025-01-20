@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.Views;
@@ -11,13 +10,9 @@ public sealed partial class DiskWidget : UserControl, IWidgetViewBase
 
     public bool IsActivated { get; private set; } = false;
 
-    public DiskWidget(string widgetId, ResourceDictionary? resourceDictionary, HardwareInfoService hardwareInfoService)
+    public DiskWidget(string widgetId, HardwareInfoService hardwareInfoService)
     {
         ViewModel = new DiskViewModel(widgetId, hardwareInfoService);
-        if (resourceDictionary != null)
-        {
-            Resources.MergedDictionaries.Add(resourceDictionary);
-        }
         InitializeComponent();
     }
 

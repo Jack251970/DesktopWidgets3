@@ -1,8 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.Views;
 
-namespace DesktopWidgets3.Widget.Jack251970.SystemInfo.Views;
-
-internal delegate IWidgetViewBase WidgetCreateDelegate(string widgetId, ResourceDictionary? resourceDictionary, HardwareInfoService HardwareInfoService);
+internal delegate IWidgetViewBase WidgetCreateDelegate(string widgetId, HardwareInfoService HardwareInfoService);
 internal interface IWidgetViewBase : IDisposable
 {
     bool IsActivated { get; }

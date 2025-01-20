@@ -184,7 +184,7 @@ public partial class PerformanceViewModel : ObservableRecipient
 
             _dispatcherQueue.TryEnqueue(() =>
             {
-                MemoryLeftInfo = Main.WidgetInitContext.LocalizationService.GetLocalizedString("Performance_Memory");
+                MemoryLeftInfo = Main.WidgetInitContext.LocalizationService.GetLocalizedString("Performance.Memory");
                 MemoryRightInfo = allMem == 0 ? FormatUtils.FormatPercentage(memoryUsage) : memoryUsedInfo;
                 MemoryLoadValue = memoryUsage * 100;
             });
