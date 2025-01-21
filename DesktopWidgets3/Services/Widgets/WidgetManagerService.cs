@@ -1233,7 +1233,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
                 Index = widgetIndex,
                 Pinned = true,
                 Position = widgetWindow.Position,
-                Size = widgetWindow.ContentSize,
+                Size = providerType == WidgetProviderType.Microsoft ? RectSize.NULL : widgetWindow.ContentSize,
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
             });
