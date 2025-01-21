@@ -20,7 +20,6 @@ global using DesktopWidgets3.Helpers.Navigation;
 global using DesktopWidgets3.Models.Application;
 global using DesktopWidgets3.Models.Parameters;
 global using DesktopWidgets3.Models.Settings;
-global using DesktopWidgets3.Models.Widgets;
 global using DesktopWidgets3.Services;
 global using DesktopWidgets3.Services.Widgets;
 global using DesktopWidgets3.UserControls;
