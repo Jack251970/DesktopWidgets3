@@ -315,49 +315,55 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Initialization
 
-    public void Initialize()
+    public async Task InitializeAsync(WidgetViewModel? widgetViewModel = null)
     {
         // set window properties
         var hwnd = this.GetWindowHandle();
         SystemHelper.SetWindowZPos(hwnd, SystemHelper.WINDOWZPOS.ONBOTTOM); // Force window to stay at bottom
         _manager.WindowMessageReceived += WindowManager_WindowMessageReceived; // Register window sink events
+
+        // initialize widget view model
+        await SetWidgetMenuAsync(widgetViewModel);
     }
 
     #endregion
 
     #region Menu Flyout
 
-    private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs _)
+    private MenuFlyout? WidgetMenuFlyout;
+
+    private async Task SetWidgetMenuAsync(WidgetViewModel? widgetViewModel)
     {
-        if ((!_isEditMode) && sender as Button is Button widgetMenuButton && widgetMenuButton.Flyout is MenuFlyout widgetMenuFlyout)
+        if (WidgetMenuFlyout == null)
         {
-            widgetMenuFlyout.Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft;
-            if (widgetMenuFlyout?.Items.Count == 0)
+            WidgetMenuFlyout = new MenuFlyout
             {
-                // pin & delete & customize
-                AddUnpinDeleteItemsToWidgetMenu(widgetMenuFlyout);
-                if (_widgetResourceService.GetWidgetIsCustomizable(ProviderType, WidgetId, WidgetType))
-                {
-                    AddCustomizeToWidgetMenu(widgetMenuFlyout);
-                }
+                Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft
+            };
 
-                // size
-                if (ProviderType == WidgetProviderType.Microsoft)
-                {
-                    widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
-                    await AddSizeItemsToWidgetMenuAsync(widgetMenuFlyout);
-                }
+            // pin & delete & customize
+            AddUnpinDeleteItemsToWidgetMenu(WidgetMenuFlyout);
+            if (_widgetResourceService.GetWidgetIsCustomizable(ProviderType, WidgetId, WidgetType))
+            {
+                AddCustomizeToWidgetMenu(WidgetMenuFlyout);
+            }
 
-                // layout
-                widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
-                AddLayoutItemsToWidgetMenu(widgetMenuFlyout);
+            // size
+            if (ProviderType == WidgetProviderType.Microsoft)
+            {
+                WidgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
+                await AddSizeItemsToWidgetMenuAsync(WidgetMenuFlyout, widgetViewModel);
+            }
+
+            // layout
+            WidgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
+            AddLayoutItemsToWidgetMenu(WidgetMenuFlyout);
 
 #if DEBUG
-                // restart
-                widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
-                AddRestartItemsToWidgetMenu(widgetMenuFlyout);
+            // restart
+            WidgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
+            AddRestartItemsToWidgetMenu(WidgetMenuFlyout);
 #endif
-            }
         }
     }
 
@@ -449,10 +455,9 @@ public sealed partial class WidgetWindow : WindowEx
 
     private SelectableMenuFlyoutItem? _currentSelectedSize;
 
-    private async Task AddSizeItemsToWidgetMenuAsync(MenuFlyout widgetMenuFlyout)
+    private async Task AddSizeItemsToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetViewModel? widgetViewModel)
     {
-        var widgetViewModel = ViewModel.WidgetViewModel;
-        if (widgetViewModel is null)
+        if (widgetViewModel == null)
         {
             // If we can't get the widgetViewModel, bail and don't show sizes.
             return;
@@ -706,7 +711,7 @@ public sealed partial class WidgetWindow : WindowEx
     private void Content_Loaded(object sender, RoutedEventArgs e)
     {
         // initialize widget icon
-        UpdateWidgetHeaderIconFillAsync(ContentArea.ActualTheme);
+        UpdateWidgetHeaderIconFill(ContentArea.ActualTheme);
 
         // set title bar
         ExtendsContentIntoTitleBar = true;
@@ -784,10 +789,10 @@ public sealed partial class WidgetWindow : WindowEx
 
     private void ContentArea_ActualThemeChanged(FrameworkElement sender, object args)
     {
-        UpdateWidgetHeaderIconFillAsync(sender.ActualTheme);
+        UpdateWidgetHeaderIconFill(sender.ActualTheme);
     }
 
-    private async void UpdateWidgetHeaderIconFillAsync(ElementTheme actualTheme)
+    private async void UpdateWidgetHeaderIconFill(ElementTheme actualTheme)
     {
         if (ProviderType == WidgetProviderType.DesktopWidgets3)
         {
@@ -841,7 +846,7 @@ public sealed partial class WidgetWindow : WindowEx
     #region Edit Mode
 
     private bool _isEditMode = true;
-    private bool _isEditModeInitialized;
+    private bool _isEditModeInitialized = false;
 
     public void SetEditMode(bool isEditMode)
     {
@@ -852,7 +857,10 @@ public sealed partial class WidgetWindow : WindowEx
         }
 
         // set window style (it can cause size change)
-        IsResizable = isEditMode;
+        if (ProviderType == WidgetProviderType.DesktopWidgets3)
+        {
+            IsResizable = isEditMode;
+        }
 
         // set title bar (it can cause size change)
         SetTitleBarDragRegion(isEditMode);
@@ -866,6 +874,9 @@ public sealed partial class WidgetWindow : WindowEx
         {
             IsActive = !isEditMode;
         }
+
+        // set widget menu
+        ViewModel.WidgetMenuFlyout = isEditMode ? null : WidgetMenuFlyout;
 
         // set edit mode flag
         _isEditModeInitialized = true;

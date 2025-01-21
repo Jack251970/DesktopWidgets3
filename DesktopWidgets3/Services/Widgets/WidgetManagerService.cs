@@ -787,7 +787,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(providerType, widgetId, widgetType);
 
             // initialize window
-            widgetWindow.Initialize();
+            await widgetWindow.InitializeAsync();
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
@@ -857,7 +857,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             widgetWindow.ViewModel.WidgetDisplayTitle = widgetName;
 
             // initialize window
-            widgetWindow.Initialize();
+            await widgetWindow.InitializeAsync(widgetViewModel);
 
             // set window style, size and position
             widgetWindow.IsResizable = false;

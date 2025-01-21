@@ -18,6 +18,9 @@ public partial class WidgetWindowViewModel : ObservableRecipient
     public string _widgetDisplayTitle = string.Empty;
 
     [ObservableProperty]
+    public MenuFlyout? _widgetMenuFlyout = null;
+
+    [ObservableProperty]
     public FrameworkElement _widgetFrameworkElement = new ProgressRing();
 
     [ObservableProperty]

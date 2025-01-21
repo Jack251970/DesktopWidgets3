@@ -46,14 +46,10 @@
                 VerticalAlignment="Top"
                 Background="Transparent"
                 BorderThickness="0"
-                Click="OpenWidgetMenuAsync"
                 Content="&#xE712;"
+                Flyout="{x:Bind ViewModel.WidgetMenuFlyout, Mode=OneWay}"
                 FontFamily="{StaticResource SymbolThemeFontFamily}"
-                FontSize="{ThemeResource CaptionTextBlockFontSize}">
-                <Button.Flyout>
-                    <MenuFlyout />
-                </Button.Flyout>
-            </Button>
+                FontSize="{ThemeResource CaptionTextBlockFontSize}" />
         </Grid>
 
         <!--  Widget content  -->
