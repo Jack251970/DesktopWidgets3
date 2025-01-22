@@ -35,6 +35,7 @@
       <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
       <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
       <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
+      <PackageReference Include="System.Management.Automation" Version="7.4.6" />
   </ItemGroup>
 
   <ItemGroup>

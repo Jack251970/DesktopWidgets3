@@ -246,6 +246,13 @@ public partial class App : Application
                 services.AddDashboard();
 
                 #endregion
+
+                #region DevHome.Services.Core
+
+                // DevHome.Services.Core Services
+                services.AddCore();
+
+                #endregion
             })
             .Build();
 

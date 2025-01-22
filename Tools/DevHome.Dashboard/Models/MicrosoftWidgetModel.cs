@@ -25,7 +25,7 @@ namespace DevHome.Dashboard.Models;
 /// Resource model and management model for microsoft widgets.
 /// Edited from DashboardView.xaml.cs.
 /// </summary>
-public partial class MicrosoftWidgetModel : IDisposable
+public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, WidgetViewModelFactory widgetViewModelFactory, IWidgetHostingService widgetHostingService, IWidgetServiceService widgetServiceService) : IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));
 
@@ -35,9 +35,10 @@ public partial class MicrosoftWidgetModel : IDisposable
 
     public List<WidgetViewModel> ExistedWidgets { get; set; } = [];
 
-    private readonly DispatcherQueue _dispatcherQueue;
-    private readonly WidgetViewModelFactory _widgetViewModelFactory;
-    private readonly IWidgetHostingService _widgetHostingService;
+    private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
+    private readonly WidgetViewModelFactory _widgetViewModelFactory = widgetViewModelFactory;
+    private readonly IWidgetHostingService _widgetHostingService = widgetHostingService;
+    private readonly IWidgetServiceService _widgetServiceService = widgetServiceService;
 
     private Func<WidgetViewModel, int, Task>? CreateWidgetWindow;
 
@@ -48,13 +49,6 @@ public partial class MicrosoftWidgetModel : IDisposable
     public bool IsLoading { get; private set; } = false;
 
     public bool HasWidgetServiceInitialized { get; private set; } = false;
-
-    public MicrosoftWidgetModel()
-    {
-        _dispatcherQueue = DependencyExtensions.GetRequiredService<DispatcherQueue>();
-        _widgetViewModelFactory = DependencyExtensions.GetRequiredService<WidgetViewModelFactory>();
-        _widgetHostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
-    }
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
     {
@@ -486,9 +480,8 @@ public partial class MicrosoftWidgetModel : IDisposable
             return false;
         }
 
-        // TODO(Future): Add support for widget service.
         // Ensure the WidgetService is installed and up to date.
-        /*var widgetServiceState = _widgetServiceService.GetWidgetServiceState();
+        var widgetServiceState = _widgetServiceService.GetWidgetServiceState();
         switch (widgetServiceState)
         {
             case WidgetServiceService.WidgetServiceStates.MeetsMinVersion:
@@ -496,23 +489,23 @@ public partial class MicrosoftWidgetModel : IDisposable
                 break;
             case WidgetServiceService.WidgetServiceStates.NotAtMinVersion:
                 _log.Warning($"Initialization failed, WidgetServiceState not at min version");
-                UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;
+                /*UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;*/
                 return false;
             case WidgetServiceService.WidgetServiceStates.NotOK:
                 _log.Warning($"Initialization failed, WidgetServiceState not OK");
-                NotOKServiceMessageStackPanel.Visibility = Visibility.Visible;
+                /*NotOKServiceMessageStackPanel.Visibility = Visibility.Visible;*/
                 return false;
             case WidgetServiceService.WidgetServiceStates.Updating:
                 _log.Warning($"Initialization failed, WidgetServiceState updating");
-                UpdatingWidgetServiceMessageStackPanel.Visibility = Visibility.Visible;
+                /*UpdatingWidgetServiceMessageStackPanel.Visibility = Visibility.Visible;*/
                 return false;
             case WidgetServiceService.WidgetServiceStates.Unknown:
                 _log.Error($"Initialization failed, WidgetServiceState unknown");
-                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+                /*RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;*/
                 return false;
             default:
                 break;
-        }*/
+        }
 
         // Ensure we can access the WidgetService and subscribe to WidgetCatalog events.
         if (!await SubscribeToWidgetCatalogEventsAsync())

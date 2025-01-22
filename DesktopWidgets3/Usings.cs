@@ -7,6 +7,11 @@ global using DevHome.Dashboard.Controls;
 global using DevHome.Dashboard.Extensions;
 global using DevHome.Dashboard.Helpers;
 global using DevHome.Dashboard.Services;
+global using DevHome.Dashboard.Services.Core.Contracts;
+global using DevHome.Dashboard.Services.Core.Exceptions;
+global using DevHome.Dashboard.Services.Core.Extensions;
+global using DevHome.Dashboard.Services.Core.Models;
+global using DevHome.Dashboard.Services.Core.Services;
 global using DevHome.Dashboard.ViewModels;
 global using DevHome.Dashboard.Models;
 

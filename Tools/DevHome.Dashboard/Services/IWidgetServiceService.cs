@@ -1,4 +1,4 @@
-﻿/*// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using static DevHome.Dashboard.Services.WidgetServiceService;
@@ -10,4 +10,4 @@ public interface IWidgetServiceService
     public Task<bool> TryInstallingWidgetService();
 
     public WidgetServiceStates GetWidgetServiceState();
-}*/
+}

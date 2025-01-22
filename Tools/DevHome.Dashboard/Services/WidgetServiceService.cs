@@ -1,9 +1,9 @@
-﻿/*// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common.Helpers;
+//using DevHome.Common.Helpers;
 using DevHome.Dashboard.Helpers;
-using DevHome.Services.Core.Contracts;
+using DevHome.Dashboard.Services.Core.Contracts;
 using Serilog;
 using Windows.ApplicationModel;
 
@@ -35,7 +35,10 @@ public class WidgetServiceService(IPackageDeploymentService packageDeploymentSer
         // First check for the WidgetsPlatformRuntime package. If it's installed and has a valid state, we return that state.
         _log.Information("Checking for WidgetsPlatformRuntime...");
         var package = GetWidgetsPlatformRuntimePackage();
-        _widgetServiceState = ValidatePackage(package);
+        if (package != null)
+        {
+            _widgetServiceState = ValidatePackage(package);
+        }
         if (_widgetServiceState == WidgetServiceStates.MeetsMinVersion ||
             _widgetServiceState == WidgetServiceStates.Updating)
         {
@@ -45,7 +48,10 @@ public class WidgetServiceService(IPackageDeploymentService packageDeploymentSer
         // If the WidgetsPlatformRuntime package is not installed or not high enough version, check for the WebExperience package.
         _log.Information("Checking for WebExperiencePack...");
         package = GetWebExperiencePackPackage();
-        _widgetServiceState = ValidatePackage(package);
+        if (package != null)
+        {
+            _widgetServiceState = ValidatePackage(package);
+        }
 
         return _widgetServiceState;
     }
@@ -54,12 +60,16 @@ public class WidgetServiceService(IPackageDeploymentService packageDeploymentSer
     {
         _log.Information("Try installing widget service...");
         var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetsPlatformRuntimePackageId);
-        _widgetServiceState = ValidatePackage(GetWidgetsPlatformRuntimePackage());
+        var package = GetWidgetsPlatformRuntimePackage();
+        if (package != null)
+        {
+            _widgetServiceState = ValidatePackage(package);
+        }
         _log.Information($"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
         return installedSuccessfully;
     }
 
-    private Package GetWebExperiencePackPackage()
+    private Package? GetWebExperiencePackPackage()
     {
         var minSupportedVersion400 = new Version(423, 3800);
         var minSupportedVersion500 = new Version(523, 3300);
@@ -69,17 +79,17 @@ public class WidgetServiceService(IPackageDeploymentService packageDeploymentSer
         var packages = _packageDeploymentService.FindPackagesForCurrentUser(
             WidgetHelpers.WebExperiencePackageFamilyName,
             (minSupportedVersion400, version500),
-            (minSupportedVersion500, null));
+            (minSupportedVersion500, null)!);
         return packages.FirstOrDefault();
     }
 
-    private Package GetWidgetsPlatformRuntimePackage()
+    private Package? GetWidgetsPlatformRuntimePackage()
     {
         var minSupportedVersion = new Version(1, 0, 0, 0);
 
         var packages = _packageDeploymentService.FindPackagesForCurrentUser(
             WidgetHelpers.WidgetsPlatformRuntimePackageFamilyName,
-            (minSupportedVersion, null));
+            (minSupportedVersion, null)!);
         return packages.FirstOrDefault();
     }
 
@@ -106,4 +116,4 @@ public class WidgetServiceService(IPackageDeploymentService packageDeploymentSer
         _log.Information($"ValidatePackage found {packageStatus}");
         return packageStatus;
     }
-}*/
+}
