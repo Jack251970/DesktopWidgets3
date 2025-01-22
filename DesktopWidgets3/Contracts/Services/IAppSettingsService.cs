@@ -24,10 +24,6 @@ public interface IAppSettingsService
 
     Task SetBatterySaverAsync(bool value);
 
-    bool MultiThread { get; }
-
-    Task SetMultiThreadAsync(bool value);
-
     ElementTheme Theme { get; }
 
     Task SaveThemeInSettingsAsync(ElementTheme theme);

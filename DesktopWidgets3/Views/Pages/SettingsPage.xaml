@@ -93,13 +93,6 @@
                     <ToggleSwitch IsOn="{x:Bind ViewModel.BatterySaver, Mode=TwoWay}" />
                 </controls:SettingsCard>
 
-                <controls:SettingsCard x:Uid="Settings_MultiThread_Card">
-                    <controls:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE81E;" />
-                    </controls:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.MultiThread, Mode=TwoWay}" />
-                </controls:SettingsCard>
-
                 <!--  Apperance  -->
                 <TextBlock x:Uid="Settings_Appearance" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
 

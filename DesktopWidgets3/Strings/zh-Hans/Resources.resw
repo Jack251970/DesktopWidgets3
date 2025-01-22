@@ -228,12 +228,6 @@
   <data name="Settings_Repository_Card.Header" xml:space="preserve">
     <value>查看存储库</value>
   </data>
-  <data name="Settings_MultiThread_Card.Description" xml:space="preserve">
-    <value>使用多个线程加载组件</value>
-  </data>
-  <data name="Settings_MultiThread_Card.Header" xml:space="preserve">
-    <value>多线程加速</value>
-  </data>
   <data name="AppNotificationUnhandledExceptionPayload" xml:space="preserve">
     <value>&lt;toast launch="action=ToastClick"&gt;
   &lt;visual&gt;

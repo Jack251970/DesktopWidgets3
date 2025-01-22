@@ -26,7 +26,6 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
             Language = GetLanguage();
             SilentStart = GetSilentStart();
             BatterySaver = GetBatterySaver();
-            MultiThread = GetMultiThread();
             Theme = GetTheme();
             BackdropType = GetBackdropType();
 
@@ -160,37 +159,6 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     }
 
     public event Action<bool>? OnBatterySaverChanged;
-
-    #endregion
-
-    #region Multi Thread
-
-    private bool multiThread;
-    public bool MultiThread
-    {
-        get => multiThread;
-        private set
-        {
-            if (multiThread != value)
-            {
-                multiThread = value;
-            }
-        }
-    }
-
-    private const bool DefaultMultiThread = false;
-
-    private bool GetMultiThread()
-    {
-        var data = GetDataFromSettings(_localSettingsKeys.MultiThreadKey, DefaultMultiThread);
-        return data;
-    }
-
-    public async Task SetMultiThreadAsync(bool value)
-    {
-        await SaveDataInSettingsAsync(_localSettingsKeys.MultiThreadKey, value);
-        MultiThread = value;
-    }
 
     #endregion
 

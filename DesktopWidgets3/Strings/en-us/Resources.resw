@@ -228,12 +228,6 @@
   <data name="Settings_Repository_Card.Header" xml:space="preserve">
     <value>To view this repository</value>
   </data>
-  <data name="Settings_MultiThread_Card.Description" xml:space="preserve">
-    <value>Use multiple threads to load widget windows</value>
-  </data>
-  <data name="Settings_MultiThread_Card.Header" xml:space="preserve">
-    <value>Multi-thread acceleration</value>
-  </data>
   <data name="AppNotificationUnhandledExceptionPayload" xml:space="preserve">
     <value>&lt;toast launch="action=ToastClick"&gt;
   &lt;visual&gt;

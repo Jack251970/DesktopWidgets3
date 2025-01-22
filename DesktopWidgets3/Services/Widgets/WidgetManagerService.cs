@@ -705,7 +705,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         };
 
         // create widget window
-        var window = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), _appSettingsService.MultiThread, lifecycleActions);
+        var window = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), false, lifecycleActions);
 
         // add to widget window pair list
         var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
@@ -758,7 +758,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         };
 
         // create widget window
-        var window = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item, widgetViewModel), _appSettingsService.MultiThread, lifecycleActions);
+        var window = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item, widgetViewModel), false, lifecycleActions);
 
         // add to widget window pair list
         var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);

@@ -33,9 +33,6 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
     private bool _batterySaver;
 
     [ObservableProperty]
-    private bool _multiThread;
-
-    [ObservableProperty]
     private int _themeIndex;
 
     [ObservableProperty]
@@ -71,7 +68,6 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
     {
         SilentStart = _appSettingsService.SilentStart;
         BatterySaver = _appSettingsService.BatterySaver;
-        MultiThread = _appSettingsService.MultiThread;
         ThemeIndex = (int)_themeSelectorService.Theme;
         BackdropTypeIndex = (int)_appSettingsService.BackdropType;
 
@@ -179,14 +175,6 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
         if (_isInitialized)
         {
             _appSettingsService.SetBatterySaverAsync(value);
-        }
-    }
-
-    partial void OnMultiThreadChanged(bool value)
-    {
-        if (_isInitialized)
-        {
-            _appSettingsService.SetMultiThreadAsync(value);
         }
     }
 

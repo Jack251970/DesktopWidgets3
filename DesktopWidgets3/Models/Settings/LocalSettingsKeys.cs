@@ -8,8 +8,6 @@ internal class LocalSettingsKeys
 
     public readonly string BatterySaverKey = "BatterySaver";
 
-    public readonly string MultiThreadKey = "MultiThread";
-
     public readonly string ThemeKey = "Theme";
 
     public readonly string BackdropTypeKey = "Backdrop";
