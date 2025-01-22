@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-//using DevHome.Common.Extensions;
-//using DevHome.Common.Services;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
@@ -73,7 +71,9 @@ public sealed class WidgetHelpers
         var endOfPfnIndex = providerId.IndexOf('!', StringComparison.Ordinal);
         var familyNamePartOfProviderId = providerId[..endOfPfnIndex];
 
-        // Check if the specified widget provider is not the WebExperiencePackage, which can cause COM issues.
+        // Check if the specified widget provider is not the WebExperiencePackage.
+        // Theoretically, the widgets of the WebExperiencePackage should work, but it cause COM issues for icons & screenshots.
+        // And even the widgets cannot be created. So, we exclude them.
         return familyNamePartOfProviderId != WebExperiencePackageFamilyName;
     }
 

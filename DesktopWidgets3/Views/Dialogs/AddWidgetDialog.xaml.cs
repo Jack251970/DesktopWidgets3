@@ -217,26 +217,19 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
                     if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
-                        try
+                        var subItemContent = await BuildWidgetNavItemAsync(widgetDef);
+                        var enable = !_widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
+                        var subItem = new NavigationViewItem
                         {
-                            var subItemContent = await BuildWidgetNavItemAsync(widgetDef);
-                            var enable = !_widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
-                            var subItem = new NavigationViewItem
-                            {
-                                Tag = widgetDef,
-                                Content = subItemContent,
-                                IsEnabled = enable,
-                            };
-                            subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
-                            subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
-                            subItem.SetValue(ToolTipService.ToolTipProperty, widgetDef.DisplayTitle);
+                            Tag = widgetDef,
+                            Content = subItemContent,
+                            IsEnabled = enable,
+                        };
+                        subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
+                        subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
+                        subItem.SetValue(ToolTipService.ToolTipProperty, widgetDef.DisplayTitle);
 
-                            navItem.MenuItems.Add(subItem);
-                        }
-                        catch(Exception e)
-                        {
-                            _log.Error(e, $"Error building widget nav item for {widgetDef.Id}");
-                        }
+                        navItem.MenuItems.Add(subItem);
                     }
                 }
 

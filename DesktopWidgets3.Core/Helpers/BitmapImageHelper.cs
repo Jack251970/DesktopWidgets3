@@ -20,10 +20,15 @@ public class BitmapImageHelper
         var completionSource = new TaskCompletionSource<BitmapImage>();
         dispatcherQueue.TryEnqueue(() =>
         {
-            var itemImage = new BitmapImage
+            var itemImage = new BitmapImage();
+            try
             {
-                UriSource = new Uri(imagePath)
-            };
+                itemImage.UriSource = new Uri(imagePath);
+            }
+            catch (Exception)
+            {
+                // If the image is invalid, set the image to null.
+            }
             completionSource.TrySetResult(itemImage);
         });
 
@@ -48,7 +53,14 @@ public class BitmapImageHelper
         {
             using var bitmapStream = await iconStreamRef.OpenReadAsync();
             var itemImage = new BitmapImage();
-            await itemImage.SetSourceAsync(bitmapStream);
+            try
+            {
+                await itemImage.SetSourceAsync(bitmapStream);
+            }
+            catch (Exception)
+            {
+                // If the image is invalid, set the image to null.
+            }
             completionSource.TrySetResult(itemImage);
         });
 
