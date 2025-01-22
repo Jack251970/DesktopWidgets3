@@ -421,7 +421,7 @@ public partial class MicrosoftWidgetModel : IDisposable
         }
 
         // If the widget's extension was disabled, hide the widget (don't add it to the list), but don't delete it.
-        if (!await WidgetHelpers.IsIncludedWidgetProviderAsync(comSafeWidgetDefinition.ProviderDefinition))
+        if (!WidgetHelpers.IsIncludedWidgetProvider(comSafeWidgetDefinition.ProviderDefinition))
         {
             _log.Information($"Not adding widget from disabled extension {comSafeWidgetDefinition.ProviderDefinitionId}");
             return null;

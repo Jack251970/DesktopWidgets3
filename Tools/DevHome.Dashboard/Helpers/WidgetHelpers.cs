@@ -66,28 +66,15 @@ public sealed class WidgetHelpers
         }
     }
 
-    public static async Task<bool> IsIncludedWidgetProviderAsync(WidgetProviderDefinition provider)
+    public static bool IsIncludedWidgetProvider(WidgetProviderDefinition provider)
     {
-        /*// Cut WidgetProviderDefinition id down to just the package family name.
+        // Cut WidgetProviderDefinition id down to just the package family name.
         var providerId = provider.Id;
         var endOfPfnIndex = providerId.IndexOf('!', StringComparison.Ordinal);
         var familyNamePartOfProviderId = providerId[..endOfPfnIndex];
 
-        // Get the list of packages that contain Dev Home widgets and are enabled.
-        var extensionService = DependencyExtensions.GetRequiredService<IExtensionService>();
-        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync(includeDisabledExtensions: false);
-
-        // Check if the specified widget provider is in the list.
-        var include = enabledWidgetProviderIds.ToList().Contains(familyNamePartOfProviderId);
-        LogExtensions.LogInformation(ClassName, $"Found provider Id = {providerId}, include = {include}");
-        return include;*/
-        if (provider.DisplayName == "PeregrineWidgets")
-        {
-            return false;
-        }
-
-        await Task.CompletedTask;
-        return true;
+        // Check if the specified widget provider is not the WebExperiencePackage, which can cause COM issues.
+        return familyNamePartOfProviderId != WebExperiencePackageFamilyName;
     }
 
     public static string CreateWidgetCustomState(int ordinal)
