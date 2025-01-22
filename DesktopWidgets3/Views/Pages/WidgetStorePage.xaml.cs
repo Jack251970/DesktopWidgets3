@@ -81,6 +81,10 @@ public sealed partial class WidgetStorePage : Page
         if (_widgetId != string.Empty)
         {
             await _widgetResourceService.InstallWidgetAsync(_widgetId);
+            if (await DialogFactory.ShowRestartApplicationDialogAsync() == WidgetDialogResult.Left)
+            {
+                App.RestartApplication();
+            }
             _widgetId = string.Empty;
         }
     }
@@ -90,6 +94,10 @@ public sealed partial class WidgetStorePage : Page
         if (_widgetId != string.Empty)
         {
             await _widgetResourceService.UninstallWidgetAsync(_widgetId);
+            if (await DialogFactory.ShowRestartApplicationDialogAsync() == WidgetDialogResult.Left)
+            {
+                App.RestartApplication();
+            }
             _widgetId = string.Empty;
         }
     }

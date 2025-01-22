@@ -4,20 +4,18 @@ namespace DesktopWidgets3.Core.Widgets.Helpers;
 
 public static class DialogFactory
 {
-    private static readonly IDialogService WidgetDialogService = DependencyExtensions.GetRequiredService<IDialogService>();
-
     public static async Task<WidgetDialogResult> ShowDeleteWidgetDialogAsync(WindowEx? window = null)
     {
         var title = "Dialog_DeleteWidget.Title".GetLocalizedString();
         var content = "Dialog_DeleteWidget.Content".GetLocalizedString();
-        return await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content);
+        return await DependencyExtensions.GetRequiredService<IDialogService>().ShowTwoButtonDialogAsync(window, title, content);
     }
 
     public static async Task ShowDeleteWidgetFullScreenDialogAsync(Func<Task> deleteFunc)
     {
         var title = "Dialog_DeleteWidget.Title".GetLocalizedString();
         var content = "Dialog_DeleteWidget.Content".GetLocalizedString();
-        await WidgetDialogService.ShowFullScreenTwoButtonDialogAsync(title, content, func: async (result) =>
+        await DependencyExtensions.GetRequiredService<IDialogService>().ShowFullScreenTwoButtonDialogAsync(title, content, func: async (result) =>
         {
             if (result == WidgetDialogResult.Left)
             {
@@ -30,13 +28,20 @@ public static class DialogFactory
     {
         var title = "Dialog_SaveCurrentLayout.Title".GetLocalizedString();
         var content = "Dialog_SaveCurrentLayout.Content".GetLocalizedString();
-        return await WidgetDialogService.ShowTwoButtonDialogAsync(window, title, content);
+        return await DependencyExtensions.GetRequiredService<IDialogService>().ShowTwoButtonDialogAsync(window, title, content);
     }
 
     public static async Task ShowCreateWidgetErrorDialogAsync(WindowEx? window = null)
     {
         var title = string.Empty;
         var content = "CouldNotCreateWidgetError".GetLocalizedString(Constants.DevHomeDashboard);
-        await WidgetDialogService.ShowOneButtonDialogAsync(window, title, content);
+        await DependencyExtensions.GetRequiredService<IDialogService>().ShowOneButtonDialogAsync(window, title, content);
+    }
+
+    public static async Task<WidgetDialogResult> ShowRestartApplicationDialogAsync(WindowEx? window = null)
+    {
+        var title = "RestartApplication.Title".GetLocalizedString();
+        var content = "RestartApplication.Content".GetLocalizedString();
+        return await DependencyExtensions.GetRequiredService<IDialogService>().ShowTwoButtonDialogAsync(window, title, content);
     }
 }

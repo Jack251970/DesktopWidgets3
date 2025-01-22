@@ -351,4 +351,10 @@
   <data name="AddWidgetDialog_PinButtonText.Text" xml:space="preserve">
     <value>固定</value>
   </data>
+  <data name="RestartApplication.Title" xml:space="preserve">
+    <value>重启应用</value>
+  </data>
+  <data name="RestartApplication.Content" xml:space="preserve">
+    <value>你想要现在重启应用吗？</value>
+  </data>
 </root>

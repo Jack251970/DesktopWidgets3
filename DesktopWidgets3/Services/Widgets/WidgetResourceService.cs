@@ -1702,8 +1702,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                 await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
             }
         }
-
-        App.RestartApplication();
     }
 
     public async Task UninstallWidgetAsync(string widgetId)
@@ -1729,8 +1727,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
             widgetStoreList[index].ResourcesFolder = string.Empty;
             await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
         }
-
-        App.RestartApplication();
     }
 
     #endregion
