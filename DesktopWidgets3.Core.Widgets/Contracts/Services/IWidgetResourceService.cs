@@ -1,5 +1,4 @@
-﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.Widgets.Hosts;
 
@@ -29,21 +28,21 @@ public interface IWidgetResourceService
 
     bool IsWidgetGroupUnknown(WidgetProviderType providerType, string widgetId, string widgetType);
 
-    Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId);
+    Task<Brush> GetWidgetGroupIconBrushAsync(WidgetProviderType providerType, string widgetId);
 
-    Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderDefinition widgetProviderDefinition);
+    Task<Brush> GetWidgetGroupIconBrushAsync(WidgetProviderDefinition widgetProviderDefinition);
 
     string GetWidgetName(WidgetProviderType providerType, string widgetId, string widgetType);
 
     string GetWidgetDescription(WidgetProviderType providerType, string widgetId, string widgetType);
 
-    Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme);
+    Task<Brush> GetWidgetIconBrushAsync(WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme);
 
-    Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme);
+    Task<Brush> GetWidgetScreenshotBrushAsync(WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme);
 
-    Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
+    Task<Brush> GetWidgetIconBrushAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
 
-    Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
+    Task<Brush> GetWidgetScreenshotBrushAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
 
     RectSize GetWidgetDefaultSize(string widgetId, string widgetType);
 

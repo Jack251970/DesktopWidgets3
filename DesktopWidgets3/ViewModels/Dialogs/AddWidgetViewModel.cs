@@ -40,7 +40,7 @@ public partial class AddWidgetViewModel(
 
         WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
         WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinitionDisplayName;
-        WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(_dispatcherQueue, selectedWidgetDefinition, actualTheme);
+        WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(selectedWidgetDefinition, actualTheme);
         PinButtonVisibility = true;
     }
 
@@ -51,7 +51,6 @@ public partial class AddWidgetViewModel(
         WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
         WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinitionDisplayName;
         WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(
-            _dispatcherQueue, 
             WidgetProviderType.DesktopWidgets3, 
             selectedWidgetDefinition.WidgetId, 
             selectedWidgetDefinition.WidgetType, 
@@ -76,14 +75,12 @@ public partial class AddWidgetViewModel(
             if (_selectedWidgetDefinition as ComSafeWidgetDefinition is ComSafeWidgetDefinition selectedWidgetDefinition)
             {
                 WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(
-                    _dispatcherQueue, 
                     selectedWidgetDefinition, 
                     actualTheme);
             }
             else if (_selectedWidgetDefinition as DesktopWidgets3WidgetDefinition is DesktopWidgets3WidgetDefinition selectedWidgetDefinition1)
             {
                 WidgetScreenshot = await _widgetResourceService.GetWidgetScreenshotBrushAsync(
-                    _dispatcherQueue,
                     WidgetProviderType.DesktopWidgets3,
                     selectedWidgetDefinition1.WidgetId, 
                     selectedWidgetDefinition1.WidgetType, 

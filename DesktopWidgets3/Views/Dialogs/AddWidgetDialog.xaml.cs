@@ -92,15 +92,10 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // load the microsoft widgets
         await FillAvailableMicrosoftWidgetsAsync();
 
-        // bind the navigation view event
-        if (!_isHidden)
-        {
-            AddWidgetNavigationView.SelectionChanged += AddWidgetNavigationView_SelectionChanged;
-        }
-
         // select the first widget by default
         if (!_isHidden)
         {
+            AddWidgetNavigationView.SelectionChanged += AddWidgetNavigationView_SelectionChanged;
             SelectFirstWidgetByDefault();
         }
 
@@ -178,7 +173,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<Grid> BuildWidgetNavItemAsync(DesktopWidgets3WidgetDefinition widgetDefinition)
     {
-        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, WidgetProviderType.DesktopWidgets3, widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
+        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(WidgetProviderType.DesktopWidgets3, widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
     }
@@ -255,14 +250,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<Grid> BuildWidgetGroupNavItemAsync(WidgetProviderDefinition widgetProviderDefinition)
     {
-        var imageBrush = await _widgetResourceService.GetWidgetGroupIconBrushAsync(_dispatcherQueue, widgetProviderDefinition);
+        var imageBrush = await _widgetResourceService.GetWidgetGroupIconBrushAsync(widgetProviderDefinition);
 
         return BuildNavItem(imageBrush, widgetProviderDefinition.DisplayName);
     }
 
     private async Task<Grid> BuildWidgetNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
-        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinition, ActualTheme);
+        var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(widgetDefinition, ActualTheme);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
     }

@@ -708,10 +708,10 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
-    private void Content_Loaded(object sender, RoutedEventArgs e)
+    private async void Content_Loaded(object sender, RoutedEventArgs e)
     {
         // initialize widget icon
-        UpdateWidgetHeaderIconFill(ContentArea.ActualTheme);
+        await UpdateWidgetHeaderIconFillAsync(ContentArea.ActualTheme);
 
         // set title bar
         ExtendsContentIntoTitleBar = true;
@@ -779,28 +779,28 @@ public sealed partial class WidgetWindow : WindowEx
         }
     }
 
-    private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
+    private void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
     {
-        await this.EnqueueOrInvokeAsync((window) =>
+        DispatcherQueue.TryEnqueue(() =>
         {
             SetScaledWindowSizeAndContentSize(sender.TextScaleFactor);
         });
     }
 
-    private void ContentArea_ActualThemeChanged(FrameworkElement sender, object args)
+    private async void ContentArea_ActualThemeChanged(FrameworkElement sender, object args)
     {
-        UpdateWidgetHeaderIconFill(sender.ActualTheme);
+        await UpdateWidgetHeaderIconFillAsync(sender.ActualTheme);
     }
 
-    private async void UpdateWidgetHeaderIconFill(ElementTheme actualTheme)
+    private async Task UpdateWidgetHeaderIconFillAsync(ElementTheme actualTheme)
     {
         if (ProviderType == WidgetProviderType.DesktopWidgets3)
         {
-            ViewModel.WidgetIconFill = await _widgetResourceService.GetWidgetIconBrushAsync(DispatcherQueue, ProviderType, WidgetId, WidgetType, actualTheme);
+            ViewModel.WidgetIconFill = await _widgetResourceService.GetWidgetIconBrushAsync(ProviderType, WidgetId, WidgetType, actualTheme);
         }
         else
         {
-            ViewModel.WidgetIconFill = await _widgetResourceService.GetWidgetIconBrushAsync(DispatcherQueue, WidgetViewModel!.WidgetDefinition, actualTheme);
+            ViewModel.WidgetIconFill = await _widgetResourceService.GetWidgetIconBrushAsync(WidgetViewModel!.WidgetDefinition, actualTheme);
         }
     }
 

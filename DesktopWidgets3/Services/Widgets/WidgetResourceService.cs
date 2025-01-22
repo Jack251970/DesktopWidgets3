@@ -518,17 +518,17 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Icon
 
-    public async Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId)
+    public async Task<Brush> GetWidgetGroupIconBrushAsync(WidgetProviderType providerType, string widgetId)
     {
         if (providerType == WidgetProviderType.DesktopWidgets3)
         {
             (var _, var allIndex, var installedIndex) = GetWidgetGroupIndex(widgetId, true);
-            return await GetWidgetGroupIconBrushAsync(dispatcherQueue, widgetId, allIndex, installedIndex);
+            return await GetWidgetGroupIconBrushAsync(widgetId, allIndex, installedIndex);
         }
         else
         {
             var providerDefinitionIndex = GetWidgetProviderDefinitionIndex(widgetId);
-            return await GetWidgetGroupIconBrushAsync(dispatcherQueue, providerDefinitionIndex);
+            return await GetWidgetGroupIconBrushAsync(providerDefinitionIndex);
         }
     }
 
@@ -541,12 +541,12 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         _desktopWidgets3WidgetGroupIconCache.TryRemove(widgetId, out _);
     }
 
-    private async Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, int? allIndex, int? installedIndex)
+    private async Task<Brush> GetWidgetGroupIconBrushAsync(string widgetId, int? allIndex, int? installedIndex)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetGroupIconFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, allIndex, installedIndex);
+            image = await GetGroupIconFromDesktopWidgets3CacheAsync(widgetId, allIndex, installedIndex);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {
@@ -566,7 +566,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         return brush;
     }
 
-    private async Task<BitmapImage> GetGroupIconFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, int? allIndex, int? installedIndex)
+    private async Task<BitmapImage> GetGroupIconFromDesktopWidgets3CacheAsync(string widgetId, int? allIndex, int? installedIndex)
     {
         BitmapImage? bitmapImage;
 
@@ -579,7 +579,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         }
 
         // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
-        bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetGroupIcoPath(allIndex, installedIndex));
+        bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(_dispatcherQueue, GetWidgetGroupIcoPath(allIndex, installedIndex));
         _desktopWidgets3WidgetGroupIconCache.TryAdd(widgetId, bitmapImage);
 
         return bitmapImage;
@@ -608,16 +608,16 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Microsoft
 
-    public async Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderDefinition widgetProviderDefinition)
+    public async Task<Brush> GetWidgetGroupIconBrushAsync(WidgetProviderDefinition widgetProviderDefinition)
     {
-        return await _widgetIconService.GetBrushForMicrosoftWidgetProviderIconAsync(dispatcherQueue, widgetProviderDefinition);
+        return await _widgetIconService.GetBrushForMicrosoftWidgetProviderIconAsync(widgetProviderDefinition);
     }
 
-    private async Task<Brush> GetWidgetGroupIconBrushAsync(DispatcherQueue dispatcherQueue, int providerDefinitionIndex)
+    private async Task<Brush> GetWidgetGroupIconBrushAsync(int providerDefinitionIndex)
     {
         if (providerDefinitionIndex != -1)
         {
-            return await GetWidgetGroupIconBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetProviderDefinitions.ElementAt(providerDefinitionIndex));
+            return await GetWidgetGroupIconBrushAsync(_microsoftWidgetModel.WidgetProviderDefinitions.ElementAt(providerDefinitionIndex));
         }
 
         return null!;
@@ -778,17 +778,17 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Icon
 
-    public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme)
+    public async Task<Brush> GetWidgetIconBrushAsync(WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme)
     {
         if (providerType == WidgetProviderType.DesktopWidgets3)
         {
             (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-            return await GetWidgetIconBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
+            return await GetWidgetIconBrushAsync(widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
         }
         else
         {
             var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
-            return await GetWidgetIconBrushAsync(dispatcherQueue, definitionIndex, actualTheme);
+            return await GetWidgetIconBrushAsync(definitionIndex, actualTheme);
         }
     }
 
@@ -803,12 +803,12 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         _desktopWidgets3WidgetDarkIconCache.TryRemove((widgetId, widgetType), out _);
     }
 
-    private async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
+    private async Task<Brush> GetWidgetIconBrushAsync(string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetIconFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
+            image = await GetIconFromDesktopWidgets3CacheAsync(widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {
@@ -828,7 +828,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         return brush;
     }
 
-    private async Task<BitmapImage> GetIconFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetIconFromDesktopWidgets3CacheAsync(string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
     {
         BitmapImage? bitmapImage;
 
@@ -850,12 +850,12 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
         if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Dark));
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(_dispatcherQueue, GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Dark));
             _desktopWidgets3WidgetDarkIconCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
         else
         {
-            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Dark));
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(_dispatcherQueue, GetWidgetIconPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Dark));
             _desktopWidgets3WidgetLightIconCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
 
@@ -907,16 +907,16 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Microsoft
 
-    public async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    public async Task<Brush> GetWidgetIconBrushAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
-        return await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(dispatcherQueue, widgetDefinition, actualTheme);
+        return await _widgetIconService.GetBrushForMicrosoftWidgetIconAsync(widgetDefinition, actualTheme);
     }
 
-    private async Task<Brush> GetWidgetIconBrushAsync(DispatcherQueue dispatcherQueue, int definitionIndex, ElementTheme actualTheme)
+    private async Task<Brush> GetWidgetIconBrushAsync(int definitionIndex, ElementTheme actualTheme)
     {
         if (definitionIndex != -1)
         {
-            return await GetWidgetIconBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
+            return await GetWidgetIconBrushAsync(_microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
         }
 
         return null!;
@@ -928,17 +928,17 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Screenshot
 
-    public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme)
+    public async Task<Brush> GetWidgetScreenshotBrushAsync(WidgetProviderType providerType, string widgetId, string widgetType, ElementTheme actualTheme)
     {
         if (providerType == WidgetProviderType.DesktopWidgets3)
         {
             (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-            return await GetWidgetScreenshotBrushAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
+            return await GetWidgetScreenshotBrushAsync(widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
         }
         else
         {
             var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
-            return await GetWidgetScreenshotBrushAsync(dispatcherQueue, definitionIndex, actualTheme);
+            return await GetWidgetScreenshotBrushAsync(definitionIndex, actualTheme);
         }
     }
 
@@ -953,12 +953,12 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         _desktopWidgets3WidgetDarkScreenshotCache.Remove((widgetId, widgetType), out _);
     }
 
-    private async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
+    private async Task<Brush> GetWidgetScreenshotBrushAsync(string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetScreenshotFromDesktopWidgets3CacheAsync(dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
+            image = await GetScreenshotFromDesktopWidgets3CacheAsync(widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {
@@ -977,7 +977,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         return brush;
     }
 
-    private async Task<BitmapImage> GetScreenshotFromDesktopWidgets3CacheAsync(DispatcherQueue dispatcherQueue, string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetScreenshotFromDesktopWidgets3CacheAsync(string widgetId, string widgetType, int? allIndex, int? installedIndex, int? widgetTypeIndex, ElementTheme actualTheme)
     {
         BitmapImage? bitmapImage;
 
@@ -999,12 +999,12 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         // If the screenshot wasn't already in the cache, get it from the widget resources service and add it to the cache before returning.
         if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Dark));
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(_dispatcherQueue, GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Dark));
             _desktopWidgets3WidgetDarkScreenshotCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
         else
         {
-            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Light));
+            bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(_dispatcherQueue, GetWidgetScreenshotPath(allIndex, installedIndex, widgetTypeIndex, ElementTheme.Light));
             _desktopWidgets3WidgetLightScreenshotCache.TryAdd((widgetId, widgetType), bitmapImage);
         }
 
@@ -1056,16 +1056,16 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Microsoft
 
-    public async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    public async Task<Brush> GetWidgetScreenshotBrushAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
-        return await _widgetScreenshotService.GetBrushForMicrosoftWidgetScreenshotAsync(dispatcherQueue, widgetDefinition, actualTheme);
+        return await _widgetScreenshotService.GetBrushForMicrosoftWidgetScreenshotAsync(widgetDefinition, actualTheme);
     }
 
-    private async Task<Brush> GetWidgetScreenshotBrushAsync(DispatcherQueue dispatcherQueue, int definitionIndex, ElementTheme actualTheme)
+    private async Task<Brush> GetWidgetScreenshotBrushAsync(int definitionIndex, ElementTheme actualTheme)
     {
         if (definitionIndex != -1)
         {
-            return await GetWidgetScreenshotBrushAsync(dispatcherQueue, _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
+            return await GetWidgetScreenshotBrushAsync(_microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex), actualTheme);
         }
 
         return null!;
@@ -1415,7 +1415,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                 {
                     Id = widgetId,
                     Name = GetWidgetGroupName(allIndex, installedIndex),
-                    IconFill = await GetWidgetGroupIconBrushAsync(_dispatcherQueue, widgetId, allIndex, installedIndex),
+                    IconFill = await GetWidgetGroupIconBrushAsync(widgetId, allIndex, installedIndex),
                     Types = widget.Metadata.WidgetTypes
                 });
             }
@@ -1453,7 +1453,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                         Type = widgetType,
                         Index = widgetIndex,
                         Name = GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType),
-                        IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
+                        IconFill = await GetWidgetIconBrushAsync(widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
                         Pinned = widget.Pinned,
                         IsUnknown = false,
                         IsInstalled = true
@@ -1473,7 +1473,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                         Type = widgetType,
                         Index = widgetIndex,
                         Name = string.Format("Unknown_Widget_Name".GetLocalizedString(), unknownNotInstalledWidgetList.Count),
-                        IconFill = await GetIconBrushFromPathAsync(_dispatcherQueue, Constants.UnknownWidgetIconPath),
+                        IconFill = await GetIconBrushFromPathAsync(Constants.UnknownWidgetIconPath),
                         Pinned = widget.Pinned,
                         IsUnknown = true,
                         IsInstalled = false,
@@ -1492,7 +1492,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                         Type = widgetType,
                         Index = widgetIndex,
                         Name = GetWidgetName(widgetDefinitionIndex),
-                        IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetDefinitionIndex, actualTheme),
+                        IconFill = await GetWidgetIconBrushAsync(widgetDefinitionIndex, actualTheme),
                         Pinned = widget.Pinned,
                         IsUnknown = false,
                         IsInstalled = true
@@ -1512,7 +1512,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                         Type = widgetType,
                         Index = widgetIndex,
                         Name = string.Format("Unknown_Widget_Name".GetLocalizedString(), unknownNotInstalledWidgetList.Count),
-                        IconFill = await GetIconBrushFromPathAsync(_dispatcherQueue, Constants.UnknownWidgetIconPath),
+                        IconFill = await GetIconBrushFromPathAsync(Constants.UnknownWidgetIconPath),
                         Pinned = widget.Pinned,
                         IsUnknown = true,
                         IsInstalled = false,
@@ -1536,7 +1536,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                 Type = widgetType,
                 Index = widgetIndex,
                 Name = GetWidgetName(allIndex, installedIndex, widgetTypeIndex, widgetType),
-                IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
+                IconFill = await GetWidgetIconBrushAsync(widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
                 Pinned = true,
                 IsUnknown = false,
                 IsInstalled = true
@@ -1560,7 +1560,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
             Type = widgetType,
             Index = widgetIndex,
             Name = widgetName,
-            IconFill = await GetWidgetIconBrushAsync(_dispatcherQueue, widgetViewModel.WidgetDefinition, actualTheme),
+            IconFill = await GetWidgetIconBrushAsync(widgetViewModel.WidgetDefinition, actualTheme),
             Pinned = true,
             IsUnknown = false,
             IsInstalled = true
@@ -1589,7 +1589,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                     Author = metadata.Author,
                     Version = metadata.Version,
                     Website = metadata.Website,
-                    IconFill = await GetWidgetGroupIconBrushAsync(_dispatcherQueue, widgetId, allIndex, installedIndex)
+                    IconFill = await GetWidgetGroupIconBrushAsync(widgetId, allIndex, installedIndex)
                 });
             }
         }
@@ -1617,7 +1617,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                         Author = metadata.Author,
                         Version = metadata.Version,
                         Website = metadata.Website,
-                        IconFill = await GetWidgetGroupIconBrushAsync(_dispatcherQueue, widgetId, allIndex, installedIndex)
+                        IconFill = await GetWidgetGroupIconBrushAsync(widgetId, allIndex, installedIndex)
                     });
                 }
             }
@@ -1684,7 +1684,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     private readonly ConcurrentDictionary<string, BitmapImage> _pathIconCache = new();
 
-    private async Task<Brush> GetIconBrushFromPathAsync(DispatcherQueue dispatcherQueue, string iconPath)
+    private async Task<Brush> GetIconBrushFromPathAsync(string iconPath)
     {
         var image = new BitmapImage();
         try
@@ -1701,7 +1701,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
             else
             {
                 // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
-                bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(dispatcherQueue, iconPath);
+                bitmapImage = await BitmapImageHelper.ImagePathToBitmapImageAsync(_dispatcherQueue, iconPath);
                 _pathIconCache.TryAdd(iconPath, bitmapImage);
 
                 image = bitmapImage;

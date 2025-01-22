@@ -12,12 +12,14 @@ using Serilog;
 
 namespace DevHome.Dashboard.Services;
 
-public class WidgetScreenshotService : IWidgetScreenshotService
+public class WidgetScreenshotService(DispatcherQueue dispatcherQueue) : IWidgetScreenshotService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetScreenshotService));
 
     private readonly ConcurrentDictionary<string, BitmapImage> _microsoftWidgetLightScreenshotCache = new();
     private readonly ConcurrentDictionary<string, BitmapImage> _microsoftWidgetDarkScreenshotCache = new();
+
+    private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
 
     public void RemoveScreenshotsFromMicrosoftIconCache(string definitionId)
     {
@@ -25,7 +27,7 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         _microsoftWidgetDarkScreenshotCache.Remove(definitionId, out _);
     }
 
-    private async Task<BitmapImage> GetScreenshotFromMicrosoftCacheAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetScreenshotFromMicrosoftCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage? bitmapImage;
@@ -48,24 +50,24 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         // If the screenshot wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
         if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).GetScreenshots().FirstOrDefault()!.Image);
+            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(_dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).GetScreenshots().FirstOrDefault()!.Image);
             _microsoftWidgetDarkScreenshotCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
         else
         {
-            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).GetScreenshots().FirstOrDefault()!.Image);
+            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(_dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).GetScreenshots().FirstOrDefault()!.Image);
             _microsoftWidgetLightScreenshotCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
 
         return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForMicrosoftWidgetScreenshotAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    public async Task<Brush> GetBrushForMicrosoftWidgetScreenshotAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetScreenshotFromMicrosoftCacheAsync(dispatcherQueue, widgetDefinition, actualTheme);
+            image = await GetScreenshotFromMicrosoftCacheAsync(widgetDefinition, actualTheme);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {

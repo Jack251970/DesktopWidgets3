@@ -235,7 +235,6 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
         foreach (var widgetItem in yourWidgets)
         {
             widgetItem.IconFill = await _widgetResourceService.GetWidgetIconBrushAsync(
-                _dispatcherQueue, 
                 widgetItem.ProviderType, 
                 widgetItem.Id, 
                 widgetItem.Type, 

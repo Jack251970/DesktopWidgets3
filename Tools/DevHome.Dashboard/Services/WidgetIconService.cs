@@ -12,9 +12,11 @@ using Serilog;
 
 namespace DevHome.Dashboard.Services;
 
-public class WidgetIconService : IWidgetIconService
+public class WidgetIconService(DispatcherQueue dispatcherQueue) : IWidgetIconService
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetIconService));
+
+    private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
 
     #region Widget Icon
 
@@ -27,7 +29,7 @@ public class WidgetIconService : IWidgetIconService
         _microsoftWidgetDarkIconCache.TryRemove(definitionId, out _);
     }
 
-    private async Task<BitmapImage> GetIconFromMicrosoftCacheAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetIconFromMicrosoftCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage? bitmapImage;
@@ -50,24 +52,24 @@ public class WidgetIconService : IWidgetIconService
         // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
         if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).Icon);
+            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(_dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).Icon);
             _microsoftWidgetDarkIconCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
         else
         {
-            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).Icon);
+            bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(_dispatcherQueue, (await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).Icon);
             _microsoftWidgetLightIconCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
 
         return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForMicrosoftWidgetIconAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    public async Task<Brush> GetBrushForMicrosoftWidgetIconAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetIconFromMicrosoftCacheAsync(dispatcherQueue, widgetDefinition, actualTheme);
+            image = await GetIconFromMicrosoftCacheAsync(widgetDefinition, actualTheme);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {
@@ -98,7 +100,7 @@ public class WidgetIconService : IWidgetIconService
         _microsoftWidgetProviderIconCache.TryRemove(providerDefinitionId, out _);
     }
 
-    private async Task<BitmapImage> GetIconFromMicrosoftProviderCacheAsync(DispatcherQueue dispatcherQueue, WidgetProviderDefinition widgetProviderDefinition)
+    private async Task<BitmapImage> GetIconFromMicrosoftProviderCacheAsync(WidgetProviderDefinition widgetProviderDefinition)
     {
         var widgetDefinitionId = widgetProviderDefinition.Id;
         BitmapImage? bitmapImage;
@@ -112,18 +114,18 @@ public class WidgetIconService : IWidgetIconService
         }
 
         // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
-        bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(dispatcherQueue, widgetProviderDefinition.Icon);
+        bitmapImage = await BitmapImageHelper.RandomAccessStreamToBitmapImageAsync(_dispatcherQueue, widgetProviderDefinition.Icon);
         _microsoftWidgetProviderIconCache.TryAdd(widgetDefinitionId, bitmapImage);
 
         return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForMicrosoftWidgetProviderIconAsync(DispatcherQueue dispatcherQueue, WidgetProviderDefinition widgetProviderDefinition)
+    public async Task<Brush> GetBrushForMicrosoftWidgetProviderIconAsync(WidgetProviderDefinition widgetProviderDefinition)
     {
         var image = new BitmapImage();
         try
         {
-            image = await GetIconFromMicrosoftProviderCacheAsync(dispatcherQueue, widgetProviderDefinition);
+            image = await GetIconFromMicrosoftProviderCacheAsync(widgetProviderDefinition);
         }
         catch (FileNotFoundException fileNotFoundEx)
         {

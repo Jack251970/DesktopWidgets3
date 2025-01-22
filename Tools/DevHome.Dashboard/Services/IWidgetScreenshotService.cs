@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using DevHome.Dashboard.ComSafeWidgetObjects;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 
@@ -12,5 +11,5 @@ public interface IWidgetScreenshotService
 {
     public void RemoveScreenshotsFromMicrosoftIconCache(string definitionId);
 
-    public Task<Brush> GetBrushForMicrosoftWidgetScreenshotAsync(DispatcherQueue dispatcherQueue, ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
+    public Task<Brush> GetBrushForMicrosoftWidgetScreenshotAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
 }
