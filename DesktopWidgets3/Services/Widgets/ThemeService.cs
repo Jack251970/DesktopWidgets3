@@ -2,9 +2,9 @@
 
 namespace DesktopWidgets3.Services.Widgets;
 
-internal class ThemeService : IThemeService
+internal class ThemeService(IThemeSelectorService themeSelectorService) : IThemeService
 {
-    private readonly IThemeSelectorService _themeSelectorService = DependencyExtensions.GetRequiredService<IThemeSelectorService>();
+    private readonly IThemeSelectorService _themeSelectorService = themeSelectorService;
 
     ElementTheme IThemeService.RootTheme => _themeSelectorService.Theme;
 

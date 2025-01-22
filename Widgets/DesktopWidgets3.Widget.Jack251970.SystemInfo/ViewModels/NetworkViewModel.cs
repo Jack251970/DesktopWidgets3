@@ -51,7 +51,7 @@ public partial class NetworkViewModel : ObservableRecipient
     public NetworkViewModel(string widgetId, HardwareInfoService hardwareInfoService)
     {
         Id = widgetId;
-        _dispatcherQueue = Main.WidgetInitContext.WidgetService.GetDispatcherQueue(Id);
+        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _hardwareInfoService = hardwareInfoService;
         InitializeTimer(updateTimer, UpdateNetwork);
     }

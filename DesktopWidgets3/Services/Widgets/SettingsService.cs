@@ -1,8 +1,8 @@
 ﻿namespace DesktopWidgets3.Services.Widgets;
 
-internal class SettingsService : ISettingsService
+internal class SettingsService(IAppSettingsService appSettingsService) : ISettingsService
 {
-    private readonly IAppSettingsService _appSettingsService = DependencyExtensions.GetRequiredService<IAppSettingsService>();
+    private readonly IAppSettingsService _appSettingsService = appSettingsService;
 
     bool ISettingsService.BatterySaver => _appSettingsService.BatterySaver;
 

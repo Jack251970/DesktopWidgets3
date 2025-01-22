@@ -43,7 +43,7 @@ public partial class DiskViewModel : ObservableRecipient
     public DiskViewModel(string widgetId, HardwareInfoService hardwareInfoService)
     {
         Id = widgetId;
-        _dispatcherQueue = Main.WidgetInitContext.WidgetService.GetDispatcherQueue(Id);
+        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _hardwareInfoService = hardwareInfoService;
         InitializeAllTimers();
     }

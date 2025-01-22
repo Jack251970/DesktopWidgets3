@@ -59,7 +59,7 @@ public partial class PerformanceViewModel : ObservableRecipient
     public PerformanceViewModel(string widgetId, HardwareInfoService hardwareInfoService)
     {
         Id = widgetId;
-        _dispatcherQueue = Main.WidgetInitContext.WidgetService.GetDispatcherQueue(Id);
+        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _hardwareInfoService = hardwareInfoService;
         InitializeAllTimers();
     }
