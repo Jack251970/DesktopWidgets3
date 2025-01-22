@@ -1,20 +1,20 @@
 ﻿/*// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using DevHome.Common.Helpers;
 using DevHome.Dashboard.Helpers;
 using DevHome.Services.Core.Contracts;
+using Serilog;
 using Windows.ApplicationModel;
 
 namespace DevHome.Dashboard.Services;
 
-public class WidgetServiceService : IWidgetServiceService
+public class WidgetServiceService(IPackageDeploymentService packageDeploymentService, IMicrosoftStoreService msStoreService) : IWidgetServiceService
 {
-    private readonly IPackageDeploymentService _packageDeploymentService;
-    private readonly IMicrosoftStoreService _msStoreService;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetServiceService));
+
+    private readonly IPackageDeploymentService _packageDeploymentService = packageDeploymentService;
+    private readonly IMicrosoftStoreService _msStoreService = msStoreService;
 
     private WidgetServiceStates _widgetServiceState = WidgetServiceStates.Unknown;
 
@@ -27,19 +27,13 @@ public class WidgetServiceService : IWidgetServiceService
         Unknown,
     }
 
-    public WidgetServiceService(IPackageDeploymentService packageDeploymentService, IMicrosoftStoreService msStoreService)
-    {
-        _packageDeploymentService = packageDeploymentService;
-        _msStoreService = msStoreService;
-    }
-
     public WidgetServiceStates GetWidgetServiceState()
     {
         var isWindows11String = RuntimeHelper.IsOnWindows11 ? "Windows 11" : "Windows 10";
-        LogExtensions.LogInformation(ClassName, $"Checking for WidgetService on {isWindows11String}");
+        _log.Information($"Checking for WidgetService on {isWindows11String}");
 
         // First check for the WidgetsPlatformRuntime package. If it's installed and has a valid state, we return that state.
-        LogExtensions.LogInformation(ClassName, "Checking for WidgetsPlatformRuntime");
+        _log.Information("Checking for WidgetsPlatformRuntime...");
         var package = GetWidgetsPlatformRuntimePackage();
         _widgetServiceState = ValidatePackage(package);
         if (_widgetServiceState == WidgetServiceStates.MeetsMinVersion ||
@@ -49,7 +43,7 @@ public class WidgetServiceService : IWidgetServiceService
         }
 
         // If the WidgetsPlatformRuntime package is not installed or not high enough version, check for the WebExperience package.
-        LogExtensions.LogInformation(ClassName, "Checking for WebExperiencePack");
+        _log.Information("Checking for WebExperiencePack...");
         package = GetWebExperiencePackPackage();
         _widgetServiceState = ValidatePackage(package);
 
@@ -58,10 +52,10 @@ public class WidgetServiceService : IWidgetServiceService
 
     public async Task<bool> TryInstallingWidgetService()
     {
-        LogExtensions.LogInformation(ClassName, "Try installing widget service");
+        _log.Information("Try installing widget service...");
         var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetsPlatformRuntimePackageId);
         _widgetServiceState = ValidatePackage(GetWidgetsPlatformRuntimePackage());
-        LogExtensions.LogInformation(ClassName, $"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
+        _log.Information($"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
         return installedSuccessfully;
     }
 
@@ -83,7 +77,9 @@ public class WidgetServiceService : IWidgetServiceService
     {
         var minSupportedVersion = new Version(1, 0, 0, 0);
 
-        var packages = _packageDeploymentService.FindPackagesForCurrentUser(WidgetHelpers.WidgetsPlatformRuntimePackageFamilyName, (minSupportedVersion, null));
+        var packages = _packageDeploymentService.FindPackagesForCurrentUser(
+            WidgetHelpers.WidgetsPlatformRuntimePackageFamilyName,
+            (minSupportedVersion, null));
         return packages.FirstOrDefault();
     }
 
@@ -107,7 +103,7 @@ public class WidgetServiceService : IWidgetServiceService
             packageStatus = WidgetServiceStates.NotOK;
         }
 
-        LogExtensions.LogInformation(ClassName, $"ValidatePackage found {packageStatus}");
+        _log.Information($"ValidatePackage found {packageStatus}");
         return packageStatus;
     }
 }*/
