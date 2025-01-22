@@ -93,8 +93,6 @@ public class WidgetMetaData
 
     public bool AllowMultiple { get; set; } = false;
 
-    public bool IsCustomizable { get; set; } = false;
-
     private string _widgetDirectory = string.Empty;
     public string WidgetDirectory
     {

@@ -343,7 +343,7 @@ public sealed partial class WidgetWindow : WindowEx
 
             // pin & delete & customize
             AddUnpinDeleteItemsToWidgetMenu(WidgetMenuFlyout);
-            if (_widgetResourceService.GetWidgetIsCustomizable(ProviderType, WidgetId, WidgetType))
+            if (widgetViewModel != null && widgetViewModel.WidgetDefinition.IsCustomizable)
             {
                 AddCustomizeToWidgetMenu(WidgetMenuFlyout);
             }

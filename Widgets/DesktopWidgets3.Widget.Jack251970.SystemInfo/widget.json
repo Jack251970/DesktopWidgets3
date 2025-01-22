@@ -18,8 +18,7 @@
       "ScreenshotPathDark": "Images\\PerformanceScreenshotDark.png",
       "DefaultWidth": 342.0,
       "DefaultHeight": 201.0,
-      "AllowMultiple": false,
-      "IsCustomizable": false
+      "AllowMultiple": false
     },
     {
       "Type": "SystemInfo_Network",
@@ -30,8 +29,7 @@
       "ScreenshotPathDark": "Images\\NetworkScreenshotDark.png",
       "DefaultWidth": 342.0,
       "DefaultHeight": 174.0,
-      "AllowMultiple": false,
-      "IsCustomizable": false
+      "AllowMultiple": false
     },
     {
       "Type": "SystemInfo_Disk",
@@ -42,8 +40,7 @@
       "ScreenshotPathDark": "Images\\DiskScreenshotDark.png",
       "DefaultWidth": 342.0,
       "DefaultHeight": 198.0,
-      "AllowMultiple": false,
-      "IsCustomizable": false
+      "AllowMultiple": false
     }
   ]
 }

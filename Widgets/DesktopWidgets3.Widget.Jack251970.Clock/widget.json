@@ -18,8 +18,7 @@
       "ScreenshotPathDark": "Images\\DigitalClockScreenshotDark.png",
       "DefaultWidth": 342.0,
       "DefaultHeight": 174.0,
-      "AllowMultiple": false,
-      "IsCustomizable": false
+      "AllowMultiple": false
     },
     {
       "Type": "Clock_AnalogClock",
@@ -30,8 +29,7 @@
       "ScreenshotPathDark": "Images\\AnalogClockScreenshotDark.png",
       "DefaultWidth": 342.0,
       "DefaultHeight": 342.0,
-      "AllowMultiple": false,
-      "IsCustomizable": false
+      "AllowMultiple": false
     }
   ]
 }

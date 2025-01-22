@@ -1269,57 +1269,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #endregion
 
-    #region Is Customizable
-
-    public bool GetWidgetIsCustomizable(WidgetProviderType providerType, string widgetId, string widgetType)
-    {
-        if (providerType == WidgetProviderType.DesktopWidgets3)
-        {
-            (var _, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
-            return GetWidgetIsCustomizable(allIndex, installedIndex, widgetTypeIndex);
-        }
-        else
-        {
-            var definitionIndex = GetWidgetDefinitionIndex(widgetId, widgetType);
-            return GetWidgetIsCustomizable(definitionIndex);
-        }
-    }
-
-    #region Desktop Widgets 3
-
-    private bool GetWidgetIsCustomizable(int? allIndex, int? installedIndex, int? widgetTypeIndex)
-    {
-        if (installedIndex != null && installedIndex < InstalledWidgetGroupPairs.Count && widgetTypeIndex != null)
-        {
-            return InstalledWidgetGroupPairs[installedIndex!.Value].Metadata.Widgets[widgetTypeIndex!.Value].IsCustomizable;
-        }
-
-        if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count && widgetTypeIndex != null)
-        {
-            return AllWidgetGroupMetadatas[allIndex!.Value].Widgets[widgetTypeIndex!.Value].IsCustomizable;
-        }
-
-        return false;
-    }
-
-    #endregion
-
-    #region Microsoft
-
-    private bool GetWidgetIsCustomizable(int definitionIndex)
-    {
-        if (definitionIndex != -1)
-        {
-            return _microsoftWidgetModel.WidgetDefinitions.ElementAt(definitionIndex).IsCustomizable;
-        }
-
-        return false;
-    }
-
-    #endregion
-
-    #endregion
-
     #endregion
 
     #region Widget Group & Widget Index

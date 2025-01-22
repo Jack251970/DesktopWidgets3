@@ -53,8 +53,6 @@ public interface IWidgetResourceService
 
     bool IsWidgetSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[]? currentlyPinnedWidgets);
 
-    bool GetWidgetIsCustomizable(WidgetProviderType providerType, string widgetId, string widgetType);
-
     Task<List<DashboardWidgetGroupItem>> GetInstalledDashboardGroupItems();
 
     Task<List<DashboardWidgetItem>> GetYourDashboardWidgetItemsAsync(ElementTheme actualTheme);
