@@ -3,6 +3,7 @@
 
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Dashboard.Common.Renderers;
+using DevHome.Dashboard.Common.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Serilog;

@@ -1,6 +1,8 @@
 ﻿// DevHome.Dashboard
 global using DevHome.Dashboard.ComSafeWidgetObjects;
 global using DevHome.Dashboard.Controls;
+global using DevHome.Dashboard.Common.Renderers;
+global using DevHome.Dashboard.Common.Services;
 global using DevHome.Dashboard.Extensions;
 global using DevHome.Dashboard.Helpers;
 global using DevHome.Dashboard.Services;

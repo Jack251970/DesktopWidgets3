@@ -3,7 +3,7 @@
 
 using AdaptiveCards.Rendering.WinUI3;
 
-namespace DevHome.Dashboard.Services;
+namespace DevHome.Dashboard.Common.Services;
 
 public interface IAdaptiveCardRenderingService
 {

@@ -6,7 +6,7 @@ using System.Text.Json;
 //using DevHome.Dashboard.Common.Contracts;
 //using DevHome.Dashboard.Common.Extensions;
 //using DevHome.Dashboard.Common.Helpers;
-//using DevHome.Dashboard.Common.Services;
+using DevHome.Dashboard.Common.Services;
 //using DevHome.Dashboard.Common.Views;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
