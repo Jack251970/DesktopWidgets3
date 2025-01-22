@@ -343,9 +343,9 @@ public sealed partial class WidgetWindow : WindowEx
 
             // pin & delete & customize
             AddUnpinDeleteItemsToWidgetMenu(WidgetMenuFlyout);
-            if (widgetViewModel != null && widgetViewModel.WidgetDefinition.IsCustomizable)
+            if (ProviderType == WidgetProviderType.Microsoft)
             {
-                AddCustomizeToWidgetMenu(WidgetMenuFlyout);
+                AddCustomizeToWidgetMenu(WidgetMenuFlyout, widgetViewModel);
             }
 
             // size
@@ -419,8 +419,20 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Customize
 
-    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout)
+    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel? widgetViewModel)
     {
+        if (widgetViewModel == null)
+        {
+            // If we can't get the widgetViewModel, bail and don't show customize.
+            return;
+        }
+
+        if (!widgetViewModel.IsCustomizable)
+        {
+            // If the widget is not customizable, bail and don't show customize.
+            return;
+        }
+
         var icon = new FontIcon()
         {
             Glyph = "\xE70F"
@@ -438,11 +450,7 @@ public sealed partial class WidgetWindow : WindowEx
     {
         if (sender is MenuFlyoutItem)
         {
-            if (ProviderType == WidgetProviderType.DesktopWidgets3)
-            {
-                // TODO(Future): Add support for desktop widgets customization and combine this codes in one function.
-            }
-            else
+            if (ProviderType == WidgetProviderType.Microsoft)
             {
                 await ViewModel.WidgetViewModel!.Widget.NotifyCustomizationRequestedAsync();
             }
