@@ -93,7 +93,7 @@ public partial class ExtensionService : IExtensionService
 
                         if (package == null)
                         {
-                            OnPackageUninstalled?.Invoke(this, args.Package.Id.FullName);
+                            OnPackageUninstalled?.Invoke(this, extension.PackageFamilyName);
                         }
 
                         break;

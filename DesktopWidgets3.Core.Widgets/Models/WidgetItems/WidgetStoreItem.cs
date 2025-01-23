@@ -20,6 +20,8 @@ public class WidgetStoreItem : BaseWidgetStoreItem
 {
     public required WidgetProviderType ProviderType { get; set; }
 
+    public required string FamilyName { get; set; }
+
     public required string Name { get; set; }
 
     public required string Description { get; set; }

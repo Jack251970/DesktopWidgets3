@@ -64,6 +64,8 @@ public interface IWidgetResourceService
 
     Task<List<WidgetStoreItem>> GetPreinstalledAvailableWidgetStoreItemsAsync();
 
+    Task<WidgetStoreItem?> GetWidgetStoreItemAsync(IExtensionWrapper extension);
+
     Task InstallWidgetAsync(string widgetId);
 
     Task UninstallWidgetAsync(string widgetId);

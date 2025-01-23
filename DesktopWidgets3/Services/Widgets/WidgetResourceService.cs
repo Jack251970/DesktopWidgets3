@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -1571,6 +1570,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                 {
                     ProviderType = WidgetProviderType.DesktopWidgets3,
                     Id = widgetId,
+                    FamilyName = string.Empty,
                     Name = GetWidgetGroupName(allIndex, installedIndex),
                     Description = GetWidgetGroupDescription(allIndex, installedIndex),
                     Author = metadata.Author,
@@ -1613,6 +1613,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                     {
                         ProviderType = WidgetProviderType.DesktopWidgets3,
                         Id = metadata.ID,
+                        FamilyName = string.Empty,
                         Name = GetWidgetGroupName(allIndex, installedIndex),
                         Description = GetWidgetGroupDescription(allIndex, installedIndex),
                         Author = metadata.Author,
@@ -1625,6 +1626,17 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         }
 
         return widgetStoreItemList;
+    }
+
+    public async Task<WidgetStoreItem?> GetWidgetStoreItemAsync(IExtensionWrapper extension)
+    {
+        var widgetProvider = _microsoftWidgetModel.WidgetProviderDefinitions.FirstOrDefault(x => x.GetFamilyName() == extension.PackageFamilyName);
+        if (widgetProvider != null)
+        {
+            return await GetWidgetStoreItem(widgetProvider, extension);
+        }
+
+        return null;
     }
 
     public async Task InstallWidgetAsync(string widgetId)
@@ -1688,6 +1700,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         {
             ProviderType = WidgetProviderType.Microsoft,
             Id = widgetProvider.Id,
+            FamilyName = extension.PackageFamilyName,
             Name = widgetProvider.DisplayName,
             Description = $"{lastUpdatedLabel} {installedDate.LocalDateTime}",
             Author = extension.Publisher,
