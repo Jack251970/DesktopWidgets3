@@ -234,10 +234,15 @@ public partial class App : Application
 
                 #endregion
 
-                #region DevHome.Dashboard
+                #region DevHome
 
-                // Models
                 services.AddSingleton<MicrosoftWidgetModel>();
+
+                services.AddSingleton<IExtensionService, ExtensionService>();
+
+                #endregion
+
+                #region DevHome.Dashboard
 
                 // View-models
                 services.AddTransient<AddWidgetViewModel>();
@@ -417,6 +422,9 @@ public partial class App : Application
 
         // Dispose microsoft widgets
         GetService<MicrosoftWidgetModel>().Dispose();
+
+        // Dispose extension service
+        GetService<IExtensionService>().Dispose();
 
         // Unregister app notification service
         GetService<IAppNotificationService>().Unregister();

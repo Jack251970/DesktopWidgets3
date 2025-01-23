@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -492,21 +493,6 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         if (allIndex != null && allIndex < AllWidgetGroupMetadatas.Count)
         {
             return AllWidgetGroupMetadatas[allIndex!.Value].Description;
-        }
-
-        return string.Empty;
-    }
-
-    #endregion
-
-    #region Microsoft
-
-    private static string GetWidgetGroupDescription(int providerDefinitionIndex)
-    {
-        if (providerDefinitionIndex != -1)
-        {
-            // TODO(Future): How can we get the description of the provider?
-            return string.Empty;
         }
 
         return string.Empty;
@@ -1583,6 +1569,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
             {
                 widgetStoreItemList.Add(new WidgetStoreItem()
                 {
+                    ProviderType = WidgetProviderType.DesktopWidgets3,
                     Id = widgetId,
                     Name = GetWidgetGroupName(allIndex, installedIndex),
                     Description = GetWidgetGroupDescription(allIndex, installedIndex),
@@ -1591,6 +1578,19 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                     Website = metadata.Website,
                     IconFill = await GetWidgetGroupIconBrushAsync(widgetId, allIndex, installedIndex)
                 });
+            }
+        }
+
+        foreach (var widgetProvider in _microsoftWidgetModel.WidgetProviderDefinitions)
+        {
+            if (WidgetHelpers.IsIncludedWidgetProvider(widgetProvider))
+            {
+                var familyName = widgetProvider.GetFamilyName();
+                var extension = _microsoftWidgetModel.InstalledExtensions.FirstOrDefault(x => x.PackageFamilyName == familyName);
+                if (extension != null)
+                {
+                    widgetStoreItemList.Add(await GetWidgetStoreItem(widgetProvider, extension));
+                }
             }
         }
 
@@ -1611,6 +1611,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                 {
                     widgetStoreItemList.Add(new WidgetStoreItem()
                     {
+                        ProviderType = WidgetProviderType.DesktopWidgets3,
                         Id = metadata.ID,
                         Name = GetWidgetGroupName(allIndex, installedIndex),
                         Description = GetWidgetGroupDescription(allIndex, installedIndex),
@@ -1676,6 +1677,24 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
             widgetStoreList[index].ResourcesFolder = string.Empty;
             await _appSettingsService.SaveWidgetStoreListAsync(widgetStoreList);
         }
+    }
+
+    private async Task<WidgetStoreItem> GetWidgetStoreItem(WidgetProviderDefinition widgetProvider, IExtensionWrapper extension)
+    {
+        var version = extension.Version;
+        var installedDate = extension.InstalledDate;
+        var lastUpdatedLabel = "Last_Updated".GetLocalizedString(Constants.DevHomeDashboard);
+        return new WidgetStoreItem()
+        {
+            ProviderType = WidgetProviderType.Microsoft,
+            Id = widgetProvider.Id,
+            Name = widgetProvider.DisplayName,
+            Description = $"{lastUpdatedLabel} {installedDate.LocalDateTime}",
+            Author = extension.Publisher,
+            Version = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}",
+            Website = $"https://apps.microsoft.com/home",  // We are unable to get the product id from the extension.
+            IconFill = await GetWidgetGroupIconBrushAsync(widgetProvider)
+        };
     }
 
     #endregion

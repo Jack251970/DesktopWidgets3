@@ -3,11 +3,7 @@
 
 using System.Collections.ObjectModel;
 using System.Text.Json;
-//using DevHome.Dashboard.Common.Contracts;
-//using DevHome.Dashboard.Common.Extensions;
-//using DevHome.Dashboard.Common.Helpers;
 using DevHome.Dashboard.Common.Services;
-//using DevHome.Dashboard.Common.Views;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
@@ -25,18 +21,21 @@ namespace DevHome.Dashboard.Models;
 /// Resource model and management model for microsoft widgets.
 /// Edited from DashboardView.xaml.cs.
 /// </summary>
-public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, WidgetViewModelFactory widgetViewModelFactory, IWidgetHostingService widgetHostingService, IWidgetServiceService widgetServiceService) : IDisposable
+public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, WidgetViewModelFactory widgetViewModelFactory, IExtensionService extensionService, IWidgetHostingService widgetHostingService, IWidgetServiceService widgetServiceService) : IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));
 
     // TODO(Future): Use lock like _existedWidgetsLock to add multi-threading support.
-    public ObservableCollection<WidgetProviderDefinition> WidgetProviderDefinitions { get; private set; } = [];
-    public ObservableCollection<ComSafeWidgetDefinition> WidgetDefinitions { get; private set; } = [];
+    public ObservableCollection<WidgetProviderDefinition> WidgetProviderDefinitions { get; private set; } = null!;
+    public ObservableCollection<ComSafeWidgetDefinition> WidgetDefinitions { get; private set; } = null!;
 
-    public List<WidgetViewModel> ExistedWidgets { get; set; } = [];
+    public List<IExtensionWrapper> InstalledExtensions { get; private set; } = null!;
+
+    public readonly List<WidgetViewModel> ExistedWidgets = [];
 
     private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
     private readonly WidgetViewModelFactory _widgetViewModelFactory = widgetViewModelFactory;
+    private readonly IExtensionService _extensionService = extensionService;
     private readonly IWidgetHostingService _widgetHostingService = widgetHostingService;
     private readonly IWidgetServiceService _widgetServiceService = widgetServiceService;
 
@@ -75,6 +74,9 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
             // Update the collections
             WidgetProviderDefinitions = new ObservableCollection<WidgetProviderDefinition>(providerDefinitions);
             WidgetDefinitions = new ObservableCollection<ComSafeWidgetDefinition>(comSafeWidgetDefinitions);
+
+            // Initialize the extensions
+            await InitializeExtensionsAsync();
         }
         catch (Exception ex)
         {
@@ -124,6 +126,7 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         try
         {
             await OnUnloadedAsync();
+            _extensionService.OnExtensionsChanged -= OnExtensionsChanged;
         }
         catch (Exception ex)
         {
@@ -131,6 +134,24 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         }
 
         _log.Debug($"MicrosoftWidgetModel closed");
+    }
+
+    #endregion
+
+    #region Packages & Extensions
+
+    private async Task InitializeExtensionsAsync()
+    {
+        InstalledExtensions = await _extensionService.GetInstalledExtensionsAsync();
+
+        _log.Information($"Found {InstalledExtensions.Count} installed extensions");
+
+        _extensionService.OnExtensionsChanged += OnExtensionsChanged;
+    }
+
+    private void OnExtensionsChanged(object? sender, List<IExtensionWrapper> installedExtensions)
+    {
+        InstalledExtensions = installedExtensions;
     }
 
     #endregion

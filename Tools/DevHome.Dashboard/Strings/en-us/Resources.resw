@@ -273,11 +273,14 @@
     <value>Widget removed</value>
     <comment>This is said by narrator whenever a widget is removed</comment>
   </data>
-  <!-- Below is from DevHome.Common project -->
   <data name="ChooseFileActionTitle" xml:space="preserve">
     <value>Choose file</value>
   </data>
   <data name="ChooseFileActionToolTip" xml:space="preserve">
     <value>Choose file</value>
+  </data>
+  <data name="LastUpdated" xml:space="preserve">
+    <value>Last updated</value>
+    <comment>Text that precedes the date and time a specific package was last updated on the user's computer</comment>
   </data>
 </root>

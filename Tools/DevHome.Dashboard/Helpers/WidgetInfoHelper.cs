@@ -58,4 +58,13 @@ public static class WidgetInfoHelper
 
         return (string.Empty, string.Empty, string.Empty);
     }
+
+    public static string GetFamilyName(this WidgetProviderDefinition widgetProviderDefinition)
+    {
+        // Cut WidgetProviderDefinition id down to just the package family name.
+        var providerId = widgetProviderDefinition.Id;
+        var endOfPfnIndex = providerId.IndexOf('!', StringComparison.Ordinal);
+        var familyNamePartOfProviderId = providerId[..endOfPfnIndex];
+        return familyNamePartOfProviderId;
+    }
 }

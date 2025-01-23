@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Windows.System;
 
 namespace DesktopWidgets3.Views.Pages;
 
@@ -14,6 +15,7 @@ public sealed partial class WidgetStorePage : Page
     private readonly MenuFlyout InstallRightClickMenu;
     private readonly MenuFlyout UninstallRightClickMenu;
 
+    private WidgetProviderType _providerType = WidgetProviderType.DesktopWidgets3;
     private string _widgetId = string.Empty;
 
     public WidgetStorePage()
@@ -60,6 +62,7 @@ public sealed partial class WidgetStorePage : Page
     {
         if (sender is FrameworkElement element && element.Tag is WidgetStoreItem item)
         {
+            _providerType = item.ProviderType;
             _widgetId = item.Id;
             InstallRightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
@@ -70,6 +73,7 @@ public sealed partial class WidgetStorePage : Page
     {
         if (sender is FrameworkElement element && element.Tag is WidgetStoreItem item)
         {
+            _providerType = item.ProviderType;
             _widgetId = item.Id;
             UninstallRightClickMenu.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             e.Handled = true;
@@ -80,11 +84,19 @@ public sealed partial class WidgetStorePage : Page
     {
         if (_widgetId != string.Empty)
         {
-            await _widgetResourceService.InstallWidgetAsync(_widgetId);
-            if (await DialogFactory.ShowRestartApplicationDialogAsync() == WidgetDialogResult.Left)
+            if (_providerType == WidgetProviderType.DesktopWidgets3)
             {
-                App.RestartApplication();
+                await _widgetResourceService.InstallWidgetAsync(_widgetId);
+                if (await DialogFactory.ShowRestartApplicationDialogAsync() == WidgetDialogResult.Left)
+                {
+                    App.RestartApplication();
+                }
             }
+            else
+            {
+                // TODO(Future): Implement GitHub widget installation, not supported yet.
+            }
+
             _widgetId = string.Empty;
         }
     }
@@ -93,11 +105,19 @@ public sealed partial class WidgetStorePage : Page
     {
         if (_widgetId != string.Empty)
         {
-            await _widgetResourceService.UninstallWidgetAsync(_widgetId);
-            if (await DialogFactory.ShowRestartApplicationDialogAsync() == WidgetDialogResult.Left)
+            if (_providerType == WidgetProviderType.DesktopWidgets3)
             {
-                App.RestartApplication();
+                await _widgetResourceService.UninstallWidgetAsync(_widgetId);
+                if (await DialogFactory.ShowRestartApplicationDialogAsync() == WidgetDialogResult.Left)
+                {
+                    App.RestartApplication();
+                }
             }
+            else
+            {
+                await Launcher.LaunchUriAsync(new("ms-settings:appsfeatures"));
+            }
+
             _widgetId = string.Empty;
         }
     }

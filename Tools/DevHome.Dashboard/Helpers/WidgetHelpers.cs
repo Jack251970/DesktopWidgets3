@@ -66,10 +66,8 @@ public sealed class WidgetHelpers
 
     public static bool IsIncludedWidgetProvider(WidgetProviderDefinition provider)
     {
-        // Cut WidgetProviderDefinition id down to just the package family name.
-        var providerId = provider.Id;
-        var endOfPfnIndex = providerId.IndexOf('!', StringComparison.Ordinal);
-        var familyNamePartOfProviderId = providerId[..endOfPfnIndex];
+        // The family name part of the provider ID is used to determine if the widget provider is included.
+        var familyNamePartOfProviderId = provider.GetFamilyName();
 
         // Check if the specified widget provider is not the WebExperiencePackage.
         // Theoretically, the widgets of the WebExperiencePackage should work, but it cause COM issues for icons & screenshots.
