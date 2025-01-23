@@ -334,6 +334,10 @@ public partial class ExtensionService : IExtensionService
                 _catalog.PackageInstalling -= Catalog_PackageInstalling;
                 _catalog.PackageUninstalling -= Catalog_PackageUninstalling;
                 _catalog.PackageUpdating -= Catalog_PackageUpdating;
+                OnExtensionsChanged = null;
+                OnPackageInstalled = null;
+                OnPackageUninstalled = null;
+                OnPackageUpdated = null;
                 _installedExtensions.Clear();
                 _catalogLock.Dispose();
                 _getInstalledExtensionsLock.Dispose();

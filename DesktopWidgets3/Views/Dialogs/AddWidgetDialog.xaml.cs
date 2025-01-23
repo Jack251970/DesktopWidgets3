@@ -408,8 +408,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     #endregion
 
-    // TODO(Future): Support WidgetCatalog_WidgetDefinitionAdded and Updated?
-
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         var deletedDefinitionId = args.DefinitionId;
