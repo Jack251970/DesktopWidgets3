@@ -30,22 +30,30 @@ public partial class WidgetStorePageViewModel(DispatcherQueue dispatcherQueue, I
 
         await Task.CompletedTask;
 
+        await _availableWidgetsLock.WaitAsync();
+
         AvailableWidgets.Clear();
         foreach (var widget in availableWidgets)
         {
             AvailableWidgets.Add(widget);
         }
+
+        _availableWidgetsLock.Release();
     }
 
     private async Task InitializeInstalledWidgetsAsync()
     {
         var installedWidgets = await _widgetResourceService.GetInstalledWidgetStoreItemsAsync();
 
+        await _installedWidgetsLock.WaitAsync();
+
         InstalledWidgets.Clear();
         foreach (var widget in installedWidgets)
         {
             InstalledWidgets.Add(widget);
         }
+
+        _installedWidgetsLock.Release();
     }
 
     #endregion
@@ -61,11 +69,13 @@ public partial class WidgetStorePageViewModel(DispatcherQueue dispatcherQueue, I
         _dispatcherQueue.TryEnqueue(async () =>
         {
             await _installedWidgetsLock.WaitAsync();
+
             var widgetStoreItem = await _widgetResourceService.GetWidgetStoreItemAsync(extension);
             if (widgetStoreItem != null)
             {
                 InstalledWidgets.Add(widgetStoreItem);
             }
+
             _installedWidgetsLock.Release();
         });
     }
@@ -75,11 +85,13 @@ public partial class WidgetStorePageViewModel(DispatcherQueue dispatcherQueue, I
         _dispatcherQueue.TryEnqueue(async () =>
         {
             await _installedWidgetsLock.WaitAsync();
+
             var widgetToRemove = InstalledWidgets.FirstOrDefault(x => x.FamilyName == packageFamilyName);
             if (widgetToRemove != null)
             {
                 InstalledWidgets.Remove(widgetToRemove);
             }
+
             _installedWidgetsLock.Release();
         });
     }
@@ -89,6 +101,7 @@ public partial class WidgetStorePageViewModel(DispatcherQueue dispatcherQueue, I
         _dispatcherQueue.TryEnqueue(async () =>
         {
             await _installedWidgetsLock.WaitAsync();
+
             var widgetToUpdate = InstalledWidgets.FirstOrDefault(x => x.FamilyName == extension.PackageFamilyName);
             if (widgetToUpdate != null)
             {
@@ -100,6 +113,7 @@ public partial class WidgetStorePageViewModel(DispatcherQueue dispatcherQueue, I
                     InstalledWidgets.Insert(widgetIndex, widgetStoreItem);
                 }
             }
+
             _installedWidgetsLock.Release();
         });
     }
@@ -116,13 +130,8 @@ public partial class WidgetStorePageViewModel(DispatcherQueue dispatcherQueue, I
     {
         if (!_isInitialized)
         {
-            await _availableWidgetsLock.WaitAsync();
             await InitializeAvailableWidgetsAsync();
-            _availableWidgetsLock.Release();
-
-            await _installedWidgetsLock.WaitAsync();
             await InitializeInstalledWidgetsAsync();
-            _installedWidgetsLock.Release();
 
             _extensionService.OnPackageInstalled += ExtensionService_OnPackageInstalled;
             _extensionService.OnPackageUpdated += ExtensionService_OnPackageUpdated;

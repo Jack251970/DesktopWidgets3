@@ -14,6 +14,8 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
     public ObservableCollection<DashboardWidgetItem> PinnedWidgets { get; set; } = [];
     public ObservableCollection<DashboardWidgetItem> UnpinnedWidgets { get; set; } = [];
 
+    private readonly SemaphoreSlim _refreshWidgetsLock = new(1, 1);
+
     private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
     private readonly MicrosoftWidgetModel _microsoftWidgetModel = microsoftWidgetModel;
     private readonly WidgetViewModelFactory _widgetViewModelFactory = widgetViewModelFactory;
@@ -58,34 +60,30 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
 
     #endregion
 
-    #region Load
+    #region Initialize
 
-    private async Task LoadYourWidgetsAsync()
+    private async Task InitializeYourWidgetsAsync()
     {
         yourWidgets = await _widgetResourceService.GetYourDashboardWidgetItemsAsync(_themeSelectorService.GetActualTheme());
         foreach (var item in yourWidgets)
         {
             item.PinnedChangedCallback = OnPinnedChanged;
         }
+
+        RefreshYourWidgets();
     }
 
     private async void OnPinnedChanged(DashboardWidgetItem item)
     {
         if (item.Pinned)
         {
+            await PinWidgetItemAsync(item.ProviderType, item.Id, item.Type, item.Index);
             await _widgetManagerService.PinWidgetAsync(item.ProviderType, item.Id, item.Type, item.Index, false);
         }
         else
         {
+            await UnpinWidgetItemAsync(item.ProviderType, item.Id, item.Type, item.Index);
             await _widgetManagerService.UnpinWidgetAsync(item.ProviderType, item.Id, item.Type, item.Index, false);
-        }
-
-        var index = yourWidgets.FindIndex(x => x.Equals(item.ProviderType, item.Id, item.Type, item.Index));
-        if (index != -1)
-        {
-            yourWidgets[index].Pinned = item.Pinned;
-
-            RefreshYourWidgets();
         }
     }
 
@@ -93,15 +91,29 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
 
     #region Refresh
 
-    internal void RefreshDeletedWidget(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
+    internal async Task RefreshDeletedWidgetAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
     {
+        await _refreshWidgetsLock.WaitAsync();
+
+        var widgetToDelete = PinnedWidgets.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
+        if (widgetToDelete != null)
+        {
+            PinnedWidgets.Remove(widgetToDelete);
+        }
+
+        var widgetToDelete1 = UnpinnedWidgets.FirstOrDefault(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
+        if (widgetToDelete1 != null)
+        {
+            UnpinnedWidgets.Remove(widgetToDelete1);
+        }
+
         var index = yourWidgets.FindIndex(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
         if (index != -1)
         {
             yourWidgets.RemoveAt(index);
-
-            RefreshYourWidgets();
         }
+
+        _refreshWidgetsLock.Release();
     }
 
     private async Task RefreshAddedWidgetAsync(string widgetId, string widgetType, int widgetIndex)
@@ -110,9 +122,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
         if (widgetItem != null)
         {
             widgetItem.PinnedChangedCallback = OnPinnedChanged;
-            yourWidgets.Add(widgetItem);
-
-            RefreshYourWidgets();
+            await AddWidgetItemAsync(widgetItem);
         }
     }
 
@@ -122,9 +132,7 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
         if (widgetItem != null)
         {
             widgetItem.PinnedChangedCallback = OnPinnedChanged;
-            yourWidgets.Add(widgetItem);
-
-            RefreshYourWidgets(); 
+            await AddWidgetItemAsync(widgetItem);
         }
     }
 
@@ -147,14 +155,65 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
 
     #endregion
 
+    #region Add & Pin & Unpin
+
+    private async Task AddWidgetItemAsync(DashboardWidgetItem item)
+    {
+        await _refreshWidgetsLock.WaitAsync();
+
+        if (item.Pinned)
+        {
+            PinnedWidgets.Add(item);
+        }
+        else
+        {
+            UnpinnedWidgets.Add(item);
+        }
+
+        yourWidgets.Add(item);
+
+        _refreshWidgetsLock.Release();
+    }
+
+    private async Task PinWidgetItemAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
+    {
+        await _refreshWidgetsLock.WaitAsync();
+
+        var indexToPin = yourWidgets.FindIndex(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
+        if (indexToPin != -1)
+        {
+            yourWidgets[indexToPin].Pinned = true;
+            yourWidgets[indexToPin].PinnedChangedCallback = OnPinnedChanged;
+            RefreshYourWidgets();
+        }
+
+        _refreshWidgetsLock.Release();
+    }
+
+    private async Task UnpinWidgetItemAsync(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
+    {
+        await _refreshWidgetsLock.WaitAsync();
+
+        var indexToUnpin = yourWidgets.FindIndex(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
+        if (indexToUnpin != -1)
+        {
+            yourWidgets[indexToUnpin].Pinned = false;
+            yourWidgets[indexToUnpin].PinnedChangedCallback = OnPinnedChanged;
+            RefreshYourWidgets();
+        }
+
+        _refreshWidgetsLock.Release();
+    }
+
+    #endregion
+
     #region Navigation Aware
 
     public async void OnNavigatedTo(object parameter)
     {
         if (!_isInitialized)
         {
-            await LoadYourWidgetsAsync();
-            RefreshYourWidgets();
+            await InitializeYourWidgetsAsync();
 
             _isInitialized = true;
 
@@ -170,16 +229,14 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
             var actualTheme = _themeSelectorService.GetActualTheme();
             switch (navigationParameter.Event)
             {
-                case DashboardViewModelNavigationParameter.UpdateEvent.Pin:
+                case DashboardViewModelNavigationParameter.UpdateEvent.Add:
                     if (providerType == WidgetProviderType.DesktopWidgets3)
                     {
                         var widgetItem = await _widgetResourceService.GetDashboardWidgetItemAsync(widgetId, widgetType, widgetIndex, actualTheme);
                         if (widgetItem != null)
                         {
                             widgetItem.PinnedChangedCallback = OnPinnedChanged;
-                            yourWidgets.Add(widgetItem);
-
-                            RefreshYourWidgets();
+                            await AddWidgetItemAsync(widgetItem);
                         }
                     }
                     else
@@ -191,31 +248,19 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
                             if (widgetItem != null)
                             {
                                 widgetItem.PinnedChangedCallback = OnPinnedChanged;
-                                yourWidgets.Add(widgetItem);
-
-                                RefreshYourWidgets();
+                                await AddWidgetItemAsync(widgetItem);
                             }
                         }
                     }
                     break;
+                case DashboardViewModelNavigationParameter.UpdateEvent.Pin:
+                    await PinWidgetItemAsync(providerType, widgetId, widgetType, widgetIndex);
+                    break;
                 case DashboardViewModelNavigationParameter.UpdateEvent.Unpin:
-                    var index = yourWidgets.FindIndex(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
-                    if (index != -1)
-                    {
-                        yourWidgets[index].Pinned = false;
-                        yourWidgets[index].PinnedChangedCallback = OnPinnedChanged;
-
-                        RefreshYourWidgets();
-                    }
+                    await UnpinWidgetItemAsync(providerType, widgetId, widgetType, widgetIndex);
                     break;
                 case DashboardViewModelNavigationParameter.UpdateEvent.Delete:
-                    var index1 = yourWidgets.FindIndex(x => x.Equals(providerType, widgetId, widgetType, widgetIndex));
-                    if (index1 != -1)
-                    {
-                        yourWidgets.RemoveAt(index1);
-
-                        RefreshYourWidgets();
-                    }
+                    await RefreshDeletedWidgetAsync(providerType, widgetId, widgetType, widgetIndex);
                     break;
             }
         }
@@ -232,14 +277,18 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
 
     public async Task UpdateThemeAsync(ElementTheme actualTheme)
     {
+        await _refreshWidgetsLock.WaitAsync();
+
         foreach (var widgetItem in yourWidgets)
         {
             widgetItem.IconFill = await _widgetResourceService.GetWidgetIconBrushAsync(
-                widgetItem.ProviderType, 
-                widgetItem.Id, 
-                widgetItem.Type, 
+                widgetItem.ProviderType,
+                widgetItem.Id,
+                widgetItem.Type,
                 actualTheme);
         }
+
+        _refreshWidgetsLock.Release();
     }
 
     #endregion

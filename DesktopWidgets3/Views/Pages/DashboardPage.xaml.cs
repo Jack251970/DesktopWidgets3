@@ -67,7 +67,7 @@ public sealed partial class DashboardPage : Page
         {
             if (await DialogFactory.ShowDeleteWidgetDialogAsync() == WidgetDialogResult.Left)
             {
-                ViewModel.RefreshDeletedWidget(_providerType, _widgetId, _widgetType, _widgetIndex);
+                await ViewModel.RefreshDeletedWidgetAsync(_providerType, _widgetId, _widgetType, _widgetIndex);
                 await _widgetManagerService.DeleteWidgetAsync(_providerType, _widgetId, _widgetType, _widgetIndex, false);
             }
             _widgetIndex = -1;

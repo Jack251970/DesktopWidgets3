@@ -423,7 +423,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         {
             RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
-                Event = DashboardViewModelNavigationParameter.UpdateEvent.Pin,
+                Event = DashboardViewModelNavigationParameter.UpdateEvent.Add,
                 ProviderType = providerType,
                 Id = widgetId,
                 Type = widgetType,
@@ -487,7 +487,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         {
             RefreshDashboardPage(new DashboardViewModelNavigationParameter()
             {
-                Event = DashboardViewModelNavigationParameter.UpdateEvent.Pin,
+                Event = DashboardViewModelNavigationParameter.UpdateEvent.Add,
                 ProviderType = providerType,
                 Id = widgetId,
                 Type = widgetType,
@@ -524,24 +524,37 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
             // update widget list
             await _appSettingsService.PinWidgetAsync(providerType, widgetId, widgetType, widgetIndex);
+
+            // refresh dashboard page
+            if (refresh)
+            {
+                RefreshDashboardPage(new DashboardViewModelNavigationParameter()
+                {
+                    Event = DashboardViewModelNavigationParameter.UpdateEvent.Pin,
+                    ProviderType = providerType,
+                    Id = widgetId,
+                    Type = widgetType,
+                    Index = widgetIndex
+                });
+            }
         }
         else
         {
             // add widget
             await AddWidgetAsync(widgetId, widgetType, null, false);
-        }
 
-        // refresh dashboard page
-        if (refresh)
-        {
-            RefreshDashboardPage(new DashboardViewModelNavigationParameter()
+            // refresh dashboard page
+            if (refresh)
             {
-                Event = DashboardViewModelNavigationParameter.UpdateEvent.Pin,
-                ProviderType = providerType,
-                Id = widgetId,
-                Type = widgetType,
-                Index = widgetIndex
-            });
+                RefreshDashboardPage(new DashboardViewModelNavigationParameter()
+                {
+                    Event = DashboardViewModelNavigationParameter.UpdateEvent.Add,
+                    ProviderType = providerType,
+                    Id = widgetId,
+                    Type = widgetType,
+                    Index = widgetIndex
+                });
+            }
         }
     }
 

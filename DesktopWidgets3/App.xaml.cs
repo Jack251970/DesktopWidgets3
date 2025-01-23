@@ -209,16 +209,16 @@ public partial class App : Application
                 #region Views & ViewModels
 
                 // Main Window Pages
+                services.AddSingleton<NavShellPageViewModel>();
                 services.AddTransient<NavShellPage>();
-                services.AddTransient<NavShellPageViewModel>();
-                services.AddTransient<HomePageViewModel>();
+                services.AddSingleton<HomePageViewModel>();
                 services.AddTransient<HomePage>();
-                services.AddTransient<SettingsPageViewModel>();
+                services.AddSingleton<SettingsPageViewModel>();
                 services.AddTransient<SettingsPage>();
-                services.AddTransient<DashboardPageViewModel>();
+                services.AddSingleton<DashboardPageViewModel>();
                 services.AddTransient<DashboardPage>();
+                services.AddSingleton<WidgetStorePageViewModel>();
                 services.AddTransient<WidgetStorePage>();
-                services.AddTransient<WidgetStorePageViewModel>();
 
                 // Widgets Window Pages
                 services.AddTransient<WidgetSettingPage>();
