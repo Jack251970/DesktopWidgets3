@@ -578,17 +578,26 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         await _existedWidgetsLock.WaitAsync();
         try
         {
+            _log.Debug($"Leaving Dashboard, unsubscribing from widgets.");
+
             await Task.Run(UnsubscribeFromWidgets);
         }
         finally
         {
+            _log.Debug($"Leaving Dashboard, disposing widgets.");
+
             foreach (var widget in ExistedWidgets)
             {
                 widget.Dispose();
             }
+            
+            _log.Debug($"Leaving Dashboard, clearing widgets.");
+
             ExistedWidgets.Clear();
             _existedWidgetsLock.Release();
         }
+
+        _log.Debug($"Leaving Dashboard, unsubscribing from widget catalog events.");
 
         await UnsubscribeFromWidgetCatalogEventsAsync();
     }
