@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
 namespace DesktopWidgets3.Services.Widgets;
@@ -143,6 +144,124 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         _log.Debug("All widget windows closed");
+    }
+
+    #endregion
+
+    #region Widget Catalog Events
+
+    private void InitializeWidgetCatalogEvents()
+    {
+        _microsoftWidgetModel.WidgetDefinitionDeleted += MicrosoftWidgetModel_WidgetDefinitionDeleted;
+        _microsoftWidgetModel.WidgetDefinitionUpdated += MicrosoftWidgetModel_WidgetDefinitionUpdated;
+    }
+
+    // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
+    private async void MicrosoftWidgetModel_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
+    {
+        var definitionId = args.DefinitionId;
+        _log.Information($"WidgetDefinitionDeleted {definitionId}");
+
+        var widgetsToRemove = GetWidgetsFromDefinitionId(definitionId);
+        foreach (var widget in widgetsToRemove)
+        {
+            var widgetToRemove = widget.Item4;
+            _log.Information($"Remove widget {widgetToRemove.Widget.Id}");
+            await UnpinWidgetAsync(WidgetProviderType.Microsoft, widget.Item1, widget.Item2, widget.Item3, true);
+        }
+
+        DependencyExtensions.GetRequiredService<IWidgetIconService>().RemoveIconsFromMicrosoftIconCache(definitionId);
+        DependencyExtensions.GetRequiredService<IWidgetScreenshotService>().RemoveScreenshotsFromMicrosoftIconCache(definitionId);
+    }
+
+    private async void MicrosoftWidgetModel_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
+    {
+        WidgetDefinition unsafeWidgetDefinition;
+        try
+        {
+            unsafeWidgetDefinition = await Task.Run(() => args.Definition);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "WidgetCatalog_WidgetDefinitionUpdated: Couldn't get args.WidgetDefinition");
+            return;
+        }
+
+        if (unsafeWidgetDefinition == null)
+        {
+            _log.Error("WidgetCatalog_WidgetDefinitionUpdated: Couldn't get WidgetDefinition");
+            return;
+        }
+
+        var widgetDefinitionId = await ComSafeWidgetDefinition.GetIdFromUnsafeWidgetDefinitionAsync(unsafeWidgetDefinition);
+        var comSafeNewDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+        if (!await comSafeNewDefinition.PopulateAsync())
+        {
+            _log.Error($"Error populating widget definition for widget {widgetDefinitionId}");
+            return;
+        }
+
+        var updatedDefinitionId = comSafeNewDefinition.Id;
+        _log.Information($"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
+
+        var widgetsToUpdate = GetWidgetsFromDefinitionId(updatedDefinitionId);
+        var matchingWidgetsFound = 0;
+        foreach (var widget in widgetsToUpdate)
+        {
+            // Things in the definition that we need to update to if they have changed:
+            // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
+            var widgetToUpdate = widget.Item4;
+            var oldDef = widgetToUpdate.WidgetDefinition;
+
+            // If we're no longer allowed to have multiple instances of this widget, delete all but the first.
+            if (++matchingWidgetsFound > 1 && comSafeNewDefinition.AllowMultiple == false && oldDef.AllowMultiple == true)
+            {
+                _log.Information($"No longer allowed to have multiple of widget {updatedDefinitionId}");
+                _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
+                await UnpinWidgetAsync(WidgetProviderType.Microsoft, widget.Item1, widget.Item2, widget.Item3, true);
+                _log.Information($"Deleted Widget {widgetToUpdate.Widget.Id}");
+            }
+            else
+            {
+                // Changing the definition updates the DisplayTitle.
+                widgetToUpdate.WidgetDefinition = comSafeNewDefinition;
+
+                // If the size the widget is currently set to is no longer supported by the widget, revert to its default size.
+                // DevHomeTODO: Need to update WidgetControl with now-valid sizes.
+                // DevHomeTODO: Properly compare widget capabilities.
+                // https://github.com/microsoft/devhome/issues/641
+                if (await oldDef.GetWidgetCapabilitiesAsync() != await comSafeNewDefinition.GetWidgetCapabilitiesAsync())
+                {
+                    // DevHomeTODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
+                    // https://github.com/microsoft/devhome/issues/641
+                    if (!(await comSafeNewDefinition.GetWidgetCapabilitiesAsync()).Any(cap => cap.Size == widgetToUpdate.WidgetSize))
+                    {
+                        var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(await comSafeNewDefinition.GetWidgetCapabilitiesAsync());
+                        widgetToUpdate.WidgetSize = newDefaultSize;
+                        await widgetToUpdate.Widget.SetSizeAsync(newDefaultSize);
+                        await RestartWidgetAsync(WidgetProviderType.Microsoft, widget.Item1, widget.Item2, widget.Item3);
+                    }
+                }
+            }
+
+            // DevHomeTODO: ThemeResource (icons) changed.
+            // https://github.com/microsoft/devhome/issues/641
+        }
+    }
+
+    private List<Tuple<string, string, int, WidgetViewModel>> GetWidgetsFromDefinitionId(string definitionId)
+    {
+        var widgetsToRemove = new List<Tuple<string, string, int, WidgetViewModel>>();
+        foreach (var item in PinnedWidgetWindowPairs)
+        {
+            var pair = item.Value;
+            var widgetViewModel = pair.Window.ViewModel.WidgetViewModel!;
+            if (pair.ProviderType == WidgetProviderType.Microsoft && widgetViewModel.Widget.DefinitionId == definitionId)
+            {
+                widgetsToRemove.Add(new(pair.WidgetId, pair.WidgetType, pair.WidgetIndex, widgetViewModel));
+            }
+        }
+        return widgetsToRemove;
     }
 
     #endregion

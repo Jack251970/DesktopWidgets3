@@ -633,7 +633,7 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     #endregion
 
-    #region WidgetCatalog Events
+    #region Widget Catalog Events
 
     public event TypedEventHandler<WidgetCatalog, WidgetDefinitionAddedEventArgs>? WidgetDefinitionAdded;
     public event TypedEventHandler<WidgetCatalog, WidgetDefinitionDeletedEventArgs>? WidgetDefinitionDeleted;
@@ -646,31 +646,11 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         WidgetDefinitionAdded?.Invoke(sender, args);
     }
 
-    // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
     private async void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         await Task.Run(OnWidgetDefinitionChange);
 
         WidgetDefinitionDeleted?.Invoke(sender, args);
-
-        // TODO(Future): Add support for widget deletion.
-        /*var definitionId = args.DefinitionId;
-        _dispatcherQueue.TryEnqueue(async () =>
-        {
-            _log.Information($"WidgetDefinitionDeleted {definitionId}");
-            foreach (var widgetToRemove in ExistedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
-            {
-                _log.Information($"Remove widget {widgetToRemove.Widget.Id}");
-                widgetToRemove.Dispose();
-                ExistedWidgets.Remove(widgetToRemove);
-
-                // The widget definition is gone, so delete widgets with that definition.
-                await widgetToRemove.Widget.DeleteAsync();
-            }
-        });
-
-        ViewModel.WidgetIconService.RemoveIconsFromMicrosoftIconCache(definitionId);
-        ViewModel.WidgetScreenshotService.RemoveScreenshotsFromMicrosoftIconCache(definitionId);*/
     }
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
@@ -678,82 +658,6 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         await Task.Run(OnWidgetDefinitionChange);
 
         WidgetDefinitionUpdated?.Invoke(sender, args);
-
-        // TODO(Future): Add support for widget update.
-        /*WidgetDefinition unsafeWidgetDefinition;
-        try
-        {
-            unsafeWidgetDefinition = await Task.Run(() => args.Definition);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "WidgetCatalog_WidgetDefinitionUpdated: Couldn't get args.WidgetDefinition");
-            return;
-        }
-
-        if (unsafeWidgetDefinition == null)
-        {
-            _log.Error("WidgetCatalog_WidgetDefinitionUpdated: Couldn't get WidgetDefinition");
-            return;
-        }
-
-        var widgetDefinitionId = await ComSafeWidgetDefinition.GetIdFromUnsafeWidgetDefinitionAsync(unsafeWidgetDefinition);
-        var comSafeNewDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
-        if (!await comSafeNewDefinition.PopulateAsync())
-        {
-            _log.Error($"Error populating widget definition for widget {widgetDefinitionId}");
-            return;
-        }
-
-        var updatedDefinitionId = comSafeNewDefinition.Id;
-        _log.Information($"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
-
-        var matchingWidgetsFound = 0;
-
-        foreach (var widgetToUpdate in ExistedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
-        {
-            // Things in the definition that we need to update to if they have changed:
-            // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
-            var oldDef = widgetToUpdate.WidgetDefinition;
-
-            // If we're no longer allowed to have multiple instances of this widget, delete all but the first.
-            if (++matchingWidgetsFound > 1 && comSafeNewDefinition.AllowMultiple == false && oldDef.AllowMultiple == true)
-            {
-                _dispatcherQueue.TryEnqueue(async () =>
-                {
-                    _log.Information($"No longer allowed to have multiple of widget {updatedDefinitionId}");
-                    _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
-                    widgetToUpdate.Dispose();
-                    ExistedWidgets.Remove(widgetToUpdate);
-                    await widgetToUpdate.Widget.DeleteAsync();
-                    _log.Information($"Deleted Widget {widgetToUpdate.Widget.Id}");
-                });
-            }
-            else
-            {
-                // Changing the definition updates the DisplayTitle.
-                widgetToUpdate.WidgetDefinition = comSafeNewDefinition;
-
-                // If the size the widget is currently set to is no longer supported by the widget, revert to its default size.
-                // DevHomeTODO: Need to update WidgetControl with now-valid sizes.
-                // DevHomeTODO: Properly compare widget capabilities.
-                // https://github.com/microsoft/devhome/issues/641
-                if (await oldDef.GetWidgetCapabilitiesAsync() != await comSafeNewDefinition.GetWidgetCapabilitiesAsync())
-                {
-                    // DevHomeTODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
-                    // https://github.com/microsoft/devhome/issues/641
-                    if (!(await comSafeNewDefinition.GetWidgetCapabilitiesAsync()).Any(cap => cap.Size == widgetToUpdate.WidgetSize))
-                    {
-                        var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(await comSafeNewDefinition.GetWidgetCapabilitiesAsync());
-                        widgetToUpdate.WidgetSize = newDefaultSize;
-                        await widgetToUpdate.Widget.SetSizeAsync(newDefaultSize);
-                    }
-                }
-            }
-
-            // DevHomeTODO: ThemeResource (icons) changed.
-            // https://github.com/microsoft/devhome/issues/641
-        }*/
     }
 
     private async Task OnWidgetDefinitionChange()
