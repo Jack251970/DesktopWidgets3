@@ -94,7 +94,7 @@ public sealed partial class WidgetStorePage : Page
             }
             else
             {
-                // TODO(Future): Implement GitHub widget installation, not supported yet.
+                // TODO(Future): Implement Microsoft widget installation, not supported yet.
             }
 
             _widgetId = string.Empty;
