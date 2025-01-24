@@ -1,6 +1,6 @@
 ﻿using WinUIEx;
 
-namespace DesktopWidgets3.Core.Widgets.Helpers;
+namespace DesktopWidgets3.Core.Helpers;
 
 public static class DialogFactory
 {
