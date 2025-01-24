@@ -8,7 +8,6 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
@@ -507,7 +506,7 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         if (RuntimeHelper.IsCurrentProcessRunningElevated())
         {
             _log.Error($"Dev Home is running as admin, can't show Dashboard");
-            // RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
+            await DialogFactory.ShowRunningAsAdminMessageDialogAsync();
             return false;
         }
 
@@ -520,19 +519,20 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
                 break;
             case WidgetServiceService.WidgetServiceStates.NotAtMinVersion:
                 _log.Warning($"Initialization failed, WidgetServiceState not at min version");
-                /*UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;*/
+                await DialogFactory.ShowUpdateWidgetsMessageDialogAsync();
+                await GoToWidgetsInStoreAsync();
                 return false;
             case WidgetServiceService.WidgetServiceStates.NotOK:
                 _log.Warning($"Initialization failed, WidgetServiceState not OK");
-                /*NotOKServiceMessageStackPanel.Visibility = Visibility.Visible;*/
+                await DialogFactory.ShowNotOKServiceMessageDialogAsync();
                 return false;
             case WidgetServiceService.WidgetServiceStates.Updating:
                 _log.Warning($"Initialization failed, WidgetServiceState updating");
-                /*UpdatingWidgetServiceMessageStackPanel.Visibility = Visibility.Visible;*/
+                await DialogFactory.ShowUpdatingWidgetServiceMessageDialogAsync();
                 return false;
             case WidgetServiceService.WidgetServiceStates.Unknown:
                 _log.Error($"Initialization failed, WidgetServiceState unknown");
-                /*RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;*/
+                await DialogFactory.ShowRestartDevHomeMessageDialogAsync();
                 return false;
             default:
                 break;
@@ -542,7 +542,7 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         if (!await SubscribeToWidgetCatalogEventsAsync())
         {
             _log.Error($"Catalog event subscriptions failed, show error");
-            /*RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;*/
+            await DialogFactory.ShowRestartDevHomeMessageDialogAsync();
             return false;
         }
 
@@ -695,7 +695,6 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     #region Store
 
-    // TODO(Future): Check if we need this function.
     public static async Task GoToWidgetsInStoreAsync()
     {
         if (RuntimeHelper.IsOnWindows11)

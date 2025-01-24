@@ -44,4 +44,39 @@ public static class DialogFactory
         var content = "RestartApplication.Content".GetLocalizedString();
         return await DependencyExtensions.GetRequiredService<IDialogService>().ShowTwoButtonDialogAsync(window, title, content);
     }
+
+    public static async Task ShowRunningAsAdminMessageDialogAsync(WindowEx? window = null)
+    {
+        var title = string.Empty;
+        var content = "RunningAsAdminMessage.Text".GetLocalizedString(Constants.DevHomeDashboard);
+        await DependencyExtensions.GetRequiredService<IDialogService>().ShowOneButtonDialogAsync(window, title, content);
+    }
+
+    public static async Task ShowRestartDevHomeMessageDialogAsync(WindowEx? window = null)
+    {
+        var title = string.Empty;
+        var content = "RestartDevHomeMessage.Text".GetLocalizedString(Constants.DevHomeDashboard);
+        await DependencyExtensions.GetRequiredService<IDialogService>().ShowOneButtonDialogAsync(window, title, content);
+    }
+
+    public static async Task ShowUpdatingWidgetServiceMessageDialogAsync(WindowEx? window = null)
+    {
+        var title = string.Empty;
+        var content = "UpdatingWidgetServiceMessage.Text".GetLocalizedString(Constants.DevHomeDashboard);
+        await DependencyExtensions.GetRequiredService<IDialogService>().ShowOneButtonDialogAsync(window, title, content);
+    }
+
+    public static async Task ShowNotOKServiceMessageDialogAsync(WindowEx? window = null)
+    {
+        var title = string.Empty;
+        var content = "NotOKWidgetServiceMessage.Text".GetLocalizedString(Constants.DevHomeDashboard);
+        await DependencyExtensions.GetRequiredService<IDialogService>().ShowOneButtonDialogAsync(window, title, content);
+    }
+
+    public static async Task ShowUpdateWidgetsMessageDialogAsync(WindowEx? window = null)
+    {
+        var title = string.Empty;
+        var content = "UpdateWidgetsMessage.Text".GetLocalizedString(Constants.DevHomeDashboard);
+        await DependencyExtensions.GetRequiredService<IDialogService>().ShowOneButtonDialogAsync(window, title, content);
+    }
 }
