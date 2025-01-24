@@ -24,10 +24,12 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(MicrosoftWidgetModel));
 
-    public List<IExtensionWrapper> InstalledExtensions { get; set; } = null!;
+    public bool HasWidgetServiceInitialized { get; private set; } = false;
 
-    public List<WidgetProviderDefinition> WidgetProviderDefinitions { get; private set; } = null!;
-    public List<ComSafeWidgetDefinition> WidgetDefinitions { get; private set; } = null!;
+    public List<IExtensionWrapper> InstalledExtensions { get; set; } = [];
+
+    public List<WidgetProviderDefinition> WidgetProviderDefinitions { get; private set; } = [];
+    public List<ComSafeWidgetDefinition> WidgetDefinitions { get; private set; } = [];
 
     private readonly List<WidgetViewModel> ExistedWidgets = [];
 
@@ -43,47 +45,46 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     public CancellationTokenSource InitWidgetsCancellationTokenSource { get; private set; } = null!;
 
-    public bool IsLoading { get; private set; } = false;
-
-    public bool HasWidgetServiceInitialized { get; private set; } = false;
-
-    public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
-    {
-        return (widgetCount == 0 && !isLoading && HasWidgetServiceInitialized) ? Visibility.Visible : Visibility.Collapsed;
-    }
-
-    public static bool IsRunningElevated()
-    {
-        return RuntimeHelper.IsCurrentProcessRunningElevated();
-    }
-
     #region Initialization & Restart & Close
 
     public async Task InitializeResourcesAsync()
     {
-        try
+        HasWidgetServiceInitialized = false;
+
+        if (await ValidateDashboardState())
         {
-            // Show the providers and widgets underneath them in alphabetical order
-            var providerDefinitions = (await _widgetHostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
-            var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_widgetHostingService);
+            HasWidgetServiceInitialized = true;
 
-            _log.Information($"Filling available Microsoft widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
+            try
+            {
+                // Show the providers and widgets underneath them in alphabetical order
+                var providerDefinitions = (await _widgetHostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
+                var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_widgetHostingService);
 
-            // Update the collections
-            WidgetProviderDefinitions = [.. providerDefinitions];
-            WidgetDefinitions = comSafeWidgetDefinitions;
+                _log.Information($"Filling available Microsoft widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
 
-            // Initialize the extensions
-            await InitializeExtensionsAsync();
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Error initializing Microsoft widget resources");
+                // Update the collections
+                WidgetProviderDefinitions = [.. providerDefinitions];
+                WidgetDefinitions = comSafeWidgetDefinitions;
+
+                // Initialize the extensions
+                await InitializeExtensionsAsync();
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Error initializing Microsoft widget resources");
+            }
         }
     }
 
     public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task> createWidgetWindow, CancellationTokenSource initWidgetsCancellationTokenSource)
     {
+        if (!HasWidgetServiceInitialized)
+        {
+            // If the widget service is not initialized, don't try to initialize the pinned widgets.
+            return;
+        }
+
         _log.Information($"Initializing MicrosoftWidgetModel");
 
         CreateWidgetWindow = createWidgetWindow;
@@ -103,6 +104,12 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     public async Task RestartPinnedWidgetsAsync()
     {
+        if (!HasWidgetServiceInitialized)
+        {
+            // If the widget service is not initialized, don't try to restart the pinned widgets.
+            return;
+        }
+
         _log.Information($"Restarting MicrosoftWidgetModel");
 
         try
@@ -119,6 +126,12 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     public async Task ClosePinnedWidgetsAsync()
     {
+        if (!HasWidgetServiceInitialized)
+        {
+            // If the widget service is not initialized, don't need to close the pinned widgets.
+            return;
+        }
+
         _log.Information($"Closing MicrosoftWidgetModel");
 
         try
@@ -158,6 +171,12 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     public WidgetProviderDefinition? GetWidgetProviderDefinition(string widgetId)
     {
+        if (!HasWidgetServiceInitialized)
+        {
+            // If the widget service is not initialized, return null
+            return null;
+        }
+
         foreach (var providerDefinition in WidgetProviderDefinitions)
         {
             var (_, widgetId1) = providerDefinition.GetWidgetProviderInfo();
@@ -172,6 +191,12 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     public ComSafeWidgetDefinition? GetWidgetDefinition(string widgetId, string widgetType)
     {
+        if (!HasWidgetServiceInitialized)
+        {
+            // If the widget service is not initialized, return null
+            return null;
+        }
+
         foreach (var widgetDefinition in WidgetDefinitions)
         {
             var (_, _, _, widgetId1, widgetType1) = widgetDefinition.GetWidgetProviderAndWidgetInfo();
@@ -190,6 +215,12 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     public async Task<WidgetViewModel?> GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex)
     {
+        if (!HasWidgetServiceInitialized)
+        {
+            // If the widget service is not initialized, return null
+            return null;
+        }
+
         var hostWidgets = await GetPreviouslyPinnedWidgets();
         await _existedWidgetsLock.WaitAsync(CancellationToken.None);
         try
@@ -255,32 +286,14 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     #region Loaded & UnLoaded
 
-    private async Task OnLoadedAsync(bool validate)
+    private async Task OnLoadedAsync(bool init)
     {
-        IsLoading = true;
-
-        if (validate)
+        if (init)
         {
-            HasWidgetServiceInitialized = false;
-
-            if (await ValidateDashboardState())
-            {
-                HasWidgetServiceInitialized = true;
-                DependencyExtensions.GetRequiredService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
-                await InitializeDashboard();
-            }
+            DependencyExtensions.GetRequiredService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         }
-        else if (HasWidgetServiceInitialized)
-        {
-            await InitializeDashboard();
-        }
-        else if (await ValidateDashboardState())
-        {
-            HasWidgetServiceInitialized = true;
-            await InitializeDashboard();
-        }
-
-        IsLoading = false;
+        
+        await InitializeDashboard();
     }
 
     private async Task InitializeDashboard()
@@ -488,11 +501,10 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         return [.. comSafeHostWidgets];
     }
 
-    // TODO(Future): Let the user know why the dashboard is not available and set false flag.
     private async Task<bool> ValidateDashboardState()
     {
         // Ensure we're not running elevated. Display an error and don't allow using the Dashboard if we are.
-        if (IsRunningElevated())
+        if (RuntimeHelper.IsCurrentProcessRunningElevated())
         {
             _log.Error($"Dev Home is running as admin, can't show Dashboard");
             // RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
