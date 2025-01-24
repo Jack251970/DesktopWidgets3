@@ -590,10 +590,8 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
             {
                 widget.Dispose();
             }
-            
-            _log.Debug($"Leaving Dashboard, clearing widgets.");
-
             ExistedWidgets.Clear();
+
             _existedWidgetsLock.Release();
         }
 
@@ -606,6 +604,8 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
     {
         try
         {
+            _log.Debug($"UnsubscribeFromWidgets {ExistedWidgets.Count}");
+
             foreach (var widget in ExistedWidgets)
             {
                 widget.UnsubscribeFromWidgetUpdates();

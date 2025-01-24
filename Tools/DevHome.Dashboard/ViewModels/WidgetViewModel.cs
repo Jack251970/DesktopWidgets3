@@ -75,10 +75,7 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
 
     partial void OnWidgetChanging(ComSafeWidget value)
     {
-        if (Widget != null)
-        {
-            Widget.WidgetUpdated -= HandleWidgetUpdated;
-        }
+        UnsubscribeFromWidgetUpdates();
         WidgetFrameworkElement = null!;
         IsLoaded = false;
     }
@@ -402,7 +399,10 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
 
     public void UnsubscribeFromWidgetUpdates()
     {
-        Widget.WidgetUpdated -= HandleWidgetUpdated;
+        if (Widget != null)
+        {
+            Widget.WidgetUpdated -= HandleWidgetUpdated;
+        }
     }
 
     private static void AnnounceWarnings(AdaptiveCard card)
@@ -463,7 +463,7 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
 
     #region Dispose
 
-    private bool _disposedValue;
+    private bool _disposed;
 
     public void Dispose()
     {
@@ -473,15 +473,16 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposedValue)
+        if (!_disposed)
         {
             if (disposing)
             {
                 _renderedCard = null!;
+                UnsubscribeFromWidgetUpdates();
                 WidgetDefinition?.Dispose();
             }
 
-            _disposedValue = true;
+            _disposed = true;
         }
     }
 
