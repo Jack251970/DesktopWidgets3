@@ -50,9 +50,9 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
             }
             else if (newWidget is ComSafeWidgetDefinition newWidgetDefinition1)
             {
-                await _microsoftWidgetModel.AddWidgetsAsync(newWidgetDefinition1, () => DialogFactory.ShowCreateWidgetErrorDialogAsync(), async (wvm) =>
+                await _microsoftWidgetModel.AddWidgetsAsync(newWidgetDefinition1, true, (wvm) =>
                 {
-                    return await _widgetManagerService.AddWidgetAsync(wvm, RefreshAddedWidgetAsync, false);
+                    return _widgetManagerService.AddWidgetAsync(wvm, RefreshAddedWidgetAsync, false);
                 });
             }
         }

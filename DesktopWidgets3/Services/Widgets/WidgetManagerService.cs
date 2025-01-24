@@ -1079,9 +1079,9 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             var newWidgetDefinition = _microsoftWidgetModel.GetWidgetDefinition(widgetId, widgetType);
             if (newWidgetDefinition != null)
             {
-                await _microsoftWidgetModel.AddWidgetsAsync(newWidgetDefinition, null, async (wvm) =>
+                await _microsoftWidgetModel.AddWidgetsAsync(newWidgetDefinition, false, (wvm) =>
                 {
-                    return await AddWidgetAsync(wvm, null, false);
+                    return AddWidgetAsync(wvm, null, false);
                 });
             }
             else

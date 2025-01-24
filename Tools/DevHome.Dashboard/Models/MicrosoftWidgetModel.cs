@@ -746,7 +746,7 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         await TryDeleteWidgetAsync(widgetToDelete.GetUnsafeWidgetObject());
     }
 
-    public async Task AddWidgetsAsync(ComSafeWidgetDefinition newWidgetDefinition, Func<Task>? showCreateErrorMessageAsync, Func<WidgetViewModel, Task<int>> insertWidgetAsync)
+    public async Task AddWidgetsAsync(ComSafeWidgetDefinition newWidgetDefinition, bool showErrorMessage, Func<WidgetViewModel, Task<int>> insertWidgetAsync)
     {
         try
         {
@@ -756,9 +756,9 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
             {
                 // Couldn't create the widget, show an error message.
                 _log.Error($"Failure in CreateWidgetAsync, can't create the widget");
-                if (showCreateErrorMessageAsync != null)
+                if (showErrorMessage)
                 {
-                    await showCreateErrorMessageAsync();
+                    await DialogFactory.ShowCreateWidgetErrorDialogAsync();
                 }
                 return;
             }
@@ -767,9 +767,9 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
             if (unsafeWidgetId == string.Empty)
             {
                 _log.Error($"Couldn't get Widget.Id, can't create the widget");
-                if (showCreateErrorMessageAsync != null)
+                if (showErrorMessage)
                 {
-                    await showCreateErrorMessageAsync();
+                    await DialogFactory.ShowCreateWidgetErrorDialogAsync();
                 }
 
                 // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
@@ -782,9 +782,9 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
             if (!await comSafeWidget.PopulateAsync())
             {
                 _log.Error($"Couldn't populate the ComSafeWidget, can't create the widget");
-                if (showCreateErrorMessageAsync != null)
+                if (showErrorMessage)
                 {
-                    await showCreateErrorMessageAsync();
+                    await DialogFactory.ShowCreateWidgetErrorDialogAsync();
                 }
 
                 // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
@@ -807,9 +807,9 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         catch (Exception ex)
         {
             _log.Warning(ex, $"Creating widget failed: ");
-            if (showCreateErrorMessageAsync != null)
+            if (showErrorMessage)
             {
-                await showCreateErrorMessageAsync();
+                await DialogFactory.ShowCreateWidgetErrorDialogAsync();
             }
         }
     }
