@@ -234,13 +234,14 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
                 {
                     // DevHomeTODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
                     // https://github.com/microsoft/devhome/issues/641
-                    if (!(await comSafeNewDefinition.GetWidgetCapabilitiesAsync()).Any(cap => cap.Size == widgetToUpdate.WidgetSize))
-                    {
-                        var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(await comSafeNewDefinition.GetWidgetCapabilitiesAsync());
-                        widgetToUpdate.WidgetSize = newDefaultSize;
-                        await widgetToUpdate.Widget.SetSizeAsync(newDefaultSize);
-                        await RestartWidgetAsync(WidgetProviderType.Microsoft, widget.Item1, widget.Item2, widget.Item3);
-                    }
+                    // We don't need to update widgets because we let the user freely change the widget size.
+                    // if (!(await comSafeNewDefinition.GetWidgetCapabilitiesAsync()).Any(cap => cap.Size == widgetToUpdate.WidgetSize))
+                    // {
+                    //     var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(await comSafeNewDefinition.GetWidgetCapabilitiesAsync());
+                    //     widgetToUpdate.WidgetSize = newDefaultSize;
+                    //     await widgetToUpdate.Widget.SetSizeAsync(newDefaultSize);
+                    //     await RestartWidgetAsync(WidgetProviderType.Microsoft, widget.Item1, widget.Item2, widget.Item3);
+                    // }
                 }
             }
 
@@ -584,7 +585,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             Index = index,
             Pinned = true,
             Position = WidgetConstants.DefaultWidgetPosition,
-            Size = RectSize.NULL,
+            Size = _widgetResourceService.GetWidgetDefaultSize(widgetViewModel),
             DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
             Settings = new BaseWidgetSettings()
         };
@@ -910,7 +911,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             widgetWindow.ViewModel.WidgetDisplayTitle = _widgetResourceService.GetWidgetName(providerType, widgetId, widgetType);
 
             // initialize window
-            await widgetWindow.InitializeAsync();
+            widgetWindow.Initialize();
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
@@ -980,7 +981,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             widgetWindow.ViewModel.WidgetDisplayTitle = widgetName;
 
             // initialize window
-            await widgetWindow.InitializeAsync(widgetViewModel);
+            widgetWindow.Initialize(widgetViewModel);
 
             // set window style, size and position
             widgetWindow.IsResizable = false;
@@ -1356,7 +1357,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
                 Index = widgetIndex,
                 Pinned = true,
                 Position = widgetWindow.Position,
-                Size = providerType == WidgetProviderType.Microsoft ? RectSize.NULL : widgetWindow.ContentSize,
+                Size = widgetWindow.ContentSize,
                 DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
                 Settings = null!,
             });

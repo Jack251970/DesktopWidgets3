@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
@@ -1093,7 +1094,24 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #region Microsoft
 
-    // We don't need to set the default size for Microsoft widgets.
+    public RectSize GetWidgetDefaultSize(WidgetViewModel widgetViewModel)
+    {
+        var widgetSizeHeight = GetPixelHeightFromWidgetSize(widgetViewModel.WidgetSize);
+        var widgetSizeWidth = WidgetHelpers.WidgetPxWidth;
+
+        return new RectSize(widgetSizeWidth, widgetSizeHeight);
+    }
+
+    private static double GetPixelHeightFromWidgetSize(WidgetSize size)
+    {
+        return size switch
+        {
+            WidgetSize.Small => WidgetHelpers.WidgetPxHeightSmall,
+            WidgetSize.Medium => WidgetHelpers.WidgetPxHeightMedium,
+            WidgetSize.Large => WidgetHelpers.WidgetPxHeightLarge,
+            _ => 0,
+        };
+    }
 
     #endregion
 

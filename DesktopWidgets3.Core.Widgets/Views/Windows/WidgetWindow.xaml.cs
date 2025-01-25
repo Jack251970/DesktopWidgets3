@@ -8,9 +8,7 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Windows.Win32;
 using Windows.UI.ViewManagement;
-using Microsoft.Windows.Widgets;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Automation.Peers;
 
 namespace DesktopWidgets3.Core.Widgets.Views.Windows;
 
@@ -277,8 +275,8 @@ public sealed partial class WidgetWindow : WindowEx
         InitializeComponent();
 
         // Initialize size & position for completed event
-        var widgetSizeHeight = GetPixelHeightFromWidgetSize(WidgetViewModel.WidgetSize);
-        var widgetSizeWidth = WidgetHelpers.WidgetPxWidth;
+        var widgetSizeHeight = widgetItem.Size.Height!.Value;
+        var widgetSizeWidth = widgetItem.Size.Width!.Value;
         _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
         _widgetPosition = AppWindow.Position;
         if (widgetItem.Position.X != WidgetConstants.DefaultWidgetPosition.X)
@@ -315,7 +313,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     #region Initialization
 
-    public async Task InitializeAsync(WidgetViewModel? widgetViewModel = null)
+    public void Initialize(WidgetViewModel? widgetViewModel = null)
     {
         // set window properties
         var hwnd = this.GetWindowHandle();
@@ -323,7 +321,7 @@ public sealed partial class WidgetWindow : WindowEx
         _manager.WindowMessageReceived += WindowManager_WindowMessageReceived; // Register window sink events
 
         // initialize widget view model
-        await SetWidgetMenuAsync(widgetViewModel);
+        SetWidgetMenu(widgetViewModel);
     }
 
     #endregion
@@ -332,7 +330,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     private MenuFlyout? WidgetMenuFlyout;
 
-    private async Task SetWidgetMenuAsync(WidgetViewModel? widgetViewModel)
+    private void SetWidgetMenu(WidgetViewModel? widgetViewModel)
     {
         if (WidgetMenuFlyout == null)
         {
@@ -346,13 +344,6 @@ public sealed partial class WidgetWindow : WindowEx
             if (ProviderType == WidgetProviderType.Microsoft)
             {
                 AddCustomizeToWidgetMenu(WidgetMenuFlyout, widgetViewModel);
-            }
-
-            // size
-            if (ProviderType == WidgetProviderType.Microsoft)
-            {
-                WidgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
-                await AddSizeItemsToWidgetMenuAsync(WidgetMenuFlyout, widgetViewModel);
             }
 
             // layout
@@ -459,126 +450,6 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
-    #region Size
-
-    private SelectableMenuFlyoutItem? _currentSelectedSize;
-
-    private async Task AddSizeItemsToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetViewModel? widgetViewModel)
-    {
-        if (widgetViewModel == null)
-        {
-            // If we can't get the widgetViewModel, bail and don't show sizes.
-            return;
-        }
-
-        var widgetHostingService = DependencyExtensions.GetRequiredService<IWidgetHostingService>();
-        var unsafeWidgetDefinition = await widgetHostingService.GetWidgetDefinitionAsync(widgetViewModel.Widget.DefinitionId);
-        if (unsafeWidgetDefinition == null)
-        {
-            // If we can't get the widgetDefinition, bail and don't show sizes.
-            return;
-        }
-
-        var widgetDefinitionId = await ComSafeWidgetDefinition.GetIdFromUnsafeWidgetDefinitionAsync(unsafeWidgetDefinition);
-        if (string.IsNullOrEmpty(widgetDefinitionId))
-        {
-            // If we can't get the widgetDefinitionId, bail and don't show sizes.
-            return;
-        }
-
-        var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
-        if (!await comSafeWidgetDefinition.PopulateAsync())
-        {
-            // If we can't populate the widgetDefinition, bail and don't show sizes.
-            return;
-        }
-
-        var capabilities = await comSafeWidgetDefinition.GetWidgetCapabilitiesAsync();
-        var sizeMenuItems = new List<SelectableMenuFlyoutItem>();
-
-        // Add the three possible sizes. Each side should only be enabled if it is included in the widget's capabilities.
-        if (capabilities.Any(cap => cap.Size == WidgetSize.Small))
-        {
-            var menuItemSmall = new SelectableMenuFlyoutItem
-            {
-                Tag = WidgetSize.Small,
-                Text = "SmallWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard)
-            };
-            menuItemSmall.Click += OnMenuItemSizeClick;
-            widgetMenuFlyout.Items.Add(menuItemSmall);
-            sizeMenuItems.Add(menuItemSmall);
-        }
-
-        if (capabilities.Any(cap => cap.Size == WidgetSize.Medium))
-        {
-            var menuItemMedium = new SelectableMenuFlyoutItem
-            {
-                Tag = WidgetSize.Medium,
-                Text = "MediumWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard)
-            };
-            menuItemMedium.Click += OnMenuItemSizeClick;
-            widgetMenuFlyout.Items.Add(menuItemMedium);
-            sizeMenuItems.Add(menuItemMedium);
-        }
-
-        if (capabilities.Any(cap => cap.Size == WidgetSize.Large))
-        {
-            var menuItemLarge = new SelectableMenuFlyoutItem
-            {
-                Tag = WidgetSize.Large,
-                Text = "LargeWidgetMenuText".GetLocalizedString(Constants.DevHomeDashboard)
-            };
-            menuItemLarge.Click += OnMenuItemSizeClick;
-            widgetMenuFlyout.Items.Add(menuItemLarge);
-            sizeMenuItems.Add(menuItemLarge);
-        }
-
-        // Mark current widget size.
-        var currentSelectedSize = sizeMenuItems.FirstOrDefault(x => (WidgetSize)x.Tag == widgetViewModel.WidgetSize);
-        _currentSelectedSize = currentSelectedSize;
-        if (currentSelectedSize is not null)
-        {
-            MarkSize(currentSelectedSize);
-        }
-    }
-
-    private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
-    {
-        if (sender is SelectableMenuFlyoutItem menuSizeItem && menuSizeItem.Tag is WidgetSize size)
-        {
-            // Unset mark on current size.
-            if (_currentSelectedSize is SelectableMenuFlyoutItem currentSelectedSize)
-            {
-                currentSelectedSize.Icon = null;
-                var peer = FrameworkElementAutomationPeer.FromElement(currentSelectedSize) as SelectableMenuFlyoutItemAutomationPeer;
-                peer?.RemoveFromSelection();
-            }
-
-            // Resize widget.
-            var widgetViewModel = ViewModel.WidgetViewModel!;
-            widgetViewModel.WidgetSize = size;
-            await widgetViewModel.Widget.SetSizeAsync(size);
-            SetScaledWindowSizeAndContentSize(_uiSettings.TextScaleFactor);
-
-            // Set mark on new size.
-            _currentSelectedSize = menuSizeItem;
-            MarkSize(menuSizeItem);
-        }
-    }
-
-    private static void MarkSize(SelectableMenuFlyoutItem menuSizeItem)
-    {
-        var fontIcon = new FontIcon
-        {
-            Glyph = "\xE915"
-        };
-        menuSizeItem.Icon = fontIcon;
-        var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
-        peer?.AddToSelection();
-    }
-
-    #endregion
-
     #region Layout
 
     private void AddLayoutItemsToWidgetMenu(MenuFlyout menuFlyout)
@@ -659,21 +530,8 @@ public sealed partial class WidgetWindow : WindowEx
 
     public void SetScaledWindowSizeAndContentSize(double textScale)
     {
-        if (ProviderType == WidgetProviderType.DesktopWidgets3)
-        {
-            ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
-            ContentArea.Height = double.NaN;  // Use auto height
-            ContentArea.Width = double.NaN;  // Use auto width
-        }
-        else
-        {
-            var widgetSizeHeight = GetPixelHeightFromWidgetSize(WidgetViewModel!.WidgetSize);
-            var widgetSizeWidth = WidgetHelpers.WidgetPxWidth;
-            _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
-            ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
-            ContentArea.Height = widgetSizeHeight * textScale;
-            ContentArea.Width = widgetSizeWidth * textScale;
-        }
+        // set header height
+        ViewModel.HeaderHeight = new GridLength(WidgetHelpers.HeaderHeightUnscaled * textScale);
 
         // initialize diviation size between window and its content
         WindowContentDiviation.Height = Height - Bounds.Height;
@@ -686,17 +544,6 @@ public sealed partial class WidgetWindow : WindowEx
         // we need to fill the gap here so that content size will not changed when user saves the widget without resizing)
         WindowContentDiviation.Height = Size.Height - _widgetSize.Height * textScale;
         WindowContentDiviation.Width = Size.Width - _widgetSize.Width * textScale;
-    }
-
-    private static double GetPixelHeightFromWidgetSize(WidgetSize size)
-    {
-        return size switch
-        {
-            WidgetSize.Small => WidgetHelpers.WidgetPxHeightSmall,
-            WidgetSize.Medium => WidgetHelpers.WidgetPxHeightMedium,
-            WidgetSize.Large => WidgetHelpers.WidgetPxHeightLarge,
-            _ => 0,
-        };
     }
 
     #endregion
@@ -865,10 +712,7 @@ public sealed partial class WidgetWindow : WindowEx
         }
 
         // set window style (it can cause size change)
-        if (ProviderType == WidgetProviderType.DesktopWidgets3)
-        {
-            IsResizable = isEditMode;
-        }
+        IsResizable = isEditMode;
 
         // set title bar (it can cause size change)
         SetTitleBarDragRegion(isEditMode);
