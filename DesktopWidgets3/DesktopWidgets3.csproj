@@ -220,23 +220,13 @@
     <Copy SourceFiles="$(PkgAdaptiveCards_Rendering_WinUI3)\runtimes\win10-$(Platform)\native\AdaptiveCards.Rendering.WinUI3.dll" DestinationFolder="$(TargetDir)" />
   </Target>
 
-  <Target Name="BuildWidgetProjectsAndCopy" AfterTargets="Build">
-    <!-- Build widget projects -->
+  <Target Name="BuildWidgetProjects" AfterTargets="AssignProjectConfiguration" BeforeTargets="Build">
+
     <ItemGroup>
       <WidgetProjects Include="$(WidgetProjects)" />
     </ItemGroup>
-    <MSBuild Projects="@(WidgetProjects)" Targets="Build" Properties="Platform=$(Platform);Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
-    <!-- Copy widget project files -->
-    <!-- Clock -->
-    <ItemGroup>
-      <ClockFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.Clock\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(ClockFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.Clock\%(RecursiveDir)" />
-    <!-- System Info -->
-    <ItemGroup>
-      <SystemInfoFiles Include="$(SolutionDir)Widgets\DesktopWidgets3.Widget.Jack251970.SystemInfo\bin\$(Platform)\$(Configuration)\$(TargetFramework)\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(SystemInfoFiles)" DestinationFolder="$(TargetDir)Widgets\DesktopWidgets3.Widget.Jack251970.SystemInfo\%(RecursiveDir)" />
+    <MSBuild Projects="@(WidgetProjects)" Targets="Build" BuildInParallel="false" Properties="Platform=$(Platform);Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+    
   </Target>
   
 </Project>

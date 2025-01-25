@@ -86,4 +86,11 @@
     </Page>
   </ItemGroup>
 
+  <Target Name="CopyWidgetProjectToCoreProject" AfterTargets="Build">
+    <ItemGroup>
+      <ClockFiles Include="$(TargetDir)**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ClockFiles)" DestinationFolder="$(SolutionDir)DesktopWidgets3\bin\$(Platform)\$(Configuration)\$(TargetFramework)\Widgets\$(AssemblyName)\%(RecursiveDir)" />
+  </Target>
+
 </Project>

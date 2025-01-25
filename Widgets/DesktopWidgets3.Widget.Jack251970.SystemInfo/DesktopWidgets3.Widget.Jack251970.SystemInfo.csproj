@@ -90,5 +90,12 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+
+  <Target Name="CopyWidgetProjectToCoreProject" AfterTargets="Build">
+    <ItemGroup>
+      <SystemInfoFiles Include="$(TargetDir)**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SystemInfoFiles)" DestinationFolder="$(SolutionDir)DesktopWidgets3\bin\$(Platform)\$(Configuration)\$(TargetFramework)\Widgets\$(AssemblyName)\%(RecursiveDir)" />
+  </Target>
   
 </Project>
