@@ -190,6 +190,8 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
     #region Widget Allow Multiple
 
+    public event EventHandler? AllowMultipleWidgetChanged;
+
     public async Task<bool> IsWidgetSingleInstanceAndAlreadyPinnedAsync(WidgetProviderType providerType, string widgetId, string widgetType)
     {
         if (_widgetResourceService.GetWidgetAllowMultiple(providerType, widgetId, widgetType))
@@ -875,55 +877,21 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             WidgetContext = widgetContext
         };
 
-        // add to widget window list
-        PinnedWidgetWindowPairs.TryAdd(widgetRuntimeId, new WidgetWindowPair()
+        // change widget dictionary
+        await AddWidgetToDictionaryAsync(() =>
         {
-            ProviderType = providerType,
-            RuntimeId = widgetRuntimeId,
-            WidgetId = widgetId,
-            WidgetType = widgetType,
-            WidgetIndex = widgetIndex,
-            WidgetInfo = widgetInfo,
-            Window = null!
-        });
-
-        // configure widget window lifecycle actions
-        var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
-        {
-            Window_Creating = null,
-            Window_Created = WidgetWindow_Created,
-            Window_Closing = null,
-            Window_Closed = null
-        };
-
-        // create widget window
-        var window = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), false, lifecycleActions);
-
-        // add to widget window pair list
-        var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
-        if (widgetWindowPair != null)
-        {
-            widgetWindowPair.Window = window;
-        }
-
-        // add to widget dictionary
-        await _matchingWidgetNumberLock.WaitAsync();
-        try
-        {
-            var key = new Tuple<WidgetProviderType, string, string>(providerType, widgetId, widgetType);
-            if (MatchingWidgetNumber.TryGetValue(key, out var value))
+            // configure widget window lifecycle actions
+            var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
             {
-                MatchingWidgetNumber[key] = ++value;
-            }
-            else
-            {
-                MatchingWidgetNumber.Add(key, 1);
-            }
-        }
-        finally
-        {
-            _matchingWidgetNumberLock.Release();
-        }
+                Window_Creating = null,
+                Window_Created = WidgetWindow_Created,
+                Window_Closing = null,
+                Window_Closed = null
+            };
+
+            // create widget window
+            return WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item), false, lifecycleActions);
+        }, widgetRuntimeId, widgetInfo, providerType, widgetId, widgetType, widgetIndex);
     }
 
     private async Task CreateWidgetWindowAsync(JsonWidgetItem item, WidgetViewModel widgetViewModel)
@@ -947,7 +915,26 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             WidgetContext = widgetContext
         };
 
-        // add to widget window list
+        // change widget dictionary
+        await AddWidgetToDictionaryAsync(() => 
+        {
+            // configure widget window lifecycle actions
+            var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
+            {
+                Window_Creating = null,
+                Window_Created = (window) => WidgetWindow_Created(window, widgetViewModel),
+                Window_Closing = null,
+                Window_Closed = null
+            };
+
+            // create widget window
+            return WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item, widgetViewModel), false, lifecycleActions);
+        }, widgetRuntimeId, widgetInfo, providerType, widgetId, widgetType, widgetIndex);
+    }
+
+    private async Task AddWidgetToDictionaryAsync(Func<WidgetWindow> createWindow, string widgetRuntimeId, WidgetInfo widgetInfo, WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex)
+    {
+        // add widget dictionary
         PinnedWidgetWindowPairs.TryAdd(widgetRuntimeId, new WidgetWindowPair()
         {
             ProviderType = providerType,
@@ -959,17 +946,8 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             Window = null!
         });
 
-        // configure widget window lifecycle actions
-        var lifecycleActions = new WindowsExtensions.WindowLifecycleActions()
-        {
-            Window_Creating = null,
-            Window_Created = (window) => WidgetWindow_Created(window, widgetViewModel),
-            Window_Closing = null,
-            Window_Closed = null
-        };
-
-        // create widget window
-        var window = WindowsExtensions.CreateWindow(() => new WidgetWindow(widgetRuntimeId, item, widgetViewModel), false, lifecycleActions);
+        // create window
+        var window = createWindow();
 
         // add to widget window pair list
         var widgetWindowPair = GetWidgetWindowPair(providerType, widgetId, widgetType, widgetIndex);
@@ -995,6 +973,12 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         finally
         {
             _matchingWidgetNumberLock.Release();
+        }
+
+        // invoke allow multiple widget changed event
+        if (_widgetResourceService.GetWidgetAllowMultiple(providerType, widgetId, widgetType))
+        {
+            AllowMultipleWidgetChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -1225,8 +1209,29 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             // close window
             await WindowsExtensions.CloseWindowAsync(widgetWindow);
 
-            // remove from widget window pair list
+            // remove from widget window list
             PinnedWidgetWindowPairs.Remove(widgetRuntimeId, out var widgetWindowPair);
+
+            // remove from widget dictionary
+            await _matchingWidgetNumberLock.WaitAsync();
+            try
+            {
+                var key = new Tuple<WidgetProviderType, string, string>(providerType, widgetId, widgetType);
+                if (MatchingWidgetNumber.TryGetValue(key, out var value))
+                {
+                    MatchingWidgetNumber[key] = --value;
+                }
+            }
+            finally
+            {
+                _matchingWidgetNumberLock.Release();
+            }
+
+            // invoke allow multiple widget changed event
+            if (_widgetResourceService.GetWidgetAllowMultiple(providerType, widgetId, widgetType))
+            {
+                AllowMultipleWidgetChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
     }
 
