@@ -439,15 +439,6 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
     #endregion
 
-    #region Is Navigated
-
-    public bool GetWidgetSettingIsNavigated(string widgetId, string widgetType)
-    {
-        return true;
-    }
-
-    #endregion
-
     #endregion
 
     #region Widget View Model
@@ -1157,7 +1148,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         {
             // create widget setting context & register guid
             var widgetSettingRuntimeId = StringUtils.GetRandomWidgetRuntimeId();
-            var widgetSettingContext = new WidgetSettingContext(this)
+            var widgetSettingContext = new WidgetSettingContext()
             {
                 Id = widgetSettingRuntimeId,
                 Type = widgetType

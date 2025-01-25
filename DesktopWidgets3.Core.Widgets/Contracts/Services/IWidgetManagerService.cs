@@ -20,8 +20,6 @@ public interface IWidgetManagerService : IDisposable
 
     bool GetWidgetIsActive(WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex);
 
-    bool GetWidgetSettingIsNavigated(string widgetId, string widgetType);
-
     WidgetViewModel? GetWidgetViewModel(string widgetId, string widgetType, int widgetIndex);
 
     Task AddWidgetAsync(string widgetId, string widgetType, Func<string, string, int, Task>? action, bool updateDashboard);
