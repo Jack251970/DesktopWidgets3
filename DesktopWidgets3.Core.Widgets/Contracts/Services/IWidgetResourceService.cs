@@ -50,9 +50,7 @@ public interface IWidgetResourceService
 
     (RectSize MinSize, RectSize MaxSize) GetWidgetMinMaxSize(WidgetProviderType providerType, string widgetId, string widgetType);
 
-    bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType, List<JsonWidgetItem> currentlyPinnedWidgets);
-
-    bool IsWidgetSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[]? currentlyPinnedWidgets);
+    bool GetWidgetAllowMultiple(WidgetProviderType widgetProvider, string widgetId, string widgetType);
 
     Task<List<DashboardWidgetGroupItem>> GetInstalledDashboardGroupItems();
 

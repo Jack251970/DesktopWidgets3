@@ -1173,57 +1173,9 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     #endregion
 
-    #region Single Instance And Already Pinned
-
-    #region Desktop Widgets 3
-
-    public bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType, List<JsonWidgetItem> currentlyPinnedWidgets)
-    {
-        if (!GetWidgetAllowMultiple(WidgetProviderType.DesktopWidgets3, widgetId, widgetType))
-        {
-            foreach (var pinnedWidget in currentlyPinnedWidgets)
-            {
-                if (pinnedWidget.Equals(WidgetProviderType.DesktopWidgets3, widgetId, widgetType))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    #endregion
-
-    #region Microsoft
-
-    public bool IsWidgetSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[]? currentlyPinnedWidgets)
-    {
-        // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
-        if (!widgetDef.AllowMultiple)
-        {
-            if (currentlyPinnedWidgets != null)
-            {
-                foreach (var pinnedWidget in currentlyPinnedWidgets)
-                {
-                    if (pinnedWidget.DefinitionId == widgetDef.Id)
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    #endregion
-
-    #endregion
-
     #region Allow Multiple
 
-    private bool GetWidgetAllowMultiple(WidgetProviderType widgetProvider, string widgetId, string widgetType)
+    public bool GetWidgetAllowMultiple(WidgetProviderType widgetProvider, string widgetId, string widgetType)
     {
         if (widgetProvider == WidgetProviderType.DesktopWidgets3)
         {

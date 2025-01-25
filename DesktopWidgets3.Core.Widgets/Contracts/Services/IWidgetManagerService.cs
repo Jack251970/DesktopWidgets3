@@ -2,7 +2,7 @@
 
 public interface IWidgetManagerService : IDisposable
 {
-    void InitializePinnedWidgets(bool initialized);
+    Task InitializePinnedWidgetsAsync(bool initialized);
 
     Task RestartAllWidgetsAsync();
 

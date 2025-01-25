@@ -19,6 +19,9 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
     private readonly ConcurrentDictionary<string, WidgetWindowPair> PinnedWidgetWindowPairs = [];
     private readonly ConcurrentDictionary<string, WidgetSettingPair> WidgetSettingPairs = [];
 
+    private readonly Dictionary<Tuple<WidgetProviderType, string, string>, int> MatchingWidgetNumber = [];
+    private readonly SemaphoreSlim _matchingWidgetNumberLock = new(1, 1);
+
     private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
 
     private readonly List<JsonWidgetItem> _originalWidgetList = [];
@@ -28,17 +31,26 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
     #region Initialization & Restart & Close
 
-    public async void InitializePinnedWidgets(bool initialized)
+    public async Task InitializePinnedWidgetsAsync(bool initialized)
     {
         _log.Information("Initializing pinned widgets (Initialized: {Initialized})", initialized);
 
-        // initialize desktop widgets 3 widgets
-        var pinnedDesktopWidgets3Widgets = _appSettingsService.GetWidgetsList().Where(x => x.ProviderType == WidgetProviderType.DesktopWidgets3 && x.Pinned).ToList();
-        foreach (var widget in pinnedDesktopWidgets3Widgets)
+        try
         {
-            _initWidgetsCancellationTokenSource.Token.ThrowIfCancellationRequested();
+            // initialize desktop widgets 3 widgets
+            var providerType = WidgetProviderType.DesktopWidgets3;
+            var pinnedDesktopWidgets3Widgets = _appSettingsService.GetWidgetsList().Where(x => x.ProviderType == providerType && x.Pinned).ToList();
 
-            CreateWidgetWindow(widget);
+            foreach (var widget in pinnedDesktopWidgets3Widgets)
+            {
+                _initWidgetsCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                await CreateWidgetWindowAsync(widget);
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error initializing Desktop Widgets 3 widgets");
         }
 
         _log.Debug("Desktop Widgets 3 widgets initialized");
@@ -80,7 +92,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             if (item.Pinned)
             {
                 // create widget window
-                CreateWidgetWindow(item, widgetViewModel);
+                await CreateWidgetWindowAsync(item, widgetViewModel);
             }
         }
         else
@@ -100,7 +112,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             await CloseAllWidgetWindowsAsync();
 
             // enable all enabled widgets
-            InitializePinnedWidgets(false);
+            await InitializePinnedWidgetsAsync(false);
         }
         catch (Exception ex)
         {
@@ -144,6 +156,34 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         }, Microsoft.UI.Dispatching.DispatcherQueuePriority.High);
 
         _log.Debug("All widget windows closed");
+    }
+
+    #endregion
+
+    #region Widget Allow Multiple
+
+    private async Task<bool> IsWidgetSingleInstanceAndAlreadyPinned(WidgetProviderType providerType, string widgetId, string widgetType)
+    {
+        if (_widgetResourceService.GetWidgetAllowMultiple(providerType, widgetId, widgetType))
+        {
+            return false;
+        }
+
+        await _matchingWidgetNumberLock.WaitAsync();
+        try
+        {
+            var key = new Tuple<WidgetProviderType, string, string>(providerType, widgetId, widgetType);
+            if (MatchingWidgetNumber.TryGetValue(key, out var value))
+            {
+                return value > 0;
+            }
+
+            return false;
+        }
+        finally
+        {
+            _matchingWidgetNumberLock.Release();
+        }
     }
 
     #endregion
@@ -527,7 +567,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         };
 
         // create widget window
-        CreateWidgetWindow(widget);
+        await CreateWidgetWindowAsync(widget);
 
         // update dashboard page
         if (updateDashboard)
@@ -591,7 +631,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         };
 
         // create widget window
-        CreateWidgetWindow(item, widgetViewModel);
+        await CreateWidgetWindowAsync(item, widgetViewModel);
 
         // update dashboard page
         if (updateDashboard)
@@ -625,7 +665,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             if (widget.ProviderType == WidgetProviderType.DesktopWidgets3)
             {
                 // create widget window
-                CreateWidgetWindow(widget);
+                await CreateWidgetWindowAsync(widget);
             }
             else
             {
@@ -757,7 +797,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
                 if (widget.ProviderType == WidgetProviderType.DesktopWidgets3)
                 {
                     // create widget window
-                    CreateWidgetWindow(widget);
+                    await CreateWidgetWindowAsync(widget);
                 }
                 else if (widget.ProviderType == WidgetProviderType.Microsoft)
                 {
@@ -786,7 +826,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
     #region Private
 
-    private void CreateWidgetWindow(JsonWidgetItem item)
+    private async Task CreateWidgetWindowAsync(JsonWidgetItem item)
     {
         // get widget info
         var providerType = item.ProviderType;
@@ -837,9 +877,28 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         {
             widgetWindowPair.Window = window;
         }
+
+        // add to widget dictionary
+        await _matchingWidgetNumberLock.WaitAsync();
+        try
+        {
+            var key = new Tuple<WidgetProviderType, string, string>(providerType, widgetId, widgetType);
+            if (MatchingWidgetNumber.TryGetValue(key, out var value))
+            {
+                MatchingWidgetNumber[key] = ++value;
+            }
+            else
+            {
+                MatchingWidgetNumber.Add(key, 1);
+            }
+        }
+        finally
+        {
+            _matchingWidgetNumberLock.Release();
+        }
     }
 
-    private void CreateWidgetWindow(JsonWidgetItem item, WidgetViewModel widgetViewModel)
+    private async Task CreateWidgetWindowAsync(JsonWidgetItem item, WidgetViewModel widgetViewModel)
     {
         // get widget info
         var providerType = item.ProviderType;
@@ -889,6 +948,25 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         if (widgetWindowPair != null)
         {
             widgetWindowPair.Window = window;
+        }
+
+        // add to widget dictionary
+        await _matchingWidgetNumberLock.WaitAsync();
+        try
+        {
+            var key = new Tuple<WidgetProviderType, string, string>(providerType, widgetId, widgetType);
+            if (MatchingWidgetNumber.TryGetValue(key, out var value))
+            {
+                MatchingWidgetNumber[key] = ++value;
+            }
+            else
+            {
+                MatchingWidgetNumber.Add(key, 1);
+            }
+        }
+        finally
+        {
+            _matchingWidgetNumberLock.Release();
         }
     }
 
@@ -1063,7 +1141,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         var widgetViewModel = await _microsoftWidgetModel.GetWidgetViewModel(widgetId, widgetType, widgetIndex);
         if (widgetViewModel != null)
         {
-            CreateWidgetWindow(item, widgetViewModel);
+            await CreateWidgetWindowAsync(item, widgetViewModel);
         }
         else
         {
@@ -1475,6 +1553,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         {
             if (disposing)
             {
+                _matchingWidgetNumberLock.Dispose();
                 _editModeLock.Dispose();
                 _initWidgetsCancellationTokenSource.Dispose();
 

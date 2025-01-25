@@ -143,7 +143,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 var widgetDefinition = new DesktopWidgets3WidgetDefinition(widgetId, widgetType, widgetGroup.Name, widgetName);
 
                 var subItemContent = await BuildWidgetNavItemAsync(widgetDefinition);
-                var enable = !_widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetId, widgetType, currentlyPinnedWidgets);
+                var enable = !IsWidgetSingleInstanceAndAlreadyPinned(widgetId, widgetType, currentlyPinnedWidgets);
                 var subItem = new NavigationViewItem
                 {
                     Tag = widgetDefinition,
@@ -176,6 +176,22 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(WidgetProviderType.DesktopWidgets3, widgetDefinition.WidgetId, widgetDefinition.WidgetType, ActualTheme);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
+    }
+
+    private bool IsWidgetSingleInstanceAndAlreadyPinned(string widgetId, string widgetType, List<JsonWidgetItem> currentlyPinnedWidgets)
+    {
+        if (!_widgetResourceService.GetWidgetAllowMultiple(WidgetProviderType.DesktopWidgets3, widgetId, widgetType))
+        {
+            foreach (var pinnedWidget in currentlyPinnedWidgets)
+            {
+                if (pinnedWidget.Equals(WidgetProviderType.DesktopWidgets3, widgetId, widgetType))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     #endregion
@@ -218,7 +234,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItemAsync(widgetDef);
-                        var enable = !_widgetResourceService.IsWidgetSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
+                        var enable = !IsWidgetSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,
@@ -260,6 +276,26 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var imageBrush = await _widgetResourceService.GetWidgetIconBrushAsync(widgetDefinition, ActualTheme);
 
         return BuildNavItem(imageBrush, widgetDefinition.DisplayTitle);
+    }
+
+    private static bool IsWidgetSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[]? currentlyPinnedWidgets)
+    {
+        // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
+        if (!widgetDef.AllowMultiple)
+        {
+            if (currentlyPinnedWidgets != null)
+            {
+                foreach (var pinnedWidget in currentlyPinnedWidgets)
+                {
+                    if (pinnedWidget.DefinitionId == widgetDef.Id)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     #endregion
