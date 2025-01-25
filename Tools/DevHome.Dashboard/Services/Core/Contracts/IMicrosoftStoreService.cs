@@ -36,4 +36,11 @@ public interface IMicrosoftStoreService
     /// <param name="packageId">Target package id</param>
     /// <returns>True if package was installed, false otherwise</returns>
     public Task<bool> TryInstallPackageAsync(string packageId);
+
+    /// <summary>
+    /// Install a package from the store.
+    /// </summary>
+    /// <param name="packageId">Target package id</param>
+    /// <param name="timeout">Amount of time the operation should wait before cancelling the task.</param>
+    public Task InstallPackageAsync(string packageId, TimeSpan timeout);
 }

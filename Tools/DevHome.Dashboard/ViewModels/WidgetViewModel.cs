@@ -310,20 +310,29 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
         return grid;
     }
 
-    private static string MergeJsonData(string jsonStringA, string jsonStringB)
+    private static JObject WrapJsonString(string jsonString)
     {
-        if (string.IsNullOrEmpty(jsonStringA))
+        return new JObject { ["data"] = jsonString };
+    }
+
+    private static string MergeJsonData(Windows.Data.Json.JsonValue actionValue, Windows.Data.Json.JsonObject inputsObject)
+    {
+        JObject objA = [];
+        JObject objB = [];
+
+        if (actionValue?.ValueType == Windows.Data.Json.JsonValueType.Object)
         {
-            return jsonStringB;
+            objA = JObject.Parse(actionValue.Stringify());
+        }
+        else if (actionValue?.ValueType == Windows.Data.Json.JsonValueType.String)
+        {
+            objA = WrapJsonString(actionValue.Stringify());
         }
 
-        if (string.IsNullOrEmpty(jsonStringB))
+        if (inputsObject?.ValueType != Windows.Data.Json.JsonValueType.Null)
         {
-            return jsonStringA;
+            objB = JObject.Parse(inputsObject!.Stringify());
         }
-
-        var objA = JObject.Parse(jsonStringA);
-        var objB = JObject.Parse(jsonStringB);
 
         objA.Merge(objB);
 
@@ -340,22 +349,10 @@ public partial class WidgetViewModel : ObservableObject, IDisposable
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
         {
-            var actionData = string.Empty;
-            var inputsData = string.Empty;
+            var actionValue = executeAction.DataJson;
+            var inputsObject = args.Inputs.AsJson();
 
-            var dataType = executeAction.DataJson.ValueType;
-            if (dataType != Windows.Data.Json.JsonValueType.Null)
-            {
-                actionData = executeAction.DataJson.Stringify();
-            }
-
-            var inputType = args.Inputs.AsJson().ValueType;
-            if (inputType != Windows.Data.Json.JsonValueType.Null)
-            {
-                inputsData = args.Inputs.AsJson().Stringify();
-            }
-
-            var dataToSend = MergeJsonData(actionData, inputsData);
+            var dataToSend = MergeJsonData(actionValue, inputsObject);
 
             _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
