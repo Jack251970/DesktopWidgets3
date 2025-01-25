@@ -45,7 +45,15 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             {
                 _initWidgetsCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                await CreateWidgetWindowAsync(widget);
+                // check single instance
+                if (await IsWidgetSingleInstanceAndAlreadyPinnedAsync(widget.ProviderType, widget.Id, widget.Type))
+                {
+                    await _appSettingsService.UnpinWidgetAsync(widget.ProviderType, widget.Id, widget.Type, widget.Index);
+                }
+                else
+                {
+                    await CreateWidgetWindowAsync(widget);
+                }
             }
         }
         catch (Exception ex)
@@ -57,14 +65,28 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
         if (initialized)
         {
+            var existedWidgets = new List<Tuple<WidgetProviderType, string, string, int>>();
+
             // initialize microsoft widgets
             await _microsoftWidgetModel.InitializePinnedWidgetsAsync(async (widget, index) =>
             {
-                await CreateWidgetWindowAsync(index, widget);
+                await CreateWidgetWindowAsync(index, widget, existedWidgets);
             }, _initWidgetsCancellationTokenSource);
 
-            // We don't delete microsoft widget json items that aren't in the system widget storage.
+            // We don't delete microsoft widget json items that aren't in the system widget storage but unpin them instead.
             // Because we need to keep the settings of the deleted widgets to restore them when the user re-adds them.
+            var pinnedMicrosoftWidgets = _appSettingsService.GetWidgetsList().Where(x => x.ProviderType == WidgetProviderType.Microsoft && x.Pinned).ToList();
+            foreach (var widget in pinnedMicrosoftWidgets)
+            {
+                if (existedWidgets.Contains(new(WidgetProviderType.Microsoft, widget.Id, widget.Type, widget.Index)))
+                {
+                    existedWidgets.Remove(new(WidgetProviderType.Microsoft, widget.Id, widget.Type, widget.Index));
+                }
+                else
+                {
+                    await _appSettingsService.UnpinWidgetAsync(widget.ProviderType, widget.Id, widget.Type, widget.Index);
+                }
+            }
         }
         else
         {
@@ -75,12 +97,11 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         _log.Debug("Microsoft Widgets initialized");
     }
 
-    private async Task CreateWidgetWindowAsync(int index, WidgetViewModel widgetViewModel)
+    private async Task CreateWidgetWindowAsync(int widgetIndex, WidgetViewModel widgetViewModel, List<Tuple<WidgetProviderType, string, string, int>> existedWidgets)
     {
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
         var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
-        var widgetIndex = index;
 
         _log.Debug("Creating Microsoft widget window (WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", widgetId, widgetType, widgetIndex);
 
@@ -93,6 +114,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             {
                 // create widget window
                 await CreateWidgetWindowAsync(item, widgetViewModel);
+                existedWidgets.Add(new(providerType, widgetId, widgetType, widgetIndex));
             }
         }
         else
@@ -162,7 +184,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
     #region Widget Allow Multiple
 
-    private async Task<bool> IsWidgetSingleInstanceAndAlreadyPinned(WidgetProviderType providerType, string widgetId, string widgetType)
+    public async Task<bool> IsWidgetSingleInstanceAndAlreadyPinnedAsync(WidgetProviderType providerType, string widgetId, string widgetType)
     {
         if (_widgetResourceService.GetWidgetAllowMultiple(providerType, widgetId, widgetType))
         {

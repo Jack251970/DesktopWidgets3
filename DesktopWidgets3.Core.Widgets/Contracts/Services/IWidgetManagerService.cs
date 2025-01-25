@@ -8,6 +8,8 @@ public interface IWidgetManagerService : IDisposable
 
     Task CloseAllWidgetsAsync();
 
+    Task<bool> IsWidgetSingleInstanceAndAlreadyPinnedAsync(WidgetProviderType providerType, string widgetId, string widgetType);
+
     (WidgetProviderType providerType, string widgetId, string widgetType, int widgetIndex) GetWidgetInfo(string widgetRuntimeId);
 
     (string widgetId, string widgetType, int widgetIndex) GetWidgetSettingInfo(string widgetSettingRuntimeId);
