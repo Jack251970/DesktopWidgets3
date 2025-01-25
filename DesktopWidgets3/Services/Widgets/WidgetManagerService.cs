@@ -68,9 +68,9 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             var existedWidgets = new List<Tuple<WidgetProviderType, string, string, int>>();
 
             // initialize microsoft widgets
-            await _microsoftWidgetModel.InitializePinnedWidgetsAsync(async (widget, index) =>
+            await _microsoftWidgetModel.InitializePinnedWidgetsAsync((widget, index) =>
             {
-                await CreateWidgetWindowAsync(index, widget, existedWidgets);
+                return CreateWidgetWindowAsync(index, widget, existedWidgets);
             }, _initWidgetsCancellationTokenSource);
 
             // We don't delete microsoft widget json items that aren't in the system widget storage but unpin them instead.
@@ -97,7 +97,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         _log.Debug("Microsoft Widgets initialized");
     }
 
-    private async Task CreateWidgetWindowAsync(int widgetIndex, WidgetViewModel widgetViewModel, List<Tuple<WidgetProviderType, string, string, int>> existedWidgets)
+    private async Task<bool> CreateWidgetWindowAsync(int widgetIndex, WidgetViewModel widgetViewModel, List<Tuple<WidgetProviderType, string, string, int>> existedWidgets)
     {
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
@@ -115,12 +115,18 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
                 // create widget window
                 await CreateWidgetWindowAsync(item, widgetViewModel);
                 existedWidgets.Add(new(providerType, widgetId, widgetType, widgetIndex));
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
         else
         {
             // add widget
             await AddWidgetAsync(widgetViewModel, null, true);
+            return true;
         }
     }
 

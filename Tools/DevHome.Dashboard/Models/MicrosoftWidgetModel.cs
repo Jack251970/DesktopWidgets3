@@ -38,7 +38,7 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
     private readonly IWidgetHostingService _widgetHostingService = widgetHostingService;
     private readonly IWidgetServiceService _widgetServiceService = widgetServiceService;
 
-    private Func<WidgetViewModel, int, Task>? CreateWidgetWindow;
+    private Func<WidgetViewModel, int, Task<bool>>? CreateWidgetWindow;
 
     private readonly SemaphoreSlim _existedWidgetsLock = new(1, 1);
 
@@ -76,7 +76,7 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
         }
     }
 
-    public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task> createWidgetWindow, CancellationTokenSource initWidgetsCancellationTokenSource)
+    public async Task InitializePinnedWidgetsAsync(Func<WidgetViewModel, int, Task<bool>> createWidgetWindow, CancellationTokenSource initWidgetsCancellationTokenSource)
     {
         if (!HasWidgetServiceInitialized)
         {
@@ -399,13 +399,20 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
             {
                 if (CreateWidgetWindow != null)
                 {
-                    await CreateWidgetWindow.Invoke(wvm, index);
-                    ExistedWidgets.Add(wvm);
+                    var addedWidget = await CreateWidgetWindow.Invoke(wvm, index);
+                    if (addedWidget)
+                    {
+                        ExistedWidgets.Add(wvm);
+                    }
+                    else
+                    {
+                        wvm.Dispose();
+                    }
                 }
             }, cancellationToken);
         }
 
-        _log.Information($"Done restoring pinned widgets");
+        _log.Information($"Done restoring pinned widgets: {restoredWidgetsWithPosition.Count}");
     }
 
     private async Task<(WidgetCustomState, ComSafeWidgetDefinition)?> CheckWidgetAsync(ComSafeWidget widget)
