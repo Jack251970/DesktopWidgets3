@@ -319,9 +319,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     private async Task SaveWidgetListAsync()
     {
-        var valueCopy = new List<JsonWidgetItem>(WidgetList);
-
-        await _localSettingsService.SaveJsonFileAsync(Constants.WidgetListFile, valueCopy);
+        await _localSettingsService.SaveJsonFileAsync(Constants.WidgetListFile, WidgetList);
     }
 
     #endregion
@@ -344,9 +342,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
 
     private async Task SaveWidgetStoreListAsync()
     {
-        var valueCopy = new List<JsonWidgetStoreItem>(WidgetStoreList);
-
-        await _localSettingsService.SaveJsonFileAsync(Constants.WidgetStoreListFile, valueCopy);
+        await _localSettingsService.SaveJsonFileAsync(Constants.WidgetStoreListFile, WidgetStoreList);
     }
 
     #endregion
