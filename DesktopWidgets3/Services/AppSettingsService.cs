@@ -46,6 +46,44 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
             WidgetListJsonSerializerSettings = new JsonSerializerSettings { Converters = { new JsonWidgetItemConverter() } };
 
             WidgetList = await _localSettingsService.ReadJsonFileAsync<List<JsonWidgetItem>>(Constants.WidgetListFile, WidgetListJsonSerializerSettings) ?? [];
+
+            // We need to check for the index of each widget and make sure it is unique
+            var change = false;
+            var dictionary = new Dictionary<Tuple<WidgetProviderType, string, string>, List<int>>();
+            for (var i = 0; i < WidgetList.Count; i++)
+            {
+                var item = WidgetList[i];
+                var key = new Tuple<WidgetProviderType, string, string>(item.ProviderType, item.Id, item.Type);
+                if (!dictionary.TryGetValue(key, out var list))
+                {
+                    dictionary.Add(key, [item.Index]);
+                }
+                else
+                {
+                    if (!list.Contains(item.Index))
+                    {
+                        list.Add(item.Index);
+                    }
+                    else
+                    {
+                        // Find a new index
+                        var newIndex = item.Index + 1;
+                        while (list.Contains(newIndex))
+                        {
+                            ++newIndex;
+                        }
+                        WidgetList[i].Index = newIndex;
+                        change = true;
+
+                        _log.Information($"Widget {item.Name} has a duplicate index. Changing to {newIndex}");
+                    }
+                }
+            }
+
+            if (change)
+            {
+                await SaveWidgetListAsync();
+            }
         }
 
         return WidgetList;
