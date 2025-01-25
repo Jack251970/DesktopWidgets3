@@ -411,14 +411,14 @@ public partial class App : Application
         // Close all desktop widgets 3 widgets
         await GetService<IWidgetManagerService>().CloseAllWidgetsAsync();
 
-        // Dispose widget manager service
-        GetService<IWidgetManagerService>().Dispose();
-
         // Close all windows
         await WindowsExtensions.CloseAllWindowsAsync();
 
         // Dispose desktop widgets 3 widgets
         await GetService<IWidgetResourceService>().DisposeWidgetsAsync();
+
+        // Dispose widget manager service
+        GetService<IWidgetManagerService>().Dispose();
 
         // Dispose microsoft widgets
         GetService<MicrosoftWidgetModel>().Dispose();
