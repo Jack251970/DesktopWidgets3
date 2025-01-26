@@ -215,6 +215,8 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
         {
             await InitializeYourWidgetsAsync();
 
+            _widgetManagerService.AllowMultipleWidgetChanged += WidgetManagerService_AllowMultipleWidgetChanged;
+
             _isInitialized = true;
 
             return;
@@ -286,6 +288,25 @@ public partial class DashboardPageViewModel(DispatcherQueue dispatcherQueue, Mic
                 widgetItem.Id,
                 widgetItem.Type,
                 actualTheme);
+        }
+
+        _refreshWidgetsLock.Release();
+    }
+
+    #endregion
+
+    #region Update Editable
+
+    private async void WidgetManagerService_AllowMultipleWidgetChanged(object? sender, EventArgs e)
+    {
+        await _refreshWidgetsLock.WaitAsync();
+
+        foreach (var widgetItem in UnpinnedWidgets)
+        {
+            var providerType = widgetItem.ProviderType;
+            var widgetId = widgetItem.Id;
+            var widgetType = widgetItem.Type;
+            widgetItem.Editable = (!widgetItem.IsUnknown) && widgetItem.IsInstalled && (!await _widgetManagerService.IsWidgetSingleInstanceAndAlreadyPinnedAsync(providerType, widgetId, widgetType));
         }
 
         _refreshWidgetsLock.Release();

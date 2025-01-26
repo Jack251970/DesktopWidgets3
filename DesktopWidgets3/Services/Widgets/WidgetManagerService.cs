@@ -976,7 +976,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         }
 
         // invoke allow multiple widget changed event
-        if (_widgetResourceService.GetWidgetAllowMultiple(providerType, widgetId, widgetType))
+        if (!_widgetResourceService.GetWidgetAllowMultiple(providerType, widgetId, widgetType))
         {
             AllowMultipleWidgetChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -1228,7 +1228,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             }
 
             // invoke allow multiple widget changed event
-            if (_widgetResourceService.GetWidgetAllowMultiple(providerType, widgetId, widgetType))
+            if (!_widgetResourceService.GetWidgetAllowMultiple(providerType, widgetId, widgetType))
             {
                 AllowMultipleWidgetChanged?.Invoke(this, EventArgs.Empty);
             }

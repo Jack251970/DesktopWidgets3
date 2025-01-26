@@ -42,7 +42,8 @@ public partial class DashboardWidgetItem : BaseWidgetItem
 
     public required bool IsInstalled { get; set; }
 
-    public bool Editable => (!IsUnknown) && IsInstalled;
+    [ObservableProperty]
+    private bool _editable;
 
     public Action<DashboardWidgetItem>? PinnedChangedCallback { get; set; }
 

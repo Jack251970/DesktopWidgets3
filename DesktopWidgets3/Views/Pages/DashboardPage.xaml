@@ -148,7 +148,7 @@
                                         Grid.Column="2"
                                         Margin="0,-2,0,0"
                                         HorizontalAlignment="Right"
-                                        IsEnabled="{x:Bind Editable, Mode=OneTime}"
+                                        IsEnabled="{x:Bind Editable, Mode=OneWay}"
                                         IsOn="{x:Bind Pinned, Mode=TwoWay}"
                                         OffContent=""
                                         OnContent=""

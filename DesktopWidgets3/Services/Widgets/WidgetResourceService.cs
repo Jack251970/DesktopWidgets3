@@ -1388,6 +1388,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         var widgetList = _appSettingsService.GetWidgetsList();
         var dashboardItemList = new List<DashboardWidgetItem>();
         var unknownNotInstalledWidgetList = new List<(string, string)>();
+        var widgetManagerService = DependencyExtensions.GetRequiredService<IWidgetManagerService>();
 
         foreach (var widget in widgetList)
         {
@@ -1411,7 +1412,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                         IconFill = await GetWidgetIconBrushAsync(widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
                         Pinned = widget.Pinned,
                         IsUnknown = false,
-                        IsInstalled = true
+                        IsInstalled = true,
+                        Editable = widget.Pinned || (!await widgetManagerService.IsWidgetSingleInstanceAndAlreadyPinnedAsync(providerType, widgetId, widgetType))
                     });
                 }
                 else
@@ -1432,6 +1434,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                         Pinned = widget.Pinned,
                         IsUnknown = true,
                         IsInstalled = false,
+                        Editable = false
                     });
                 }
             }
@@ -1450,7 +1453,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                         IconFill = await GetWidgetIconBrushAsync(widgetDefinitionIndex, actualTheme),
                         Pinned = widget.Pinned,
                         IsUnknown = false,
-                        IsInstalled = true
+                        IsInstalled = true,
+                        Editable = widget.Pinned || (!await widgetManagerService.IsWidgetSingleInstanceAndAlreadyPinnedAsync(providerType, widgetId, widgetType))
                     });
                 }
                 else
@@ -1471,6 +1475,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                         Pinned = widget.Pinned,
                         IsUnknown = true,
                         IsInstalled = false,
+                        Editable = false
                     });
                 }
             }
@@ -1481,12 +1486,13 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
     public async Task<DashboardWidgetItem?> GetDashboardWidgetItemAsync(string widgetId, string widgetType, int widgetIndex, ElementTheme actualTheme)
     {
+        var providerType = WidgetProviderType.DesktopWidgets3;
         (var installed, var allIndex, var installedIndex, var widgetTypeIndex) = GetWidgetGroupAndWidgetTypeIndex(widgetId, widgetType, true);
         if (installed)
         {
             return new DashboardWidgetItem()
             {
-                ProviderType = WidgetProviderType.DesktopWidgets3,
+                ProviderType = providerType,
                 Id = widgetId,
                 Type = widgetType,
                 Index = widgetIndex,
@@ -1494,7 +1500,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
                 IconFill = await GetWidgetIconBrushAsync(widgetId, widgetType, allIndex, installedIndex, widgetTypeIndex, actualTheme),
                 Pinned = true,
                 IsUnknown = false,
-                IsInstalled = true
+                IsInstalled = true,
+                Editable = true  // all widgets are pinned by default, so they are always editable
             };
         }
 
@@ -1518,7 +1525,8 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
             IconFill = await GetWidgetIconBrushAsync(widgetViewModel.WidgetDefinition, actualTheme),
             Pinned = true,
             IsUnknown = false,
-            IsInstalled = true
+            IsInstalled = true,
+            Editable = true  // all widgets are pinned by default, so they are always editable
         };
     }
 
