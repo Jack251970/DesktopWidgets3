@@ -14,30 +14,6 @@ public partial class App : Application
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(App));
 
-    #region Host
-
-    // The .NET Generic Host provides dependency injection, configuration, logging, and other services.
-    // https://docs.microsoft.com/dotnet/core/extensions/generic-host
-    // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
-    // https://docs.microsoft.com/dotnet/core/extensions/configuration
-    // https://docs.microsoft.com/dotnet/core/extensions/logging
-    public IHost? Host { get; private set; }
-
-    public static T GetService<T>() where T : class
-    {
-        if ((Current as App)!.Host!.Services.GetService(typeof(T)) is not T service)
-        {
-            throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
-        }
-
-        // Uncomment to log the service retrieval for checking the recrusive call
-        // _log.Debug("Service {service} retrieved.", typeof(T).Name);
-
-        return service;
-    }
-
-    #endregion
-
     #region Main Window
 
     public static MainWindow MainWindow { get; set; } = null!;
@@ -107,7 +83,7 @@ public partial class App : Application
         ResourceExtensions.AddInnerResource(Constants.DevHomeDashboard);
 
         // Build the host
-        Host = Microsoft.Extensions.Hosting.Host
+        var host = Host
             .CreateDefaultBuilder()
             .UseContentRoot(AppContext.BaseDirectory)
             .ConfigureLogging(builder => builder
@@ -140,9 +116,6 @@ public partial class App : Application
 
                 // Backdrop Management
                 services.AddSingleton<IBackdropSelectorService, BackdropSelectorService>();
-
-                // Dependency Injection
-                services.AddSingleton<IDependencyService, DependencyService>();
 
                 // Dialog Managment
                 services.AddSingleton<IDialogService, DialogService>();
@@ -260,18 +233,16 @@ public partial class App : Application
                 #endregion
             })
             .Build();
+        DependencyExtensions.ConfigureServices(host.Services);
 
         // Configure exception handlers
         UnhandledException += (sender, e) => HandleAppUnhandledException(e.Exception, true);
         AppDomain.CurrentDomain.UnhandledException += (sender, e) => HandleAppUnhandledException(e.ExceptionObject as Exception, false);
         TaskScheduler.UnobservedTaskException += (sender, e) => HandleAppUnhandledException(e.Exception, false);
 
-        // Initialize core extensions after services
-        DependencyExtensions.Initialize(GetService<IDependencyService>());
-
         // Initialize core services
-        GetService<IAppSettingsService>().Initialize();
-        GetService<IAppNotificationService>().Initialize();
+        DependencyExtensions.GetRequiredService<IAppSettingsService>().Initialize();
+        DependencyExtensions.GetRequiredService<IAppNotificationService>().Initialize();
 
         // Initialize core helpers after services
         AppLanguageHelper.Initialize();
@@ -314,7 +285,7 @@ public partial class App : Application
 #if SPLASH_SCREEN
             // Show the splash screen
             SplashScreenLoadingTCS = new TaskCompletionSource();
-            var needActivate = await GetService<IActivationService>().LaunchMainWindowAsync(appActivationArguments);
+            var needActivate = await DependencyExtensions.GetRequiredService<IActivationService>().LaunchMainWindowAsync(appActivationArguments);
 
             if (needActivate)
             {
@@ -343,29 +314,29 @@ public partial class App : Application
 #endif
 
             // Initialize dialog service
-            GetService<IDialogService>().Initialize();
+            DependencyExtensions.GetRequiredService<IDialogService>().Initialize();
 
             // Check startup
             _ = StartupHelper.CheckStartup();
 
             // initialize widget store list
-            await GetService<IAppSettingsService>().InitializeWidgetStoreListAsync();
+            await DependencyExtensions.GetRequiredService<IAppSettingsService>().InitializeWidgetStoreListAsync();
 
             // Initialize widget resources
-            await GetService<IWidgetResourceService>().InitalizeAsync();
+            await DependencyExtensions.GetRequiredService<IWidgetResourceService>().InitalizeAsync();
 
             // initialize widget list
-            await GetService<IAppSettingsService>().InitializeWidgetListAsync();
+            await DependencyExtensions.GetRequiredService<IAppSettingsService>().InitializeWidgetListAsync();
 
             // Initialize pinned widgets
-            await GetService<IWidgetManagerService>().InitializePinnedWidgetsAsync(true);
+            await DependencyExtensions.GetRequiredService<IWidgetManagerService>().InitializePinnedWidgetsAsync(true);
 
             // Activate the main window
-            await GetService<IActivationService>().ActivateMainWindowAsync(args);
+            await DependencyExtensions.GetRequiredService<IActivationService>().ActivateMainWindowAsync(args);
 
             // Create edit mode window
             EditModeWindow = WindowsExtensions.CreateWindow<EditModeWindow>();
-            await GetService<IActivationService>().ActivateWindowAsync(EditModeWindow);
+            await DependencyExtensions.GetRequiredService<IActivationService>().ActivateWindowAsync(EditModeWindow);
         }
     }
 
@@ -386,7 +357,7 @@ public partial class App : Application
         // Try to show a notification
         if (showToastNotification)
         {
-            GetService<IAppNotificationService>().TryShow(
+            DependencyExtensions.GetRequiredService<IAppNotificationService>().TryShow(
                 string.Format("AppNotificationUnhandledExceptionPayload".GetLocalizedString(),
                 $"{ex?.ToString()}{Environment.NewLine}"));
         }
@@ -400,7 +371,7 @@ public partial class App : Application
     {
         _log.Information($"App is activated. Activation type: {activatedEventArgs.Data.GetType().Name}");
 
-        await MainWindow.EnqueueOrInvokeAsync(async (_) => await GetService<IActivationService>().ActivateMainWindowAsync(activatedEventArgs));
+        await MainWindow.EnqueueOrInvokeAsync(async (_) => await DependencyExtensions.GetRequiredService<IActivationService>().ActivateMainWindowAsync(activatedEventArgs));
     }
 #endif
 
@@ -409,25 +380,25 @@ public partial class App : Application
         _log.Information("Exiting current application");
 
         // Close all desktop widgets 3 widgets
-        await GetService<IWidgetManagerService>().CloseAllWidgetsAsync();
+        await DependencyExtensions.GetRequiredService<IWidgetManagerService>().CloseAllWidgetsAsync();
 
         // Close all windows
         await WindowsExtensions.CloseAllWindowsAsync();
 
         // Dispose desktop widgets 3 widgets
-        await GetService<IWidgetResourceService>().DisposeWidgetsAsync();
+        await DependencyExtensions.GetRequiredService<IWidgetResourceService>().DisposeWidgetsAsync();
 
         // Dispose widget manager service
-        GetService<IWidgetManagerService>().Dispose();
+        DependencyExtensions.GetRequiredService<IWidgetManagerService>().Dispose();
 
         // Dispose microsoft widgets
-        GetService<MicrosoftWidgetModel>().Dispose();
+        DependencyExtensions.GetRequiredService<MicrosoftWidgetModel>().Dispose();
 
         // Dispose extension service
-        GetService<IExtensionService>().Dispose();
+        DependencyExtensions.GetRequiredService<IExtensionService>().Dispose();
 
         // Unregister app notification service
-        GetService<IAppNotificationService>().Unregister();
+        DependencyExtensions.GetRequiredService<IAppNotificationService>().Unregister();
 
         Current.Exit();
     }
