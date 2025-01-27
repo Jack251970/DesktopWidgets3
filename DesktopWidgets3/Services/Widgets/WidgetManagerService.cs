@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
@@ -101,9 +102,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
     {
         // get widget info
         var providerType = WidgetProviderType.Microsoft;
-        var (_, _, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
-
-        _log.Debug("Creating Microsoft widget window (WidgetId: {WidgetId}, WidgetType: {WidgetType}, WidgetIndex: {WidgetIndex})", widgetId, widgetType, widgetIndex);
+        var (_, widgetName, _, widgetId, widgetType) = widgetViewModel.GetWidgetProviderAndWidgetInfo();
 
         // find item
         var widgetList = _appSettingsService.GetWidgetsList();
@@ -125,7 +124,27 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         else
         {
             // add widget
-            await AddWidgetAsync(widgetViewModel, null, true);
+            var newItem = new JsonWidgetItem()
+            {
+                ProviderType = providerType,
+                Name = widgetName,
+                Id = widgetId,
+                Type = widgetType,
+                Index = widgetIndex,
+                Pinned = true,
+                Position = WidgetConstants.DefaultWidgetPosition,
+                Size = _widgetResourceService.GetWidgetDefaultSize(widgetViewModel),
+                DisplayMonitor = DisplayMonitor.GetPrimaryMonitorInfo(),
+                Settings = new BaseWidgetSettings()
+            };
+
+            // create widget window
+            await CreateWidgetWindowAsync(newItem, widgetViewModel);
+
+            // save widget item
+            await _appSettingsService.AddWidgetAsync(newItem);
+
+            existedWidgets.Add(new(providerType, widgetId, widgetType, widgetIndex));
             return true;
         }
     }
