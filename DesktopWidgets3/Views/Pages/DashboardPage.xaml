@@ -3,7 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DesktopWidgets3.Behaviors"
-    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DesktopWidgets3.ViewModels.Pages"
@@ -39,10 +38,10 @@
 
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.PinnedWidgets, Mode=OneWay}">
                 <ItemsRepeater.Layout>
-                    <controls:StaggeredLayout
-                        ColumnSpacing="8"
-                        DesiredColumnWidth="378"
-                        RowSpacing="8" />
+                    <UniformGridLayout
+                        MinColumnSpacing="8"
+                        MinItemWidth="378"
+                        MinRowSpacing="8" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="widgetmodels:DashboardWidgetItem">
@@ -103,10 +102,10 @@
 
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.UnpinnedWidgets, Mode=OneWay}">
                 <ItemsRepeater.Layout>
-                    <controls:StaggeredLayout
-                        ColumnSpacing="8"
-                        DesiredColumnWidth="378"
-                        RowSpacing="8" />
+                    <UniformGridLayout
+                        MinColumnSpacing="8"
+                        MinItemWidth="378"
+                        MinRowSpacing="8" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="widgetmodels:DashboardWidgetItem">
