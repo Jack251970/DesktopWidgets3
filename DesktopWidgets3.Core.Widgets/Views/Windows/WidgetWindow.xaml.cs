@@ -158,7 +158,7 @@ public sealed partial class WidgetWindow : WindowEx
 
     private WidgetViewModel? WidgetViewModel;
 
-    private PointInt32 _widgetPosition;
+    private PointInt32 _widgetActualPosition;
 
     private RectSize _widgetSize;
 
@@ -226,14 +226,14 @@ public sealed partial class WidgetWindow : WindowEx
         var widgetSizeHeight = widgetItem.Size.Height!.Value;
         var widgetSizeWidth = widgetItem.Size.Width!.Value;
         _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
-        _widgetPosition = AppWindow.Position;
+        _widgetActualPosition = AppWindow.Position;
         if (widgetItem.Position.X != WidgetConstants.DefaultWidgetPosition.X)
         {
-            _widgetPosition.X = widgetItem.Position.X;
+            _widgetActualPosition.X = GetWidgetActualPositionX(widgetItem.Position.X, widgetItem.DisplayMonitor);
         }
         if (widgetItem.Position.Y != WidgetConstants.DefaultWidgetPosition.Y)
         {
-            _widgetPosition.Y = widgetItem.Position.Y;
+            _widgetActualPosition.Y = GetWidgetActualPositionY(widgetItem.Position.Y, widgetItem.DisplayMonitor);
         }
 
         // Initialize properties for ui elements
@@ -278,14 +278,14 @@ public sealed partial class WidgetWindow : WindowEx
         var widgetSizeHeight = widgetItem.Size.Height!.Value;
         var widgetSizeWidth = widgetItem.Size.Width!.Value;
         _widgetSize = new RectSize(widgetSizeWidth, widgetSizeHeight);
-        _widgetPosition = AppWindow.Position;
+        _widgetActualPosition = AppWindow.Position;
         if (widgetItem.Position.X != WidgetConstants.DefaultWidgetPosition.X)
         {
-            _widgetPosition.X = widgetItem.Position.X;
+            _widgetActualPosition.X = GetWidgetActualPositionX(widgetItem.Position.X, widgetItem.DisplayMonitor);
         }
         if (widgetItem.Position.Y != WidgetConstants.DefaultWidgetPosition.Y)
         {
-            _widgetPosition.Y = widgetItem.Position.Y;
+            _widgetActualPosition.Y = GetWidgetActualPositionY(widgetItem.Position.Y, widgetItem.DisplayMonitor);
         }
 
         // Initialize properties for ui elements
@@ -548,6 +548,70 @@ public sealed partial class WidgetWindow : WindowEx
 
     #endregion
 
+    #region Position
+
+    public static int GetWidgetActualPositionX(int jsonX, DisplayMonitor jsonMonitor)
+    {
+        if (jsonMonitor.IsPrimary)
+        {
+            // If the monitor is primary, return the json position
+            return jsonX;
+        }
+        else
+        {
+            var monitor = DisplayMonitor.GetMonitorInfo().FirstOrDefault(x => x.Name == jsonMonitor.Name);
+            if (monitor != null)
+            {
+                // If we can find the monitor, return the actual position based on the existing monitor
+                return jsonX + (int)monitor.RectMonitor.X;
+            }
+            else
+            {
+                // Or return the actual position based on the json monitor
+                return jsonX + (int)jsonMonitor.RectMonitor.X;
+            }
+        }
+    }
+
+    public static int GetWidgetActualPositionY(int jsonY, DisplayMonitor jsonMonitor)
+    {
+        if (jsonMonitor.IsPrimary)
+        {
+            // If the monitor is primary, return the json position
+            return jsonY;
+        }
+        else
+        {
+            var monitor = DisplayMonitor.GetMonitorInfo().FirstOrDefault(x => x.Name == jsonMonitor.Name);
+            if (monitor != null)
+            {
+                // If we can find the monitor, return the actual position based on the existing monitor
+                return jsonY + (int)monitor.RectMonitor.Y;
+            }
+            else
+            {
+                // Or return the actual position based on the json monitor
+                return jsonY + (int)jsonMonitor.RectMonitor.Y;
+            }
+        }
+    }
+
+    public static PointInt32 GetWidgetJsonPosition(PointInt32 actualPosition, DisplayMonitor actualMonitor)
+    {
+        if (actualMonitor.IsPrimary)
+        {
+            // If the monitor is primary, the actual position is the same as the json position
+            return actualPosition;
+        }
+        else
+        {
+            // Otherwise, return the position based on the actual monitor
+            return new(actualPosition.X - (int)actualMonitor.RectMonitor.X, actualPosition.Y - (int)actualMonitor.RectMonitor.Y);
+        }
+    }
+
+    #endregion
+
     #region Events
 
     private void WidgetWindow_Activated(object? sender, WindowActivatedEventArgs args)
@@ -586,7 +650,7 @@ public sealed partial class WidgetWindow : WindowEx
         LoadCompleted?.Invoke(this, new LoadCompletedEventArgs() 
         { 
             WidgetRuntimeId = RuntimeId,
-            WidgetPosition = _widgetPosition,
+            WidgetActualPosition = _widgetActualPosition,
             WidgetSettings = WidgetSettings,
             WidgetViewModel = WidgetViewModel
         });
@@ -669,7 +733,7 @@ public sealed partial class WidgetWindow : WindowEx
     {
         public required string WidgetRuntimeId { get; set; }
 
-        public required PointInt32 WidgetPosition { get; set; }
+        public required PointInt32 WidgetActualPosition { get; set; }
 
         public required BaseWidgetSettings? WidgetSettings { get; set; }
 

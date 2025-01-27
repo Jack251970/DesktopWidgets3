@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
+using Windows.Graphics;
 
 namespace DesktopWidgets3.Services.Widgets;
 
@@ -1050,7 +1050,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
             // parse event agrs
             var widgetRuntimeId = args.WidgetRuntimeId;
-            var widgetPosition = args.WidgetPosition;
+            var widgetPosition = args.WidgetActualPosition;
             var widgetSettings = args.WidgetSettings!;
 
             // set widget position
@@ -1120,7 +1120,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
 
             // parse event agrs
             var widgetRuntimeId = args.WidgetRuntimeId;
-            var widgetPosition = args.WidgetPosition;
+            var widgetPosition = args.WidgetActualPosition;
             var widgetViewModel = args.WidgetViewModel;
 
             // set widget position
@@ -1402,6 +1402,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             var widgetIndex = widgetWindow.WidgetIndex;
 
             // save original widget
+            var displayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow);
             _originalWidgetList.Add(new JsonWidgetItem()
             {
                 ProviderType = providerType,
@@ -1410,10 +1411,10 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
                 Type = widgetType,
                 Index = widgetIndex,
                 Pinned = true,
-                Position = widgetWindow.Position,
+                Position = WidgetWindow.GetWidgetJsonPosition(widgetWindow.Position, displayMonitor),
                 Size = widgetWindow.ContentSize,
-                DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
-                Settings = null!,
+                DisplayMonitor = displayMonitor,
+                Settings = null!
             });
         }
 
@@ -1479,6 +1480,7 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             var widgetIndex = widgetWindow.WidgetIndex;
 
             // find original widget
+            var displayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow);
             widgetList.Add(new JsonWidgetItem()
             {
                 ProviderType = providerType,
@@ -1487,10 +1489,10 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
                 Type = widgetType,
                 Index = widgetIndex,
                 Pinned = true,
-                Position = widgetWindow.Position,
+                Position = WidgetWindow.GetWidgetJsonPosition(widgetWindow.Position, displayMonitor),
                 Size = widgetWindow.ContentSize,
-                DisplayMonitor = DisplayMonitor.GetMonitorInfo(widgetWindow),
-                Settings = null!,
+                DisplayMonitor = displayMonitor,
+                Settings = null!
             });
         }
         await _appSettingsService.UpdateWidgetsListIgnoreSettingsAsync(widgetList);
@@ -1527,7 +1529,9 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
             // restore position and size
             if (originalWidget != null)
             {
-                window.Position = originalWidget.Position;
+                var positionX = WidgetWindow.GetWidgetActualPositionX(originalWidget.Position.X, originalWidget.DisplayMonitor);
+                var positionY = WidgetWindow.GetWidgetActualPositionY(originalWidget.Position.Y, originalWidget.DisplayMonitor);
+                window.Position = new PointInt32(positionX, positionY);
                 window.ContentSize = originalWidget.Size;
                 window.Show();
             };
