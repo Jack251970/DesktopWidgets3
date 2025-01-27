@@ -63,12 +63,9 @@ public sealed partial class EditModeWindow : WindowEx
     {
         var monitorInfo = DisplayMonitor.GetMonitorInfo(this);
         var monitorWidth = monitorInfo.RectMonitor.Width;
-        if (monitorWidth != null)
-        {
-            var windowWidth = AppWindow.Size.Width;
-            this.Move((int)(monitorWidth - windowWidth) / 2, 8);
-            WindowExtensions.Show(this);
-        }
+        var windowWidth = AppWindow.Size.Width;
+        this.Move((int)(monitorWidth - windowWidth) / 2, 8);
+        WindowExtensions.Show(this);
     }
 
     #region Commands

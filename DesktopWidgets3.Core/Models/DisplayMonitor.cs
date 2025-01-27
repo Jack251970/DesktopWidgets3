@@ -7,9 +7,9 @@ public class DisplayMonitor
 {
     public string Name { get; set; } = string.Empty;
 
-    public RectSize RectMonitor { get; set; } = RectSize.NULL;
+    public Rect3 RectMonitor { get; set; }
 
-    public RectSize RectWork { get; set; } = RectSize.NULL;
+    public Rect3 RectWork { get; set; }
 
     public bool IsPrimary { get; set; } = false;
 
@@ -19,8 +19,8 @@ public class DisplayMonitor
         return monitorInfos.Select(x => new DisplayMonitor
         {
             Name = x.Name,
-            RectMonitor = new RectSize(x.RectMonitor),
-            RectWork = new RectSize(x.RectWork),
+            RectMonitor = new(x.RectMonitor),
+            RectWork = new(x.RectWork),
             IsPrimary = x.IsPrimary
         }).ToList();
     }
@@ -35,8 +35,8 @@ public class DisplayMonitor
                 return new()
                 {
                     Name = monitorInfo.Name,
-                    RectMonitor = new RectSize(monitorInfo.RectMonitor),
-                    RectWork = new RectSize(monitorInfo.RectWork),
+                    RectMonitor = new(monitorInfo.RectMonitor),
+                    RectWork = new(monitorInfo.RectWork),
                     IsPrimary = monitorInfo.IsPrimary
                 };
             }
@@ -50,8 +50,8 @@ public class DisplayMonitor
         return new()
         {
             Name = primaryMonitorInfo!.Name,
-            RectMonitor = new RectSize(primaryMonitorInfo.RectMonitor),
-            RectWork = new RectSize(primaryMonitorInfo.RectWork),
+            RectMonitor = new(primaryMonitorInfo.RectMonitor),
+            RectWork = new(primaryMonitorInfo.RectWork),
             IsPrimary = primaryMonitorInfo.IsPrimary
         };
     }
