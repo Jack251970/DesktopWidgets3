@@ -720,6 +720,12 @@ public partial class MicrosoftWidgetModel(DispatcherQueue dispatcherQueue, Widge
 
     public async Task<ComSafeWidget[]> GetComSafeWidgetsAsync()
     {
+        if (!HasWidgetServiceInitialized)
+        {
+            // If the widget service is not initialized, return an empty list
+            return [];
+        }
+
         var unsafeCurrentlyPinnedWidgets = await _widgetHostingService.GetWidgetsAsync();
         var comSafeCurrentlyPinnedWidgets = new List<ComSafeWidget>();
         foreach (var unsafeWidget in unsafeCurrentlyPinnedWidgets)
