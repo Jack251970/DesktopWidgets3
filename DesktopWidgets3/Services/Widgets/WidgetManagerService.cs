@@ -793,8 +793,9 @@ internal partial class WidgetManagerService(MicrosoftWidgetModel microsoftWidget
         var widgetViewModel = GetWidgetViewModel(widgetId, widgetType, widgetIndex);
         if (widgetViewModel != null)
         {
+            // DevHome does this, but sometimes it can cause the thread await to hang, so we remove it.
             // Remove any custom state from the widget. In case the deletion fails, we won't show the widget anymore.
-            await widgetViewModel.Widget.SetCustomStateAsync(string.Empty);
+            // await widgetViewModel.Widget.SetCustomStateAsync(string.Empty);
 
             // Try delete widget
             await MicrosoftWidgetModel.TryDeleteWidgetAsync(widgetViewModel);
