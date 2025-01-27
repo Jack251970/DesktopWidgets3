@@ -210,6 +210,7 @@
   </ItemGroup>
 
   <!-- Workaround for Adaptive Cards not supporting correct RIDs when using .NET 8 -->
+  <!-- If CopyAdaptiveCardsToTargetDir failed because files cannot be found, comment these codes and build for one time first.  -->
   <ItemGroup>
     <Content Include="$(TargetDir)\AdaptiveCards.ObjectModel.WinUI3.dll" Link="AdaptiveCards.ObjectModel.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
