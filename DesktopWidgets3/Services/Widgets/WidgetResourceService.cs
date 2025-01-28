@@ -549,7 +549,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         var brush = new ImageBrush
         {
             ImageSource = image,
-            Stretch = Stretch.Uniform,
+            Stretch = Stretch.Uniform
         };
 
         return brush;
@@ -811,7 +811,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         var brush = new ImageBrush
         {
             ImageSource = image,
-            Stretch = Stretch.Uniform,
+            Stretch = Stretch.Uniform
         };
 
         return brush;
@@ -961,6 +961,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         var brush = new ImageBrush
         {
             ImageSource = image,
+            Stretch = Stretch.Uniform
         };
 
         return brush;
@@ -1732,7 +1733,7 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
         var brush = new ImageBrush
         {
             ImageSource = image,
-            Stretch = Stretch.Uniform,
+            Stretch = Stretch.Uniform
         };
 
         return brush;

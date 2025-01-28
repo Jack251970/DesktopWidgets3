@@ -81,6 +81,7 @@ public class WidgetScreenshotService(DispatcherQueue dispatcherQueue) : IWidgetS
         var brush = new ImageBrush
         {
             ImageSource = image,
+            Stretch = Stretch.Uniform
         };
 
         return brush;
