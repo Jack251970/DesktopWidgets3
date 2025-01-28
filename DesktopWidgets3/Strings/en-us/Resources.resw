@@ -351,4 +351,13 @@
   <data name="RestartApplication.Content" xml:space="preserve">
     <value>Do you want to restart application now?</value>
   </data>
+  <data name="Settings_Widgets.Text" xml:space="preserve">
+    <value>Widgets</value>
+  </data>
+  <data name="Settings_MicrosoftWidgets_Card.Header" xml:space="preserve">
+    <value>Enable Microsoft widgets</value>
+  </data>
+  <data name="Settings_MicrosoftWidgets_Card.Description" xml:space="preserve">
+    <value>Enable widgets from Microsoft store</value>
+  </data>
 </root>

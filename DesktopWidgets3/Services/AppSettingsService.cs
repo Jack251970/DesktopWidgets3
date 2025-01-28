@@ -28,6 +28,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
             BatterySaver = GetBatterySaver();
             Theme = GetTheme();
             BackdropType = GetBackdropType();
+            EnableMicrosoftWidgets = GetEnableMicrosoftWidgets();
 
             // initialize efficiency mode
             EfficiencyModeUtilities.SetEfficiencyMode(BatterySaver);
@@ -124,7 +125,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         return data;
     }
 
-    public async Task SaveLanguageInSettingsAsync(string language)
+    public async Task SetLanguageAsync(string language)
     {
         await SaveDataInSettingsAsync(_localSettingsKeys.LanguageKey, language);
         Language = language;
@@ -223,7 +224,7 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
         return data;
     }
 
-    public async Task SaveThemeInSettingsAsync(ElementTheme theme)
+    public async Task SetThemeAsync(ElementTheme theme)
     {
         await SaveDataInSettingsAsync(_localSettingsKeys.ThemeKey, theme);
         Theme = theme;
@@ -258,6 +259,37 @@ internal class AppSettingsService(ILocalSettingsService localSettingsService, IO
     {
         await SaveDataInSettingsAsync(_localSettingsKeys.BackdropTypeKey, type);
         BackdropType = type;
+    }
+
+    #endregion
+
+    #region Enable Microsoft Widgets
+
+    private bool enableMicrosoftWidgets;
+    public bool EnableMicrosoftWidgets
+    {
+        get => enableMicrosoftWidgets;
+        private set
+        {
+            if (enableMicrosoftWidgets != value)
+            {
+                enableMicrosoftWidgets = value;
+            }
+        }
+    }
+
+    private const bool DefaultEnableMicrosoftWidgets = true;
+
+    private bool GetEnableMicrosoftWidgets()
+    {
+        var data = GetDataFromSettings(_localSettingsKeys.EnableMicrosoftWidgetsKey, DefaultEnableMicrosoftWidgets);
+        return data;
+    }
+
+    public async Task SetEnableMicrosoftWidgetsAsync(bool value)
+    {
+        await SaveDataInSettingsAsync(_localSettingsKeys.EnableMicrosoftWidgetsKey, value);
+        EnableMicrosoftWidgets = value;
     }
 
     #endregion

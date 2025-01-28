@@ -12,7 +12,7 @@ public interface IAppSettingsService
 
     string Language { get; }
 
-    Task SaveLanguageInSettingsAsync(string language);
+    Task SetLanguageAsync(string language);
 
     bool SilentStart { get; }
 
@@ -26,9 +26,13 @@ public interface IAppSettingsService
 
     ElementTheme Theme { get; }
 
-    Task SaveThemeInSettingsAsync(ElementTheme theme);
+    Task SetThemeAsync(ElementTheme theme);
 
     BackdropType BackdropType { get; }
+
+    Task SetEnableMicrosoftWidgetsAsync(bool value);
+
+    bool EnableMicrosoftWidgets { get; }
 
     Task SaveBackdropTypeInSettingsAsync(BackdropType type);
 

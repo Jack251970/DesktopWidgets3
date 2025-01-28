@@ -43,8 +43,11 @@ internal class WidgetResourceService(DispatcherQueue dispatcherQueue, MicrosoftW
 
         try
         {
-            // initialize microsoft widget resources
-            await _microsoftWidgetModel.InitializeResourcesAsync();
+            // initialize microsoft widget resources if enabled them
+            if (_appSettingsService.EnableMicrosoftWidgets)
+            {
+                await _microsoftWidgetModel.InitializeResourcesAsync();
+            }
 
             // get all widget metadata
             GetAllWidgetsMetadata();

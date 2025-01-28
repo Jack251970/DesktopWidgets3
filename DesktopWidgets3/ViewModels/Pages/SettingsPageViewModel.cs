@@ -39,6 +39,9 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
     private int _backdropTypeIndex;
 
     [ObservableProperty]
+    private bool _enableMicrosoftWidgets;
+
+    [ObservableProperty]
     private string _appDisplayName = ConstantHelper.AppDisplayName;
 
     [ObservableProperty]
@@ -70,6 +73,7 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
         BatterySaver = _appSettingsService.BatterySaver;
         ThemeIndex = (int)_themeSelectorService.Theme;
         BackdropTypeIndex = (int)_appSettingsService.BackdropType;
+        EnableMicrosoftWidgets = _appSettingsService.EnableMicrosoftWidgets;
 
         _isInitialized = true;
     }
@@ -127,7 +131,7 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
             else
             {
                 // No need to set PrimaryLanguageOverride in unpackaged app - it will be set by the app in the next launch
-                _appSettingsService.SaveLanguageInSettingsAsync(AppLanguageHelper.GetLanguageCode(value));
+                _appSettingsService.SetLanguageAsync(AppLanguageHelper.GetLanguageCode(value));
             }
 
             ShowRestartTip = true;
@@ -191,6 +195,14 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
         if (_isInitialized)
         {
             _backdropSelectorService.SetBackdropTypeAsync((BackdropType)value);
+        }
+    }
+
+    partial void OnEnableMicrosoftWidgetsChanged(bool value)
+    {
+        if (_isInitialized)
+        {
+            _appSettingsService.SetEnableMicrosoftWidgetsAsync(value);
         }
     }
 

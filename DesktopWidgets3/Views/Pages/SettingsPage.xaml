@@ -120,6 +120,16 @@
                     </ComboBox>
                 </controls:SettingsCard>
 
+                <!--  Widgets  -->
+                <TextBlock x:Uid="Settings_Widgets" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
+
+                <controls:SettingsCard x:Uid="Settings_MicrosoftWidgets_Card">
+                    <controls:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE950;" />
+                    </controls:SettingsCard.HeaderIcon>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.EnableMicrosoftWidgets, Mode=TwoWay}" />
+                </controls:SettingsCard>
+
                 <!--  About  -->
                 <TextBlock x:Uid="Settings_About" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 

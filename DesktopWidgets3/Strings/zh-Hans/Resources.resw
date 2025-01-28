@@ -351,4 +351,13 @@
   <data name="RestartApplication.Content" xml:space="preserve">
     <value>你想要现在重启应用吗？</value>
   </data>
+  <data name="Settings_Widgets.Text" xml:space="preserve">
+    <value>小组件</value>
+  </data>
+  <data name="Settings_MicrosoftWidgets_Card.Description" xml:space="preserve">
+    <value>启用来自微软商店的小组件</value>
+  </data>
+  <data name="Settings_MicrosoftWidgets_Card.Header" xml:space="preserve">
+    <value>启用微软小组件</value>
+  </data>
 </root>

@@ -11,4 +11,6 @@ internal class LocalSettingsKeys
     public readonly string ThemeKey = "Theme";
 
     public readonly string BackdropTypeKey = "Backdrop";
+
+    public readonly string EnableMicrosoftWidgetsKey = "EnableMicrosoftWidgets";
 }
