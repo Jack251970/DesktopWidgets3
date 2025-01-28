@@ -17,7 +17,7 @@
       "ScreenshotPath": "Images\\PerformanceScreenshotLight.png",
       "ScreenshotPathDark": "Images\\PerformanceScreenshotDark.png",
       "DefaultWidth": 342.0,
-      "DefaultHeight": 201.0,
+      "DefaultHeight": 192.0,
       "AllowMultiple": false
     },
     {
@@ -28,7 +28,7 @@
       "ScreenshotPath": "Images\\NetworkScreenshotLight.png",
       "ScreenshotPathDark": "Images\\NetworkScreenshotDark.png",
       "DefaultWidth": 342.0,
-      "DefaultHeight": 174.0,
+      "DefaultHeight": 165.0,
       "AllowMultiple": false
     },
     {
@@ -39,7 +39,7 @@
       "ScreenshotPath": "Images\\DiskScreenshotLight.png",
       "ScreenshotPathDark": "Images\\DiskScreenshotDark.png",
       "DefaultWidth": 342.0,
-      "DefaultHeight": 198.0,
+      "DefaultHeight": 189.0,
       "AllowMultiple": false
     }
   ]
