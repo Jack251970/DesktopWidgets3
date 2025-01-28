@@ -2,17 +2,13 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 
 namespace DesktopWidgets3.ViewModels.Dialogs;
 
-public partial class AddWidgetViewModel(
-    DispatcherQueue dispatcherQueue,
-    IWidgetResourceService widgetResourceService) : ObservableObject
+public partial class AddWidgetViewModel(IWidgetResourceService widgetResourceService) : ObservableObject
 {
-    private readonly DispatcherQueue _dispatcherQueue = dispatcherQueue;
     private readonly IWidgetResourceService _widgetResourceService = widgetResourceService;
 
     [ObservableProperty]
