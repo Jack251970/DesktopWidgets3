@@ -41,8 +41,8 @@
                 <TeachingTip
                     x:Uid="TeachingTipRestart"
                     IsLightDismissEnabled="True"
-                    IsOpen="{x:Bind ViewModel.ShowRestartTip, Mode=TwoWay}"
-                    Target="{x:Bind AppLanguagesComboBox}">
+                    IsOpen="{x:Bind ViewModel.ShowRestartTipLanguage, Mode=TwoWay}"
+                    Target="{x:Bind AppLanguagesComboBox, Mode=OneTime}">
                     <StackPanel
                         Padding="0,8,0,0"
                         HorizontalAlignment="Right"
@@ -56,7 +56,7 @@
                         <Button
                             x:Uid="ButtonCancel"
                             MinWidth="140"
-                            Command="{x:Bind ViewModel.CancelRestartCommand, Mode=OneWay}" />
+                            Command="{x:Bind ViewModel.CancelRestartLanguageCommand, Mode=OneWay}" />
                     </StackPanel>
                 </TeachingTip>
 
@@ -127,8 +127,29 @@
                     <controls:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE950;" />
                     </controls:SettingsCard.HeaderIcon>
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.EnableMicrosoftWidgets, Mode=TwoWay}" />
+                    <ToggleSwitch x:Name="ToggleSwitchEnableMicrosoftWidgets" IsOn="{x:Bind ViewModel.EnableMicrosoftWidgets, Mode=TwoWay}" />
                 </controls:SettingsCard>
+                <TeachingTip
+                    x:Uid="TeachingTipRestart"
+                    IsLightDismissEnabled="True"
+                    IsOpen="{x:Bind ViewModel.ShowRestartTipMicrosoftWidgets, Mode=TwoWay}"
+                    Target="{x:Bind ToggleSwitchEnableMicrosoftWidgets, Mode=OneTime}">
+                    <StackPanel
+                        Padding="0,8,0,0"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Uid="ButtonOk"
+                            MinWidth="140"
+                            Command="{x:Bind ViewModel.RestartApplicationCommand, Mode=OneWay}"
+                            Style="{ThemeResource AccentButtonStyle}" />
+                        <Button
+                            x:Uid="ButtonCancel"
+                            MinWidth="140"
+                            Command="{x:Bind ViewModel.CancelRestartMicrosoftWidgetsCommand, Mode=OneWay}" />
+                    </StackPanel>
+                </TeachingTip>
 
                 <!--  About  -->
                 <TextBlock x:Uid="Settings_About" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />

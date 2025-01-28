@@ -18,7 +18,7 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
     private int _languageIndex;
 
     [ObservableProperty]
-    private bool _showRestartTip;
+    private bool _showRestartTipLanguage;
 
     [ObservableProperty]
     private bool _runStartup;
@@ -40,6 +40,9 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
 
     [ObservableProperty]
     private bool _enableMicrosoftWidgets;
+
+    [ObservableProperty]
+    private bool _showRestartTipMicrosoftWidgets;
 
     [ObservableProperty]
     private string _appDisplayName = ConstantHelper.AppDisplayName;
@@ -89,7 +92,8 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
         RunStartup = logonTask || startupEntry;
         LogonTask = logonTask;
 
-        ShowRestartTip = false;
+        ShowRestartTipLanguage = false;
+        ShowRestartTipMicrosoftWidgets = false;
     }
 
     public void OnNavigatedFrom()
@@ -110,9 +114,15 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
 #pragma warning restore CA1822 // Mark members as static
 
     [RelayCommand]
-    private void CancelRestart()
+    private void CancelRestartLanguage()
     {
-        ShowRestartTip = false;
+        ShowRestartTipLanguage = false;
+    }
+
+    [RelayCommand]
+    private void CancelRestartMicrosoftWidgets()
+    {
+        ShowRestartTipMicrosoftWidgets = false;
     }
 
     #endregion
@@ -134,7 +144,7 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
                 _appSettingsService.SetLanguageAsync(AppLanguageHelper.GetLanguageCode(value));
             }
 
-            ShowRestartTip = true;
+            ShowRestartTipLanguage = true;
         }
     }
 
@@ -203,6 +213,8 @@ public partial class SettingsPageViewModel : ObservableRecipient, INavigationAwa
         if (_isInitialized)
         {
             _appSettingsService.SetEnableMicrosoftWidgetsAsync(value);
+
+            ShowRestartTipMicrosoftWidgets = true;
         }
     }
 
