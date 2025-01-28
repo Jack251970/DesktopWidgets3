@@ -91,6 +91,7 @@
       <ClockFiles Include="$(TargetDir)**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(ClockFiles)" DestinationFolder="$(SolutionDir)DesktopWidgets3\bin\$(Platform)\$(Configuration)\$(TargetFramework)\Widgets\$(AssemblyName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(ClockFiles)" DestinationFolder="$(SolutionDir)DesktopWidgets3\bin\$(Platform)\$(Configuration)\$(TargetFramework)\AppX\Widgets\$(AssemblyName)\%(RecursiveDir)" />
   </Target>
 
 </Project>
